@@ -1391,7 +1391,6 @@ static void digi_close(struct usb_serial_port *port)
 		goto exit;
 
 	if (port->serial->dev) {
-		/* FIXME: Transmit idle belongs in the wait_unti_sent path */
 		digi_transmit_idle(port, DIGI_CLOSE_TIMEOUT);
 
 		/* disable input flow control */

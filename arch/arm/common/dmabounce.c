@@ -34,6 +34,9 @@
 
 #include <asm/cacheflush.h>
 
+#include <typedefs.h>
+#include <bcmdefs.h>
+
 #undef STATS
 
 #ifdef STATS
@@ -328,7 +331,7 @@ static inline void unmap_single(struct device *dev, dma_addr_t dma_addr,
  * substitute the safe buffer for the unsafe one.
  * (basically move the buffer from an unsafe area to a safe one)
  */
-dma_addr_t dma_map_single(struct device *dev, void *ptr, size_t size,
+dma_addr_t BCMFASTPATH dma_map_single(struct device *dev, void *ptr, size_t size,
 		enum dma_data_direction dir)
 {
 	dev_dbg(dev, "%s(ptr=%p,size=%d,dir=%x)\n",
@@ -346,7 +349,7 @@ EXPORT_SYMBOL(dma_map_single);
  * the safe buffer.  (basically return things back to the way they
  * should be)
  */
-void dma_unmap_single(struct device *dev, dma_addr_t dma_addr, size_t size,
+void BCMFASTPATH dma_unmap_single(struct device *dev, dma_addr_t dma_addr, size_t size,
 		enum dma_data_direction dir)
 {
 	dev_dbg(dev, "%s(ptr=%p,size=%d,dir=%x)\n",

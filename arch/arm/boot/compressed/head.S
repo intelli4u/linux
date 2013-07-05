@@ -353,10 +353,6 @@ params:		ldr	r0, =0x10000100		@ params_phys for RPC
 cache_on:	mov	r3, #8			@ cache_on function
 		b	call_cache_fn
 
-/*
- * Initialize the highest priority protection region, PR7
- * to cover all 32bit address and cacheable and bufferable.
- */
 __armv4_mpu_cache_on:
 		mov	r0, #0x3f		@ 4G, the whole
 		mcr	p15, 0, r0, c6, c7, 0	@ PR7 Area Setting
@@ -483,6 +479,8 @@ __armv7_mmu_cache_on:
 		mcr	p15, 0, r0, c7, c10, 4	@ drain write buffer
 		tst	r11, #0xf		@ VMSA
 		mcrne	p15, 0, r0, c8, c7, 0	@ flush I,D TLBs
+		dsb				@ Barriers
+		isb
 #endif
 		mrc	p15, 0, r0, c1, c0, 0	@ read control reg
 		orr	r0, r0, #0x5000		@ I-cache enable, RR cache replacement

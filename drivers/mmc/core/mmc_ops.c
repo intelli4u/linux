@@ -461,4 +461,3 @@ int mmc_send_status(struct mmc_card *card, u32 *status)
 
 	return 0;
 }
-

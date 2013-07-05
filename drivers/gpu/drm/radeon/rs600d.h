@@ -517,7 +517,6 @@
 #define   S_000009_ENABLE_PAGE_TABLES(x)               (((x) & 0x1) << 26)
 #define   G_000009_ENABLE_PAGE_TABLES(x)               (((x) >> 26) & 0x1)
 #define   C_000009_ENABLE_PAGE_TABLES                  0xFBFFFFFF
-/* FIXME don't know the various field size need feedback from AMD */
 #define R_000100_MC_PT0_CNTL                         0x000100
 #define   S_000100_ENABLE_PT(x)                        (((x) & 0x1) << 0)
 #define   G_000100_ENABLE_PT(x)                        (((x) >> 0) & 0x1)

@@ -65,14 +65,6 @@ struct timecounter {
 	u64 nsec;
 };
 
-/**
- * cyclecounter_cyc2ns - converts cycle counter cycles to nanoseconds
- * @tc:		Pointer to cycle counter.
- * @cycles:	Cycles
- *
- * XXX - This could use some mult_lxl_ll() asm optimization. Same code
- * as in cyc2ns, but with unsigned result.
- */
 static inline u64 cyclecounter_cyc2ns(const struct cyclecounter *cc,
 				      cycle_t cycles)
 {
@@ -260,13 +252,6 @@ static inline u32 clocksource_hz2mult(u32 hz, u32 shift_constant)
 	return (u32)tmp;
 }
 
-/**
- * clocksource_cyc2ns - converts clocksource cycles to nanoseconds
- *
- * Converts cycles to nanoseconds, using the given mult and shift.
- *
- * XXX - This could use some mult_lxl_ll() asm optimization
- */
 static inline s64 clocksource_cyc2ns(cycle_t cycles, u32 mult, u32 shift)
 {
 	return ((u64) cycles * mult) >> shift;

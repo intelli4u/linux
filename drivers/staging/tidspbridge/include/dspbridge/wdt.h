@@ -76,4 +76,3 @@ void dsp_wdt_enable(bool enable);
 void dsp_wdt_sm_set(void *data);
 
 #endif
-

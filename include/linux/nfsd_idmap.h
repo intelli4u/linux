@@ -40,7 +40,6 @@
 #include <linux/in.h>
 #include <linux/sunrpc/svc.h>
 
-/* XXX from linux/nfs_idmap.h */
 #define IDMAP_NAMESZ 128
 
 #ifdef CONFIG_NFSD_V4

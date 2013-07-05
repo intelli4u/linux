@@ -60,7 +60,6 @@
 #include "r8192E_dm.h"
 //#include "r8192xU_phyreg.h"
 //#include <linux/usb.h>
-// FIXME: check if 2.6.7 is ok
 
 #ifdef CONFIG_PM
 #include "r8192_pm.h"
@@ -257,15 +256,8 @@ void CamResetAllEntry(struct net_device *dev)
 	//u8 ucIndex;
 	u32 ulcommand = 0;
 
-#if 1
 	ulcommand |= BIT31|BIT30;
 	write_nic_dword(dev, RWCAM, ulcommand);
-#else
-        for(ucIndex=0;ucIndex<TOTAL_CAM_ENTRY;ucIndex++)
-                CAM_mark_invalid(dev, ucIndex);
-        for(ucIndex=0;ucIndex<TOTAL_CAM_ENTRY;ucIndex++)
-                CAM_empty_entry(dev, ucIndex);
-#endif
 }
 
 
@@ -852,18 +844,6 @@ void rtl8192_irq_disable(struct net_device *dev)
 }
 
 
-#if 0
-static void rtl8192_set_mode(struct net_device *dev,int mode)
-{
-	u8 ecmd;
-	ecmd=read_nic_byte(dev, EPROM_CMD);
-	ecmd=ecmd &~ EPROM_CMD_OPERATING_MODE_MASK;
-	ecmd=ecmd | (mode<<EPROM_CMD_OPERATING_MODE_SHIFT);
-	ecmd=ecmd &~ (1<<EPROM_CS_SHIFT);
-	ecmd=ecmd &~ (1<<EPROM_CK_SHIFT);
-	write_nic_byte(dev, EPROM_CMD, ecmd);
-}
-#endif
 
 void rtl8192_update_msr(struct net_device *dev)
 {
@@ -898,15 +878,6 @@ void rtl8192_set_chan(struct net_device *dev,short ch)
     struct r8192_priv *priv = (struct r8192_priv *)ieee80211_priv(dev);
     RT_TRACE(COMP_RF, "=====>%s()====ch:%d\n", __FUNCTION__, ch);
     priv->chan=ch;
-#if 0
-    if(priv->ieee80211->iw_mode == IW_MODE_ADHOC ||
-            priv->ieee80211->iw_mode == IW_MODE_MASTER){
-
-        priv->ieee80211->link_state = WLAN_LINK_ASSOCIATED;
-        priv->ieee80211->master_chan = ch;
-        rtl8192_update_beacon_ch(dev);
-    }
-#endif
 
     /* this hack should avoid frame TX during channel setting*/
 
@@ -997,19 +968,6 @@ static void rtl8192_free_tx_ring(struct net_device *dev, unsigned int prio)
     ring->desc = NULL;
 }
 
-#if 0
-static void rtl8192_beacon_disable(struct net_device *dev)
-{
-	struct r8192_priv *priv = (struct r8192_priv *)ieee80211_priv(dev);
-	u32 reg;
-
-	reg = read_nic_dword(priv->ieee80211->dev,INTA_MASK);
-
-	/* disable Beacon realted interrupt signal */
-	reg &= ~(IMR_BcnInt | IMR_BcnInt | IMR_TBDOK | IMR_TBDER);
-	write_nic_dword(priv->ieee80211->dev, INTA_MASK, reg);
-}
-#endif
 
 void PHY_SetRtl8192eRfOff(struct net_device* dev	)
 {
@@ -1045,17 +1003,12 @@ void rtl8192_halt_adapter(struct net_device *dev, bool reset)
 	OpMode = RT_OP_MODE_NO_LINK;
 	priv->ieee80211->SetHwRegHandler(dev, HW_VAR_MEDIA_STATUS, &OpMode);
 
-#if 1
 	if(!priv->ieee80211->bSupportRemoteWakeUp)
 	{
 		u1bTmp = 0x0;	// disable tx/rx. In 8185 we write 0x10 (Reset bit), but here we make reference to WMAC and wirte 0x0. 2006.11.21 Emily
 		//priv->ieee80211->SetHwRegHandler(dev, HW_VAR_COMMAND, &u1bTmp );	// Using HW_VAR_COMMAND instead of writing CMDR directly. Rewrited by Annie, 2006-04-07.
 		write_nic_byte(dev, CMDR, u1bTmp);
 	}
-#else
-	cmd=read_nic_byte(dev,CMDR);
-	write_nic_byte(dev, CMDR, cmd &~ (CR_TE|CR_RE));
-#endif
 
 	mdelay(20);
 
@@ -1112,13 +1065,6 @@ void rtl8192_halt_adapter(struct net_device *dev, bool reset)
 	return;
 }
 
-#if 0
-static void rtl8192_reset(struct net_device *dev)
-{
-    rtl8192_irq_disable(dev);
-    printk("This is RTL819xP Reset procedure\n");
-}
-#endif
 
 static const u16 rtl_rate[] = {10,20,55,110,60,90,120,180,240,360,480,540};
 inline u16 rtl8192_rate2rate(short rate)
@@ -1132,27 +1078,11 @@ inline u16 rtl8192_rate2rate(short rate)
 
 static void rtl8192_data_hard_stop(struct net_device *dev)
 {
-	//FIXME !!
-	#if 0
-	struct r8192_priv *priv = (struct r8192_priv *)ieee80211_priv(dev);
-	priv->dma_poll_mask |= (1<<TX_DMA_STOP_LOWPRIORITY_SHIFT);
-	rtl8192_set_mode(dev,EPROM_CMD_CONFIG);
-	write_nic_byte(dev,TX_DMA_POLLING,priv->dma_poll_mask);
-	rtl8192_set_mode(dev,EPROM_CMD_NORMAL);
-	#endif
 }
 
 
 static void rtl8192_data_hard_resume(struct net_device *dev)
 {
-	// FIXME !!
-	#if 0
-	struct r8192_priv *priv = (struct r8192_priv *)ieee80211_priv(dev);
-	priv->dma_poll_mask &= ~(1<<TX_DMA_STOP_LOWPRIORITY_SHIFT);
-	rtl8192_set_mode(dev,EPROM_CMD_CONFIG);
-	write_nic_byte(dev,TX_DMA_POLLING,priv->dma_poll_mask);
-	rtl8192_set_mode(dev,EPROM_CMD_NORMAL);
-	#endif
 }
 
 /* this function TX data frames when the ieee80211 stack requires this.
@@ -1177,12 +1107,6 @@ static void rtl8192_hard_data_xmit(struct sk_buff *skb, struct net_device *dev, 
 	//spin_lock_irqsave(&priv->tx_lock,flags);
 
         memcpy((unsigned char *)(skb->cb),&dev,sizeof(dev));
-#if 0
-	tcb_desc->RATRIndex = 7;
-	tcb_desc->bTxDisableRateFallBack = 1;
-	tcb_desc->bTxUseDriverAssingedRate = 1;
-	tcb_desc->bTxEnableFwCalcDur = 1;
-#endif
 	skb_push(skb, priv->ieee80211->tx_headroom);
 	ret = rtl8192_tx(dev, skb);
 	if(ret != 0) {
@@ -1397,10 +1321,6 @@ static void rtl8192_net_update(struct net_device *dev)
 	//BSSID
 	write_nic_dword(dev,BSSIDR,((u32*)net->bssid)[0]);
 	write_nic_word(dev,BSSIDR+4,((u16*)net->bssid)[2]);
-#if 0
-	//MSR
-	rtl8192_update_msr(dev);
-#endif
 
 
 //	rtl8192_update_cap(dev, net->capability);
@@ -1866,12 +1786,6 @@ static short rtl8192_pci_initdescring(struct net_device *dev)
             goto err_free_rings;
     }
 
-#if 0
-    /* specific process for hardware beacon process */
-    ret = rtl8192_alloc_tx_desc_ring(dev, MAX_TX_QUEUE_COUNT - 1, 2);
-    if (ret)
-        goto err_free_rings;
-#endif
 
     return 0;
 
@@ -1918,7 +1832,6 @@ static void rtl8192_pci_resetdescring(struct net_device *dev)
     }
 }
 
-#if 1
 extern void rtl8192_update_ratr_table(struct net_device* dev);
 static void rtl8192_link_change(struct net_device *dev)
 {
@@ -1931,11 +1844,9 @@ static void rtl8192_link_change(struct net_device *dev)
 	{
 		rtl8192_net_update(dev);
 		rtl8192_update_ratr_table(dev);
-#if 1
 		//add this as in pure N mode, wep encryption will use software way, but there is no chance to set this as wep will not set group key in wext. WB.2008.07.08
 		if ((KEY_TYPE_WEP40 == ieee->pairwise_key_type) || (KEY_TYPE_WEP104 == ieee->pairwise_key_type))
 		EnableHWSecurityConfig8192(dev);
-#endif
 	}
 	else
 	{
@@ -1959,7 +1870,6 @@ static void rtl8192_link_change(struct net_device *dev)
 		write_nic_dword(dev, RCR, reg);
 	}
 }
-#endif
 
 
 static struct ieee80211_qos_parameters def_qos_parameters = {
@@ -2105,10 +2015,6 @@ static int rtl8192_qos_association_resp(struct r8192_priv *priv,
 			 &network->qos_data.parameters,\
 			sizeof(struct ieee80211_qos_parameters));
 		priv->ieee80211->current_network.qos_data.active = 1;
-#if 0
-		if((priv->ieee80211->current_network.qos_data.param_count != \
-					network->qos_data.param_count))
-#endif
 		 {
                         set_qos_param = 1;
 			/* update qos parameter for current network */
@@ -2196,14 +2102,9 @@ void rtl8192_update_ratr_table(struct net_device* dev)
 	write_nic_byte(dev, UFWP, 1);
 }
 
-#if 0
-static u8 ccmp_ie[4] = {0x00,0x50,0xf2,0x04};
-static u8 ccmp_rsn_ie[4] = {0x00, 0x0f, 0xac, 0x04};
-#endif
 
 static bool GetNmodeSupportBySecCfg8190Pci(struct net_device*dev)
 {
-#if 1
 
 	struct r8192_priv *priv = ieee80211_priv(dev);
 	struct ieee80211_device *ieee = priv->ieee80211;
@@ -2213,35 +2114,6 @@ static bool GetNmodeSupportBySecCfg8190Pci(struct net_device*dev)
 	} else {
 		return true;
 	}
-#else
-	struct r8192_priv* priv = ieee80211_priv(dev);
-	struct ieee80211_device* ieee = priv->ieee80211;
-        int wpa_ie_len= ieee->wpa_ie_len;
-        struct ieee80211_crypt_data* crypt;
-        int encrypt;
-
-        crypt = ieee->crypt[ieee->tx_keyidx];
-        encrypt = (ieee->current_network.capability & WLAN_CAPABILITY_PRIVACY) || (ieee->host_encrypt && crypt && crypt->ops && (0 == strcmp(crypt->ops->name,"WEP")));
-
-	/* simply judge  */
-	if(encrypt && (wpa_ie_len == 0)) {
-		/* wep encryption, no N mode setting */
-		return false;
-//	} else if((wpa_ie_len != 0)&&(memcmp(&(ieee->wpa_ie[14]),ccmp_ie,4))) {
-	} else if((wpa_ie_len != 0)) {
-		/* parse pairwise key type */
-		//if((pairwisekey = WEP40)||(pairwisekey = WEP104)||(pairwisekey = TKIP))
-		if (((ieee->wpa_ie[0] == 0xdd) && (!memcmp(&(ieee->wpa_ie[14]),ccmp_ie,4))) || ((ieee->wpa_ie[0] == 0x30) && (!memcmp(&ieee->wpa_ie[10],ccmp_rsn_ie, 4))))
-			return true;
-		else
-			return false;
-	} else {
-		//RT_TRACE(COMP_ERR,"In %s The GroupEncAlgorithm is [4]\n",__FUNCTION__ );
-		return true;
-	}
-
-	return true;
-#endif
 }
 
 static void rtl8192_refresh_supportrate(struct r8192_priv* priv)
@@ -2285,7 +2157,6 @@ static void rtl8192_SetWirelessMode(struct net_device* dev, u8 wireless_mode)
 	struct r8192_priv *priv = ieee80211_priv(dev);
 	u8 bSupportMode = rtl8192_getSupportedWireleeMode(dev);
 
-#if 1
 	if ((wireless_mode == WIRELESS_MODE_AUTO) || ((wireless_mode&bSupportMode)==0))
 	{
 		if(bSupportMode & WIRELESS_MODE_N_24G)
@@ -2313,7 +2184,7 @@ static void rtl8192_SetWirelessMode(struct net_device* dev, u8 wireless_mode)
 			wireless_mode = WIRELESS_MODE_B;
 		}
 	}
-#ifdef TO_DO_LIST //// TODO: this function doesn't work well at this time, we should wait for FPGA
+#ifdef TO_DO_LIST //    // TODO: this function doesn't work well at this time, we should wait for FPGA
 	ActUpdateChannelAccessSetting( pAdapter, pHalData->CurrentWirelessMode, &pAdapter->MgntInfo.Info8185.ChannelAccessSetting );
 #endif
 	priv->ieee80211->mode = wireless_mode;
@@ -2324,7 +2195,6 @@ static void rtl8192_SetWirelessMode(struct net_device* dev, u8 wireless_mode)
 		priv->ieee80211->pHTInfo->bEnableHT = 0;
 	RT_TRACE(COMP_INIT, "Current Wireless Mode is %x\n", wireless_mode);
 	rtl8192_refresh_supportrate(priv);
-#endif
 
 }
 //init priv variables here
@@ -3600,7 +3470,6 @@ static RT_STATUS rtl8192_adapter_start(struct net_device *dev)
 			RT_TRACE(COMP_INIT, "Before C-cut\n");
 		}
 
-#if 1
 	//Firmware download
 	RT_TRACE(COMP_INIT, "Load Firmware!\n");
 	bfirmwareok = init_firmware(dev);
@@ -3609,7 +3478,6 @@ static RT_STATUS rtl8192_adapter_start(struct net_device *dev)
 		return rtStatus;
 	}
 	RT_TRACE(COMP_INIT, "Load Firmware finished!\n");
-#endif
 	//RF config
 	if(priv->ResetProgress == RESET_TYPE_NORESET)
 	{
@@ -3653,11 +3521,6 @@ static RT_STATUS rtl8192_adapter_start(struct net_device *dev)
 	{ // User disable RF via registry.
 		RT_TRACE((COMP_INIT|COMP_RF|COMP_POWER), "%s(): Turn off RF for RegRfOff ----------\n",__FUNCTION__);
 		MgntActSet_RF_State(dev, eRfOff, RF_CHANGE_BY_SW);
-#if 0//cosa, ask SD3 willis and he doesn't know what is this for
-		// Those action will be discard in MgntActSet_RF_State because off the same state
-	for(eRFPath = 0; eRFPath <pHalData->NumTotalRFPath; eRFPath++)
-		PHY_SetRFReg(Adapter, (RF90_RADIO_PATH_E)eRFPath, 0x4, 0xC00, 0x0);
-#endif
 	}
 	else if(priv->ieee80211->RfOffReason > RF_CHANGE_BY_PS)
 	{ // H/W or S/W RF OFF before sleep.
@@ -3983,7 +3846,6 @@ TxCheckStuck(struct net_device *dev)
 			bCheckFwTxCnt = TRUE;
 		}
 	}
-#if 1
 	if(bCheckFwTxCnt)
 	{
 		if(HalTxCheckStuck8190Pci(dev))
@@ -3992,7 +3854,6 @@ TxCheckStuck(struct net_device *dev)
 			return RESET_TYPE_SILENT;
 		}
 	}
-#endif
 	return RESET_TYPE_NORESET;
 }
 
@@ -4084,7 +3945,6 @@ rtl819x_ifcheck_resetornot(struct net_device *dev)
 	rfState = priv->ieee80211->eRFPowerState;
 
 	TxResetType = TxCheckStuck(dev);
-#if 1
 	if( rfState != eRfOff &&
 		/*ADAPTER_TEST_STATUS_FLAG(Adapter, ADAPTER_STATUS_FW_DOWNLOAD_FAILURE)) &&*/
 		(priv->ieee80211->iw_mode != IW_MODE_ADHOC))
@@ -4099,7 +3959,6 @@ rtl819x_ifcheck_resetornot(struct net_device *dev)
 		// set, STA cannot hear any packet a all. Emily, 2008.04.12
 		RxResetType = RxCheckStuck(dev);
 	}
-#endif
 
 	RT_TRACE(COMP_RESET,"%s(): TxResetType is %d, RxResetType is %d\n",__FUNCTION__,TxResetType,RxResetType);
 	if(TxResetType==RESET_TYPE_NORMAL || RxResetType==RESET_TYPE_NORMAL)
@@ -4282,7 +4141,6 @@ RESET_START:
 		// Set the variable for reset.
 		priv->ResetProgress = RESET_TYPE_SILENT;
 //		rtl8192_close(dev);
-#if 1
 		down(&priv->wx_sem);
 		if(priv->up == 0)
 		{
@@ -4335,18 +4193,13 @@ RESET_START:
 				RT_TRACE(COMP_ERR," ERR!!! %s():  Reset Failed!!\n",__FUNCTION__);
 			}
 		}
-#endif
 		ieee->is_silent_reset = 1;
-#if 1
 		EnableHWSecurityConfig8192(dev);
-#if 1
 		if(ieee->state == IEEE80211_LINKED && ieee->iw_mode == IW_MODE_INFRA)
 		{
 			ieee->set_chan(ieee->dev, ieee->current_network.channel);
 
-#if 1
 			queue_work(ieee->wq, &ieee->associate_complete_wq);
-#endif
 
 		}
 		else if(ieee->state == IEEE80211_LINKED && ieee->iw_mode == IW_MODE_ADHOC)
@@ -4362,7 +4215,6 @@ RESET_START:
 				ieee->data_hard_resume(ieee->dev);
 			netif_carrier_on(ieee->dev);
 		}
-#endif
 
 		CamRestoreAllEntry(dev);
 
@@ -4378,7 +4230,6 @@ RESET_START:
 		// For test --> force write UFWP.
 		write_nic_byte(dev, UFWP, 1);
 		RT_TRACE(COMP_RESET, "Reset finished!! ====>[%d]\n", priv->reset_count);
-#endif
 	}
 }
 
@@ -4788,7 +4639,6 @@ static void rtl819x_watchdog_wqcallback(struct work_struct *work)
 		return;
 	}
 	/* disable silent reset temply 2008.9.11*/
-#if 1
 	if( ((priv->force_reset) || (!priv->bDisableNormalResetCheck && ResetType==RESET_TYPE_SILENT))) // This is control by OID set in Pomelo
 	{
 		last_time = 1;
@@ -4796,7 +4646,6 @@ static void rtl819x_watchdog_wqcallback(struct work_struct *work)
 	}
 	else
 		last_time = 0;
-#endif
 	priv->force_reset = false;
 	priv->bForcedSilentReset = false;
 	priv->bResetInProgress = false;
@@ -4887,10 +4736,6 @@ int rtl8192_down(struct net_device *dev)
 {
 	struct r8192_priv *priv = ieee80211_priv(dev);
 //	int i;
-#if 0
-	u8	ucRegRead;
-	u32	ulRegRead;
-#endif
 	if (priv->up == 0) return -1;
 
 #ifdef ENABLE_LPS
@@ -4902,35 +4747,10 @@ int rtl8192_down(struct net_device *dev)
 	priv->up=0;
 	priv->ieee80211->ieee_up = 0;
 	RT_TRACE(COMP_DOWN, "==========>%s()\n", __FUNCTION__);
-/* FIXME */
 	if (!netif_queue_stopped(dev))
 		netif_stop_queue(dev);
 
 	rtl8192_irq_disable(dev);
-#if 0
-	if(!priv->ieee80211->bSupportRemoteWakeUp) {
-		MgntActSet_RF_State(dev, eRfOff, RF_CHANGE_BY_INIT);
-		// 2006.11.30. System reset bit
-		ulRegRead = read_nic_dword(dev, CPU_GEN);
-		ulRegRead|=CPU_GEN_SYSTEM_RESET;
-		write_nic_dword(dev, CPU_GEN, ulRegRead);
-	} else {
-		//2008.06.03 for WOL
-		write_nic_dword(dev, WFCRC0, 0xffffffff);
-		write_nic_dword(dev, WFCRC1, 0xffffffff);
-		write_nic_dword(dev, WFCRC2, 0xffffffff);
-#ifdef RTL8190P
-		//GPIO 0 = TRUE
-		ucRegRead = read_nic_byte(dev, GPO);
-		ucRegRead |= BIT0;
-		write_nic_byte(dev, GPO, ucRegRead);
-#endif
-		//Write PMR register
-		write_nic_byte(dev, PMR, 0x5);
-		//Disable tx, enanble rx
-		write_nic_byte(dev, MacBlkCtrl, 0xa);
-	}
-#endif
 //	flush_scheduled_work();
 	rtl8192_cancel_deferred_work(priv);
 	deinit_hal_dm(dev);
@@ -4980,7 +4800,6 @@ static void r8192_set_multicast(struct net_device *dev)
 
 	//down(&priv->wx_sem);
 
-	/* FIXME FIXME */
 
 	promisc = (dev->flags & IFF_PROMISC) ? 1:0;
 
@@ -5269,7 +5088,7 @@ rtl8190_process_cck_rxpathsel(
 	struct ieee80211_rx_stats * pprevious_stats
 	)
 {
-#ifdef RTL8190P	//Only 90P 2T4R need to check
+#ifdef RTL8190P	    //Only 90P 2T4R need to check
 	char				last_cck_adc_pwdb[4]={0,0,0,0};
 	u8				i;
 //cosa add for Rx path selection
@@ -5363,14 +5182,6 @@ static void rtl8192_process_phyinfo(struct r8192_priv * priv, u8* buffer,struct 
 	}else
 	{
 //remve for that we don't use AMPDU to calculate PWDB,because the reported PWDB of some AP is fault.
-#if 0
-		// if previous packet is aggregated packet, and current packet
-		//	(1) is not AMPDU
-		//	(2) is the first packet of one AMPDU
-		// that means the previous packet is the last one aggregated packet
-		if( !pcurrent_stats->bIsAMPDU || pcurrent_stats->bFirstMPDU)
-			bcheck = true;
-#endif
 	}
 
 	if(slide_rssi_statistics++ >= PHY_RSSI_SLID_WIN_MAX)
@@ -5407,25 +5218,6 @@ static void rtl8192_process_phyinfo(struct r8192_priv * priv, u8* buffer,struct 
 	// Check RSSI
 	//
 	priv->stats.num_process_phyinfo++;
-#if 0
-	/* record the general signal strength to the sliding window. */
-	if(slide_rssi_statistics++ >= PHY_RSSI_SLID_WIN_MAX)
-	{
-		slide_rssi_statistics = PHY_RSSI_SLID_WIN_MAX;
-		last_rssi = priv->stats.slide_signal_strength[slide_rssi_index];
-		priv->stats.slide_rssi_total -= last_rssi;
-	}
-	priv->stats.slide_rssi_total += pprevious_stats->SignalStrength;
-
-	priv->stats.slide_signal_strength[slide_rssi_index++] = pprevious_stats->SignalStrength;
-	if(slide_rssi_index >= PHY_RSSI_SLID_WIN_MAX)
-		slide_rssi_index = 0;
-
-	// <1> Showed on UI for user, in dbm
-	tmp_val = priv->stats.slide_rssi_total/slide_rssi_statistics;
-	priv->stats.signal_strength = rtl819x_translate_todbm((u8)tmp_val);
-
-#endif
 	// <2> Showed on UI for engineering
 	// hardware does not provide rssi information for each rf path in CCK
 	if(!pprevious_stats->bIsCCK && pprevious_stats->bPacketToSelf)
@@ -5496,7 +5288,6 @@ static void rtl8192_process_phyinfo(struct r8192_priv * priv, u8* buffer,struct 
 			priv->undecorated_smoothed_pwdb = pprevious_stats->RxPWDBAll;
 			//DbgPrint("First pwdb initialize \n");
 		}
-#if 1
 		if(pprevious_stats->RxPWDBAll > (u32)priv->undecorated_smoothed_pwdb)
 		{
 			priv->undecorated_smoothed_pwdb =
@@ -5510,20 +5301,6 @@ static void rtl8192_process_phyinfo(struct r8192_priv * priv, u8* buffer,struct 
 					( ((priv->undecorated_smoothed_pwdb)*(Rx_Smooth_Factor-1)) +
 					(pprevious_stats->RxPWDBAll)) /(Rx_Smooth_Factor);
 		}
-#else
-		//Fixed by Jacken 2008-03-20
-		if(pPreviousRfd->Status.RxPWDBAll > (u32)pHalData->UndecoratedSmoothedPWDB)
-		{
-			pHalData->UndecoratedSmoothedPWDB =
-					( ((pHalData->UndecoratedSmoothedPWDB)* 5) + (pPreviousRfd->Status.RxPWDBAll)) / 6;
-			pHalData->UndecoratedSmoothedPWDB = pHalData->UndecoratedSmoothedPWDB + 1;
-		}
-		else
-		{
-			pHalData->UndecoratedSmoothedPWDB =
-					( ((pHalData->UndecoratedSmoothedPWDB)* 5) + (pPreviousRfd->Status.RxPWDBAll)) / 6;
-		}
-#endif
 		rtl819x_update_rxsignalstatistics8190pci(priv,pprevious_stats);
 	}
 
@@ -5766,7 +5543,7 @@ static void rtl8192_query_rxphystatus(
 #endif
 		priv->stats.numqry_phystatusCCK++;
 
-#ifdef RTL8190P	//Only 90P 2T4R need to check
+#ifdef RTL8190P	    //Only 90P 2T4R need to check
 		if(priv->rf_type == RF_2T4R && DM_RxPathSelTable.Enable && bpacket_match_bssid)
 		{
 			for(i=RF90_PATH_A; i<RF90_PATH_MAX; i++)
@@ -5870,7 +5647,7 @@ static void rtl8192_query_rxphystatus(
 
 			//Fixed by Jacken from Bryant 2008-03-20
 			//Original value is 106
-#ifdef RTL8190P	   //Modify by Jacken 2008/03/31
+#ifdef RTL8190P	       //Modify by Jacken 2008/03/31
 			rx_pwr[i] = ((pofdm_buf->trsw_gain_X[i]&0x3F)*2) - 106;
 #else
 			rx_pwr[i] = ((pofdm_buf->trsw_gain_X[i]&0x3F)*2) - 110;
@@ -5927,9 +5704,6 @@ static void rtl8192_query_rxphystatus(
 			rx_evmX /= 2;	//dbm
 
 			evm = rtl819x_evm_dbtopercentage(rx_evmX);
-#if 0
-			EVM = SignalScaleMapping(EVM);//make it good looking, from 0~100
-#endif
 			if(bpacket_match_bssid)
 			{
 				if(i==0) // Fill value in RFD, Get the first spatial stream only
@@ -6009,7 +5783,6 @@ static void TranslateRxSignalStuff819xpci(struct net_device *dev,
             (eqMacAddr(priv->ieee80211->current_network.bssid,	(fc & IEEE80211_FCTL_TODS)? hdr->addr1 : (fc & IEEE80211_FCTL_FROMDS )? hdr->addr2 : hdr->addr3))
             && (!pstats->bHwError) && (!pstats->bCRC)&& (!pstats->bICV));
     bpacket_toself =  bpacket_match_bssid & (eqMacAddr(praddr, priv->ieee80211->dev->dev_addr));
-#if 1//cosa
     if(WLAN_FC_GET_FRAMETYPE(fc)== IEEE80211_STYPE_BEACON)
     {
         bPacketBeacon = true;
@@ -6021,8 +5794,6 @@ static void TranslateRxSignalStuff819xpci(struct net_device *dev,
             bToSelfBA = true;
         //DbgPrint("BlockAck, MatchBSSID = %d, ToSelf = %d \n", bPacketMatchBSSID, bPacketToSelf);
     }
-
-#endif
     if(bpacket_match_bssid)
     {
         priv->stats.numpacket_matchbssid++;
@@ -6057,12 +5828,6 @@ static void rtl8192_tx_resume(struct net_device *dev)
 			skb = skb_dequeue(&ieee->skb_waitQ[queue_index]);
 			/* 2. tx the packet directly */
 			ieee->softmac_data_hard_start_xmit(skb,dev,0/* rate useless now*/);
-			#if 0
-			if(queue_index!=MGNT_QUEUE) {
-				ieee->stats.tx_packets++;
-				ieee->stats.tx_bytes += skb->len;
-			}
-			#endif
 		}
 	}
 }
@@ -6097,10 +5862,6 @@ static void UpdateReceivedRateHistogramStatistics8190(
 	u32 preamble_guardinterval;  //1: short preamble/GI, 0: long preamble/GI
 
 	/* 2007/03/09 MH We will not update rate of packet from rx cmd queue. */
-	#if 0
-	if (pRfd->queue_id == CMPK_RX_QUEUE_ID)
-		return;
-	#endif
 	if(pstats->bCRC)
 		rcvType = 2;
 	else if(pstats->bICV)
@@ -6421,16 +6182,6 @@ static int __devinit rtl8192_pci_probe(struct pci_dev *pdev,
 	priv->irq = 0;
 
 	dev->netdev_ops = &rtl8192_netdev_ops;
-#if 0
-	dev->open = rtl8192_open;
-	dev->stop = rtl8192_close;
-	//dev->hard_start_xmit = rtl8192_8023_hard_start_xmit;
-	dev->tx_timeout = tx_timeout;
-	//dev->wireless_handlers = &r8192_wx_handlers_def;
-	dev->do_ioctl = rtl8192_ioctl;
-	dev->set_multicast_list = r8192_set_multicast;
-	dev->set_mac_address = r8192_set_mac_adr;
-#endif
 
          //DMESG("Oops: i'm coming\n");
 #if WIRELESS_EXT >= 12
@@ -6507,11 +6258,6 @@ fail:
  * */
 void rtl8192_cancel_deferred_work(struct r8192_priv* priv)
 {
-	/* call cancel_work_sync instead of cancel_delayed_work if and only if Linux_version_code
-         * is  or is newer than 2.6.20 and work structure is defined to be struct work_struct.
-         * Otherwise call cancel_delayed_work is enough.
-         * FIXME (2.6.20 should 2.6.22, work_struct should not cancel)
-         * */
 	cancel_delayed_work(&priv->watch_dog_wq);
 	cancel_delayed_work(&priv->update_beacon_wq);
 	cancel_delayed_work(&priv->ieee80211->hw_wakeup_wq);
@@ -6777,18 +6523,6 @@ static irqreturn_t rtl8192_interrupt(int irq, void *netdev)
 
 static void rtl8192_try_wake_queue(struct net_device *dev, int pri)
 {
-#if 0
-	unsigned long flags;
-	short enough_desc;
-	struct r8192_priv *priv = (struct r8192_priv *)ieee80211_priv(dev);
-
-	spin_lock_irqsave(&priv->tx_lock,flags);
-	enough_desc = check_nic_enough_desc(dev,pri);
-        spin_unlock_irqrestore(&priv->tx_lock,flags);
-
-	if(enough_desc)
-		ieee80211_rtl_wake_queue(priv->ieee80211);
-#endif
 }
 
 
@@ -6801,7 +6535,6 @@ void EnableHWSecurityConfig8192(struct net_device *dev)
 	 struct ieee80211_device* ieee = priv->ieee80211;
 	 //printk("==>ieee:%p, dev:%p\n", ieee, dev);
 	SECR_value = SCR_TxEncEnable | SCR_RxDecEnable;
-#if 1
 	if (((KEY_TYPE_WEP40 == ieee->pairwise_key_type) || (KEY_TYPE_WEP104 == ieee->pairwise_key_type)) && (priv->ieee80211->auth_mode != 2))
 	{
 		SECR_value |= SCR_RxUseDK;
@@ -6812,8 +6545,6 @@ void EnableHWSecurityConfig8192(struct net_device *dev)
 		SECR_value |= SCR_RxUseDK;
 		SECR_value |= SCR_TxUseDK;
 	}
-
-#endif
 
         //add HWSec active enable here.
 //default using hwsec. when peer AP is in N mode only and pairwise_key_type is none_aes(which HT_IOT_ACT_PURE_N_MODE indicates it), use software security. when peer AP is in b,g,n mode mixed and pairwise_key_type is none_aes, use g mode hw security. WB on 2008.7.4

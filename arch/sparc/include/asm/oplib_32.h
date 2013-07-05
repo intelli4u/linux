@@ -78,12 +78,6 @@ extern void prom_cmdline(void);
  */
 extern void prom_halt(void) __attribute__ ((noreturn));
 
-/* Set the PROM 'sync' callback function to the passed function pointer.
- * When the user gives the 'sync' command at the prom prompt while the
- * kernel is still active, the prom will call this routine.
- *
- * XXX The arguments are different on V0 vs. V2->higher proms, grrr! XXX
- */
 typedef void (*sync_func_t)(void);
 extern void prom_setsync(sync_func_t func_ptr);
 

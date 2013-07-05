@@ -59,17 +59,11 @@ struct rndis_request {
 	struct list_head ListEntry;
 	struct osd_waitevent *WaitEvent;
 
-	/*
-	 * FIXME: We assumed a fixed size response here. If we do ever need to
-	 * handle a bigger response, we can either define a max response
-	 * message or add a response buffer variable above this field
-	 */
 	struct rndis_message ResponseMessage;
 
 	/* Simplify allocation by having a netvsc packet inline */
 	struct hv_netvsc_packet	Packet;
 	struct hv_page_buffer Buffer;
-	/* FIXME: We assumed a fixed size request here. */
 	struct rndis_message RequestMessage;
 };
 
@@ -352,10 +346,6 @@ static void RndisFilterReceiveData(struct rndis_device *Device,
 
 	rndisPacket = &Message->Message.Packet;
 
-	/*
-	 * FIXME: Handle multiple rndis pkt msgs that maybe enclosed in this
-	 * netvsc packet (ie TotalDataBufferLength != MessageLength)
-	 */
 
 	/* Remove the rndis header and pass it back up the stack */
 	dataOffset = RNDIS_HEADER_SIZE + rndisPacket->DataOffset;
@@ -402,23 +392,6 @@ static int RndisFilterOnReceive(struct hv_device *Device,
 			Packet->PageBuffers[0].Offset);
 
 	/* Make sure we got a valid rndis message */
-	/*
-	 * FIXME: There seems to be a bug in set completion msg where its
-	 * MessageLength is 16 bytes but the ByteCount field in the xfer page
-	 * range shows 52 bytes
-	 * */
-#if 0
-	if (Packet->TotalDataBufferLength != rndisHeader->MessageLength) {
-		kunmap_atomic(rndisHeader - Packet->PageBuffers[0].Offset,
-			      KM_IRQ0);
-
-		DPRINT_ERR(NETVSC, "invalid rndis message? (expected %u "
-			   "bytes got %u)...dropping this message!",
-			   rndisHeader->MessageLength,
-			   Packet->TotalDataBufferLength);
-		return -1;
-	}
-#endif
 
 	if ((rndisHeader->NdisMessageType != REMOTE_NDIS_PACKET_MSG) &&
 	    (rndisHeader->MessageLength > sizeof(struct rndis_message))) {
@@ -654,7 +627,6 @@ static int RndisFilterInitDevice(struct rndis_device *Device)
 	init = &request->RequestMessage.Message.InitializeRequest;
 	init->MajorVersion = RNDIS_MAJOR_VERSION;
 	init->MinorVersion = RNDIS_MINOR_VERSION;
-	/* FIXME: Use 1536 - rounded ethernet frame size */
 	init->MaxTransferSize = 2048;
 
 	Device->State = RNDIS_DEV_INITIALIZING;

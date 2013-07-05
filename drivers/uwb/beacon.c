@@ -1,27 +1,4 @@
-/*
- * Ultra Wide Band
- * Beacon management
- *
- * Copyright (C) 2005-2006 Intel Corporation
- * Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
- *
- *
- * FIXME: docs
- */
+
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/module.h>
@@ -98,20 +75,6 @@ error_cmd:
 	return result;
 }
 
-/*
- * Start/stop beacons
- *
- * @rc:          UWB Radio Controller to operate on
- * @channel:     UWB channel on which to beacon (WUSB[table
- *               5-12]). If -1, stop beaconing.
- * @bpst_offset: Beacon Period Start Time offset; FIXME-do zero
- *
- * According to WHCI 0.95 [4.13.6] the driver will only receive the RCEB
- * of a SET IE command after the device sent the first beacon that includes
- * the IEs specified in the SET IE command. So, after we start beaconing we
- * check if there is anything in the IE cache and call the SET IE command
- * if needed.
- */
 int uwb_rc_beacon(struct uwb_rc *rc, int channel, unsigned bpst_offset)
 {
 	int result;
@@ -143,20 +106,6 @@ int uwb_rc_beacon(struct uwb_rc *rc, int channel, unsigned bpst_offset)
 	return result;
 }
 
-/*
- * Beacon cache
- *
- * The purpose of this is to speed up the lookup of becon information
- * when a new beacon arrives. The UWB Daemon uses it also to keep a
- * tab of which devices are in radio distance and which not. When a
- * device's beacon stays present for more than a certain amount of
- * time, it is considered a new, usable device. When a beacon ceases
- * to be received for a certain amount of time, it is considered that
- * the device is gone.
- *
- * FIXME: use an allocator for the entries
- * FIXME: use something faster for search than a list
- */
 
 void uwb_bce_kfree(struct kref *_bce)
 {
@@ -369,8 +318,6 @@ static int uwb_verify_beacon(struct uwb_rc *rc, struct uwb_event *evt,
 			sizeof(*be) + sizeof(*bf));
 		goto error;
 	}
-	/* FIXME: make sure beacon frame IEs are fine and that the whole thing
-	 * is consistent */
 	result = 0;
 error:
 	return result;
@@ -402,7 +349,6 @@ int uwbd_evt_handle_rc_beacon(struct uwb_event *evt)
 	if (result < 0)
 		return result;
 
-	/* FIXME: handle alien beacons. */
 	if (be->bBeaconType == UWB_RC_BEACON_TYPE_OL_ALIEN ||
 	    be->bBeaconType == UWB_RC_BEACON_TYPE_NOL_ALIEN) {
 		return -ENOSYS;
@@ -543,7 +489,7 @@ int uwbd_evt_handle_rc_bpoie_change(struct uwb_event *evt)
 	struct device *dev = &evt->rc->uwb_dev.dev;
 	struct uwb_rc_evt_bpoie_change *bpoiec;
 	struct uwb_ie_bpo *bpoie;
-	static unsigned count;	/* FIXME: this is a temp hack */
+	static unsigned count;
 	size_t iesize;
 
 	/* Is there enough data to decode it? */
@@ -563,10 +509,6 @@ int uwbd_evt_handle_rc_bpoie_change(struct uwb_event *evt)
 	}
 	if (++count % 1000 == 0)	/* Lame placeholder */
 		dev_info(dev, "BPOIE: %u changes received\n", count);
-	/*
-	 * FIXME: At this point we should go over all the IEs in the
-	 *        bpoiec->BPOIE array and act on each.
-	 */
 	result = 0;
 error:
 	return result;

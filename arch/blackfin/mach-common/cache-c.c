@@ -62,12 +62,6 @@ void __cpuinit bfin_icache_init(struct cplb_entry *icplb_tbl)
 #ifdef CONFIG_BFIN_DCACHE
 void __cpuinit bfin_dcache_init(struct cplb_entry *dcplb_tbl)
 {
-	/*
-	 *  Anomaly notes:
-	 *  05000287 - We implement workaround #2 - Change the DMEM_CONTROL
-	 *  register, so that the port preferences for DAG0 and DAG1 are set
-	 *  to port B
-	 */
 	bfin_cache_init(dcplb_tbl, DCPLB_ADDR0, DCPLB_DATA0, DMEM_CONTROL,
 		(DMEM_CNTR | PORT_PREF0 | (ANOMALY_05000287 ? PORT_PREF1 : 0)));
 }

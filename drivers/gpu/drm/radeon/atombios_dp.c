@@ -267,7 +267,6 @@ static u8 dp_get_adjust_request_pre_emphasis(uint8_t link_status[DP_LINK_STATUS_
 	return ((l >> s) & 0x3) << DP_TRAIN_PRE_EMPHASIS_SHIFT;
 }
 
-/* XXX fix me -- chip specific */
 #define DP_VOLTAGE_MAX         DP_TRAIN_VOLTAGE_SWING_1200
 static u8 dp_pre_emphasis_max(u8 voltage_swing)
 {
@@ -806,4 +805,3 @@ int radeon_dp_i2c_aux_ch(struct i2c_adapter *adapter, int mode,
 	}
 	return -EREMOTEIO;
 }
-

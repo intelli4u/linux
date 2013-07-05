@@ -128,7 +128,6 @@ static long ehca_plpar_hcall_norets(unsigned long opcode,
 			     opcode, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
 
 	for (i = 0; i < 5; i++) {
-		/* serialize hCalls to work around firmware issue */
 		if (ehca_lock_hcalls)
 			spin_lock_irqsave(&hcall_lock, flags);
 
@@ -180,7 +179,6 @@ static long ehca_plpar_hcall9(unsigned long opcode,
 			     arg6, arg7, arg8, arg9);
 
 	for (i = 0; i < 5; i++) {
-		/* serialize hCalls to work around firmware issue */
 		if (ehca_lock_hcalls)
 			spin_lock_irqsave(&hcall_lock, flags);
 

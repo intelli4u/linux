@@ -872,7 +872,6 @@ static int __devinit cx18_probe(struct pci_dev *pci_dev,
 	u32 devtype;
 	struct cx18 *cx;
 
-	/* FIXME - module parameter arrays constrain max instances */
 	i = atomic_inc_return(&cx18_instance) - 1;
 	if (i >= CX18_MAX_CARDS) {
 		printk(KERN_ERR "cx18: cannot manage card %d, driver has a "
@@ -1134,16 +1133,6 @@ int cx18_init_on_first_open(struct cx18 *cx)
 	}
 	set_bit(CX18_F_I_LOADED_FW, &cx->i_flags);
 
-	/*
-	 * Init the firmware twice to work around a silicon bug
-	 * with the digital TS.
-	 *
-	 * The second firmware load requires us to normalize the APU state,
-	 * or the audio for the first analog capture will be badly incorrect.
-	 *
-	 * I can't seem to call APU_RESETAI and have it succeed without the
-	 * APU capturing audio, so we start and stop it here to do the reset
-	 */
 
 	/* MPEG Encoding, 224 kbps, MPEG Layer II, 48 ksps */
 	cx18_vapi(cx, CX18_APU_START, 2, CX18_APU_ENCODING_METHOD_MPEG|0xb9, 0);

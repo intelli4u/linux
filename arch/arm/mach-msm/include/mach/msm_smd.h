@@ -57,13 +57,6 @@ int smd_cur_packet_size(smd_channel_t *ch);
 void smd_kick(smd_channel_t *ch);
 
 
-#if 0
-/* these are interruptable waits which will block you until the specified
-** number of bytes are readable or writable.
-*/
-int smd_wait_until_readable(smd_channel_t *ch, int bytes);
-int smd_wait_until_writable(smd_channel_t *ch, int bytes);
-#endif
 
 typedef enum {
 	SMD_PORT_DS = 0,

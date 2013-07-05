@@ -785,11 +785,19 @@ static struct mfc_cache *ipmr_cache_find(struct mr_table *mrt,
 					 __be32 origin,
 					 __be32 mcastgrp)
 {
+#ifdef IGMP_PROXY
+	int line = 0;
+#else	
 	int line = MFC_HASH(mcastgrp, origin);
+#endif
 	struct mfc_cache *c;
 
 	list_for_each_entry(c, &mrt->mfc_cache_array[line], list) {
+#ifdef IGMP_PROXY
+		if (c->mfc_mcastgrp == mcastgrp)
+#else
 		if (c->mfc_origin == origin && c->mfc_mcastgrp == mcastgrp)
+#endif
 			return c;
 	}
 	return NULL;
@@ -957,8 +965,13 @@ ipmr_cache_unresolved(struct mr_table *mrt, vifi_t vifi, struct sk_buff *skb)
 
 	spin_lock_bh(&mfc_unres_lock);
 	list_for_each_entry(c, &mrt->mfc_unres_queue, list) {
+#ifdef IGMP_PROXY
+		if (c->mfc_mcastgrp == iph->daddr)
+#else		
 		if (c->mfc_mcastgrp == iph->daddr &&
-		    c->mfc_origin == iph->saddr) {
+		    c->mfc_origin == iph->saddr) 
+#endif
+		{
 			found = true;
 			break;
 		}
@@ -1030,11 +1043,20 @@ static int ipmr_mfc_delete(struct mr_table *mrt, struct mfcctl *mfc)
 	int line;
 	struct mfc_cache *c, *next;
 
+#ifdef IGMP_PROXY
+	line=0;
+#else
 	line = MFC_HASH(mfc->mfcc_mcastgrp.s_addr, mfc->mfcc_origin.s_addr);
+#endif
 
 	list_for_each_entry_safe(c, next, &mrt->mfc_cache_array[line], list) {
+#ifdef IGMP_PROXY
+		if (c->mfc_mcastgrp == mfc->mfcc_mcastgrp.s_addr)
+#else		
 		if (c->mfc_origin == mfc->mfcc_origin.s_addr &&
-		    c->mfc_mcastgrp == mfc->mfcc_mcastgrp.s_addr) {
+		    c->mfc_mcastgrp == mfc->mfcc_mcastgrp.s_addr) 
+#endif		    
+		{
 			write_lock_bh(&mrt_lock);
 			list_del(&c->list);
 			write_unlock_bh(&mrt_lock);
@@ -1056,11 +1078,20 @@ static int ipmr_mfc_add(struct net *net, struct mr_table *mrt,
 	if (mfc->mfcc_parent >= MAXVIFS)
 		return -ENFILE;
 
+#ifdef IGMP_PROXY
+	line=0;
+#else
 	line = MFC_HASH(mfc->mfcc_mcastgrp.s_addr, mfc->mfcc_origin.s_addr);
+#endif
 
 	list_for_each_entry(c, &mrt->mfc_cache_array[line], list) {
+#ifdef IGMP_PROXY
+		if (c->mfc_mcastgrp == mfc->mfcc_mcastgrp.s_addr)
+#else		
 		if (c->mfc_origin == mfc->mfcc_origin.s_addr &&
-		    c->mfc_mcastgrp == mfc->mfcc_mcastgrp.s_addr) {
+		    c->mfc_mcastgrp == mfc->mfcc_mcastgrp.s_addr) 
+#endif		    
+		{
 			found = true;
 			break;
 		}
@@ -1101,8 +1132,13 @@ static int ipmr_mfc_add(struct net *net, struct mr_table *mrt,
 	found = false;
 	spin_lock_bh(&mfc_unres_lock);
 	list_for_each_entry(uc, &mrt->mfc_unres_queue, list) {
+#ifdef IGMP_PROXY
+		if (uc->mfc_mcastgrp == c->mfc_mcastgrp)
+#else				
 		if (uc->mfc_origin == c->mfc_origin &&
-		    uc->mfc_mcastgrp == c->mfc_mcastgrp) {
+		    uc->mfc_mcastgrp == c->mfc_mcastgrp) 
+#endif
+		{
 			list_del(&uc->list);
 			atomic_dec(&mrt->cache_resolve_queue_len);
 			found = true;
@@ -1523,6 +1559,11 @@ static void ipmr_queue_xmit(struct net *net, struct mr_table *mrt,
 
 	if (vif->dev == NULL)
 		goto out_free;
+	if (strcmp(vif->dev->name, skb->dev->name) == 0)
+	{
+		//printk(KERN_EMERG "Don't send to orig intf (%s)\n", vif->dev->name);
+		goto out_free;
+	}
 
 #ifdef CONFIG_IP_PIMSM
 	if (vif->flags & VIFF_REGISTER) {
@@ -1580,13 +1621,12 @@ static void ipmr_queue_xmit(struct net *net, struct mr_table *mrt,
 
 	skb_dst_drop(skb);
 	skb_dst_set(skb, &rt->dst);
+#ifndef IGMP_PROXY	
 	ip_decrease_ttl(ip_hdr(skb));
+#endif
 
-	/* FIXME: forward and output firewalls used to be called here.
-	 * What do we do with netfilter? -- RR */
 	if (vif->flags & VIFF_TUNNEL) {
 		ip_encap(skb, vif->local, vif->remote);
-		/* FIXME: extra output firewall step used to be here. --RR */
 		vif->dev->stats.tx_packets++;
 		vif->dev->stats.tx_bytes += skb->len;
 	}
@@ -1643,17 +1683,6 @@ static int ip_mr_forward(struct net *net, struct mr_table *mrt,
 		int true_vifi;
 
 		if (skb_rtable(skb)->fl.iif == 0) {
-			/* It is our own packet, looped back.
-			   Very complicated situation...
-
-			   The best workaround until routing daemons will be
-			   fixed is not to redistribute packet, if it was
-			   send through wrong interface. It means, that
-			   multicast applications WILL NOT work for
-			   (S,G), which have default multicast route pointing
-			   to wrong oif. In any case, it is not a good
-			   idea to use multicasting applications on router.
-			 */
 			goto dont_forward;
 		}
 
@@ -1683,7 +1712,11 @@ static int ip_mr_forward(struct net *net, struct mr_table *mrt,
 	 *	Forward the frame
 	 */
 	for (ct = cache->mfc_un.res.maxvif-1; ct >= cache->mfc_un.res.minvif; ct--) {
+#ifdef IGMP_PROXY
+		if (ip_hdr(skb)->ttl >= cache->mfc_un.res.ttls[ct]) {
+#else				
 		if (ip_hdr(skb)->ttl > cache->mfc_un.res.ttls[ct]) {
+#endif
 			if (psend != -1) {
 				struct sk_buff *skb2 = skb_clone(skb, GFP_ATOMIC);
 				if (skb2)
@@ -2312,10 +2345,17 @@ static int ipmr_mfc_seq_show(struct seq_file *seq, void *v)
 		const struct ipmr_mfc_iter *it = seq->private;
 		const struct mr_table *mrt = it->mrt;
 
+#ifdef IGMP_PROXY
+		seq_printf(seq, "%08X %-3hd",
+			   (__force u32) mfc->mfc_mcastgrp,
+			   mfc->mfc_parent);
+
+#else
 		seq_printf(seq, "%08X %08X %-3hd",
 			   (__force u32) mfc->mfc_mcastgrp,
 			   (__force u32) mfc->mfc_origin,
 			   mfc->mfc_parent);
+#endif
 
 		if (it->cache != &mrt->mfc_unres_queue) {
 			seq_printf(seq, " %8lu %8lu %8lu",

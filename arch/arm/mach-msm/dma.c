@@ -64,12 +64,6 @@ void msm_dmov_enqueue_cmd(unsigned id, struct msm_dmov_cmd *cmd)
 	status = readl(DMOV_STATUS(id));
 	if (list_empty(&ready_commands[id]) &&
 		(status & DMOV_STATUS_CMD_PTR_RDY)) {
-#if 0
-		if (list_empty(&active_commands[id])) {
-			PRINT_FLOW("msm_dmov_enqueue_cmd(%d), enable interrupt\n", id);
-			writel(DMOV_CONFIG_IRQ_EN, DMOV_CONFIG(id));
-		}
-#endif
 		if (cmd->execute_func)
 			cmd->execute_func(cmd);
 		PRINT_IO("msm_dmov_enqueue_cmd(%d), start command, status %x\n", id, status);
@@ -268,4 +262,3 @@ static int __init msm_init_datamover(void)
 }
 
 arch_initcall(msm_init_datamover);
-

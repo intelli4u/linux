@@ -179,4 +179,3 @@ void thaw_processes(void)
 	schedule();
 	printk("done.\n");
 }
-

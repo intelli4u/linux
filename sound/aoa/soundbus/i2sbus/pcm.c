@@ -169,15 +169,7 @@ static int i2sbus_pcm_open(struct i2sbus_dev *i2sdev, int in)
 	 * currently in use (if any). */
 	hw->rate_min = 5512;
 	hw->rate_max = 192000;
-	/* if the other stream is active, then we can only
-	 * support what it is currently using.
-	 * FIXME: I lied. This comment is wrong. We can support
-	 * anything that works with the same serial format, ie.
-	 * when recording 24 bit sound we can well play 16 bit
-	 * sound at the same time iff using the same transfer mode.
-	 */
 	if (other->active) {
-		/* FIXME: is this guaranteed by the alsa api? */
 		hw->formats &= (1ULL << i2sdev->format);
 		/* see above, restrict rates to the one we already have */
 		hw->rate_min = i2sdev->rate;
@@ -413,8 +405,6 @@ static int i2sbus_pcm_prepare(struct i2sbus_dev *i2sdev, int in)
 	/* 16 bit formats */
 	case SNDRV_PCM_FORMAT_S16_BE:
 	case SNDRV_PCM_FORMAT_U16_BE:
-		/* FIXME: if we add different bus factors we need to
-		 * do more here!! */
 		bi.bus_factor = 0;
 		list_for_each_entry(cii, &i2sdev->sound.codec_list, list) {
 			bi.bus_factor = cii->codec->bus_factor;
@@ -458,7 +448,6 @@ static int i2sbus_pcm_prepare(struct i2sbus_dev *i2sdev, int in)
 		sfr |= I2S_SF_SERIAL_FORMAT_I2S_64X;
 		break;
 	}
-	/* FIXME: THIS ASSUMES MASTER ALL THE TIME */
 	sfr |= I2S_SF_SCLK_MASTER;
 
 	list_for_each_entry(cii, &i2sdev->sound.codec_list, list) {

@@ -547,6 +547,13 @@ void ndisc_send_skb(struct sk_buff *skb,
 		in6_dev_put(idev);
 }
 
+/*  added start pling 08/16/2010 */
+extern const char lan_if_name[];
+extern const char wan_if_name[];
+extern int lan_dad_detected;
+extern int wan_dad_detected;
+/*  added end pling 08/16/2010 */
+
 EXPORT_SYMBOL(ndisc_send_skb);
 
 /*
@@ -579,6 +586,19 @@ static void ndisc_send_na(struct net_device *dev, struct neighbour *neigh,
 	struct icmp6hdr icmp6h = {
 		.icmp6_type = NDISC_NEIGHBOUR_ADVERTISEMENT,
 	};
+
+    /*  added start pling 08/16/2010 */
+    if (!strcmp(dev->name, lan_if_name) && lan_dad_detected)
+    {
+        //printk(KERN_EMERG "%s: DAD: Don't send na on %s\n", __FUNCTION__, dev->name);
+        return;
+    }
+    else if (!strcmp(dev->name, wan_if_name) && wan_dad_detected)
+    {
+        //printk(KERN_EMERG "%s: DAD: Don't send na on %s\n", __FUNCTION__, dev->name);
+        return;
+    }
+    /*  added end pling 08/16/2010 */
 
 	/* for anycast or proxy, solicited_addr != src_addr */
 	ifp = ipv6_get_ifaddr(dev_net(dev), solicited_addr, dev, 1);
@@ -613,6 +633,13 @@ void ndisc_send_ns(struct net_device *dev, struct neighbour *neigh,
 	struct icmp6hdr icmp6h = {
 		.icmp6_type = NDISC_NEIGHBOUR_SOLICITATION,
 	};
+
+    /*  added start pling 10/27/2009 */
+    if (!strcmp(dev->name, lan_if_name) && lan_dad_detected)
+        return;
+    else if (!strcmp(dev->name, wan_if_name) && wan_dad_detected)
+        return;
+    /*  added end pling 10/27/2009 */
 
 	if (saddr == NULL) {
 		if (ipv6_get_lladdr(dev, &addr_buf,
@@ -825,7 +852,6 @@ static void ndisc_recv_ns(struct sk_buff *skb)
 
 		idev = in6_dev_get(dev);
 		if (!idev) {
-			/* XXX: count this drop? */
 			return;
 		}
 
@@ -976,7 +1002,6 @@ static void ndisc_recv_na(struct sk_buff *skb)
 		if (lladdr && !memcmp(lladdr, dev->dev_addr, dev->addr_len) &&
 		    net->ipv6.devconf_all->forwarding && net->ipv6.devconf_all->proxy_ndp &&
 		    pneigh_lookup(&nd_tbl, net, &msg->target, dev, 0)) {
-			/* XXX: idev->cnf.prixy_ndp */
 			goto out;
 		}
 
@@ -1637,6 +1662,11 @@ static void pndisc_redo(struct sk_buff *skb)
 	kfree_skb(skb);
 }
 
+/*  added start Bob, 08/13/2009, workaround to pass hop limit to since socket option hoplimit is not working */
+int hop_limit_tmp;
+EXPORT_SYMBOL(hop_limit_tmp);
+/*  added end Bob, 08/13/2009 */
+
 int ndisc_rcv(struct sk_buff *skb)
 {
 	struct nd_msg *msg;
@@ -1648,6 +1678,7 @@ int ndisc_rcv(struct sk_buff *skb)
 
 	__skb_push(skb, skb->data - skb_transport_header(skb));
 
+    hop_limit_tmp = ipv6_hdr(skb)->hop_limit;   /*  added Bob, 08/13/2009 */
 	if (ipv6_hdr(skb)->hop_limit != 255) {
 		ND_PRINTK2(KERN_WARNING
 			   "ICMPv6 NDISC: invalid hop-limit: %d\n",

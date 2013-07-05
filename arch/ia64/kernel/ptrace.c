@@ -588,16 +588,6 @@ static void do_sync_rbs(struct unw_frame_info *info, void *arg)
 	fn(info->task, info->sw, pt->ar_bspstore, urbs_end);
 }
 
-/*
- * when a thread is stopped (ptraced), debugger might change thread's user
- * stack (change memory directly), and we must avoid the RSE stored in kernel
- * to override user stack (user space's RSE is newer than kernel's in the
- * case). To workaround the issue, we copy kernel RSE to user RSE before the
- * task is stopped, so user RSE has updated data.  we then copy user RSE to
- * kernel after the task is resummed from traced stop and kernel will use the
- * newer RSE to return to user. TIF_RESTORE_RSE is the flag to indicate we need
- * synchronize user RSE to kernel.
- */
 void ia64_ptrace_stop(void)
 {
 	if (test_and_set_tsk_thread_flag(current, TIF_RESTORE_RSE))

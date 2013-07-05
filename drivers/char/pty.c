@@ -197,7 +197,6 @@ static void pty_flush_buffer(struct tty_struct *tty)
 
 	if (!to)
 		return;
-	/* tty_buffer_flush(to); FIXME */
 	if (to->packet) {
 		spin_lock_irqsave(&tty->ctrl_lock, flags);
 		tty->ctrl_status |= TIOCPKT_FLUSHWRITE;

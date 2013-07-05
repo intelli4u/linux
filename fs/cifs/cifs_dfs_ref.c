@@ -381,4 +381,3 @@ out_err:
 const struct inode_operations cifs_dfs_referral_inode_operations = {
 	.follow_link = cifs_dfs_follow_mountpoint,
 };
-

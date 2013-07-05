@@ -348,11 +348,6 @@ EXPORT_SYMBOL(mmc_set_data_timeout);
  */
 unsigned int mmc_align_data_size(struct mmc_card *card, unsigned int sz)
 {
-	/*
-	 * FIXME: We don't have a system for the controller to tell
-	 * the core about its problems yet, so for now we just 32-bit
-	 * align the size.
-	 */
 	sz = ((sz + 3) / 4) * 4;
 
 	return sz;

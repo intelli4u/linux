@@ -3,7 +3,7 @@
 #include <linux/ide.h>
 
 #if defined(CONFIG_ARM) || defined(CONFIG_M68K) || defined(CONFIG_MIPS) || \
-    defined(CONFIG_PARISC) || defined(CONFIG_PPC) || defined(CONFIG_SPARC)
+	defined(CONFIG_PARISC) || defined(CONFIG_PPC) || defined(CONFIG_SPARC)
 #include <asm/ide.h>
 #else
 #include <asm-generic/ide_iops.h>

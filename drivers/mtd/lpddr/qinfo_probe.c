@@ -249,4 +249,3 @@ module_exit(lpddr_probe_exit);
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Vasiliy Leonenko <vasiliy.leonenko@gmail.com>");
 MODULE_DESCRIPTION("Driver to probe qinfo flash chips");
-

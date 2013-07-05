@@ -146,10 +146,6 @@ static int __init pcie_setup(struct pci_sys_data *sys)
 	 */
 	orion_pcie_setup(PCIE_BASE, &orion5x_mbus_dram_info);
 
-	/*
-	 * Check whether to apply Orion-1/Orion-NAS PCIe config
-	 * read transaction workaround.
-	 */
 	dev = orion_pcie_dev_id(PCIE_BASE);
 	if (dev == MV88F5181_DEV_ID || dev == MV88F5182_DEV_ID) {
 		printk(KERN_NOTICE "Applying Orion-1/Orion-NAS PCIe config "

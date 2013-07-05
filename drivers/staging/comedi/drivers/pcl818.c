@@ -298,7 +298,7 @@ static const struct pcl818_board boardtypes[] = {
 	/* pcm3718 */
 	{"pcm3718", 9, 16, 8, 10000, 0, 16, 16, &range_pcl818h_ai,
 	 &range_unipolar5, PCLx1x_RANGE, 0x00fc,
-	 0x0a, 0xfff, 0xfff, 0, 1 /* XXX ? */ },
+	 0x0a, 0xfff, 0xfff, 0, 1 },
 };
 
 #define n_boardtypes (sizeof(boardtypes)/sizeof(struct pcl818_board))

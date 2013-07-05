@@ -114,20 +114,6 @@ setup_604_hid0:
 	isync
 	blr
 
-/* 7400 <= rev 2.7 and 7410 rev = 1.0 suffer from some
- * erratas we work around here.
- * Moto MPC710CE.pdf describes them, those are errata
- * #3, #4 and #5
- * Note that we assume the firmware didn't choose to
- * apply other workarounds (there are other ones documented
- * in the .pdf). It appear that Apple firmware only works
- * around #3 and with the same fix we use. We may want to
- * check if the CPU is using 60x bus mode in which case
- * the workaround for errata #4 is useless. Also, we may
- * want to explicitly clear HID0_NOPDST as this is not
- * needed once we have applied workaround #5 (though it's
- * not set by Apple's firmware at least).
- */
 setup_7400_workarounds:
 	mfpvr	r3
 	rlwinm	r3,r3,0,20,31
@@ -274,11 +260,6 @@ END_FTR_SECTION_IFSET(CPU_FTR_NO_DPM)
 	isync
 	blr
 
-/*
- * Initialize the FPU registers. This is needed to work around an errata
- * in some 750 cpus where using a not yet initialized FPU register after
- * power on reset may hang the CPU
- */
 _GLOBAL(__init_fpu_registers)
 	mfmsr	r10
 	ori	r11,r10,MSR_FP
@@ -486,4 +467,3 @@ _GLOBAL(__restore_cpu_setup)
 1:
 	mtcr	r7
 	blr
-

@@ -242,4 +242,3 @@ enum devState {
 };
 
 #endif	/* _USBDRV_H */
-

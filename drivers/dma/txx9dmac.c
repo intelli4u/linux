@@ -773,10 +773,6 @@ txx9dmac_prep_dma_memcpy(struct dma_chan *chan, dma_addr_t dest, dma_addr_t src,
 
 	for (offset = 0; offset < len; offset += xfer_count) {
 		xfer_count = min_t(size_t, len - offset, TXX9_DMA_MAX_COUNT);
-		/*
-		 * Workaround for ERT-TX49H2-033, ERT-TX49H3-020,
-		 * ERT-TX49H4-016 (slightly conservative)
-		 */
 		if (__is_dmac64(ddev)) {
 			if (xfer_count > 0x100 &&
 			    (xfer_count & 0xff) >= 0xfa &&

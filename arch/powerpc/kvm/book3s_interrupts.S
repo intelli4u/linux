@@ -113,7 +113,6 @@ kvm_start_entry:
 	PPC_STL	r1, SVCPU_HOST_R1(r5)
 	PPC_STL	r2, SVCPU_HOST_R2(r5)
 
-	/* XXX swap in/out on load? */
 	PPC_LL	r3, VCPU_HIGHMEM_HANDLER(r4)
 	PPC_STL	r3, SVCPU_VMHANDLER(r5)
 
@@ -138,7 +137,7 @@ kvm_start_lightweight:
 	beq	no_dcbz32_on
 
 	mfspr   r3,SPRN_HID5
-	ori     r3, r3, 0x80		/* XXX HID5_dcbz32 = 0x80 */
+	ori     r3, r3, 0x80
 	mtspr   SPRN_HID5,r3
 
 no_dcbz32_on:
@@ -254,8 +253,6 @@ call_linux_handler:
 	/* Restore host IP -> SRR0 */
 	PPC_LL	r5, VCPU_HOST_RETIP(r7)
 
-	/* XXX Better move to a safe function?
-	 *     What if we get an HTAB flush in between mtsrr0 and mtsrr1? */
 
 	mtlr	r12
 

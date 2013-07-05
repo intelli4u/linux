@@ -15,8 +15,7 @@
  * 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#if defined(CONFIG_USB_STORAGE_ALAUDA) || \
-		defined(CONFIG_USB_STORAGE_ALAUDA_MODULE)
+#if defined(CONFIG_USB_STORAGE_ALAUDA) || defined(CONFIG_USB_STORAGE_ALAUDA_MODULE)
 
 UNUSUAL_DEV(  0x0584, 0x0008, 0x0102, 0x0102,
 		"Fujifilm",

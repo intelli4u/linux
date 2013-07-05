@@ -544,10 +544,6 @@ out:
 	return sk;
 }
 
-/*
- * Keepalive timer.
- * FIXME: Should respond to SO_KEEPALIVE etc.
- */
 static void dn_keepalive(struct sock *sk)
 {
 	struct dn_scp *scp = DN_SK(sk);
@@ -2397,27 +2393,3 @@ module_init(decnet_init);
  * Requires an audit of the code to check for memory leaks and
  * initialisation problems etc.
  */
-#if 0
-static void __exit decnet_exit(void)
-{
-	sock_unregister(AF_DECnet);
-	rtnl_unregister_all(PF_DECnet);
-	dev_remove_pack(&dn_dix_packet_type);
-
-	dn_unregister_sysctl();
-
-	unregister_netdevice_notifier(&dn_dev_notifier);
-
-	dn_route_cleanup();
-	dn_dev_cleanup();
-	dn_neigh_cleanup();
-	dn_fib_cleanup();
-
-	proc_net_remove(&init_net, "decnet");
-
-	proto_unregister(&dn_proto);
-
-	rcu_barrier_bh(); /* Wait for completion of call_rcu_bh()'s */
-}
-module_exit(decnet_exit);
-#endif

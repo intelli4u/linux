@@ -119,12 +119,7 @@
 
 
 /* Min/Max/Default Parameter Values */
-#if 0 //;? (HCF_TYPE) & HCF_TYPE_AP
-//;? why this difference depending on compile option, seems to me it should depend on runtime if anything
-#define PARM_DEFAULT_SSID                       "LinuxAP"
-#else
 #define PARM_DEFAULT_SSID                       "ANY"
-#endif // HCF_TYPE_AP
 
 #define PARM_MIN_NAME_LEN                       1
 #define PARM_MAX_NAME_LEN                       32
@@ -626,7 +621,7 @@ typedef struct wvlan_rx_wmp_hdr
 	unsigned short address3[3];
 	unsigned short sequenceControl;
 	unsigned short address4[3];
-#ifndef HERMES25	//;?just to be on the safe side of inherited but not comprehended code #ifdef HERMES2
+#ifndef HERMES25	    //;?just to be on the safe side of inherited but not comprehended code #ifdef HERMES2
 	unsigned short seems_to_be_unused_reserved3[5];  //;?
 	unsigned short seems_to_be_unused_reserved4;	 //;?
 #endif // HERMES25

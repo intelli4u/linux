@@ -52,7 +52,8 @@ static struct s1d13xxxfb_regval s1d13xxxfb_initregs[] = {
     {0x0043,0x00},   // LCD Display Start Address Register 1
     {0x0044,0x00},   // LCD Display Start Address Register 2
 
-#elif defined(CONFIG_PLAT_M32700UT) || defined(CONFIG_PLAT_OPSPUT) || defined(CONFIG_PLAT_MAPPI3)
+#elif defined(CONFIG_PLAT_M32700UT) || defined(CONFIG_PLAT_OPSPUT) || \
+	defined(CONFIG_PLAT_MAPPI3)
     {0x0004,0x07},   // GPIO[0:7] direction
     {0x0005,0x00},   // GPIO[8:12] direction
     {0x0008,0x00},   // GPIO[0:7] data
@@ -181,7 +182,8 @@ static struct s1d13xxxfb_regval s1d13xxxfb_initregs[] = {
 #error unsupported SWIVEL_VIEW mode
 #endif  /* SWIVEL_VIEW */
 
-#if defined(CONFIG_PLAT_M32700UT) || defined(CONFIG_PLAT_OPSPUT) || defined(CONFIG_PLAT_MAPPI3)
+#if defined(CONFIG_PLAT_M32700UT) || defined(CONFIG_PLAT_OPSPUT) || \
+	defined(CONFIG_PLAT_MAPPI3)
     {0x0008,0x07},   // LCD panel Vdd & Vg on
 #endif
 
@@ -189,7 +191,8 @@ static struct s1d13xxxfb_regval s1d13xxxfb_initregs[] = {
 #if defined(CONFIG_PLAT_MAPPI)
     {0x0046,0x80},   // LCD Memory Address Offset Register 0
     {0x0047,0x02},   // LCD Memory Address Offset Register 1
-#elif defined(CONFIG_PLAT_M32700UT) || defined(CONFIG_PLAT_OPSPUT) || defined(CONFIG_PLAT_MAPPI3)
+#elif defined(CONFIG_PLAT_M32700UT) || defined(CONFIG_PLAT_OPSPUT) || \
+	defined(CONFIG_PLAT_MAPPI3)
     {0x0046,0xf0},   // LCD Memory Address Offset Register 0
     {0x0047,0x00},   // LCD Memory Address Offset Register 1
 #endif

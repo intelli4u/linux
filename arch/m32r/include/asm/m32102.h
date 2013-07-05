@@ -104,8 +104,8 @@
 #define M32R_MFT5RLD_PORTL     (0x0C+M32R_MFT5_OFFSET)  /* MFT4 reload */
 #define M32R_MFT5CMPRLD_PORTL  (0x10+M32R_MFT5_OFFSET)  /* MFT4 compare reload */
 
-#if (defined(CONFIG_CHIP_M32700) && !defined(CONFIG_PLAT_MAPPI2)) \
-	|| defined(CONFIG_CHIP_M32104)
+#if (defined(CONFIG_CHIP_M32700) && !defined(CONFIG_PLAT_MAPPI2)) || \
+	defined(CONFIG_CHIP_M32104)
 #define M32R_MFTCR_MFT0MSK  (1UL<<31)  /* b0 */
 #define M32R_MFTCR_MFT1MSK  (1UL<<30)  /* b1 */
 #define M32R_MFTCR_MFT2MSK  (1UL<<29)  /* b2 */

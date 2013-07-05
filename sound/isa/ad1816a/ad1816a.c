@@ -264,7 +264,6 @@ static struct pnp_card_driver ad1816a_pnpc_driver = {
 	.id_table	= snd_ad1816a_pnpids,
 	.probe		= snd_ad1816a_pnp_detect,
 	.remove		= __devexit_p(snd_ad1816a_pnp_remove),
-	/* FIXME: suspend/resume */
 };
 
 static int __init alsa_card_ad1816a_init(void)

@@ -1,4 +1,4 @@
-/* $Id: elsa.c,v 2.32.2.4 2004/01/24 20:47:21 keil Exp $
+/* $Id: elsa.c,v 2.32.2.4 2004/01/24 20:47:21 Exp $
  *
  * low level stuff for Elsa isdn cards
  *

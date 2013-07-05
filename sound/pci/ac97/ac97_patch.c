@@ -1288,7 +1288,6 @@ static int patch_sigmatel_stac9758(struct snd_ac97 * ac97)
 
 	// patch for SigmaTel
 	ac97->build_ops = &patch_sigmatel_stac9758_ops;
-	/* FIXME: assume only page 0 for writing cache */
 	snd_ac97_update_bits(ac97, AC97_INT_PAGING, AC97_PAGE_MASK, AC97_PAGE_VENDOR);
 	for (i = 0; i < 4; i++)
 		snd_ac97_write_cache(ac97, regs[i], pregs[i]);
@@ -1684,7 +1683,6 @@ static struct snd_ac97_build_ops patch_ad1886_build_ops = {
 static int patch_ad1886(struct snd_ac97 * ac97)
 {
 	patch_ad1881(ac97);
-	/* Presario700 workaround */
 	/* for Jack Sense/SPDIF Register misetting causing */
 	snd_ac97_write_cache(ac97, AC97_AD_JACK_SPDIF, 0x0010);
 	ac97->build_ops = &patch_ad1886_build_ops;
@@ -2599,14 +2597,6 @@ static const struct snd_kcontrol_new snd_ac97_controls_alc650[] = {
 	/* 10: Mic/CLFE share */
 	/* 11-13: in IEC958 controls */
 	AC97_SINGLE("Swap Surround Slot", AC97_ALC650_MULTICH, 14, 1, 0),
-#if 0 /* always set in patch_alc650 */
-	AC97_SINGLE("IEC958 Input Clock Enable", AC97_ALC650_CLOCK, 0, 1, 0),
-	AC97_SINGLE("IEC958 Input Pin Enable", AC97_ALC650_CLOCK, 1, 1, 0),
-	AC97_SINGLE("Surround DAC Switch", AC97_ALC650_SURR_DAC_VOL, 15, 1, 1),
-	AC97_DOUBLE("Surround DAC Volume", AC97_ALC650_SURR_DAC_VOL, 8, 0, 31, 1),
-	AC97_SINGLE("Center/LFE DAC Switch", AC97_ALC650_LFE_DAC_VOL, 15, 1, 1),
-	AC97_DOUBLE("Center/LFE DAC Volume", AC97_ALC650_LFE_DAC_VOL, 8, 0, 31, 1),
-#endif
 	AC97_SURROUND_JACK_MODE_CTL,
 	AC97_CHANNEL_MODE_CTL,
 };
@@ -2659,7 +2649,6 @@ static int patch_alc650(struct snd_ac97 * ac97)
 		ac97->id = 0x414c4723;          /* F version */
 
 	/* revision E or F */
-	/* FIXME: what about revision D ? */
 	ac97->spec.dev_flags = (ac97->id == 0x414c4722 ||
 				ac97->id == 0x414c4723);
 
@@ -2970,7 +2959,6 @@ static struct snd_ac97_build_ops patch_cm9738_ops = {
 static int patch_cm9738(struct snd_ac97 * ac97)
 {
 	ac97->build_ops = &patch_cm9738_ops;
-	/* FIXME: can anyone confirm below? */
 	/* CM9738 has no PCM volume although the register reacts */
 	ac97->flags |= AC97_HAS_NO_PCM_VOL;
 	snd_ac97_write_cache(ac97, AC97_PCM, 0x8000);
@@ -3098,7 +3086,6 @@ static int patch_cm9739(struct snd_ac97 * ac97)
 		val |= (1 << 14);
 	snd_ac97_write_cache(ac97, AC97_CM9739_MULTI_CHAN, val);
 
-	/* FIXME: set up GPIO */
 	snd_ac97_write_cache(ac97, 0x70, 0x0100);
 	snd_ac97_write_cache(ac97, 0x72, 0x0020);
 	/* Special exception for ASUS W1000/CMI9739. It does not have an SPDIF in. */
@@ -3120,9 +3107,6 @@ static int patch_cm9739(struct snd_ac97 * ac97)
 
 static void cm9761_update_jacks(struct snd_ac97 *ac97)
 {
-	/* FIXME: check the bits for each model
-	 *        model 83 is confirmed to work
-	 */
 	static unsigned short surr_on[3][2] = {
 		{ 0x0008, 0x0000 }, /* 9761-78 & 82 */
 		{ 0x0000, 0x0008 }, /* 9761-82 rev.B */
@@ -3286,17 +3270,10 @@ static int patch_cm9761(struct snd_ac97 *ac97)
 	 * bit  0: mic boost level (0=20dB, 1=30dB)
 	 */
 
-#if 0
-	if (ac97->spec.dev_flags)
-		val = 0x0214;
-	else
-		val = 0x321c;
-#endif
 	val = snd_ac97_read(ac97, AC97_CM9761_MULTI_CHAN);
 	val |= (1 << 4); /* front on */
 	snd_ac97_write_cache(ac97, AC97_CM9761_MULTI_CHAN, val);
 
-	/* FIXME: set up GPIO */
 	snd_ac97_write_cache(ac97, 0x70, 0x0100);
 	snd_ac97_write_cache(ac97, 0x72, 0x0020);
 

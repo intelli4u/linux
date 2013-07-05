@@ -50,32 +50,6 @@ static inline void arch_spin_unlock(arch_spinlock_t *lock)
 	__asm__ __volatile__("stb %%g0, [%0]" : : "r" (lock) : "memory");
 }
 
-/* Read-write spinlocks, allowing multiple readers
- * but only one writer.
- *
- * NOTE! it is quite common to have readers in interrupts
- * but no interrupt writers. For those circumstances we
- * can "mix" irq-safe locks - any writer needs to get a
- * irq-safe write-lock, but readers can get non-irqsafe
- * read-locks.
- *
- * XXX This might create some problems with my dual spinlock
- * XXX scheme, deadlocks etc. -DaveM
- *
- * Sort of like atomic_t's on Sparc, but even more clever.
- *
- *	------------------------------------
- *	| 24-bit counter           | wlock |  arch_rwlock_t
- *	------------------------------------
- *	 31                       8 7     0
- *
- * wlock signifies the one writer is in or somebody is updating
- * counter. For a writer, if he successfully acquires the wlock,
- * but counter is non-zero, he has to release the lock and wait,
- * till both counter and wlock are zero.
- *
- * Unfortunately this scheme limits us to ~16,000,000 cpus.
- */
 static inline void __arch_read_lock(arch_rwlock_t *rw)
 {
 	register arch_rwlock_t *lp asm("g1");

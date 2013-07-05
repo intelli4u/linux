@@ -413,7 +413,6 @@ static int ehci_fsl_drv_probe(struct platform_device *pdev)
 	if (usb_disabled())
 		return -ENODEV;
 
-	/* FIXME we only want one one probe() not two */
 	return usb_hcd_fsl_probe(&ehci_fsl_hc_driver, pdev);
 }
 
@@ -421,7 +420,6 @@ static int ehci_fsl_drv_remove(struct platform_device *pdev)
 {
 	struct usb_hcd *hcd = platform_get_drvdata(pdev);
 
-	/* FIXME we only want one one remove() not two */
 	usb_hcd_fsl_remove(hcd, pdev);
 	return 0;
 }

@@ -94,26 +94,6 @@ static ssize_t _show_name(struct device *dev,
 	return strlen(buf);
 }
 
-#if 0 /* hangs */
-static ssize_t _set_name(struct device *dev, struct device_attribute *attr,
-				const char *buf, size_t count)
-{
-	int err = 0;
-	char *out = kmalloc(count + 1, GFP_KERNEL);
-
-	if (!out)
-		return -ENOMEM;
-
-	memcpy(out, buf, count);
-	if (count && out[count - 1] == '\n')
-		out[--count] = 0;
-	if (count)
-		err = device_rename(dev, out);
-	kfree(out);
-
-	return (err < 0) ? err : count;
-}
-#endif
 
 static ssize_t _show_channelmap(struct device *dev,
 				struct device_attribute *attr, char *buf)
@@ -406,4 +386,3 @@ static void mISDN_cleanup(void)
 
 module_init(mISDNInit);
 module_exit(mISDN_cleanup);
-

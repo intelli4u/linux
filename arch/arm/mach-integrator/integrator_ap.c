@@ -50,13 +50,6 @@
 
 #include "common.h"
 
-/* 
- * All IO addresses are mapped onto VA 0xFFFx.xxxx, where x.xxxx
- * is the (PA >> 12).
- *
- * Setup a VA for the Integrator interrupt controller (for header #0,
- * just for now).
- */
 #define VA_IC_BASE	IO_ADDRESS(INTEGRATOR_IC_BASE) 
 #define VA_SC_BASE	IO_ADDRESS(INTEGRATOR_SC_BASE)
 #define VA_EBI_BASE	IO_ADDRESS(INTEGRATOR_EBI_BASE)

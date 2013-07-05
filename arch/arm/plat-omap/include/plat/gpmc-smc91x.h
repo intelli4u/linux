@@ -25,8 +25,7 @@ struct omap_smc91x_platform_data {
 	int	(*retime)(void);
 };
 
-#if defined(CONFIG_SMC91X) || \
-	defined(CONFIG_SMC91X_MODULE)
+#if defined(CONFIG_SMC91X) || defined(CONFIG_SMC91X_MODULE)
 
 extern void gpmc_smc91x_init(struct omap_smc91x_platform_data *d);
 

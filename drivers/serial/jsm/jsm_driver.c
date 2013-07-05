@@ -150,7 +150,6 @@ static int __devinit jsm_probe_one(struct pci_dev *pdev, const struct pci_device
 
 	rc = jsm_uart_port_init(brd);
 	if (rc < 0) {
-		/* XXX: leaking all resources from jsm_tty_init here! */
 		dev_err(&pdev->dev, "Can't init uart port (%d)\n", rc);
 		rc = -ENXIO;
 		goto out_free_irq;
@@ -168,8 +167,6 @@ static int __devinit jsm_probe_one(struct pci_dev *pdev, const struct pci_device
 	 */
 	brd->flipbuf = kzalloc(MYFLIPLEN, GFP_KERNEL);
 	if (!brd->flipbuf) {
-		/* XXX: leaking all resources from jsm_tty_init and
-		 	jsm_uart_port_init here! */
 		dev_err(&pdev->dev, "memory allocation for flipbuf failed\n");
 		rc = -ENOMEM;
 		goto out_free_irq;

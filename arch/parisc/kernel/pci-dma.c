@@ -337,10 +337,6 @@ pcxl_free_range(unsigned long vaddr, size_t size)
 
 static int proc_pcxl_dma_show(struct seq_file *m, void *v)
 {
-#if 0
-	u_long i = 0;
-	unsigned long *res_ptr = (u_long *)pcxl_res_map;
-#endif
 	unsigned long total_pages = pcxl_res_size << 3;   /* 8 bits per byte */
 
 	seq_printf(m, "\nDMA Mapping Area size    : %d bytes (%ld pages)\n",
@@ -357,15 +353,6 @@ static int proc_pcxl_dma_show(struct seq_file *m, void *v)
 		total_pages - pcxl_used_pages, pcxl_used_pages,
 		(pcxl_used_pages * 100 / total_pages));
 
-#if 0
-	seq_puts(m, "\nResource bitmap:");
-
-	for(; i < (pcxl_res_size / sizeof(u_long)); ++i, ++res_ptr) {
-		if ((i & 7) == 0)
-		    seq_puts(m,"\n   ");
-		seq_printf(m, "%s %08lx", buf, *res_ptr);
-	}
-#endif
 	seq_putc(m, '\n');
 	return 0;
 }
@@ -427,14 +414,6 @@ static void * pa11_dma_alloc_consistent (struct device *dev, size_t size, dma_ad
 	map_uncached_pages(vaddr, size, paddr);
 	*dma_handle = (dma_addr_t) paddr;
 
-#if 0
-/* This probably isn't needed to support EISA cards.
-** ISA cards will certainly only support 24-bit DMA addressing.
-** Not clear if we can, want, or need to support ISA.
-*/
-	if (!dev || *dev->coherent_dma_mask < 0xffffffff)
-		gfp |= GFP_DMA;
-#endif
 	return (void *)vaddr;
 }
 

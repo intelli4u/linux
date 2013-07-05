@@ -203,12 +203,6 @@ void t21142_lnk_change(struct net_device *dev, int csr5)
 				tp->csr6 |= 0x0200;
 			iowrite32(1, ioaddr + CSR13);
 		}
-#if 0							/* Restart shouldn't be needed. */
-		iowrite32(tp->csr6 | RxOn, ioaddr + CSR6);
-		if (tulip_debug > 2)
-			printk(KERN_DEBUG "%s:  Restarting Tx and Rx, CSR5 is %08x\n",
-			       dev->name, ioread32(ioaddr + CSR5));
-#endif
 		tulip_start_rxtx(tp);
 		if (tulip_debug > 2)
 			printk(KERN_DEBUG "%s:  Setting CSR6 %08x/%x CSR12 %08x\n",
@@ -256,5 +250,3 @@ void t21142_lnk_change(struct net_device *dev, int csr5)
 		tulip_restart_rxtx(tp);
 	}
 }
-
-

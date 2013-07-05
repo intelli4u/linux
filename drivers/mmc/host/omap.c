@@ -228,9 +228,6 @@ no_claim:
 	if (claimed) {
 		mmc_omap_fclk_enable(host, 1);
 
-		/* Doing the dummy read here seems to work around some bug
-		 * at least in OMAP24xx silicon where the command would not
-		 * start after writing the CMD register. Sigh. */
 		OMAP_MMC_READ(host, CON);
 
 		OMAP_MMC_WRITE(host, CON, slot->saved_con);
@@ -980,7 +977,6 @@ static void mmc_omap_dma_cb(int lch, u16 ch_status, void *data)
 			"DMA callback while DMA not enabled\n");
 		return;
 	}
-	/* FIXME: We really should do something to _handle_ the errors */
 	if (ch_status & OMAP1_DMA_TOUT_IRQ) {
 		dev_err(mmc_dev(host->mmc),"DMA timeout\n");
 		return;

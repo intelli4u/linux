@@ -1080,21 +1080,6 @@ static int setup_fbuffer(struct zoran_fh *fh,
 	if (!bytesperline)
 		bytesperline = width * ((fmt->depth + 7) & ~7) / 8;
 
-#if 0
-	if (zr->overlay_active) {
-		/* dzjee... stupid users... don't even bother to turn off
-		 * overlay before changing the memory location...
-		 * normally, we would return errors here. However, one of
-		 * the tools that does this is... xawtv! and since xawtv
-		 * is used by +/- 99% of the users, we'd rather be user-
-		 * friendly and silently do as if nothing went wrong */
-		dprintk(3,
-			KERN_ERR
-			"%s: %s - forced overlay turnoff because framebuffer changed\n",
-			ZR_DEVNAME(zr), __func__);
-		zr36057_overlay(zr, 0);
-	}
-#endif
 
 	if (!(fmt->flags & ZORAN_FORMAT_OVERLAY)) {
 		dprintk(1,
@@ -3388,4 +3373,3 @@ struct video_device zoran_template __devinitdata = {
 	.release = &zoran_vdev_release,
 	.tvnorms = V4L2_STD_NTSC | V4L2_STD_PAL | V4L2_STD_SECAM,
 };
-

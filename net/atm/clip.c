@@ -377,14 +377,6 @@ static netdev_tx_t clip_start_xmit(struct sk_buff *skb,
 		return NETDEV_TX_OK;
 	}
 	if (!skb_dst(skb)->neighbour) {
-#if 0
-		skb_dst(skb)->neighbour = clip_find_neighbour(skb_dst(skb), 1);
-		if (!skb_dst(skb)->neighbour) {
-			dev_kfree_skb(skb);	/* lost that one */
-			dev->stats.tx_dropped++;
-			return 0;
-		}
-#endif
 		pr_err("NO NEIGHBOUR !\n");
 		dev_kfree_skb(skb);
 		dev->stats.tx_dropped++;

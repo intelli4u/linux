@@ -65,7 +65,6 @@ void *memmove(void *v_dst, const void *v_src, __kernel_size_t c)
 	 * different boundaries shifts will be necessary. This might result in
 	 * bad performance on MicroBlaze systems without a barrel shifter.
 	 */
-	/* FIXME this part needs more test */
 	/* Do a descending copy - this is a bit trickier! */
 	dst += c;
 	src += c;

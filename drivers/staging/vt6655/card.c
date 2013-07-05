@@ -1545,7 +1545,6 @@ CARDbyGetTransmitPower (
     return (pDevice->byCurPwrdBm);
 }
 
-//xxx
 void
 CARDvSafeResetTx (
     void *pDeviceHandler
@@ -2216,10 +2215,3 @@ void CARDvUpdateNextTBTT (unsigned long dwIoBase, QWORD qwTSF, unsigned short wB
 
     return;
 }
-
-
-
-
-
-
-

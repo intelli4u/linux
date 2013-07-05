@@ -81,10 +81,6 @@ static int __init tusb_print_revision(struct musb *musb)
 #define WBUS_QUIRK_MASK	(TUSB_PHY_OTG_CTRL_TESTM2 | TUSB_PHY_OTG_CTRL_TESTM1 \
 				| TUSB_PHY_OTG_CTRL_TESTM0)
 
-/*
- * Workaround for spontaneous WBUS wake-up issue #2 for tusb3.0.
- * Disables power detection in PHY for the duration of idle.
- */
 static void tusb_wbus_quirk(struct musb *musb, int enabled)
 {
 	void __iomem	*tbase = musb->ctrl_base;
@@ -317,10 +313,6 @@ static int tusb_draw_power(struct otg_transceiver *x, unsigned mA)
 #define tusb_draw_power	NULL
 #endif
 
-/* workaround for issue 13:  change clock during chip idle
- * (to be fixed in rev3 silicon) ... symptoms include disconnect
- * or looping suspend/resume cycles
- */
 static void tusb_set_clock_source(struct musb *musb, unsigned mode)
 {
 	void __iomem	*tbase = musb->ctrl_base;
@@ -339,7 +331,6 @@ static void tusb_set_clock_source(struct musb *musb, unsigned mode)
 
 	musb_writel(tbase, TUSB_PRCM_CONF, reg);
 
-	/* FIXME tusb6010_platform_retime(mode == 0); */
 }
 
 /*
@@ -835,7 +826,6 @@ static irqreturn_t tusb_interrupt(int irq, void *__hci)
 
 		/* there are issues re-locking the PLL on wakeup ... */
 
-		/* work around issue 8 */
 		for (i = 0xf7f7f7; i > 0xf7f7f7 - 1000; i--) {
 			musb_writel(tbase, TUSB_SCRATCH_PAD, 0);
 			musb_writel(tbase, TUSB_SCRATCH_PAD, i);
@@ -845,7 +835,6 @@ static irqreturn_t tusb_interrupt(int irq, void *__hci)
 			DBG(6, "TUSB NOR not ready\n");
 		}
 
-		/* work around issue 13 (2nd half) */
 		tusb_set_clock_source(musb, 1);
 
 		reg = musb_readl(tbase, TUSB_PRCM_WAKEUP_SOURCE);
@@ -974,7 +963,6 @@ void musb_platform_disable(struct musb *musb)
 {
 	void __iomem	*tbase = musb->ctrl_base;
 
-	/* FIXME stop DMA, IRQs, timers, ... */
 
 	/* disable all IRQs */
 	musb_writel(tbase, TUSB_INT_MASK, ~TUSB_INT_MASK_RESERVED_BITS);

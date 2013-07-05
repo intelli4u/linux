@@ -25,9 +25,6 @@
  */
 #define MTS		(1<<2)
 
-/* FIXME: I have no idea what's the difference between
-   D2620 and D2633 firmwares
- */
 #define D2620		(1<<3)
 #define D2633		(1<<4)
 

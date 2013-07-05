@@ -28,5 +28,3 @@ void __attribute__((weak)) bust_spinlocks(int yes)
 			wake_up_klogd();
 	}
 }
-
-

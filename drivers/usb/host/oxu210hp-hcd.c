@@ -464,20 +464,6 @@ static void ehci_hub_descriptor(struct oxu_hcd *oxu,
 }
 
 
-/* Allocate an OXU210HP on-chip memory data buffer
- *
- * An on-chip memory data buffer is required for each OXU210HP USB transfer.
- * Each transfer descriptor has one or more on-chip memory data buffers.
- *
- * Data buffers are allocated from a fix sized pool of data blocks.
- * To minimise fragmentation and give reasonable memory utlisation,
- * data buffers are allocated with sizes the power of 2 multiples of
- * the block size, starting on an address a multiple of the allocated size.
- *
- * FIXME: callers of this function require a buffer to be allocated for
- * len=0. This is a waste of on-chip memory and should be fix. Then this
- * function should be changed to not allocate a buffer for len=0.
- */
 static int oxu_buf_alloc(struct oxu_hcd *oxu, struct ehci_qtd *qtd, int len)
 {
 	int n_blocks;	/* minium blocks needed to hold len */
@@ -893,7 +879,6 @@ static void qtd_copy_status(struct oxu_hcd *oxu, struct urb *urb,
 	/* serious "can't proceed" faults reported by the hardware */
 	if (token & QTD_STS_HALT) {
 		if (token & QTD_STS_BABBLE) {
-			/* FIXME "must" disable babbling device's port too */
 			urb->status = -EOVERFLOW;
 		} else if (token & QTD_STS_MMF) {
 			/* fs/ls interrupt xfer missed the complete-split */
@@ -1420,7 +1405,6 @@ static struct ehci_qh *qh_make(struct oxu_hcd *oxu,
 			qh->gap_uf = 1 + usb_calc_bus_time(urb->dev->speed,
 					is_input, 0, maxp) / (125 * 1000);
 
-			/* FIXME this just approximates SPLIT/CSPLIT times */
 			if (is_input) {		/* SPLIT, gap, CSPLIT+DATA */
 				qh->c_usecs = qh->usecs + HS_USECS(0);
 				qh->usecs = HS_USECS(1);
@@ -2004,13 +1988,6 @@ static void qh_unlink_periodic(struct oxu_hcd *oxu, struct ehci_qh *qh)
 	unsigned i;
 	unsigned period;
 
-	/* FIXME:
-	 *   IF this isn't high speed
-	 *   and this qh is active in the current uframe
-	 *   (and overlay token SplitXstate is false?)
-	 * THEN
-	 *   qh->hw_info1 |= cpu_to_le32(1 << 7 "ignore");
-	 */
 
 	/* high bandwidth, or otherwise part of every microframe */
 	period = qh->period;
@@ -2326,14 +2303,7 @@ restart:
 
 		/* Stop when we catch up to the HC */
 
-		/* FIXME:  this assumes we won't get lapped when
-		 * latencies climb; that should be rare, but...
-		 * detect it, and just go all the way around.
-		 * FLR might help detect this case, so long as latencies
-		 * don't exceed periodic_size msec (default 1.024 sec).
-		 */
 
-		/* FIXME: likewise assumes HC doesn't halt mid-scan */
 
 		if (now_uframe == clock) {
 			unsigned	now;
@@ -2993,9 +2963,6 @@ static int oxu_urb_dequeue(struct usb_hcd *hcd, struct urb *urb, int status)
 			spin_unlock_irqrestore(&oxu->lock, flags);
 
 			if (status != 0) {
-				/* shouldn't happen often, but ...
-				 * FIXME kill those tds' urbs
-				 */
 				err("can't reschedule qh %p, err %d",
 					qh, status);
 			}
@@ -3137,7 +3104,6 @@ static int oxu_hub_status_data(struct usb_hcd *hcd, char *buf)
 			status = STS_PCD;
 		}
 	}
-	/* FIXME autosuspend idle root hubs */
 	spin_unlock_irqrestore(&oxu->lock, flags);
 	return status ? retval : 0;
 }
@@ -3169,12 +3135,6 @@ static int oxu_hub_control(struct usb_hcd *hcd, u16 typeReq,
 	int retval = 0;
 	unsigned selector;
 
-	/*
-	 * FIXME:  support SetPortFeatures USB_PORT_FEAT_INDICATOR.
-	 * HCS_INDICATOR may say we can change LEDs to off/amber/green.
-	 * (track current state ourselves) ... blink for diagnostics,
-	 * power, "this is the one", etc.  EHCI spec supports this.
-	 */
 
 	spin_lock_irqsave(&oxu->lock, flags);
 	switch (typeReq) {
@@ -3922,27 +3882,8 @@ static void oxu_drv_shutdown(struct platform_device *pdev)
 	oxu_drv_remove(pdev);
 }
 
-#if 0
-/* FIXME: TODO */
-static int oxu_drv_suspend(struct device *dev)
-{
-	struct platform_device *pdev = to_platform_device(dev);
-	struct usb_hcd *hcd = dev_get_drvdata(dev);
-
-	return 0;
-}
-
-static int oxu_drv_resume(struct device *dev)
-{
-	struct platform_device *pdev = to_platform_device(dev);
-	struct usb_hcd *hcd = dev_get_drvdata(dev);
-
-	return 0;
-}
-#else
 #define oxu_drv_suspend	NULL
 #define oxu_drv_resume	NULL
-#endif
 
 static struct platform_driver oxu_driver = {
 	.probe		= oxu_drv_probe,

@@ -90,6 +90,12 @@ u16 vlan_dev_vlan_id(const struct net_device *dev)
 }
 EXPORT_SYMBOL(vlan_dev_vlan_id);
 
+u16 vlan_dev_vlan_flags(const struct net_device *dev)
+{
+	return vlan_dev_info(dev)->flags;
+}
+EXPORT_SYMBOL(vlan_dev_vlan_flags);
+
 static gro_result_t
 vlan_gro_common(struct napi_struct *napi, struct vlan_group *grp,
 		unsigned int vlan_tci, struct sk_buff *skb)

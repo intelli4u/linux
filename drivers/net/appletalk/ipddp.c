@@ -158,12 +158,12 @@ static netdev_tx_t ipddp_xmit(struct sk_buff *skb, struct net_device *dev)
          */
         if(rt->dev->type == ARPHRD_LOCALTLK)
         {
-                ddp->deh_dnet  = 0;   /* FIXME more hops?? */
+                ddp->deh_dnet  = 0;
                 ddp->deh_snet  = 0;
         }
         else
         {
-                ddp->deh_dnet  = rt->at.s_net;   /* FIXME more hops?? */
+                ddp->deh_dnet  = rt->at.s_net;
                 ddp->deh_snet  = our_addr->s_net;
         }
         ddp->deh_dnode = rt->at.s_node;

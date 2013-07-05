@@ -501,6 +501,13 @@ static int igmpv3_send_report(struct in_device *in_dev, struct ip_mc_list *pmc)
 	struct sk_buff *skb = NULL;
 	int type;
 
+#if 0
+	/* not to let kernel send igmp packets */
+#ifdef IGMP_PROXY
+	return 0;
+#endif
+#endif
+
 	if (!pmc) {
 		read_lock(&in_dev->mc_list_lock);
 		for (pmc=in_dev->mc_list; pmc; pmc=pmc->next) {
@@ -555,6 +562,13 @@ static void igmpv3_send_cr(struct in_device *in_dev)
 	struct ip_mc_list *pmc, *pmc_prev, *pmc_next;
 	struct sk_buff *skb = NULL;
 	int type, dtype;
+
+#if 0
+	/* not to let kernel send igmp packets */
+#ifdef IGMP_PROXY
+	return;
+#endif
+#endif
 
 	read_lock(&in_dev->mc_list_lock);
 	spin_lock_bh(&in_dev->mc_tomb_lock);
@@ -634,6 +648,13 @@ static int igmp_send_report(struct in_device *in_dev, struct ip_mc_list *pmc,
 	struct net *net = dev_net(dev);
 	__be32	group = pmc ? pmc->multiaddr : 0;
 	__be32	dst;
+
+#if 0
+	/* not to let kernel send igmp packets */
+#ifdef IGMP_PROXY
+	return 0;
+#endif
+#endif
 
 	if (type == IGMPV3_HOST_MEMBERSHIP_REPORT)
 		return igmpv3_send_report(in_dev, pmc);

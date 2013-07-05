@@ -827,4 +827,3 @@ struct ttm_bo_driver nouveau_bo_driver = {
 	.io_mem_reserve = &nouveau_ttm_io_mem_reserve,
 	.io_mem_free = &nouveau_ttm_io_mem_free,
 };
-

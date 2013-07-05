@@ -899,11 +899,6 @@ static int eeepc_hotk_thaw(struct device *device)
 	if (eeepc->wlan_rfkill) {
 		bool wlan;
 
-		/*
-		 * Work around bios bug - acpi _PTS turns off the wireless led
-		 * during suspend.  Normally it restores it on resume, but
-		 * we should kick it ourselves in case hibernation is aborted.
-		 */
 		wlan = get_acpi(eeepc, CM_ASL_WLAN);
 		set_acpi(eeepc, CM_ASL_WLAN, wlan);
 	}

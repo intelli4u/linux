@@ -71,23 +71,6 @@ struct ref_table {
 	u32 start_mask;
 };
 
-/*
- * Object reference table consists of 2**N entries.
- *
- * State	Object ptr	Reference
- * -----        ----------      ---------
- * In use        non-NULL       XXXX|own index
- *				(XXXX changes each time entry is acquired)
- * Free            NULL         YYYY|next free index
- *				(YYYY is one more than last used XXXX)
- * Uninitialized   NULL         0
- *
- * Entry 0 is not used; this allows index 0 to denote the end of the free list.
- *
- * Note that a reference value of 0 does not necessarily indicate that an
- * entry is uninitialized, since the last entry in the free list could also
- * have a reference value of 0 (although this is unlikely).
- */
 
 static struct ref_table tipc_ref_table = { NULL };
 
@@ -316,4 +299,3 @@ void *tipc_ref_deref(u32 ref)
 	}
 	return NULL;
 }
-

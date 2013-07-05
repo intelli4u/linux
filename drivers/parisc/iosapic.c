@@ -127,7 +127,6 @@
 */
 
 
-/* FIXME: determine which include files are really needed */
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/spinlock.h>
@@ -803,15 +802,6 @@ int iosapic_fixup_irq(void *isi_obj, struct pci_dev *pcidev)
 
 	vi->irte = irte;
 
-	/*
-	 * Allocate processor IRQ
-	 *
-	 * XXX/FIXME The txn_alloc_irq() code and related code should be
-	 * moved to enable_irq(). That way we only allocate processor IRQ
-	 * bits for devices that actually have drivers claiming them.
-	 * Right now we assign an IRQ to every PCI device present,
-	 * regardless of whether it's used or not.
-	 */
 	vi->txn_irq = txn_alloc_irq(8);
 
 	if (vi->txn_irq < 0)

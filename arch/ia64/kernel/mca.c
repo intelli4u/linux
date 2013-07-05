@@ -443,15 +443,6 @@ ia64_log_get(int sal_info_type, u8 **buffer, int irq_safe)
 	}
 }
 
-/*
- *  ia64_mca_log_sal_error_record
- *
- *  This function retrieves a specified error record type from SAL
- *  and wakes up any processes waiting for error records.
- *
- *  Inputs  :   sal_info_type   (Type of error record MCA/CMC/CPE)
- *              FIXME: remove MCA and irq_safe.
- */
 static void
 ia64_mca_log_sal_error_record(int sal_info_type)
 {
@@ -1604,11 +1595,6 @@ default_monarch_init_process(struct notifier_block *self, unsigned long val, voi
 		return NOTIFY_DONE;
 #endif
 
-	/*
-	 * FIXME: mlogbuf will brim over with INIT stack dumps.
-	 * To enable show_stack from INIT, we use oops_in_progress which should
-	 * be used in real oops. This would cause something wrong after INIT.
-	 */
 	BREAK_LOGLEVEL(console_loglevel);
 	ia64_mlogbuf_dump_from_init();
 
@@ -1633,7 +1619,6 @@ default_monarch_init_process(struct notifier_block *self, unsigned long val, voi
 		} while_each_thread (g, t);
 		read_unlock(&tasklist_lock);
 	}
-	/* FIXME: This will not restore zapped printk locks. */
 	RESTORE_LOGLEVEL(console_loglevel);
 	return NOTIFY_DONE;
 }
@@ -1675,11 +1660,6 @@ ia64_init_handler(struct pt_regs *regs, struct switch_stack *sw,
 	previous_current = ia64_mca_modify_original_stack(regs, sw, sos, "INIT");
 	sos->os_status = IA64_INIT_RESUME;
 
-	/* FIXME: Workaround for broken proms that drive all INIT events as
-	 * slaves.  The last slave that enters is promoted to be a monarch.
-	 * Remove this code in September 2006, that gives platforms a year to
-	 * fix their proms and get their customers updated.
-	 */
 	if (!sos->monarch && atomic_add_return(1, &slaves) == num_online_cpus()) {
 		mprintk(KERN_WARNING "%s: Promoting cpu %d to monarch.\n",
 		        __func__, cpu);
@@ -1687,11 +1667,6 @@ ia64_init_handler(struct pt_regs *regs, struct switch_stack *sw,
 		sos->monarch = 1;
 	}
 
-	/* FIXME: Workaround for broken proms that drive all INIT events as
-	 * monarchs.  Second and subsequent monarchs are demoted to slaves.
-	 * Remove this code in September 2006, that gives platforms a year to
-	 * fix their proms and get their customers updated.
-	 */
 	if (sos->monarch && atomic_add_return(1, &monarchs) > 1) {
 		mprintk(KERN_WARNING "%s: Demoting cpu %d to slave.\n",
 			       __func__, cpu);
@@ -2002,10 +1977,6 @@ ia64_mca_init(void)
 	IA64_MCA_DEBUG("%s: registered MCA rendezvous spinloop and wakeup mech.\n", __func__);
 
 	ia64_mc_info.imi_mca_handler        = ia64_tpa(mca_hldlr_ptr->fp);
-	/*
-	 * XXX - disable SAL checksum by setting size to 0; should be
-	 *	ia64_tpa(ia64_os_mca_dispatch_end) - ia64_tpa(ia64_os_mca_dispatch);
-	 */
 	ia64_mc_info.imi_mca_handler_size	= 0;
 
 	/* Register the os mca handler with SAL */
@@ -2023,10 +1994,6 @@ ia64_mca_init(void)
 	IA64_MCA_DEBUG("%s: registered OS MCA handler with SAL at 0x%lx, gp = 0x%lx\n", __func__,
 		       ia64_mc_info.imi_mca_handler, ia64_tpa(mca_hldlr_ptr->gp));
 
-	/*
-	 * XXX - disable SAL checksum by setting size to 0, should be
-	 * size of the actual init handler in mca_asm.S.
-	 */
 	ia64_mc_info.imi_monarch_init_handler		= ia64_tpa(init_hldlr_ptr_monarch->fp);
 	ia64_mc_info.imi_monarch_init_handler_size	= 0;
 	ia64_mc_info.imi_slave_init_handler		= ia64_tpa(init_hldlr_ptr_slave->fp);

@@ -917,4 +917,3 @@ void __init iSeries_pcibios_init(void)
 
 	pci_devs_phb_init();
 }
-

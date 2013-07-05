@@ -274,7 +274,6 @@ static void ep0_reset(struct langwell_udc *dev)
 		ep->dqh->dqh_ios = 1;
 		ep->dqh->dqh_mpl = EP0_MAX_PKT_SIZE;
 
-		/* FIXME: enable ep0-in HW zero length termination select */
 		if (is_in(ep))
 			ep->dqh->dqh_zlt = 0;
 		ep->dqh->dqh_mult = 0;
@@ -370,10 +369,6 @@ static int langwell_ep_enable(struct usb_ep *_ep,
 		default:
 			goto done;
 		}
-		/*
-		 * FIXME:
-		 * calculate transactions needed for high bandwidth iso
-		 */
 		mult = (unsigned char)(1 + ((max >> 11) & 0x03));
 		max = max & 0x8ff;	/* bit 0~10 */
 		/* 3 transactions at most */
@@ -816,7 +811,6 @@ static int langwell_ep_queue(struct usb_ep *_ep, struct usb_request *_req,
 
 	/* set up dma mapping in case the caller didn't */
 	if (_req->dma == DMA_ADDR_INVALID) {
-		/* WORKAROUND: WARN_ON(size == 0) */
 		if (_req->length == 0) {
 			VDBG(dev, "req->length: 0->1\n");
 			zlflag = 1;
@@ -2847,7 +2841,6 @@ static irqreturn_t langwell_irq(int irq, void *_dev)
 
 	/* SOF received interrupt (for ISO transfer) */
 	if (irq_sts & STS_SRI) {
-		/* FIXME */
 		/* VDBG(dev, "SOF received interrupt\n"); */
 	}
 
@@ -2871,7 +2864,6 @@ static irqreturn_t langwell_irq(int irq, void *_dev)
 
 	/* USB error or system error interrupt */
 	if (irq_sts & (STS_UEI | STS_SEI)) {
-		/* FIXME */
 		WARNING(dev, "error IRQ, irq_sts: %x\n", irq_sts);
 	}
 
@@ -3369,4 +3361,3 @@ static void __exit cleanup(void)
 #endif
 }
 module_exit(cleanup);
-

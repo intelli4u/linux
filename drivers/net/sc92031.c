@@ -918,7 +918,6 @@ static struct net_device_stats *sc92031_get_stats(struct net_device *dev)
 	struct sc92031_priv *priv = netdev_priv(dev);
 	void __iomem *port_base = priv->port_base;
 
-	// FIXME I do not understand what is this trying to do.
 	if (netif_running(dev)) {
 		int temp;
 
@@ -1214,7 +1213,6 @@ static int sc92031_ethtool_set_settings(struct net_device *dev,
 
 		phy_ctrl = PhyCtrlAne;
 
-		// FIXME: I'm not sure what the original code was trying to do
 		if (cmd->advertising & ADVERTISED_Autoneg)
 			phy_ctrl |= PhyCtrlDux | PhyCtrlSpd100 | PhyCtrlSpd10;
 		if (cmd->advertising & ADVERTISED_100baseT_Full)
@@ -1226,7 +1224,6 @@ static int sc92031_ethtool_set_settings(struct net_device *dev,
 		if (cmd->advertising & ADVERTISED_10baseT_Half)
 			phy_ctrl |= PhyCtrlSpd10;
 	} else {
-		// FIXME: Whole branch guessed
 		phy_ctrl = 0;
 
 		if (cmd->speed == SPEED_10)
@@ -1272,7 +1269,6 @@ static void sc92031_ethtool_get_wol(struct net_device *dev,
 	pm_config = ioread32(port_base + PMConfig);
 	spin_unlock_bh(&priv->lock);
 
-	// FIXME: Guessed
 	wolinfo->supported = WAKE_PHY | WAKE_MAGIC
 			| WAKE_UCAST | WAKE_MCAST | WAKE_BCAST;
 	wolinfo->wolopts = 0;
@@ -1284,7 +1280,6 @@ static void sc92031_ethtool_get_wol(struct net_device *dev,
 		wolinfo->wolopts |= WAKE_MAGIC;
 
 	if (pm_config & PM_WakeUp)
-		// FIXME: Guessed
 		wolinfo->wolopts |= WAKE_UCAST | WAKE_MCAST | WAKE_BCAST;
 }
 
@@ -1306,7 +1301,6 @@ static int sc92031_ethtool_set_wol(struct net_device *dev,
 	if (wolinfo->wolopts & WAKE_MAGIC)
 		pm_config |= PM_Magic;
 
-	// FIXME: Guessed
 	if (wolinfo->wolopts & (WAKE_UCAST | WAKE_MCAST | WAKE_BCAST))
 		pm_config |= PM_WakeUp;
 

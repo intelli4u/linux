@@ -269,8 +269,6 @@ svc_rdma_get_reply_array(struct rpcrdma_msg *rmsgp)
 	struct rpcrdma_write_array *wr_ary;
 	struct rpcrdma_write_array *rp_ary;
 
-	/* XXX: Need to fix when reply list may occur with read-list and/or
-	 * write list */
 	if (rmsgp->rm_body.rm_chunks[0] != 0 ||
 	    rmsgp->rm_body.rm_chunks[1] != 0)
 		return NULL;

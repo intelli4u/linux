@@ -563,7 +563,7 @@ static irqreturn_t saa7134_irq(int irq, void *dev_id)
 					break;
 
 				case SAA7134_REMOTE_I2C:
-					break;			/* FIXME: invoke I2C get_key() */
+					break;
 
 				default:			/* GPIO16 not used by IR remote */
 					break;
@@ -582,7 +582,7 @@ static irqreturn_t saa7134_irq(int irq, void *dev_id)
 					break;
 
 				case SAA7134_REMOTE_I2C:
-					break;			/* FIXME: invoke I2C get_key() */
+					break;
 
 				default:			/* GPIO18 not used by IR remote */
 					break;
@@ -1255,8 +1255,6 @@ static int saa7134_resume(struct pci_dev *pci_dev)
 	saa7134_buffer_requeue(dev, &dev->vbi_q);
 	saa7134_buffer_requeue(dev, &dev->ts_q);
 
-	/* FIXME: Disable DMA audio sound - temporary till proper support
-		  is implemented*/
 
 	dev->dmasound.dma_running = 0;
 

@@ -72,8 +72,6 @@
 #ifdef __ASSEMBLY__
 
 #ifdef CONFIG_64BIT
-/* the 64-bit pa gnu assembler unfortunately defaults to .level 1.1 or 2.0 so
- * work around that for now... */
 	.level 2.0w
 #endif
 

@@ -422,4 +422,3 @@ int MIDIbuf_avail(int dev)
 	return 0;
 }
 EXPORT_SYMBOL(MIDIbuf_avail);
-

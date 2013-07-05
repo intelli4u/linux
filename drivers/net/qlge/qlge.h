@@ -59,7 +59,7 @@
 /* The maximum number of frags we handle is based
  * on PAGE_SIZE...
  */
-#if (PAGE_SHIFT == 12) || (PAGE_SHIFT == 13)	/* 4k & 8k pages */
+#if (PAGE_SHIFT == 12) || (PAGE_SHIFT == 13)	    /* 4k & 8k pages */
 #define TX_DESC_PER_OAL ((MAX_SKB_FRAGS - TX_DESC_PER_IOCB) + 2)
 #else /* all other page sizes */
 #define TX_DESC_PER_OAL 0
@@ -2245,14 +2245,12 @@ int ql_own_firmware(struct ql_adapter *qdev);
 int ql_clean_lb_rx_ring(struct rx_ring *rx_ring, int budget);
 void qlge_set_multicast_list(struct net_device *ndev);
 
-#if 1
 #define QL_ALL_DUMP
 #define QL_REG_DUMP
 #define QL_DEV_DUMP
 #define QL_CB_DUMP
 /* #define QL_IB_DUMP */
 /* #define QL_OB_DUMP */
-#endif
 
 #ifdef QL_REG_DUMP
 extern void ql_dump_xgmac_control_regs(struct ql_adapter *qdev);

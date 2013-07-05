@@ -206,7 +206,6 @@ static void group_adjust_blocks(struct super_block *sb, int group_no,
  * windows(start, end). Otherwise, it will only print out the "bad" windows,
  * those windows that overlap with their immediate neighbors.
  */
-#if 1
 static void __rsv_window_dump(struct rb_root *root, int verbose,
 			      const char *fn)
 {
@@ -251,9 +250,6 @@ restart:
 }
 #define rsv_window_dump(root, verbose) \
 	__rsv_window_dump((root), (verbose), __func__)
-#else
-#define rsv_window_dump(root, verbose) do {} while (0)
-#endif
 
 /**
  * goal_in_my_reservation()
@@ -1553,4 +1549,3 @@ unsigned long ext2_bg_num_gdb(struct super_block *sb, int group)
 {
 	return ext2_bg_has_super(sb, group) ? EXT2_SB(sb)->s_gdb_count : 0;
 }
-

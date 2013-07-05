@@ -1360,5 +1360,3 @@ bfa_ioim_abort(struct bfa_ioim_s *ioim)
 	bfa_fcpim_stats(ioim->fcpim, io_aborts);
 	bfa_sm_send_event(ioim, BFA_IOIM_SM_ABORT);
 }
-
-

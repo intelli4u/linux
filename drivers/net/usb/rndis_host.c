@@ -60,7 +60,6 @@ void rndis_status(struct usbnet *dev, struct urb *urb)
 {
 	netdev_dbg(dev->net, "rndis status urb, len %d stat %d\n",
 		   urb->actual_length, urb->status);
-	// FIXME for keepalives, respond immediately (asynchronously)
 	// if not an RNDIS status, do like cdc_status(dev,urb) does
 }
 EXPORT_SYMBOL_GPL(rndis_status);
@@ -133,7 +132,6 @@ int rndis_command(struct usbnet *dev, struct rndis_msg_hdr *buf, int buflen)
 	if (unlikely(retval < 0 || xid == 0))
 		return retval;
 
-	// FIXME Seems like some devices discard responses when
 	// we time out and cancel our "get response" requests...
 	// so, this is fragile.  Probably need to poll for status.
 
@@ -565,7 +563,6 @@ fill:
 	hdr->data_offset = cpu_to_le32(sizeof(*hdr) - 8);
 	hdr->data_len = cpu_to_le32(len);
 
-	/* FIXME make the last packet always be short ... */
 	return skb;
 }
 EXPORT_SYMBOL_GPL(rndis_tx_fixup);

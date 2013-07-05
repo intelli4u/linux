@@ -276,15 +276,6 @@ static int w9966_i2c_setscl(struct w9966 *cam, int state)
 	return 0;
 }
 
-#if 0
-/* Get peripheral data line
-   Expects a claimed pdev. */
-static int w9966_i2c_getsda(struct w9966 *cam)
-{
-	const unsigned char state = w9966_read_reg(cam, 0x18);
-	return ((state & W9966_I2C_R_DATA) > 0);
-}
-#endif
 
 /* Write a byte with ack to the i2c bus.
    Expects a claimed pdev. -1 on error */
@@ -311,62 +302,9 @@ static int w9966_i2c_wbyte(struct w9966 *cam, int data)
 
 /* Read a data byte with ack from the i2c-bus
    Expects a claimed pdev. -1 on error */
-#if 0
-static int w9966_i2c_rbyte(struct w9966 *cam)
-{
-	unsigned char data = 0x00;
-	int i;
-
-	w9966_i2c_setsda(cam, 1);
-
-	for (i = 0; i < 8; i++) {
-		if (w9966_i2c_setscl(cam, 1) == -1)
-			return -1;
-		data = data << 1;
-		if (w9966_i2c_getsda(cam))
-			data |= 0x01;
-
-		w9966_i2c_setscl(cam, 0);
-	}
-	return data;
-}
-#endif
 
 /* Read a register from the i2c device.
    Expects claimed pdev. -1 on error */
-#if 0
-static int w9966_read_reg_i2c(struct w9966 *cam, int reg)
-{
-	int data;
-
-	w9966_i2c_setsda(cam, 0);
-	w9966_i2c_setscl(cam, 0);
-
-	if (w9966_i2c_wbyte(cam, W9966_I2C_W_ID) == -1 ||
-	    w9966_i2c_wbyte(cam, reg) == -1)
-		return -1;
-
-	w9966_i2c_setsda(cam, 1);
-	if (w9966_i2c_setscl(cam, 1) == -1)
-		return -1;
-	w9966_i2c_setsda(cam, 0);
-	w9966_i2c_setscl(cam, 0);
-
-	if (w9966_i2c_wbyte(cam, W9966_I2C_R_ID) == -1)
-		return -1;
-	data = w9966_i2c_rbyte(cam);
-	if (data == -1)
-		return -1;
-
-	w9966_i2c_setsda(cam, 0);
-
-	if (w9966_i2c_setscl(cam, 1) == -1)
-		return -1;
-	w9966_i2c_setsda(cam, 1);
-
-	return data;
-}
-#endif
 
 /* Write a register to the i2c device.
    Expects claimed pdev. -1 on error */

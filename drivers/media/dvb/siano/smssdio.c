@@ -257,9 +257,6 @@ static int __devinit smssdio_probe(struct sdio_func *func,
 	if (params.device_type != SMS_STELLAR)
 		params.flags |= SMS_DEVICE_FAMILY2;
 	else {
-		/*
-		 * FIXME: Stellar needs special handling...
-		 */
 		ret = -ENODEV;
 		goto free;
 	}
@@ -314,7 +311,6 @@ static void smssdio_remove(struct sdio_func *func)
 
 	smsdev = sdio_get_drvdata(func);
 
-	/* FIXME: racy! */
 	if (smsdev->split_cb)
 		smscore_putbuffer(smsdev->coredev, smsdev->split_cb);
 

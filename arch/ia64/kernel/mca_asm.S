@@ -615,7 +615,6 @@ ia64_state_save:
 	;;
 	st8 [temp1]=temp3	// save ar.lc
 
-	// FIXME: Some proms are incorrectly accessing the minstate area as
 	// cached data.  The C code uses region 6, uncached virtual.  Ensure
 	// that there is no cache data lying around for the first 1K of the
 	// minstate area.

@@ -79,7 +79,6 @@ static int itd1000_read_reg(struct itd1000_state *state, u8 reg)
 		{ .addr = state->cfg->i2c_address, .flags = I2C_M_RD, .buf = &val, .len = 1 },
 	};
 
-	/* ugly flexcop workaround */
 	itd1000_write_regs(state, (reg - 1) & 0xff, &state->shadow[(reg - 1) & 0xff], 1);
 
 	if (i2c_transfer(state->i2c, msg, 2) != 2) {

@@ -258,7 +258,6 @@ static void scc_set_dmamode (struct ata_port *ap, struct ata_device *adev)
 
 unsigned long scc_mode_filter(struct ata_device *adev, unsigned long mask)
 {
-	/* errata A308 workaround: limit ATAPI UDMA mode to UDMA4 */
 	if (adev->class == ATA_DEV_ATAPI &&
 	    (mask & (0xE0 << ATA_SHIFT_UDMA))) {
 		printk(KERN_INFO "%s: limit ATAPI UDMA to UDMA4\n", DRV_NAME);
@@ -755,12 +754,10 @@ static u8 scc_bmdma_status (struct ata_port *ap)
 	if (!(in_be32(mmio + SCC_DMA_CMD) & ATA_DMA_START))
 		return host_stat;
 
-	/* errata A252,A308 workaround: Step4 */
 	if ((scc_check_altstatus(ap) & ATA_ERR)
 					&& (int_status & INTSTS_INTRQ))
 		return (host_stat | ATA_DMA_INTR);
 
-	/* errata A308 workaround Step5 */
 	if (int_status & INTSTS_IOIRQS) {
 		host_stat |= ATA_DMA_INTR;
 

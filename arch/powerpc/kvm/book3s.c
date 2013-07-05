@@ -310,9 +310,6 @@ int kvmppc_book3s_irqprio_deliver(struct kvm_vcpu *vcpu, unsigned int priority)
 		break;
 	}
 
-#if 0
-	printk(KERN_INFO "Deliver interrupt 0x%x? %x\n", vec, deliver);
-#endif
 
 	if (deliver)
 		kvmppc_inject_interrupt(vcpu, vec, flags);
@@ -800,7 +797,7 @@ int kvmppc_handle_exit(struct kvm_run *run, struct kvm_vcpu *vcpu,
 	printk(KERN_EMERG "exit_nr=0x%x | pc=0x%lx | dar=0x%lx | dec=0x%x | msr=0x%lx\n",
 		exit_nr, kvmppc_get_pc(vcpu), kvmppc_get_fault_dar(vcpu),
 		kvmppc_get_dec(vcpu), to_svcpu(vcpu)->shadow_srr1);
-#elif defined (EXIT_DEBUG_SIMPLE)
+#elif defined(EXIT_DEBUG_SIMPLE)
 	if ((exit_nr != 0x900) && (exit_nr != 0x500))
 		printk(KERN_EMERG "exit_nr=0x%x | pc=0x%lx | dar=0x%lx | msr=0x%lx\n",
 			exit_nr, kvmppc_get_pc(vcpu), kvmppc_get_fault_dar(vcpu),
@@ -828,11 +825,6 @@ int kvmppc_handle_exit(struct kvm_run *run, struct kvm_vcpu *vcpu,
 			vcpu->stat.sp_instruc++;
 		} else if (vcpu->arch.mmu.is_dcbz32(vcpu) &&
 			  (!(vcpu->arch.hflags & BOOK3S_HFLAG_DCBZ32))) {
-			/*
-			 * XXX If we do the dcbz hack we use the NX bit to flush&patch the page,
-			 *     so we can't use the NX bit inside the guest. Let's cross our fingers,
-			 *     that no guest that needs the dcbz hack does NX.
-			 */
 			kvmppc_mmu_pte_flush(vcpu, kvmppc_get_pc(vcpu), ~0xFFFUL);
 			r = RESUME_GUEST;
 		} else {
@@ -941,7 +933,6 @@ program_interrupt:
 		break;
 	}
 	case BOOK3S_INTERRUPT_SYSCALL:
-		// XXX make user settable
 		if (vcpu->arch.osi_enabled &&
 		    (((u32)kvmppc_get_gpr(vcpu, 3)) == OSI_SC_MAGIC_R3) &&
 		    (((u32)kvmppc_get_gpr(vcpu, 4)) == OSI_SC_MAGIC_R4)) {
@@ -1342,7 +1333,6 @@ int __kvmppc_vcpu_run(struct kvm_run *kvm_run, struct kvm_vcpu *vcpu)
 	/* Remember the MSR with disabled extensions */
 	ext_msr = current->thread.regs->msr;
 
-	/* XXX we get called with irq disabled - change that! */
 	local_irq_enable();
 
 	/* Preload FPU if it's enabled */

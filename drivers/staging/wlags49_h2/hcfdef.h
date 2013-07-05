@@ -85,40 +85,6 @@
 
 /*************************************************************************************************/
 
-#if 0 //
-#define BIT0  0x0001
-#define BIT1  0x0002
-#define BIT2  0x0004
-#define BIT3  0x0008
-#define BIT4  0x0010
-#define BIT5  0x0020
-#define BIT6  0x0040
-#define BIT7  0x0080
-#define BIT8  0x0100
-#define BIT9  0x0200
-#define BIT10 0x0400
-#define BIT11 0x0800
-#define BIT12 0x1000
-#define BIT13 0x2000
-#define BIT14 0x4000
-#define BIT15 0x8000
-#define BIT16 0x00010000
-#define BIT17 0x00020000
-#define BIT18 0x00040000
-#define BIT19 0x00080000
-#define BIT20 0x00100000
-#define BIT21 0x00200000
-#define BIT22 0x00400000
-#define BIT23 0x00800000
-#define BIT24 0x01000000
-#define BIT25 0x02000000
-#define BIT26 0x04000000
-#define BIT27 0x08000000
-#define BIT28 0x10000000
-#define BIT29 0x20000000
-#define BIT30 0x40000000
-#define BIT31 0x80000000
-#endif // 0
 
 /************************************************************************************************/
 /********************************* GENERAL EQUATES **********************************************/
@@ -189,98 +155,7 @@
 #define BAP_1					HREG_DATA_1		//Used by HCF to access NIC RAM
 
 
-//************************* Hermes Receive/Transmit Frame Structures
-//HFS_STAT
-//see MMD.H for HFS_STAT_ERR
-#define 	HFS_STAT_MSG_TYPE	0xE000	//Hermes reported Message Type
-#define 	HFS_STAT_MIC_KEY_ID	0x1800	//MIC key used (if any)
-#define 	HFS_STAT_1042		0x2000	//RFC1042 Encoded
-#define 	HFS_STAT_TUNNEL		0x4000	//Bridge-Tunnel Encoded
-#define 	HFS_STAT_WMP_MSG	0x6000	//WaveLAN-II Management Protocol Frame
-#if (HCF_TYPE) & HCF_TYPE_WPA
-#define 	HFS_STAT_MIC		0x0010	//Frame contains MIC  //;? re-instate when F/W ready
-#endif
-
-//************************* Hermes Register Offsets and Command bits
-#define HREG_IO_RANGE			0x80		//I/O Range used by Hermes
-
-
-//************************* Command/Status
-#define HREG_CMD				0x00		//
-#define 	HCMD_CMD_CODE			0x3F
-#define HREG_PARAM_0			0x02		//
-#define HREG_PARAM_1			0x04		//
-#define HREG_PARAM_2			0x06		//
-#define HREG_STAT				0x08		//
-#define 	HREG_STAT_CMD_CODE		0x003F	//
-#define		HREG_STAT_DIAG_ERR		0x0100
-#define		HREG_STAT_INQUIRE_ERR	0x0500
-#define 	HREG_STAT_CMD_RESULT	0x7F00	//
-#define HREG_RESP_0				0x0A		//
-#define HREG_RESP_1				0x0C		//
-#define HREG_RESP_2				0x0E		//
-
-
-//************************* FID Management
-#define HREG_INFO_FID			0x10		//
-#define HREG_RX_FID				0x20		//
-#define HREG_ALLOC_FID  		0x22		//
-#define HREG_TX_COMPL_FID  		0x24		//
-
-
-//************************* BAP
-//20031030 HWi Inserted this again because the dongle code uses this (GPIF.C)
-//#define HREG_SELECT_0			0x18		//
-//#define HREG_OFFSET_0			0x1C		//
-//#define HREG_DATA_0			0x36		//
-
-//#define 	HREG_OFFSET_BUSY		0x8000	// use HCMD_BUSY
-#define 	HREG_OFFSET_ERR			0x4000	//
-//rsrvd #define 	HREG_OFFSET_DATA_OFFSET	0x0FFF	//
-
-#define HREG_SELECT_1			0x1A		//
-#define HREG_OFFSET_1			0x1E		//
-#define HREG_DATA_1				0x38		//
-
-
-//************************* Event
-#define HREG_EV_STAT			0x30		//
-#define HREG_INT_EN				0x32		//
-#define HREG_EV_ACK				0x34		//
-
-#define    HREG_EV_TICK				0x8000	//Auxiliary Timer Tick
-//#define  HREG_EV_RES				0x4000	//H-I only: H/W error (Wait Time-out)
-#define    HREG_EV_INFO_DROP		0x2000	//WMAC did not have sufficient RAM to build Unsollicited Frame
-#if (HCF_TYPE) & HCF_TYPE_HII5
-#define    HREG_EV_ACK_REG_READY	0x0000
-#else
-#define    HREG_EV_ACK_REG_READY	0x1000	//Workaround Kludge bit for H-II (not H-II.5)
-#endif // HCF_TYPE_HII5
-#if (HCF_SLEEP) & ( HCF_CDS | HCF_DDS )
-#define    HREG_EV_SLEEP_REQ		0x0800
-#else
-#define    HREG_EV_SLEEP_REQ		0x0000
-#endif // HCF_CDS / HCF_DDS
-#if HCF_DMA
-//#define    HREG_EV_LPESC			0x0400 // firmware sets this bit and clears it, not for host usage.
-#define    HREG_EV_RDMAD			0x0200 // rx frame in host memory
-#define    HREG_EV_TDMAD			0x0100 // tx frame in host memory processed
-//#define    HREG_EV_RXDMA			0x0040 // firmware kicks off DMA engine (bit is not for host usage)
-//#define    HREG_EV_TXDMA			0x0020 // firmware kicks off DMA engine (bit is not for host usage)
-#define    HREG_EV_FW_DMA			0x0460 // firmware / DMA engine I/F (bits are not for host usage)
-#else
-#define    HREG_EV_FW_DMA			0x0000
-#endif // HCF_DMA
-#define    HREG_EV_INFO				0x0080	// Asynchronous Information Frame
-#define    HREG_EV_CMD				0x0010	// Command completed, Status and Response available
-#define    HREG_EV_ALLOC			0x0008	// Asynchronous part of Allocation/Reclaim completed
-#define    HREG_EV_TX_EXC			0x0004	// Asynchronous Transmission unsuccessful completed
-#define    HREG_EV_TX				0x0002	// Asynchronous Transmission successful completed
-#define    HREG_EV_RX				0x0001	// Asynchronous Receive Frame
-
-#define    HREG_EV_TX_EXT 			( (HCF_EXT) & (HCF_EXT_INT_TX_EX | HCF_EXT_INT_TICK ) )
-									/* HREG_EV_TX_EXT := 0x0000 or HREG_EV_TX_EXC and/or HREG_EV_TICK
-									 * could be extended with HREG_EV_TX */
+/
 #if HCF_EXT_INT_TX_EX != HREG_EV_TX_EXC
 err: these values should match;
 #endif // HCF_EXT_INT_TX_EX / HREG_EV_TX_EXC
@@ -466,9 +341,9 @@ err: PRI_1 not supported for H-I;	// Compatibility for Primary Firmware - driver
 err: PRI_2 not supported for H-I;	// Compatibility for Primary Firmware - driver I/F
 #endif // HCF_CFG_PRI_2_TOP / HCF_CFG_PRI_2_BOTTOM
 
-#ifdef HCF_CFG_PRI_3_TOP									// Top Compatibility for Primary Firmware - driver I/F
-#if HCF_CFG_PRI_3_TOP == 0 || \
-	CFG_DRV_ACT_RANGES_PRI_3_BOTTOM <= HCF_CFG_PRI_3_TOP && HCF_CFG_PRI_3_TOP <= CFG_DRV_ACT_RANGES_PRI_3_TOP
+#ifdef HCF_CFG_PRI_3_TOP									    // Top Compatibility for Primary Firmware - driver I/F
+#if HCF_CFG_PRI_3_TOP == 0 || CFG_DRV_ACT_RANGES_PRI_3_BOTTOM <= HCF_CFG_PRI_3_TOP && \
+	HCF_CFG_PRI_3_TOP <= CFG_DRV_ACT_RANGES_PRI_3_TOP
 #undef CFG_DRV_ACT_RANGES_PRI_3_TOP
 #define CFG_DRV_ACT_RANGES_PRI_3_TOP	HCF_CFG_PRI_3_TOP
 #else
@@ -476,8 +351,9 @@ err: ;
 #endif
 #endif // HCF_CFG_PRI_3_TOP
 
-#ifdef HCF_CFG_PRI_3_BOTTOM                       			// Bottom Compatibility for Primary Firmware - driver I/F
-#if CFG_DRV_ACT_RANGES_PRI_3_BOTTOM <= HCF_CFG_PRI_3_BOTTOM && HCF_CFG_PRI_3_BOTTOM <= CFG_DRV_ACT_RANGES_PRI_3_TOP
+#ifdef HCF_CFG_PRI_3_BOTTOM                       			    // Bottom Compatibility for Primary Firmware - driver I/F
+#if CFG_DRV_ACT_RANGES_PRI_3_BOTTOM <= HCF_CFG_PRI_3_BOTTOM && HCF_CFG_PRI_3_BOTTOM <= \
+	CFG_DRV_ACT_RANGES_PRI_3_TOP
 #undef CFG_DRV_ACT_RANGES_PRI_3_BOTTOM
 #define CFG_DRV_ACT_RANGES_PRI_3_BOTTOM	HCF_CFG_PRI_3_BOTTOM
 #else
@@ -503,9 +379,9 @@ err: HSI_2 not supported for H-I;	// Compatibility for HSI I/F
 err: HSI_3 not supported for H-I;	// Compatibility for HSI I/F
 #endif // HCF_CFG_HSI_3_TOP / HCF_CFG_HSI_3_BOTTOM
 
-#ifdef HCF_CFG_HSI_4_TOP 									// Top Compatibility for HSI I/F
-#if HCF_CFG_HSI_4_TOP == 0 || \
-	CFG_DRV_ACT_RANGES_HSI_4_BOTTOM <= CF_CFG_HSI_4_TOP && HCF_CFG_HSI_4_TOP <= CFG_DRV_ACT_RANGES_HSI_4_TOP
+#ifdef HCF_CFG_HSI_4_TOP 									    // Top Compatibility for HSI I/F
+#if HCF_CFG_HSI_4_TOP == 0 || CFG_DRV_ACT_RANGES_HSI_4_BOTTOM <= CF_CFG_HSI_4_TOP && \
+	HCF_CFG_HSI_4_TOP <= CFG_DRV_ACT_RANGES_HSI_4_TOP
 #undef CFG_DRV_ACT_RANGES_HSI_4_TOP
 #define CFG_DRV_ACT_RANGES_HSI_4_TOP	HCF_CFG_HSI_4_TOP
 #else
@@ -513,8 +389,9 @@ err: ;
 #endif
 #endif // HCF_CFG_HSI_4_TOP
 
-#ifdef HCF_CFG_HSI_4_BOTTOM								// Bottom Compatibility for HSI I/F
-#if CFG_DRV_ACT_RANGES_HSI_4_BOTTOM <= HCF_CFG_HSI_4_BOTTOM && HCF_CFG_HSI_4_BOTTOM <= CFG_DRV_ACT_RANGES_HSI_4_TOP
+#ifdef HCF_CFG_HSI_4_BOTTOM								    // Bottom Compatibility for HSI I/F
+#if CFG_DRV_ACT_RANGES_HSI_4_BOTTOM <= HCF_CFG_HSI_4_BOTTOM && HCF_CFG_HSI_4_BOTTOM <= \
+	CFG_DRV_ACT_RANGES_HSI_4_TOP
 #undef CFG_DRV_ACT_RANGES_HSI_4_BOTTOM
 #define CFG_DRV_ACT_RANGES_HSI_4_BOTTOM	HCF_CFG_HSI_4_BOTTOM
 #else
@@ -522,9 +399,9 @@ err: ;
 #endif
 #endif // HCF_CFG_HSI_4_BOTTOM
 
-#ifdef HCF_CFG_HSI_5_TOP 									// Top Compatibility for HSI I/F
-#if HCF_CFG_HSI_5_TOP == 0 || \
-	CFG_DRV_ACT_RANGES_HSI_5_BOTTOM <= CF_CFG_HSI_5_TOP && HCF_CFG_HSI_5_TOP <= CFG_DRV_ACT_RANGES_HSI_5_TOP
+#ifdef HCF_CFG_HSI_5_TOP 									    // Top Compatibility for HSI I/F
+#if HCF_CFG_HSI_5_TOP == 0 || CFG_DRV_ACT_RANGES_HSI_5_BOTTOM <= CF_CFG_HSI_5_TOP && \
+	HCF_CFG_HSI_5_TOP <= CFG_DRV_ACT_RANGES_HSI_5_TOP
 #undef CFG_DRV_ACT_RANGES_HSI_5_TOP
 #define CFG_DRV_ACT_RANGES_HSI_5_TOP	HCF_CFG_HSI_5_TOP
 #else
@@ -532,8 +409,9 @@ err: ;
 #endif
 #endif // HCF_CFG_HSI_5_TOP
 
-#ifdef HCF_CFG_HSI_5_BOTTOM								// Bottom Compatibility for HSI I/F
-#if CFG_DRV_ACT_RANGES_HSI_5_BOTTOM <= HCF_CFG_HSI_5_BOTTOM && HCF_CFG_HSI_5_BOTTOM <= CFG_DRV_ACT_RANGES_HSI_5_TOP
+#ifdef HCF_CFG_HSI_5_BOTTOM								    // Bottom Compatibility for HSI I/F
+#if CFG_DRV_ACT_RANGES_HSI_5_BOTTOM <= HCF_CFG_HSI_5_BOTTOM && HCF_CFG_HSI_5_BOTTOM <= \
+	CFG_DRV_ACT_RANGES_HSI_5_TOP
 #undef CFG_DRV_ACT_RANGES_HSI_5_BOTTOM
 #define CFG_DRV_ACT_RANGES_HSI_5_BOTTOM	HCF_CFG_HSI_5_BOTTOM
 #else
@@ -545,9 +423,9 @@ err: ;
 err: APF_1 not supported for H-I;	// Compatibility for AP Firmware - driver I/F
 #endif // HCF_CFG_APF_1_TOP / HCF_CFG_APF_1_BOTTOM
 
-#ifdef HCF_CFG_APF_2_TOP                  					// Top Compatibility for AP Firmware - driver I/F
-#if HCF_CFG_APF_2_TOP == 0 || \
-	CFG_DRV_ACT_RANGES_APF_2_BOTTOM <= HCF_CFG_APF_2_TOP && HCF_CFG_APF_2_TOP <= CFG_DRV_ACT_RANGES_APF_2_TOP
+#ifdef HCF_CFG_APF_2_TOP                  					    // Top Compatibility for AP Firmware - driver I/F
+#if HCF_CFG_APF_2_TOP == 0 || CFG_DRV_ACT_RANGES_APF_2_BOTTOM <= HCF_CFG_APF_2_TOP && \
+	HCF_CFG_APF_2_TOP <= CFG_DRV_ACT_RANGES_APF_2_TOP
 #undef CFG_DRV_ACT_RANGES_APF_2_TOP
 #define CFG_DRV_ACT_RANGES_APF_2_TOP	HCF_CFG_APF_2_TOP
 #else
@@ -555,8 +433,9 @@ err: ;
 #endif
 #endif // HCF_CFG_APF_TOP
 
-#ifdef HCF_CFG_APF_2_BOTTOM                       			// Bottom Compatibility for AP Firmware - driver I/F
-#if CFG_DRV_ACT_RANGES_APF_2_BOTTOM <= HCF_CFG_APF_2_BOTTOM && HCF_CFG_APF_2_BOTTOM <= CFG_DRV_ACT_RANGES_APF_2_TOP
+#ifdef HCF_CFG_APF_2_BOTTOM                       			    // Bottom Compatibility for AP Firmware - driver I/F
+#if CFG_DRV_ACT_RANGES_APF_2_BOTTOM <= HCF_CFG_APF_2_BOTTOM && HCF_CFG_APF_2_BOTTOM <= \
+	CFG_DRV_ACT_RANGES_APF_2_TOP
 #undef CFG_DRV_ACT_RANGES_APF_2_BOTTOM
 #define CFG_DRV_ACT_RANGES_APF_2_BOTTOM	HCF_CFG_APF_2_BOTTOM
 #else
@@ -569,9 +448,9 @@ err: ;
 err: STA_1 not supported for H-I;	// Compatibility for Station Firmware - driver I/F
 #endif // HCF_CFG_STA_1_TOP / HCF_CFG_STA_1_BOTTOM
 
-#ifdef HCF_CFG_STA_2_TOP                  					// Top Compatibility for Station Firmware - driver I/F
-#if HCF_CFG_STA_2_TOP == 0 || \
-	CFG_DRV_ACT_RANGES_STA_2_BOTTOM <= HCF_CFG_STA_2_TOP && HCF_CFG_STA_2_TOP <= CFG_DRV_ACT_RANGES_STA_2_TOP
+#ifdef HCF_CFG_STA_2_TOP                  					    // Top Compatibility for Station Firmware - driver I/F
+#if HCF_CFG_STA_2_TOP == 0 || CFG_DRV_ACT_RANGES_STA_2_BOTTOM <= HCF_CFG_STA_2_TOP && \
+	HCF_CFG_STA_2_TOP <= CFG_DRV_ACT_RANGES_STA_2_TOP
 #undef CFG_DRV_ACT_RANGES_STA_2_TOP
 #define CFG_DRV_ACT_RANGES_STA_2_TOP	HCF_CFG_STA_2_TOP
 #else
@@ -579,8 +458,9 @@ err: ;
 #endif
 #endif // HCF_CFG_STA_TOP
 
-#ifdef HCF_CFG_STA_2_BOTTOM                       			// Bottom Compatibility for Station Firmware - driver I/F
-#if CFG_DRV_ACT_RANGES_STA_2_BOTTOM <= HCF_CFG_STA_2_BOTTOM && HCF_CFG_STA_2_BOTTOM <= CFG_DRV_ACT_RANGES_STA_2_TOP
+#ifdef HCF_CFG_STA_2_BOTTOM                       			    // Bottom Compatibility for Station Firmware - driver I/F
+#if CFG_DRV_ACT_RANGES_STA_2_BOTTOM <= HCF_CFG_STA_2_BOTTOM && HCF_CFG_STA_2_BOTTOM <= \
+	CFG_DRV_ACT_RANGES_STA_2_TOP
 #undef CFG_DRV_ACT_RANGES_STA_2_BOTTOM
 #define CFG_DRV_ACT_RANGES_STA_2_BOTTOM	HCF_CFG_STA_2_BOTTOM
 #else
@@ -651,7 +531,7 @@ err: MSF should no longer supply this macro;
 #define IF_NOT_SSN(x) x
 #endif // HCF_TYPE_WPA
 
-#if HCF_TALLIES & HCF_TALLIES_HCF		//HCF tally support
+#if HCF_TALLIES & HCF_TALLIES_HCF		    //HCF tally support
 #define IF_TALLY(x)  x
 #else
 #define IF_TALLY(x)
@@ -704,20 +584,6 @@ err: you used an invalid bitmask;
 // #define HCF_EX_INT 0x000
 #endif // HCF_EX_INT
 
-#if 0 //get compiler going
-#if HCF_EX_INT_TICK	!= HREG_EV_TICK
-;? out dated checking
-err: someone redefined these macros while the implemenation assumes they are equal;
-#endif
-#if HCF_EX_INT_TX_OK != HFS_TX_CNTL_TX_OK || HFS_TX_CNTL_TX_OK != HREG_EV_TX_OK
-;? out dated checking
-err: someone redefined these macros while the implemenation assumes they are equal;
-#endif
-#if HCF_EX_INT_TX_EX != HFS_TX_CNTL_TX_EX || HFS_TX_CNTL_TX_EX != HREG_EV_TX_EX
-;? out dated checking
-err: someone redefined these macros while the implemenation assumes they are equal;
-#endif
-#endif // 0 get compiler going
 
 
 /* The assert in HCFLOGENTRY checks against re-entrancy. Re-entrancy could be caused by MSF logic at
@@ -801,9 +667,8 @@ extern IFBP BASED assert_ifbp;			//to make asserts easily work under MMD and DHF
 EXTERN_C void		 mdd_assert			(IFBP ifbp, unsigned int line_number, hcf_32 q );
 #endif //HCF_ASSERT
 
-#if ! ( (HCF_IO) & HCF_IO_32BITS )				// defined 16 bits only
+#if ! ( (HCF_IO) & HCF_IO_32BITS )				    // defined 16 bits only
 #undef OUT_PORT_STRING_32
 #undef IN_PORT_STRING_32
 #endif // HCF_IO
 #endif	//HCFDEFC_H
-

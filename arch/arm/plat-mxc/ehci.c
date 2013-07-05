@@ -327,4 +327,3 @@ error:
 	return -EINVAL;
 }
 EXPORT_SYMBOL(mxc_initialize_usb_hw);
-

@@ -153,7 +153,6 @@ struct octeon_cop2_state {
 	unsigned long   cop2_3des_key[3];
 	/* DMFC2 rt, 0x0088 (Set with DMTC2 rt, 0x0098) */
 	unsigned long   cop2_3des_result;
-	/* DMFC2 rt, 0x0111 (FIXME: Read Pass1 Errata) */
 	unsigned long   cop2_aes_inp0;
 	/* DMFC2 rt, 0x0102; DMFC2 rt, 0x0103 */
 	unsigned long   cop2_aes_iv[2];

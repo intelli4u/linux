@@ -88,10 +88,6 @@ _GLOBAL(hash_page)
 #ifdef CONFIG_SMP
 	beq-	hash_page_out		/* return if no mapping */
 #else
-	/* XXX it seems like the 601 will give a machine fault on the
-	   rfi if its alignment is wrong (bottom 4 bits of address are
-	   8 or 0xc) and we have had a not-taken conditional branch
-	   to the address following the rfi. */
 	beqlr-
 #endif
 #ifndef CONFIG_PTE_64BIT

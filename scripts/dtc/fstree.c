@@ -90,4 +90,3 @@ struct boot_info *dt_from_fs(const char *dirname)
 
 	return build_boot_info(NULL, tree, 0);
 }
-

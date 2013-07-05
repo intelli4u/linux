@@ -44,19 +44,6 @@ static const char ID_sccs[] = "@(#)drvfbi.c	1.63 99/02/11 (C) SK " ;
  * valid configuration values are:
  */
 
-/*
- *	xPOS_ID:xxxx
- *	|	\  /
- *	|	 \/
- *	|	  --------------------- the patched POS_ID of the Adapter
- *	|				xxxx = (Vendor ID low byte,
- *	|					Vendor ID high byte,
- *	|					Device ID low byte,
- *	|					Device ID high byte)
- *	+------------------------------ the patched oem_id must be
- *					'S' for SK or 'I' for IBM
- *					this is a short id for the driver.
- */
 #ifndef MULT_OEM
 #ifndef	OEM_CONCEPT
 const u_char oem_id[] = "xPOS_ID:xxxx" ;
@@ -581,4 +568,3 @@ void mac_do_pci_fix(struct s_smc *smc)
 	SK_UNUSED(smc) ;
 }
 #endif	/* PCI */
-

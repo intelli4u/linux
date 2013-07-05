@@ -204,4 +204,3 @@ void dlm_astd_resume(void)
 {
 	mutex_unlock(&astd_running);
 }
-

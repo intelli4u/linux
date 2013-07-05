@@ -155,4 +155,3 @@ struct bfa_ioc_aen_data_s {
 };
 
 #endif /* __BFA_DEFS_IOC_H__ */
-

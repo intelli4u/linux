@@ -612,20 +612,6 @@ static void pmic_battery_handle_intrpt(struct work_struct *work)
 
 	/* setup battery charging */
 
-#if 0
-	/* check usb otg power capability and set charger accordingly */
-	retval = langwell_udc_maxpower(&power);
-	if (retval) {
-		dev_warn(pbi->dev,
-		    "%s(): usb otg power query failed with error code %d\n",
-			__func__, retval);
-		return;
-	}
-
-	if (power >= 500)
-		chrg = BATT_USBOTG_500MA_CHARGE;
-	else
-#endif
 		chrg = BATT_USBOTG_TRICKLE_CHARGE;
 
 	/* enable battery charging */

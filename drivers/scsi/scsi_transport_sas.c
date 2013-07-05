@@ -939,7 +939,6 @@ struct sas_port *sas_port_alloc_num(struct device *parent)
 	struct Scsi_Host *shost = dev_to_shost(parent);
 	struct sas_host_attrs *sas_host = to_sas_host_attrs(shost);
 
-	/* FIXME: use idr for this eventually */
 	mutex_lock(&sas_host->lock);
 	if (scsi_is_sas_expander_device(parent)) {
 		struct sas_rphy *rphy = dev_to_rphy(parent);

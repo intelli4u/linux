@@ -364,7 +364,6 @@ get_pteptr(struct mm_struct *mm, unsigned long addr, pte_t **ptep, pmd_t **pmdp)
 					*ptep = pte;
 					if (pmdp)
 						*pmdp = pmd;
-					/* XXX caller needs to do pte_unmap, yuck */
 				}
 			}
 		}

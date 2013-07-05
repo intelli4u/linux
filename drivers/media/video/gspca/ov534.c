@@ -341,7 +341,6 @@ static const u8 bridge_init[][2] = {
 static const u8 sensor_init[][2] = {
 	{ 0x12, 0x80 },
 	{ 0x11, 0x01 },
-/*fixme: better have a delay?*/
 	{ 0x11, 0x01 },
 	{ 0x11, 0x01 },
 	{ 0x11, 0x01 },

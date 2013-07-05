@@ -312,12 +312,6 @@ int prom_retain(const char *name, unsigned long size,
 	return 0;
 }
 
-/* Get "Unumber" string for the SIMM at the given
- * memory address.  Usually this will be of the form
- * "Uxxxx" where xxxx is a decimal number which is
- * etched into the motherboard next to the SIMM slot
- * in question.
- */
 int prom_getunumber(int syndrome_code,
 		    unsigned long phys_addr,
 		    char *buf, int buflen)

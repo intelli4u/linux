@@ -31,13 +31,6 @@
 #include "generic.h"
 #include "devices.h"
 
-/*
- * n/a: 2, 5, 6, 7, 8, 23, 24, 25, 26, 27, 87, 88, 89,
- * nu: 58 -- 77, 90, 91, 93, 102, 105-108, 114-116,
- * XXX: 21,
- * XXX: 79 CS_3 for LAN9215 or PSKTSEL on R2, R3
- * XXX: 33 CS_5 for LAN9215 on R1
- */
 
 static unsigned long csb726_pin_config[] = {
 	GPIO78_nCS_2, /* EXP_CS */
@@ -128,7 +121,6 @@ static unsigned long csb726_pin_config[] = {
 static struct pxamci_platform_data csb726_mci = {
 	.detect_delay_ms	= 500,
 	.ocr_mask		= MMC_VDD_32_33|MMC_VDD_33_34,
-	/* FIXME setpower */
 	.gpio_card_detect	= CSB726_GPIO_MMC_DETECT,
 	.gpio_card_ro		= CSB726_GPIO_MMC_RO,
 	.gpio_power		= -1,

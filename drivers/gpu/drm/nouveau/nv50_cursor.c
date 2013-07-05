@@ -154,4 +154,3 @@ nv50_cursor_fini(struct nouveau_crtc *nv_crtc)
 			 nv_rd32(dev, NV50_PDISPLAY_CURSOR_CURSOR_CTRL2(idx)));
 	}
 }
-

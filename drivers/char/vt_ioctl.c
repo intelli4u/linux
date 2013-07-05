@@ -570,12 +570,6 @@ int vt_ioctl(struct tty_struct *tty, struct file * file,
 		ucval = KB_101;
 		goto setchar;
 
-		/*
-		 * These cannot be implemented on any machine that implements
-		 * ioperm() in user level (such as Alpha PCs) or not at all.
-		 *
-		 * XXX: you should never use these, just call ioperm directly..
-		 */
 #ifdef CONFIG_X86
 	case KDADDIO:
 	case KDDELIO:
@@ -619,14 +613,6 @@ int vt_ioctl(struct tty_struct *tty, struct file * file,
 	}
 
 	case KDSETMODE:
-		/*
-		 * currently, setting the mode from KD_TEXT to KD_GRAPHICS
-		 * doesn't do a whole lot. i'm not sure if it should do any
-		 * restoration of modes or what...
-		 *
-		 * XXX It should at least call into the driver, fbdev's definitely
-		 * need to restore their engine state. --BenH
-		 */
 		if (!perm)
 			goto eperm;
 		switch (arg) {
@@ -1151,7 +1137,6 @@ int vt_ioctl(struct tty_struct *tty, struct file * file,
 			ret = -EFAULT;
 			break;
 		}
-		/* FIXME: Should check the copies properly */
 		__get_user(ll, &vtconsize->v_rows);
 		__get_user(cc, &vtconsize->v_cols);
 		__get_user(vlin, &vtconsize->v_vlin);

@@ -67,7 +67,6 @@ struct lgdt3305_state {
 
 /* ------------------------------------------------------------------------ */
 
-/* FIXME: verify & document the LGDT3304 registers */
 
 #define LGDT3305_GEN_CTRL_1                   0x0000
 #define LGDT3305_GEN_CTRL_2                   0x0001
@@ -362,8 +361,6 @@ static int lgdt3305_rfagc_loop(struct lgdt3305_state *state,
 	case QAM_256:
 		agcdelay = 0x046b;
 		rfbw     = 0x8889;
-		/* FIXME: investigate optimal ifbw & rfbw values for the
-		 *        DT3304 and re-write this switch..case block */
 		if (state->cfg->demod_chip == LGDT3304)
 			ifbw = 0x6666;
 		else /* (state->cfg->demod_chip == LGDT3305) */

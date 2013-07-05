@@ -1126,8 +1126,6 @@ static int dlm_send_mig_lockres_msg(struct dlm_ctxt *dlm,
 	ret = o2net_send_message(DLM_MIG_LOCKRES_MSG, dlm->key, mres,
 				 sz, send_to, &status);
 	if (ret < 0) {
-		/* XXX: negative status is not handled.
-		 * this will end up killing this node. */
 		mlog(ML_ERROR, "Error %d when sending message %u (key "
 		     "0x%x) to node %u\n", ret, DLM_MIG_LOCKRES_MSG,
 		     dlm->key, send_to);
@@ -1644,7 +1642,6 @@ int dlm_do_master_requery(struct dlm_ctxt *dlm, struct dlm_lock_resource *res,
 
 	ret = o2net_send_message(DLM_MASTER_REQUERY_MSG, dlm->key,
 				 &req, sizeof(req), nodenum, &status);
-	/* XXX: negative status not handled properly here. */
 	if (ret < 0)
 		mlog(ML_ERROR, "Error %d when sending message %u (key "
 		     "0x%x) to node %u\n", ret, DLM_MASTER_REQUERY_MSG,

@@ -99,7 +99,7 @@ typedef struct card_s {
 	u8 __iomem *rambase;	/* buffer memory base (virtual) */
 	u8 __iomem *scabase;	/* SCA memory base (virtual) */
 	plx9050 __iomem *plxbase; /* PLX registers memory base (virtual) */
-	u32 init_ctrl_value;	/* Saved value - 9050 bug workaround */
+	u32 init_ctrl_value;
 	u16 rx_ring_buffers;	/* number of buffers in a ring */
 	u16 tx_ring_buffers;
 	u16 buff_offset;	/* offset of first buffer of first channel */
@@ -349,7 +349,6 @@ static int __devinit pc300_pci_init_one(struct pci_dev *pdev,
 		pc300_pci_remove_one(pdev);
 	}
 
-	/* PLX PCI 9050 workaround for local configuration register read bug */
 	pci_write_config_dword(pdev, PCI_BASE_ADDRESS_0, scaphys);
 	card->init_ctrl_value = readl(&((plx9050 __iomem *)card->scabase)->init_ctrl);
 	pci_write_config_dword(pdev, PCI_BASE_ADDRESS_0, plxphys);

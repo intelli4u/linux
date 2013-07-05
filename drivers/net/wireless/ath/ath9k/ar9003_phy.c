@@ -460,13 +460,6 @@ static void ar9003_hw_init_bb(struct ath_hw *ah,
 	/* Activate the PHY (includes baseband activate + synthesizer on) */
 	REG_WRITE(ah, AR_PHY_ACTIVE, AR_PHY_ACTIVE_EN);
 
-	/*
-	 * There is an issue if the AP starts the calibration before
-	 * the base band timeout completes.  This could result in the
-	 * rx_clear false triggering.  As a workaround we add delay an
-	 * extra BASE_ACTIVATE_DELAY usecs to ensure this condition
-	 * does not happen.
-	 */
 	udelay(synthDelay + BASE_ACTIVATE_DELAY);
 }
 

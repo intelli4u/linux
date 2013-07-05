@@ -577,4 +577,3 @@ static void __exit mpc52xx_spi_exit(void)
 	of_unregister_platform_driver(&mpc52xx_spi_of_driver);
 }
 module_exit(mpc52xx_spi_exit);
-

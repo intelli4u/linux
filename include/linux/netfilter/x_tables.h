@@ -383,7 +383,6 @@ struct xt_table {
 struct xt_table_info {
 	/* Size per table */
 	unsigned int size;
-	/* Number of entries: FIXME. --RR */
 	unsigned int number;
 	/* Initial number of entries. Needed for module usage count */
 	unsigned int initial_entries;
@@ -580,9 +579,6 @@ struct compat_xt_entry_target {
 	unsigned char data[0];
 };
 
-/* FIXME: this works only on 32 bit tasks
- * need to change whole approach in order to calculate align as function of
- * current task alignment */
 
 struct compat_xt_counters {
 	compat_u64 pcnt, bcnt;			/* Packet and byte counters */

@@ -1822,11 +1822,6 @@ retry:
 	if (ret)
 		return ret;
 
-	/*
-	 * Potential ABBA deadlock, work around it by ordering lock
-	 * grabbing by pipe info address. Otherwise two different processes
-	 * could deadlock (one doing tee from A -> B, the other from B -> A).
-	 */
 	pipe_double_lock(ipipe, opipe);
 
 	do {
@@ -1929,11 +1924,6 @@ static int link_pipe(struct pipe_inode_info *ipipe,
 	struct pipe_buffer *ibuf, *obuf;
 	int ret = 0, i = 0, nbuf;
 
-	/*
-	 * Potential ABBA deadlock, work around it by ordering lock
-	 * grabbing by pipe info address. Otherwise two different processes
-	 * could deadlock (one doing tee from A -> B, the other from B -> A).
-	 */
 	pipe_double_lock(ipipe, opipe);
 
 	do {

@@ -364,18 +364,6 @@ static void i82975x_init_csrows(struct mem_ctl_info *mci,
 
 	last_cumul_size = 0;
 
-	/*
-	 * 82875 comment:
-	 * The dram row boundary (DRB) reg values are boundary address
-	 * for each DRAM row with a granularity of 32 or 64MB (single/dual
-	 * channel operation).  DRB regs are cumulative; therefore DRB7 will
-	 * contain the total memory contained in all eight rows.
-	 *
-	 * FIXME:
-	 *  EDAC currently works for Dual-channel Interleaved configuration.
-	 *  Other configurations, which the chip supports, need fixing/testing.
-	 *
-	 */
 
 	for (index = 0; index < mci->nr_csrows; index++) {
 		csrow = &mci->csrows[index];

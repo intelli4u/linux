@@ -291,7 +291,6 @@ static inline unsigned short *screenpos(struct vc_data *vc, int offset, int view
 /* Called  from the keyboard irq path.. */
 static inline void scrolldelta(int lines)
 {
-	/* FIXME */
 	/* scrolldelta needs some kind of consistency lock, but the BKL was
 	   and still is not protecting versus the scheduled back end */
 	scrollback_delta += lines;
@@ -1421,11 +1420,6 @@ static void set_mode(struct vc_data *vc, int on_off)
 				break;
 			case 3:	/* 80/132 mode switch unimplemented */
 				vc->vc_deccolm = on_off;
-#if 0
-				vc_resize(deccolm ? 132 : 80, vc->vc_rows);
-				/* this alone does not suffice; some user mode
-				   utility has to change the hardware regs */
-#endif
 				break;
 			case 5:			/* Inverted screen on/off */
 				if (vc->vc_decscnm != on_off) {

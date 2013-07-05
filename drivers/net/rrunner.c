@@ -338,35 +338,6 @@ static int rr_reset(struct net_device *dev)
 	writel(SWAP_DATA | PTR32BIT | PTR_WD_NOSWAP, &regs->Mode);
 #endif
 
-#if 0
-	/*
-	 * Don't worry, this is just black magic.
-	 */
-	writel(0xdf000, &regs->RxBase);
-	writel(0xdf000, &regs->RxPrd);
-	writel(0xdf000, &regs->RxCon);
-	writel(0xce000, &regs->TxBase);
-	writel(0xce000, &regs->TxPrd);
-	writel(0xce000, &regs->TxCon);
-	writel(0, &regs->RxIndPro);
-	writel(0, &regs->RxIndCon);
-	writel(0, &regs->RxIndRef);
-	writel(0, &regs->TxIndPro);
-	writel(0, &regs->TxIndCon);
-	writel(0, &regs->TxIndRef);
-	writel(0xcc000, &regs->pad10[0]);
-	writel(0, &regs->DrCmndPro);
-	writel(0, &regs->DrCmndCon);
-	writel(0, &regs->DwCmndPro);
-	writel(0, &regs->DwCmndCon);
-	writel(0, &regs->DwCmndRef);
-	writel(0, &regs->DrDataPro);
-	writel(0, &regs->DrDataCon);
-	writel(0, &regs->DrDataRef);
-	writel(0, &regs->DwDataPro);
-	writel(0, &regs->DwDataCon);
-	writel(0, &regs->DwDataRef);
-#endif
 
 	writel(0xffffffff, &regs->MbEvent);
 	writel(0, &regs->Event);

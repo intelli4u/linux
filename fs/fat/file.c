@@ -390,12 +390,6 @@ int fat_setattr(struct dentry *dentry, struct iattr *attr)
 		goto out;
 	}
 
-	/*
-	 * Expand the file. Since inode_setattr() updates ->i_size
-	 * before calling the ->truncate(), but FAT needs to fill the
-	 * hole before it. XXX: this is no longer true with new truncate
-	 * sequence.
-	 */
 	if (attr->ia_valid & ATTR_SIZE) {
 		if (attr->ia_size > inode->i_size) {
 			error = fat_cont_expand(inode, attr->ia_size);

@@ -1078,10 +1078,6 @@ static void svm_get_segment(struct kvm_vcpu *vcpu,
 		var->g = s->limit > 0xfffff;
 		break;
 	case VCPU_SREG_TR:
-		/*
-		 * Work around a bug where the busy flag in the tr selector
-		 * isn't exposed
-		 */
 		var->type |= 0x2;
 		break;
 	case VCPU_SREG_DS:
@@ -2932,7 +2928,6 @@ static void pre_svm_run(struct vcpu_svm *svm)
 	struct svm_cpu_data *sd = per_cpu(svm_data, cpu);
 
 	svm->vmcb->control.tlb_ctl = TLB_CONTROL_DO_NOTHING;
-	/* FIXME: handle wraparound of asid_generation */
 	if (svm->asid_generation != sd->asid_generation)
 		new_asid(svm, sd);
 }

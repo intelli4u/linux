@@ -986,7 +986,6 @@ int w_e_end_ov_req(struct drbd_conf *mdev, struct drbd_work *w, int cancel)
 		goto out;
 
 	digest_size = crypto_hash_digestsize(mdev->verify_tfm);
-	/* FIXME if this allocation fails, online verify will not terminate! */
 	digest = kmalloc(digest_size, GFP_NOIO);
 	if (digest) {
 		drbd_csum_ee(mdev, mdev->verify_tfm, e, digest);

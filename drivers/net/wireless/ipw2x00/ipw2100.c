@@ -5044,46 +5044,6 @@ static int ipw2100_set_rts_threshold(struct ipw2100_priv *priv, u32 threshold)
 	return 0;
 }
 
-#if 0
-int ipw2100_set_fragmentation_threshold(struct ipw2100_priv *priv,
-					u32 threshold, int batch_mode)
-{
-	struct host_command cmd = {
-		.host_command = FRAG_THRESHOLD,
-		.host_command_sequence = 0,
-		.host_command_length = 4,
-		.host_command_parameters[0] = 0,
-	};
-	int err;
-
-	if (!batch_mode) {
-		err = ipw2100_disable_adapter(priv);
-		if (err)
-			return err;
-	}
-
-	if (threshold == 0)
-		threshold = DEFAULT_FRAG_THRESHOLD;
-	else {
-		threshold = max(threshold, MIN_FRAG_THRESHOLD);
-		threshold = min(threshold, MAX_FRAG_THRESHOLD);
-	}
-
-	cmd.host_command_parameters[0] = threshold;
-
-	IPW_DEBUG_HC("FRAG_THRESHOLD: %u\n", threshold);
-
-	err = ipw2100_hw_send_command(priv, &cmd);
-
-	if (!batch_mode)
-		ipw2100_enable_adapter(priv);
-
-	if (!err)
-		priv->frag_threshold = threshold;
-
-	return err;
-}
-#endif
 
 static int ipw2100_set_short_retry(struct ipw2100_priv *priv, u32 retry)
 {
@@ -5428,21 +5388,6 @@ struct ipw2100_wep_key {
 #define WEP_STR_64(x) x[0],x[1],x[2],x[3],x[4]
 #define WEP_STR_128(x) x[0],x[1],x[2],x[3],x[4],x[5],x[6],x[7],x[8],x[9],x[10]
 
-/**
- * Set a the wep key
- *
- * @priv: struct to work on
- * @idx: index of the key we want to set
- * @key: ptr to the key data to set
- * @len: length of the buffer at @key
- * @batch_mode: FIXME perform the operation in batch mode, not
- *              disabling the device.
- *
- * @returns 0 if OK, < 0 errno code on error.
- *
- * Fill out a command structure with the new wep key, length an
- * index and send it down the wire.
- */
 static int ipw2100_set_key(struct ipw2100_priv *priv,
 			   int idx, char *key, int len, int batch_mode)
 {
@@ -5486,7 +5431,6 @@ static int ipw2100_set_key(struct ipw2100_priv *priv,
 
 	if (!batch_mode) {
 		err = ipw2100_disable_adapter(priv);
-		/* FIXME: IPG: shouldn't this prink be in _disable_adapter()? */
 		if (err) {
 			printk(KERN_ERR DRV_NAME
 			       ": %s: Could not disable adapter %d\n",
@@ -5703,11 +5647,6 @@ static void shim__set_security(struct net_device *dev,
 		      priv->ieee->sec.flags & (1 << 1) ? '1' : '0',
 		      priv->ieee->sec.flags & (1 << 0) ? '1' : '0');
 
-/* As a temporary work around to enable WPA until we figure out why
- * wpa_supplicant toggles the security capability of the driver, which
- * forces a disassocation with force_update...
- *
- *	if (force_update || !(priv->status & STATUS_ASSOCIATED))*/
 	if (!(priv->status & (STATUS_ASSOCIATED | STATUS_ASSOCIATING)))
 		ipw2100_configure_security(priv, 0);
       done:
@@ -6679,7 +6618,6 @@ out:
  */
 static void __exit ipw2100_exit(void)
 {
-	/* FIXME: IPG: check that we have no instances of the devices open */
 #ifdef CONFIG_IPW2100_DEBUG
 	driver_remove_file(&ipw2100_pci_driver.driver,
 			   &driver_attr_debug_level);
@@ -8358,7 +8296,6 @@ static struct iw_statistics *ipw2100_wx_wireless_stats(struct net_device *dev)
 	wstats->qual.updated = 7;
 	wstats->qual.updated |= IW_QUAL_NOISE_INVALID;
 
-	/* FIXME: this is percent and not a # */
 	wstats->miss.beacon = missed_beacons;
 
 	if (ipw2100_get_ordinal(priv, IPW_ORD_STAT_TX_FAILURES,

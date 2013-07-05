@@ -1,4 +1,4 @@
-/* $Id: isdn_ppp.c,v 1.1.2.3 2004/02/10 01:07:13 keil Exp $
+/* $Id: isdn_ppp.c,v 1.1.2.3 2004/02/10 01:07:13 Exp $
  *
  * Linux ISDN subsystem, functions for synchronous PPP (linklevel).
  *
@@ -1037,7 +1037,7 @@ isdn_ppp_push_higher(isdn_net_dev * net_dev, isdn_net_local * lp, struct sk_buff
 	}
 	is = ippp_table[slot];
  	
- 	if (lp->master) { // FIXME?
+ 	if (lp->master) {
 		mlp = ISDN_MASTER_PRIV(lp);
  		slot = mlp->ppp_slot;
  		if (slot < 0 || slot >= ISDN_MAX_CHANNELS) {

@@ -1299,7 +1299,6 @@ static int sil24_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 		return rc;
 	iomap = pcim_iomap_table(pdev);
 
-	/* apply workaround for completion IRQ loss on PCI-X errata */
 	if (pi.flags & SIL24_FLAG_PCIX_IRQ_WOC) {
 		tmp = readl(iomap[SIL24_HOST_BAR] + HOST_CTRL);
 		if (tmp & (HOST_CTRL_TRDY | HOST_CTRL_STOP | HOST_CTRL_DEVSEL))

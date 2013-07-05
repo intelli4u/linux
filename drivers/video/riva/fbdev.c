@@ -515,7 +515,7 @@ static void rivafb_load_cursor_image(struct riva_par *par, u8 *data8,
 		
 		for (j = 0; j < w/2; j++) {
 			tmp = 0;
-#if defined (__BIG_ENDIAN)
+#if defined(__BIG_ENDIAN)
 			tmp = (b & (1 << 31)) ? fg << 16 : bg << 16;
 			b <<= 1;
 			tmp |= (b & (1 << 31)) ? fg : bg;

@@ -3700,12 +3700,6 @@ void * __init __alloc_memory_core_early(int nid, u64 size, u64 align,
 		if (addr == -1ULL)
 			continue;
 
-#if 0
-		printk(KERN_DEBUG "alloc (nid=%d %llx - %llx) (%llx - %llx) %llx %llx => %llx\n",
-				nid,
-				ei_start, ei_last, goal, limit, size,
-				align, addr);
-#endif
 
 		ptr = phys_to_virt(addr);
 		memset(ptr, 0, size);

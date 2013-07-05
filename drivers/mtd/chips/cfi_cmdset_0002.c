@@ -545,15 +545,6 @@ static struct mtd_info *cfi_amdstd_setup(struct mtd_info *mtd)
 		printk(KERN_WARNING "Sum of regions (%lx) != total size of set of interleaved chips (%lx)\n", offset, devsize);
 		goto setup_err;
 	}
-#if 0
-	// debug
-	for (i=0; i<mtd->numeraseregions;i++){
-		printk("%d: offset=0x%x,size=0x%x,blocks=%d\n",
-		       i,mtd->eraseregions[i].offset,
-		       mtd->eraseregions[i].erasesize,
-		       mtd->eraseregions[i].numblocks);
-	}
-#endif
 
 	__module_get(THIS_MODULE);
 	register_reboot_notifier(&mtd->reboot_notifier);
@@ -1025,9 +1016,6 @@ static inline int do_read_secsi_onechip(struct map_info *map, struct flchip *chi
 	mutex_lock(&chip->mutex);
 
 	if (chip->state != FL_READY){
-#if 0
-		printk(KERN_DEBUG "Waiting for chip to read, status = %d\n", chip->state);
-#endif
 		set_current_state(TASK_UNINTERRUPTIBLE);
 		add_wait_queue(&chip->wq, &wait);
 
@@ -1035,10 +1023,6 @@ static inline int do_read_secsi_onechip(struct map_info *map, struct flchip *chi
 
 		schedule();
 		remove_wait_queue(&chip->wq, &wait);
-#if 0
-		if(signal_pending(current))
-			return -EINTR;
-#endif
 		timeo = jiffies + HZ;
 
 		goto retry;
@@ -1178,7 +1162,7 @@ static int __xipram do_write_oneword(struct map_info *map, struct flchip *chip, 
 			mutex_unlock(&chip->mutex);
 			schedule();
 			remove_wait_queue(&chip->wq, &wait);
-			timeo = jiffies + (HZ / 2); /* FIXME */
+			timeo = jiffies + (HZ / 2);
 			mutex_lock(&chip->mutex);
 			continue;
 		}
@@ -1200,7 +1184,6 @@ static int __xipram do_write_oneword(struct map_info *map, struct flchip *chip, 
 	if (!chip_good(map, adr, datum)) {
 		/* reset on all failures. */
 		map_write( map, CMD(0xF0), chip->start );
-		/* FIXME - should have reset delay before continuing */
 
 		if (++retry_cnt <= MAX_WORD_RETRIES)
 			goto retry;
@@ -1246,9 +1229,6 @@ static int cfi_amdstd_write_words(struct mtd_info *mtd, loff_t to, size_t len,
 		mutex_lock(&cfi->chips[chipnum].mutex);
 
 		if (cfi->chips[chipnum].state != FL_READY) {
-#if 0
-			printk(KERN_DEBUG "Waiting for chip to write, status = %d\n", cfi->chips[chipnum].state);
-#endif
 			set_current_state(TASK_UNINTERRUPTIBLE);
 			add_wait_queue(&cfi->chips[chipnum].wq, &wait);
 
@@ -1256,10 +1236,6 @@ static int cfi_amdstd_write_words(struct mtd_info *mtd, loff_t to, size_t len,
 
 			schedule();
 			remove_wait_queue(&cfi->chips[chipnum].wq, &wait);
-#if 0
-			if(signal_pending(current))
-				return -EINTR;
-#endif
 			goto retry;
 		}
 
@@ -1324,9 +1300,6 @@ static int cfi_amdstd_write_words(struct mtd_info *mtd, loff_t to, size_t len,
 		mutex_lock(&cfi->chips[chipnum].mutex);
 
 		if (cfi->chips[chipnum].state != FL_READY) {
-#if 0
-			printk(KERN_DEBUG "Waiting for chip to write, status = %d\n", cfi->chips[chipnum].state);
-#endif
 			set_current_state(TASK_UNINTERRUPTIBLE);
 			add_wait_queue(&cfi->chips[chipnum].wq, &wait);
 
@@ -1334,10 +1307,6 @@ static int cfi_amdstd_write_words(struct mtd_info *mtd, loff_t to, size_t len,
 
 			schedule();
 			remove_wait_queue(&cfi->chips[chipnum].wq, &wait);
-#if 0
-			if(signal_pending(current))
-				return -EINTR;
-#endif
 			goto retry1;
 		}
 
@@ -1359,9 +1328,6 @@ static int cfi_amdstd_write_words(struct mtd_info *mtd, loff_t to, size_t len,
 }
 
 
-/*
- * FIXME: interleaved mode not tested, and probably not supported!
- */
 static int __xipram do_write_buffer(struct map_info *map, struct flchip *chip,
 				    unsigned long adr, const u_char *buf,
 				    int len)
@@ -1439,7 +1405,7 @@ static int __xipram do_write_buffer(struct map_info *map, struct flchip *chip,
 			mutex_unlock(&chip->mutex);
 			schedule();
 			remove_wait_queue(&chip->wq, &wait);
-			timeo = jiffies + (HZ / 2); /* FIXME */
+			timeo = jiffies + (HZ / 2);
 			mutex_lock(&chip->mutex);
 			continue;
 		}
@@ -1459,7 +1425,6 @@ static int __xipram do_write_buffer(struct map_info *map, struct flchip *chip,
 	/* reset on all failures. */
 	map_write( map, CMD(0xF0), chip->start );
 	xip_enable(map, chip, adr);
-	/* FIXME - should have reset delay before continuing */
 
 	printk(KERN_WARNING "MTD %s(): software timeout\n",
 	       __func__ );
@@ -1613,7 +1578,7 @@ static int __xipram do_erase_chip(struct map_info *map, struct flchip *chip)
 		if (chip->erase_suspended) {
 			/* This erase was suspended and resumed.
 			   Adjust the timeout */
-			timeo = jiffies + (HZ*20); /* FIXME */
+			timeo = jiffies + (HZ*20);
 			chip->erase_suspended = 0;
 		}
 
@@ -1633,7 +1598,6 @@ static int __xipram do_erase_chip(struct map_info *map, struct flchip *chip)
 	if (!chip_good(map, adr, map_word_ff(map))) {
 		/* reset on all failures. */
 		map_write( map, CMD(0xF0), chip->start );
-		/* FIXME - should have reset delay before continuing */
 
 		ret = -EIO;
 	}
@@ -1701,7 +1665,7 @@ static int __xipram do_erase_oneblock(struct map_info *map, struct flchip *chip,
 		if (chip->erase_suspended) {
 			/* This erase was suspended and resumed.
 			   Adjust the timeout */
-			timeo = jiffies + (HZ*20); /* FIXME */
+			timeo = jiffies + (HZ*20);
 			chip->erase_suspended = 0;
 		}
 
@@ -1724,7 +1688,6 @@ static int __xipram do_erase_oneblock(struct map_info *map, struct flchip *chip,
 	if (!chip_good(map, adr, map_word_ff(map))) {
 		/* reset on all failures. */
 		map_write( map, CMD(0xF0), chip->start );
-		/* FIXME - should have reset delay before continuing */
 
 		ret = -EIO;
 	}

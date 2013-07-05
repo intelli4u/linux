@@ -82,6 +82,18 @@
 #define CREATE_TRACE_POINTS
 #include <trace/events/sched.h>
 
+#if defined(CONFIG_BUZZZ)
+#include <asm/buzzz.h>
+/* These global varaibles are needed to hold prev, next tasks to log context
+ * switch as stack will be invalid after context_switch.
+ * Also per-cpu macros are not needed as these variables are accessed
+ * only inside pre-emption disabled code.
+ */
+#if defined(BUZZZ_KEVT_LVL) && (BUZZZ_KEVT_LVL >= 1)
+struct task_struct *buzzz_prev[NR_CPUS];
+struct task_struct *buzzz_next[NR_CPUS];
+#endif	/* BUZZZ_KEVT_LVL */
+#endif	/* CONFIG_BUZZZ */
 /*
  * Convert user-nice values [ -20 ... 0 ... 19 ]
  * to static priority [ MAX_RT_PRIO..MAX_PRIO-1 ],
@@ -1038,6 +1050,10 @@ static enum hrtimer_restart hrtick(struct hrtimer *timer)
 
 	WARN_ON_ONCE(cpu_of(rq) != smp_processor_id());
 
+#if defined(BUZZZ_KEVT_LVL) && (BUZZZ_KEVT_LVL >= 2)
+	buzzz_kevt_log0(BUZZZ_KEVT_ID_SCHED_HRTICK);
+#endif	/* BUZZZ_KEVT_LVL */
+
 	raw_spin_lock(&rq->lock);
 	update_rq_clock(rq);
 	rq->curr->sched_class->task_tick(rq, rq->curr, 1);
@@ -1435,7 +1451,8 @@ static inline void dec_cpu_load(struct rq *rq, unsigned long load)
 	update_load_sub(&rq->load, load);
 }
 
-#if (defined(CONFIG_SMP) && defined(CONFIG_FAIR_GROUP_SCHED)) || defined(CONFIG_RT_GROUP_SCHED)
+#if (defined(CONFIG_SMP) && defined(CONFIG_FAIR_GROUP_SCHED)) || \
+	defined(CONFIG_RT_GROUP_SCHED)
 typedef int (*tg_visitor)(struct task_group *, void *);
 
 /*
@@ -2810,10 +2827,6 @@ asmlinkage void schedule_tail(struct task_struct *prev)
 
 	finish_task_switch(rq, prev);
 
-	/*
-	 * FIXME: do we need to worry about rq being invalidated by the
-	 * task_switch?
-	 */
 	post_schedule(rq);
 
 #ifdef __ARCH_WANT_UNLOCKED_CTXSW
@@ -3697,6 +3710,10 @@ void scheduler_tick(void)
 	struct rq *rq = cpu_rq(cpu);
 	struct task_struct *curr = rq->curr;
 
+#if defined(BUZZZ_KEVT_LVL) && (BUZZZ_KEVT_LVL >= 1)
+	buzzz_kevt_log1(BUZZZ_KEVT_ID_SCHED_TICK, jiffies);
+#endif	/* BUZZZ_KEVT_LVL */
+
 	sched_clock_tick();
 
 	raw_spin_lock(&rq->lock);
@@ -3724,7 +3741,7 @@ notrace unsigned long get_parent_ip(unsigned long addr)
 }
 
 #if defined(CONFIG_PREEMPT) && (defined(CONFIG_DEBUG_PREEMPT) || \
-				defined(CONFIG_PREEMPT_TRACER))
+	defined(CONFIG_PREEMPT_TRACER))
 
 void __kprobes add_preempt_count(int val)
 {
@@ -3924,6 +3941,11 @@ need_resched_nonpreemptible:
 		rq->curr = next;
 		++*switch_count;
 
+#if defined(BUZZZ_KEVT_LVL) && (BUZZZ_KEVT_LVL >= 1)
+		buzzz_prev[cpu] = prev;
+		buzzz_next[cpu] = next;
+#endif	/* BUZZZ_KEVT_LVL */
+
 		context_switch(rq, prev, next); /* unlocks the rq */
 		/*
 		 * The context switch have flipped the stack from under us
@@ -3933,6 +3955,12 @@ need_resched_nonpreemptible:
 		 */
 		cpu = smp_processor_id();
 		rq = cpu_rq(cpu);
+
+#if defined(BUZZZ_KEVT_LVL) && (BUZZZ_KEVT_LVL >= 1)
+		buzzz_kevt_log2(BUZZZ_KEVT_ID_SCHEDULE,
+			            (uint32_t)buzzz_prev[cpu], (uint32_t)buzzz_next[cpu]);
+#endif	/* BUZZZ_KEVT_LVL */
+
 	} else
 		raw_spin_unlock_irq(&rq->lock);
 

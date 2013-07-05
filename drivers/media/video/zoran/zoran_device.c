@@ -398,7 +398,7 @@ zr36057_set_vfe (struct zoran              *zr,
 	vcrop1 = (tvn->Ha / 2 - He) / 2;
 	vcrop2 = tvn->Ha / 2 - He - vcrop1;
 	VStart = tvn->VStart;
-	VEnd = VStart + tvn->Ha / 2;	// - 1; FIXME SnapShot times out with -1 in 768*576 on the DC10 - LP
+	VEnd = VStart + tvn->Ha / 2;
 	VStart += vcrop1;
 	VEnd -= vcrop2;
 	reg = ((VStart & ZR36057_VFEVCR_Vmask) << ZR36057_VFEVCR_VStart)

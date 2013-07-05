@@ -172,7 +172,6 @@ static void b43_shm_clear_tssi(struct b43_wldev *dev)
 	b43_shm_write16(dev, B43_SHM_SHARED, 0x0072, 0x7F7F);
 }
 
-/* Synthetic PU workaround */
 static void b43_synth_pu_workaround(struct b43_wldev *dev, u8 channel)
 {
 	struct b43_phy *phy = &dev->phy;
@@ -180,7 +179,6 @@ static void b43_synth_pu_workaround(struct b43_wldev *dev, u8 channel)
 	might_sleep();
 
 	if (phy->radio_ver != 0x2050 || phy->radio_rev >= 6) {
-		/* We do not need the workaround. */
 		return;
 	}
 
@@ -2073,7 +2071,7 @@ static void b43_phy_initg(struct b43_wldev *dev)
 		 * Essentially, what we do here is resetting all NRSSI LT
 		 * entries to -32 (see the clamp_val() in nrssi_hw_update())
 		 */
-		b43_nrssi_hw_update(dev, 0xFFFF);	//FIXME?
+		b43_nrssi_hw_update(dev, 0xFFFF);
 		b43_calc_nrssi_threshold(dev);
 	} else if (phy->gmode || phy->rev >= 2) {
 		if (gphy->nrssi[0] == -1000) {
@@ -2085,9 +2083,6 @@ static void b43_phy_initg(struct b43_wldev *dev)
 	if (phy->radio_rev == 8)
 		b43_phy_write(dev, B43_PHY_EXTG(0x05), 0x3230);
 	b43_phy_init_pctl(dev);
-	/* FIXME: The spec says in the following if, the 0 should be replaced
-	   'if OFDM may not be used in the current locale'
-	   but OFDM is legal everywhere */
 	if ((dev->dev->bus->chip_id == 0x4306
 	     && dev->dev->bus->chip_package == 2) || 0) {
 		b43_phy_mask(dev, B43_PHY_CRS0, 0xBFFF);
@@ -2531,8 +2526,6 @@ static int b43_gphy_op_prepare_hardware(struct b43_wldev *dev)
 	b43_read32(dev, B43_MMIO_MACCTL);
 
 	if (phy->rev == 1) {
-		/* Workaround: Temporarly disable gmode through the early init
-		 * phase, as the gmode stuff is not needed for phy rev 1 */
 		phy->gmode = 0;
 		b43_wireless_core_reset(dev, 0);
 		b43_phy_initg(dev);
@@ -3004,7 +2997,6 @@ static void b43_gphy_op_pwork_15sec(struct b43_wldev *dev)
 		}
 	} else if (gphy->interfmode == B43_INTERFMODE_NONWLAN &&
 		   phy->rev == 1) {
-		//TODO: implement rev1 workaround
 	}
 	b43_lo_g_maintanance_work(dev);
 	b43_mac_enable(dev);

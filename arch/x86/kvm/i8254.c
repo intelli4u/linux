@@ -81,7 +81,6 @@ static void pit_set_gate(struct kvm *kvm, int channel, u32 val)
 	default:
 	case 0:
 	case 4:
-		/* XXX: just disable/enable counting */
 		break;
 	case 1:
 	case 2:
@@ -157,7 +156,6 @@ static int pit_get_count(struct kvm *kvm, int channel)
 		counter = (c->count - d) & 0xffff;
 		break;
 	case 3:
-		/* XXX: may be incorrect for odd counts */
 		counter = c->count - (mod_64((2 * d), c->count));
 		break;
 	default:
@@ -400,7 +398,6 @@ static void pit_load_count(struct kvm *kvm, int channel, u32 val)
 	switch (ps->channels[0].mode) {
 	case 0:
 	case 1:
-        /* FIXME: enhance mode 4 precision */
 	case 4:
 		if (!(ps->flags & KVM_PIT_FLAGS_HPET_LEGACY)) {
 			create_pit_timer(ps, val, 0);

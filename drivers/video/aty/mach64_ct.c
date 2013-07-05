@@ -211,7 +211,6 @@ static int aty_valid_pll_ct(const struct fb_info *info, u32 vclk_per, struct pll
 	struct atyfb_par *par = (struct atyfb_par *) info->par;
 	int pllvclk;
 
-	/* FIXME: use the VTB/GTB /{3,6,12} post dividers if they're better suited */
 	q = par->ref_clk_per * pll->pll_ref_div * 4 / vclk_per;
 	if (q < 16*8 || q > 255*8) {
 		printk(KERN_CRIT "atyfb: vclk out of range\n");
@@ -495,19 +494,6 @@ static int __devinit aty_init_pll_ct(const struct fb_info *info,
 
 	if (dsp_config)
 		pll->ct.dsp_loop_latency = (dsp_config & DSP_LOOP_LATENCY) >> 16;
-#if 0
-	FIXME: is it relevant for us?
-	if ((!dsp_on_off && !M64_HAS(RESET_3D)) ||
-		((dsp_on_off == vga_dsp_on_off) &&
-		(!dsp_config || !((dsp_config ^ vga_dsp_config) & DSP_XCLKS_PER_QW)))) {
-		vga_dsp_on_off &= VGA_DSP_OFF;
-		vga_dsp_config &= VGA_DSP_XCLKS_PER_QW;
-		if (ATIDivide(vga_dsp_on_off, vga_dsp_config, 5, 1) > 24)
-			pll->ct.fifo_size = 32;
-		else
-			pll->ct.fifo_size = 24;
-	}
-#endif
 	/* Exit if the user does not want us to tamper with the clock
 	rates of her chip. */
 	if (par->mclk_per == 0) {
@@ -524,7 +510,6 @@ static int __devinit aty_init_pll_ct(const struct fb_info *info,
 
 	pll->ct.pll_ref_div = par->pll_per * 2 * 255 / par->ref_clk_per;
 
-	/* FIXME: use the VTB/GTB /3 post divider if it's better suited */
 	q = par->ref_clk_per * pll->ct.pll_ref_div * 8 /
 		(pll->ct.mclk_fb_mult * par->xclk_per);
 

@@ -641,17 +641,6 @@ nlmclnt_reclaim(struct nlm_host *host, struct file_lock *fl)
 				"(errno %d, status %d)\n", fl->fl_pid,
 				status, ntohl(req->a_res.status));
 
-	/*
-	 * FIXME: This is a serious failure. We can
-	 *
-	 *  a.	Ignore the problem
-	 *  b.	Send the owning process some signal (Linux doesn't have
-	 *	SIGLOST, though...)
-	 *  c.	Retry the operation
-	 *
-	 * Until someone comes up with a simple implementation
-	 * for b or c, I'll choose option a.
-	 */
 
 	return -ENOLCK;
 }

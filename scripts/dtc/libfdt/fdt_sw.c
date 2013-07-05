@@ -59,7 +59,6 @@ static int _fdt_sw_check_header(void *fdt)
 {
 	if (fdt_magic(fdt) != FDT_SW_MAGIC)
 		return -FDT_ERR_BADMAGIC;
-	/* FIXME: should check more details about the header state */
 	return 0;
 }
 

@@ -144,10 +144,6 @@
  */
 #ifdef CONFIG_ARCH_OMAP1
 
-/*
- * XXX: These probably want to be moved to arch/arm/mach-omap/omap1/irq.c
- * or something similar.. -- PFM.
- */
 
 #define OMAP_IH1_BASE		0xfffecb00
 #define OMAP_IH2_BASE		0xfffe0000

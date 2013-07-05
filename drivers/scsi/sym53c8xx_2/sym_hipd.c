@@ -44,9 +44,6 @@
 #include "sym_glue.h"
 #include "sym_nvram.h"
 
-#if 0
-#define SYM_DEBUG_GENERIC_SUPPORT
-#endif
 
 /*
  *  Needed function prototypes.
@@ -451,11 +448,7 @@ static int sym_getpciclock (struct sym_hcb *np)
 	 *  For now, we only need to know about the actual 
 	 *  PCI BUS clock frequency for C1010-66 chips.
 	 */
-#if 1
 	if (np->features & FE_66MHZ) {
-#else
-	if (1) {
-#endif
 		OUTB(np, nc_stest1, SCLK); /* Use the PCI clock as SCSI clock */
 		f = sym_getfreq(np);
 		OUTB(np, nc_stest1, 0);
@@ -509,7 +502,6 @@ sym_getsync(struct sym_hcb *np, u_char dt, u_char sfac, u_char *divp, u_char *fa
 	 *  to 5 Mega-transfers per second and may result in
 	 *  using higher clock divisors.
 	 */
-#if 1
 	if ((np->features & (FE_C10|FE_U3EN)) == FE_C10) {
 		/*
 		 *  Look for the lowest clock divisor that allows an 
@@ -530,7 +522,6 @@ sym_getsync(struct sym_hcb *np, u_char dt, u_char sfac, u_char *divp, u_char *fa
 		*fakp = fak;
 		return ret;
 	}
-#endif
 
 	/*
 	 *  Look for the greatest clock divisor that allows an 
@@ -812,14 +803,6 @@ static int sym_prepare_setting(struct Scsi_Host *shost, struct sym_hcb *np, stru
 	if (burst_max > np->maxburst)
 		burst_max = np->maxburst;
 
-	/*
-	 *  DEL 352 - 53C810 Rev x11 - Part Number 609-0392140 - ITEM 2.
-	 *  This chip and the 860 Rev 1 may wrongly use PCI cache line 
-	 *  based transactions on LOAD/STORE instructions. So we have 
-	 *  to prevent these chips from using such PCI transactions in 
-	 *  this driver. The generic ncr driver that does not use 
-	 *  LOAD/STORE instructions does not need this work-around.
-	 */
 	if ((pdev->device == PCI_DEVICE_ID_NCR_53C810 &&
 	     pdev->revision >= 0x10 && pdev->revision <= 0x11) ||
 	    (pdev->device == PCI_DEVICE_ID_NCR_53C860 &&
@@ -838,11 +821,7 @@ static int sym_prepare_setting(struct Scsi_Host *shost, struct sym_hcb *np, stru
 		np->rv_dmode	|= BOF;		/* Burst Opcode Fetch */
 	if (np->features & FE_ERMP)
 		np->rv_dmode	|= ERMP;	/* Enable Read Multiple */
-#if 1
 	if ((np->features & FE_PFEN) && !np->ram_ba)
-#else
-	if (np->features & FE_PFEN)
-#endif
 		np->rv_dcntl	|= PFEN;	/* Prefetch Enable */
 	if (np->features & FE_CLSE)
 		np->rv_dcntl	|= CLSE;	/* Cache Line Size Enable */
@@ -983,11 +962,7 @@ static int sym_regtest(struct sym_hcb *np)
 	data = 0xffffffff;
 	OUTL(np, nc_dstat, data);
 	data = INL(np, nc_dstat);
-#if 1
 	if (data == 0xffffffff) {
-#else
-	if ((data & 0xe2f0fffd) != 0x02000080) {
-#endif
 		printf ("CACHE TEST FAILED: reg dstat-sstat2 readback %x.\n",
 			(unsigned) data);
 		return 0x10;
@@ -1045,7 +1020,6 @@ restart_test:
 	 *  Check for fatal DMA errors.
 	 */
 	dstat = INB(np, nc_dstat);
-#if 1	/* Band aiding for broken hardwares that fail PCI parity */
 	if ((dstat & MDPE) && (np->rv_ctest4 & MPEE)) {
 		printf ("%s: PCI DATA PARITY ERROR DETECTED - "
 			"DISABLING MASTER DATA PARITY CHECKING.\n",
@@ -1053,7 +1027,6 @@ restart_test:
 		np->rv_ctest4 &= ~MPEE;
 		goto restart_test;
 	}
-#endif
 	if (dstat & (MDPE|BF|IID)) {
 		printf ("CACHE TEST FAILED: DMA error (dstat=0x%02x).", dstat);
 		return (0x80);
@@ -1954,10 +1927,6 @@ static void sym_settrans(struct sym_hcb *np, int target, u_char opts, u_char ofs
 	wval = tp->head.wval;
 	uval = tp->head.uval;
 
-#if 0
-	printf("XXXX sval=%x wval=%x uval=%x (%x)\n", 
-		sval, wval, uval, np->rv_scntl3);
-#endif
 	/*
 	 *  Set the offset.
 	 */
@@ -2376,11 +2345,7 @@ static void sym_int_par (struct sym_hcb *np, u_short sist)
 		}
 	}
 	else if (phase == 7)	/* We definitely cannot handle parity errors */
-#if 1				/* in message-in phase due to the relection  */
 		goto reset_all; /* path and various message anticipations.   */
-#else
-		OUTL_DSP(np, SCRIPTA_BA(np, clrack));
-#endif
 	else
 		OUTL_DSP(np, SCRIPTA_BA(np, dispatch));
 	return;
@@ -2699,11 +2664,6 @@ unexpected_phase:
 	case 2:	/* COMMAND phase */
 		nxtdsp = SCRIPTA_BA(np, dispatch);
 		break;
-#if 0
-	case 3:	/* STATUS  phase */
-		nxtdsp = SCRIPTA_BA(np, dispatch);
-		break;
-#endif
 	case 6:	/* MSG OUT phase */
 		/*
 		 *  If the device may want to use untagged when we want 
@@ -2730,11 +2690,6 @@ unexpected_phase:
 			}
 		}
 		break;
-#if 0
-	case 7:	/* MSG IN  phase */
-		nxtdsp = SCRIPTA_BA(np, clrack);
-		break;
-#endif
 	}
 
 	if (nxtdsp) {
@@ -2840,10 +2795,6 @@ irqreturn_t sym_interrupt(struct Scsi_Host *shost)
 	if (!(istat & (SIP|DIP)))
 		return (istat & INTF) ? IRQ_HANDLED : IRQ_NONE;
 
-#if 0	/* We should never get this one */
-	if (istat & CABRT)
-		OUTB(np, nc_istat, CABRT);
-#endif
 
 	/*
 	 *  PAR and MA interrupts may occur at the same time,
@@ -3227,9 +3178,6 @@ int sym_clear_tasks(struct sym_hcb *np, int cam_status, int target, int lun, int
 		if (sym_get_cam_status(cmd) != DID_TIME_OUT)
 			sym_set_cam_status(cmd, cam_status);
 		++i;
-#if 0
-printf("XXXX TASK @%p CLEARED\n", cp);
-#endif
 	}
 	return i;
 }
@@ -4334,16 +4282,12 @@ static void sym_nego_default(struct sym_hcb *np, struct sym_tcb *tp, struct sym_
 {
 	switch (cp->nego_status) {
 	case NS_PPR:
-#if 0
-		sym_setpprot (np, cp->target, 0, 0, 0, 0, 0, 0);
-#else
 		if (tp->tgoal.period < np->minsync)
 			tp->tgoal.period = np->minsync;
 		if (tp->tgoal.offset > np->maxoffs)
 			tp->tgoal.offset = np->maxoffs;
 		tp->tgoal.iu = tp->tgoal.dt = tp->tgoal.qas = 0;
 		tp->tgoal.check_nego = 1;
-#endif
 		break;
 	case NS_SYNC:
 		sym_setsync (np, cp->target, 0, 0, 0, 0);
@@ -4952,15 +4896,6 @@ static struct sym_ccb *sym_ccb_from_dsa(struct sym_hcb *np, u32 dsa)
  */
 static void sym_init_tcb (struct sym_hcb *np, u_char tn)
 {
-#if 0	/*  Hmmm... this checking looks paranoid. */
-	/*
-	 *  Check some alignments required by the chip.
-	 */	
-	assert (((offsetof(struct sym_reg, nc_sxfer) ^
-		offsetof(struct sym_tcb, head.sval)) &3) == 0);
-	assert (((offsetof(struct sym_reg, nc_scntl3) ^
-		offsetof(struct sym_tcb, head.wval)) &3) == 0);
-#endif
 }
 
 /*
@@ -5689,9 +5624,6 @@ int sym_hcb_attach(struct Scsi_Host *shost, struct sym_fw *fw, struct sym_nvram 
 		np->scripta_ba = np->ram_ba;
 		if (np->features & FE_RAM8K) {
 			np->scriptb_ba = np->scripta_ba + 4096;
-#if 0	/* May get useful for 64 BIT PCI addressing */
-			np->scr_ram_seg = cpu_to_scr(np->scripta_ba >> 32);
-#endif
 		}
 	}
 

@@ -188,7 +188,6 @@ int NetVscInitialize(struct hv_driver *drv)
 	memcpy(&drv->deviceType, &gNetVscDeviceType, sizeof(struct hv_guid));
 
 	/* Make sure it is set by the caller */
-	/* FIXME: These probably should still be tested in some way */
 	/* ASSERT(driver->OnReceiveCallback); */
 	/* ASSERT(driver->OnLinkStatusChanged); */
 
@@ -1149,7 +1148,6 @@ static void NetVscSendReceiveCompletion(struct hv_device *Device,
 	recvcompMessage.Header.MessageType =
 				NvspMessage1TypeSendRNDISPacketComplete;
 
-	/* FIXME: Pass in the status */
 	recvcompMessage.Messages.Version1Messages.SendRNDISPacketComplete.Status = NvspStatusSuccess;
 
 retry_send_cmplt:

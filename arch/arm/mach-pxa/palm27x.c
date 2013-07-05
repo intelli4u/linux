@@ -166,8 +166,7 @@ void __init palm27x_lcd_init(int power, struct pxafb_mode_info *mode)
 /******************************************************************************
  * USB Gadget
  ******************************************************************************/
-#if	defined(CONFIG_USB_GADGET_PXA27X) || \
-	defined(CONFIG_USB_GADGET_PXA27X_MODULE)
+#if	defined(CONFIG_USB_GADGET_PXA27X) || defined(CONFIG_USB_GADGET_PXA27X_MODULE)
 static struct gpio_vbus_mach_info palm27x_udc_info = {
 	.gpio_vbus_inverted	= 1,
 };
@@ -216,8 +215,7 @@ void __init palm27x_irda_init(int pwdn)
 /******************************************************************************
  * WM97xx audio, battery
  ******************************************************************************/
-#if	defined(CONFIG_TOUCHSCREEN_WM97XX) || \
-	defined(CONFIG_TOUCHSCREEN_WM97XX_MODULE)
+#if	defined(CONFIG_TOUCHSCREEN_WM97XX) || defined(CONFIG_TOUCHSCREEN_WM97XX_MODULE)
 static struct wm97xx_batt_pdata palm27x_batt_pdata = {
 	.batt_aux	= WM97XX_AUX_ID3,
 	.temp_aux	= WM97XX_AUX_ID2,
@@ -428,8 +426,7 @@ void __init palm27x_power_init(int ac, int usb)
 /******************************************************************************
  * Core power regulator
  ******************************************************************************/
-#if defined(CONFIG_REGULATOR_MAX1586) || \
-    defined(CONFIG_REGULATOR_MAX1586_MODULE)
+#if defined(CONFIG_REGULATOR_MAX1586) || defined(CONFIG_REGULATOR_MAX1586_MODULE)
 static struct regulator_consumer_supply palm27x_max1587a_consumers[] = {
 	{
 		.supply	= "vcc_core",

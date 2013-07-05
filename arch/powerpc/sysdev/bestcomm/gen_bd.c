@@ -351,4 +351,3 @@ EXPORT_SYMBOL_GPL(bcom_psc_gen_bd_tx_init);
 MODULE_DESCRIPTION("BestComm General Buffer Descriptor tasks driver");
 MODULE_AUTHOR("Jeff Gibbons <jeff.gibbons@appspec.com>");
 MODULE_LICENSE("GPL v2");
-

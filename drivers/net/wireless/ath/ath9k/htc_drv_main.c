@@ -320,7 +320,6 @@ static int ath9k_htc_update_cap_target(struct ath9k_htc_priv *priv)
 
 	memset(&tcap, 0, sizeof(struct ath9k_htc_cap_target));
 
-	/* FIXME: Values are hardcoded */
 	tcap.flags = 0x240c40;
 	tcap.flags_ext = 0x80601000;
 	tcap.ampdu_limit = 0xffff0000;

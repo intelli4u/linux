@@ -37,39 +37,6 @@ int rtl8192E_suspend (struct pci_dev *pdev, pm_message_t state)
 	if (dev->netdev_ops->ndo_stop)
 		dev->netdev_ops->ndo_stop(dev);
 //	dev->stop(dev);
-#if 0
-
-	netif_carrier_off(dev);
-
-	ieee80211_softmac_stop_protocol(priv->ieee80211);
-
-	write_nic_byte(dev,MSR,(read_nic_byte(dev,MSR)&0xfc)|MSR_LINK_NONE);
-	if(!priv->ieee80211->bSupportRemoteWakeUp) {
-		/* disable tx/rx. In 8185 we write 0x10 (Reset bit),
-		 * but here we make reference to WMAC and wirte 0x0.
-		 * 2006.11.21 Emily
-		 */
-		write_nic_byte(dev, CMDR, 0);
-	}
-	//disable interrupt
-	write_nic_dword(dev,INTA_MASK,0);
-	priv->irq_enabled = 0;
-        write_nic_dword(dev,ISR,read_nic_dword(dev, ISR));
-
-	/* need to  free DM related functions */
-	cancel_work_sync(&priv->reset_wq);
-	del_timer_sync(&priv->fsync_timer);
-	del_timer_sync(&priv->watch_dog_timer);
-	cancel_delayed_work(&priv->watch_dog_wq);
-	cancel_delayed_work(&priv->update_beacon_wq);
-	cancel_work_sync(&priv->qos_activate);
-
-	/* TODO
-#if ((DEV_BUS_TYPE == PCI_INTERFACE) && (HAL_CODE_BASE == RTL8192))
-pHalData->bHwRfOffAction = 2;
-#endif
-*/
-#endif
 	// Call MgntActSet_RF_State instead to prevent RF config race condition.
 	// By Bruce, 2008-01-17.
 	//

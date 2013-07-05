@@ -411,5 +411,3 @@ struct lpfc_iocbq *lpfc_sli_ringtx_get(struct lpfc_hba *,
 int __lpfc_sli_issue_iocb(struct lpfc_hba *, uint32_t,
 	struct lpfc_iocbq *, uint32_t);
 uint32_t lpfc_drain_txq(struct lpfc_hba *);
-
-

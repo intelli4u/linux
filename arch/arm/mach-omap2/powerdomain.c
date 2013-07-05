@@ -208,16 +208,6 @@ static int _pwrdm_post_transition_cb(struct powerdomain *pwrdm, void *unused)
 
 /* Public functions */
 
-/**
- * pwrdm_init - set up the powerdomain layer
- * @pwrdm_list: array of struct powerdomain pointers to register
- *
- * Loop through the array of powerdomains @pwrdm_list, registering all
- * that are available on the current CPU. If pwrdm_list is supplied
- * and not null, all of the referenced powerdomains will be
- * registered.  No return value.  XXX pwrdm_list is not really a
- * "list"; it is an array.  Rename appropriately.
- */
 void pwrdm_init(struct powerdomain **pwrdm_list)
 {
 	struct powerdomain **p = NULL;
@@ -899,10 +889,6 @@ int pwrdm_clear_all_prev_pwrst(struct powerdomain *pwrdm)
 	if (!pwrdm)
 		return -EINVAL;
 
-	/*
-	 * XXX should get the powerdomain's current state here;
-	 * warn & fail if it is not ON.
-	 */
 
 	pr_debug("powerdomain: clearing previous power state reg for %s\n",
 		 pwrdm->name);
@@ -1031,7 +1017,6 @@ int pwrdm_wait_transition(struct powerdomain *pwrdm)
 	 * powerdomain transitions to take?
 	 */
 
-	/* XXX Is this udelay() value meaningful? */
 	while ((prm_read_mod_reg(pwrdm->prcm_offs, pwrstst_reg_offs) &
 		OMAP_INTRANSITION_MASK) &&
 	       (c++ < PWRDM_TRANSITION_BAILOUT))
@@ -1074,4 +1059,3 @@ int pwrdm_post_transition(void)
 	pwrdm_for_each(_pwrdm_post_transition_cb, NULL);
 	return 0;
 }
-

@@ -112,10 +112,6 @@ static struct dpll_data dpll_dd = {
 	.rate_tolerance		= DEFAULT_DPLL_RATE_TOLERANCE
 };
 
-/*
- * XXX Cannot add round_rate here yet, as this is still a composite clock,
- * not just a DPLL
- */
 static struct clk dpll_ck = {
 	.name		= "dpll_ck",
 	.ops		= &clkops_null,
@@ -715,7 +711,6 @@ static struct clk mdm_osc_ck = {
  *
  * DSS is both initiator and target.
  */
-/* XXX Add RATE_NOT_VALIDATED */
 
 static const struct clksel_rate dss1_fck_sys_rates[] = {
 	{ .div = 1, .val = 0, .flags = RATE_IN_24XX },
@@ -1530,10 +1525,6 @@ static struct clk hdq_fck = {
 	.recalc		= &followparent_recalc,
 };
 
-/*
- * XXX This is marked as a 2420-only define, but it claims to be present
- * on 2430 also.  Double-check.
- */
 static struct clk i2c2_ick = {
 	.name		= "i2c2_ick",
 	.ops		= &clkops_omap2_dflt_wait,
@@ -1554,10 +1545,6 @@ static struct clk i2chs2_fck = {
 	.recalc		= &followparent_recalc,
 };
 
-/*
- * XXX This is marked as a 2420-only define, but it claims to be present
- * on 2430 also.  Double-check.
- */
 static struct clk i2c1_ick = {
 	.name		= "i2c1_ick",
 	.ops		= &clkops_omap2_dflt_wait,
@@ -2005,4 +1992,3 @@ int __init omap2430_clk_init(void)
 
 	return 0;
 }
-

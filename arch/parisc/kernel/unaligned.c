@@ -754,4 +754,3 @@ check_unaligned(struct pt_regs *regs)
 
 	return (int)(regs->ior & align_mask);
 }
-

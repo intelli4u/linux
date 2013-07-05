@@ -679,12 +679,6 @@ static void sta_apply_parameters(struct ieee80211_local *local,
 	if (params->aid)
 		sta->sta.aid = params->aid;
 
-	/*
-	 * FIXME: updating the following information is racy when this
-	 *	  function is called from ieee80211_change_station().
-	 *	  However, all this information should be static so
-	 *	  maybe we should just reject attemps to change it.
-	 */
 
 	if (params->listen_interval >= 0)
 		sta->listen_interval = params->listen_interval;

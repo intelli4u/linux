@@ -269,6 +269,12 @@ void hfs_inode_read_fork(struct inode *inode, struct hfs_extent *ext,
 	inode->i_size = HFS_I(inode)->phys_size = log_size;
 	HFS_I(inode)->fs_blocks = (log_size + sb->s_blocksize - 1) >> sb->s_blocksize_bits;
 	inode_set_bytes(inode, HFS_I(inode)->fs_blocks << sb->s_blocksize_bits);
+    /*  added start pling 05/31/2010 */
+    /* Set the i_blocks field properly */
+    inode->i_blocks = inode->i_size/512;
+    if (inode->i_size % 512)
+        inode->i_blocks++;
+    /*  added end pling 05/31/2010 */
 	HFS_I(inode)->alloc_blocks = be32_to_cpu(phys_size) /
 				     HFS_SB(sb)->alloc_blksz;
 	HFS_I(inode)->clump_blocks = clump_size / HFS_SB(sb)->alloc_blksz;

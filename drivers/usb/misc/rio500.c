@@ -398,7 +398,7 @@ read_rio(struct file *file, char __user *buffer, size_t count, loff_t * ppos)
 
 		if (partial) {
 			count = this_read = partial;
-		} else if (result == -ETIMEDOUT || result == 15) {	/* FIXME: 15 ??? */
+		} else if (result == -ETIMEDOUT || result == 15) {
 			if (!maxretry--) {
 				mutex_unlock(&(rio->lock));
 				err("read_rio: maxretry timeout");
@@ -561,4 +561,3 @@ module_exit(usb_rio_cleanup);
 MODULE_AUTHOR( DRIVER_AUTHOR );
 MODULE_DESCRIPTION( DRIVER_DESC );
 MODULE_LICENSE("GPL");
-

@@ -279,9 +279,6 @@ uvc_video_pump(struct uvc_video *video)
 	unsigned long flags;
 	int ret;
 
-	/* FIXME TODO Race between uvc_video_pump and requests completion
-	 * handler ???
-	 */
 
 	while (1) {
 		/* Retrieve the first available USB request, protected by the
@@ -383,4 +380,3 @@ uvc_video_init(struct uvc_video *video)
 	uvc_queue_init(&video->queue, V4L2_BUF_TYPE_VIDEO_OUTPUT);
 	return 0;
 }
-

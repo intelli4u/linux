@@ -893,13 +893,6 @@ static int truncate_upper(struct dentry *dentry, struct iattr *ia,
 				    - (ia->ia_size & ~PAGE_CACHE_MASK));
 
 
-		/*
-		 * XXX(truncate) this should really happen at the begginning
-		 * of ->setattr.  But the code is too messy to that as part
-		 * of a larger patch.  ecryptfs is also totally missing out
-		 * on the inode_change_ok check at the beginning of
-		 * ->setattr while would include this.
-		 */
 		rc = inode_newsize_ok(inode, ia->ia_size);
 		if (rc)
 			goto out;

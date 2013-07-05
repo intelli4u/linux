@@ -795,8 +795,7 @@ static struct platform_device para_flash_device = {
 
 #if defined(CONFIG_SPI_BFIN) || defined(CONFIG_SPI_BFIN_MODULE)
 /* all SPI peripherals info goes here */
-#if defined(CONFIG_MTD_M25P80) \
-	|| defined(CONFIG_MTD_M25P80_MODULE)
+#if defined(CONFIG_MTD_M25P80) || defined(CONFIG_MTD_M25P80_MODULE)
 /* SPI flash chip (m25p16) */
 static struct mtd_partition bfin_spi_flash_partitions[] = {
 	{
@@ -853,8 +852,7 @@ static struct bfin5xx_spi_chip spidev_chip_info = {
 #endif
 
 static struct spi_board_info bf54x_spi_board_info[] __initdata = {
-#if defined(CONFIG_MTD_M25P80) \
-	|| defined(CONFIG_MTD_M25P80_MODULE)
+#if defined(CONFIG_MTD_M25P80) || defined(CONFIG_MTD_M25P80_MODULE)
 	{
 		/* the modalias must be the same as spi device driver name */
 		.modalias = "m25p80", /* Name of spi_driver for this device */
@@ -981,7 +979,7 @@ static struct platform_device i2c_bfin_twi0_device = {
 	.resource = bfin_twi0_resource,
 };
 
-#if !defined(CONFIG_BF542)	/* The BF542 only has 1 TWI */
+#if !defined(CONFIG_BF542)	    /* The BF542 only has 1 TWI */
 static struct resource bfin_twi1_resource[] = {
 	[0] = {
 		.start = TWI1_REGBASE,

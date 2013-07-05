@@ -358,4 +358,3 @@ int __devinit snd_usb_caiaq_control_init(struct snd_usb_caiaqdev *dev)
 
 	return ret;
 }
-

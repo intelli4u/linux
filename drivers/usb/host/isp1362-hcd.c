@@ -1143,7 +1143,6 @@ static irqreturn_t isp1362_irq(struct usb_hcd *hcd)
 		intstat &= isp1362_hcd->intenb;
 		if (intstat & OHCI_INTR_UE) {
 			pr_err("Unrecoverable error\n");
-			/* FIXME: do here reset or cleanup or whatever */
 		}
 		if (intstat & OHCI_INTR_RHSC) {
 			isp1362_hcd->rhstatus = isp1362_read_reg32(isp1362_hcd, HCRHSTATUS);
@@ -1816,14 +1815,12 @@ static int isp1362_bus_suspend(struct usb_hcd *hcd)
 	isp1362_write_reg32(isp1362_hcd, HCCONTROL, isp1362_hcd->hc_control);
 	isp1362_show_reg(isp1362_hcd, HCCONTROL);
 
-#if 1
 	isp1362_hcd->hc_control = isp1362_read_reg32(isp1362_hcd, HCCONTROL);
 	if ((isp1362_hcd->hc_control & OHCI_CTRL_HCFS) != OHCI_USB_SUSPEND) {
 		pr_err("%s: controller won't suspend %08x\n", __func__,
 		    isp1362_hcd->hc_control);
 		status = -EBUSY;
 	} else
-#endif
 	{
 		/* no resumes until devices finish suspending */
 		isp1362_hcd->next_statechange = jiffies + msecs_to_jiffies(5);
@@ -2037,10 +2034,6 @@ static void dump_regs(struct seq_file *s, struct isp1362_hcd *isp1362_hcd)
 		   isp1362_read_reg16(isp1362_hcd, HCBUFSTAT));
 	seq_printf(s, "HCDIRADDR  [%02x] %08x\n", ISP1362_REG_NO(ISP1362_REG_HCDIRADDR),
 		   isp1362_read_reg32(isp1362_hcd, HCDIRADDR));
-#if 0
-	seq_printf(s, "HCDIRDATA  [%02x]     %04x\n", ISP1362_REG_NO(HCDIRDATA),
-		   isp1362_read_reg16(isp1362_hcd, HCDIRDATA));
-#endif
 	seq_printf(s, "HCISTLBUFSZ[%02x]     %04x\n", ISP1362_REG_NO(ISP1362_REG_HCISTLBUFSZ),
 		   isp1362_read_reg16(isp1362_hcd, HCISTLBUFSZ));
 	seq_printf(s, "HCISTLRATE [%02x]     %04x\n", ISP1362_REG_NO(ISP1362_REG_HCISTLRATE),
@@ -2063,10 +2056,6 @@ static void dump_regs(struct seq_file *s, struct isp1362_hcd *isp1362_hcd)
 		   isp1362_read_reg16(isp1362_hcd, HCATLBUFSZ));
 	seq_printf(s, "HCATLBLKSZ [%02x]     %04x\n", ISP1362_REG_NO(ISP1362_REG_HCATLBLKSZ),
 		   isp1362_read_reg16(isp1362_hcd, HCATLBLKSZ));
-#if 0
-	seq_printf(s, "HCATLDONE  [%02x] %08x\n", ISP1362_REG_NO(ISP1362_REG_HCATLDONE),
-		   isp1362_read_reg32(isp1362_hcd, HCATLDONE));
-#endif
 	seq_printf(s, "HCATLSKIP  [%02x] %08x\n", ISP1362_REG_NO(ISP1362_REG_HCATLSKIP),
 		   isp1362_read_reg32(isp1362_hcd, HCATLSKIP));
 	seq_printf(s, "HCATLLAST  [%02x] %08x\n", ISP1362_REG_NO(ISP1362_REG_HCATLLAST),
@@ -2101,7 +2090,6 @@ static int proc_isp1362_show(struct seq_file *s, void *unused)
 		   max(isp1362_hcd->istl_queue[0] .stat_maxptds,
 		       isp1362_hcd->istl_queue[1] .stat_maxptds));
 
-	/* FIXME: don't show the following in suspended state */
 	spin_lock_irq(&isp1362_hcd->lock);
 
 	dump_irq(s, "hc_irq_enable", isp1362_read_reg16(isp1362_hcd, HCuPINTENB));

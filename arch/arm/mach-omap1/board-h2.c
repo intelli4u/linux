@@ -145,34 +145,6 @@ static struct platform_device h2_nor_device = {
 };
 
 static struct mtd_partition h2_nand_partitions[] = {
-#if 0
-	/* REVISIT:  enable these partitions if you make NAND BOOT
-	 * work on your H2 (rev C or newer); published versions of
-	 * x-load only support P2 and H3.
-	 */
-	{
-		.name		= "xloader",
-		.offset		= 0,
-		.size		= 64 * 1024,
-		.mask_flags	= MTD_WRITEABLE,	/* force read-only */
-	},
-	{
-		.name		= "bootloader",
-		.offset		= MTDPART_OFS_APPEND,
-		.size		= 256 * 1024,
-		.mask_flags	= MTD_WRITEABLE,	/* force read-only */
-	},
-	{
-		.name		= "params",
-		.offset		= MTDPART_OFS_APPEND,
-		.size		= 192 * 1024,
-	},
-	{
-		.name		= "kernel",
-		.offset		= MTDPART_OFS_APPEND,
-		.size		= 2 * SZ_1M,
-	},
-#endif
 	{
 		.name		= "filesystem",
 		.size		= MTDPART_SIZ_FULL,
@@ -403,15 +375,6 @@ static struct omap_board_config_kernel h2_config[] __initdata = {
 
 static void __init h2_init(void)
 {
-	/* Here we assume the NOR boot config:  NOR on CS3 (possibly swapped
-	 * to address 0 by a dip switch), NAND on CS2B.  The NAND driver will
-	 * notice whether a NAND chip is enabled at probe time.
-	 *
-	 * FIXME revC boards (and H3) support NAND-boot, with a dip switch to
-	 * put NOR on CS2B and NAND (which on H2 may be 16bit) on CS3.  Try
-	 * detecting that in code here, to avoid probing every possible flash
-	 * configuration...
-	 */
 	h2_nor_resource.end = h2_nor_resource.start = omap_cs3_phys();
 	h2_nor_resource.end += SZ_32M - 1;
 

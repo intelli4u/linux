@@ -36,7 +36,7 @@ static struct map_desc omap_io_desc[] __initdata = {
 	}
 };
 
-#if defined (CONFIG_ARCH_OMAP730) || defined (CONFIG_ARCH_OMAP850)
+#if defined(CONFIG_ARCH_OMAP730) || defined(CONFIG_ARCH_OMAP850)
 static struct map_desc omap7xx_io_desc[] __initdata = {
 	{
 		.virtual	= OMAP7XX_DSP_BASE,
@@ -104,7 +104,7 @@ void __init omap1_map_common_io(void)
 	 */
 	omap_check_revision();
 
-#if defined (CONFIG_ARCH_OMAP730) || defined (CONFIG_ARCH_OMAP850)
+#if defined(CONFIG_ARCH_OMAP730) || defined(CONFIG_ARCH_OMAP850)
 	if (cpu_is_omap7xx()) {
 		iotable_init(omap7xx_io_desc, ARRAY_SIZE(omap7xx_io_desc));
 	}
@@ -141,4 +141,3 @@ void __init omap1_init_common_hw(void)
 
 	omap1_mux_init();
 }
-

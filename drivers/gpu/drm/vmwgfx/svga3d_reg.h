@@ -1055,21 +1055,6 @@ typedef
 struct SVGA3dGuestImage {
    SVGAGuestPtr         ptr;
 
-   /*
-    * A note on interpretation of pitch: This value of pitch is the
-    * number of bytes between vertically adjacent image
-    * blocks. Normally this is the number of bytes between the first
-    * pixel of two adjacent scanlines. With compressed textures,
-    * however, this may represent the number of bytes between
-    * compression blocks rather than between rows of pixels.
-    *
-    * XXX: Compressed textures currently must be tightly packed in guest memory.
-    *
-    * If the image is 1-dimensional, pitch is ignored.
-    *
-    * If 'pitch' is zero, the SVGA3D device calculates a pitch value
-    * assuming each row of blocks is tightly packed.
-    */
    uint32 pitch;
 } SVGA3dGuestImage;
 
@@ -1672,31 +1657,6 @@ struct {
 } SVGA3dCmdBlitSurfaceToScreen;         /* SVGA_3D_CMD_BLIT_SURFACE_TO_SCREEN */
 
 
-/*
- * Capability query index.
- *
- * Notes:
- *
- *   1. SVGA3D_DEVCAP_MAX_TEXTURES reflects the maximum number of
- *      fixed-function texture units available. Each of these units
- *      work in both FFP and Shader modes, and they support texture
- *      transforms and texture coordinates. The host may have additional
- *      texture image units that are only usable with shaders.
- *
- *   2. The BUFFER_FORMAT capabilities are deprecated, and they always
- *      return TRUE. Even on physical hardware that does not support
- *      these formats natively, the SVGA3D device will provide an emulation
- *      which should be invisible to the guest OS.
- *
- *      In general, the SVGA3D device should support any operation on
- *      any surface format, it just may perform some of these
- *      operations in software depending on the capabilities of the
- *      available physical hardware.
- *
- *      XXX: In the future, we will add capabilities that describe in
- *      detail what formats are supported in hardware for what kinds
- *      of operations.
- */
 
 typedef enum {
    SVGA3D_DEVCAP_3D                                = 0,

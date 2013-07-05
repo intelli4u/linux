@@ -217,4 +217,3 @@
 #endif /* CONFIG_CPU_S3C2440 */
 
 #endif	/* __ASM_ARCH_REGS_DSC_H */
-

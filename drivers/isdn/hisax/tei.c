@@ -1,4 +1,4 @@
-/* $Id: tei.c,v 2.20.2.3 2004/01/13 14:31:26 keil Exp $
+/* $Id: tei.c,v 2.20.2.3 2004/01/13 14:31:26 Exp $
  *
  * Author       Karsten Keil
  *              based on the teles driver from Jan den Ouden

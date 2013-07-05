@@ -719,11 +719,6 @@ static int nilfs_setup_super(struct nilfs_sb_info *sbi)
 	if (nilfs->ns_mount_state & NILFS_ERROR_FS) {
 		printk(KERN_WARNING
 		       "NILFS warning: mounting fs with errors\n");
-#if 0
-	} else if (max_mnt_count >= 0 && mnt_count >= max_mnt_count) {
-		printk(KERN_WARNING
-		       "NILFS warning: maximal mount count reached\n");
-#endif
 	}
 	if (!max_mnt_count)
 		sbp[0]->s_max_mnt_count = cpu_to_le16(NILFS_DFL_MAX_MNT_COUNT);

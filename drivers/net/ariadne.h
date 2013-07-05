@@ -412,4 +412,3 @@ struct MC68230 {
 
 #define ARIADNE_RAM		0x8000	/* Always access WORDs!! */
 #define ARIADNE_RAM_SIZE	0x8000
-

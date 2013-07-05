@@ -170,13 +170,6 @@ void snd_midi_event_reset_decode(struct snd_midi_event *dev)
 	spin_unlock_irqrestore(&dev->lock, flags);
 }
 
-#if 0
-void snd_midi_event_init(struct snd_midi_event *dev)
-{
-	snd_midi_event_reset_encode(dev);
-	snd_midi_event_reset_decode(dev);
-}
-#endif  /*  0  */
 
 void snd_midi_event_no_status(struct snd_midi_event *dev, int on)
 {
@@ -186,27 +179,6 @@ void snd_midi_event_no_status(struct snd_midi_event *dev, int on)
 /*
  * resize buffer
  */
-#if 0
-int snd_midi_event_resize_buffer(struct snd_midi_event *dev, int bufsize)
-{
-	unsigned char *new_buf, *old_buf;
-	unsigned long flags;
-
-	if (bufsize == dev->bufsize)
-		return 0;
-	new_buf = kmalloc(bufsize, GFP_KERNEL);
-	if (new_buf == NULL)
-		return -ENOMEM;
-	spin_lock_irqsave(&dev->lock, flags);
-	old_buf = dev->buf;
-	dev->buf = new_buf;
-	dev->bufsize = bufsize;
-	reset_encode(dev);
-	spin_unlock_irqrestore(&dev->lock, flags);
-	kfree(old_buf);
-	return 0;
-}
-#endif  /*  0  */
 
 /*
  *  read bytes and encode to sequencer event if finished

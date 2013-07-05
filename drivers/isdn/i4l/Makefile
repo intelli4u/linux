@@ -16,4 +16,3 @@ isdn-$(CONFIG_ISDN_PPP)		+= isdn_ppp.o
 isdn-$(CONFIG_ISDN_X25)		+= isdn_concap.o isdn_x25iface.o
 isdn-$(CONFIG_ISDN_AUDIO)		+= isdn_audio.o
 isdn-$(CONFIG_ISDN_TTY_FAX)	+= isdn_ttyfax.o
-

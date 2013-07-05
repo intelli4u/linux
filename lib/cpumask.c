@@ -101,7 +101,6 @@ bool alloc_cpumask_var_node(cpumask_var_t *mask, gfp_t flags, int node)
 		dump_stack();
 	}
 #endif
-	/* FIXME: Bandaid to save us from old primitives which go to NR_CPUS. */
 	if (*mask) {
 		unsigned char *ptr = (unsigned char *)cpumask_bits(*mask);
 		unsigned int tail;

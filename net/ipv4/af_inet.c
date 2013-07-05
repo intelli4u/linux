@@ -117,6 +117,8 @@
 #include <linux/mroute.h>
 #endif
 
+#include <typedefs.h>
+#include <bcmdefs.h>
 
 /* The inetsw table contains everything that inet_create needs to
  * build a new socket.
@@ -1119,14 +1121,6 @@ static int inet_sk_reselect_saddr(struct sock *sk)
 
 	inet->inet_saddr = inet->inet_rcv_saddr = new_saddr;
 
-	/*
-	 * XXX The only one ugly spot where we need to
-	 * XXX really change the sockets identity after
-	 * XXX it has entered the hashes. -DaveM
-	 *
-	 * Besides that, it does not check for connection
-	 * uniqueness. Wait for troubles.
-	 */
 	__sk_prot_rehash(sk);
 	return 0;
 }
@@ -1293,7 +1287,7 @@ out:
 	return segs;
 }
 
-static struct sk_buff **inet_gro_receive(struct sk_buff **head,
+static struct sk_buff ** BCMFASTPATH_HOST inet_gro_receive(struct sk_buff **head,
 					 struct sk_buff *skb)
 {
 	const struct net_protocol *ops;
@@ -1371,7 +1365,7 @@ out:
 	return pp;
 }
 
-static int inet_gro_complete(struct sk_buff *skb)
+static int BCMFASTPATH_HOST inet_gro_complete(struct sk_buff *skb)
 {
 	const struct net_protocol *ops;
 	struct iphdr *iph = ip_hdr(skb);
@@ -1769,4 +1763,3 @@ static int __init ipv4_proc_init(void)
 #endif /* CONFIG_PROC_FS */
 
 MODULE_ALIAS_NETPROTO(PF_INET);
-

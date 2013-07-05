@@ -72,8 +72,7 @@ void omap_mcbsp_register_board_cfg(struct omap_mcbsp_platform_data *config,
 
 /*-------------------------------------------------------------------------*/
 
-#if defined(CONFIG_SND_OMAP_SOC_MCPDM) || \
-		defined(CONFIG_SND_OMAP_SOC_MCPDM_MODULE)
+#if defined(CONFIG_SND_OMAP_SOC_MCPDM) || defined(CONFIG_SND_OMAP_SOC_MCPDM_MODULE)
 
 static struct resource mcpdm_resources[] = {
 	{
@@ -218,10 +217,6 @@ static struct platform_device omap_uwire_device = {
 
 static void omap_init_uwire(void)
 {
-	/* FIXME define and use a boot tag; not all boards will be hooking
-	 * up devices to the microwire controller, and multi-board configs
-	 * mean that CONFIG_SPI_OMAP_UWIRE may be configured anyway...
-	 */
 
 	/* board-specific code must configure chipselects (only a few
 	 * are normally used) and SCLK/SDI/SDO (each has two choices).

@@ -30,8 +30,6 @@ static int pxa2xx_pcm_hw_params(struct snd_pcm_substream *substream,
 
 	dma = snd_soc_dai_get_dma_data(rtd->dai->cpu_dai, substream);
 
-	/* return if this is a bufferless transfer e.g.
-	 * codec <--> BT codec or GSM modem -- lg FIXME */
 	if (!dma)
 		return 0;
 

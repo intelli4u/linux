@@ -13,4 +13,3 @@
 #define FIXADDR_USER_END	0
 
 #endif
-

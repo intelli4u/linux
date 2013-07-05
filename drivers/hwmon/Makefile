@@ -112,4 +112,3 @@ obj-$(CONFIG_SENSORS_WM8350)	+= wm8350-hwmon.o
 ifeq ($(CONFIG_HWMON_DEBUG_CHIP),y)
 EXTRA_CFLAGS += -DDEBUG
 endif
-

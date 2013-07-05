@@ -19,12 +19,6 @@
  *
  */
 
-#if 0
-#define PLUGIN_DEBUG
-#endif
-#if 0
-#define OSS_DEBUG
-#endif
 
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -409,7 +403,6 @@ static int snd_pcm_hw_param_near(struct snd_pcm_substream *pcm,
 	int min, max;
 	int mindir, maxdir;
 	int valdir = dir ? *dir : 0;
-	/* FIXME */
 	if (best > INT_MAX)
 		best = INT_MAX;
 	min = max = best;
@@ -1936,13 +1929,6 @@ static int snd_pcm_oss_get_caps1(struct snd_pcm_substream *substream, int res)
 #endif
 	/* DSP_CAP_REALTIME is set all times: */
 	/* all ALSA drivers can return actual pointer in ring buffer */
-#if defined(DSP_CAP_REALTIME) && 0
-	{
-		struct snd_pcm_runtime *runtime = substream->runtime;
-		if (runtime->info & (SNDRV_PCM_INFO_BLOCK_TRANSFER|SNDRV_PCM_INFO_BATCH))
-			res &= ~DSP_CAP_REALTIME;
-	}
-#endif
 	return res;
 }
 
@@ -2488,7 +2474,8 @@ static long snd_pcm_oss_ioctl(struct file *file, unsigned int cmd, unsigned long
 		return put_user(SNDRV_OSS_VERSION, p);
 	if (cmd == OSS_ALSAEMULVER)
 		return put_user(1, p);
-#if defined(CONFIG_SND_MIXER_OSS) || (defined(MODULE) && defined(CONFIG_SND_MIXER_OSS_MODULE))
+#if defined(CONFIG_SND_MIXER_OSS) || (defined(MODULE) && \
+	defined(CONFIG_SND_MIXER_OSS_MODULE))
 	if (((cmd >> 8) & 0xff) == 'M')	{	/* mixer ioctl - for OSS compatibility */
 		struct snd_pcm_substream *substream;
 		int idx;

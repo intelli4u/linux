@@ -135,4 +135,3 @@ struct xgi_hw_device_info
 
 
 #endif
-

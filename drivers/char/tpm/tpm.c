@@ -1093,10 +1093,6 @@ static struct tpm_input_header savestate_header = {
 	.ordinal = TPM_ORD_SAVESTATE
 };
 
-/* Bug workaround - some TPM's don't flush the most
- * recently changed pcr on suspend, so force the flush
- * with an extend to the selected _unused_ non-volatile pcr.
- */
 static int tpm_suspend_pcr;
 static int __init tpm_suspend_setup(char *str)
 {

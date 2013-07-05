@@ -279,25 +279,6 @@ int snd_msnd_DARQ(struct snd_msnd *chip, int bank)
 
 	writew(wTmp, chip->DARQ + JQS_wTail);
 
-#if 0
-	/* Get our digital audio queue struct */
-	DAQD = bank * DAQDS__size + chip->mappedbase + DARQ_DATA_BUFF;
-
-	/* Get length of data */
-	size = readw(DAQD + DAQDS_wSize);
-
-	/* Read data from the head (unprotected bank 1 access okay
-	   since this is only called inside an interrupt) */
-	outb(HPBLKSEL_1, chip->io + HP_BLKS);
-	n = msnd_fifo_write(&chip->DARF,
-			    (char *)(chip->base + bank * DAR_BUFF_SIZE),
-			    size, 0);
-	if (n <= 0) {
-		outb(HPBLKSEL_0, chip->io + HP_BLKS);
-		return n;
-	}
-	outb(HPBLKSEL_0, chip->io + HP_BLKS);
-#endif
 
 	return 1;
 }
@@ -408,13 +389,6 @@ static void snd_msnd_capture_reset_queue(struct snd_msnd *chip,
 	writew(PCTODSP_OFFSET(chip->last_recbank * DAQDS__size),
 		chip->DARQ + JQS_wTail);
 
-#if 0 /* Critical section: bank 1 access. this is how the OSS driver does it:*/
-	spin_lock_irqsave(&chip->lock, flags);
-	outb(HPBLKSEL_1, chip->io + HP_BLKS);
-	memset_io(chip->mappedbase, 0, DAR_BUFF_SIZE * 3);
-	outb(HPBLKSEL_0, chip->io + HP_BLKS);
-	spin_unlock_irqrestore(&chip->lock, flags);
-#endif
 
 	chip->capturePeriodBytes = pcm_count;
 	snd_printdd("snd_msnd_capture_reset_queue() %i\n", pcm_count);
@@ -704,4 +678,3 @@ EXPORT_SYMBOL(snd_msnd_pcm);
 
 MODULE_DESCRIPTION("Common routines for Turtle Beach Multisound drivers");
 MODULE_LICENSE("GPL");
-

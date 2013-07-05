@@ -57,11 +57,6 @@ static void mpc8xxx_gpio_save_regs(struct of_mm_gpio_chip *mm)
 	mpc8xxx_gc->data = in_be32(mm->regs + GPIO_DAT);
 }
 
-/* Workaround GPIO 1 errata on MPC8572/MPC8536. The status of GPIOs
- * defined as output cannot be determined by reading GPDAT register,
- * so we use shadow data register instead. The status of input pins
- * is determined by reading GPDAT register.
- */
 static int mpc8572_gpio_get(struct gpio_chip *gc, unsigned int gpio)
 {
 	u32 val;

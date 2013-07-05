@@ -221,6 +221,9 @@ static inline int ip_skb_dst_mtu(struct sk_buff *skb)
 	       skb_dst(skb)->dev->mtu : dst_mtu(skb_dst(skb));
 }
 
+/* Fxcn port-S Wins, 0714-09 */
+int (*br_post_insert_hook)(struct sk_buff *skb);// add , Lewis Min, for OpenDNS, 03/12/2009
+/* Fxcn port-E Wins, 0714-09 */
 static int ip_finish_output(struct sk_buff *skb)
 {
 #if defined(CONFIG_NETFILTER) && defined(CONFIG_XFRM)
@@ -230,6 +233,24 @@ static int ip_finish_output(struct sk_buff *skb)
 		return dst_output(skb);
 	}
 #endif
+    
+/* Fxcn port-S Wins, 0714-09 */
+    // add start, Lewis Min, for OpenDNS, 03/12/2009
+	if(NULL!=br_post_insert_hook)
+	{
+        int ret;
+
+		ret = br_post_insert_hook(skb);
+		if((ret==NF_DROP)||(ret==NF_STOLEN))
+		{
+//			read_unlock(&br->lock);
+//            spin_unlock_bh(&br->lock);
+			return;
+		}
+	}
+    // add end, Lewis Min, for OpenDNS, 03/12/2009
+/* Fxcn port-E Wins, 0714-09 */
+
 	if (skb->len > ip_skb_dst_mtu(skb) && !skb_is_gso(skb))
 		return ip_fragment(skb, ip_finish_output2);
 	else
@@ -424,7 +445,7 @@ static void ip_copy_metadata(struct sk_buff *to, struct sk_buff *from)
 #endif
 	nf_copy(to, from);
 #if defined(CONFIG_NETFILTER_XT_TARGET_TRACE) || \
-    defined(CONFIG_NETFILTER_XT_TARGET_TRACE_MODULE)
+	defined(CONFIG_NETFILTER_XT_TARGET_TRACE_MODULE)
 	to->nf_trace = from->nf_trace;
 #endif
 #if defined(CONFIG_IP_VS) || defined(CONFIG_IP_VS_MODULE)
@@ -451,6 +472,7 @@ int ip_fragment(struct sk_buff *skb, int (*output)(struct sk_buff *))
 	__be16 not_last_frag;
 	struct rtable *rt = skb_rtable(skb);
 	int err = 0;
+    int first_frag = 1;     //  added pling 04/29/2010 
 
 	dev = rt->dst.dev;
 
@@ -661,6 +683,20 @@ slow_path:
 		 */
 		iph = ip_hdr(skb2);
 		iph->frag_off = htons((offset >> 3));
+
+        /*  added start pling 04/29/2010 */
+        /* If the packet is not from IP stack, i.e. from other i/f,
+         * then copy the Ethernet header and cb to the
+         * first fragment, for later use by NAT/QoS.
+         */
+        if (!skb->sk && first_frag)
+        {
+            first_frag = 0;
+            skb2->mac_header = (unsigned char *)(skb2->data - sizeof(struct ethhdr));
+            memcpy(skb2->mac_header, skb->mac_header, sizeof(struct ethhdr));
+            memcpy(skb2->cb, skb->cb, sizeof(skb->cb));
+        }
+        /*  added end pling 04/29/2010 */
 
 		/* ANK: dirty, but effective trick. Upgrade options only if
 		 * the segment to be fragmented was THE FIRST (otherwise,
@@ -1453,3 +1489,17 @@ void __init ip_init(void)
 	igmp_mc_proc_init();
 #endif
 }
+/* Fxcn port-S Wins, 0714-09 */
+// add start, Lewis Min, for OpenDNS, 12/12/2008
+void insert_func_to_BR_POST_ROUTE(void *FUNC)
+{
+   br_post_insert_hook= FUNC;
+}
+
+
+void remove_func_from_BR_POST_ROUTE(void)
+{
+   br_post_insert_hook= NULL;
+}
+// add end, Lewis Min, for OpenDNS, 12/12/2008
+/* Fxcn port-E Wins, 0714-09 */

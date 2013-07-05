@@ -22,17 +22,6 @@
 #include <asm/page.h>
 #include <hv/hypervisor.h>
 
-/*
- * Rather than associating each mm with its own ASID, we just use
- * ASIDs to allow us to lazily flush the TLB when we switch mms.
- * This way we only have to do an actual TLB flush on mm switch
- * every time we wrap ASIDs, not every single time we switch.
- *
- * FIXME: We might improve performance by keeping ASIDs around
- * properly, though since the hypervisor direct-maps VAs to TSB
- * entries, we're likely to have lost at least the executable page
- * mappings by the time we switch back to the original mm.
- */
 DECLARE_PER_CPU(int, current_asid);
 
 /* The hypervisor tells us what ASIDs are available to us. */

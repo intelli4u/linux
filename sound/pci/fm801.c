@@ -1562,7 +1562,6 @@ static int snd_fm801_suspend(struct pci_dev *pci, pm_message_t state)
 	snd_ac97_suspend(chip->ac97_sec);
 	for (i = 0; i < ARRAY_SIZE(saved_regs); i++)
 		chip->saved_regs[i] = inw(chip->port + saved_regs[i]);
-	/* FIXME: tea575x suspend */
 
 	pci_disable_device(pci);
 	pci_save_state(pci);

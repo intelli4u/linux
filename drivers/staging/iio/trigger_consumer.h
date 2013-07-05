@@ -42,6 +42,3 @@ static int iio_device_unregister_trigger_consumer(struct iio_dev *dev_info)
 };
 
 #endif /* CONFIG_TRIGGER_CONSUMER */
-
-
-

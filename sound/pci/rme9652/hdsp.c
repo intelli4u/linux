@@ -361,7 +361,6 @@ MODULE_FIRMWARE("digiface_firmware_rev11.bin");
 #define HDSP_systemFrequency64   (HDSP_inp_freq2)
 #define HDSP_systemFrequency88_2 (HDSP_inp_freq0|HDSP_inp_freq2)
 #define HDSP_systemFrequency96   (HDSP_inp_freq1|HDSP_inp_freq2)
-/* FIXME : more values for 9632 cards ? */
 
 #define HDSP_SelSyncRefMask        (HDSP_SelSyncRef0|HDSP_SelSyncRef1|HDSP_SelSyncRef2)
 #define HDSP_SelSyncRef_ADAT1      0

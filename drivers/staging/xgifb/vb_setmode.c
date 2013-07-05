@@ -4014,7 +4014,6 @@ unsigned char XGI_SearchModeID(unsigned short ModeNo,
 
 
 
-#ifdef LINUX /* chiawen for linux solution */
 
     if ( ModeNo <= 5 )
         ModeNo |= 1 ;
@@ -4047,8 +4046,6 @@ unsigned char XGI_SearchModeID(unsigned short ModeNo,
 			return 0;
         }
     }
-
-#endif
 
     return 1;
 }
@@ -10427,4 +10424,3 @@ unsigned short XGI_GetVCLK2Ptr(unsigned short ModeNo,
 
     return( VCLKIndex ) ;
 }
-

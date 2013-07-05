@@ -922,4 +922,3 @@ MODULE_AUTHOR("Sylvain Munaut <tnt@246tNt.com>");
 MODULE_DESCRIPTION("Freescale MPC52xx IDE/ATA libata driver");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(of, mpc52xx_ata_of_match);
-

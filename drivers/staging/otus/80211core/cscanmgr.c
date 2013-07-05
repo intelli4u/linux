@@ -309,11 +309,6 @@ void zfScanMgrScanEventRetry(zdev_t* dev)
     if ( !wd->sta.bPassiveScan )
     {
         zfScanSendProbeRequest(dev);
-        #if 0
-        zmw_enter_critical_section(dev);
-        zfTimerSchedule(dev, ZM_EVENT_IN_SCAN, ZM_TICK_IN_SCAN);
-        zmw_leave_critical_section(dev);
-        #endif
     }
 }
 
@@ -402,7 +397,6 @@ u8_t zfScanMgrScanEventTimeout(zdev_t* dev)
 
         wd->sta.bChannelScan = FALSE;
 
-        #if 1
         if (zfStaIsConnected(dev))
         { // Finish site survey, reset the variable to detect using wrong frequency !
             zfHpFinishSiteSurvey(dev, 1);
@@ -426,7 +420,6 @@ u8_t zfScanMgrScanEventTimeout(zdev_t* dev)
             wd->sta.ibssSiteSurveyStatus = 0;
             zmw_leave_critical_section(dev);
         }
-        #endif
 
 report_scan_result:
         /* avoid lose receive packet when site survey */
@@ -505,7 +498,6 @@ void zfScanMgrScanEventStart(zdev_t* dev)
 //    zm_debug_msg0("scan 0");
 //    zfCoreSetFrequencyV2(dev, wd->sta.scanFrequency, zfScanMgrEventSetFreqCompleteCb);
 
-    #if 1
     if (zfStaIsConnected(dev))
     {// If doing site survey !
         zfHpBeginSiteSurvey(dev, 1);
@@ -520,7 +512,6 @@ void zfScanMgrScanEventStart(zdev_t* dev)
         wd->sta.ibssSiteSurveyStatus = 0;
         zmw_leave_critical_section(dev);
     }
-    #endif
 
     zm_debug_msg0("scan 0");
     zfCoreSetFrequencyV2(dev, wd->sta.scanFrequency, zfScanMgrEventSetFreqCompleteCb);

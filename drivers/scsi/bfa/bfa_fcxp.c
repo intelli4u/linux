@@ -770,5 +770,3 @@ bfa_fcxp_get_maxrsp(struct bfa_s *bfa)
 
 	return mod->rsp_pld_sz;
 }
-
-

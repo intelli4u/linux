@@ -62,6 +62,17 @@
 #include <linux/blkdev.h>
 #include "../../scsi/sd.h"
 
+/*  added pling start 02/26/2010, for USB LED */
+#if (defined INCLUDE_USB_LED)   
+/*  modified start, Wins, 04/11/2011 */
+#if defined(R6300v2)
+extern int usb1_pkt_cnt;
+extern int usb2_pkt_cnt;
+#elif defined(R6250) || defined(R6200v2)
+extern int usb1_pkt_cnt;
+#endif /* R6300v2 */
+#endif
+/*  added end pling 02/26/2010 */ 
 
 /***********************************************************************
  * Data transfer routines
@@ -424,6 +435,24 @@ static int usb_stor_bulk_transfer_sglist(struct us_data *us, unsigned int pipe,
 	if (test_bit(US_FLIDX_ABORTING, &us->dflags))
 		return USB_STOR_XFER_ERROR;
 
+	/*  added pling start 02/26/2010, for USB LED */
+#if 0
+#if (defined INCLUDE_USB_LED)    
+    /*  modified start, Wins, 04/11/2011 */
+#if defined(R6300v2)
+    char devpath[4];
+    memcpy(devpath, us->pusb_dev->devpath, 3);
+    devpath[3] = '\0';
+    if (!strcmp(devpath, "1.1"))
+        usb1_pkt_cnt++;
+    else if (!strcmp(devpath, "1.2"))
+        usb2_pkt_cnt++;
+#endif /* R6300v2 */
+    /*  modified end, Wins, 04/11/2011 */
+#endif
+#endif
+    /*  added end pling 02/26/2010 */ 
+
 	/* initialize the scatter-gather request block */
 	US_DEBUGP("%s: xfer %u bytes, %d entries\n", __func__,
 			length, num_sg);
@@ -700,7 +729,6 @@ Retry_Sense:
 
 		scsi_eh_prep_cmnd(srb, &ses, NULL, 0, sense_size);
 
-		/* FIXME: we must do the protocol translation here */
 		if (us->subclass == US_SC_RBC || us->subclass == US_SC_SCSI ||
 				us->subclass == US_SC_CYP_ATACB)
 			srb->cmd_len = 6;

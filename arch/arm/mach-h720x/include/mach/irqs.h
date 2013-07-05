@@ -10,7 +10,7 @@
 #ifndef __ASM_ARCH_IRQS_H
 #define __ASM_ARCH_IRQS_H
 
-#if defined (CONFIG_CPU_H7201)
+#if defined(CONFIG_CPU_H7201)
 
 #define IRQ_PMU		0		/* 0x000001 */
 #define IRQ_DMA		1 		/* 0x000002 */
@@ -50,7 +50,7 @@
 			| (1<<IRQ_GPIOC) | (1<<IRQ_GPIOD)
 
 
-#elif defined (CONFIG_CPU_H7202)
+#elif defined(CONFIG_CPU_H7202)
 
 #define IRQ_PMU		0		/* 0x00000001 */
 #define IRQ_DMA		1		/* 0x00000002 */

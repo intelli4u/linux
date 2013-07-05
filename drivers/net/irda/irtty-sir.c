@@ -576,4 +576,3 @@ MODULE_AUTHOR("Dag Brattli <dagb@cs.uit.no>");
 MODULE_DESCRIPTION("IrDA TTY device driver");
 MODULE_ALIAS_LDISC(N_IRDA);
 MODULE_LICENSE("GPL");
-

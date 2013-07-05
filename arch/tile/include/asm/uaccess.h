@@ -128,14 +128,6 @@ struct __get_user {
 	int err;
 };
 
-/*
- * FIXME: we should express these as inline extended assembler, since
- * they're fundamentally just a variable dereference and some
- * supporting exception_table gunk.  Note that (a la i386) we can
- * extend the copy_to_user and copy_from_user routines to call into
- * such extended assembler routines, though we will have to use a
- * different return code in that case (1, 2, or 4, rather than -EFAULT).
- */
 extern struct __get_user __get_user_1(const void __user *);
 extern struct __get_user __get_user_2(const void __user *);
 extern struct __get_user __get_user_4(const void __user *);

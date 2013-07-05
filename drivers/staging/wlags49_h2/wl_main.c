@@ -144,7 +144,7 @@
  ******************************************************************************/
 void wl_isr_handler( unsigned long p );
 
-#if 0 //SCULL_USE_PROC /* don't waste space if unused */
+#if 0 //SCULL_USE_PROC     /* don't waste space if unused */
 //int scull_read_procmem(char *buf, char **start, off_t offset, int len, int unused);
 int scull_read_procmem(char *buf, char **start, off_t offset, int len, int *eof, void *data );
 static int write_int(struct file *file, const char *buffer, unsigned long count, void *data);
@@ -158,12 +158,6 @@ static void proc_write(const char *name, write_proc_t *w, void *data);
 static p_u16    irq_mask                = 0xdeb8; // IRQ3,4,5,7,9,10,11,12,14,15
 static p_s8     irq_list[4]             = { -1 };
 
-#if 0
-MODULE_PARM(irq_mask,               "h");
-MODULE_PARM_DESC(irq_mask,               "IRQ mask [0xdeb8]");
-MODULE_PARM(irq_list,               "1-4b");
-MODULE_PARM_DESC(irq_list,               "IRQ list [<irq_mask>]");
-#endif
 
 static p_u8     PARM_AUTHENTICATION        	= PARM_DEFAULT_AUTHENTICATION;
 static p_u16    PARM_AUTH_KEY_MGMT_SUITE   	= PARM_DEFAULT_AUTH_KEY_MGMT_SUITE;
@@ -233,146 +227,6 @@ static p_u8     PARM_WDS_ADDRESS6[ETH_ALEN]	= PARM_DEFAULT_NETWORK_ADDR;
 #endif // USE_WDS
 
 
-#if 0
-MODULE_PARM(PARM_DESIRED_SSID,          "s");
-MODULE_PARM_DESC(PARM_DESIRED_SSID,             "Network Name (<string>) [ANY]");
-MODULE_PARM(PARM_OWN_SSID,              "s");
-MODULE_PARM_DESC(PARM_OWN_SSID,                 "Network Name (<string>) [ANY]");
-MODULE_PARM(PARM_OWN_CHANNEL,           "b");
-MODULE_PARM_DESC(PARM_OWN_CHANNEL,              "Channel (0 - 14) [0]");
-MODULE_PARM(PARM_SYSTEM_SCALE,          "b");
-MODULE_PARM_DESC(PARM_SYSTEM_SCALE,             "Distance Between APs (1 - 3) [1]");
-MODULE_PARM(PARM_TX_RATE,               "b");
-MODULE_PARM_DESC(PARM_TX_RATE,                  "Transmit Rate Control");
-MODULE_PARM(PARM_RTS_THRESHOLD,         "h");
-MODULE_PARM_DESC(PARM_RTS_THRESHOLD,            "Medium Reservation (RTS/CTS Fragment Length) (256 - 2347) [2347]");
-MODULE_PARM(PARM_MICROWAVE_ROBUSTNESS,  "s");
-MODULE_PARM_DESC(PARM_MICROWAVE_ROBUSTNESS,     "Microwave Oven Robustness Enabled (<string> N or Y) [N]");
-MODULE_PARM(PARM_OWN_NAME,              "s");
-MODULE_PARM_DESC(PARM_OWN_NAME,                 "Station Name (<string>) [Linux]");
-
-MODULE_PARM(PARM_ENABLE_ENCRYPTION,     "b");
-MODULE_PARM_DESC(PARM_ENABLE_ENCRYPTION,        "Encryption Mode (0 - 7) [0]");
-
-MODULE_PARM(PARM_KEY1,                  "s");
-MODULE_PARM_DESC(PARM_KEY1,                     "Data Encryption Key 1 (<string>) []");
-MODULE_PARM(PARM_KEY2,                  "s");
-MODULE_PARM_DESC(PARM_KEY2,                     "Data Encryption Key 2 (<string>) []");
-MODULE_PARM(PARM_KEY3,                  "s");
-MODULE_PARM_DESC(PARM_KEY3,                     "Data Encryption Key 3 (<string>) []");
-MODULE_PARM(PARM_KEY4,                  "s");
-MODULE_PARM_DESC(PARM_KEY4,                     "Data Encryption Key 4 (<string>) []");
-MODULE_PARM(PARM_TX_KEY,                "b");
-MODULE_PARM_DESC(PARM_TX_KEY,                   "Transmit Key ID (1 - 4) [1]");
-MODULE_PARM(PARM_MULTICAST_RATE,        "b");
-MODULE_PARM_DESC(PARM_MULTICAST_RATE,           "Multicast Rate");
-MODULE_PARM(PARM_DOWNLOAD_FIRMWARE,     "s");
-MODULE_PARM_DESC(PARM_DOWNLOAD_FIRMWARE,        "filename of firmware image");
-
-MODULE_PARM(PARM_AUTH_KEY_MGMT_SUITE,   "b");
-MODULE_PARM_DESC(PARM_AUTH_KEY_MGMT_SUITE,      "Authentication Key Management suite (0-4) [0]");
-
-MODULE_PARM(PARM_LOAD_BALANCING,        "s");
-MODULE_PARM_DESC(PARM_LOAD_BALANCING,           "Load Balancing Enabled (<string> N or Y) [Y]");
-MODULE_PARM(PARM_MEDIUM_DISTRIBUTION,   "s");
-MODULE_PARM_DESC(PARM_MEDIUM_DISTRIBUTION,      "Medium Distribution Enabled (<string> N or Y) [Y]");
-MODULE_PARM(PARM_TX_POW_LEVEL,          "b");
-MODULE_PARM_DESC(PARM_TX_POW_LEVEL,             "Transmit Power (0 - 6) [3]");
-MODULE_PARM(PARM_SRSC_2GHZ,             "b");
-MODULE_PARM_DESC(PARM_SRSC_2GHZ,                "Supported Rate Set Control 2.4 GHz");
-MODULE_PARM(PARM_SRSC_5GHZ,             "b");
-MODULE_PARM_DESC(PARM_SRSC_5GHZ,                "Supported Rate Set Control 5.0 GHz");
-MODULE_PARM(PARM_BRSC_2GHZ,             "b");
-MODULE_PARM_DESC(PARM_BRSC_2GHZ,                "Basic Rate Set Control 2.4 GHz");
-MODULE_PARM(PARM_BRSC_5GHZ,             "b");
-MODULE_PARM_DESC(PARM_BRSC_5GHZ,                "Basic Rate Set Control 5.0 GHz");
-#if 1 //;? (HCF_TYPE) & HCF_TYPE_STA
-//;?seems reasonable that even an AP-only driver could afford this small additional footprint
-MODULE_PARM(PARM_PM_ENABLED,            "h");
-MODULE_PARM_DESC(PARM_PM_ENABLED,               "Power Management State (0 - 2, 8001 - 8002) [0]");
-MODULE_PARM(PARM_PORT_TYPE,             "b");
-MODULE_PARM_DESC(PARM_PORT_TYPE,                "Port Type (1 - 3) [1]");
-//;?MODULE_PARM(PARM_CREATE_IBSS,           "s");
-//;?MODULE_PARM_DESC(PARM_CREATE_IBSS,              "Create IBSS (<string> N or Y) [N]");
-//;?MODULE_PARM(PARM_MULTICAST_RX,          "s");
-//;?MODULE_PARM_DESC(PARM_MULTICAST_RX,             "Multicast Receive Enable (<string> N or Y) [Y]");
-//;?MODULE_PARM(PARM_MAX_SLEEP,             "h");
-//;?MODULE_PARM_DESC(PARM_MAX_SLEEP,                "Maximum Power Management Sleep Duration (0 - 65535) [100]");
-//;?MODULE_PARM(PARM_NETWORK_ADDR,          "6b");
-//;?MODULE_PARM_DESC(PARM_NETWORK_ADDR,             "Hardware Ethernet Address ([0x00-0xff],[0x00-0xff],[0x00-0xff],[0x00-0xff],[0x00-0xff],[0x00-0xff]) [<factory value>]");
-//;?MODULE_PARM(PARM_AUTHENTICATION,        "b");
-//
-//tracker 12448
-//;?MODULE_PARM_DESC(PARM_AUTHENTICATION,           "Authentication Type (0-2) [0] 0=Open 1=SharedKey 2=LEAP");
-//;?MODULE_PARM_DESC(authentication,         "Authentication Type (1-2) [1] 1=Open 2=SharedKey");
-//tracker 12448
-//
-//;?MODULE_PARM(PARM_OWN_ATIM_WINDOW,       "b");
-//;?MODULE_PARM_DESC(PARM_OWN_ATIM_WINDOW,          "ATIM Window time in TU for IBSS creation (0-100) [0]");
-//;?MODULE_PARM(PARM_PM_HOLDOVER_DURATION,  "b");
-//;?MODULE_PARM_DESC(PARM_PM_HOLDOVER_DURATION,     "Time station remains awake after MAC frame transfer when PM is on (0-65535) [100]");
-//;?MODULE_PARM(PARM_PROMISCUOUS_MODE,      "s");
-//;?MODULE_PARM_DESC(PARM_PROMISCUOUS_MODE,         "Promiscuous Mode Enable (<string> Y or N ) [N]" );
-//;?
-MODULE_PARM(PARM_CONNECTION_CONTROL,    "b");
-MODULE_PARM_DESC(PARM_CONNECTION_CONTROL,       "Connection Control (0 - 3) [2]");
-#endif /* HCF_STA */
-#if 1 //;? (HCF_TYPE) & HCF_TYPE_AP
-					//;?should we restore this to allow smaller memory footprint
-MODULE_PARM(PARM_OWN_DTIM_PERIOD,       "b");
-MODULE_PARM_DESC(PARM_OWN_DTIM_PERIOD,          "DTIM Period (0 - 255) [1]");
-MODULE_PARM(PARM_REJECT_ANY,            "s");
-MODULE_PARM_DESC(PARM_REJECT_ANY,               "Closed System (<string> N or Y) [N]");
-MODULE_PARM(PARM_EXCLUDE_UNENCRYPTED,   "s");
-MODULE_PARM_DESC(PARM_EXCLUDE_UNENCRYPTED,      "Deny non-encrypted (<string> N or Y) [Y]");
-MODULE_PARM(PARM_MULTICAST_PM_BUFFERING,"s");
-MODULE_PARM_DESC(PARM_MULTICAST_PM_BUFFERING,   "Buffer MAC frames for Tx after DTIM (<string> Y or N) [Y]");
-MODULE_PARM(PARM_INTRA_BSS_RELAY,       "s");
-MODULE_PARM_DESC(PARM_INTRA_BSS_RELAY,          "IntraBSS Relay (<string> N or Y) [Y]");
-MODULE_PARM(PARM_RTS_THRESHOLD1,        "h");
-MODULE_PARM_DESC(PARM_RTS_THRESHOLD1,           "RTS Threshold, WDS Port 1 (256 - 2347) [2347]");
-MODULE_PARM(PARM_RTS_THRESHOLD2,        "h");
-MODULE_PARM_DESC(PARM_RTS_THRESHOLD2,           "RTS Threshold, WDS Port 2 (256 - 2347) [2347]");
-MODULE_PARM(PARM_RTS_THRESHOLD3,        "h");
-MODULE_PARM_DESC(PARM_RTS_THRESHOLD3,           "RTS Threshold, WDS Port 3 (256 - 2347) [2347]");
-MODULE_PARM(PARM_RTS_THRESHOLD4,        "h");
-MODULE_PARM_DESC(PARM_RTS_THRESHOLD4,           "RTS Threshold, WDS Port 4 (256 - 2347) [2347]");
-MODULE_PARM(PARM_RTS_THRESHOLD5,        "h");
-MODULE_PARM_DESC(PARM_RTS_THRESHOLD5,           "RTS Threshold, WDS Port 5 (256 - 2347) [2347]");
-MODULE_PARM(PARM_RTS_THRESHOLD6,        "h");
-MODULE_PARM_DESC(PARM_RTS_THRESHOLD6,           "RTS Threshold, WDS Port 6 (256 - 2347) [2347]");
-MODULE_PARM(PARM_TX_RATE1,              "b");
-MODULE_PARM_DESC(PARM_TX_RATE1,                 "Transmit Rate Control, WDS Port 1 (1 - 7) [3]");
-MODULE_PARM(PARM_TX_RATE2,              "b");
-MODULE_PARM_DESC(PARM_TX_RATE2,                 "Transmit Rate Control, WDS Port 2 (1 - 7) [3]");
-MODULE_PARM(PARM_TX_RATE3,              "b");
-MODULE_PARM_DESC(PARM_TX_RATE3,                 "Transmit Rate Control, WDS Port 3 (1 - 7) [3]");
-MODULE_PARM(PARM_TX_RATE4,              "b");
-MODULE_PARM_DESC(PARM_TX_RATE4,                 "Transmit Rate Control, WDS Port 4 (1 - 7) [3]");
-MODULE_PARM(PARM_TX_RATE5,              "b");
-MODULE_PARM_DESC(PARM_TX_RATE5,                 "Transmit Rate Control, WDS Port 5 (1 - 7) [3]");
-MODULE_PARM(PARM_TX_RATE6,              "b");
-MODULE_PARM_DESC(PARM_TX_RATE6,                 "Transmit Rate Control, WDS Port 6 (1 - 7) [3]");
-MODULE_PARM(PARM_WDS_ADDRESS1,          "6b");
-MODULE_PARM_DESC(PARM_WDS_ADDRESS1,             "MAC Address, WDS Port 1 ([0x00-0xff],[0x00-0xff],[0x00-0xff],[0x00-0xff],[0x00-0xff],[0x00-0xff]) [{0}]");
-MODULE_PARM(PARM_WDS_ADDRESS2,          "6b");
-MODULE_PARM_DESC(PARM_WDS_ADDRESS2,             "MAC Address, WDS Port 2 ([0x00-0xff],[0x00-0xff],[0x00-0xff],[0x00-0xff],[0x00-0xff],[0x00-0xff]) [{0}]");
-MODULE_PARM(PARM_WDS_ADDRESS3,          "6b");
-MODULE_PARM_DESC(PARM_WDS_ADDRESS3,             "MAC Address, WDS Port 3 ([0x00-0xff],[0x00-0xff],[0x00-0xff],[0x00-0xff],[0x00-0xff],[0x00-0xff]) [{0}]");
-MODULE_PARM(PARM_WDS_ADDRESS4,          "6b");
-MODULE_PARM_DESC(PARM_WDS_ADDRESS4,             "MAC Address, WDS Port 4 ([0x00-0xff],[0x00-0xff],[0x00-0xff],[0x00-0xff],[0x00-0xff],[0x00-0xff]) [{0}]");
-MODULE_PARM(PARM_WDS_ADDRESS5,          "6b");
-MODULE_PARM_DESC(PARM_WDS_ADDRESS5,             "MAC Address, WDS Port 5 ([0x00-0xff],[0x00-0xff],[0x00-0xff],[0x00-0xff],[0x00-0xff],[0x00-0xff]) [{0}]");
-MODULE_PARM(PARM_WDS_ADDRESS6,          "6b");
-MODULE_PARM_DESC(PARM_WDS_ADDRESS6,             "MAC Address, WDS Port 6 ([0x00-0xff],[0x00-0xff],[0x00-0xff],[0x00-0xff],[0x00-0xff],[0x00-0xff]) [{0}]");
-
-MODULE_PARM(PARM_OWN_BEACON_INTERVAL,   "b");
-MODULE_PARM_DESC(PARM_OWN_BEACON_INTERVAL,      "Own Beacon Interval (20 - 200) [100]");
-MODULE_PARM(PARM_COEXISTENCE,   "b");
-MODULE_PARM_DESC(PARM_COEXISTENCE,      "Coexistence (0-7) [0]");
-
-#endif /* HCF_AP */
-#endif
 
 /* END NEW PARAMETERS */
 /*******************************************************************************
@@ -404,14 +258,9 @@ MODULE_PARM_DESC( useRTS, "Use RTS test interface (<string> N or Y) [N]" );
 extern struct CFG_RANGE2_STRCT BASED
 	cfg_drv_act_ranges_pri; 	    // describes primary-actor range of HCF
 
-#if 0 //;? (HCF_TYPE) & HCF_TYPE_AP
-extern memimage ap;                 // AP firmware image to be downloaded
-#endif /* HCF_AP */
 
-#if 1 //;? (HCF_TYPE) & HCF_TYPE_STA
 //extern memimage station;            // STA firmware image to be downloaded
 extern memimage fw_image;            // firmware image to be downloaded
-#endif /* HCF_STA */
 
 
 /*******************************************************************************
@@ -491,7 +340,6 @@ int wl_insert( struct net_device *dev )
 //;?        DBG_PARAM( DbgInfo, PARM_NAME_PM_HOLDOVER_DURATION, "%d", PARM_PM_HOLDOVER_DURATION );
 //;?        DBG_PARAM( DbgInfo, PARM_NAME_PROMISCUOUS_MODE, "\"%s\"", PARM_PROMISCUOUS_MODE );
 //;?#endif /* HCF_STA */
-#if 1 //;? (HCF_TYPE) & HCF_TYPE_AP
 		//;?should we restore this to allow smaller memory footprint
 		//;?I guess: no, since this is Debug mode only
 	DBG_PARAM( DbgInfo, PARM_NAME_OWN_DTIM_PERIOD, "%d", PARM_OWN_DTIM_PERIOD );
@@ -519,7 +367,6 @@ int wl_insert( struct net_device *dev )
 	DBG_PARAM( DbgInfo, PARM_NAME_WDS_ADDRESS5, "\"%s\"", DbgHwAddr( PARM_WDS_ADDRESS5 ));
 	DBG_PARAM( DbgInfo, PARM_NAME_WDS_ADDRESS6, "\"%s\"", DbgHwAddr( PARM_WDS_ADDRESS6 ));
 #endif /* USE_WDS */
-#endif /* HCF_AP */
 
 	VALID_PARAM( !PARM_DESIRED_SSID || ( strlen( PARM_DESIRED_SSID ) <= PARM_MAX_NAME_LEN ));
 	VALID_PARAM( !PARM_OWN_SSID || ( strlen( PARM_OWN_SSID ) <= PARM_MAX_NAME_LEN ));
@@ -657,7 +504,6 @@ int wl_insert( struct net_device *dev )
 	lp->srsc[1] = PARM_SRSC_5GHZ;
 	lp->brsc[0] = PARM_BRSC_2GHZ;
 	lp->brsc[1] = PARM_BRSC_5GHZ;
-#if 1 //;? (HCF_TYPE) & HCF_TYPE_STA
 //;?seems reasonable that even an AP-only driver could afford this small additional footprint
 	lp->PortType            = PARM_PORT_TYPE;
 	lp->MaxSleepDuration    = PARM_MAX_SLEEP;
@@ -685,9 +531,6 @@ int wl_insert( struct net_device *dev )
 	}
 
 	lp->connectionControl = PARM_CONNECTION_CONTROL;
-
-#endif /* HCF_STA */
-#if 1 //;? (HCF_TYPE) & HCF_TYPE_AP
 	//;?should we restore this to allow smaller memory footprint
 	lp->DTIMPeriod = PARM_OWN_DTIM_PERIOD;
 
@@ -748,7 +591,6 @@ int wl_insert( struct net_device *dev )
 		lp->wds_port[5].wdsAddress[i] = PARM_WDS_ADDRESS6[i];
 	}
 #endif  /* USE_WDS */
-#endif  /* HCF_AP */
 #ifdef USE_RTS
 	if ( strchr( "Yy", useRTS[0] ) != NULL ) {
 		lp->useRTS = 1;
@@ -854,24 +696,6 @@ int wl_insert( struct net_device *dev )
 	/* Certain RIDs must be set before enabling the ports */
 	wl_put_ltv_init( lp );
 
-#if 0 //;?why was this already commented out in wl_lkm_720
-	/* Enable the ports */
-	if ( wl_adapter_is_open( lp->dev )) {
-		/* Enable the ports */
-		DBG_TRACE( DbgInfo, "Enabling Port 0\n" );
-		hcf_status = wl_enable( lp );
-
-		if ( hcf_status != HCF_SUCCESS ) {
-			DBG_TRACE( DbgInfo, "Enable port 0 failed: 0x%x\n", hcf_status );
-		}
-
-#if (HCF_TYPE) & HCF_TYPE_AP
-		DBG_TRACE( DbgInfo, "Enabling WDS Ports\n" );
-		//wl_enable_wds_ports( lp );
-#endif  /* (HCF_TYPE) & HCF_TYPE_AP */
-
-	}
-#endif
 
 	/* Fill out the MAC address information in the net_device struct */
 	memcpy( lp->dev->dev_addr, lp->MACAddress, ETH_ALEN );
@@ -918,7 +742,7 @@ int wl_insert( struct net_device *dev )
 		printk( "%02X%c", dev->dev_addr[i], (( i < ( ETH_ALEN-1 )) ? ':' : '\n' ));
 	}
 
-#if 0 //SCULL_USE_PROC /* don't waste space if unused */
+#if 0 //SCULL_USE_PROC     /* don't waste space if unused */
 	create_proc_read_entry( "wlags", 0, NULL, scull_read_procmem, dev );
 	proc_mkdir("driver/wlags49", 0);
 	proc_write("driver/wlags49/wlags49_type", write_int, &lp->wlags49_type);
@@ -1066,10 +890,8 @@ int wl_go( struct wl_private *lp )
 		}
 	}
 
-#if 1 //;? (HCF_TYPE) & HCF_TYPE_AP
 	//DBG_TRACE( DbgInfo, "Disabling WDS Ports\n" );
 	//wl_disable_wds_ports( lp );
-#endif  /* (HCF_TYPE) & HCF_TYPE_AP */
 
 //;?what was the purpose of this
 // 	/* load the appropriate firmware image, depending on driver mode */
@@ -1744,199 +1566,6 @@ int wl_put_ltv( struct wl_private *lp )
 #endif // WARP
 	} else {
 		/* The following are set in AP mode only */
-#if 0 //;? (HCF_TYPE) & HCF_TYPE_AP
-		//;?should we restore this to allow smaller memory footprint
-
-		/* DTIM Period */
-		lp->ltvRecord.len       = 2;
-		lp->ltvRecord.typ       = CFG_CNF_OWN_DTIM_PERIOD;
-		lp->ltvRecord.u.u16[0]  = CNV_INT_TO_LITTLE( lp->DTIMPeriod );
-		hcf_status = hcf_put_info( &lp->hcfCtx, (LTVP)&( lp->ltvRecord ));
-
-		/* Multicast PM Buffering */
-		lp->ltvRecord.len       = 2;
-		lp->ltvRecord.typ       = CFG_CNF_MCAST_PM_BUF;
-		lp->ltvRecord.u.u16[0]  = CNV_INT_TO_LITTLE( lp->multicastPMBuffering );
-		hcf_status = hcf_put_info( &lp->hcfCtx, (LTVP)&( lp->ltvRecord ));
-
-		/* Reject ANY - Closed System */
-		lp->ltvRecord.len       = 2;
-		lp->ltvRecord.typ       = CFG_CNF_REJECT_ANY;
-		lp->ltvRecord.u.u16[0]  = CNV_INT_TO_LITTLE( lp->RejectAny );
-
-		hcf_status = hcf_put_info( &lp->hcfCtx, (LTVP)&( lp->ltvRecord ));
-
-		/* Exclude Unencrypted */
-		lp->ltvRecord.len       = 2;
-		lp->ltvRecord.typ       = CFG_CNF_EXCL_UNENCRYPTED;
-		lp->ltvRecord.u.u16[0]  = CNV_INT_TO_LITTLE( lp->ExcludeUnencrypted );
-
-		hcf_status = hcf_put_info( &lp->hcfCtx, (LTVP)&( lp->ltvRecord ));
-
-		/* IntraBSS Relay */
-		lp->ltvRecord.len       = 2;
-		lp->ltvRecord.typ       = CFG_CNF_INTRA_BSS_RELAY;
-		lp->ltvRecord.u.u16[0]  = CNV_INT_TO_LITTLE( lp->intraBSSRelay );
-		hcf_status = hcf_put_info( &lp->hcfCtx, (LTVP)&( lp->ltvRecord ));
-
-		/* RTS Threshold 0 */
-		lp->ltvRecord.len       = 2;
-		lp->ltvRecord.typ       = CFG_RTS_THRH0;
-		lp->ltvRecord.u.u16[0]  = CNV_INT_TO_LITTLE( lp->RTSThreshold );
-
-		hcf_status = hcf_put_info( &lp->hcfCtx, (LTVP)&( lp->ltvRecord ));
-
-		/* Tx Rate Control 0 */
-#ifdef WARP
-		lp->ltvRecord.len       = 3;
-		lp->ltvRecord.typ       = CFG_TX_RATE_CNTL0;
-		lp->ltvRecord.u.u16[0]  = CNV_INT_TO_LITTLE( lp->TxRateControl[0] );
-		lp->ltvRecord.u.u16[1]  = CNV_INT_TO_LITTLE( lp->TxRateControl[1] );
-#else
-		lp->ltvRecord.len       = 2;
-		lp->ltvRecord.typ       = CFG_TX_RATE_CNTL0;
-		lp->ltvRecord.u.u16[0]  = CNV_INT_TO_LITTLE( lp->TxRateControl[0] );
-#endif  // WARP
-
-		hcf_status = hcf_put_info( &lp->hcfCtx, (LTVP)&( lp->ltvRecord ));
-
-		/* Own Beacon Interval */
-		lp->ltvRecord.len       = 2;
-		lp->ltvRecord.typ       = 0xFC31;
-		lp->ltvRecord.u.u16[0]  = CNV_INT_TO_LITTLE( lp->ownBeaconInterval );
-		hcf_status = hcf_put_info( &lp->hcfCtx, (LTVP)&( lp->ltvRecord ));
-
-		/* Co-Existence Behavior */
-		lp->ltvRecord.len       = 2;
-		lp->ltvRecord.typ       = 0xFCC7;
-		lp->ltvRecord.u.u16[0]  = CNV_INT_TO_LITTLE( lp->coexistence );
-		hcf_status = hcf_put_info( &lp->hcfCtx, (LTVP)&( lp->ltvRecord ));
-
-#ifdef USE_WDS
-
-		/* RTS Threshold 1 */
-		lp->ltvRecord.len       = 2;
-		lp->ltvRecord.typ       = CFG_RTS_THRH1;
-		lp->ltvRecord.u.u16[0]  = CNV_INT_TO_LITTLE( lp->wds_port[0].rtsThreshold );
-		hcf_status = hcf_put_info( &lp->hcfCtx, (LTVP)&( lp->ltvRecord ));
-
-		/* RTS Threshold 2 */
-		lp->ltvRecord.len       = 2;
-		lp->ltvRecord.typ       = CFG_RTS_THRH2;
-		lp->ltvRecord.u.u16[0]  = CNV_INT_TO_LITTLE( lp->wds_port[1].rtsThreshold );
-		hcf_status = hcf_put_info( &lp->hcfCtx, (LTVP)&( lp->ltvRecord ));
-
-
-		/* RTS Threshold 3 */
-		lp->ltvRecord.len       = 2;
-		lp->ltvRecord.typ       = CFG_RTS_THRH3;
-		lp->ltvRecord.u.u16[0]  = CNV_INT_TO_LITTLE( lp->wds_port[2].rtsThreshold );
-		hcf_status = hcf_put_info( &lp->hcfCtx, (LTVP)&( lp->ltvRecord ));
-
-
-		/* RTS Threshold 4 */
-		lp->ltvRecord.len       = 2;
-		lp->ltvRecord.typ       = CFG_RTS_THRH4;
-		lp->ltvRecord.u.u16[0]  = CNV_INT_TO_LITTLE( lp->wds_port[3].rtsThreshold );
-		hcf_status = hcf_put_info( &lp->hcfCtx, (LTVP)&( lp->ltvRecord ));
-
-
-		/* RTS Threshold 5 */
-		lp->ltvRecord.len       = 2;
-		lp->ltvRecord.typ       = CFG_RTS_THRH5;
-		lp->ltvRecord.u.u16[0]  = CNV_INT_TO_LITTLE( lp->wds_port[4].rtsThreshold );
-		hcf_status = hcf_put_info( &lp->hcfCtx, (LTVP)&( lp->ltvRecord ));
-
-		/* RTS Threshold 6 */
-		lp->ltvRecord.len       = 2;
-		lp->ltvRecord.typ       = CFG_RTS_THRH6;
-		lp->ltvRecord.u.u16[0]  = CNV_INT_TO_LITTLE( lp->wds_port[5].rtsThreshold );
-		hcf_status = hcf_put_info( &lp->hcfCtx, (LTVP)&( lp->ltvRecord ));
-#if 0
-		/* TX Rate Control 1 */
-		lp->ltvRecord.len       = 2;
-		lp->ltvRecord.typ       = CFG_TX_RATE_CNTL1;
-		lp->ltvRecord.u.u16[0]  = CNV_INT_TO_LITTLE( lp->wds_port[0].txRateCntl );
-		hcf_status = hcf_put_info( &lp->hcfCtx, (LTVP)&( lp->ltvRecord ));
-
-		/* TX Rate Control 2 */
-		lp->ltvRecord.len       = 2;
-		lp->ltvRecord.typ       = CFG_TX_RATE_CNTL2;
-		lp->ltvRecord.u.u16[0]  = CNV_INT_TO_LITTLE( lp->wds_port[1].txRateCntl );
-		hcf_status = hcf_put_info( &lp->hcfCtx, (LTVP)&( lp->ltvRecord ));
-
-		/* TX Rate Control 3 */
-		lp->ltvRecord.len       = 2;
-		lp->ltvRecord.typ       = CFG_TX_RATE_CNTL3;
-		lp->ltvRecord.u.u16[0]  = CNV_INT_TO_LITTLE( lp->wds_port[2].txRateCntl );
-		hcf_status = hcf_put_info( &lp->hcfCtx, (LTVP)&( lp->ltvRecord ));
-
-		/* TX Rate Control 4 */
-		lp->ltvRecord.len       = 2;
-		lp->ltvRecord.typ       = CFG_TX_RATE_CNTL4;
-		lp->ltvRecord.u.u16[0]  = CNV_INT_TO_LITTLE( lp->wds_port[3].txRateCntl );
-		hcf_status = hcf_put_info( &lp->hcfCtx, (LTVP)&( lp->ltvRecord ));
-
-		/* TX Rate Control 5 */
-		lp->ltvRecord.len       = 2;
-		lp->ltvRecord.typ       = CFG_TX_RATE_CNTL5;
-		lp->ltvRecord.u.u16[0]  = CNV_INT_TO_LITTLE( lp->wds_port[4].txRateCntl );
-		hcf_status = hcf_put_info( &lp->hcfCtx, (LTVP)&( lp->ltvRecord ));
-
-		/* TX Rate Control 6 */
-		lp->ltvRecord.len       = 2;
-		lp->ltvRecord.typ       = CFG_TX_RATE_CNTL6;
-		lp->ltvRecord.u.u16[0]  = CNV_INT_TO_LITTLE( lp->wds_port[5].txRateCntl );
-		hcf_status = hcf_put_info( &lp->hcfCtx, (LTVP)&( lp->ltvRecord ));
-
-#endif
-
-		/* WDS addresses.  It's okay to blindly send these parameters, because
-		   the port needs to be enabled, before anything is done with it. */
-
-		/* WDS Address 1 */
-		lp->ltvRecord.len      = 4;
-		lp->ltvRecord.typ      = CFG_CNF_WDS_ADDR1;
-
-		memcpy( &lp->ltvRecord.u.u8[0], lp->wds_port[0].wdsAddress, ETH_ALEN );
-		hcf_status = hcf_put_info( &lp->hcfCtx, (LTVP)&( lp->ltvRecord ));
-
-		/* WDS Address 2 */
-		lp->ltvRecord.len      = 4;
-		lp->ltvRecord.typ      = CFG_CNF_WDS_ADDR2;
-
-		memcpy( &lp->ltvRecord.u.u8[0], lp->wds_port[1].wdsAddress, ETH_ALEN );
-		hcf_status = hcf_put_info( &lp->hcfCtx, (LTVP)&( lp->ltvRecord ));
-
-		/* WDS Address 3 */
-		lp->ltvRecord.len      = 4;
-		lp->ltvRecord.typ      = CFG_CNF_WDS_ADDR3;
-
-		memcpy( &lp->ltvRecord.u.u8[0], lp->wds_port[2].wdsAddress, ETH_ALEN );
-		hcf_status = hcf_put_info( &lp->hcfCtx, (LTVP)&( lp->ltvRecord ));
-
-		/* WDS Address 4 */
-		lp->ltvRecord.len      = 4;
-		lp->ltvRecord.typ      = CFG_CNF_WDS_ADDR4;
-
-		memcpy( &lp->ltvRecord.u.u8[0], lp->wds_port[3].wdsAddress, ETH_ALEN );
-		hcf_status = hcf_put_info( &lp->hcfCtx, (LTVP)&( lp->ltvRecord ));
-
-		/* WDS Address 5 */
-		lp->ltvRecord.len      = 4;
-		lp->ltvRecord.typ      = CFG_CNF_WDS_ADDR5;
-
-		memcpy( &lp->ltvRecord.u.u8[0], lp->wds_port[4].wdsAddress, ETH_ALEN );
-		hcf_status = hcf_put_info( &lp->hcfCtx, (LTVP)&( lp->ltvRecord ));
-
-		/* WDS Address 6 */
-		lp->ltvRecord.len      = 4;
-		lp->ltvRecord.typ      = CFG_CNF_WDS_ADDR6;
-
-		memcpy( &lp->ltvRecord.u.u8[0], lp->wds_port[5].wdsAddress, ETH_ALEN );
-		hcf_status = hcf_put_info( &lp->hcfCtx, (LTVP)&( lp->ltvRecord ));
-#endif  /* USE_WDS */
-#endif  /* (HCF_TYPE) & HCF_TYPE_AP */
 	}
 
 	/* Own MAC Address */
@@ -2103,7 +1732,7 @@ static void __exit wl_module_exit( void )
 	DBG_ENTER(DbgInfo);
 
 	wl_adapter_cleanup_module( );
-#if 0 //SCULL_USE_PROC /* don't waste space if unused */
+#if 0 //SCULL_USE_PROC     /* don't waste space if unused */
 	remove_proc_entry( "wlags", NULL );		//;?why so a-symmetric compared to location of create_proc_read_entry
 #endif
 
@@ -2336,11 +1965,6 @@ void wl_remove( struct net_device *dev )
 	/* Reset portState */
 	lp->portState = WVLAN_PORT_STATE_DISABLED;
 
-#if 0 //;? (HCF_TYPE) & HCF_TYPE_AP
-#ifdef USE_WDS
-	//wl_disable_wds_ports( lp );
-#endif // USE_WDS
-#endif  /* (HCF_TYPE) & HCF_TYPE_AP */
 
 	/* Mark the device as unregistered */
 	lp->is_registered = FALSE;
@@ -3523,7 +3147,7 @@ void wl_wds_netdev_deregister( struct wl_private *lp )
 #endif  /* USE_WDS */
 
 
-#if 0 //SCULL_USE_PROC /* don't waste space if unused */
+#if 0 //SCULL_USE_PROC     /* don't waste space if unused */
 /*
  * The proc filesystem: function to read and entry
  */
@@ -3708,7 +3332,6 @@ int scull_read_procmem(char *buf, char **start, off_t offset, int len, int *eof,
 #ifdef USE_RTS
    	    len += sprintf(buf+len,"useRTS:               0x%04X\n", lp->useRTS );
 #endif  // USE_RTS
-#if 1 //;? (HCF_TYPE) & HCF_TYPE_AP
 		//;?should we restore this to allow smaller memory footprint
 		//;?I guess not. This should be brought under Debug mode only
    	    len += sprintf(buf+len,"DTIMPeriod:           0x%04X\n", lp->DTIMPeriod );         // 1 - 255 (1)
@@ -3720,7 +3343,6 @@ int scull_read_procmem(char *buf, char **start, off_t offset, int len, int *eof,
 #ifdef USE_WDS
 //x		WVLAN_WDS_IF                wds_port[NUM_WDS_PORTS];
 #endif // USE_WDS
-#endif // HCF_AP
 	} else if ( lp->wlags49_type == 2 ){
         len += sprintf(buf+len,"tallies to be added\n" );
 //Hermes Tallies (IFB substructure) {

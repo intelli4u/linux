@@ -1002,9 +1002,6 @@
 #define	AR5K_PCIE_PM_CTL_PSM_D2		0x00000200
 #define	AR5K_PCIE_PM_CTL_PSM_D3		0x00000400
 
-/*
- * PCI-E Workaround enable register
- */
 #define	AR5K_PCIE_WAEN	0x407c
 
 /*
@@ -1656,12 +1653,6 @@
 #define AR5K_SLEEP2_DTIM_PER		0xffff0000	/* Mask for DTIM period (?) */
 #define AR5K_SLEEP2_DTIM_PER_S		16
 
-/*
- * TX power control (TPC) register
- *
- * XXX: PCDAC steps (0.5dbm) or DBM ?
- *
- */
 #define AR5K_TXPC			0x80e8			/* Register Address */
 #define AR5K_TXPC_ACK_M			0x0000003f	/* ACK tx power */
 #define AR5K_TXPC_ACK_S			0

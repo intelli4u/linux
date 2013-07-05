@@ -339,13 +339,6 @@ void __init spider_init_IRQ(void)
 	struct device_node *dn;
 	int chip = 0;
 
-	/* XXX node numbers are totally bogus. We _hope_ we get the device
-	 * nodes in the right order here but that's definitely not guaranteed,
-	 * we need to get the node from the device tree instead.
-	 * There is currently no proper property for it (but our whole
-	 * device-tree is bogus anyway) so all we can do is pray or maybe test
-	 * the address and deduce the node-id
-	 */
 	for (dn = NULL;
 	     (dn = of_find_node_by_name(dn, "interrupt-controller"));) {
 		if (of_device_is_compatible(dn, "CBEA,platform-spider-pic")) {

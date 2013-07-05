@@ -114,14 +114,13 @@
  */
 #define NR_IRQS_EB		(IRQ_EB_GIC_START + 96)
 
-#if defined(CONFIG_MACH_REALVIEW_EB) \
-	&& (!defined(NR_IRQS) || (NR_IRQS < NR_IRQS_EB))
+#if defined(CONFIG_MACH_REALVIEW_EB) && (!defined(NR_IRQS) || (NR_IRQS < NR_IRQS_EB))
 #undef NR_IRQS
 #define NR_IRQS			NR_IRQS_EB
 #endif
 
-#if defined(CONFIG_REALVIEW_EB_ARM11MP) || defined(CONFIG_REALVIEW_EB_A9MP) \
-	&& (!defined(MAX_GIC_NR) || (MAX_GIC_NR < NR_GIC_EB11MP))
+#if defined(CONFIG_REALVIEW_EB_ARM11MP) || defined(CONFIG_REALVIEW_EB_A9MP) && \
+	(!defined(MAX_GIC_NR) || (MAX_GIC_NR < NR_GIC_EB11MP))
 #undef MAX_GIC_NR
 #define MAX_GIC_NR		NR_GIC_EB11MP
 #endif

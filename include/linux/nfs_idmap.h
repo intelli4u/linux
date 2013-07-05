@@ -39,7 +39,6 @@
 
 #include <linux/types.h>
 
-/* XXX from bits/utmp.h  */
 #define IDMAP_NAMESZ  128
 
 #define IDMAP_TYPE_USER  0

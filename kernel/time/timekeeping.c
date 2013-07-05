@@ -153,9 +153,10 @@ __cacheline_aligned_in_smp DEFINE_SEQLOCK(xtime_lock);
  * - wall_to_monotonic is no longer the boot time, getboottime must be
  * used instead.
  */
-static struct timespec xtime __attribute__ ((aligned (16)));
+struct timespec xtime __attribute__ ((aligned (16)));
 static struct timespec wall_to_monotonic __attribute__ ((aligned (16)));
 static struct timespec total_sleep_time;
+EXPORT_SYMBOL(xtime);
 
 /*
  * The raw monotonic time for the CLOCK_MONOTONIC_RAW posix clock.
@@ -443,30 +444,12 @@ u64 timekeeping_max_deferment(void)
 	return timekeeper.clock->max_idle_ns;
 }
 
-/**
- * read_persistent_clock -  Return time from the persistent clock.
- *
- * Weak dummy function for arches that do not yet support it.
- * Reads the time from the battery backed persistent clock.
- * Returns a timespec with tv_sec=0 and tv_nsec=0 if unsupported.
- *
- *  XXX - Do be sure to remove it once all arches implement it.
- */
 void __attribute__((weak)) read_persistent_clock(struct timespec *ts)
 {
 	ts->tv_sec = 0;
 	ts->tv_nsec = 0;
 }
 
-/**
- * read_boot_clock -  Return time of the system start.
- *
- * Weak dummy function for arches that do not yet support it.
- * Function to read the exact time the system has been started.
- * Returns a timespec with tv_sec=0 and tv_nsec=0 if unsupported.
- *
- *  XXX - Do be sure to remove it once all arches implement it.
- */
 void __attribute__((weak)) read_boot_clock(struct timespec *ts)
 {
 	ts->tv_sec = 0;

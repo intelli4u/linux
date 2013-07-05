@@ -1162,10 +1162,6 @@ static int prism2_ioctl_siwmode(struct net_device *dev,
 
 	if ((local->iw_mode == IW_MODE_ADHOC ||
 	     local->iw_mode == IW_MODE_MONITOR) && *mode == IW_MODE_MASTER) {
-		/* There seems to be a firmware bug in at least STA f/w v1.5.6
-		 * that leaves beacon frames to use IBSS type when moving from
-		 * IBSS to Host AP mode. Doing double Port0 reset seems to be
-		 * enough to workaround this. */
 		double_reset = 1;
 	}
 
@@ -1383,27 +1379,6 @@ static int prism2_ioctl_siwretry(struct net_device *dev,
 
 	return -EOPNOTSUPP;
 
-#if 0
-	/* what could be done, if firmware would support this.. */
-
-	if (rrq->flags & IW_RETRY_LIMIT) {
-		if (rrq->flags & IW_RETRY_LONG)
-			HFA384X_RID_LONGRETRYLIMIT = rrq->value;
-		else if (rrq->flags & IW_RETRY_SHORT)
-			HFA384X_RID_SHORTRETRYLIMIT = rrq->value;
-		else {
-			HFA384X_RID_LONGRETRYLIMIT = rrq->value;
-			HFA384X_RID_SHORTRETRYLIMIT = rrq->value;
-		}
-
-	}
-
-	if (rrq->flags & IW_RETRY_LIFETIME) {
-		HFA384X_RID_MAXTRANSMITLIFETIME = rrq->value / 1024;
-	}
-
-	return 0;
-#endif /* 0 */
 }
 
 static int prism2_ioctl_giwretry(struct net_device *dev,

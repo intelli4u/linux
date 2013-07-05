@@ -525,26 +525,6 @@ void rose_rt_device_down(struct net_device *dev)
 	spin_unlock_bh(&rose_node_list_lock);
 }
 
-#if 0 /* Currently unused */
-/*
- *	A device has been removed. Remove its links.
- */
-void rose_route_device_down(struct net_device *dev)
-{
-	struct rose_route *s, *rose_route;
-
-	spin_lock_bh(&rose_route_list_lock);
-	rose_route = rose_route_list;
-	while (rose_route != NULL) {
-		s          = rose_route;
-		rose_route = rose_route->next;
-
-		if (s->neigh1->dev == dev || s->neigh2->dev == dev)
-			rose_remove_route(s);
-	}
-	spin_unlock_bh(&rose_route_list_lock);
-}
-#endif
 
 /*
  *	Clear all nodes and neighbours out, except for neighbours with
@@ -860,10 +840,6 @@ int rose_route_frame(struct sk_buff *skb, ax25_cb *ax25)
 	int len, res = 0;
 	char buf[11];
 
-#if 0
-	if (call_in_firewall(PF_ROSE, skb->dev, skb->data, NULL, &skb) != FW_ACCEPT)
-		return res;
-#endif
 
 	frametype = skb->data[2];
 	lci = ((skb->data[0] << 8) & 0xF00) + ((skb->data[1] << 0) & 0x0FF);
@@ -1001,7 +977,7 @@ int rose_route_frame(struct sk_buff *skb, ax25_cb *ax25)
 	 *	1. The frame isn't for us,
 	 *	2. It isn't "owned" by any existing route.
 	 */
-	if (frametype != ROSE_CALL_REQUEST) {	/* XXX */
+	if (frametype != ROSE_CALL_REQUEST) {
 		res = 0;
 		goto out;
 	}

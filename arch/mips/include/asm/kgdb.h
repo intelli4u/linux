@@ -5,8 +5,8 @@
 
 #include <asm/sgidefs.h>
 
-#if (_MIPS_ISA == _MIPS_ISA_MIPS1) || (_MIPS_ISA == _MIPS_ISA_MIPS2) || \
-	(_MIPS_ISA == _MIPS_ISA_MIPS32)
+#if (_MIPS_ISA == _MIPS_ISA_MIPS1) || (_MIPS_ISA == _MIPS_ISA_MIPS2) || (_MIPS_ISA == \
+	_MIPS_ISA_MIPS32)
 
 #define KGDB_GDB_REG_SIZE	32
 #define GDB_SIZEOF_REG		sizeof(u32)

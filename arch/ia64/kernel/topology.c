@@ -463,4 +463,3 @@ static int __init cache_sysfs_init(void)
 }
 
 device_initcall(cache_sysfs_init);
-

@@ -59,7 +59,6 @@
  * the card, but are subject to subtle interactions between bios,
  * hardware and the driver.
  */
-/* XXX: Add vblank support? */
 #define USE_IRQS 0
 
 typedef struct drm_i830_buf_priv {

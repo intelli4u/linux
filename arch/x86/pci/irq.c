@@ -276,11 +276,6 @@ static int pirq_via586_set(struct pci_dev *router, struct pci_dev *dev, int pirq
 	return 1;
 }
 
-/*
- * ITE 8330G pirq rules are nibble-based
- * FIXME: pirqmap may be { 1, 0, 3, 2 },
- * 	  2+3 are both mapped to irq 9 on my system
- */
 static int pirq_ite_get(struct pci_dev *router, struct pci_dev *dev, int pirq)
 {
 	static const unsigned char pirqmap[4] = { 1, 0, 2, 3 };
@@ -616,7 +611,6 @@ static __init int intel_router_probe(struct irq_router *r, struct pci_dev *route
 static __init int via_router_probe(struct irq_router *r,
 				struct pci_dev *router, u16 device)
 {
-	/* FIXME: We should move some of the quirk fixup stuff here */
 
 	/*
 	 * workarounds for some buggy BIOSes
@@ -659,7 +653,6 @@ static __init int via_router_probe(struct irq_router *r,
 	case PCI_DEVICE_ID_VIA_8233A:
 	case PCI_DEVICE_ID_VIA_8235:
 	case PCI_DEVICE_ID_VIA_8237:
-		/* FIXME: add new ones for 8233/5 */
 		r->name = "VIA";
 		r->get = pirq_via_get;
 		r->set = pirq_via_set;
@@ -812,10 +805,6 @@ static struct irq_router pirq_router;
 static struct pci_dev *pirq_router_dev;
 
 
-/*
- *	FIXME: should we have an option to say "generic for
- *	chipset" ?
- */
 
 static void __init pirq_find_router(struct irq_router *r)
 {
@@ -919,8 +908,6 @@ static int pcibios_lookup_irq(struct pci_dev *dev, int assign)
 		'A' + pin - 1, pirq, mask, pirq_table->exclusive_irqs);
 	mask &= pcibios_irq_mask;
 
-	/* Work around broken HP Pavilion Notebooks which assign USB to
-	   IRQ 9 even though it is actually wired to IRQ 11 */
 
 	if (broken_hp_bios_irq9 && pirq == 0x59 && dev->irq == 9) {
 		dev->irq = 11;
@@ -1065,10 +1052,6 @@ void __init pcibios_fixup_irqs(void)
 	}
 }
 
-/*
- * Work around broken HP Pavilion Notebooks which assign USB to
- * IRQ 9 even though it is actually wired to IRQ 11
- */
 static int __init fix_broken_hp_bios_irq9(const struct dmi_system_id *d)
 {
 	if (!broken_hp_bios_irq9) {
@@ -1079,10 +1062,6 @@ static int __init fix_broken_hp_bios_irq9(const struct dmi_system_id *d)
 	return 0;
 }
 
-/*
- * Work around broken Acer TravelMate 360 Notebooks which assign
- * Cardbus to IRQ 11 even though it is actually wired to IRQ 10
- */
 static int __init fix_acer_tm360_irqrouting(const struct dmi_system_id *d)
 {
 	if (!acer_tm360_irqrouting) {

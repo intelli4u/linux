@@ -119,6 +119,3 @@
 #define S3C2410_TCON_T0START	  (1<<0)
 
 #endif /*  __ASM_ARCH_REGS_TIMER_H */
-
-
-

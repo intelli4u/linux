@@ -135,7 +135,6 @@ static void ncp_update_dates(struct inode *inode, struct nw_info_struct *nwi)
 	DPRINTK(KERN_DEBUG "ncp_update_dates_and_mode: (%s) nfs.mode=0%o\n",
 		nwi->entryName, nwi->nfs.mode);
 	if (nwi->nfs.mode) {
-		/* XXX Security? */
 		inode->i_mode = nwi->nfs.mode;
 	}
 
@@ -881,7 +880,6 @@ int ncp_notify_change(struct dentry *dentry, struct iattr *attr)
 	info_mask = 0;
 	memset(&info, 0, sizeof(info));
 
-#if 1 
         if ((attr->ia_valid & ATTR_MODE) != 0)
         {
 		umode_t newmode = attr->ia_mode;
@@ -930,7 +928,6 @@ int ncp_notify_change(struct dentry *dentry, struct iattr *attr)
 		}
 #endif
         }
-#endif
 
 	/* Do SIZE before attributes, otherwise mtime together with size does not work...
 	 */

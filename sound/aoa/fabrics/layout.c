@@ -142,8 +142,6 @@ static struct codec_connection onyx_connections_noheadphones[] = {
 		.connected = CC_DIGITALOUT,
 		.codec_bit = 1,
 	},
-	/* FIXME: are these correct? probably not for all the machines
-	 * below ... If not this will need separating. */
 	{
 		.connected = CC_LINEIN,
 		.codec_bit = 2,

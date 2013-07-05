@@ -56,12 +56,6 @@ extern      "C"
 /* iSPLD control chip registers */
 /********************************/
 
-#if 0
-#define CPLD_MCSR    0x0
-#define CPLD_MCLK    0x1
-#define CPLD_LEDS    0x2
-#define CPLD_INTR    0x3
-#endif
 
     struct c4_cpld
     {

@@ -99,8 +99,8 @@ static void __init search_IAR(void)
 		for (irqN = 0; irqN < NR_PERI_INTS; irqN += 4) {
 			int irqn;
 			u32 iar = bfin_read32((unsigned long *)SIC_IAR0 +
-#if defined(CONFIG_BF51x) || defined(CONFIG_BF52x) || \
-	defined(CONFIG_BF538) || defined(CONFIG_BF539)
+#if defined(CONFIG_BF51x) || defined(CONFIG_BF52x) || defined(CONFIG_BF538) || \
+	defined(CONFIG_BF539)
 				((irqN % 32) >> 3) + ((irqN / 32) * ((SIC_IAR4 - SIC_IAR0) / 4))
 #else
 				(irqN >> 3)
@@ -680,7 +680,8 @@ static void bfin_demux_gpio_irq(unsigned int inta_irq,
 		irq = IRQ_PF0;
 		search = 1;
 		break;
-# if defined(BF537_FAMILY) && !(defined(CONFIG_BFIN_MAC) || defined(CONFIG_BFIN_MAC_MODULE))
+# if defined(BF537_FAMILY) && !(defined(CONFIG_BFIN_MAC) || \
+	defined(CONFIG_BFIN_MAC_MODULE))
 	case IRQ_MAC_RX:
 		irq = IRQ_PH0;
 		break;
@@ -1112,8 +1113,8 @@ int __init init_arch_irq(void)
 	int irq;
 	unsigned long ilat = 0;
 	/*  Disable all the peripheral intrs  - page 4-29 HW Ref manual */
-#if defined(CONFIG_BF54x) || defined(CONFIG_BF52x) || defined(CONFIG_BF561) \
-	|| defined(BF538_FAMILY) || defined(CONFIG_BF51x)
+#if defined(CONFIG_BF54x) || defined(CONFIG_BF52x) || defined(CONFIG_BF561) || \
+	defined(BF538_FAMILY) || defined(CONFIG_BF51x)
 	bfin_write_SIC_IMASK0(SIC_UNMASK_ALL);
 	bfin_write_SIC_IMASK1(SIC_UNMASK_ALL);
 # ifdef CONFIG_BF54x
@@ -1154,7 +1155,8 @@ int __init init_arch_irq(void)
 		switch (irq) {
 #if defined(CONFIG_BF53x)
 		case IRQ_PROG_INTA:
-# if defined(BF537_FAMILY) && !(defined(CONFIG_BFIN_MAC) || defined(CONFIG_BFIN_MAC_MODULE))
+# if defined(BF537_FAMILY) && !(defined(CONFIG_BFIN_MAC) || \
+	defined(CONFIG_BFIN_MAC_MODULE))
 		case IRQ_MAC_RX:
 # endif
 #elif defined(CONFIG_BF54x)
@@ -1250,9 +1252,6 @@ int __init init_arch_irq(void)
 	CSYNC();
 
 	printk(KERN_INFO "Configuring Blackfin Priority Driven Interrupts\n");
-	/* IMASK=xxx is equivalent to STI xx or bfin_irq_flags=xx,
-	 * local_irq_enable()
-	 */
 	program_IAR();
 	/* Therefore it's better to setup IARs before interrupts enabled */
 	search_IAR();

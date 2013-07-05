@@ -684,22 +684,6 @@ static u8 sonypi_call3(u8 dev, u8 fn, u8 v)
 	return v1;
 }
 
-#if 0
-/* Get brightness, hue etc. Unreliable... */
-static u8 sonypi_read(u8 fn)
-{
-	u8 v1, v2;
-	int n = 100;
-
-	while (n--) {
-		v1 = sonypi_call2(0x8f, fn);
-		v2 = sonypi_call2(0x8f, fn);
-		if (v1 == v2 && v1 != 0xff)
-			return v1;
-	}
-	return 0xff;
-}
-#endif
 
 /* Set brightness, hue etc */
 static void sonypi_set(u8 fn, u8 v)

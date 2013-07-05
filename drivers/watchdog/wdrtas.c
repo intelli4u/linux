@@ -1,7 +1,4 @@
-/*
- * FIXME: add wdrtas_get_status and wdrtas_get_boot_status as soon as
- * RTAS calls are available
- */
+
 
 /*
  * RTAS watchdog driver

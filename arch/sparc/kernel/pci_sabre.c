@@ -280,9 +280,6 @@ static irqreturn_t sabre_ce_intr(int irq, void *dev_id)
 		((error_bits & SABRE_CEAFSR_PDWR) ?
 		 "DMA Write" : "???")));
 
-	/* XXX Use syndrome and afar to print out module string just like
-	 * XXX UDB CE trap handler does... -DaveM
-	 */
 	printk("%s: syndrome[%02lx] bytemask[%04lx] dword_offset[%lx] "
 	       "was_block(%d)\n",
 	       pbm->name,

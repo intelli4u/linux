@@ -264,4 +264,3 @@ struct proto ieee802154_raw_prot = {
 	.getsockopt	= raw_getsockopt,
 	.setsockopt	= raw_setsockopt,
 };
-

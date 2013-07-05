@@ -68,7 +68,6 @@ static int utf8_to_utf16le(const char *s, __le16 *cp, unsigned len)
 			// 11101110wwwwzzzzyy + 110111yyyyxxxxxx
 			//     = 11110uuu 10uuzzzz 10yyyyyy 10xxxxxx
 			// (uuuuu = wwww + 1)
-			// FIXME accept the surrogate code points (only)
 
 			} else
 				goto fail;
@@ -133,4 +132,3 @@ usb_gadget_get_string (struct usb_gadget_strings *table, int id, u8 *buf)
 	buf [1] = USB_DT_STRING;
 	return buf [0];
 }
-

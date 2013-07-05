@@ -1607,10 +1607,6 @@ static void udc_setup_endpoints(struct udc *dev)
 		dev->ep[UDC_EP0OUT_IX].ep.maxpacket = UDC_EP0OUT_MAX_PKT_SIZE;
 	}
 
-	/*
-	 * with suspend bug workaround, ep0 params for gadget driver
-	 * are set at gadget driver bind() call
-	 */
 	dev->gadget.ep0 = &dev->ep[UDC_EP0IN_IX].ep;
 	dev->ep[UDC_EP0IN_IX].halted = 0;
 	INIT_LIST_HEAD(&dev->gadget.ep0->ep_list);
@@ -1785,17 +1781,6 @@ static void udc_handle_halt_state(struct udc_ep *ep)
 		tmp = readl(&ep->regs->ctl);
 		/* STALL cleared ? */
 		if (!(tmp & AMD_BIT(UDC_EPCTL_S))) {
-			/*
-			 * FIXME: MSC spec requires that stall remains
-			 * even on receivng of CLEAR_FEATURE HALT. So
-			 * we would set STALL again here to be compliant.
-			 * But with current mass storage drivers this does
-			 * not work (would produce endless host retries).
-			 * So we clear halt on CLEAR_FEATURE.
-			 *
-			DBG(ep->dev, "ep %d: set STALL again\n", ep->num);
-			tmp |= AMD_BIT(UDC_EPCTL_S);
-			writel(tmp, &ep->regs->ctl);*/
 
 			/* clear NAK by writing CNAK */
 			tmp |= AMD_BIT(UDC_EPCTL_CNAK);
@@ -3464,4 +3449,3 @@ module_exit(cleanup);
 MODULE_DESCRIPTION(UDC_MOD_DESCRIPTION);
 MODULE_AUTHOR("Thomas Dahlmann");
 MODULE_LICENSE("GPL");
-

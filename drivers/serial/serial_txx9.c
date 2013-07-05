@@ -255,8 +255,6 @@ static void serial_txx9_initialize(struct uart_port *port)
 	unsigned int tmout = 10000;
 
 	sio_out(up, TXX9_SIFCR, TXX9_SIFCR_SWRST);
-	/* TX4925 BUG WORKAROUND.  Accessing SIOC register
-	 * immediately after soft reset causes bus error. */
 	mmiowb();
 	udelay(1);
 	while ((sio_in(up, TXX9_SIFCR) & TXX9_SIFCR_SWRST) && --tmout)
@@ -466,7 +464,7 @@ static void serial_txx9_break_ctl(struct uart_port *port, int break_state)
 	spin_unlock_irqrestore(&up->port.lock, flags);
 }
 
-#if defined(CONFIG_SERIAL_TXX9_CONSOLE) || (CONFIG_CONSOLE_POLL)
+#if defined(CONFIG_SERIAL_TXX9_CONSOLE) || CONFIG_CONSOLE_POLL
 /*
  *	Wait for transmitter & holding register to empty
  */

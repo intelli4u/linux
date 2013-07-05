@@ -31,4 +31,3 @@ struct mtd_info *mtd_concat_create(
 void mtd_concat_destroy(struct mtd_info *mtd);
 
 #endif
-

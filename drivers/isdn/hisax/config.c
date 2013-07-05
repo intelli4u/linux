@@ -1,4 +1,4 @@
-/* $Id: config.c,v 2.84.2.5 2004/02/11 13:21:33 keil Exp $
+/* $Id: config.c,v 2.84.2.5 2004/02/11 13:21:33 Exp $
  *
  * Author       Karsten Keil
  * Copyright    by Karsten Keil      <keil@isdn4linux.de>
@@ -585,15 +585,6 @@ static inline struct IsdnCardState *hisax_findcard(int driverid)
 /*
  * Find card with given card number
  */
-#if 0
-struct IsdnCardState *hisax_get_card(int cardnr)
-{
-	if ((cardnr <= nrcards) && (cardnr > 0))
-		if (cards[cardnr - 1].cs)
-			return cards[cardnr - 1].cs;
-	return NULL;
-}
-#endif  /*  0  */
 
 static int HiSax_readstatus(u_char __user *buf, int len, int id, int channel)
 {
@@ -796,7 +787,7 @@ static void closecard(int cardnr)
 	}
 	if (csta->cardmsg)
 		csta->cardmsg(csta, CARD_RELEASE, NULL);
-	if (csta->dbusytimer.function != NULL) // FIXME?
+	if (csta->dbusytimer.function != NULL)
 		del_timer(&csta->dbusytimer);
 	ll_unload(csta);
 }
@@ -1737,7 +1728,6 @@ static void hisax_b_l1l2(struct hisax_if *ifc, int pr, void *arg)
 	struct PStack *st = bcs->st;
 	struct sk_buff *skb;
 
-	// FIXME use isdnl1?
 	switch (pr) {
 	case PH_ACTIVATE | INDICATION:
 		st->l1.l1l2(st, pr, NULL);
@@ -1791,7 +1781,6 @@ static void hisax_d_l2l1(struct PStack *st, int pr, void *arg)
 		if (cs->debug & DEB_DLOG_VERBOSE)
 			dlogframe(cs, skb, 0);
 		Logl2Frame(cs, skb, "PH_DATA_REQ", 0);
-		// FIXME lock?
 		if (!test_and_set_bit(FLG_L1_DBUSY, &cs->HW_Flags))
 			D_L2L1(hisax_d_if, PH_DATA | REQUEST, skb);
 		else
@@ -1825,7 +1814,6 @@ static void hisax_b_l2l1(struct PStack *st, int pr, void *arg)
 		break;
 	case PH_DATA | REQUEST:
 	case PH_PULL | INDICATION:
-		// FIXME lock?
 		if (!test_and_set_bit(BC_FLG_BUSY, &bcs->Flag)) {
 			B_L2L1(b_if, PH_DATA | REQUEST, arg);
 		} else {

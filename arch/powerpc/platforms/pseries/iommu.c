@@ -621,4 +621,3 @@ void iommu_init_early_pSeries(void)
 
 	set_pci_dma_ops(&dma_iommu_ops);
 }
-

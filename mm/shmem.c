@@ -804,7 +804,6 @@ static int shmem_notify_change(struct dentry *dentry, struct iattr *attr)
 			}
 		}
 
-		/* XXX(truncate): truncate_setsize should be called last */
 		truncate_setsize(inode, newsize);
 		if (page)
 			page_cache_release(page);

@@ -188,22 +188,6 @@ static int write_acpi_int(const char *methodName, int val)
 	return (status == AE_OK);
 }
 
-#if 0
-static int read_acpi_int(const char *methodName, int *pVal)
-{
-	struct acpi_buffer results;
-	union acpi_object out_objs[1];
-	acpi_status status;
-
-	results.length = sizeof(out_objs);
-	results.pointer = out_objs;
-
-	status = acpi_evaluate_object(0, (char *)methodName, 0, &results);
-	*pVal = out_objs[0].integer.value;
-
-	return (status == AE_OK) && (out_objs[0].type == ACPI_TYPE_INTEGER);
-}
-#endif
 
 static const char *method_hci /*= 0*/ ;
 
@@ -752,9 +736,6 @@ static int keys_proc_show(struct seq_file *m, void *v)
 		} else if (hci_result == HCI_EMPTY) {
 			/* better luck next time */
 		} else if (hci_result == HCI_NOT_SUPPORTED) {
-			/* This is a workaround for an unresolved issue on
-			 * some machines where system events sporadically
-			 * become disabled. */
 			hci_write1(HCI_SYSTEM_EVENT, 1, &hci_result);
 			printk(MY_NOTICE "Re-enabled hotkeys\n");
 		} else {
@@ -936,9 +917,6 @@ static void toshiba_acpi_notify(acpi_handle handle, u32 event, void *context)
 					 key->keycode, 0);
 			input_sync(toshiba_acpi.hotkey_dev);
 		} else if (hci_result == HCI_NOT_SUPPORTED) {
-			/* This is a workaround for an unresolved issue on
-			 * some machines where system events sporadically
-			 * become disabled. */
 			hci_write1(HCI_SYSTEM_EVENT, 1, &hci_result);
 			printk(MY_NOTICE "Re-enabled hotkeys\n");
 		}

@@ -723,7 +723,6 @@ static void mpc52xx_fec_stop(struct net_device *dev)
 
 		if (time_after_eq(jiffies, timeout))
 			dev_err(&dev->dev, "queues didn't drain\n");
-#if 1
 		if (time_after_eq(jiffies, timeout)) {
 			dev_err(&dev->dev, "  tx: index: %i, outdex: %i\n",
 					priv->tx_dmatsk->index,
@@ -732,7 +731,6 @@ static void mpc52xx_fec_stop(struct net_device *dev)
 					priv->rx_dmatsk->index,
 					priv->rx_dmatsk->outdex);
 		}
-#endif
 	}
 
 	bcom_disable(priv->tx_dmatsk);

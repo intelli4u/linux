@@ -82,6 +82,9 @@
 #include <linux/crypto.h>
 #include <linux/scatterlist.h>
 
+#include <typedefs.h>
+#include <bcmdefs.h>
+
 int sysctl_tcp_tw_reuse __read_mostly;
 int sysctl_tcp_low_latency __read_mostly;
 EXPORT_SYMBOL(sysctl_tcp_low_latency);
@@ -635,7 +638,7 @@ static void tcp_v4_send_reset(struct sock *sk, struct sk_buff *skb)
 	}
 #endif
 	arg.csum = csum_tcpudp_nofold(ip_hdr(skb)->daddr,
-				      ip_hdr(skb)->saddr, /* XXX */
+				      ip_hdr(skb)->saddr,
 				      arg.iov[0].iov_len, IPPROTO_TCP, 0);
 	arg.csumoffset = offsetof(struct tcphdr, check) / 2;
 	arg.flags = (sk && inet_sk(sk)->transparent) ? IP_REPLY_ARG_NOSRCCHECK : 0;
@@ -710,7 +713,7 @@ static void tcp_v4_send_ack(struct sk_buff *skb, u32 seq, u32 ack,
 #endif
 	arg.flags = reply_flags;
 	arg.csum = csum_tcpudp_nofold(ip_hdr(skb)->daddr,
-				      ip_hdr(skb)->saddr, /* XXX */
+				      ip_hdr(skb)->saddr,
 				      arg.iov[0].iov_len, IPPROTO_TCP, 0);
 	arg.csumoffset = offsetof(struct tcphdr, check) / 2;
 	if (oif)
@@ -2549,10 +2552,19 @@ void tcp4_proc_exit(void)
 }
 #endif /* CONFIG_PROC_FS */
 
+#ifdef CONFIG_INET_GRO
+extern atomic_t gro_timer_init;
+#endif
 struct sk_buff **tcp4_gro_receive(struct sk_buff **head, struct sk_buff *skb)
 {
-	struct iphdr *iph = skb_gro_network_header(skb);
+	struct iphdr *iph;
 
+#ifdef CONFIG_INET_GRO
+	if (atomic_read(&gro_timer_init))
+		return tcp_gro_receive(head, skb);
+#else
+	/* We don't support hw-checksum. Skip this part to do real TCP merge */
+	iph = skb_gro_network_header(skb);
 	switch (skb->ip_summed) {
 	case CHECKSUM_COMPLETE:
 		if (!tcp_v4_check(skb_gro_len(skb), iph->saddr, iph->daddr,
@@ -2568,10 +2580,11 @@ struct sk_buff **tcp4_gro_receive(struct sk_buff **head, struct sk_buff *skb)
 	}
 
 	return tcp_gro_receive(head, skb);
+#endif /* CONFIG_INET_GRO */
 }
 EXPORT_SYMBOL(tcp4_gro_receive);
 
-int tcp4_gro_complete(struct sk_buff *skb)
+int BCMFASTPATH_HOST tcp4_gro_complete(struct sk_buff *skb)
 {
 	struct iphdr *iph = ip_hdr(skb);
 	struct tcphdr *th = tcp_hdr(skb);

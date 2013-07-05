@@ -77,4 +77,3 @@ int pmem_remap(struct pmem_region *region, struct file *file,
 	       unsigned operation);
 
 #endif //_ANDROID_PPP_H_
-

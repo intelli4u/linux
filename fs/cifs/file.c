@@ -127,8 +127,6 @@ cifs_posix_open_inode_helper(struct inode *inode, struct file *file,
 		goto psx_client_can_cache;
 	}
 
-	/* BB FIXME need to fix this check to move it earlier into posix_open
-	   BB  fIX following section BB FIXME */
 
 	/* if not oplocked, invalidate inode pages if mtime or file
 	   size changed */
@@ -1696,11 +1694,6 @@ int cifs_fsync(struct file *file, int datasync)
 
 /*	cFYI(1, "rpages is %d for sync page of Index %ld", rpages, index);
 
-#if 0
-	if (rc < 0)
-		return rc;
-	return 0;
-#endif
 } */
 
 /*

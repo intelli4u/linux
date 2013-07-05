@@ -282,17 +282,6 @@ static irqreturn_t hp_sdc_nmisr(int irq, void *dev_id)
 	status = hp_sdc_status_in8();
 	printk(KERN_WARNING PREFIX "NMI !\n");
 
-#if 0
-	if (status & HP_SDC_NMISTATUS_FHS) {
-		read_lock(&hp_sdc.hook_lock);
-		if (hp_sdc.timer != NULL)
-			hp_sdc.timer(irq, dev_id, status, 0);
-		read_unlock(&hp_sdc.hook_lock);
-	} else {
-		/* TODO: pass this on to the HIL handler, or do SAK here? */
-		printk(KERN_WARNING PREFIX "HIL NMI\n");
-	}
-#endif
 
 	return IRQ_HANDLED;
 }

@@ -187,7 +187,6 @@ enum board_status_bits {
 
 uint32_t almost_full_bits(unsigned int num_words)
 {
-/* XXX need to add or subtract one? */
 	return (num_words << 16) & 0xff0000;
 }
 
@@ -198,7 +197,6 @@ uint32_t almost_empty_bits(unsigned int num_words)
 
 unsigned int almost_full_num_words(uint32_t bits)
 {
-/* XXX need to add or subtract one? */
 	return (bits >> 16) & 0xffff;
 }
 
@@ -278,13 +276,6 @@ static const struct hpdi_board hpdi_boards[] = {
 	 .device_id = PCI_DEVICE_ID_PLX_9080,
 	 .subdevice_id = 0x2400,
 	 },
-#if 0
-	{
-	 .name = "pxi-hpdi32",
-	 .device_id = 0x9656,
-	 .subdevice_id = 0x2705,
-	 },
-#endif
 };
 
 static DEFINE_PCI_DEVICE_TABLE(hpdi_pci_table) = {
@@ -865,7 +856,6 @@ static int di_cmd_test(struct comedi_device *dev, struct comedi_subdevice *s,
 
 	for (i = 1; i < cmd->chanlist_len; i++) {
 		if (CR_CHAN(cmd->chanlist[i]) != i) {
-			/*  XXX could support 8 or 16 channels */
 			comedi_error(dev,
 				     "chanlist must be ch 0 to 31 in order");
 			err++;
@@ -1000,7 +990,6 @@ static void drain_dma_buffers(struct comedi_device *dev, unsigned int channel)
 			    next);
 		DEBUG_PRINT("pci addr reg 0x%x\n", next_transfer_addr);
 	}
-	/*  XXX check for buffer overrun somehow */
 }
 
 static irqreturn_t handle_interrupt(int irq, void *d)
@@ -1048,7 +1037,7 @@ static irqreturn_t handle_interrupt(int irq, void *d)
 	/*  spin lock makes sure noone else changes plx dma control reg */
 	spin_lock_irqsave(&dev->spinlock, flags);
 	dma1_status = readb(priv(dev)->plx9080_iobase + PLX_DMA1_CS_REG);
-	if (plx_status & ICS_DMA1_A) {	/*  XXX *//*  dma chan 1 interrupt */
+	if (plx_status & ICS_DMA1_A) {/*  dma chan 1 interrupt */
 		writeb((dma1_status & PLX_DMA_EN_BIT) | PLX_CLEAR_DMA_INTR_BIT,
 		       priv(dev)->plx9080_iobase + PLX_DMA1_CS_REG);
 		DEBUG_PRINT("dma1 status 0x%x\n", dma1_status);

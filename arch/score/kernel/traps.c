@@ -112,9 +112,6 @@ static void show_code(unsigned int *pc)
 	}
 }
 
-/*
- * FIXME: really the generic show_regs should take a const pointer argument.
- */
 void show_regs(struct pt_regs *regs)
 {
 	printk("r0 : %08lx %08lx %08lx %08lx %08lx %08lx %08lx %08lx\n",

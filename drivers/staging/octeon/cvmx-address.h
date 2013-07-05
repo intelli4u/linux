@@ -32,14 +32,6 @@
 #ifndef __CVMX_ADDRESS_H__
 #define __CVMX_ADDRESS_H__
 
-#if 0
-typedef enum {
-	CVMX_MIPS_SPACE_XKSEG = 3LL,
-	CVMX_MIPS_SPACE_XKPHYS = 2LL,
-	CVMX_MIPS_SPACE_XSSEG = 1LL,
-	CVMX_MIPS_SPACE_XUSEG = 0LL
-} cvmx_mips_space_t;
-#endif
 
 typedef enum {
 	CVMX_MIPS_XKSEG_SPACE_KSEG0 = 0LL,

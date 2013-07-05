@@ -261,4 +261,3 @@ extern void fbcon_set_rotate(struct fbcon_ops *ops);
 #endif /* CONFIG_FRAMEBUFFER_CONSOLE_ROTATION */
 
 #endif /* _VIDEO_FBCON_H */
-

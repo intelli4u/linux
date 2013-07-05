@@ -70,16 +70,13 @@ static const char *format_topo =
 "\nT:  Bus=%2.2d Lev=%2.2d Prnt=%2.2d Port=%2.2d Cnt=%2.2d Dev#=%3d Spd=%3s MxCh=%2d\n";
 
 static const char *format_string_manufacturer =
-/* S:  Manufacturer=xxxx */
   "S:  Manufacturer=%.100s\n";
 
 static const char *format_string_product =
-/* S:  Product=xxxx */
   "S:  Product=%.100s\n";
 
 #ifdef ALLOW_SERIAL_NUMBER
 static const char *format_string_serialnumber =
-/* S:  SerialNumber=xxxx */
   "S:  SerialNumber=%.100s\n";
 #endif
 
@@ -92,7 +89,6 @@ static const char *format_device1 =
   "D:  Ver=%2x.%02x Cls=%02x(%-5s) Sub=%02x Prot=%02x MxPS=%2d #Cfgs=%3d\n";
 
 static const char *format_device2 =
-/* P:  Vendor=xxxx ProdID=xxxx Rev=xx.xx */
   "P:  Vendor=%04x ProdID=%04x Rev=%2x.%02x\n";
 
 static const char *format_config =
@@ -104,7 +100,6 @@ static const char *format_iad =
   "A:  FirstIf#=%2d IfCount=%2d Cls=%02x(%-5s) Sub=%02x Prot=%02x\n";
 
 static const char *format_iface =
-/* I:  If#=dd Alt=dd #EPs=dd Cls=xx(sssss) Sub=xx Prot=xx Driver=xxxx*/
   "I:%c If#=%2d Alt=%2d #EPs=%2d Cls=%02x(%-5s) Sub=%02x Prot=%02x Driver=%s\n";
 
 static const char *format_endpt =
@@ -442,7 +437,7 @@ static char *usb_dump_desc(char *start, char *end, struct usb_device *dev)
 }
 
 
-#ifdef PROC_EXTRA /* TBD: may want to add this code later */
+#ifdef PROC_EXTRA     /* TBD: may want to add this code later */
 
 static char *usb_dump_hub_descriptor(char *start, char *end,
 				     const struct usb_hub_descriptor *desc)

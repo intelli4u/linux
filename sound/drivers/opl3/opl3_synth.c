@@ -612,4 +612,3 @@ static int snd_opl3_set_connection(struct snd_opl3 * opl3, int connection)
 
 	return 0;
 }
-

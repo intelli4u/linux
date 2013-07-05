@@ -137,20 +137,6 @@
 
 #define DA7210_VERSION "0.0.1"
 
-/*
- * Playback Volume
- *
- * max		: 0x3F (+15.0 dB)
- *		   (1.5 dB step)
- * min		: 0x11 (-54.0 dB)
- * mute		: 0x10
- * reserved	: 0x00 - 0x0F
- *
- * ** FIXME **
- *
- * Reserved area are considered as "mute".
- * -> min = -79.5 dB
- */
 static const DECLARE_TLV_DB_SCALE(hp_out_tlv, -7950, 150, 1);
 
 static const struct snd_kcontrol_new da7210_snd_controls[] = {
@@ -397,10 +383,6 @@ static int da7210_set_dai_fmt(struct snd_soc_dai *codec_dai, u32 fmt)
 		return -EINVAL;
 	}
 
-	/* FIXME
-	 *
-	 * It support I2S only now
-	 */
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		dai_cfg3 |= DA7210_DAI_FORMAT_I2SMODE;
@@ -409,10 +391,6 @@ static int da7210_set_dai_fmt(struct snd_soc_dai *codec_dai, u32 fmt)
 		return -EINVAL;
 	}
 
-	/* FIXME
-	 *
-	 * It support 64bit data transmission only now
-	 */
 	dai_cfg1 |= DA7210_DAI_FLEN_64BIT;
 
 	da7210_write(codec, DA7210_DAI_CFG1, dai_cfg1);
@@ -502,17 +480,6 @@ static int da7210_init(struct da7210_priv *da7210)
 		goto codec_err;
 	}
 
-	/* FIXME
-	 *
-	 * This driver use fixed value here
-	 * And below settings expects MCLK = 12.288MHz
-	 *
-	 * When you select different MCLK, please check...
-	 *      DA7210_PLL_DIV1 val
-	 *      DA7210_PLL_DIV2 val
-	 *      DA7210_PLL_DIV3 val
-	 *      DA7210_PLL_DIV3 :: DA7210_MCLK_RANGExxx
-	 */
 
 	/*
 	 * make sure that DA7210 use bypass mode before start up

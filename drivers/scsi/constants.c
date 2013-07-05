@@ -1457,5 +1457,3 @@ void scsi_print_result(struct scsi_cmnd *cmd)
 	scsi_show_result(cmd->result);
 }
 EXPORT_SYMBOL(scsi_print_result);
-
-

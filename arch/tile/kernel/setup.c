@@ -1025,7 +1025,7 @@ static void __init validate_hv(void)
 
 static void __init validate_va(void)
 {
-#ifndef __tilegx__   /* FIXME: GX: probably some validation relevant here */
+#ifndef __tilegx__
 	/*
 	 * Similarly, make sure we're only using allowed VAs.
 	 * We assume we can contiguously use MEM_USER_INTRPT .. MEM_HV_INTRPT,

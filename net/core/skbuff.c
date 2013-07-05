@@ -70,6 +70,9 @@
 
 #include "kmap_skb.h"
 
+#include <typedefs.h>
+#include <bcmdefs.h>
+
 static struct kmem_cache *skbuff_head_cache __read_mostly;
 static struct kmem_cache *skbuff_fclone_cache __read_mostly;
 
@@ -196,6 +199,11 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
 	 * the tail pointer in struct sk_buff!
 	 */
 	memset(skb, 0, offsetof(struct sk_buff, tail));
+
+	/* Clear the members that were shifted to end of struct */
+	memset(((u8 *)&skb->users) + sizeof(atomic_t), 0,
+	       (sizeof(struct sk_buff) - (sizeof(atomic_t) + offsetof(struct sk_buff, users))));
+
 	skb->truesize = size + sizeof(struct sk_buff);
 	atomic_set(&skb->users, 1);
 	skb->head = data;
@@ -398,7 +406,6 @@ static void skb_release_head_state(struct sk_buff *skb)
 #ifdef CONFIG_BRIDGE_NETFILTER
 	nf_bridge_put(skb->nf_bridge);
 #endif
-/* XXX: IS this still necessary? - JHS */
 #ifdef CONFIG_NET_SCHED
 	skb->tc_index = 0;
 #ifdef CONFIG_NET_CLS_ACT
@@ -506,6 +513,11 @@ bool skb_recycle_check(struct sk_buff *skb, int skb_size)
 	atomic_set(&shinfo->dataref, 1);
 
 	memset(skb, 0, offsetof(struct sk_buff, tail));
+
+	/* Clear the members that were shifted to end of struct */
+	memset(((u8 *)&skb->users) + sizeof(atomic_t), 0,
+	       (sizeof(struct sk_buff) - (sizeof(atomic_t) + offsetof(struct sk_buff, users))));
+
 	skb->data = skb->head + NET_SKB_PAD;
 	skb_reset_tail_pointer(skb);
 
@@ -513,8 +525,13 @@ bool skb_recycle_check(struct sk_buff *skb, int skb_size)
 }
 EXPORT_SYMBOL(skb_recycle_check);
 
-static void __copy_skb_header(struct sk_buff *new, const struct sk_buff *old)
+static void BCMFASTPATH_HOST __copy_skb_header(struct sk_buff *new, const struct sk_buff *old)
 {
+#ifdef PKTC
+	memset(new->pktc_cb, 0, sizeof(new->pktc_cb));
+#endif
+	memset(new->fpath_cb, 0, sizeof(new->fpath_cb));    /* Bob added 02/06/2013 to init fpath_cb */ 
+	
 	new->tstamp		= old->tstamp;
 	new->dev		= old->dev;
 	new->transport_header	= old->transport_header;
@@ -541,7 +558,7 @@ static void __copy_skb_header(struct sk_buff *new, const struct sk_buff *old)
 	new->skb_iif		= old->skb_iif;
 	__nf_copy(new, old);
 #if defined(CONFIG_NETFILTER_XT_TARGET_TRACE) || \
-    defined(CONFIG_NETFILTER_XT_TARGET_TRACE_MODULE)
+	defined(CONFIG_NETFILTER_XT_TARGET_TRACE_MODULE)
 	new->nf_trace		= old->nf_trace;
 #endif
 #ifdef CONFIG_NET_SCHED
@@ -551,6 +568,12 @@ static void __copy_skb_header(struct sk_buff *new, const struct sk_buff *old)
 #endif
 #endif
 	new->vlan_tci		= old->vlan_tci;
+#if defined(HNDCTF) || defined(CTFPOOL)
+	new->pktc_flags		= old->pktc_flags;
+#endif
+#ifdef CTFPOOL
+	new->ctfpool		= NULL;
+#endif
 
 	skb_copy_secmark(new, old);
 }
@@ -975,9 +998,6 @@ int skb_pad(struct sk_buff *skb, int pad)
 			goto free_skb;
 	}
 
-	/* FIXME: The use of this function with non-linear skb's really needs
-	 * to be audited.
-	 */
 	err = skb_linearize(skb);
 	if (unlikely(err))
 		goto free_skb;
@@ -2658,7 +2678,7 @@ err:
 }
 EXPORT_SYMBOL_GPL(skb_segment);
 
-int skb_gro_receive(struct sk_buff **head, struct sk_buff *skb)
+int BCMFASTPATH_HOST skb_gro_receive(struct sk_buff **head, struct sk_buff *skb)
 {
 	struct sk_buff *p = *head;
 	struct sk_buff *nskb;
@@ -2802,6 +2822,7 @@ __skb_to_sgvec(struct sk_buff *skb, struct scatterlist *sg, int offset, int len)
 	if (copy > 0) {
 		if (copy > len)
 			copy = len;
+		sg->page_link = 0;
 		sg_set_buf(sg, skb->data + offset, copy);
 		elt++;
 		if ((len -= copy) == 0)
@@ -2820,6 +2841,7 @@ __skb_to_sgvec(struct sk_buff *skb, struct scatterlist *sg, int offset, int len)
 
 			if (copy > len)
 				copy = len;
+			sg[elt].page_link = 0;
 			sg_set_page(&sg[elt], frag->page, copy,
 					frag->page_offset+offset-start);
 			elt++;

@@ -140,12 +140,6 @@ void smbiod_flush(struct smb_sb_info *server)
 	}
 }
 
-/*
- * Wake up smbmount and make it reconnect to the server.
- * This must be called with the server locked.
- *
- * FIXME: add smbconnect version to this
- */
 int smbiod_retry(struct smb_sb_info *server)
 {
 	struct list_head *head;
@@ -179,24 +173,13 @@ int smbiod_retry(struct smb_sb_info *server)
 		}
 	}
 
-	/*
-	 * FIXME: test the code for retrying request we already sent
-	 */
 	head = server->recvq.next;
 	while (head != &server->recvq) {
 		req = list_entry(head, struct smb_request, rq_queue);
 		head = head->next;
-#if 0
-		if (req->rq_flags & SMB_REQ_RETRY) {
-			/* must move the request to the xmitq */
-			VERBOSE("retrying request %p on recvq\n", req);
-			list_move(&req->rq_queue, &server->xmitq);
-			continue;
-		}
-#endif
 
 		VERBOSE("aborting request %p on recvq\n", req);
-		/* req->rq_rcls = ???; */ /* FIXME: set smb error code too? */
+		/* req->rq_rcls = ???; */
 		req->rq_errno = -EIO;
 		list_del_init(&req->rq_queue);
 		smb_rput(req);
@@ -206,7 +189,6 @@ int smbiod_retry(struct smb_sb_info *server)
 	smb_close_socket(server);
 
 	if (!pid) {
-		/* FIXME: this is fatal, umount? */
 		printk(KERN_ERR "smb_retry: no connection process\n");
 		server->state = CONN_RETRIED;
 		goto out;
@@ -222,13 +204,11 @@ int smbiod_retry(struct smb_sb_info *server)
 	 */
 	result = kill_pid(pid, SIGUSR1, 1);
 	if (result) {
-		/* FIXME: this is most likely fatal, umount? */
 		printk(KERN_ERR "smb_retry: signal failed [%d]\n", result);
 		goto out;
 	}
 	VERBOSE("signalled pid %d\n", pid_nr(pid));
 
-	/* FIXME: The retried requests should perhaps get a "time boost". */
 
 out:
 	put_pid(pid);
@@ -303,7 +283,6 @@ static int smbiod(void *unused)
 		struct smb_sb_info *server;
 		struct list_head *pos, *n;
 
-		/* FIXME: Use poll? */
 		wait_event_interruptible(smbiod_wait,
 			 test_bit(SMBIOD_DATA_READY, &smbiod_flags));
 		if (signal_pending(current)) {

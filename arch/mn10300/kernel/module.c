@@ -26,11 +26,7 @@
 #include <linux/kernel.h>
 #include <linux/bug.h>
 
-#if 0
-#define DEBUGP printk
-#else
 #define DEBUGP(fmt, ...)
-#endif
 
 /*
  * allocate storage for a module

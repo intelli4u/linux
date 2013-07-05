@@ -798,4 +798,3 @@ const struct file_operations gfs2_dir_fops_nolock = {
 	.release	= gfs2_close,
 	.fsync		= gfs2_fsync,
 };
-

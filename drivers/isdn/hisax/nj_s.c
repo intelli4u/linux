@@ -1,4 +1,4 @@
-/* $Id: nj_s.c,v 2.13.2.4 2004/01/16 01:53:48 keil Exp $
+/* $Id: nj_s.c,v 2.13.2.4 2004/01/16 01:53:48 Exp $
  *
  * This software may be used and distributed according to the terms
  * of the GNU General Public License, incorporated herein by reference.

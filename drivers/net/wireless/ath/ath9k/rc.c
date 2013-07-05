@@ -866,13 +866,6 @@ static void ath_get_rate(void *priv, struct ieee80211_sta *sta, void *priv_sta,
 		}
 	}
 
-	/*
-	 * Force hardware to use computed duration for next
-	 * fragment by disabling multi-rate retry, which
-	 * updates duration based on the multi-rate duration table.
-	 *
-	 * FIXME: Fix duration
-	 */
 	if (ieee80211_has_morefrags(fc) ||
 	    (le16_to_cpu(hdr->seq_ctrl) & IEEE80211_SCTL_FRAG)) {
 		rates[1].count = rates[2].count = rates[3].count = 0;
@@ -1470,7 +1463,6 @@ static void ath_rate_update(void *priv, struct ieee80211_supported_band *sband,
 	bool local_sgi = (ath_rc_priv->ht_cap & WLAN_RC_SGI_FLAG) ?
 		true : false;
 
-	/* FIXME: Handle AP mode later when we support CWM */
 
 	if (changed & IEEE80211_RC_HT_CHANGED) {
 		if (sc->sc_ah->opmode != NL80211_IFTYPE_STATION)

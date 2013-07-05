@@ -190,7 +190,6 @@ static int dlm_plock_callback(struct plock_op *op)
 
 	rv = notify(fl, NULL, 0);
 	if (rv) {
-		/* XXX: We need to cancel the fs lock here: */
 		log_print("dlm_plock_callback: lock granted after lock request "
 			  "failed; dangling lock!\n");
 		goto out;
@@ -442,4 +441,3 @@ void dlm_plock_exit(void)
 	if (misc_deregister(&plock_dev_misc) < 0)
 		log_print("dlm_plock_exit: misc_deregister failed");
 }
-

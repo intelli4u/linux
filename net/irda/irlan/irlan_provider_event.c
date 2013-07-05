@@ -130,7 +130,6 @@ static int irlan_provider_state_info(struct irlan_cb *self, IRLAN_EVENT event,
 	case IRLAN_OPEN_DATA_CMD:
 		ret = irlan_parse_open_data_cmd(self, skb);
 		if (self->provider.access_type == ACCESS_PEER) {
-			/* FIXME: make use of random functions! */
 			self->provider.send_arb_val = (jiffies & 0xffff);
 		}
 		irlan_provider_send_reply(self, CMD_OPEN_DATA_CHANNEL, ret);
@@ -229,13 +228,3 @@ static int irlan_provider_state_data(struct irlan_cb *self, IRLAN_EVENT event,
 
 	return 0;
 }
-
-
-
-
-
-
-
-
-
-

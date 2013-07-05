@@ -1095,7 +1095,6 @@ qla2x00_chip_diag(scsi_qla_host_t *vha)
 	WRT_REG_WORD(&reg->hccr, HCCR_RESET_RISC);
 	WRT_REG_WORD(&reg->hccr, HCCR_RELEASE_RISC);
 
-	/* Workaround for QLA2312 PCI parity error */
 	if (IS_QLA2100(ha) || IS_QLA2200(ha) || IS_QLA2300(ha)) {
 		data = qla2x00_debounce_register(MAILBOX_REG(ha, reg, 0));
 		for (cnt = 6000000; cnt && (data == MBS_BUSY); cnt--) {

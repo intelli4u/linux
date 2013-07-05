@@ -296,11 +296,6 @@ int line_ioctl(struct tty_struct *tty, struct file * file,
 	case TIOCGSOFTCAR:
 	case TIOCSSOFTCAR:
 		return -ENOIOCTLCMD;
-#if 0
-	case TCwhatever:
-		/* do something */
-		break;
-#endif
 	default:
 		for (i = 0; i < ARRAY_SIZE(tty_ioctls); i++)
 			if (cmd == tty_ioctls[i].cmd)

@@ -173,4 +173,3 @@ iommu_coalesce_chunks(struct ioc *ioc, struct device *dev,
 
 	return n_mappings;
 }
-

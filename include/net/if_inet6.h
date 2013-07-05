@@ -211,7 +211,6 @@ static inline void ipv6_eth_mc_map(struct in6_addr *addr, char *buf)
 
 static inline void ipv6_tr_mc_map(struct in6_addr *addr, char *buf)
 {
-	/* All nodes FF01::1, FF02::1, FF02::1:FFxx:xxxx */
 
 	if (((addr->s6_addr[0] == 0xFF) &&
 	    ((addr->s6_addr[1] == 0x01) || (addr->s6_addr[1] == 0x02)) &&

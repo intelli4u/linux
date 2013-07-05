@@ -1621,4 +1621,3 @@ const struct quotactl_ops gfs2_quotactl_ops = {
 	.get_dqblk	= gfs2_get_dqblk,
 	.set_dqblk	= gfs2_set_dqblk,
 };
-

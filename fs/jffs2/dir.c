@@ -276,7 +276,6 @@ static int jffs2_link (struct dentry *old_dentry, struct inode *dir_i, struct de
 	if (S_ISDIR(old_dentry->d_inode->i_mode))
 		return -EPERM;
 
-	/* XXX: This is ugly */
 	type = (old_dentry->d_inode->i_mode & S_IFMT) >> 12;
 	if (!type) type = DT_REG;
 
@@ -309,8 +308,6 @@ static int jffs2_symlink (struct inode *dir_i, struct dentry *dentry, const char
 	uint32_t alloclen;
 	int ret, targetlen = strlen(target);
 
-	/* FIXME: If you care. We'd need to use frags for the target
-	   if it grows much more than this */
 	if (targetlen > 254)
 		return -ENAMETOOLONG;
 
@@ -739,7 +736,6 @@ static int jffs2_mknod (struct inode *dir_i, struct dentry *dentry, int mode, de
 	rd->mctime = cpu_to_je32(get_seconds());
 	rd->nsize = namelen;
 
-	/* XXX: This is ugly. */
 	rd->type = (mode & S_IFMT) >> 12;
 
 	rd->node_crc = cpu_to_je32(crc32(0, rd, sizeof(*rd)-8));
@@ -807,14 +803,9 @@ static int jffs2_rename (struct inode *old_dir_i, struct dentry *old_dentry,
 		}
 	}
 
-	/* XXX: We probably ought to alloc enough space for
-	   both nodes at the same time. Writing the new link,
-	   then getting -ENOSPC, is quite bad :)
-	*/
 
 	/* Make a hard link */
 
-	/* XXX: This is ugly */
 	type = (old_dentry->d_inode->i_mode & S_IFMT) >> 12;
 	if (!type) type = DT_REG;
 
@@ -876,4 +867,3 @@ static int jffs2_rename (struct inode *old_dir_i, struct dentry *old_dentry,
 
 	return 0;
 }
-

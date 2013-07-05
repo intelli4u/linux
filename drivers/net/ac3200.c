@@ -188,16 +188,6 @@ static int __init ac_probe1(int ioaddr, struct net_device *dev)
 
 	printk(KERN_DEBUG "AC3200 in EISA slot %d, node %pM",
 	       ioaddr/0x1000, dev->dev_addr);
-#if 0
-	/* Check the vendor ID/prefix. Redundant after checking the EISA ID */
-	if (inb(ioaddr + AC_SA_PROM + 0) != AC_ADDR0
-		|| inb(ioaddr + AC_SA_PROM + 1) != AC_ADDR1
-		|| inb(ioaddr + AC_SA_PROM + 2) != AC_ADDR2 ) {
-		printk(", not found (invalid prefix).\n");
-		retval = -ENODEV;
-		goto out;
-	}
-#endif
 
 	/* Assign and allocate the interrupt now. */
 	if (dev->irq == 0) {

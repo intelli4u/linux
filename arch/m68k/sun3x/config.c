@@ -59,22 +59,5 @@ void __init config_sun3x(void)
 	sun3_intreg = (unsigned char *)SUN3X_INTREG;
 
 	/* only the serial console is known to work anyway... */
-#if 0
-	switch (*(unsigned char *)SUN3X_EEPROM_CONS) {
-	case 0x10:
-		serial_console = 1;
-		conswitchp = NULL;
-		break;
-	case 0x11:
-		serial_console = 2;
-		conswitchp = NULL;
-		break;
-	default:
-		serial_console = 0;
-		conswitchp = &dummy_con;
-		break;
-	}
-#endif
 
 }
-

@@ -382,4 +382,3 @@ int __devinit tulip_read_eeprom(struct net_device *dev, int location, int addr_l
 	iowrite32(EE_ENB & ~EE_CS, ee_addr);
 	return (tp->flags & HAS_SWAPPED_SEEPROM) ? swab16(retval) : retval;
 }
-

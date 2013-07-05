@@ -37,10 +37,6 @@ void xhci_dbg_regs(struct xhci_hcd *xhci)
 			&xhci->cap_regs->hc_capbase, temp);
 	xhci_dbg(xhci, "//   CAPLENGTH: 0x%x\n",
 			(unsigned int) HC_LENGTH(temp));
-#if 0
-	xhci_dbg(xhci, "//   HCIVERSION: 0x%x\n",
-			(unsigned int) HC_VERSION(temp));
-#endif
 
 	xhci_dbg(xhci, "// xHCI operational registers at %p:\n", xhci->op_regs);
 
@@ -99,7 +95,6 @@ static void xhci_print_cap_regs(struct xhci_hcd *xhci)
 	xhci_dbg(xhci, "HCC PARAMS 0x%x:\n", (unsigned int) temp);
 	xhci_dbg(xhci, "  HC generates %s bit addresses\n",
 			HCC_64BIT_ADDR(temp) ? "64" : "32");
-	/* FIXME */
 	xhci_dbg(xhci, "  FIXME: more HCCPARAMS debugging\n");
 
 	temp = xhci_readl(xhci, &xhci->cap_regs->run_regs_off);
@@ -273,10 +268,6 @@ void xhci_debug_trb(struct xhci_hcd *xhci, union xhci_trb *trb)
 		break;
 	case TRB_TYPE(TRB_TRANSFER):
 		address = trb->trans_event.buffer;
-		/*
-		 * FIXME: look at flags to figure out if it's an address or if
-		 * the data is directly in the buffer field.
-		 */
 		xhci_dbg(xhci, "DMA address or buffer contents= %llu\n", address);
 		break;
 	case TRB_TYPE(TRB_COMPLETION):
@@ -294,19 +285,6 @@ void xhci_debug_trb(struct xhci_hcd *xhci, union xhci_trb *trb)
 	}
 }
 
-/**
- * Debug a segment with an xHCI ring.
- *
- * @return The Link TRB of the segment, or NULL if there is no Link TRB
- * (which is a bug, since all segments must have a Link TRB).
- *
- * Prints out all TRBs in the segment, even those after the Link TRB.
- *
- * XXX: should we print out TRBs that the HC owns?  As long as we don't
- * write, that should be fine...  We shouldn't expect that the memory pointed to
- * by the TRB is valid at all.  Do we care about ones the HC owns?  Probably,
- * for HC debugging.
- */
 void xhci_debug_segment(struct xhci_hcd *xhci, struct xhci_segment *seg)
 {
 	int i;
@@ -351,7 +329,6 @@ void xhci_dbg_ring_ptrs(struct xhci_hcd *xhci, struct xhci_ring *ring)
  */
 void xhci_debug_ring(struct xhci_hcd *xhci, struct xhci_ring *ring)
 {
-	/* FIXME: Throw an error if any segment doesn't have a Link TRB */
 	struct xhci_segment *seg;
 	struct xhci_segment *first_seg = ring->first_seg;
 	xhci_debug_segment(xhci, first_seg);

@@ -38,11 +38,6 @@ struct lock_stat {
 	struct list_head	hash_entry;
 	struct rb_node		rb;		/* used for sorting */
 
-	/*
-	 * FIXME: raw_field_value() returns unsigned long long,
-	 * so address of lockdep_map should be dealed as 64bit.
-	 * Is there more better solution?
-	 */
 	void			*addr;		/* address of lockdep_map, used as ID */
 	char			*name;		/* for strcpy(), we cannot use const */
 

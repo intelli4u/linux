@@ -179,11 +179,11 @@ static struct platform_device pcm027_flash = {
 
 static struct gpio_led pcm027_led[] = {
 	{
-		.name = "led0:red",	/* FIXME */
+		.name = "led0:red",
 		.gpio = PCM027_LED_CPU
 	},
 	{
-		.name = "led1:green",	/* FIXME */
+		.name = "led1:green",
 		.gpio = PCM027_LED_HEARD_BEAT
 	},
 };

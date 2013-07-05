@@ -110,4 +110,3 @@
 #define CORGI_GPIO_MIC_BIAS		(CORGI_SCOOP_GPIO_BASE + 8)
 
 #endif /* __ASM_ARCH_CORGI_H  */
-

@@ -457,15 +457,6 @@ static irqreturn_t saa7146_irq(int irq, void *dev_id)
 				saa->vidinfo.frame_count = 0;
 				saa->vidinfo.h_size = 704;
 				saa->vidinfo.v_size = 480;
-#if 0
-				if (saa->endmarkhead != saa->endmarktail) {
-					saa->audhead =
-						saa->endmark[saa->endmarkhead];
-					saa->endmarkhead++;
-					if (saa->endmarkhead >= MAX_MARKS)
-						saa->endmarkhead = 0;
-				}
-#endif
 			}
 			if (istat & 0x4000) {	/* Sequence Error Code */
 				if (saa->endmarkhead != saa->endmarktail) {
@@ -942,13 +933,8 @@ send_fpga_stuff:
 		if (NewCard)
 			set_genlock_offset(saa, 0);
 		debiwrite(saa, debNormal, IBM_MP2_FRNT_ATTEN, 0, 2);
-#if 0
-		/* enable genlock */
-		debiwrite(saa, debNormal, XILINX_CTL0, 0x8000, 2);
-#else
 		/* disable genlock */
 		debiwrite(saa, debNormal, XILINX_CTL0, 0x8080, 2);
-#endif
 	}
 
 	return failure;
@@ -1045,9 +1031,6 @@ static int initialize_ibmmpeg2(struct video_code *microcode)
 		if (i != 0xa55a) {
 			printk(KERN_INFO "stradis%d: %04x != 0xa55a\n",
 				saa->nr, i);
-#if 0
-			return -1;
-#endif
 		}
 		if (!strncmp(microcode->loadwhat, "decoder.vid", 11)) {
 			if (saa->boardcfg[0] > 27)
@@ -2049,12 +2032,6 @@ static int __devinit init_saa7146(struct pci_dev *pdev)
 		dev_err(&pdev->dev, "%d: debi kmalloc failed\n", saa->nr);
 		goto err;
 	}
-#if 0
-	saa->pagedebi = saa->dmadebi + 32768;	/* top 4k is for mmu */
-	saawrite(virt_to_bus(saa->pagedebi) /*|0x800 */ , SAA7146_DEBI_PAGE);
-	for (i = 0; i < 12; i++)	/* setup mmu page table */
-		saa->pagedebi[i] = virt_to_bus((saa->dmadebi + i * 4096));
-#endif
 	saa->audhead = saa->vidhead = saa->osdhead = 0;
 	saa->audtail = saa->vidtail = saa->osdtail = 0;
 	if (saa->vidbuf == NULL && (saa->vidbuf = vmalloc(524288)) == NULL) {

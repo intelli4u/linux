@@ -571,11 +571,6 @@ int netlbl_secattr_catmap_setrng(struct netlbl_lsm_secattr_catmap *catmap,
 	u32 iter_max_spot;
 	u32 spot;
 
-	/* XXX - This could probably be made a bit faster by combining writes
-	 * to the catmap instead of setting a single bit each time, but for
-	 * right now skipping to the start of the range in the catmap should
-	 * be a nice improvement over calling the individual setbit function
-	 * repeatedly from a loop. */
 
 	while (iter->next != NULL &&
 	       start >= (iter->startbit + NETLBL_CATMAP_SIZE))

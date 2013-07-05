@@ -1054,21 +1054,6 @@ static int falcon_decode_var(struct fb_var_screeninfo *var,
 	/* single or double pixel width */
 	xstretch = (xres < 640) ? 2 : 1;
 
-#if 0 /* SM124 supports only 640x400, this is rejected above */
-	if (mon_type == F_MON_SM) {
-		if (xres != 640 && yres != 400)
-			return -EINVAL;
-		plen = 1;
-		pclock = &f32;
-		/* SM124-mode is special */
-		par->hw.falcon.ste_mode = 1;
-		par->hw.falcon.f_shift = 0x000;
-		par->hw.falcon.st_shift = 0x200;
-		left_margin = hsync_len = 128 / plen;
-		right_margin = 0;
-		/* TODO set all margins */
-	} else
-#endif
 	if (mon_type == F_MON_SC || mon_type == F_MON_TV) {
 		plen = 2 * xstretch;
 		if (var->pixclock > f32.t * plen)
@@ -1273,12 +1258,6 @@ again:
 		par->HDB += par->HHT + 2 + 0x200;
 	par->HDE = gend1 - par->HHT - 2 - hde_off / prescale;
 	par->HBB = gend2 - par->HHT - 2;
-#if 0
-	/* One more Videl constraint: data fetch of two lines must not overlap */
-	if ((par->HDB & 0x200) && (par->HDB & ~0x200) - par->HDE <= 5) {
-		/* if this happens increase margins, decrease hfreq. */
-	}
-#endif
 	if (hde_off % prescale)
 		par->HBB++;		/* compensate for non matching hde and hbb */
 	par->HSS = par->HHT + 2 - plen * hsync_len / prescale;
@@ -2706,10 +2685,6 @@ static int atafb_blank(int blank, struct fb_info *info)
 		cmap.len = 16;
 		fb_set_cmap(&cmap, info);
 	}
-#if 0
-	else
-		do_install_cmap(info);
-#endif
 	return 0;
 }
 
@@ -3248,7 +3223,6 @@ int __init atafb_init(void)
 		return -EINVAL;
 	}
 
-	// FIXME: mode needs setting!
 	//printk("fb%d: %s frame buffer device, using %dK of video memory\n",
 	//       fb_info.node, fb_info.mode->name, screen_len>>10);
 	printk("fb%d: frame buffer device, using %dK of video memory\n",

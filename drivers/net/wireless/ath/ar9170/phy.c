@@ -564,7 +564,6 @@ int ar9170_init_phy(struct ar9170 *ar, enum ieee80211_band band)
 	if (err)
 		return err;
 
-	/* XXX: remove magic! */
 	if (is_2ghz)
 		err = ar9170_write_reg(ar, 0x1d4014, 0x5163);
 	else
@@ -1109,11 +1108,6 @@ static u8 ar9170_interpolate_u8(u8 x, u8 x1, u8 y1, u8 x2, u8 y2)
 				   x1 << SHIFT, y1 << SHIFT,
 				   x2 << SHIFT, y2 << SHIFT);
 
-	/*
-	 * XXX: unwrap this expression
-	 *	Isn't it just DIV_ROUND_UP(y, 1<<SHIFT)?
-	 *	Can we rely on the compiler to optimise away the div?
-	 */
 	return (y >> SHIFT) + ((y & (1<<(SHIFT-1))) >> (SHIFT - 1));
 #undef SHIFT
 }
@@ -1407,13 +1401,6 @@ static void ar9170_calc_ctl(struct ar9170 *ar, u32 freq, enum ar9170_bw bw)
 			 */
 
 		} else {
-			/*
-			 * Workaround in otus driver, hpmain.c, line 3906:
-			 * if no data for 5GHT20 are found, take the
-			 * legacy 5G value.
-			 * We extend this here to fallback from any other *HT or
-			 * 11G, too.
-			 */
 			int k = i;
 
 			modes[i].max_power = AR5416_MAX_RATE_POWER;
@@ -1603,7 +1590,6 @@ int ar9170_set_channel(struct ar9170 *ar, struct ieee80211_channel *channel,
 	else
 		bandswitch = true;
 
-	/* HW workaround */
 	if (!ar->hw->wiphy->bands[IEEE80211_BAND_5GHZ] &&
 	    channel->center_freq <= 2417)
 		bandswitch = true;

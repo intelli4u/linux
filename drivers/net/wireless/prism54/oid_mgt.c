@@ -728,34 +728,6 @@ mgt_commit(islpci_private *priv)
  *
  * The way to do this is to set ESSID. Note though that they may get
  * unlatch before though by setting another OID. */
-#if 0
-void
-mgt_unlatch_all(islpci_private *priv)
-{
-	u32 u;
-	int rvalue = 0;
-
-	if (islpci_get_state(priv) < PRV_STATE_INIT)
-		return;
-
-	u = DOT11_OID_SSID;
-	rvalue = mgt_commit_list(priv, &u, 1);
-	/* Necessary if in MANUAL RUN mode? */
-#if 0
-	u = OID_INL_MODE;
-	rvalue |= mgt_commit_list(priv, &u, 1);
-
-	u = DOT11_OID_MLMEAUTOLEVEL;
-	rvalue |= mgt_commit_list(priv, &u, 1);
-
-	u = OID_INL_MODE;
-	rvalue |= mgt_commit_list(priv, &u, 1);
-#endif
-
-	if (rvalue)
-		printk(KERN_DEBUG "%s: Unlatching OIDs failed\n", priv->ndev->name);
-}
-#endif
 
 /* This will tell you if you are allowed to answer a mlme(ex) request .*/
 

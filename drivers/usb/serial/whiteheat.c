@@ -231,7 +231,7 @@ struct whiteheat_urb_wrap {
 struct whiteheat_private {
 	spinlock_t		lock;
 	__u8			flags;
-	__u8			mcr;		/* FIXME: no locking on mcr */
+	__u8			mcr;
 	struct list_head	rx_urbs_free;
 	struct list_head	rx_urbs_submitted;
 	struct list_head	rx_urb_q;
@@ -689,7 +689,6 @@ static int whiteheat_open(struct tty_struct *tty, struct usb_serial_port *port)
 	if (tty)
 		firm_setup_port(tty);
 
-	/* Work around HCD bugs */
 	usb_clear_halt(port->serial->dev, port->read_urb->pipe);
 	usb_clear_halt(port->serial->dev, port->write_urb->pipe);
 
@@ -1277,7 +1276,6 @@ static void firm_setup_port(struct tty_struct *tty)
 	port_settings.baud = tty_get_baud_rate(tty);
 	dbg("%s - baud rate = %d", __func__, port_settings.baud);
 
-	/* fixme: should set validated settings */
 	tty_encode_baud_rate(tty, port_settings.baud, port_settings.baud);
 	/* handle any settings that aren't specified in the tty structure */
 	port_settings.lloop = 0;
@@ -1365,7 +1363,6 @@ static int start_command_port(struct usb_serial *serial)
 	command_info = usb_get_serial_port_data(command_port);
 	mutex_lock(&command_info->mutex);
 	if (!command_info->port_running) {
-		/* Work around HCD bugs */
 		usb_clear_halt(serial->dev, command_port->read_urb->pipe);
 
 		command_port->read_urb->dev = serial->dev;

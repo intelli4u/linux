@@ -453,15 +453,6 @@ struct asd_manuf_phy_param {
 	struct asd_manuf_phy_desc phy_desc[ASD_MAX_PHYS];
 } __attribute__ ((packed));
 
-#if 0
-static const char *asd_sb_type[] = {
-	"unknown",
-	"SGPIO",
-	[2 ... 0x7F] = "unknown",
-	[0x80] = "ADPT_I2C",
-	[0x81 ... 0xFF] = "VENDOR_UNIQUExx"
-};
-#endif
 
 struct asd_ms_sb_desc {
 	u8    type;
@@ -470,24 +461,6 @@ struct asd_ms_sb_desc {
 	u8    _recvd[0];
 } __attribute__ ((packed));
 
-#if 0
-static const char *asd_conn_type[] = {
-	[0 ... 7] = "unknown",
-	"SFF8470",
-	"SFF8482",
-	"SFF8484",
-	[0x80] = "PCIX_DAUGHTER0",
-	[0x81] = "SAS_DAUGHTER0",
-	[0x82 ... 0xFF] = "VENDOR_UNIQUExx"
-};
-
-static const char *asd_conn_location[] = {
-	"unknown",
-	"internal",
-	"external",
-	"board_to_board",
-};
-#endif
 
 struct asd_ms_conn_desc {
 	u8    type;
@@ -504,16 +477,6 @@ struct asd_nd_phy_desc {
 	u8    attch_specific[0];
 } __attribute__ ((packed));
 
-#if 0
-static const char *asd_node_type[] = {
-	"IOP",
-	"IO_CONTROLLER",
-	"EXPANDER",
-	"PORT_MULTIPLIER",
-	"PORT_MULTIPLEXER",
-	"MULTI_DROP_I2C_BUS",
-};
-#endif
 
 struct asd_ms_node_desc {
 	u8    type;
@@ -854,7 +817,6 @@ static int asd_ms_get_connector_map(struct asd_ha_struct *asd_ha,
 		return -ENOENT;
 	}
 
-	/* XXX */
 
 	return 0;
 }

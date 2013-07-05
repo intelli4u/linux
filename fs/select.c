@@ -636,7 +636,6 @@ static long do_pselect(int n, fd_set __user *inp, fd_set __user *outp,
 	}
 
 	if (sigmask) {
-		/* XXX: Don't preclude handling different sized sigset_t's.  */
 		if (sigsetsize != sizeof(sigset_t))
 			return -EINVAL;
 		if (copy_from_user(&ksigmask, sigmask, sizeof(ksigmask)))
@@ -965,7 +964,6 @@ SYSCALL_DEFINE5(ppoll, struct pollfd __user *, ufds, unsigned int, nfds,
 	}
 
 	if (sigmask) {
-		/* XXX: Don't preclude handling different sized sigset_t's.  */
 		if (sigsetsize != sizeof(sigset_t))
 			return -EINVAL;
 		if (copy_from_user(&ksigmask, sigmask, sizeof(ksigmask)))

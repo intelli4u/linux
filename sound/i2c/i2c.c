@@ -190,14 +190,6 @@ static void snd_i2c_bit_set(struct snd_i2c_bus *bus, int clock, int data)
 	bus->hw_ops.bit->setlines(bus, clock, data);
 }
 
-#if 0
-static int snd_i2c_bit_clock(struct snd_i2c_bus *bus)
-{
-	if (bus->hw_ops.bit->getclock)
-		return bus->hw_ops.bit->getclock(bus);
-	return -ENXIO;
-}
-#endif
 
 static int snd_i2c_bit_data(struct snd_i2c_bus *bus, int ack)
 {

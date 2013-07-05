@@ -213,10 +213,6 @@ static int fpregs32_get(struct task_struct *target,
 	const unsigned long *fpregs = target->thread.float_regs;
 	int ret = 0;
 
-#if 0
-	if (target == current)
-		save_and_clear_fpu();
-#endif
 
 	ret = user_regset_copyout(&pos, &count, &kbuf, &ubuf,
 				  fpregs,
@@ -257,10 +253,6 @@ static int fpregs32_set(struct task_struct *target,
 	unsigned long *fpregs = target->thread.float_regs;
 	int ret;
 
-#if 0
-	if (target == current)
-		save_and_clear_fpu();
-#endif
 	ret = user_regset_copyin(&pos, &count, &kbuf, &ubuf,
 				 fpregs,
 				 0, 32 * sizeof(u32));

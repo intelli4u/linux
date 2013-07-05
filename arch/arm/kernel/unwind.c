@@ -27,7 +27,7 @@
  */
 
 #ifndef __CHECKER__
-#if !defined (__ARM_EABI__)
+#if !defined(__ARM_EABI__)
 #warning Your compiler does not have EABI support.
 #warning    ARM unwind is known to compile only with EABI compilers.
 #warning    Change compiler or disable ARM_UNWIND option.

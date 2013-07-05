@@ -101,11 +101,6 @@
 #define INVALIDATE_TLB_VECTOR_START	0xf0
 #define NUM_INVALIDATE_TLB_VECTORS	   8
 
-/*
- * Local APIC timer IRQ vector is on a different priority level,
- * to work around the 'lost local interrupt if more than 2 IRQ
- * sources per level' errata.
- */
 #define LOCAL_TIMER_VECTOR		0xef
 
 /*

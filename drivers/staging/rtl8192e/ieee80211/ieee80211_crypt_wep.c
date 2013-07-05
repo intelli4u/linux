@@ -295,4 +295,3 @@ void ieee80211_wep_null(void)
 {
         return;
 }
-

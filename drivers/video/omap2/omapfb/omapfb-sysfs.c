@@ -415,7 +415,6 @@ static ssize_t store_overlays_rotate(struct device *dev,
 		if (r)
 			goto out;
 
-		/* FIXME error handling? */
 	}
 
 	r = count;
@@ -557,4 +556,3 @@ void omapfb_remove_sysfs(struct omapfb2_device *fbdev)
 					&omapfb_attrs[t]);
 	}
 }
-

@@ -92,4 +92,3 @@ MACHINE_START(H3100, "Compaq iPAQ H3100")
 	.timer		= &sa1100_timer,
 	.init_machine	= h3100_mach_init,
 MACHINE_END
-

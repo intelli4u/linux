@@ -40,4 +40,3 @@ struct fsl_msi {
 };
 
 #endif /* _POWERPC_SYSDEV_FSL_MSI_H */
-

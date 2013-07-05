@@ -26,7 +26,6 @@
 #define pgd_clear(pgdp)
 #define kern_addr_valid(addr)	(1)
 #define	pmd_offset(a, b)	((void *)0)
-/* FIXME */
 /*
  * PMD_SHIFT determines the size of the area a second-level page table can map
  * PGDIR_SHIFT determines what a third-level page table entry can map
@@ -35,7 +34,6 @@
 
 #define PGDIR_SIZE		(1UL << PGDIR_SHIFT)
 #define PGDIR_MASK		(~(PGDIR_SIZE-1))
-/* FIXME */
 
 #define PAGE_NONE	__pgprot(0)
 #define PAGE_SHARED	__pgprot(0)

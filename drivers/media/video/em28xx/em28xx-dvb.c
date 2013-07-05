@@ -34,7 +34,7 @@
 #include "zl10353.h"
 #include "s5h1409.h"
 #include "mt352.h"
-#include "mt352_priv.h" /* FIXME */
+#include "mt352_priv.h"
 #include "tda1002x.h"
 #include "tda18271.h"
 

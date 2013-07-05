@@ -516,21 +516,6 @@ static s8 b43_rssi_postprocess(struct b43_wldev *dev,
 }
 
 //TODO
-#if 0
-static s8 b43_rssinoise_postprocess(struct b43_wldev *dev, u8 in_rssi)
-{
-	struct b43_phy *phy = &dev->phy;
-	s8 ret;
-
-	if (phy->type == B43_PHYTYPE_A) {
-		//TODO: Incomplete specs.
-		ret = 0;
-	} else
-		ret = b43_rssi_postprocess(dev, in_rssi, 0, 1, 1);
-
-	return ret;
-}
-#endif
 
 void b43_rx(struct b43_wldev *dev, struct sk_buff *skb, const void *_rxhdr)
 {
@@ -660,8 +645,6 @@ void b43_rx(struct b43_wldev *dev, struct sk_buff *skb, const void *_rxhdr)
 	case B43_PHYTYPE_A:
 		status.band = IEEE80211_BAND_5GHZ;
 		B43_WARN_ON(1);
-		/* FIXME: We don't really know which value the "chanid" contains.
-		 *        So the following assignment might be wrong. */
 		status.freq = b43_channel_to_freq_5ghz(chanid);
 		break;
 	case B43_PHYTYPE_G:
@@ -711,7 +694,7 @@ void b43_handle_txstatus(struct b43_wldev *dev,
 	if (!status->acked)
 		dev->wl->ieee_stats.dot11ACKFailureCount++;
 	if (status->rts_count) {
-		if (status->rts_count == 0xF)	//FIXME
+		if (status->rts_count == 0xF)
 			dev->wl->ieee_stats.dot11RTSFailureCount++;
 		else
 			dev->wl->ieee_stats.dot11RTSSuccessCount++;

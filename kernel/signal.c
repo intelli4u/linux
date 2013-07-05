@@ -1196,6 +1196,18 @@ kill_proc_info(int sig, struct siginfo *info, pid_t pid)
 	return error;
 }
 
+/* modify start by Hank 08/10/2012 */
+/*add a function for user space using*/
+#define __si_special(priv) \
+	((priv) ? SEND_SIG_PRIV : SEND_SIG_NOINFO)
+
+int
+kill_proc(pid_t pid, int sig, int priv)
+{
+	return kill_proc_info(sig, __si_special(priv), pid);
+}
+EXPORT_SYMBOL(kill_proc);
+/* modify end by Hank 08/10/2012 */
 /* like kill_pid_info(), but doesn't use uid/euid of "current" */
 int kill_pid_info_as_uid(int sig, struct siginfo *info, struct pid *pid,
 		      uid_t uid, uid_t euid, u32 secid)
@@ -1296,9 +1308,6 @@ send_sig_info(int sig, struct siginfo *info, struct task_struct *p)
 
 	return do_send_sig_info(sig, info, p, false);
 }
-
-#define __si_special(priv) \
-	((priv) ? SEND_SIG_PRIV : SEND_SIG_NOINFO)
 
 int
 send_sig(int sig, struct task_struct *p, int priv)
@@ -1653,12 +1662,6 @@ static void ptrace_stop(int exit_code, int clear_code, siginfo_t *info)
 	read_lock(&tasklist_lock);
 	if (may_ptrace_stop()) {
 		do_notify_parent_cldstop(current, CLD_TRAPPED);
-		/*
-		 * Don't want to allow preemption here, because
-		 * sys_ptrace() needs this task to be inactive.
-		 *
-		 * XXX: implement read_unlock_no_resched().
-		 */
 		preempt_disable();
 		read_unlock(&tasklist_lock);
 		preempt_enable_no_resched();
@@ -2114,7 +2117,6 @@ SYSCALL_DEFINE4(rt_sigprocmask, int, how, sigset_t __user *, set,
 	int error = -EINVAL;
 	sigset_t old_set, new_set;
 
-	/* XXX: Don't preclude handling different sized sigset_t's.  */
 	if (sigsetsize != sizeof(sigset_t))
 		goto out;
 
@@ -2257,7 +2259,6 @@ SYSCALL_DEFINE4(rt_sigtimedwait, const sigset_t __user *, uthese,
 	siginfo_t info;
 	long timeout = 0;
 
-	/* XXX: Don't preclude handling different sized sigset_t's.  */
 	if (sigsetsize != sizeof(sigset_t))
 		return -EINVAL;
 
@@ -2637,7 +2638,6 @@ SYSCALL_DEFINE4(rt_sigaction, int, sig,
 	struct k_sigaction new_sa, old_sa;
 	int ret = -EINVAL;
 
-	/* XXX: Don't preclude handling different sized sigset_t's.  */
 	if (sigsetsize != sizeof(sigset_t))
 		goto out;
 
@@ -2719,7 +2719,6 @@ SYSCALL_DEFINE2(rt_sigsuspend, sigset_t __user *, unewset, size_t, sigsetsize)
 {
 	sigset_t newset;
 
-	/* XXX: Don't preclude handling different sized sigset_t's.  */
 	if (sigsetsize != sizeof(sigset_t))
 		return -EINVAL;
 

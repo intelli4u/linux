@@ -10,11 +10,7 @@
 #include <asm/sn/arch.h>
 #include <asm/sn/sn0/hub.h>
 
-#if 0
-#define NODE_NUM_CPUS(n)	CNODE_NUM_CPUS(n)
-#else
 #define NODE_NUM_CPUS(n)	CPUS_PER_NODE
-#endif
 
 #define CNODEID_NONE (cnodeid_t)-1
 

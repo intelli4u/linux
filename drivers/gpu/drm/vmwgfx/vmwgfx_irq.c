@@ -147,10 +147,6 @@ int vmw_fallback_wait(struct vmw_private *dev_priv,
 		if (lazy)
 			schedule_timeout(1);
 		else if ((++count & 0x0F) == 0) {
-			/**
-			 * FIXME: Use schedule_hr_timeout here for
-			 * newer kernels and lower CPU utilization.
-			 */
 
 			__set_current_state(TASK_RUNNING);
 			schedule();

@@ -576,7 +576,6 @@ static int ocfs2_control_release(struct inode *inode, struct file *file)
 
 	if (atomic_dec_and_test(&ocfs2_control_opened)) {
 		if (!list_empty(&ocfs2_live_connection_list)) {
-			/* XXX: Do bad things! */
 			printk(KERN_ERR
 			       "ocfs2: Unexpected release of ocfs2_control!\n"
 			       "       Loss of cluster connection requires "

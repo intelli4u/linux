@@ -226,9 +226,6 @@ int hfs_cat_delete(u32 cnid, struct inode *dir, struct qstr *str)
 		struct hfs_cat_file file;
 		hfs_bnode_read(fd.bnode, &file, fd.entryoffset, sizeof(file));
 		if (be32_to_cpu(file.FlNum) == cnid) {
-#if 0
-			hfs_free_fork(sb, &file, HFS_FK_DATA);
-#endif
 			hfs_free_fork(sb, &file, HFS_FK_RSRC);
 		}
 	}

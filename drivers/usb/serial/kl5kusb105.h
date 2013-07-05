@@ -44,25 +44,7 @@ enum {
 #define KL5KUSB105A_SIO_CONFIGURE_READ_OFF     2
 
 /* Interpretation of modem status lines */
-/* These need sorting out by individually connecting pins and checking
- * results. FIXME!
- * When data is being sent we see 0x30 in the lower byte; this must
- * contain DSR and CTS ...
- */
 #define KL5KUSB105A_DSR			((1<<4) | (1<<5))
 #define KL5KUSB105A_CTS			((1<<5) | (1<<4))
 
 #define KL5KUSB105A_WANTS_TO_SEND	0x30
-#if 0
-#define KL5KUSB105A_DTR			/* Data Terminal Ready */
-#define KL5KUSB105A_CTS			/* Clear To Send */
-#define KL5KUSB105A_CD			/* Carrier Detect */
-#define KL5KUSB105A_DSR			/* Data Set Ready */
-#define KL5KUSB105A_RxD			/* Receive pin */
-
-#define KL5KUSB105A_LE
-#define KL5KUSB105A_RTS
-#define KL5KUSB105A_ST
-#define KL5KUSB105A_SR
-#define KL5KUSB105A_RI			/* Ring Indicator */
-#endif

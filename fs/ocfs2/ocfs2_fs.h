@@ -1603,4 +1603,3 @@ static inline int ocfs2_gd_is_discontig(struct ocfs2_group_desc *gd)
 	return 1;
 }
 #endif  /* _OCFS2_FS_H */
-

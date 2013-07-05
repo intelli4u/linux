@@ -403,4 +403,3 @@ void pnic2_lnk_change(struct net_device *dev, int csr5)
 
 	tulip_restart_rxtx(tp);
 }
-

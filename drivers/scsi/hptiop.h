@@ -302,10 +302,6 @@ struct hptiop_adapter_ops {
 #define HPT_IOCTL_RESULT_OK         0
 #define HPT_IOCTL_RESULT_FAILED     (-1)
 
-#if 0
-#define dprintk(fmt, args...) do { printk(fmt, ##args); } while(0)
-#else
 #define dprintk(fmt, args...)
-#endif
 
 #endif

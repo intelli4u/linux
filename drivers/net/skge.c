@@ -1307,7 +1307,6 @@ static void bcom_phy_init(struct skge_port *skge)
 	int i;
 	u16 id1, r, ext, ctl;
 
-	/* magic workaround patterns for Broadcom */
 	static const struct {
 		u16 reg;
 		u16 val;
@@ -1331,30 +1330,18 @@ static void bcom_phy_init(struct skge_port *skge)
 
 	switch (id1) {
 	case PHY_BCOM_ID1_C0:
-		/*
-		 * Workaround BCOM Errata for the C0 type.
-		 * Write magic patterns to reserved registers.
-		 */
 		for (i = 0; i < ARRAY_SIZE(C0hack); i++)
 			xm_phy_write(hw, port,
 				     C0hack[i].reg, C0hack[i].val);
 
 		break;
 	case PHY_BCOM_ID1_A1:
-		/*
-		 * Workaround BCOM Errata for the A1 type.
-		 * Write magic patterns to reserved registers.
-		 */
 		for (i = 0; i < ARRAY_SIZE(A1hack); i++)
 			xm_phy_write(hw, port,
 				     A1hack[i].reg, A1hack[i].val);
 		break;
 	}
 
-	/*
-	 * Workaround BCOM Errata (#10523) for all BCom PHYs.
-	 * Disable Power Management after reset.
-	 */
 	r = xm_phy_read(hw, port, PHY_BCOM_AUX_CTRL);
 	r |= PHY_B_AC_DIS_PM;
 	xm_phy_write(hw, port, PHY_BCOM_AUX_CTRL, r);
@@ -1366,11 +1353,6 @@ static void bcom_phy_init(struct skge_port *skge)
 	ctl = PHY_CT_SP1000;	/* always 1000mbit */
 
 	if (skge->autoneg == AUTONEG_ENABLE) {
-		/*
-		 * Workaround BCOM Errata #1 for the C5 type.
-		 * 1000Base-T Link Acquisition Failure in Slave Mode
-		 * Set Repeater/DTE bit 10 of the 1000Base-T Control Register
-		 */
 		u16 adv = PHY_B_1000C_RD;
 		if (skge->advertising & ADVERTISED_1000baseT_Half)
 			adv |= PHY_B_1000C_AHD;
@@ -1870,10 +1852,6 @@ static void genesis_link_up(struct skge_port *skge)
 	if (hw->phy_type != SK_PHY_XMAC && skge->duplex == DUPLEX_FULL)
 		cmd |= XM_MMU_GMII_FD;
 
-	/*
-	 * Workaround BCOM Errata (#10523) for all BCom Phys
-	 * Enable Power Management after link up
-	 */
 	if (hw->phy_type == SK_PHY_BCOM) {
 		xm_phy_write(hw, port, PHY_BCOM_AUX_CTRL,
 			     xm_phy_read(hw, port, PHY_BCOM_AUX_CTRL)
@@ -1902,9 +1880,6 @@ static inline void bcom_phy_intr(struct skge_port *skge)
 		pr_err("%s: uncorrectable pair swap error\n",
 		       hw->dev[port]->name);
 
-	/* Workaround BCom Errata:
-	 *	enable and disable loopback mode if "NO HCD" occurs.
-	 */
 	if (isrc & PHY_B_IS_NO_HDCL) {
 		u16 ctrl = xm_phy_read(hw, port, PHY_BCOM_CTRL);
 		xm_phy_write(hw, port, PHY_BCOM_CTRL,
@@ -2435,7 +2410,6 @@ static void yukon_phy_intr(struct skge_port *skge)
  failed:
 	pr_err("%s: autonegotiation failed (%s)\n", skge->netdev->name, reason);
 
-	/* XXX restart autonegotiation? */
 }
 
 static void skge_phy_reset(struct skge_port *skge)

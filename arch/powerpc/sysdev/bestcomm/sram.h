@@ -51,4 +51,3 @@ static inline void *bcom_sram_pa2va(phys_addr_t pa) {
 
 
 #endif  /* __BESTCOMM_SRAM_H__ */
-

@@ -1399,7 +1399,7 @@ void XGINew_SetDRAMSize_310(struct xgi_hw_device_info *HwDeviceExtension, struct
     /* XGINew_SetReg1( pVBInfo->P3d4 , 0x30 , 0x40 ) ; */
 #endif
 
-#ifdef XGI302	/* alan,should change value */
+#ifdef XGI302	    /* alan,should change value */
     XGINew_SetReg1( pVBInfo->P3d4 , 0x30 , 0x4D ) ;
     XGINew_SetReg1( pVBInfo->P3d4 , 0x31 , 0xc0 ) ;
     XGINew_SetReg1( pVBInfo->P3d4 , 0x34 , 0x3F ) ;
@@ -3122,7 +3122,6 @@ void XGINew_GetXG21Sense(struct xgi_hw_device_info *HwDeviceExtension, struct vb
 
     pVBInfo->IF_DEF_LVDS = 0 ;
 
-#if 1
     if (( pVideoMemory[ 0x65 ] & 0x01 ) )			/* For XG21 LVDS */
     {
         pVBInfo->IF_DEF_LVDS = 1 ;
@@ -3131,7 +3130,6 @@ void XGINew_GetXG21Sense(struct xgi_hw_device_info *HwDeviceExtension, struct vb
     }
     else
     {
-#endif
         XGINew_SetRegANDOR( pVBInfo->P3d4 , 0x4A , ~0x03 , 0x03 ) ; /* Enable GPIOA/B read  */
         Temp = XGINew_GetReg1( pVBInfo->P3d4 , 0x48 ) & 0xC0;
         if ( Temp == 0xC0 )
@@ -3146,9 +3144,7 @@ void XGINew_GetXG21Sense(struct xgi_hw_device_info *HwDeviceExtension, struct vb
             XGINew_SetRegANDOR( pVBInfo->P3d4 , 0x38 , ~0xE0 , 0xA0 ) ; /* Only DVO on chip */
           XGINew_SetRegAND( pVBInfo->P3d4 , 0x4A , ~0x20 ) ;	    /* Disable read GPIOF */
         }
-#if 1
     }
-#endif
 }
 
 /* -------------------------------------------------------- */
@@ -3220,4 +3216,3 @@ unsigned char GetXG27FPBits(struct vb_device_info *pVBInfo)
 
     return temp;
 }
-

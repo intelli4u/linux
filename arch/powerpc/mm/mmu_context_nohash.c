@@ -152,7 +152,6 @@ static unsigned int steal_context_up(unsigned int id)
 	/* Mark this mm has having no context anymore */
 	mm->context.id = MMU_NO_CONTEXT;
 
-	/* XXX This clear should ultimately be part of local_flush_tlb_mm */
 	__clear_bit(id, stale_map[cpu]);
 
 	return id;
@@ -269,7 +268,6 @@ void switch_mmu_context(struct mm_struct *prev, struct mm_struct *next)
 
 		local_flush_tlb_mm(next);
 
-		/* XXX This clear should ultimately be part of local_flush_tlb_mm */
 		for (i = cpu_first_thread_in_core(cpu);
 		     i <= cpu_last_thread_in_core(cpu); i++) {
 			__clear_bit(id, stale_map[i]);
@@ -441,4 +439,3 @@ void __init mmu_context_init(void)
 	next_context = first_context;
 	nr_free_contexts = last_context - first_context + 1;
 }
-

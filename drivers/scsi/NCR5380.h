@@ -179,11 +179,7 @@
 #define CSR_SCSI_BUF_RDY       0x02	/* ro  SCSI buffer read */
 #define CSR_GATED_53C80_IRQ    0x01	/* ro  Last block xferred */
 
-#if 0
-#define CSR_BASE CSR_SCSI_BUFF_INTR | CSR_53C80_INTR
-#else
 #define CSR_BASE CSR_53C80_INTR
-#endif
 
 /* Number of 128-byte blocks to be transferred */
 #define C400_BLOCK_COUNTER_REG   NCR53C400_register_offset-7	/* rw */

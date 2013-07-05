@@ -129,8 +129,14 @@
 #include <linux/random.h>
 #include <trace/events/napi.h>
 #include <linux/pci.h>
-
 #include "net-sysfs.h"
+
+#include <typedefs.h>
+#include <bcmdefs.h>
+/*  added start, pptp, Winster Chan, 06/26/2006 */
+#include <linux/if_pppox.h>
+#include <linux/ppp_comm.h>
+/*  added end, pptp, Winster Chan, 06/26/2006 */
 
 /* Instead of increasing this, you should create a hash table. */
 #define MAX_GRO_SKBS 8
@@ -169,10 +175,20 @@
 #define PTYPE_HASH_SIZE	(16)
 #define PTYPE_HASH_MASK	(PTYPE_HASH_SIZE - 1)
 
+extern char *nvram_get(const char *name);
+
 static DEFINE_SPINLOCK(ptype_lock);
 static struct list_head ptype_base[PTYPE_HASH_SIZE] __read_mostly;
 static struct list_head ptype_all __read_mostly;	/* Taps */
 
+/*  added start, pptp, Winster Chan, 06/26/2006 */
+static struct addr_info pptp_ip_addr;
+
+#define NTOHS_ETH_P_PPTP_GRE    ntohs(ETH_P_PPTP_GRE)
+#define NTOHS_ETH_P_IP          ntohs(ETH_P_IP)
+#define NTOHS_ETH_P_PPP_SES     ntohs(ETH_P_PPP_SES)
+#define NTOHS_ETH_P_PPPOE_SESS  ntohs(ETH_P_PPPOE_SESS)
+/*  added end, pptp, Winster Chan, 06/26/2006 */
 /*
  * The @dev_base_head list is protected by @dev_base_lock and the rtnl
  * semaphore.
@@ -1184,6 +1200,14 @@ static int __dev_open(struct net_device *dev)
 
 	return ret;
 }
+/*  added start pling 10/27/2009 */
+#ifdef CONFIG_IPV6
+extern const char lan_if_name[];
+extern const char wan_if_name[];
+extern int lan_dad_detected;
+extern int wan_dad_detected;
+#endif
+/*  added end pling 10/27/2009 */
 
 /**
  *	dev_open	- prepare an interface for use.
@@ -2168,12 +2192,13 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
  *      the BH enable code must have IRQs enabled so that it will not deadlock.
  *          --BLG
  */
-int dev_queue_xmit(struct sk_buff *skb)
+int BCMFASTPATH_HOST dev_queue_xmit(struct sk_buff *skb)
 {
 	struct net_device *dev = skb->dev;
 	struct netdev_queue *txq;
 	struct Qdisc *q;
 	int rc = -ENOMEM;
+	unsigned short proto;
 
 	/* Disable soft irqs for various locks below. Also
 	 * stops preemption for RCU.
@@ -2186,7 +2211,8 @@ int dev_queue_xmit(struct sk_buff *skb)
 #ifdef CONFIG_NET_CLS_ACT
 	skb->tc_verd = SET_TC_AT(skb->tc_verd, AT_EGRESS);
 #endif
-	if (q->enqueue) {
+	proto = *(unsigned short *)(skb->data + ETH_ALEN + ETH_ALEN);   
+	if ( (q->enqueue) && (htons(proto) != ETH_P_8021Q)) {     
 		rc = __dev_xmit_skb(skb, q, dev, txq);
 		goto out;
 	}
@@ -2620,7 +2646,7 @@ static inline int deliver_skb(struct sk_buff *skb,
 }
 
 #if (defined(CONFIG_BRIDGE) || defined(CONFIG_BRIDGE_MODULE)) && \
-    (defined(CONFIG_ATM_LANE) || defined(CONFIG_ATM_LANE_MODULE))
+	(defined(CONFIG_ATM_LANE) || defined(CONFIG_ATM_LANE_MODULE))
 /* This hook is defined here for ATM LANE */
 int (*br_fdb_test_addr_hook)(struct net_device *dev,
 			     unsigned char *addr) __read_mostly;
@@ -2814,6 +2840,15 @@ int __skb_bond_should_drop(struct sk_buff *skb, struct net_device *master)
 }
 EXPORT_SYMBOL(__skb_bond_should_drop);
 
+static unsigned long call_id = 0;
+static unsigned long peer_call_id = 0;
+
+void dev_import_call_id(unsigned long pptp_call_id, unsigned long pptp_peer_call_id)
+{
+    call_id = pptp_call_id;
+    peer_call_id = pptp_peer_call_id;
+}
+
 static int __netif_receive_skb(struct sk_buff *skb)
 {
 	struct packet_type *ptype, *pt_prev;
@@ -2900,6 +2935,22 @@ ncls:
 	if (unlikely(vlan_tx_tag_present(skb)))
 		goto bypass;
 
+	/* For SamKnows briding: bridge "eth0" under "br0" with "vlan1" and "eth1".
+	 * If packet comes from eth0 with VID1, then bypass bridge handling.
+     * ps. we only check the 4th byte of interface name:
+     *  eth0
+     *  eth1
+     *  vlan1
+     *     ^
+     *     +-- 4th byte='0' means packet is from eth0.
+	 */
+	if ((skb->dev->name[3] == '0') &&
+		(skb->protocol == htons(ETH_P_8021Q)) &&
+		(skb->data[0] == 0x00) &&
+		(skb->data[1] == 0x01)) {
+		goto bypass_handle_bridge;
+	}
+
 	/* Handle special case of bridge or macvlan */
 	rx_handler = rcu_dereference(skb->dev->rx_handler);
 	if (rx_handler) {
@@ -2923,8 +2974,85 @@ ncls:
 	    (vlan_dev_real_dev(skb->dev)->priv_flags & IFF_BONDING)) {
 		orig_or_bond = vlan_dev_real_dev(skb->dev);
 	}
-
+	
+bypass_handle_bridge:
+	
 	type = skb->protocol;
+    int rsttype = 0;
+    /* Check dst_addr & src_addr, if PPTP was active */
+    if (pptp_ip_addr.dst_addr && pptp_ip_addr.src_addr) {
+        if (type == NTOHS_ETH_P_IP) {
+            struct pptp_ip_hdr *iphdr;
+            iphdr = (struct pptp_ip_hdr *)(skb->data);
+            if ((iphdr->saddr == pptp_ip_addr.dst_addr) &&
+                (iphdr->daddr == pptp_ip_addr.src_addr)) {
+                /* Check if GRE header presented */
+                if (iphdr->protocol == IP_PROTOCOL_GRE) {
+                    struct pptp_gre_hdr *grehdr;
+                    int grehdrlen = 8, iphdrlen = (int)(iphdr->ihl * 4), hdrlen;
+                    unsigned short ppp_proto;
+
+                    grehdr = (struct pptp_gre_hdr *)((char *)(iphdr) + iphdrlen);
+                    if (GRE_IS_S(grehdr->flags)) grehdrlen += 4;
+                    if (GRE_IS_A(grehdr->version)) grehdrlen += 4;
+
+                    /* Handle PPTP passthrough packets */
+                    //printk(KERN_EMERG "grehdr->call_id=%x, call_id=%x\n", htons(grehdr->call_id), call_id);
+                    if (htons(grehdr->call_id) != call_id) {
+                        //printk(KERN_EMERG "Not DUT PPTP call (our:%x, pkt:%x)\n", call_id, htons(grehdr->call_id));
+                        goto reset_type; 
+                    }
+
+                    /* Russia MPD3 issue: sometimes server does not send 'ff03' */
+                    /* Per Netgear spec, 
+                     * -- only RU region, or 
+                     * -- WW firmware (with Russian language)
+                     */ 
+                    hdrlen = iphdrlen + grehdrlen;
+                    if ((skb->data[hdrlen] != 0xff) || skb->data[hdrlen+1] != 0x3) {
+#if (defined RU_VERSION)
+                        if (1)
+#elif (defined WW_VERSION)
+                        if (strcmp(nvram_get("gui_region"), "Russian") == 0)
+#else   /* Other FW, don't apply this patch */
+                        if (0)
+#endif
+                        {
+                            ppp_proto = ntohs(*(unsigned short *)((unsigned char *)skb->data + hdrlen));
+                            goto check_header;
+                        }
+                    }
+
+                    hdrlen = iphdrlen + grehdrlen + 2;
+                    ppp_proto =
+                        ntohs(*(unsigned short *)((unsigned char *)skb->data + hdrlen));
+
+check_header:
+
+                    /* Check if PPP header presented */
+                    if ((grehdr->protocol == GRE_PROTOCOL_PPTP) &&
+                        ((int)(ntohs(grehdr->payload_len)) > 0) &&
+                        ((int)(ntohs(iphdr->tot_len)) > hdrlen) &&
+                        (ppp_proto <= PPP_NETWORK_LAYER) && (ppp_proto > 0)) {
+                        /* Set packet type == pptp */
+                        type = NTOHS_ETH_P_PPTP_GRE; 
+                    }
+                } /* End if (IP_PROTOCOL_GRE) */
+            } /* End if (src_addr, dst_addr) */
+        } /* End if (ETH_P_IP) */
+    } /* End if (src_addr && dst_addr) */
+
+    if (type == NTOHS_ETH_P_PPP_SES) {    // PPPoE Session packet
+        if ((*((unsigned char *)skb->data + 6) <= PPP_NW_LAYER) &&
+            (*((unsigned short *)((unsigned char *)skb->data + 6)) > 0)) {
+            type = NTOHS_ETH_P_PPPOE_SESS;
+        }
+    }
+reset_type:
+    if ((rsttype == 1) && (ret == NET_RX_BYPASS) && (type == NTOHS_ETH_P_PPTP_GRE)) {
+        type = NTOHS_ETH_P_IP;
+        rsttype = 0;
+    }
 	list_for_each_entry_rcu(ptype,
 			&ptype_base[ntohs(type) & PTYPE_HASH_MASK], list) {
 		if (ptype->type == type && (ptype->dev == null_or_orig ||
@@ -2939,6 +3067,10 @@ ncls:
 bypass:
 	if (pt_prev) {
 		ret = pt_prev->func(skb, skb->dev, pt_prev, orig_dev);
+		if ((ret == NET_RX_BYPASS) && (pt_prev->type == NTOHS_ETH_P_PPTP_GRE)) {
+		    rsttype = 1;
+		    goto reset_type;
+		}
 	} else {
 		kfree_skb(skb);
 		/* Jamal, now you will not able to escape explaining
@@ -3028,7 +3160,7 @@ static void flush_backlog(void *arg)
 	}
 }
 
-static int napi_gro_complete(struct sk_buff *skb)
+static int BCMFASTPATH_HOST napi_gro_complete(struct sk_buff *skb)
 {
 	struct packet_type *ptype;
 	__be16 type = skb->protocol;
@@ -3060,7 +3192,7 @@ out:
 	return netif_receive_skb(skb);
 }
 
-static void napi_gro_flush(struct napi_struct *napi)
+static void BCMFASTPATH_HOST napi_gro_flush(struct napi_struct *napi)
 {
 	struct sk_buff *skb, *next;
 
@@ -3074,7 +3206,15 @@ static void napi_gro_flush(struct napi_struct *napi)
 	napi->gro_list = NULL;
 }
 
-enum gro_result dev_gro_receive(struct napi_struct *napi, struct sk_buff *skb)
+#ifdef CONFIG_INET_GRO
+void BCMFASTPATH_HOST generic_napi_gro_flush(struct napi_struct *napi)
+{
+	napi_gro_flush(napi);
+}
+EXPORT_SYMBOL(generic_napi_gro_flush);
+#endif /* CONFIG_INET_GRO */
+
+enum gro_result BCMFASTPATH_HOST dev_gro_receive(struct napi_struct *napi, struct sk_buff *skb)
 {
 	struct sk_buff **pp = NULL;
 	struct packet_type *ptype;
@@ -3166,7 +3306,7 @@ normal:
 }
 EXPORT_SYMBOL(dev_gro_receive);
 
-static gro_result_t
+static gro_result_t BCMFASTPATH_HOST
 __napi_gro_receive(struct napi_struct *napi, struct sk_buff *skb)
 {
 	struct sk_buff *p;
@@ -3182,7 +3322,7 @@ __napi_gro_receive(struct napi_struct *napi, struct sk_buff *skb)
 	return dev_gro_receive(napi, skb);
 }
 
-gro_result_t napi_skb_finish(gro_result_t ret, struct sk_buff *skb)
+gro_result_t BCMFASTPATH_HOST napi_skb_finish(gro_result_t ret, struct sk_buff *skb)
 {
 	switch (ret) {
 	case GRO_NORMAL:
@@ -3220,7 +3360,7 @@ void skb_gro_reset_offset(struct sk_buff *skb)
 }
 EXPORT_SYMBOL(skb_gro_reset_offset);
 
-gro_result_t napi_gro_receive(struct napi_struct *napi, struct sk_buff *skb)
+gro_result_t BCMFASTPATH_HOST napi_gro_receive(struct napi_struct *napi, struct sk_buff *skb)
 {
 	skb_gro_reset_offset(skb);
 
@@ -3353,6 +3493,12 @@ static void net_rps_action_and_irq_enable(struct softnet_data *sd)
 		local_irq_enable();
 }
 
+#ifdef CONFIG_INET_GRO
+struct napi_struct gro_napi = {0};
+atomic_t gro_timer_init = {0};
+extern spinlock_t gro_lock;
+#endif /* CONFIG_INET_GRO */
+
 static int process_backlog(struct napi_struct *napi, int quota)
 {
 	int work = 0;
@@ -3375,6 +3521,14 @@ static int process_backlog(struct napi_struct *napi, int quota)
 
 		while ((skb = __skb_dequeue(&sd->process_queue))) {
 			local_irq_enable();
+#ifdef CONFIG_INET_GRO
+			if (atomic_read(&gro_timer_init)) {
+				spin_lock_bh(&gro_lock);
+				napi_gro_receive(&gro_napi, skb);
+				spin_unlock_bh(&gro_lock);
+			}
+			else
+#endif /* CONFIG_INET_GRO */
 			__netif_receive_skb(skb);
 			local_irq_disable();
 			input_queue_head_incr(sd);
@@ -6080,8 +6234,16 @@ static int __init net_dev_init(void)
 	dst_init();
 	dev_mcast_init();
 	rc = 0;
+    memset(&pptp_ip_addr, 0, sizeof(struct addr_info));
 out:
 	return rc;
+}
+
+void
+dev_import_addr_info(unsigned long *saddr, unsigned long *daddr)
+{
+    pptp_ip_addr.src_addr = *saddr;
+    pptp_ip_addr.dst_addr = *daddr;
 }
 
 subsys_initcall(net_dev_init);
@@ -6093,4 +6255,3 @@ static int __init initialize_hashrnd(void)
 }
 
 late_initcall_sync(initialize_hashrnd);
-

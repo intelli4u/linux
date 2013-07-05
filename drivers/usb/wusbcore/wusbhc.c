@@ -75,7 +75,6 @@ static ssize_t wusb_trust_timeout_store(struct device *dev,
 		result = -EINVAL;
 		goto out;
 	}
-	/* FIXME: maybe we should check for range validity? */
 	wusbhc->trust_timeout = trust_timeout;
 	cancel_delayed_work(&wusbhc->keep_alive_timer);
 	flush_workqueue(wusbd);
@@ -311,7 +310,6 @@ static DEFINE_SPINLOCK(wusb_cluster_ids_lock);
  *
  * Need to release with wusb_cluster_id_put() when done w/ it.
  */
-/* FIXME: coordinate with the choose_addres() from the USB stack */
 /* we want to leave the top of the 128 range for cluster addresses and
  * the bottom for device addresses (as we map them one on one with
  * ports). */

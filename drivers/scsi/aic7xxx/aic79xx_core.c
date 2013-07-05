@@ -437,10 +437,8 @@ ahd_sg_setup(struct ahd_softc *ahd, struct scb *scb,
 static void
 ahd_setup_scb_common(struct ahd_softc *ahd, struct scb *scb)
 {
-	/* XXX Handle target mode SCBs. */
 	scb->crc_retry_count = 0;
 	if ((scb->flags & SCB_PACKETIZED) != 0) {
-		/* XXX what about ACA??  It is type 4, but TAG_TYPE == 0x3. */
 		scb->hscb->task_attribute = scb->hscb->control & SCB_TAG_TYPE;
 	} else {
 		if (ahd_get_transfer_length(scb) & 0x01)
@@ -667,13 +665,6 @@ ahd_set_scbptr(struct ahd_softc *ahd, u_int scbptr)
 	ahd_outb(ahd, SCBPTR+1, (scbptr >> 8) & 0xFF);
 }
 
-#if 0 /* unused */
-static u_int
-ahd_get_hnscb_qoff(struct ahd_softc *ahd)
-{
-	return (ahd_inw_atomic(ahd, HNSCB_QOFF));
-}
-#endif
 
 static void
 ahd_set_hnscb_qoff(struct ahd_softc *ahd, u_int value)
@@ -681,13 +672,6 @@ ahd_set_hnscb_qoff(struct ahd_softc *ahd, u_int value)
 	ahd_outw_atomic(ahd, HNSCB_QOFF, value);
 }
 
-#if 0 /* unused */
-static u_int
-ahd_get_hescb_qoff(struct ahd_softc *ahd)
-{
-	return (ahd_inb(ahd, HESCB_QOFF));
-}
-#endif
 
 static void
 ahd_set_hescb_qoff(struct ahd_softc *ahd, u_int value)
@@ -713,14 +697,6 @@ ahd_set_snscb_qoff(struct ahd_softc *ahd, u_int value)
 	ahd_outw(ahd, SNSCB_QOFF, value);
 }
 
-#if 0 /* unused */
-static u_int
-ahd_get_sescb_qoff(struct ahd_softc *ahd)
-{
-	AHD_ASSERT_MODES(ahd, AHD_MODE_CCHAN_MSK, AHD_MODE_CCHAN_MSK);
-	return (ahd_inb(ahd, SESCB_QOFF));
-}
-#endif
 
 static void
 ahd_set_sescb_qoff(struct ahd_softc *ahd, u_int value)
@@ -729,14 +705,6 @@ ahd_set_sescb_qoff(struct ahd_softc *ahd, u_int value)
 	ahd_outb(ahd, SESCB_QOFF, value);
 }
 
-#if 0 /* unused */
-static u_int
-ahd_get_sdscb_qoff(struct ahd_softc *ahd)
-{
-	AHD_ASSERT_MODES(ahd, AHD_MODE_CCHAN_MSK, AHD_MODE_CCHAN_MSK);
-	return (ahd_inb(ahd, SDSCB_QOFF) | (ahd_inb(ahd, SDSCB_QOFF + 1) << 8));
-}
-#endif
 
 static void
 ahd_set_sdscb_qoff(struct ahd_softc *ahd, u_int value)
@@ -751,20 +719,6 @@ ahd_inb_scbram(struct ahd_softc *ahd, u_int offset)
 {
 	u_int value;
 
-	/*
-	 * Workaround PCI-X Rev A. hardware bug.
-	 * After a host read of SCB memory, the chip
-	 * may become confused into thinking prefetch
-	 * was required.  This starts the discard timer
-	 * running and can cause an unexpected discard
-	 * timer interrupt.  The work around is to read
-	 * a normal register prior to the exhaustion of
-	 * the discard timer.  The mode pointer register
-	 * has no side effects and so serves well for
-	 * this purpose.
-	 *
-	 * Razor #528
-	 */
 	value = ahd_inb(ahd, offset);
 	if ((ahd->bugs & AHD_PCIX_SCBRAM_RD_BUG) != 0)
 		ahd_inb(ahd, MODE_PTR);
@@ -3593,32 +3547,6 @@ ahd_clear_intstat(struct ahd_softc *ahd)
 uint32_t ahd_debug = AHD_DEBUG_OPTS;
 #endif
 
-#if 0
-void
-ahd_print_scb(struct scb *scb)
-{
-	struct hardware_scb *hscb;
-	int i;
-
-	hscb = scb->hscb;
-	printk("scb:%p control:0x%x scsiid:0x%x lun:%d cdb_len:%d\n",
-	       (void *)scb,
-	       hscb->control,
-	       hscb->scsiid,
-	       hscb->lun,
-	       hscb->cdb_len);
-	printk("Shared Data: ");
-	for (i = 0; i < sizeof(hscb->shared_data.idata.cdb); i++)
-		printk("%#02x", hscb->shared_data.idata.cdb[i]);
-	printk("        dataptr:%#x%x datacnt:%#x sgptr:%#x tag:%#x\n",
-	       (uint32_t)((ahd_le64toh(hscb->dataptr) >> 32) & 0xFFFFFFFF),
-	       (uint32_t)(ahd_le64toh(hscb->dataptr) & 0xFFFFFFFF),
-	       ahd_le32toh(hscb->datacnt),
-	       ahd_le32toh(hscb->sgptr),
-	       SCB_GET_TAG(scb));
-	ahd_dump_sglist(scb);
-}
-#endif  /*  0  */
 
 /************************* Transfer Negotiation *******************************/
 /*
@@ -4989,10 +4917,6 @@ reswitch:
 		
 		ahd->msgin_index++;
 
-		/*
-		 * XXX Read spec about initiator dropping ATN too soon
-		 *     and use msgdone to detect it.
-		 */
 		if (msgdone == MSGLOOP_MSGCOMPLETE) {
 			ahd->msgin_index = 0;
 
@@ -5695,10 +5619,6 @@ ahd_handle_ign_wide_residue(struct ahd_softc *ahd, struct ahd_devinfo *devinfo)
 
 	scb_index = ahd_get_scbptr(ahd);
 	scb = ahd_lookup_scb(ahd, scb_index);
-	/*
-	 * XXX Actually check data direction in the sequencer?
-	 * Perhaps add datadir to some spare bits in the hscb?
-	 */
 	if ((ahd_inb(ahd, SEQ_FLAGS) & DPHASE) == 0
 	 || ahd_get_transfer_dir(scb) != CAM_DIR_IN) {
 		/*
@@ -8564,7 +8484,6 @@ ahd_rem_wscb(struct ahd_softc *ahd, u_int scbid,
 static void
 ahd_add_scb_to_free_list(struct ahd_softc *ahd, u_int scbid)
 {
-/* XXX Need some other mechanism to designate "free". */
 	/*
 	 * Invalidate the tag so that our abort
 	 * routines don't think it's active.
@@ -9987,33 +9906,6 @@ ahd_dump_card_state(struct ahd_softc *ahd)
 		ahd_unpause(ahd);
 }
 
-#if 0
-void
-ahd_dump_scbs(struct ahd_softc *ahd)
-{
-	ahd_mode_state saved_modes;
-	u_int	       saved_scb_index;
-	int	       i;
-
-	saved_modes = ahd_save_modes(ahd);
-	ahd_set_modes(ahd, AHD_MODE_SCSI, AHD_MODE_SCSI);
-	saved_scb_index = ahd_get_scbptr(ahd);
-	for (i = 0; i < AHD_SCB_MAX; i++) {
-		ahd_set_scbptr(ahd, i);
-		printk("%3d", i);
-		printk("(CTRL 0x%x ID 0x%x N 0x%x N2 0x%x SG 0x%x, RSG 0x%x)\n",
-		       ahd_inb_scbram(ahd, SCB_CONTROL),
-		       ahd_inb_scbram(ahd, SCB_SCSIID),
-		       ahd_inw_scbram(ahd, SCB_NEXT),
-		       ahd_inw_scbram(ahd, SCB_NEXT2),
-		       ahd_inl_scbram(ahd, SCB_SGPTR),
-		       ahd_inl_scbram(ahd, SCB_RESIDUAL_SGPTR));
-	}
-	printk("\n");
-	ahd_set_scbptr(ahd, saved_scb_index);
-	ahd_restore_modes(ahd, saved_modes);
-}
-#endif  /*  0  */
 
 /**************************** Flexport Logic **********************************/
 /*
@@ -10195,16 +10087,6 @@ ahd_acquire_seeprom(struct ahd_softc *ahd)
 	 * is present.
 	 */
 	return (1);
-#if 0
-	uint8_t	seetype;
-	int	error;
-
-	error = ahd_read_flexport(ahd, FLXADDR_ROMSTAT_CURSENSECTL, &seetype);
-	if (error != 0
-         || ((seetype & FLX_ROMSTAT_SEECFG) == FLX_ROMSTAT_SEE_NONE))
-		return (0);
-	return (1);
-#endif
 }
 
 void

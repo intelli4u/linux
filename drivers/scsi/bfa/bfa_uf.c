@@ -339,5 +339,3 @@ bfa_uf_isr(struct bfa_s *bfa, struct bfi_msg_s *msg)
 		bfa_assert(0);
 	}
 }
-
-

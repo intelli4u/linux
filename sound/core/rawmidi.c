@@ -1533,7 +1533,8 @@ static int snd_rawmidi_dev_free(struct snd_device *device)
 	return snd_rawmidi_free(rmidi);
 }
 
-#if defined(CONFIG_SND_SEQUENCER) || (defined(MODULE) && defined(CONFIG_SND_SEQUENCER_MODULE))
+#if defined(CONFIG_SND_SEQUENCER) || (defined(MODULE) && \
+	defined(CONFIG_SND_SEQUENCER_MODULE))
 static void snd_rawmidi_dev_seq_free(struct snd_seq_device *device)
 {
 	struct snd_rawmidi *rmidi = device->private_data;
@@ -1608,7 +1609,8 @@ static int snd_rawmidi_dev_register(struct snd_device *device)
 		}
 	}
 	rmidi->proc_entry = entry;
-#if defined(CONFIG_SND_SEQUENCER) || (defined(MODULE) && defined(CONFIG_SND_SEQUENCER_MODULE))
+#if defined(CONFIG_SND_SEQUENCER) || (defined(MODULE) && \
+	defined(CONFIG_SND_SEQUENCER_MODULE))
 	if (!rmidi->ops || !rmidi->ops->dev_register) { /* own registration mechanism */
 		if (snd_seq_device_new(rmidi->card, rmidi->device, SNDRV_SEQ_DEV_ID_MIDISYNTH, 0, &rmidi->seq_dev) >= 0) {
 			rmidi->seq_dev->private_data = rmidi;

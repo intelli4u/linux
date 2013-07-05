@@ -55,12 +55,6 @@ _GLOBAL(__init_fpu_44x)
 	isync
 	blr
 
-/*
- * Workaround for the incorrect write to DDR SDRAM errata.
- * The write address can be corrupted during writes to
- * DDR SDRAM when write pipelining is enabled on PLB0.
- * Disable write pipelining here.
- */
 #define DCRN_PLB4A0_ACR	0x81
 
 _GLOBAL(__plb_disable_wrp)
@@ -70,4 +64,3 @@ _GLOBAL(__plb_disable_wrp)
 	mtdcr	DCRN_PLB4A0_ACR,r3
 	isync
 	blr
-

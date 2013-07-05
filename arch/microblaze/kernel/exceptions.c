@@ -76,12 +76,6 @@ asmlinkage void full_exception(struct pt_regs *regs, unsigned int type,
 	addr = regs->pc;
 #endif
 
-#if 0
-	printk(KERN_WARNING "Exception %02x in %s mode, FSR=%08x PC=%08x " \
-							"ESR=%08x\n",
-			type, user_mode(regs) ? "user" : "kernel", fsr,
-			(unsigned int) regs->pc, (unsigned int) regs->esr);
-#endif
 
 	switch (type & 0x1F) {
 	case MICROBLAZE_ILL_OPCODE_EXCEPTION:
@@ -158,7 +152,6 @@ asmlinkage void full_exception(struct pt_regs *regs, unsigned int type,
 		break;
 #endif
 	default:
-	/* FIXME what to do in unexpected exception */
 		printk(KERN_WARNING "Unexpected exception %02x "
 			"PC=%08x in %s mode\n", type, (unsigned int) addr,
 			kernel_mode(regs) ? "kernel" : "user");

@@ -248,11 +248,6 @@ extern void __ip_select_ident(struct iphdr *iph, struct dst_entry *dst, int more
 static inline void ip_select_ident(struct iphdr *iph, struct dst_entry *dst, struct sock *sk)
 {
 	if (iph->frag_off & htons(IP_DF)) {
-		/* This is only to work around buggy Windows95/2000
-		 * VJ compression implementations.  If the ID field
-		 * does not change, they drop every other packet in
-		 * a TCP stream using header compression.
-		 */
 		iph->id = (sk && inet_sk(sk)->inet_daddr) ?
 					htons(inet_sk(sk)->inet_id++) : 0;
 	} else

@@ -13,7 +13,7 @@
 #define B43_PHY_CRSTHRES1_R1		B43_PHY_OFDM(0x06)	/* CRS Threshold 1 (phy.rev 1 only) */
 #define B43_PHY_LNAHPFCTL		B43_PHY_OFDM(0x1C)	/* LNA/HPF control */
 #define B43_PHY_LPFGAINCTL		B43_PHY_OFDM(0x20)	/* LPF Gain control */
-#define B43_PHY_ADIVRELATED		B43_PHY_OFDM(0x27)	/* FIXME rename */
+#define B43_PHY_ADIVRELATED		B43_PHY_OFDM(0x27)
 #define B43_PHY_CRS0			B43_PHY_OFDM(0x29)
 #define  B43_PHY_CRS0_EN		0x4000
 #define B43_PHY_PEAK_COUNT		B43_PHY_OFDM(0x30)
@@ -22,8 +22,8 @@
 #define B43_PHY_ENCORE			B43_PHY_OFDM(0x49)	/* "Encore" (RangeMax / BroadRange) */
 #define  B43_PHY_ENCORE_EN		0x0200	/* Encore enable */
 #define B43_PHY_LMS			B43_PHY_OFDM(0x55)
-#define B43_PHY_OFDM61			B43_PHY_OFDM(0x61)	/* FIXME rename */
-#define  B43_PHY_OFDM61_10		0x0010	/* FIXME rename */
+#define B43_PHY_OFDM61			B43_PHY_OFDM(0x61)
+#define  B43_PHY_OFDM61_10		0x0010
 #define B43_PHY_IQBAL			B43_PHY_OFDM(0x69)	/* I/Q balance */
 #define B43_PHY_BBTXDC_BIAS		B43_PHY_OFDM(0x6B)	/* Baseband TX DC bias */
 #define B43_PHY_OTABLECTL		B43_PHY_OFDM(0x72)	/* OFDM table control (see below) */
@@ -40,14 +40,14 @@
 #define B43_PHY_ANTWRSETT		B43_PHY_OFDM(0x8C)	/* Antenna WR settle */
 #define  B43_PHY_ANTWRSETT_ARXDIV	0x2000	/* Automatic RX diversity enabled */
 #define B43_PHY_CLIPPWRDOWNT		B43_PHY_OFDM(0x93)	/* Clip powerdown threshold */
-#define B43_PHY_OFDM9B			B43_PHY_OFDM(0x9B)	/* FIXME rename */
+#define B43_PHY_OFDM9B			B43_PHY_OFDM(0x9B)
 #define B43_PHY_N1P1GAIN		B43_PHY_OFDM(0xA0)
 #define B43_PHY_P1P2GAIN		B43_PHY_OFDM(0xA1)
 #define B43_PHY_N1N2GAIN		B43_PHY_OFDM(0xA2)
 #define B43_PHY_CLIPTHRES		B43_PHY_OFDM(0xA3)
 #define B43_PHY_CLIPN1P2THRES		B43_PHY_OFDM(0xA4)
-#define B43_PHY_CCKSHIFTBITS_WA		B43_PHY_OFDM(0xA5)	/* CCK shiftbits workaround, FIXME rename */
-#define B43_PHY_CCKSHIFTBITS		B43_PHY_OFDM(0xA7)	/* FIXME rename */
+#define B43_PHY_CCKSHIFTBITS_WA		B43_PHY_OFDM(0xA5)
+#define B43_PHY_CCKSHIFTBITS		B43_PHY_OFDM(0xA7)
 #define B43_PHY_DIVSRCHIDX		B43_PHY_OFDM(0xA8)	/* Divider search gain/index */
 #define B43_PHY_CLIPP2THRES		B43_PHY_OFDM(0xA9)
 #define B43_PHY_CLIPP3THRES		B43_PHY_OFDM(0xAA)
@@ -109,7 +109,7 @@ struct b43_phy_a {
 	/* Target idle TSSI */
 	int tgt_idle_tssi;
 	/* Current idle TSSI */
-	int cur_idle_tssi;//FIXME value currently not set
+	int cur_idle_tssi;
 
 	/* A-PHY TX Power control value. */
 	u16 txpwr_offset;

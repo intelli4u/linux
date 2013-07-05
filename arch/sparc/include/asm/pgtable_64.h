@@ -46,10 +46,6 @@
 
 #define vmemmap			((struct page *)VMEMMAP_BASE)
 
-/* XXX All of this needs to be rethought so we can take advantage
- * XXX cheetah's full 64-bit virtual address space, ie. no more hole
- * XXX in the middle like on spitfire. -DaveM
- */
 /*
  * Given a virtual address, the lowest PAGE_SHIFT bits determine offset
  * into the page; the next higher PAGE_SHIFT-3 bits determine the pte#
@@ -206,7 +202,6 @@ extern pgprot_t PAGE_KERNEL_LOCKED;
 extern pgprot_t PAGE_COPY;
 extern pgprot_t PAGE_SHARED;
 
-/* XXX This uglyness is for the atyfb driver's sparc mmap() support. XXX */
 extern unsigned long _PAGE_IE;
 extern unsigned long _PAGE_E;
 extern unsigned long _PAGE_CACHE;

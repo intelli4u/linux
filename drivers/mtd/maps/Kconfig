@@ -543,4 +543,8 @@ config MTD_PISMO
 
 	  When built as a module, it will be called pismo.ko
 
+config MTD_BCM947XX
+	tristate "CFI Flash device mapped on Broadcom BCM947XX boards"
+	depends on MTD_CFI
+
 endmenu

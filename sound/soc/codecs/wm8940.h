@@ -101,4 +101,3 @@ extern struct snd_soc_codec_device soc_codec_dev_wm8940;
 #define WM8940_OPCLKDIV_4 3
 
 #endif /* _WM8940_H */
-

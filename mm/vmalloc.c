@@ -210,10 +210,6 @@ struct page *vmalloc_to_page(const void *vmalloc_addr)
 	struct page *page = NULL;
 	pgd_t *pgd = pgd_offset_k(addr);
 
-	/*
-	 * XXX we might need to change this if we add VIRTUAL_BUG_ON for
-	 * architectures that do not vmalloc module space
-	 */
 	VIRTUAL_BUG_ON(!is_vmalloc_or_module_addr(vmalloc_addr));
 
 	if (!pgd_none(*pgd)) {
@@ -349,7 +345,6 @@ retry:
 	if (addr + size - 1 < addr)
 		goto overflow;
 
-	/* XXX: could have a last_hole cache */
 	n = vmap_area_root.rb_node;
 	if (n) {
 		struct vmap_area *first = NULL;
@@ -2478,4 +2473,3 @@ static int __init proc_vmalloc_init(void)
 }
 module_init(proc_vmalloc_init);
 #endif
-

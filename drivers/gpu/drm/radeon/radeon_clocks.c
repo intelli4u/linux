@@ -383,7 +383,6 @@ void radeon_legacy_set_engine_clock(struct radeon_device *rdev,
 	uint32_t tmp;
 	int fb_div, post_div;
 
-	/* XXX: wait for idle */
 
 	eng_clock = calc_eng_mem_clock(rdev, eng_clock, &fb_div, &post_div);
 
@@ -414,7 +413,6 @@ void radeon_legacy_set_engine_clock(struct radeon_device *rdev,
 	tmp |= (fb_div & RADEON_SPLL_FB_DIV_MASK) << RADEON_SPLL_FB_DIV_SHIFT;
 	WREG32_PLL(RADEON_M_SPLL_REF_FB_DIV, tmp);
 
-	/* XXX: verify on different asics */
 	tmp = RREG32_PLL(RADEON_SPLL_CNTL);
 	tmp &= ~RADEON_SPLL_PVG_MASK;
 	if ((eng_clock * post_div) >= 90000)
@@ -904,4 +902,3 @@ void radeon_legacy_set_clock_gating(struct radeon_device *rdev, int enable)
 		}
 	}
 }
-

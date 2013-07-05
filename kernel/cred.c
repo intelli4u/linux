@@ -18,13 +18,8 @@
 #include <linux/security.h>
 #include <linux/cn_proc.h>
 
-#if 0
-#define kdebug(FMT, ...) \
-	printk("[%-5.5s%5u] "FMT"\n", current->comm, current->pid ,##__VA_ARGS__)
-#else
 #define kdebug(FMT, ...) \
 	no_printk("[%-5.5s%5u] "FMT"\n", current->comm, current->pid ,##__VA_ARGS__)
-#endif
 
 static struct kmem_cache *cred_jar;
 

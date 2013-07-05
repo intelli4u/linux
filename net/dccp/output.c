@@ -48,7 +48,6 @@ static int dccp_transmit_skb(struct sock *sk, struct sk_buff *skb)
 		struct dccp_sock *dp = dccp_sk(sk);
 		struct dccp_skb_cb *dcb = DCCP_SKB_CB(skb);
 		struct dccp_hdr *dh;
-		/* XXX For now we're using only 48 bits sequence numbers */
 		const u32 dccp_header_size = sizeof(*dh) +
 					     sizeof(struct dccp_hdr_ext) +
 					  dccp_packet_hdr_len(dcb->dccpd_type);
@@ -105,7 +104,6 @@ static int dccp_transmit_skb(struct sock *sk, struct sk_buff *skb)
 		dh->dccph_doff	= (dccp_header_size + dcb->dccpd_opt_len) / 4;
 		dh->dccph_ccval	= dcb->dccpd_ccval;
 		dh->dccph_cscov = dp->dccps_pcslen;
-		/* XXX For now we're using only 48 bits sequence numbers */
 		dh->dccph_x	= 1;
 
 		dccp_update_gss(sk, dcb->dccpd_seq);
@@ -450,10 +448,6 @@ EXPORT_SYMBOL_GPL(dccp_ctl_make_reset);
 int dccp_send_reset(struct sock *sk, enum dccp_reset_codes code)
 {
 	struct sk_buff *skb;
-	/*
-	 * FIXME: what if rebuild_header fails?
-	 * Should we be doing a rebuild_header here?
-	 */
 	int err = inet_csk(sk)->icsk_af_ops->rebuild_header(sk);
 
 	if (err != 0)
@@ -548,38 +542,6 @@ void dccp_send_ack(struct sock *sk)
 
 EXPORT_SYMBOL_GPL(dccp_send_ack);
 
-#if 0
-/* FIXME: Is this still necessary (11.3) - currently nowhere used by DCCP. */
-void dccp_send_delayed_ack(struct sock *sk)
-{
-	struct inet_connection_sock *icsk = inet_csk(sk);
-	/*
-	 * FIXME: tune this timer. elapsed time fixes the skew, so no problem
-	 * with using 2s, and active senders also piggyback the ACK into a
-	 * DATAACK packet, so this is really for quiescent senders.
-	 */
-	unsigned long timeout = jiffies + 2 * HZ;
-
-	/* Use new timeout only if there wasn't a older one earlier. */
-	if (icsk->icsk_ack.pending & ICSK_ACK_TIMER) {
-		/* If delack timer was blocked or is about to expire,
-		 * send ACK now.
-		 *
-		 * FIXME: check the "about to expire" part
-		 */
-		if (icsk->icsk_ack.blocked) {
-			dccp_send_ack(sk);
-			return;
-		}
-
-		if (!time_before(timeout, icsk->icsk_ack.timeout))
-			timeout = icsk->icsk_ack.timeout;
-	}
-	icsk->icsk_ack.pending |= ICSK_ACK_SCHED | ICSK_ACK_TIMER;
-	icsk->icsk_ack.timeout = timeout;
-	sk_reset_timer(sk, &icsk->icsk_delack_timer, timeout);
-}
-#endif
 
 void dccp_send_sync(struct sock *sk, const u64 ackno,
 		    const enum dccp_pkt_type pkt_type)
@@ -592,7 +554,6 @@ void dccp_send_sync(struct sock *sk, const u64 ackno,
 	struct sk_buff *skb = alloc_skb(sk->sk_prot->max_header, GFP_ATOMIC);
 
 	if (skb == NULL) {
-		/* FIXME: how to make sure the sync is sent? */
 		DCCP_CRIT("could not send %s", dccp_packet_name(pkt_type));
 		return;
 	}
@@ -633,16 +594,6 @@ void dccp_send_close(struct sock *sk, const int active)
 		dccp_write_xmit(sk, 1);
 		dccp_skb_entail(sk, skb);
 		dccp_transmit_skb(sk, skb_clone(skb, prio));
-		/*
-		 * Retransmission timer for active-close: RFC 4340, 8.3 requires
-		 * to retransmit the Close/CloseReq until the CLOSING/CLOSEREQ
-		 * state can be left. The initial timeout is 2 RTTs.
-		 * Since RTT measurement is done by the CCIDs, there is no easy
-		 * way to get an RTT sample. The fallback RTT from RFC 4340, 3.4
-		 * is too low (200ms); we use a high value to avoid unnecessary
-		 * retransmissions when the link RTT is > 0.2 seconds.
-		 * FIXME: Let main module sample RTTs and use that instead.
-		 */
 		inet_csk_reset_xmit_timer(sk, ICSK_TIME_RETRANS,
 					  DCCP_TIMEOUT_INIT, DCCP_RTO_MAX);
 	} else

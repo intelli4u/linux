@@ -182,18 +182,6 @@ static int jmicron_probe(struct sdhci_pci_chip *chip)
 			  SDHCI_QUIRK_BROKEN_SMALL_PIO;
 	}
 
-	/*
-	 * JMicron chips can have two interfaces to the same hardware
-	 * in order to work around limitations in Microsoft's driver.
-	 * We need to make sure we only bind to one of them.
-	 *
-	 * This code assumes two things:
-	 *
-	 * 1. The PCI code adds subfunctions in order.
-	 *
-	 * 2. The MMC interface has a lower subfunction number
-	 *    than the SD interface.
-	 */
 	if (chip->pdev->device == PCI_DEVICE_ID_JMICRON_JMB38X_SD) {
 		struct pci_dev *sd_dev;
 

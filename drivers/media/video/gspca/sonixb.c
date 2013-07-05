@@ -116,7 +116,7 @@ struct sensor_data {
 #define COMP1 0xc9		/* 0x89 //0x09 */
 
 #define MCK_INIT 0x63
-#define MCK_INIT1 0x20		/*fixme: Bayer - 0x50 for JPEG ??*/
+#define MCK_INIT1 0x20
 
 #define SYS_CLK 0x04
 
@@ -1146,9 +1146,8 @@ static int sd_start(struct gspca_dev *gspca_dev)
 	/* V_START */
 	reg_w(gspca_dev, 0x13, &reg12_19[1], 1);
 	/* reset 0x17 SensorClk enable inv Clk 0x60 */
-				/*fixme: ov7630 [17]=68 8f (+20 if 102)*/
 	reg_w(gspca_dev, 0x17, &reg12_19[5], 1);
-	/*MCKSIZE ->3 */	/*fixme: not ov7630*/
+	/*MCKSIZE ->3 */
 	reg_w(gspca_dev, 0x19, &reg12_19[7], 1);
 	/* AE_STRX AE_STRY AE_ENDX AE_ENDY */
 	reg_w(gspca_dev, 0x1c, &sn9c10x[0x1c - 1], 4);

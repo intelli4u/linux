@@ -96,7 +96,7 @@ static inline void kunmap_atomic_notypecheck(unsigned long vaddr, enum km_type t
 #if HIGHMEM_DEBUG
 	enum fixed_addresses idx = type + KM_TYPE_NR * smp_processor_id();
 
-	if (vaddr < FIXADDR_START) /* FIXME */
+	if (vaddr < FIXADDR_START)
 		return;
 
 	if (vaddr != __fix_to_virt(FIX_KMAP_BEGIN + idx))

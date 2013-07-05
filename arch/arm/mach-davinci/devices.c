@@ -190,12 +190,6 @@ void __init davinci_setup_mmc(int module, struct davinci_mmc_config *config)
 	if (WARN_ON(cpu_is_davinci_dm646x()))
 		return;
 
-	/* REVISIT: update PINMUX, ARM_IRQMUX, and EDMA_EVTMUX here too;
-	 * for example if MMCSD1 is used for SDIO, maybe DAT2 is unused.
-	 *
-	 * FIXME dm6441 (no MMC/SD), dm357 (one), and dm335 (two) are
-	 * not handled right here ...
-	 */
 	switch (module) {
 	case 1:
 		if (cpu_is_davinci_dm355()) {
@@ -320,4 +314,3 @@ static int __init davinci_init_devices(void)
 	return 0;
 }
 arch_initcall(davinci_init_devices);
-

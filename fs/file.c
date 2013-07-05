@@ -462,13 +462,11 @@ repeat:
 	else
 		FD_CLR(fd, fdt->close_on_exec);
 	error = fd;
-#if 1
 	/* Sanity check */
 	if (rcu_dereference_raw(fdt->fd[fd]) != NULL) {
 		printk(KERN_WARNING "alloc_fd: slot %d not NULL!\n", fd);
 		rcu_assign_pointer(fdt->fd[fd], NULL);
 	}
-#endif
 
 out:
 	spin_unlock(&files->file_lock);

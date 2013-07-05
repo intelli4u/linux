@@ -29,10 +29,6 @@
 extern int early_uartlite_console(void);
 
 #ifdef CONFIG_PCI
-/*
- * PCI <-> OF matching functions
- * (XXX should these be here?)
- */
 struct pci_bus;
 struct pci_dev;
 extern int pci_device_from_OF_node(struct device_node *node,

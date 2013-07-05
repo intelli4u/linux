@@ -2211,27 +2211,6 @@ static int we_should_drop_the_connection(struct drbd_conf *mdev, struct socket *
 	return drop_it; /* && (mdev->state == R_PRIMARY) */;
 }
 
-/* The idea of sendpage seems to be to put some kind of reference
- * to the page into the skb, and to hand it over to the NIC. In
- * this process get_page() gets called.
- *
- * As soon as the page was really sent over the network put_page()
- * gets called by some part of the network layer. [ NIC driver? ]
- *
- * [ get_page() / put_page() increment/decrement the count. If count
- *   reaches 0 the page will be freed. ]
- *
- * This works nicely with pages from FSs.
- * But this means that in protocol A we might signal IO completion too early!
- *
- * In order not to corrupt data during a resync we must make sure
- * that we do not reuse our own buffer pages (EEs) to early, therefore
- * we have the net_ee list.
- *
- * XFS seems to have problems, still, it submits pages with page_count == 0!
- * As a workaround, we disable sendpage on pages
- * with page_count == 0 or PageSlab.
- */
 static int _drbd_no_send_page(struct drbd_conf *mdev, struct page *page,
 		   int offset, size_t size, unsigned msg_flags)
 {
@@ -2579,10 +2558,6 @@ static void drbd_unplug_fn(struct request_queue *q)
 	if (mdev->state.pdsk >= D_INCONSISTENT && mdev->state.conn >= C_CONNECTED) {
 		D_ASSERT(mdev->state.role == R_PRIMARY);
 		if (test_and_clear_bit(UNPLUG_REMOTE, &mdev->flags)) {
-			/* add to the data.work queue,
-			 * unless already queued.
-			 * XXX this might be a good addition to drbd_queue_work
-			 * anyways, to detect "double queuing" ... */
 			if (list_empty(&mdev->unplug_work.list))
 				drbd_queue_work(&mdev->data.work,
 						&mdev->unplug_work);

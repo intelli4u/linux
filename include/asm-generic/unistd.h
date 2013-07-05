@@ -715,7 +715,7 @@ __SYSCALL(__NR_signalfd, sys_signalfd)
 #endif /* __ARCH_WANT_SYSCALL_NO_FLAGS */
 
 #if (__BITS_PER_LONG == 32 || defined(__SYSCALL_COMPAT)) && \
-     defined(__ARCH_WANT_SYSCALL_OFF_T)
+	defined(__ARCH_WANT_SYSCALL_OFF_T)
 #define __NR_sendfile 1046
 __SYSCALL(__NR_sendfile, sys_sendfile)
 #define __NR_ftruncate 1047

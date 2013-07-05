@@ -293,47 +293,6 @@ set_switch_state(struct ct_mixer *mixer,
 		mixer->switch_state &= ~(0x1 << (type - SWH_MIXER_START));
 }
 
-#if 0 /* not used */
-/* Map integer value ranging from 0 to 65535 to 14-bit float value ranging
- * from 2^-6 to (1+1023/1024) */
-static unsigned int uint16_to_float14(unsigned int x)
-{
-	unsigned int i;
-
-	if (x < 17)
-		return 0;
-
-	x *= 2031;
-	x /= 65535;
-	x += 16;
-
-	/* i <= 6 */
-	for (i = 0; !(x & 0x400); i++)
-		x <<= 1;
-
-	x = (((7 - i) & 0x7) << 10) | (x & 0x3ff);
-
-	return x;
-}
-
-static unsigned int float14_to_uint16(unsigned int x)
-{
-	unsigned int e;
-
-	if (!x)
-		return x;
-
-	e = (x >> 10) & 0x7;
-	x &= 0x3ff;
-	x += 1024;
-	x >>= (7 - e);
-	x -= 16;
-	x *= 65535;
-	x /= 2031;
-
-	return x;
-}
-#endif /* not used */
 
 #define VOL_SCALE	0x1c
 #define VOL_MAX		0x100

@@ -107,14 +107,6 @@ static void ath9k_htc_beacon_config_sta(struct ath9k_htc_priv *priv,
 			bs.bs_bmissthreshold = 1;
 	}
 
-	/*
-	 * Calculate sleep duration. The configuration is given in ms.
-	 * We ensure a multiple of the beacon period is used. Also, if the sleep
-	 * duration is greater than the DTIM period then it makes senses
-	 * to make it a multiple of that.
-	 *
-	 * XXX fixed at 100ms
-	 */
 
 	bs.bs_sleepduration = roundup(IEEE80211_MS_TO_TU(100), sleepduration);
 	if (bs.bs_sleepduration > bs.bs_dtimperiod)
@@ -183,7 +175,6 @@ void ath9k_htc_swba(struct ath9k_htc_priv *priv, u8 beacon_pending)
 	memset(&beacon_hdr, 0, sizeof(struct tx_beacon_header));
 	memset(&tx_ctl, 0, sizeof(struct ath9k_htc_tx_ctl));
 
-	/* FIXME: Handle BMISS */
 	if (beacon_pending != 0) {
 		priv->bmiss_cnt++;
 		return;

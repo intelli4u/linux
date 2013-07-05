@@ -154,10 +154,6 @@ int rc = 0;										/* default to NO for invalid parameters */
 void parse_config(struct net_device *dev)
 {
 	int				    file_desc;
-#if 0 /* BIN_DL */
-	int				rc;
-	char				*cp = NULL;
-#endif /* BIN_DL */
 	char                buffer[MAX_LINE_SIZE];
 	char                filename[MAX_LINE_SIZE];
 	mm_segment_t	    fs;
@@ -235,42 +231,6 @@ void parse_config(struct net_device *dev)
 	memcpy(&wvlan_config->DefaultKeys, &sEncryption.EncStr,
 			sizeof(CFG_DEFAULT_KEYS_STRCT));
 
-#if 0 /* BIN_DL */
-		/* Obtain a user-space process context, storing the original context */
-		fs = get_fs();
-		set_fs(get_ds());
-
-		/* ;?just to fake something */
-		strcpy(/*wvlan_config->fw_image_*/filename, "/etc/agere/fw.bin");
-		file_desc = open(/*wvlan_config->fw_image_*/filename, 0, 0);
-		if (file_desc == -1) {
-			DBG_ERROR(DbgInfo, "No image file found\n");
-		} else {
-			DBG_TRACE(DbgInfo, "F/W image file found\n");
-#define DHF_ALLOC_SIZE 96000			/* just below 96K, let's hope it suffices for now and for the future */
-			cp = (char *)vmalloc(DHF_ALLOC_SIZE);
-			if (cp == NULL) {
-				DBG_ERROR(DbgInfo, "error in vmalloc\n");
-			} else {
-				rc = read(file_desc, cp, DHF_ALLOC_SIZE);
-				if (rc == DHF_ALLOC_SIZE) {
-					DBG_ERROR(DbgInfo, "buffer too small, %d\n", DHF_ALLOC_SIZE);
-				} else if (rc > 0) {
-					DBG_TRACE(DbgInfo, "read O.K.: %d bytes  %.12s\n", rc, cp);
-					rc = read(file_desc, &cp[rc], 1);
-					if (rc == 0)
-						DBG_TRACE(DbgInfo, "no more to read\n");
-				}
-				if (rc != 0) {
-					DBG_ERROR(DbgInfo, "file not read in one swoop or other error"\
-										", give up, too complicated, rc = %0X\n", rc);
-				}
-				vfree(cp);
-			}
-			close(file_desc);
-		}
-		set_fs(fs);			/* Return to the original context */
-#endif /* BIN_DL */
 
 	DBG_LEAVE(DbgInfo);
 	return;
@@ -424,18 +384,6 @@ void translate_option(char *buffer, struct wl_private *lp)
 
 		memcpy(lp->NetworkName, value, string_length);
 	}
-#if 0
-	else if (strcmp(key, PARM_NAME_DOWNLOAD_FIRMWARE) == 0) {
-		DBG_TRACE(DbgInfo, "DOWNLOAD_FIRMWARE, value: %s\n", value);
-		memset(lp->fw_image_filename, 0, (MAX_LINE_SIZE + 1));
-		/* Make sure the value isn't too long */
-		string_length = strlen(value);
-		if (string_length > MAX_LINE_SIZE)
-			DBG_WARNING(DbgInfo, "F/W image file name too long; will be ignored\n");
-		else
-			memcpy(lp->fw_image_filename, value, string_length);
-	}
-#endif
 	else if (strcmp(key, PARM_NAME_ENABLE_ENCRYPTION) == 0) {
 		DBG_TRACE(DbgInfo, "%s, value: %s\n", PARM_NAME_ENABLE_ENCRYPTION, value);
 
@@ -602,7 +550,6 @@ void translate_option(char *buffer, struct wl_private *lp)
 	/* Need to add? : Country code, Short/Long retry */
 
 	/* Configuration parameters specific to STA mode */
-#if 1 /* ;? (HCF_TYPE) & HCF_TYPE_STA */
 /* ;?seems reasonable that even an AP-only driver could afford this small additional footprint */
 	if (CNV_INT_TO_LITTLE(lp->hcfCtx.IFB_FWIdentity.comp_id) == COMP_ID_FW_STA) {
 					/* ;?should we return an error status in AP mode */
@@ -687,10 +634,8 @@ void translate_option(char *buffer, struct wl_private *lp)
 
 		/* Need to add? : Probe Data Rate */
 	}
-#endif  /* (HCF_TYPE) & HCF_TYPE_STA */
 
 	/* Configuration parameters specific to AP mode */
-#if 1 /* ;? (HCF_TYPE) & HCF_TYPE_AP */
 		/* ;?should we restore this to allow smaller memory footprint */
 	if (CNV_INT_TO_LITTLE(lp->hcfCtx.IFB_FWIdentity.comp_id) == COMP_ID_FW_AP) {
 		if (strcmp(key, PARM_NAME_OWN_DTIM_PERIOD) == 0) {
@@ -873,7 +818,6 @@ void translate_option(char *buffer, struct wl_private *lp)
 		}
 #endif  /* USE_WDS */
 	}
-#endif  /* (HCF_TYPE) & HCF_TYPE_AP */
 
 	return;
 } /* translate_option */

@@ -43,42 +43,6 @@
 
 #include "pxa27x_udc.h"
 
-/*
- * This driver handles the USB Device Controller (UDC) in Intel's PXA 27x
- * series processors.
- *
- * Such controller drivers work with a gadget driver.  The gadget driver
- * returns descriptors, implements configuration and data protocols used
- * by the host to interact with this device, and allocates endpoints to
- * the different protocol interfaces.  The controller driver virtualizes
- * usb hardware so that the gadget drivers will be more portable.
- *
- * This UDC hardware wants to implement a bit too much USB protocol. The
- * biggest issues are:  that the endpoints have to be set up before the
- * controller can be enabled (minor, and not uncommon); and each endpoint
- * can only have one configuration, interface and alternative interface
- * number (major, and very unusual). Once set up, these cannot be changed
- * without a controller reset.
- *
- * The workaround is to setup all combinations necessary for the gadgets which
- * will work with this driver. This is done in pxa_udc structure, statically.
- * See pxa_udc, udc_usb_ep versus pxa_ep, and matching function find_pxa_ep.
- * (You could modify this if needed.  Some drivers have a "fifo_mode" module
- * parameter to facilitate such changes.)
- *
- * The combinations have been tested with these gadgets :
- *  - zero gadget
- *  - file storage gadget
- *  - ether gadget
- *
- * The driver doesn't use DMA, only IO access and IRQ callbacks. No use is
- * made of UDC's double buffering either. USB "On-The-Go" is not implemented.
- *
- * All the requests are handled the same way :
- *  - the drivers tries to handle the request directly to the IO
- *  - if the IO fifo is not big enough, the remaining is send/received in
- *    interrupt handling.
- */
 
 #define	DRIVER_VERSION	"2008-04-18"
 #define	DRIVER_DESC	"PXA 27x USB Device Controller driver"

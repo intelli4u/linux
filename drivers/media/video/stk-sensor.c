@@ -179,7 +179,7 @@
 #define	  COM15_R01FE	  0x80	  /*            01 to FE */
 #define   COM15_R00FF	  0xc0	  /*            00 to FF */
 #define   COM15_RGB565	  0x10	  /* RGB565 output */
-#define   COM15_RGBFIXME	  0x20	  /* FIXME  */
+#define   COM15_RGBFIXME	  0x20
 #define   COM15_RGB555	  0x30	  /* RGB555 output */
 #define REG_COM16	0x41	/* Control 16 */
 #define   COM16_AWBGAIN   0x08	  /* AWB gain enable */
@@ -551,8 +551,6 @@ int stk_sensor_configure(struct stk_camera *dev)
 	default: STK_ERROR("Unsupported colorspace\n");
 		return -EFAULT;
 	}
-	/*FIXME sometimes the sensor go to a bad state
-	stk_sensor_write_regvals(dev, ov_initvals); */
 	stk_sensor_outb(dev, REG_COM7, com7);
 	msleep(50);
 	stk_sensor_write_regvals(dev, rv);
@@ -574,10 +572,6 @@ int stk_sensor_configure(struct stk_camera *dev)
 	case MODE_CIF:
 	case MODE_QVGA:
 	case MODE_QCIF:
-		/*FIXME These settings seem ignored by the sensor
-		if (stk_sensor_set_hw(dev, 220, 1500, 10, 1034))
-			STK_ERROR("stk_sensor_set_hw failed (SXGA)\n");
-		*/
 		break;
 	}
 	msleep(10);
@@ -592,4 +586,3 @@ int stk_sensor_set_brightness(struct stk_camera *dev, int br)
 	stk_sensor_outb(dev, REG_AEW, min(0xff, br + 6));
 	return 0;
 }
-

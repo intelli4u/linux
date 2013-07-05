@@ -130,10 +130,6 @@ setup_memory_node(int nid, void *kernel_end)
 
 	num_physpages += node_max_pfn - node_min_pfn;
 
-#if 0 /* we'll try this one again in a little while */
-	/* Cute trick to make sure our local node data is on local memory */
-	node_data[nid] = (pg_data_t *)(__va(node_min_pfn << PAGE_SHIFT));
-#endif
 	/* Quasi-mark the pg_data_t as in-use */
 	node_min_pfn += node_datasz;
 	if (node_min_pfn >= node_max_pfn) {
@@ -355,7 +351,4 @@ void __init mem_init(void)
 	       reservedpages << (PAGE_SHIFT-10),
 	       datasize >> 10,
 	       initsize >> 10);
-#if 0
-	mem_stress();
-#endif
 }

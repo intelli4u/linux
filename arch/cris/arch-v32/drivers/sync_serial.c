@@ -161,9 +161,9 @@ static ssize_t sync_serial_read(struct file *file, char *buf,
 				size_t count, loff_t *ppos);
 
 #if (defined(CONFIG_ETRAX_SYNCHRONOUS_SERIAL_PORT0) && \
-     defined(CONFIG_ETRAX_SYNCHRONOUS_SERIAL0_DMA)) || \
-    (defined(CONFIG_ETRAX_SYNCHRONOUS_SERIAL_PORT1) && \
-     defined(CONFIG_ETRAX_SYNCHRONOUS_SERIAL1_DMA))
+	defined(CONFIG_ETRAX_SYNCHRONOUS_SERIAL0_DMA)) || \
+	(defined(CONFIG_ETRAX_SYNCHRONOUS_SERIAL_PORT1) && \
+	defined(CONFIG_ETRAX_SYNCHRONOUS_SERIAL1_DMA))
 #define SYNC_SER_DMA
 #endif
 
@@ -176,16 +176,16 @@ static irqreturn_t rx_interrupt(int irq, void *dev_id);
 #endif
 
 #if (defined(CONFIG_ETRAX_SYNCHRONOUS_SERIAL_PORT0) && \
-     !defined(CONFIG_ETRAX_SYNCHRONOUS_SERIAL0_DMA)) || \
-    (defined(CONFIG_ETRAX_SYNCHRONOUS_SERIAL_PORT1) && \
-     !defined(CONFIG_ETRAX_SYNCHRONOUS_SERIAL1_DMA))
+	!defined(CONFIG_ETRAX_SYNCHRONOUS_SERIAL0_DMA)) || \
+	(defined(CONFIG_ETRAX_SYNCHRONOUS_SERIAL_PORT1) && \
+	!defined(CONFIG_ETRAX_SYNCHRONOUS_SERIAL1_DMA))
 #define SYNC_SER_MANUAL
 #endif
 #ifdef SYNC_SER_MANUAL
 static irqreturn_t manual_interrupt(int irq, void *dev_id);
 #endif
 
-#ifdef CONFIG_ETRAXFS	/* ETRAX FS */
+#ifdef CONFIG_ETRAXFS	    /* ETRAX FS */
 #define OUT_DMA_NBR 4
 #define IN_DMA_NBR 5
 #define PINMUX_SSER pinmux_sser0
@@ -348,13 +348,8 @@ static void __init initialize_port(int portnbr)
 	tr_cfg.sample_size = 7;
 	tr_cfg.sh_dir = regk_sser_msbfirst;
 	tr_cfg.use_dma = port->use_dma ? regk_sser_yes : regk_sser_no;
-#if 0
-	tr_cfg.rate_ctrl = regk_sser_bulk;
-	tr_cfg.data_pin_use = regk_sser_dout;
-#else
 	tr_cfg.rate_ctrl = regk_sser_iso;
 	tr_cfg.data_pin_use = regk_sser_dout;
-#endif
 	tr_cfg.bulk_wspace = 1;
 	REG_WR(sser, port->regi_sser, rw_tr_cfg, tr_cfg);
 
@@ -601,7 +596,7 @@ static int sync_serial_release(struct inode *inode, struct file *file)
 	if (port->busy)
 		port->busy--;
 	if (!port->busy)
-          /* XXX */ ;
+ ;
 	return 0;
 }
 
@@ -1454,11 +1449,9 @@ static irqreturn_t rx_interrupt(int irq, void *dev_id)
 
 				port->next_rx_desc->eol = 1;
 				port->prev_rx_desc->eol = 0;
-				/* Cache bug workaround */
 				flush_dma_descr(port->prev_rx_desc, 0);
 				port->prev_rx_desc = port->next_rx_desc;
 				port->next_rx_desc = phys_to_virt((unsigned)port->next_rx_desc->next);
-				/* Cache bug workaround */
 				flush_dma_descr(port->prev_rx_desc, 1);
 				/* wake up the waiting process */
 				wake_up_interruptible(&port->in_wait_q);

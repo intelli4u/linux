@@ -326,22 +326,6 @@ static void BB_PUT_BIT(struct happy_meal *hp, void __iomem *tregs, int bit)
 	hme_write32(hp, tregs + TCVR_BBCLOCK, 1);
 }
 
-#if 0
-static u32 BB_GET_BIT(struct happy_meal *hp, void __iomem *tregs, int internal)
-{
-	u32 ret;
-
-	hme_write32(hp, tregs + TCVR_BBCLOCK, 0);
-	hme_write32(hp, tregs + TCVR_BBCLOCK, 1);
-	ret = hme_read32(hp, tregs + TCVR_CFG);
-	if (internal)
-		ret &= TCV_CFG_MDIO0;
-	else
-		ret &= TCV_CFG_MDIO1;
-
-	return ret;
-}
-#endif
 
 static u32 BB_GET_BIT2(struct happy_meal *hp, void __iomem *tregs, int internal)
 {
@@ -730,12 +714,6 @@ static void happy_meal_timer(unsigned long data)
 				/* Just what we've been waiting for... */
 				ret = set_happy_link_modes(hp, tregs);
 				if (ret) {
-					/* Ooops, something bad happened, go to force
-					 * mode.
-					 *
-					 * XXX Broken hubs which don't support 802.3u
-					 * XXX auto-negotiation make this happen as well.
-					 */
 					goto do_force_mode;
 				}
 
@@ -806,7 +784,7 @@ static void happy_meal_timer(unsigned long data)
 		if (hp->sw_bmsr & BMSR_LSTATUS) {
 			/* Force mode selection success. */
 			display_forced_link_mode(hp, tregs);
-			set_happy_link_modes(hp, tregs); /* XXX error? then what? */
+			set_happy_link_modes(hp, tregs);
 			hp->timer_state = asleep;
 			restart_timer = 0;
 		} else {
@@ -1302,7 +1280,6 @@ static void happy_meal_begin_auto_negotiation(struct happy_meal *hp,
 	hp->sw_physid1   = happy_meal_tcvr_read(hp, tregs, MII_PHYSID1);
 	hp->sw_physid2   = happy_meal_tcvr_read(hp, tregs, MII_PHYSID2);
 
-	/* XXX Check BMSR_ANEGCAPABLE, should not be necessary though. */
 
 	hp->sw_advertise = happy_meal_tcvr_read(hp, tregs, MII_ADVERTISE);
 	if (ep == NULL || ep->autoneg == AUTONEG_ENABLE) {
@@ -1326,11 +1303,6 @@ static void happy_meal_begin_auto_negotiation(struct happy_meal *hp,
 			hp->sw_advertise &= ~(ADVERTISE_100FULL);
 		happy_meal_tcvr_write(hp, tregs, MII_ADVERTISE, hp->sw_advertise);
 
-		/* XXX Currently no Happy Meal cards I know off support 100BaseT4,
-		 * XXX and this is because the DP83840 does not support it, changes
-		 * XXX would need to be made to the tx/rx logic in the driver as well
-		 * XXX so I completely skip checking for it in the BMSR for now.
-		 */
 
 #ifdef AUTO_SWITCH_DEBUG
 		ASD(("%s: Advertising [ ", hp->dev->name));
@@ -1645,7 +1617,6 @@ static int happy_meal_init(struct happy_meal *hp)
 		printk(KERN_ERR "happy meal: Eieee, rx config register gets greasy fries.\n");
 		printk(KERN_ERR "happy meal: Trying to set %08x, reread gives %08x\n",
 		       ERX_CFG_DEFAULT(RX_OFFSET), regtmp);
-		/* XXX Should return failure here... */
 	}
 
 	/* Enable Big Mac hash table filter. */
@@ -2407,10 +2378,9 @@ static int hme_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 		 SUPPORTED_100baseT_Half | SUPPORTED_100baseT_Full |
 		 SUPPORTED_Autoneg | SUPPORTED_TP | SUPPORTED_MII);
 
-	/* XXX hardcoded stuff for now */
-	cmd->port = PORT_TP; /* XXX no MII support */
-	cmd->transceiver = XCVR_INTERNAL; /* XXX no external xcvr support */
-	cmd->phy_address = 0; /* XXX fixed PHYAD */
+	cmd->port = PORT_TP;
+	cmd->transceiver = XCVR_INTERNAL;
+	cmd->phy_address = 0;
 
 	/* Record PHY settings. */
 	spin_lock_irq(&hp->happy_lock);
@@ -3254,7 +3224,6 @@ static int __devexit hme_sbus_remove(struct platform_device *op)
 
 	unregister_netdev(net_dev);
 
-	/* XXX qfe parent interrupt... */
 
 	of_iounmap(&op->resource[0], hp->gregs, GREG_REG_SIZE);
 	of_iounmap(&op->resource[1], hp->etxregs, ETX_REG_SIZE);

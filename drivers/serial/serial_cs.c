@@ -607,10 +607,6 @@ static int multi_config(struct pcmcia_device *link)
 		}
 		info->c950ctrl = base2;
 
-		/*
-		 * FIXME: We really should wake up the port prior to
-		 * handing it over to the serial layer.
-		 */
 		if (info->quirk && info->quirk->wakeup)
 			info->quirk->wakeup(link);
 
@@ -703,10 +699,6 @@ static int serial_config(struct pcmcia_device * link)
 	if (i || info->ndev == 0)
 		goto failed;
 
-	/*
-	 * Apply any post-init quirk.  FIXME: This should really happen
-	 * before we register the port, since it might already be in use.
-	 */
 	if (info->quirk && info->quirk->post)
 		if (info->quirk->post(link))
 			goto failed;

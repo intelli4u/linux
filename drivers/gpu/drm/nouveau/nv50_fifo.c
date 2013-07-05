@@ -459,8 +459,6 @@ nv50_fifo_unload_context(struct drm_device *dev)
 
 	dev_priv->engine.instmem.flush(dev);
 
-	/*XXX: probably reload ch127 (NULL) state back too */
 	nv_wr32(dev, NV03_PFIFO_CACHE1_PUSH1, 127);
 	return 0;
 }
-

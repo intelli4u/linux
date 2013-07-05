@@ -80,7 +80,6 @@ static ssize_t led_proc_write(struct file *file, const char __user *buffer,
 
 	buf[count] = '\0';
 
-	/* work around \n when echo'ing into proc */
 	if (buf[count - 1] == '\n')
 		buf[count - 1] = '\0';
 

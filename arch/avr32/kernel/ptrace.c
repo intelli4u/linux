@@ -51,7 +51,6 @@ void user_enable_single_step(struct task_struct *tsk)
 
 void user_disable_single_step(struct task_struct *child)
 {
-	/* XXX(hch): a no-op here seems wrong.. */
 }
 
 /*

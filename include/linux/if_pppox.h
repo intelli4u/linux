@@ -47,19 +47,52 @@ struct pppoe_addr{
 }; 
  
 /************************************************************************ 
- * Protocols supported by AF_PPPOX 
- */ 
-#define PX_PROTO_OE    0 /* Currently just PPPoE */
-#define PX_PROTO_OL2TP 1 /* Now L2TP also */
-#define PX_MAX_PROTO   2
+* PPTP addressing definition
+*/
+struct pptp_addr {
+#if 0 
+	unsigned short  call_id;
+	struct in_addr  sin_addr;
+#else
+	unsigned char   remote[ETH_ALEN];       /* Remote address */
+	unsigned short  cid;                    /* PPTP call id */
+	unsigned short  pcid;                   /* PPTP peer call id */
+	unsigned long   seq_num;                /* Seq number of PPP packet */
+	unsigned long   ack_num;                /* Ack number of PPP packet */
+	unsigned long   srcaddr;                /* Source IP address */
+	unsigned long   dstaddr;                /* Destination IP address */
+	char            dev[IFNAMSIZ];          /* Local device to use */
+#endif
+};
 
-struct sockaddr_pppox { 
-       sa_family_t     sa_family;            /* address family, AF_PPPOX */ 
-       unsigned int    sa_protocol;          /* protocol identifier */ 
-       union{ 
-               struct pppoe_addr       pppoe; 
-       }sa_addr; 
+/************************************************************************
+ * Protocols supported by AF_PPPOX
+ */
+#define PX_PROTO_OE    0 /* Currently just PPPoE */
+#define PX_PROTO_TP    1 /* Add PPTP */
+#define PX_PROTO_PPTP  (PX_PROTO_TP)
+#define PX_PROTO_OL2TP 2 /* Add L2TP */
+#define PX_MAX_PROTO   3
+
+struct sockaddr_pppox {
+	sa_family_t     sa_family;            /* address family, AF_PPPOX */
+	unsigned int    sa_protocol;          /* protocol identifier */
+	union {
+		struct pppoe_addr  pppoe;
+#if 0 
+		struct pptp_addr   pptp;
+#endif
+	} sa_addr;
 } __attribute__((packed));
+
+
+struct sockaddr_pptpox {
+    sa_family_t     sa_family;            /* address family, AF_PPPOX */
+    unsigned int    sa_protocol;          /* protocol identifier */
+    union{
+        struct pptp_addr    pptp;
+    }sa_addr;
+}__attribute__ ((packed));
 
 /* The use of the above union isn't viable because the size of this
  * struct must stay fixed over time -- applications use sizeof(struct
@@ -90,6 +123,14 @@ struct sockaddr_pppol2tpv3 {
 #define PPPOEIOCSFWD	_IOW(0xB1 ,0, size_t)
 #define PPPOEIOCDFWD	_IO(0xB1 ,1)
 /*#define PPPOEIOCGFWD	_IOWR(0xB1,2, size_t)*/
+/*  added start, pptp, Winster Chan, 06/26/2006 */
+#define PPTPIOCSFWD     _IOW(0xB1 ,0, size_t)
+#define PPTPIOCDFWD     _IO(0xB1 ,1)
+/*  added end, pptp, Winster Chan, 06/26/2006 */
+
+/*  wklin added start, 12/09/2010 */
+#define PPTPIOCGGRESEQ  _IOR('t', 54, unsigned long)	/* get GRE sequence number */
+/*  wklin added end, 12/09/2010 */
 
 /* Codes to identify message types */
 #define PADI_CODE	0x09
@@ -133,6 +174,80 @@ struct pppoe_hdr {
 
 /* Length of entire PPPoE + PPP header */
 #define PPPOE_SES_HLEN	8
+/* Socket options */
+#define PPTP_SO_TIMEOUT 1
+#define PPTP_SO_WINDOW  2     
+
+/*  added start, pptp, Winster Chan, 06/26/2006 */
+/* IP PROTOCOL HEADER */
+
+/* GRE Protocol field */
+#define IP_PROTOCOL_ICMP    0x01
+#define IP_PROTOCOL_GRE     0x2f
+
+struct pptp_ip_hdr {
+#if defined(__LITTLE_ENDIAN_BITFIELD)
+    __u8    ihl:4,      /* Header length */
+        version:4;      /* Version */
+#elif defined (__BIG_ENDIAN_BITFIELD)
+    __u8    version:4,  /* Version */
+        ihl:4;          /* Header length */
+#else
+#error	"Please fix <asm/byteorder.h>"
+#endif
+    __u8	tos;        /* Differentiated services field */
+    __u16	tot_len;    /* Total length */
+    __u16	id;         /* Identification */
+    __u16	frag_off;   /* Fragment flags & offset */
+    __u8	ttl;        /* Time to live */
+    __u8	protocol;   /* Protocol: GRE(0x2f), ICMP(0x01) */
+    __u16	check;      /* Header checksum */
+    __u32	saddr;      /* Source IP address */
+    __u32	daddr;      /* Destination IP address */
+    /*The options start here. */
+} __attribute__ ((packed));
+
+/* GRE PROTOCOL HEADER */
+
+/* GRE Version field */
+//#define GRE_VERSION_1701	0x0
+#define GRE_VERSION_PPTP	0x1
+
+/* GRE Protocol field */
+#define GRE_PROTOCOL_PPTP	__constant_htons(0x880B)
+
+/* GRE Flags */
+#define GRE_FLAG_C		0x80
+#define GRE_FLAG_R		0x40
+#define GRE_FLAG_K		0x20
+#define GRE_FLAG_S		0x10
+#define GRE_FLAG_A		0x80
+
+#define GRE_IS_C(f)	((f)&GRE_FLAG_C)
+#define GRE_IS_R(f)	((f)&GRE_FLAG_R)
+#define GRE_IS_K(f)	((f)&GRE_FLAG_K)
+#define GRE_IS_S(f)	((f)&GRE_FLAG_S)
+#define GRE_IS_A(f)	((f)&GRE_FLAG_A)
+
+/* GRE is a mess: Four different standards */
+/* modified GRE header for PPTP */
+struct pptp_gre_hdr {
+    __u8  flags;        /* bitfield */
+    __u8  version;      /* should be GRE_VERSION_PPTP */
+    __u16 protocol;     /* should be GRE_PROTOCOL_PPTP */
+    __u16 payload_len;  /* size of ppp payload, not inc. gre header */
+    __u16 call_id;      /* peer's call_id for this session */
+    __u32 seq;          /* sequence number.  Present if S==1 */
+    __u32 ack;          /* seq number of highest packet recieved by */
+                        /*  sender in this session */
+} __attribute__ ((packed));
+
+/* PPTP packet (IP & GRE) header */
+struct pptp_hdr {
+    struct pptp_ip_hdr      iphdr;      /* IP header */
+    struct pptp_gre_hdr     grehdr;     /* GRE header */
+} __attribute__ ((packed));
+/*  added end, pptp, Winster Chan, 06/26/2006 */
 
 #ifdef __KERNEL__
 #include <linux/skbuff.h>
@@ -150,6 +265,22 @@ struct pppoe_opt {
 					     relayed to (PPPoE relaying) */
 };
 
+struct pptp_opt {
+#if 0 
+	struct pptp_addr src_addr;
+	struct pptp_addr dst_addr;
+	u32 ack_sent, ack_recv;
+	u32 seq_sent, seq_recv;
+	int ppp_flags;
+#else
+	struct net_device      *dev;	  /* device associated with socket*/
+	int			ifindex;  /* ifindex of device associated with socket */
+	struct pptp_addr	pa;	  /* what this socket is bound to*/
+	struct sockaddr_pptpox	relay;	  /* what socket data will be
+					     relayed to (PPTP relaying) */
+#endif
+};
+
 #include <net/sock.h>
 
 struct pppox_sock {
@@ -159,6 +290,7 @@ struct pppox_sock {
 	struct pppox_sock	*next;	  /* for hash table */
 	union {
 		struct pppoe_opt pppoe;
+		struct pptp_opt  pptp;
 	} proto;
 	__be16			num;
 };
@@ -166,6 +298,10 @@ struct pppox_sock {
 #define pppoe_ifindex	proto.pppoe.ifindex
 #define pppoe_pa	proto.pppoe.pa
 #define pppoe_relay	proto.pppoe.relay
+#define pptp_dev	proto.pptp.dev
+#define pptp_ifindex	proto.pptp.ifindex
+#define pptp_pa	proto.pptp.pa
+#define pptp_relay	proto.pptp.relay
 
 static inline struct pppox_sock *pppox_sk(struct sock *sk)
 {

@@ -15,12 +15,6 @@ void *dma_memcpy(void *pdst,
 
 	D(printk(KERN_DEBUG "dma_memcpy %d bytes... ", pn));
 
-#if 0
-	*R_GEN_CONFIG = genconfig_shadow =
-		(genconfig_shadow & ~0x3c0000) |
-		IO_STATE(R_GEN_CONFIG, dma6, intdma7) |
-		IO_STATE(R_GEN_CONFIG, dma7, intdma6);
-#endif
 	indma.sw_len = outdma.sw_len = pn;
 	indma.ctrl = d_eol | d_eop;
 	outdma.ctrl = d_eol;
@@ -37,6 +31,3 @@ void *dma_memcpy(void *pdst,
 
 	D(printk(KERN_DEBUG "done\n"));
 }
-
-
-

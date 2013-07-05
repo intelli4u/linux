@@ -61,8 +61,8 @@ Mellon the rights to redistribute these changes without encumbrance.
 
 
 /* Catch new _KERNEL defn for NetBSD and DJGPP/__CYGWIN32__ */
-#if defined(__NetBSD__) || \
-  ((defined(DJGPP) || defined(__CYGWIN32__)) && !defined(KERNEL))
+#if defined(__NetBSD__) || ((defined(DJGPP) || defined(__CYGWIN32__)) && \
+	!defined(KERNEL))
 #include <sys/types.h>
 #endif 
 
@@ -741,4 +741,3 @@ struct coda_mount_data {
 };
 
 #endif 
-

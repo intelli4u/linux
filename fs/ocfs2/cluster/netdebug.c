@@ -300,8 +300,6 @@ static int sc_seq_show(struct seq_file *seq, void *v)
 			dport = (__force __be16)inet->inet_dport;
 		}
 
-		/* XXX sigh, inet-> doesn't have sparse annotation so any
-		 * use of it here generates a warning with -Wbitwise */
 		seq_printf(seq, "%p:\n"
 			   "  krefs:           %d\n"
 			   "  sock:            %pI4:%u -> "

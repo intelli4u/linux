@@ -338,4 +338,3 @@ void init_irq_proc(void)
 		register_irq_proc(irq, desc);
 	}
 }
-

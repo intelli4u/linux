@@ -239,8 +239,6 @@ static int cxusb_aver_power_ctrl(struct dvb_usb_device *d, int onoff)
 		   !(ret = cxusb_ctrl_msg(d, 0x15, NULL, 0, NULL, 0)) &&
 		   !(ret = cxusb_ctrl_msg(d, 0x17, NULL, 0, NULL, 0)) && 0);
 	if (!ret) {
-		/* FIXME: We don't know why, but we need to configure the
-		 * lgdt3303 with the register settings below on resume */
 		int i;
 		u8 buf, bufs[] = {
 			0x0e, 0x2, 0x00, 0x7f,
@@ -681,7 +679,6 @@ static struct mt352_config cxusb_mt352_xc3028_config = {
 	.demod_init = cxusb_mt352_demod_init,
 };
 
-/* FIXME: needs tweaking */
 static struct mxl5005s_config aver_a868r_tuner = {
 	.i2c_address     = 0x63,
 	.if_freq         = 6000000UL,
@@ -699,7 +696,6 @@ static struct mxl5005s_config aver_a868r_tuner = {
 	.AgcMasterByte   = 0x00,
 };
 
-/* FIXME: needs tweaking */
 static struct mxl5005s_config d680_dmb_tuner = {
 	.i2c_address     = 0x63,
 	.if_freq         = 36125000UL,
@@ -794,7 +790,6 @@ static int cxusb_dvico_xc3028_tuner_attach(struct dvb_usb_adapter *adap)
 		.demod       = XC3028_FE_ZARLINK456,
 	};
 
-	/* FIXME: generalize & move to common area */
 	adap->fe->callback = dvico_bluebird_xc2028_callback;
 
 	fe = dvb_attach(xc2028_attach, adap->fe, &cfg);

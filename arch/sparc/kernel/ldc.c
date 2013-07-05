@@ -933,13 +933,6 @@ static irqreturn_t ldc_tx(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/* XXX ldc_alloc() and ldc_free() needs to run under a mutex so
- * XXX that addition and removal from the ldc_channel_list has
- * XXX atomicity, otherwise the __ldc_channel_exists() check is
- * XXX totally pointless as another thread can slip into ldc_alloc()
- * XXX and add a channel with the same ID.  There also needs to be
- * XXX a spinlock for ldc_channel_list.
- */
 static HLIST_HEAD(ldc_channel_list);
 
 static int __ldc_channel_exists(unsigned long id)
@@ -991,7 +984,6 @@ static void free_queue(unsigned long num_entries, struct ldc_packet *q)
 	free_pages((unsigned long)q, order);
 }
 
-/* XXX Make this configurable... XXX */
 #define LDC_IOTABLE_SIZE	(8 * 1024)
 
 static int ldc_iommu_init(struct ldc_channel *lp)
@@ -1152,9 +1144,6 @@ struct ldc_channel *ldc_alloc(unsigned long id,
 
 	lp->event_arg = event_arg;
 
-	/* XXX allow setting via ldc_channel_config to override defaults
-	 * XXX or use some formula based upon mtu
-	 */
 	lp->tx_num_entries = LDC_DEFAULT_NUM_ENTRIES;
 	lp->rx_num_entries = LDC_DEFAULT_NUM_ENTRIES;
 

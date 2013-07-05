@@ -95,8 +95,7 @@ extern int e820_search_gap(unsigned long *gapstart, unsigned long *gapsize,
 struct setup_data;
 extern void parse_e820_ext(struct setup_data *data, unsigned long pa_data);
 
-#if defined(CONFIG_X86_64) || \
-	(defined(CONFIG_X86_32) && defined(CONFIG_HIBERNATION))
+#if defined(CONFIG_X86_64) || (defined(CONFIG_X86_32) && defined(CONFIG_HIBERNATION))
 extern void e820_mark_nosave_regions(unsigned long limit_pfn);
 #else
 static inline void e820_mark_nosave_regions(unsigned long limit_pfn)

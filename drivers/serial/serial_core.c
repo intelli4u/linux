@@ -428,7 +428,6 @@ uart_get_divisor(struct uart_port *port, unsigned int baud)
 
 EXPORT_SYMBOL(uart_get_divisor);
 
-/* FIXME: Consistent locking policy */
 static void uart_change_speed(struct tty_struct *tty, struct uart_state *state,
 					struct ktermios *old_termios)
 {
@@ -1005,15 +1004,6 @@ static int uart_do_autoconfig(struct tty_struct *tty,struct uart_state *state)
 	return ret;
 }
 
-/*
- * Wait for any of the 4 modem inputs (DCD,RI,DSR,CTS) to change
- * - mask passed in arg for lines of interest
- *   (use |'ed TIOCM_RNG/DSR/CD/CTS for masking)
- * Caller should use TIOCGICOUNT to see which one it was
- *
- * FIXME: This wants extracting into a common all driver implementation
- * of TIOCMWAIT using tty_port.
- */
 static int
 uart_wait_modem_status(struct uart_state *state, unsigned long arg)
 {
@@ -1249,17 +1239,6 @@ static void uart_set_termios(struct tty_struct *tty,
 		}
 		spin_unlock_irqrestore(&state->uart_port->lock, flags);
 	}
-#if 0
-	/*
-	 * No need to wake up processes in open wait, since they
-	 * sample the CLOCAL flag once, and don't recheck it.
-	 * XXX  It's not clear whether the current behavior is correct
-	 * or not.  Hence, this may change.....
-	 */
-	if (!(old_termios->c_cflag & CLOCAL) &&
-	    (tty->termios->c_cflag & CLOCAL))
-		wake_up_interruptible(&state->uart_port.open_wait);
-#endif
 }
 
 /*
@@ -1873,6 +1852,13 @@ static const struct baud_rates baud_rates[] = {
 	{   4800, B4800   },
 	{   2400, B2400   },
 	{   1200, B1200   },
+	{    600, B600    },
+	{    300, B300    },
+	{    200, B200    },
+	{    150, B150    },
+	{    110, B110    },
+	{     75, B75     },
+	{     50, B50     },
 	{      0, B38400  }
 };
 

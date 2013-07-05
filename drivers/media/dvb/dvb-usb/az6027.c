@@ -298,7 +298,6 @@ struct stb6100_config az6027_stb6100_config = {
 };
 
 
-/* check for mutex FIXME */
 int az6027_usb_in_op(struct dvb_usb_device *d, u8 req, u16 value, u16 index, u8 *b, int blen)
 {
 	int ret = -1;

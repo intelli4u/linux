@@ -49,7 +49,7 @@
 
 	/* space_to_prot macro creates a prot id from a space id */
 
-#if (SPACEID_SHIFT) == 0
+#if SPACEID_SHIFT == 0
 	.macro  space_to_prot spc prot
 	depd,z  \spc,62,31,\prot
 	.endm
@@ -238,9 +238,6 @@
 	mfctl	%isr,spc
 	b	itlb_miss_11
 	mfctl 	%ior,va
-	/* FIXME: If user causes a naitlb miss, the priv level may not be in
-	 * lower bits of va, where the itlb miss handler is expecting them
-	 */
 
 	.align		32
 	.endm
@@ -265,9 +262,6 @@
 	b	itlb_miss_20
 #endif
 	mfctl 	%ior,va
-	/* FIXME: If user causes a naitlb miss, the priv level may not be in
-	 * lower bits of va, where the itlb miss handler is expecting them
-	 */
 
 	.align		32
 	.endm
@@ -445,7 +439,7 @@
 	 * all ILP32 processes and all the kernel for machines with
 	 * under 4GB of memory) */
 	.macro		L3_ptep pgd,pte,index,va,fault
-#if PT_NLEVELS == 3 /* we might have a 2-Level scheme, e.g. with 16kb page size */
+#if PT_NLEVELS == 3     /* we might have a 2-Level scheme, e.g. with 16kb page size */
 	extrd,u		\va,63-ASM_PGDIR_SHIFT,ASM_BITS_PER_PGD,\index
 	copy		%r0,\pte
 	extrd,u,*=	\va,63-ASM_PGDIR_SHIFT,64-ASM_PGDIR_SHIFT,%r0
@@ -631,11 +625,7 @@ ENTRY(fault_vector_20)
 	def		13
 	def		14
 	dtlb_20		15
-#if 0
-	naitlb_20	16
-#else
 	def             16
-#endif
 	nadtlb_20	17
 	def		18
 	def		19
@@ -678,11 +668,7 @@ ENTRY(fault_vector_11)
 	def		13
 	def		14
 	dtlb_11		15
-#if 0
-	naitlb_11	16
-#else
 	def             16
-#endif
 	nadtlb_11	17
 	def		18
 	def		19
@@ -846,19 +832,6 @@ _switch_to_ret:
 	copy	%r26, %r28
 ENDPROC(_switch_to)
 
-	/*
-	 * Common rfi return path for interruptions, kernel execve, and
-	 * sys_rt_sigreturn (sometimes).  The sys_rt_sigreturn syscall will
-	 * return via this path if the signal was received when the process
-	 * was running; if the process was blocked on a syscall then the
-	 * normal syscall_exit path is used.  All syscalls for traced
-	 * proceses exit via intr_restore.
-	 *
-	 * XXX If any syscalls that change a processes space id ever exit
-	 * this way, then we will need to copy %sr3 in to PT_SR[3..7], and
-	 * adjust IASQ[0..1].
-	 *
-	 */
 
 	.align	PAGE_SIZE
 
@@ -1083,13 +1056,6 @@ ENTRY(intr_save)		/* for os_hpmc */
 
 	/* If this trap is a itlb miss, skip saving/adjusting isr/ior */
 
-	/*
-	 * FIXME: 1) Use a #define for the hardwired "6" below (and in
-	 *           traps.c.
-	 *        2) Once we start executing code above 4 Gb, we need
-	 *           to adjust iasq/iaoq here in the same way we
-	 *           adjust isr/ior below.
-	 */
 
 	cmpib,COND(=),n        6,%r26,skip_save_ior
 
@@ -1108,11 +1074,6 @@ ENTRY(intr_save)		/* for os_hpmc */
 	extrd,u,*<>     %r8,PSW_W_BIT,1,%r0
 	depdi           0,1,2,%r17
 
-	/*
-	 * FIXME: This code has hardwired assumptions about the split
-	 *        between space bits and offset bits. This will change
-	 *        when we allow alternate page sizes.
-	 */
 
 	/* adjust isr/ior. */
 	extrd,u         %r16,63,SPACEID_SHIFT,%r1	/* get high bits from isr for ior */
@@ -1679,14 +1640,6 @@ dtlb_fault:
 	   %r31		   syscall return pointer
 	 */
 
-	/* Floating point registers (FIXME: what do we do with these?)
-
-	   %fr0  - %fr3	   status/exception, not preserved
-	   %fr4  - %fr7	   arguments
-	   %fr8	 - %fr11   not preserved by C code
-	   %fr12 - %fr21   preserved by C code
-	   %fr22 - %fr31   not preserved by C code
-	 */
 
 	.macro	reg_save regs
 	STREG	%r3, PT_GR3(\regs)
@@ -1888,7 +1841,6 @@ ENTRY(sys_rt_sigreturn_wrapper)
 	ldo	-FRAME_SIZE(%r30), %r30
 	LDREG	-RP_OFFSET(%r30), %r2
 
-	/* FIXME: I think we need to restore a few more things here. */
 	LDREG	TI_TASK-THREAD_SZ_ALGN-FRAME_SIZE(%r30),%r1
 	ldo	TASK_REGS(%r1),%r1	/* get pt regs */
 	reg_restore %r1
@@ -1991,11 +1943,6 @@ syscall_check_sig:
 	b,n	syscall_restore	/* skip past if we've nothing to do */
 
 syscall_do_signal:
-	/* Save callee-save registers (for sigcontext).
-	 * FIXME: After this point the process structure should be
-	 * consistent with all the relevant state of the process
-	 * before the syscall.  We need to verify this.
-	 */
 	LDREG	TI_TASK-THREAD_SZ_ALGN-FRAME_SIZE(%r30),%r1
 	ldo	TASK_REGS(%r1), %r26		/* struct pt_regs *regs */
 	reg_save %r26
@@ -2107,7 +2054,6 @@ syscall_restore_rfi:
 	STREG   %r25,TASK_PT_IASQ0(%r1)
 	STREG   %r25,TASK_PT_IASQ1(%r1)
 
-	/* XXX W bit??? */
 	/* Now if old D bit is clear, it means we didn't save all registers
 	 * on syscall entry, so do that now.  This only happens on TRACEME
 	 * calls, or if someone attached to us while we were on a syscall.
@@ -2332,4 +2278,3 @@ set_register:
 	copy    %r1,%r30
 	bv      %r0(%r25)    /* r31 */
 	copy    %r1,%r31
-

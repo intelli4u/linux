@@ -295,7 +295,7 @@
 /*
  * Macros for the master AML opcode table
  */
-#if defined (ACPI_DISASSEMBLER) || defined (ACPI_DEBUG_OUTPUT)
+#if defined(ACPI_DISASSEMBLER) || defined(ACPI_DEBUG_OUTPUT)
 #define ACPI_OP(name, Pargs, Iargs, obj_type, class, type, flags) \
 	{name, (u32)(Pargs), (u32)(Iargs), (u32)(flags), obj_type, class, type}
 #else

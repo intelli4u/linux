@@ -739,7 +739,8 @@ static struct ctl_table kern_table[] = {
 		.extra2		= &one,
 	},
 #endif
-#if defined(CONFIG_X86_LOCAL_APIC) && defined(CONFIG_X86) && !defined(CONFIG_LOCKUP_DETECTOR)
+#if defined(CONFIG_X86_LOCAL_APIC) && defined(CONFIG_X86) && \
+	!defined(CONFIG_LOCKUP_DETECTOR)
 	{
 		.procname       = "unknown_nmi_panic",
 		.data           = &unknown_nmi_panic,
@@ -1271,8 +1272,8 @@ static struct ctl_table vm_table[] = {
 		.proc_handler	= numa_zonelist_order_handler,
 	},
 #endif
-#if (defined(CONFIG_X86_32) && !defined(CONFIG_UML))|| \
-   (defined(CONFIG_SUPERH) && defined(CONFIG_VSYSCALL))
+#if (defined(CONFIG_X86_32) && !defined(CONFIG_UML))|| (defined(CONFIG_SUPERH) && \
+	defined(CONFIG_VSYSCALL))
 	{
 		.procname	= "vdso_enabled",
 		.data		= &vdso_enabled,
@@ -1489,7 +1490,7 @@ static struct ctl_table fs_table[] = {
 
 static struct ctl_table debug_table[] = {
 #if defined(CONFIG_X86) || defined(CONFIG_PPC) || defined(CONFIG_SPARC) || \
-    defined(CONFIG_S390)
+	defined(CONFIG_S390)
 	{
 		.procname	= "exception-trace",
 		.data		= &show_unhandled_signals,

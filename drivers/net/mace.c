@@ -34,7 +34,6 @@ static int port_aaui = -1;
 #define RX_BUFLEN	(ETH_FRAME_LEN + 8)
 #define TX_TIMEOUT	HZ	/* 1 second */
 
-/* Chip rev needs workaround on HW & multicast addr change */
 #define BROKEN_ADDRCHG_REV	0x0941
 
 /* Bits in transmit DMA status */
@@ -613,12 +612,6 @@ static void mace_set_multicast(struct net_device *dev)
 		multicast_filter[i >> 3] |= 1 << (i & 7);
 	    }
 	}
-#if 0
-	printk("Multicast filter :");
-	for (i = 0; i < 8; i++)
-	    printk("%02x ", multicast_filter[i]);
-	printk("\n");
-#endif
 
 	if (mp->chipid == BROKEN_ADDRCHG_REV)
 	    out_8(&mb->iac, LOGADDR);
@@ -720,10 +713,6 @@ static irqreturn_t mace_interrupt(int irq, void *dev_id)
 	    printk(KERN_ERR "mace: xmtfs not valid! (fs=%x xc=%d ds=%x)\n",
 		   fs, xcount, dstat);
 	    mace_reset(dev);
-		/*
-		 * XXX mace likes to hang the machine after a xmtfs error.
-		 * This is hard to reproduce, reseting *may* help
-		 */
 	}
 	cp = mp->tx_cmds + NCMDS_TX * i;
 	stat = ld_le16(&cp->xfer_status);
@@ -773,10 +762,6 @@ static irqreturn_t mace_interrupt(int irq, void *dev_id)
 	--mp->tx_active;
 	if (++i >= N_TX_RING)
 	    i = 0;
-#if 0
-	mace_last_fs = fs;
-	mace_last_xcount = xcount;
-#endif
     }
 
     if (i != mp->tx_empty) {
@@ -969,13 +954,6 @@ static irqreturn_t mace_rxdma_intr(int irq, void *dev_id)
 	st_le32(&cp->phy_addr, virt_to_bus(data));
 	out_le16(&cp->xfer_status, 0);
 	out_le16(&cp->command, INPUT_LAST + INTR_ALWAYS);
-#if 0
-	if ((ld_le32(&rd->status) & ACTIVE) != 0) {
-	    out_le32(&rd->control, (PAUSE << 16) | PAUSE);
-	    while ((in_le32(&rd->status) & ACTIVE) != 0)
-		;
-	}
-#endif
 	i = next;
     }
     if (i != mp->rx_fill) {

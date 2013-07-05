@@ -3001,4 +3001,3 @@ mpt2sas_ctl_exit(void)
 	}
 	misc_deregister(&ctl_dev);
 }
-

@@ -57,7 +57,6 @@ struct hist_entry {
 	s32			cpu;
 	u32			nr_events;
 
-	/* XXX These two should move to some tree widget lib */
 	u16			row_offset;
 	u16			nr_rows;
 

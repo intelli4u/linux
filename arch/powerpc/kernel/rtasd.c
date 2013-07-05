@@ -175,20 +175,6 @@ static int log_rtas_len(char * buf)
 	return len;
 }
 
-/*
- * First write to nvram, if fatal error, that is the only
- * place we log the info.  The error will be picked up
- * on the next reboot by rtasd.  If not fatal, run the
- * method for the type of error.  Currently, only RTAS
- * errors have methods implemented, but in the future
- * there might be a need to store data in nvram before a
- * call to panic().
- *
- * XXX We write to nvram periodically, to indicate error has
- * been written and sync'd, but there is a possibility
- * that if we don't shutdown correctly, a duplicate error
- * record will be created on next reboot.
- */
 void pSeries_log_error(char *buf, unsigned int err_type, int fatal)
 {
 	unsigned long offset;

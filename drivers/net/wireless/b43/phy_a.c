@@ -60,24 +60,6 @@ static inline u16 freq_r3A_value(u16 frequency)
 	return value;
 }
 
-#if 0
-/* This function converts a TSSI value to dBm in Q5.2 */
-static s8 b43_aphy_estimate_power_out(struct b43_wldev *dev, s8 tssi)
-{
-	struct b43_phy *phy = &dev->phy;
-	struct b43_phy_a *aphy = phy->a;
-	s8 dbm = 0;
-	s32 tmp;
-
-	tmp = (aphy->tgt_idle_tssi - aphy->cur_idle_tssi + tssi);
-	tmp += 0x80;
-	tmp = clamp_val(tmp, 0x00, 0xFF);
-	dbm = aphy->tssi2dbm[tmp];
-	//TODO: There's a FIXME on the specs
-
-	return dbm;
-}
-#endif
 
 static void b43_radio_set_tx_iq(struct b43_wldev *dev)
 {
@@ -136,8 +118,6 @@ static void aphy_channel_switch(struct b43_wldev *dev, unsigned int channel)
 	b43_radio_mask(dev, 0x0035, 0xFFEF);
 	b43_radio_maskset(dev, 0x0035, 0xFFEF, 0x0010);
 	b43_radio_set_tx_iq(dev);
-	//TODO: TSSI2dbm workaround
-//FIXME	b43_phy_xmitpower(dev);
 }
 
 static void b43_radio_init2060(struct b43_wldev *dev)

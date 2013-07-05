@@ -669,7 +669,6 @@ static inline int i596_rx(struct net_device *dev)
 			DMA_INV(dev, rbd, sizeof(struct i596_rbd));
 		} else {
 			printk(KERN_ERR "%s: rbd chain broken!\n", dev->name);
-			/* XXX Now what? */
 			rbd = NULL;
 		}
 		DEB(DEB_RXFRAME, printk(KERN_DEBUG
@@ -719,7 +718,6 @@ static inline int i596_rx(struct net_device *dev)
 				skb = netdev_alloc_skb_ip_align(dev, pkt_len);
 memory_squeeze:
 			if (skb == NULL) {
-				/* XXX tulip.c can defer packets here!! */
 				printk(KERN_ERR
 				       "%s: i596_rx Memory squeeze, dropping packet.\n",
 				       dev->name);
@@ -850,7 +848,6 @@ static inline void i596_reset(struct net_device *dev, struct i596_private *lp)
 
 	netif_stop_queue(dev);
 
-	/* FIXME: this command might cause an lpmc */
 	lp->dma->scb.command = SWAP16(CUC_ABORT | RX_ABORT);
 	DMA_WBACK(dev, &(lp->dma->scb), sizeof(struct i596_scb));
 	ca(dev);
@@ -910,9 +907,7 @@ static void i596_add_cmd(struct net_device *dev, struct i596_cmd *cmd)
 		printk(KERN_ERR
 		       "%s: command unit timed out, status resetting.\n",
 		       dev->name);
-#if 1
 		i596_reset(dev, lp);
-#endif
 	}
 }
 

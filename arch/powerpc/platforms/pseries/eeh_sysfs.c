@@ -84,4 +84,3 @@ void eeh_sysfs_remove_device(struct pci_dev *pdev)
 	device_remove_file(&pdev->dev, &dev_attr_eeh_false_positives);
 	device_remove_file(&pdev->dev, &dev_attr_eeh_freeze_count);
 }
-

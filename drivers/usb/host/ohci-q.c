@@ -236,7 +236,6 @@ static int ed_schedule (struct ohci_hcd *ohci, struct ed *ed)
 			ohci_dbg (ohci,
 				"ERR %d, interval %d msecs, load %d\n",
 				branch, ed->interval, ed->load);
-			// FIXME if there are TDs queued, fail them!
 			return branch;
 		}
 		ed->branch = branch;
@@ -421,9 +420,6 @@ static struct ed *ed_get (
 
 		is_out = !(ep->desc.bEndpointAddress & USB_DIR_IN);
 
-		/* FIXME usbcore changes dev->devnum before SET_ADDRESS
-		 * succeeds ... otherwise we wouldn't need "pipe".
-		 */
 		info = usb_pipedevice (pipe);
 		ed->type = usb_pipetype(pipe);
 
@@ -675,7 +671,6 @@ static void td_submit_urb (
 		for (cnt = 0; cnt < urb->number_of_packets; cnt++) {
 			int	frame = urb->start_frame;
 
-			// FIXME scheduling should handle frame counter
 			// roll-around ... exotic case (and OHCI has
 			// a 2^16 iso range, vs other HCs max of 2^10)
 			frame += cnt * urb->interval;

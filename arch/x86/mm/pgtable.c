@@ -229,7 +229,7 @@ static void pgd_prepopulate_pmd(struct mm_struct *mm, pgd_t *pgd, pmd_t *pmds[])
 	unsigned long addr;
 	int i;
 
-	if (PREALLOCATED_PMDS == 0) /* Work around gcc-3.4.x bug */
+	if (PREALLOCATED_PMDS == 0)
 		return;
 
 	pud = pud_offset(pgd, 0);

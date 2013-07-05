@@ -25,10 +25,6 @@ static unsigned long suspend_test_start_time;
 
 void suspend_test_start(void)
 {
-	/* FIXME Use better timebase than "jiffies", ideally a clocksource.
-	 * What we want is a hardware counter that will work correctly even
-	 * during the irqs-are-off stages of the suspend/resume cycle...
-	 */
 	suspend_test_start_time = jiffies;
 }
 

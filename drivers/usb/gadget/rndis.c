@@ -50,13 +50,7 @@
  * and will be happier if you provide the host_addr module parameter.
  */
 
-#if 0
-static int rndis_debug = 0;
-module_param (rndis_debug, int, 0);
-MODULE_PARM_DESC (rndis_debug, "enable debugging");
-#else
 #define rndis_debug		0
-#endif
 
 #define RNDIS_MAX_CONFIGS	1
 
@@ -136,14 +130,6 @@ static const u32 oid_supported_list [] =
 #endif	/* RNDIS_OPTIONAL_STATS */
 
 #ifdef	RNDIS_PM
-	/* PM and wakeup are "mandatory" for USB, but the RNDIS specs
-	 * don't say what they mean ... and the NDIS specs are often
-	 * confusing and/or ambiguous in this context.  (That is, more
-	 * so than their specs for the other OIDs.)
-	 *
-	 * FIXME someone who knows what these should do, please
-	 * implement them!
-	 */
 
 	/* power management */
 	OID_PNP_CAPABILITIES,
@@ -1198,4 +1184,3 @@ void rndis_exit (void)
 	}
 #endif
 }
-

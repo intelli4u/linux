@@ -75,10 +75,6 @@ static unsigned int xprt_max_resvport_limit = RPC_MAX_RESVPORT;
 
 static struct ctl_table_header *sunrpc_table_header;
 
-/*
- * FIXME: changing the UDP slot table size should also resize the UDP
- *        socket buffers for existing UDP transports
- */
 static ctl_table xs_tunables_table[] = {
 	{
 		.procname	= "udp_slot_table_entries",
@@ -581,20 +577,6 @@ static inline void xs_encode_tcp_record_marker(struct xdr_buf *buf)
 	*base = htonl(RPC_LAST_STREAM_FRAGMENT | reclen);
 }
 
-/**
- * xs_tcp_send_request - write an RPC request to a TCP socket
- * @task: address of RPC task that manages the state of an RPC request
- *
- * Return values:
- *        0:	The request has been sent
- *   EAGAIN:	The socket was blocked, please call again later to
- *		complete the request
- * ENOTCONN:	Caller needs to invoke connect logic then call again
- *    other:	Some other error occured, the request was not sent
- *
- * XXX: In the case of soft timeouts, should we eventually give up
- *	if sendmsg is not able to make progress?
- */
 static int xs_tcp_send_request(struct rpc_task *task)
 {
 	struct rpc_rqst *req = task->tk_rqstp;
@@ -2324,7 +2306,6 @@ static struct rpc_xprt *xs_setup_udp(struct xprt_create *args)
 
 	xprt->prot = IPPROTO_UDP;
 	xprt->tsh_size = 0;
-	/* XXX: header size can vary due to auth type, IPv6, etc. */
 	xprt->max_payload = (1U << 16) - (MAX_HEADER << 3);
 
 	xprt->bind_timeout = XS_BIND_TO;
@@ -2647,4 +2628,3 @@ module_param_named(tcp_slot_table_entries, xprt_tcp_slot_table_entries,
 		   slot_table_size, 0644);
 module_param_named(udp_slot_table_entries, xprt_udp_slot_table_entries,
 		   slot_table_size, 0644);
-

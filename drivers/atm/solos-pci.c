@@ -730,7 +730,7 @@ void solos_bh(unsigned long card_arg)
 				break;
 
 			case PKT_COMMAND:
-			default: /* FIXME: Not really, surely? */
+			default:
 				if (process_command(card, port, skb))
 					break;
 				spin_lock(&card->cli_queue_lock);

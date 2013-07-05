@@ -965,23 +965,6 @@ static inline void clear_bit_le(unsigned nr, unsigned char *addr)
 }
 
 
-/**
- * EFX_MAX_FRAME_LEN - calculate maximum frame length
- *
- * This calculates the maximum frame length that will be used for a
- * given MTU.  The frame length will be equal to the MTU plus a
- * constant amount of header space and padding.  This is the quantity
- * that the net driver will program into the MAC as the maximum frame
- * length.
- *
- * The 10G MAC requires 8-byte alignment on the frame
- * length, so we round up to the nearest 8.
- *
- * Re-clocking by the XGXS on RX can reduce an IPG to 32 bits (half an
- * XGMII cycle).  If the frame length reaches the maximum value in the
- * same cycle, the XMAC can miss the IPG altogether.  We work around
- * this by adding a further 16 bytes.
- */
 #define EFX_MAX_FRAME_LEN(mtu) \
 	((((mtu) + ETH_HLEN + VLAN_HLEN + 4/* FCS */ + 7) & ~7) + 16)
 

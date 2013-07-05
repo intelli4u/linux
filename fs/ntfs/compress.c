@@ -105,10 +105,6 @@ static void zero_partial_compressed_page(struct page *page,
 
 	ntfs_debug("Zeroing page region outside initialized size.");
 	if (((s64)page->index << PAGE_CACHE_SHIFT) >= initialized_size) {
-		/*
-		 * FIXME: Using clear_page() will become wrong when we get
-		 * PAGE_CACHE_SIZE != PAGE_SIZE but for now there is no problem.
-		 */
 		clear_page(kp);
 		return;
 	}
@@ -444,41 +440,6 @@ return_overflow:
 	goto return_error;
 }
 
-/**
- * ntfs_read_compressed_block - read a compressed block into the page cache
- * @page:	locked page in the compression block(s) we need to read
- *
- * When we are called the page has already been verified to be locked and the
- * attribute is known to be non-resident, not encrypted, but compressed.
- *
- * 1. Determine which compression block(s) @page is in.
- * 2. Get hold of all pages corresponding to this/these compression block(s).
- * 3. Read the (first) compression block.
- * 4. Decompress it into the corresponding pages.
- * 5. Throw the compressed data away and proceed to 3. for the next compression
- *    block or return success if no more compression blocks left.
- *
- * Warning: We have to be careful what we do about existing pages. They might
- * have been written to so that we would lose data if we were to just overwrite
- * them with the out-of-date uncompressed data.
- *
- * FIXME: For PAGE_CACHE_SIZE > cb_size we are not doing the Right Thing(TM) at
- * the end of the file I think. We need to detect this case and zero the out
- * of bounds remainder of the page in question and mark it as handled. At the
- * moment we would just return -EIO on such a page. This bug will only become
- * apparent if pages are above 8kiB and the NTFS volume only uses 512 byte
- * clusters so is probably not going to be seen by anyone. Still this should
- * be fixed. (AIA)
- *
- * FIXME: Again for PAGE_CACHE_SIZE > cb_size we are screwing up both in
- * handling sparse and compressed cbs. (AIA)
- *
- * FIXME: At the moment we don't do any zeroing out in the case that
- * initialized_size is less than data_size. This should be safe because of the
- * nature of the compression algorithm used. Just in case we check and output
- * an error message in read inode if the two sizes are not equal for a
- * compressed file. (AIA)
- */
 int ntfs_read_compressed_block(struct page *page)
 {
 	loff_t i_size;
@@ -754,11 +715,6 @@ lock_retry_remap:
 		for (; cur_page < cb_max_page; cur_page++) {
 			page = pages[cur_page];
 			if (page) {
-				/*
-				 * FIXME: Using clear_page() will become wrong
-				 * when we get PAGE_CACHE_SIZE != PAGE_SIZE but
-				 * for now there is no problem.
-				 */
 				if (likely(!cur_ofs))
 					clear_page(page_address(page));
 				else

@@ -109,7 +109,7 @@
 #include <linux/mutex.h>
 
 /* Version */
-static const char version[] = "$Id: dscc4.c,v 1.173 2003/09/20 23:55:34 romieu Exp $ for Linux\n";
+static const char version[] = "$Id: dscc4.c,v 1.173 2003/09/20 23:55:34 Exp $ for Linux\n";
 static int debug;
 static int quartz;
 
@@ -203,7 +203,6 @@ struct dscc4_dev_priv {
         __le32 *iqrx;
         __le32 *iqtx;
 
-	/* FIXME: check all the volatile are required */
         volatile u32 tx_current;
         u32 rx_current;
         u32 iqtx_current;
@@ -600,44 +599,7 @@ static inline int dscc4_xpr_ack(struct dscc4_dev_priv *dpriv)
 	return (i >= 0 ) ? i : -EAGAIN;
 }
 
-#if 0 /* dscc4_{rx/tx}_reset are both unreliable - more tweak needed */
-static void dscc4_rx_reset(struct dscc4_dev_priv *dpriv, struct net_device *dev)
-{
-	unsigned long flags;
 
-	spin_lock_irqsave(&dpriv->pci_priv->lock, flags);
-	/* Cf errata DS5 p.6 */
-	writel(0x00000000, dpriv->base_addr + CH0LRDA + dpriv->dev_id*4);
-	scc_patchl(PowerUp, 0, dpriv, dev, CCR0);
-	readl(dpriv->base_addr + CH0LRDA + dpriv->dev_id*4);
-	writel(MTFi|Rdr, dpriv->base_addr + dpriv->dev_id*0x0c + CH0CFG);
-	writel(Action, dpriv->base_addr + GCMDR);
-	spin_unlock_irqrestore(&dpriv->pci_priv->lock, flags);
-}
-
-#endif
-
-#if 0
-static void dscc4_tx_reset(struct dscc4_dev_priv *dpriv, struct net_device *dev)
-{
-	u16 i = 0;
-
-	/* Cf errata DS5 p.7 */
-	scc_patchl(PowerUp, 0, dpriv, dev, CCR0);
-	scc_writel(0x00050000, dpriv, dev, CCR2);
-	/*
-	 * Must be longer than the time required to fill the fifo.
-	 */
-	while (!dscc4_tx_quiescent(dpriv, dev) && ++i) {
-		udelay(1);
-		wmb();
-	}
-
-	writel(MTFi|Rdt, dpriv->base_addr + dpriv->dev_id*0x0c + CH0CFG);
-	if (dscc4_do_action(dev, "Rdt") < 0)
-		printk(KERN_ERR "%s: Tx reset failed\n", dev->name);
-}
-#endif
 
 /* TODO: (ab)use this function to refill a completely depleted RX ring. */
 static inline void dscc4_rx_skb(struct dscc4_dev_priv *dpriv,
@@ -809,7 +771,6 @@ static int __devinit dscc4_init_one(struct pci_dev *pdev,
 	writel(0xdef6d800, ioaddr + FIFOCR2);
 	//writel(0x11111111, ioaddr + FIFOCR4);
 	writel(0x18181818, ioaddr + FIFOCR4);
-	// FIXME: should depend on the chipset revision
 	writel(0x0000000e, ioaddr + FIFOCR3);
 
 	writel(0xff200001, ioaddr + GCMDR);
@@ -860,12 +821,6 @@ static void dscc4_init_registers(struct dscc4_dev_priv *dpriv,
 
 	scc_writel(LengthCheck | (HDLC_MAX_MRU >> 5), dpriv, dev, RLCR);
 
-	/*
-	 * No address recognition/crc-CCITT/cts enabled
-	 * Shared flags transmission disabled - cf errata DS5 p.11
-	 * Carrier detect disabled - cf errata p.14
-	 * FIXME: carrier detection/polarity may be handled more gracefully.
-	 */
 	scc_writel(0x02408000, dpriv, dev, CCR1);
 
 	/* crc not forwarded - Cf errata DS5 p.11 */
@@ -979,7 +934,6 @@ err_out:
 	return ret;
 };
 
-/* FIXME: get rid of the unneeded code */
 static void dscc4_timer(unsigned long data)
 {
 	struct net_device *dev = (struct net_device *)data;
@@ -994,7 +948,6 @@ done:
 
 static void dscc4_tx_timeout(struct net_device *dev)
 {
-	/* FIXME: something is missing there */
 }
 
 static int dscc4_loopback_check(struct dscc4_dev_priv *dpriv)
@@ -1147,7 +1100,6 @@ err:
 #ifdef DSCC4_POLLING
 static int dscc4_tx_poll(struct dscc4_dev_priv *dpriv, struct net_device *dev)
 {
-	/* FIXME: it's gonna be easy (TM), for sure */
 }
 #endif /* DSCC4_POLLING */
 
@@ -1216,49 +1168,6 @@ static inline int dscc4_check_clock_ability(int port)
 	return ret;
 }
 
-/*
- * DS1 p.137: "There are a total of 13 different clocking modes..."
- *                                  ^^
- * Design choices:
- * - by default, assume a clock is provided on pin RxClk/TxClk (clock mode 0a).
- *   Clock mode 3b _should_ work but the testing seems to make this point
- *   dubious (DIY testing requires setting CCR0 at 0x00000033).
- *   This is supposed to provide least surprise "DTE like" behavior.
- * - if line rate is specified, clocks are assumed to be locally generated.
- *   A quartz must be available (on pin XTAL1). Modes 6b/7b are used. Choosing
- *   between these it automagically done according on the required frequency
- *   scaling. Of course some rounding may take place.
- * - no high speed mode (40Mb/s). May be trivial to do but I don't have an
- *   appropriate external clocking device for testing.
- * - no time-slot/clock mode 5: shameless lazyness.
- *
- * The clock signals wiring can be (is ?) manufacturer dependant. Good luck.
- *
- * BIG FAT WARNING: if the device isn't provided enough clocking signal, it
- * won't pass the init sequence. For example, straight back-to-back DTE without
- * external clock will fail when dscc4_open() (<- 'ifconfig hdlcx xxx') is
- * called.
- *
- * Typos lurk in datasheet (missing divier in clock mode 7a figure 51 p.153
- * DS0 for example)
- *
- * Clock mode related bits of CCR0:
- *     +------------ TOE: output TxClk (0b/2b/3a/3b/6b/7a/7b only)
- *     | +---------- SSEL: sub-mode select 0 -> a, 1 -> b
- *     | | +-------- High Speed: say 0
- *     | | | +-+-+-- Clock Mode: 0..7
- *     | | | | | |
- * -+-+-+-+-+-+-+-+
- * x|x|5|4|3|2|1|0| lower bits
- *
- * Division factor of BRR: k = (N+1)x2^M (total divider = 16xk in mode 6b)
- *            +-+-+-+------------------ M (0..15)
- *            | | | |     +-+-+-+-+-+-- N (0..63)
- *    0 0 0 0 | | | | 0 0 | | | | | |
- * ...-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- *    f|e|d|c|b|a|9|8|7|6|5|4|3|2|1|0| lower bits
- *
- */
 static int dscc4_set_clock(struct net_device *dev, u32 *bps, u32 *state)
 {
 	struct dscc4_dev_priv *dpriv = dscc4_priv(dev);
@@ -1629,7 +1538,6 @@ try:
 				goto try;
 		}
 		if (state & Xmr) {
-			/* Frame needs to be sent again - FIXME */
 			printk(KERN_ERR "%s: Xmr. Ask maintainer\n", DRV_NAME);
 			if (!(state &= ~Xmr)) /* DEBUG */
 				goto try;
@@ -1774,7 +1682,6 @@ try:
 		}
 	} else { /* SccEvt */
 		if (debug > 1) {
-			//FIXME: verifier la presence de tous les evenements
 		static struct {
 			u32 mask;
 			const char *irq_name;
@@ -1803,9 +1710,6 @@ try:
 			if (!(state &= ~Cts)) /* DEBUG */
 				goto try;
 		}
-		/*
-		 * Receive Data Overflow (FIXME: fscked)
-		 */
 		if (state & Rdo) {
 			struct RxFD *rx_fd;
 			void __iomem *scc_addr;
@@ -1849,9 +1753,6 @@ try:
 					       "%s: no RDO in Rx data\n", DRV_NAME);
 			}
 #ifdef DSCC4_RDO_EXPERIMENTAL_RECOVERY
-			/*
-			 * FIXME: must the reset be this violent ?
-			 */
 #warning "FIXME: CH0BRDA"
 			writel(dpriv->rx_fd_dma +
 			       (dpriv->rx_current%RX_RING_SIZE)*
@@ -1941,7 +1842,6 @@ static int dscc4_init_ring(struct net_device *dev)
 	do {
 		tx_fd->state = FrameEnd | TO_STATE_TX(2*DUMMY_SKB_SIZE);
 		tx_fd->complete = 0x00000000;
-	        /* FIXME: NULL should be ok - to be tried */
 	        tx_fd->data = cpu_to_le32(dpriv->tx_fd_dma);
 		(tx_fd++)->next = cpu_to_le32(dpriv->tx_fd_dma +
 					(++i%TX_RING_SIZE)*sizeof(*tx_fd));
@@ -1958,7 +1858,6 @@ static int dscc4_init_ring(struct net_device *dev)
 	        rx_fd->state2 = 0x00000000;
 	        rx_fd->end = cpu_to_le32(0xbabeface);
 	        rx_fd->state1 |= TO_STATE_RX(HDLC_MAX_MRU);
-		// FIXME: return value verifiee mais traitement suspect
 		if (try_get_rx_skb(dpriv, dev) >= 0)
 			dpriv->rx_dirty++;
 		(rx_fd++)->next = cpu_to_le32(dpriv->rx_fd_dma +

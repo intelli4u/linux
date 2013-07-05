@@ -22,11 +22,6 @@
 #include <asm/uaccess.h>
 #include <asm/system.h>
 
-/*
- * Fill in the supplied page for mmap
- * XXX: how are we excluding truncate/invalidate here? Maybe need to lock
- * page?
- */
 static int ncp_file_mmap_fault(struct vm_area_struct *area,
 					struct vm_fault *vmf)
 {
@@ -37,7 +32,7 @@ static int ncp_file_mmap_fault(struct vm_area_struct *area,
 	unsigned int already_read;
 	unsigned int count;
 	int bufsize;
-	int pos; /* XXX: loff_t ? */
+	int pos;
 
 	/*
 	 * ncpfs has nothing against high pages as long

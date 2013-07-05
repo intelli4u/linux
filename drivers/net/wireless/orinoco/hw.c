@@ -156,8 +156,7 @@ int determine_fw_capabilities(struct orinoco_private *priv,
 
 		priv->has_ibss = (firmver >= 0x60006);
 		priv->has_wep = (firmver >= 0x40020);
-		priv->has_big_wep = 1; /* FIXME: this is wrong - how do we tell
-					  Gold cards from the others? */
+		priv->has_big_wep = 1;
 		priv->has_mwo = (firmver >= 0x60000);
 		priv->has_pm = (firmver >= 0x40020); /* Don't work in 7.52 ? */
 		priv->ibss_port = 1;
@@ -245,7 +244,7 @@ int determine_fw_capabilities(struct orinoco_private *priv,
 		firmver = ((unsigned long)sta_id.major << 16) |
 			((unsigned long)sta_id.minor << 8) | sta_id.variant;
 
-		priv->has_ibss = (firmver >= 0x000700); /* FIXME */
+		priv->has_ibss = (firmver >= 0x000700);
 		priv->has_big_wep = priv->has_wep = (firmver >= 0x000800);
 		priv->has_pm = (firmver >= 0x000700);
 		priv->has_hostscan = (firmver >= 0x010301);
@@ -415,7 +414,6 @@ int orinoco_hw_allocate_fid(struct orinoco_private *priv)
 
 	err = hw->ops->allocate(hw, priv->nicbuf_size, &priv->txfid);
 	if (err == -EIO && priv->nicbuf_size > TX_NICBUF_SIZE_BUG) {
-		/* Try workaround for old Symbol firmware bug */
 		priv->nicbuf_size = TX_NICBUF_SIZE_BUG;
 		err = hw->ops->allocate(hw, priv->nicbuf_size, &priv->txfid);
 
@@ -854,8 +852,6 @@ int __orinoco_hw_setup_wepkeys(struct orinoco_private *priv)
 		{
 			int keylen;
 
-			/* Force uniform key length to work around
-			 * firmware bugs */
 			keylen = priv->keys[priv->tx_key].key_len;
 
 			if (keylen > LARGE_KEY_SIZE) {

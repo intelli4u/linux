@@ -62,13 +62,6 @@ static int legacy_dvb_usb_setkeycode(struct input_dev *dev,
 			return 0;
 		}
 
-	/*
-	 * FIXME: Currently, it is not possible to increase the size of
-	 * scancode table. For it to happen, one possibility
-	 * would be to allocate a table with key_map_size + 1,
-	 * copying data, appending the new key on it, and freeing
-	 * the old one - or maybe just allocating some spare space
-	 */
 
 	return -EINVAL;
 }

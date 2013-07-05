@@ -336,11 +336,9 @@ static int vidioc_g_tuner(struct file *file, void *fh, struct v4l2_tuner *t)
 		V4L2_TUNER_CAP_LANG1 | V4L2_TUNER_CAP_LANG2 | V4L2_TUNER_CAP_SAP;
 	t->rangelow = 772;	/* 48.25 MHZ / 62.5 kHz = 772, see fi1216mk2-specs, page 2 */
 	t->rangehigh = 13684;	/* 855.25 MHz / 62.5 kHz = 13684 */
-	/* FIXME: add the real signal strength here */
 	t->signal = 0xffff;
 	t->afc = 0;
 
-	/* FIXME: standard / stereo detection is still broken */
 	msp_readreg(av7110, MSP_RD_DEM, 0x007e, &stereo_det);
 	dprintk(1, "VIDIOC_G_TUNER: msp3400 TV standard detection: 0x%04x\n", stereo_det);
 	msp_readreg(av7110, MSP_RD_DSP, 0x0018, &stereo_det);
@@ -833,8 +831,6 @@ int av7110_exit_v4l(struct av7110 *av7110)
 
 
 
-/* FIXME: these values are experimental values that look better than the
-   values from the latest "official" driver -- at least for me... (MiHu) */
 static struct saa7146_standard standard[] = {
 	{
 		.name	= "PAL",	.id		= V4L2_STD_PAL_BG,
@@ -925,4 +921,3 @@ static struct saa7146_ext_vv av7110_vv_data_c = {
 	.vbi_fops.release = av7110_vbi_reset,
 	.vbi_fops.write	= av7110_vbi_write,
 };
-

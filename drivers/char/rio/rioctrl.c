@@ -1099,7 +1099,6 @@ int riocontrol(struct rio_info *p, dev_t dev, int cmd, unsigned long arg, int su
 			p->RIOError.Error = SIGNALS_ALREADY_SET;
 			return -EBUSY;
 		}
-		/* FIXME: PID tracking */
 		p->RIOSignalProcess = current->pid;
 		p->RIOPrintDisabled = DONT_PRINT;
 		return retval;

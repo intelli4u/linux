@@ -188,11 +188,6 @@ static int get_irq_server(unsigned int virq, const struct cpumask *cpumask,
 			return -1;
 	}
 
-	/*
-	 * Workaround issue with some versions of JS20 firmware that
-	 * deliver interrupts to cpus which haven't been started. This
-	 * happens when using the maxcpus= boot option.
-	 */
 	if (cpumask_equal(cpu_online_mask, cpu_present_mask))
 		return default_distrib_server;
 
@@ -705,7 +700,6 @@ static void __init xics_init_one_node(struct device_node *np,
 	while (ilen >= (4 * sizeof(u32))) {
 		unsigned long addr, size;
 
-		/* XXX Use proper OF parsing code here !!! */
 		addr = (unsigned long)*ireg++ << 32;
 		ilen -= sizeof(u32);
 		addr |= *ireg++;

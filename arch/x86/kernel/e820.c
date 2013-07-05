@@ -684,8 +684,7 @@ void __init parse_e820_ext(struct setup_data *sdata, unsigned long pa_data)
 	e820_print_map("extended");
 }
 
-#if defined(CONFIG_X86_64) || \
-	(defined(CONFIG_X86_32) && defined(CONFIG_HIBERNATION))
+#if defined(CONFIG_X86_64) || (defined(CONFIG_X86_32) && defined(CONFIG_HIBERNATION))
 /**
  * Find the ranges of physical addresses that do not correspond to
  * e820 RAM areas and mark the corresponding pages as nosave for

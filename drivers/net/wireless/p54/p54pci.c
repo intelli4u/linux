@@ -169,7 +169,7 @@ static void p54p_refill_rx_ring(struct ieee80211_hw *dev,
 			}
 
 			desc->host_addr = cpu_to_le32(mapping);
-			desc->device_addr = 0;	// FIXME: necessary?
+			desc->device_addr = 0;
 			desc->len = cpu_to_le16(priv->common.rx_mtu + 32);
 			desc->flags = 0;
 			rx_buf[i] = skb;

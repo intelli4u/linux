@@ -67,10 +67,6 @@ static int uwb_radio_change_channel(struct uwb_rc *rc, int channel)
 
 	if (channel != rc->beaconing) {
 		if (rc->beaconing != -1 && channel != -1) {
-			/*
-			 * FIXME: should signal the channel change
-			 * with a Channel Change IE.
-			 */
 			ret = uwb_radio_change_channel(rc, -1);
 			if (ret < 0)
 				return ret;

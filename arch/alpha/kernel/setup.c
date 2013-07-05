@@ -725,15 +725,9 @@ setup_arch(char **cmdline_p)
 	ROOT_DEV = Root_SDA2;
 
 #ifdef CONFIG_EISA
-	/* FIXME:  only set this when we actually have EISA in this box? */
 	EISA_bus = 1;
 #endif
 
- 	/*
-	 * Check ASN in HWRPB for validity, report if bad.
-	 * FIXME: how was this failing?  Should we trust it instead,
-	 * and copy the value into alpha_mv.max_asn?
- 	 */
 
  	if (hwrpb->max_asn != MAX_ASN) {
 		printk("Max ASN from HWRPB is bad (0x%lx)\n", hwrpb->max_asn);
@@ -1418,11 +1412,7 @@ determine_cpu_caches (unsigned int cpu_type)
 		cbox_config = *(vulp) phys_to_virt (0xfffff00008UL);
 		size = 512*1024 * (1 << ((cbox_config >> 12) & 3));
 
-#if 0
-		L2 = ((cbox_config >> 31) & 1 ? CSHAPE (size, 6, 1) : -1);
-#else
 		L2 = external_cache_probe(512*1024, 6);
-#endif
 		break;
 	  }
 
@@ -1487,12 +1477,9 @@ const struct seq_operations cpuinfo_op = {
 static int
 alpha_panic_event(struct notifier_block *this, unsigned long event, void *ptr)
 {
-#if 1
-	/* FIXME FIXME FIXME */
 	/* If we are using SRM and serial console, just hard halt here. */
 	if (alpha_using_srm && srmcons_output)
 		__halt();
-#endif
         return NOTIFY_DONE;
 }
 

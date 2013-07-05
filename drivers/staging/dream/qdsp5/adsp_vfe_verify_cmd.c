@@ -134,7 +134,6 @@ static int verify_vfe_command_scale(struct msm_adsp_module *module,
 				    void *cmd_data, size_t cmd_size)
 {
 	uint32_t cmd_id = ((uint32_t *)cmd_data)[0];
-	// FIXME: check the size
 	if (cmd_id > 1) {
 		printk(KERN_ERR "adsp: module %s: invalid VFE SCALE command id %d\n", module->name, cmd_id);
 		return -1;

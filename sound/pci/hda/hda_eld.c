@@ -347,7 +347,6 @@ int snd_hdmi_get_eld(struct hdmi_eld *eld,
 
 	size = snd_hdmi_get_eld_size(codec, nid);
 	if (size == 0) {
-		/* wfg: workaround for ASUS P5E-VM HDMI board */
 		snd_printd(KERN_INFO "HDMI: ELD buf size is 0, force 128\n");
 		size = 128;
 	}

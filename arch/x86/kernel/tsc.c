@@ -1001,4 +1001,3 @@ void __init tsc_init(void)
 	check_system_tsc_reliable();
 	init_tsc_clocksource();
 }
-

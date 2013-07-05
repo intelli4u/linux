@@ -16,13 +16,8 @@
 #include <linux/pci.h>
 #include <asm/io.h>
 
-#if 1
 #define DMA_SRAM_START	dma_coherent_mem_start
 #define DMA_SRAM_END	dma_coherent_mem_end
-#else // Use video RAM on Matrox
-#define DMA_SRAM_START	0xe8900000
-#define DMA_SRAM_END	0xe8a00000
-#endif
 
 struct dma_alloc_record {
 	struct list_head	list;

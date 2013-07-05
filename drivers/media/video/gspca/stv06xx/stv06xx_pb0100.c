@@ -227,7 +227,7 @@ static int pb0100_start(struct sd *sd)
 	}
 
 	if (mode & PB0100_SUBSAMPLE) {
-		stv06xx_write_bridge(sd, STV_Y_CTRL, 0x02); /* Wrong, FIXME */
+		stv06xx_write_bridge(sd, STV_Y_CTRL, 0x02);
 		stv06xx_write_bridge(sd, STV_X_CTRL, 0x06);
 
 		stv06xx_write_bridge(sd, STV_SCAN_RATE, 0x10);
@@ -274,10 +274,6 @@ static void pb0100_disconnect(struct sd *sd)
 	kfree(sd->sensor_priv);
 }
 
-/* FIXME: Sort the init commands out and put them into tables,
-	  this is only for getting the camera to work */
-/* FIXME: No error handling for now,
-	  add this once the init has been converted to proper tables */
 static int pb0100_init(struct sd *sd)
 {
 	stv06xx_write_bridge(sd, STV_REG00, 1);

@@ -63,12 +63,6 @@ static inline void flush(void)
 }
 
 
-/*
- * Some bootloaders don't turn off DMA from the ethernet MAC before
- * jumping to linux, which means that we might end up with bits of RX
- * status and packet data scribbled over the uncompressed kernel image.
- * Work around this by resetting the ethernet MAC before we uncompress.
- */
 #define PHYS_ETH_SELF_CTL		0x80010020
 #define ETH_SELF_CTL_RESET		0x00000001
 

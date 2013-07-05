@@ -162,16 +162,6 @@ int ath5k_hw_rfgain_opt_init(struct ath5k_hw *ah)
 	return 0;
 }
 
-/* Schedule a gain probe check on the next transmited packet.
- * That means our next packet is going to be sent with lower
- * tx power and a Peak to Average Power Detector (PAPD) will try
- * to measure the gain.
- *
- * XXX:  How about forcing a tx packet (bypassing PCU arbitrator etc)
- * just after we enable the probe so that we don't mess with
- * standard traffic ? Maybe it's time to use sw interrupts and
- * a probe tasklet !!!
- */
 static void ath5k_hw_request_rfgain_probe(struct ath5k_hw *ah)
 {
 
@@ -1357,7 +1347,6 @@ ath5k_hw_rf511x_iq_calibrate(struct ath5k_hw *ah)
 		return 0;
 
 	/* Calibration has finished, get the results and re-run */
-	/* work around empty results which can apparently happen on 5212 */
 	for (i = 0; i <= 10; i++) {
 		iq_corr = ath5k_hw_reg_read(ah, AR5K_PHY_IQRES_CAL_CORR);
 		i_pwr = ath5k_hw_reg_read(ah, AR5K_PHY_IQRES_CAL_PWR_I);
@@ -1476,7 +1465,6 @@ ath5k_hw_set_spur_mitigation_filter(struct ath5k_hw *ah,
 	 * within our current channel's spur detection range */
 	spur_chan_fbin = AR5K_EEPROM_NO_SPUR;
 	spur_detection_window = AR5K_SPUR_CHAN_WIDTH;
-	/* XXX: Half/Quarter channels ?*/
 	if (channel->hw_value & CHANNEL_TURBO)
 		spur_detection_window *= 2;
 
@@ -1508,7 +1496,6 @@ ath5k_hw_set_spur_mitigation_filter(struct ath5k_hw *ah,
 		 * spur_delta_phase -> spur_offset / chip_freq << 11
 		 * Note: Both values have 100KHz resolution
 		 */
-		/* XXX: Half/Quarter rate channels ? */
 		switch (channel->hw_value) {
 		case CHANNEL_A:
 			/* Both sample_freq and chip_freq are 40MHz */
@@ -1591,7 +1578,6 @@ ath5k_hw_set_spur_mitigation_filter(struct ath5k_hw *ah,
 		/* Write settings on hw to enable spur filter */
 		AR5K_REG_WRITE_BITS(ah, AR5K_PHY_BIN_MASK_CTL,
 					AR5K_PHY_BIN_MASK_CTL_RATE, 0xff);
-		/* XXX: Self correlator also ? */
 		AR5K_REG_ENABLE_BITS(ah, AR5K_PHY_IQ,
 					AR5K_PHY_IQ_PILOT_MASK_EN |
 					AR5K_PHY_IQ_CHAN_MASK_EN |
@@ -1748,8 +1734,6 @@ ath5k_hw_set_fast_div(struct ath5k_hw *ah, u8 ee_mode, bool enable)
 {
 	switch (ee_mode) {
 	case AR5K_EEPROM_MODE_11G:
-		/* XXX: This is set to
-		 * disabled on initvals !!! */
 	case AR5K_EEPROM_MODE_11A:
 		if (enable)
 			AR5K_REG_DISABLE_BITS(ah, AR5K_PHY_AGCCTL,
@@ -2520,9 +2504,6 @@ ath5k_combine_pwr_to_pdadc_curves(struct ath5k_hw *ah,
 	u8 pdadc_i, pdadc_n, pwr_step, pdg, max_idx, table_size;
 	u8 pd_gain_overlap;
 
-	/* Note: Register value is initialized on initvals
-	 * there is no feedback from hw.
-	 * XXX: What about pd_gain_overlap from EEPROM ? */
 	pd_gain_overlap = (u8) ath5k_hw_reg_read(ah, AR5K_PHY_TPC_RG5) &
 		AR5K_PHY_TPC_RG5_PD_GAIN_OVERLAP;
 
@@ -3027,7 +3008,6 @@ ath5k_hw_txpower(struct ath5k_hw *ah, struct ieee80211_channel *channel,
 		return -EINVAL;
 	}
 
-	/* FIXME: Only on channel/mode change */
 	ret = ath5k_setup_channel_powertable(ah, channel, ee_mode, type);
 	if (ret)
 		return ret;
@@ -3035,14 +3015,9 @@ ath5k_hw_txpower(struct ath5k_hw *ah, struct ieee80211_channel *channel,
 	/* Limit max power if we have a CTL available */
 	ath5k_get_max_ctl_power(ah, channel);
 
-	/* FIXME: Tx power limit for this regdomain
-	 * XXX: Mac80211/CRDA will do that anyway ? */
 
-	/* FIXME: Antenna reduction stuff */
 
-	/* FIXME: Limit power on turbo modes */
 
-	/* FIXME: TPC scale reduction */
 
 	/* Get surounding channels for per-rate power table
 	 * calibration */
@@ -3068,7 +3043,6 @@ ath5k_hw_txpower(struct ath5k_hw *ah, struct ieee80211_channel *channel,
 		AR5K_TXPOWER_CCK(13, 16) | AR5K_TXPOWER_CCK(12, 8) |
 		AR5K_TXPOWER_CCK(11, 0), AR5K_PHY_TXPOWER_RATE4);
 
-	/* FIXME: TPC support */
 	if (ah->ah_txpower.txp_tpc) {
 		ath5k_hw_reg_write(ah, AR5K_PHY_TXPOWER_RATE_MAX_TPC_ENABLE |
 			AR5K_TUNE_MAX_TXPOWER, AR5K_PHY_TXPOWER_RATE_MAX);

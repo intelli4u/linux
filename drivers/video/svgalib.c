@@ -166,25 +166,6 @@ void svga_set_textmode_vga_regs(void)
 	vga_w(NULL, VGA_ATT_W, 0x20);
 }
 
-#if 0
-void svga_dump_var(struct fb_var_screeninfo *var, int node)
-{
-	pr_debug("fb%d: var.vmode         : 0x%X\n", node, var->vmode);
-	pr_debug("fb%d: var.xres          : %d\n", node, var->xres);
-	pr_debug("fb%d: var.yres          : %d\n", node, var->yres);
-	pr_debug("fb%d: var.bits_per_pixel: %d\n", node, var->bits_per_pixel);
-	pr_debug("fb%d: var.xres_virtual  : %d\n", node, var->xres_virtual);
-	pr_debug("fb%d: var.yres_virtual  : %d\n", node, var->yres_virtual);
-	pr_debug("fb%d: var.left_margin   : %d\n", node, var->left_margin);
-	pr_debug("fb%d: var.right_margin  : %d\n", node, var->right_margin);
-	pr_debug("fb%d: var.upper_margin  : %d\n", node, var->upper_margin);
-	pr_debug("fb%d: var.lower_margin  : %d\n", node, var->lower_margin);
-	pr_debug("fb%d: var.hsync_len     : %d\n", node, var->hsync_len);
-	pr_debug("fb%d: var.vsync_len     : %d\n", node, var->vsync_len);
-	pr_debug("fb%d: var.sync          : 0x%X\n", node, var->sync);
-	pr_debug("fb%d: var.pixclock      : %d\n\n", node, var->pixclock);
-}
-#endif  /*  0  */
 
 
 /* ------------------------------------------------------------------------- */

@@ -138,8 +138,6 @@ static inline void xsave_state(struct xsave_struct *fx, u64 mask)
 
 static inline void fpu_xsave(struct fpu *fpu)
 {
-	/* This, however, we can work around by forcing the compiler to select
-	   an addressing mode that doesn't require extended registers. */
 	alternative_input(
 		".byte " REX_PREFIX "0x0f,0xae,0x27",
 		".byte " REX_PREFIX "0x0f,0xae,0x37",

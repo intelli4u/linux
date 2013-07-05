@@ -273,7 +273,6 @@ static void toppoly_lcd_power(int on, struct fb_var_screeninfo *si)
 		udelay(2000);
 		gpio_set_value(EGPIO_MAGICIAN_LCD_POWER, 1);
 		udelay(2000);
-		/* FIXME: enable LCDC here */
 		udelay(2000);
 		gpio_set_value(GPIO104_MAGICIAN_LCD_POWER_1, 1);
 		udelay(2000);

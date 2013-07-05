@@ -1002,7 +1002,6 @@ static int download_code(struct edgeport_serial *serial, __u8 *image,
 	return status;
 }
 
-/* FIXME!!! */
 static int config_boot_dev(struct usb_device *dev)
 {
 	return 0;
@@ -1973,10 +1972,6 @@ static int edge_open(struct tty_struct *tty, struct usb_serial_port *port)
 		}
 	}
 
-	/*
-	 * reset the data toggle on the bulk endpoints to work around bug in
-	 * host controllers where things get out of sync some times
-	 */
 	usb_clear_halt(dev, port->write_urb->pipe);
 	usb_clear_halt(dev, port->read_urb->pipe);
 
@@ -2399,7 +2394,6 @@ static void change_port_settings(struct tty_struct *tty,
 	edge_port->baud_rate = baud;
 	config->wBaudRate = (__u16)((461550L + baud/2) / baud);
 
-	/* FIXME: Recompute actual baud from divisor here */
 
 	dbg("%s - baud rate = %d, wBaudRate = %d", __func__, baud,
 							config->wBaudRate);

@@ -1796,9 +1796,6 @@ int security_load_policy(void *data, size_t len)
 		return 0;
 	}
 
-#if 0
-	sidtab_hash_eval(&sidtab, "sids");
-#endif
 
 	rc = policydb_read(&newpolicydb, fp);
 	if (rc)

@@ -90,27 +90,6 @@ static inline void iwl_dbgfs_unregister(struct iwl_priv *priv)
 }
 #endif				/* CONFIG_IWLWIFI_DEBUGFS */
 
-/*
- * To use the debug system:
- *
- * If you are defining a new debug classification, simply add it to the #define
- * list here in the form of
- *
- * #define IWL_DL_xxxx VALUE
- *
- * where xxxx should be the name of the classification (for example, WEP).
- *
- * You then need to either add a IWL_xxxx_DEBUG() macro definition for your
- * classification, or use IWL_DEBUG(IWL_DL_xxxx, ...) whenever you want
- * to send output to that classification.
- *
- * The active debug levels can be accessed via files
- *
- * 	/sys/module/iwlagn/parameters/debug{50}
- * 	/sys/class/net/wlan0/device/debug_level
- *
- * when CONFIG_IWLWIFI_DEBUG=y.
- */
 
 /* 0x0000000F - 0x00000001 */
 #define IWL_DL_INFO		(1 << 0)

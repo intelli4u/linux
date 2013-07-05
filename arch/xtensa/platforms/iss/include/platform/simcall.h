@@ -59,4 +59,3 @@
 
 
 #endif /* _XTENSA_PLATFORM_ISS_SIMCALL_H */
-

@@ -516,7 +516,7 @@ void __init mem_init(void)
 		initsize >> 10
 	);
 
-#ifdef CONFIG_DEBUG_KERNEL /* double-sanity-check paranoia */
+#ifdef CONFIG_DEBUG_KERNEL     /* double-sanity-check paranoia */
 	printk("virtual kernel memory layout:\n"
 	       "    vmalloc : 0x%p - 0x%p   (%4ld MB)\n"
 	       "    memory  : 0x%p - 0x%p   (%4ld MB)\n"
@@ -766,8 +766,6 @@ static void __init pagetable_init(void)
 static void __init gateway_init(void)
 {
 	unsigned long linux_gateway_page_addr;
-	/* FIXME: This is 'const' in order to trick the compiler
-	   into not treating it as DP-relative data. */
 	extern void * const linux_gateway_page;
 
 	linux_gateway_page_addr = LINUX_GATEWAY_ADDR & PAGE_MASK;
@@ -794,8 +792,6 @@ map_hpux_gateway_page(struct task_struct *tsk, struct mm_struct *mm)
 	unsigned long start_pte;
 	unsigned long address;
 	unsigned long hpux_gw_page_addr;
-	/* FIXME: This is 'const' in order to trick the compiler
-	   into not treating it as DP-relative data. */
 	extern void * const hpux_gateway_page;
 
 	hpux_gw_page_addr = HPUX_GATEWAY_ADDR & PAGE_MASK;
@@ -1042,7 +1038,7 @@ void flush_tlb_all(void)
 	do_recycle = 0;
 	spin_lock(&sid_lock);
 	if (dirty_space_ids > RECYCLE_THRESHOLD) {
-	    BUG_ON(recycle_inuse);  /* FIXME: Use a semaphore/wait queue here */
+	    BUG_ON(recycle_inuse);
 	    get_dirty_sids(&recycle_ndirty,recycle_dirty_array);
 	    recycle_inuse++;
 	    do_recycle++;

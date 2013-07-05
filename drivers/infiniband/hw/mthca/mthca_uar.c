@@ -73,6 +73,5 @@ void mthca_cleanup_uar_table(struct mthca_dev *dev)
 {
 	mthca_cleanup_db_tab(dev);
 
-	/* XXX check if any UARs are still allocated? */
 	mthca_alloc_cleanup(&dev->uar_table.alloc);
 }

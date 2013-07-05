@@ -978,11 +978,6 @@ static s32 e1000_init_hw_82571(struct e1000_hw *hw)
 	mac->ops.clear_vfta(hw);
 
 	/* Setup the receive address. */
-	/*
-	 * If, however, a locally administered address was assigned to the
-	 * 82571, we must reserve a RAR for it to work around an issue where
-	 * resetting one port will reload the MAC on the other port.
-	 */
 	if (e1000e_get_laa_state_82571(hw))
 		rar_count--;
 	e1000e_init_rx_addrs(hw, rar_count);
@@ -1115,10 +1110,6 @@ static void e1000_initialize_hw_bits_82571(struct e1000_hw *hw)
 		reg |= E1000_PBA_ECC_CORR_EN;
 		ew32(PBA_ECC, reg);
 	}
-	/*
-	 * Workaround for hardware errata.
-	 * Ensure that DMA Dynamic Clock gating is disabled on 82571 and 82572
-	 */
 
         if ((hw->mac.type == e1000_82571) ||
            (hw->mac.type == e1000_82572)) {
@@ -1136,13 +1127,6 @@ static void e1000_initialize_hw_bits_82571(struct e1000_hw *hw)
 		reg |= (1 << 22);
 		ew32(GCR, reg);
 
-		/*
-		 * Workaround for hardware errata.
-		 * apply workaround for hardware errata documented in errata
-		 * docs Fixes issue where some error prone or unreliable PCIe
-		 * completions are occurring, particularly with ASPM enabled.
-		 * Without fix, issue can cause tx timeouts.
-		 */
 		reg = er32(GCR2);
 		reg |= 1;
 		ew32(GCR2, reg);
@@ -1548,7 +1532,6 @@ void e1000e_set_laa_state_82571(struct e1000_hw *hw, bool state)
 
 	hw->dev_spec.e82571.laa_is_present = state;
 
-	/* If workaround is activated... */
 	if (state)
 		/*
 		 * Hold a copy of the LAA in RAR[14] This is done so that
@@ -1881,4 +1864,3 @@ struct e1000_info e1000_82583_info = {
 	.phy_ops		= &e82_phy_ops_bm,
 	.nvm_ops		= &e82571_nvm_ops,
 };
-

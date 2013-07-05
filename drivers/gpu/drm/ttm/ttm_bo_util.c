@@ -471,10 +471,6 @@ int ttm_bo_kmap(struct ttm_buffer_object *bo,
 		return -EINVAL;
 	if (start_page > bo->num_pages)
 		return -EINVAL;
-#if 0
-	if (num_pages > 1 && !DRM_SUSER(DRM_CURPROC))
-		return -EPERM;
-#endif
 	ret = ttm_mem_io_reserve(bo->bdev, &bo->mem);
 	if (ret)
 		return ret;

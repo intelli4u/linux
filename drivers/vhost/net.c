@@ -291,7 +291,7 @@ static void handle_rx_big(struct vhost_net *net)
 	struct msghdr msg = {
 		.msg_name = NULL,
 		.msg_namelen = 0,
-		.msg_control = NULL, /* FIXME: get and handle RX aux data. */
+		.msg_control = NULL,
 		.msg_controllen = 0,
 		.msg_iov = vq->iov,
 		.msg_flags = MSG_DONTWAIT,
@@ -401,7 +401,7 @@ static void handle_rx_mergeable(struct vhost_net *net)
 	struct msghdr msg = {
 		.msg_name = NULL,
 		.msg_namelen = 0,
-		.msg_control = NULL, /* FIXME: get and handle RX aux data. */
+		.msg_control = NULL,
 		.msg_controllen = 0,
 		.msg_iov = vq->iov,
 		.msg_flags = MSG_DONTWAIT,

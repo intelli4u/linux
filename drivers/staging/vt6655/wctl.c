@@ -246,5 +246,3 @@ unsigned int uHeaderSize;
         return(false);
     }
 }
-
-

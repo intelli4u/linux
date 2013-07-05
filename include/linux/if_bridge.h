@@ -42,6 +42,15 @@
 #define BRCTL_SET_PORT_PRIORITY 16
 #define BRCTL_SET_PATH_COST 17
 #define BRCTL_GET_FDB_ENTRIES 18
+#ifdef MULTIPLE_SSID
+#define BRCTL_SET_MSSIDPROFILE 19   /*  add start, Zz Shan@MutiSsidControl 03/13/2009 */
+#define BRCTL_SET_5G_MSSIDPROFILE 20   /*  add pling, MutiSsidControl 10/06/2010 */
+#endif
+#define BRCTL_SET_BCMCTF_ENABLE 21   /*  added, zacker, 03/24/2011 */
+#ifdef INCLUDE_ACCESSCONTROL
+#define BRCTL_SET_ACCESS_CONTROL 22   /*  added, dennis, 03/24/2011 */
+#define BRCTL_SET_ACCESS_CONTROL_MODE 23   /*  added, dennis, 03/24/2011 */
+#endif
 
 #define BR_STATE_DISABLED 0
 #define BR_STATE_LISTENING 1

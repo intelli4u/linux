@@ -166,7 +166,6 @@ static int p54spi_request_firmware(struct ieee80211_hw *dev)
 	struct p54s_priv *priv = dev->priv;
 	int ret;
 
-	/* FIXME: should driver use it's own struct device? */
 	ret = request_firmware(&priv->firmware, "3826.arm", &priv->spi->dev);
 
 	if (ret < 0) {
@@ -343,10 +342,6 @@ static int p54spi_rx(struct p54s_priv *priv)
 	if (p54spi_wakeup(priv) < 0)
 		return -EBUSY;
 
-	/* Read data size and first data word in one SPI transaction
-	 * This is workaround for firmware/DMA bug,
-	 * when first data word gets lost under high load.
-	 */
 	p54spi_spi_read(priv, SPI_ADRS_DMA_DATA, rx_head, sizeof(rx_head));
 	len = rx_head[0];
 
@@ -576,7 +571,6 @@ static void p54spi_op_stop(struct ieee80211_hw *dev)
 	unsigned long flags;
 
 	if (mutex_lock_interruptible(&priv->mutex)) {
-		/* FIXME: how to handle this error? */
 		return;
 	}
 

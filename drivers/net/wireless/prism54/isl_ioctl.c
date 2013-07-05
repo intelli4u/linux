@@ -2786,13 +2786,6 @@ prism54_hostapd(struct net_device *ndev, struct iw_point *p)
 	case PRISM54_DROP_UNENCRYPTED:
 	       printk(KERN_DEBUG "%s: Caught WPA drop unencrypted request\n",
 			       ndev->name);
-#if 0
-	       uwrq = 0x01;
-	       mgt_set(priv, DOT11_OID_EXUNENCRYPTED, &uwrq);
-	       down_write(&priv->mib_sem);
-	       mgt_commit(priv);
-	       up_write(&priv->mib_sem);
-#endif
 	       /* Not necessary, as set_wpa does it, should we just do it here though? */
 	       ret = 0;
 	       break;

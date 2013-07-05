@@ -162,8 +162,7 @@ typedef struct elf32_fdesc {
 
 /* Format for the Elf64 Function descriptor */
 typedef struct elf64_fdesc {
-	__u64	dummy[2]; /* FIXME: nothing uses these, why waste
-			   * the space */
+	__u64	dummy[2];
 	__u64	addr;
 	__u64	gp;
 } Elf64_Fdesc;

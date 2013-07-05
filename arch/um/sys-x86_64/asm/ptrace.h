@@ -44,7 +44,6 @@
 
 #define PT_REGS_EFLAGS(r) UPT_EFLAGS(&(r)->regs)
 
-/* XXX */
 #define user_mode(r) UPT_IS_USER(&(r)->regs)
 #define PT_REGS_ORIG_SYSCALL(r) PT_REGS_RAX(r)
 #define PT_REGS_SYSCALL_RET(r) PT_REGS_RAX(r)

@@ -669,7 +669,7 @@ static c_char *de4x5_signatures[] = DE4X5_SIGNATURE;
 /*#define DESC_ALIGN    u32 dummy[4];  / * Must agree with DESC_SKIP_LEN */
 #define DESC_ALIGN
 
-#ifndef DEC_ONLY                        /* See README.de4x5 for using this */
+#ifndef DEC_ONLY                            /* See README.de4x5 for using this */
 static int dec_only;
 #else
 static int dec_only = 1;
@@ -1170,7 +1170,8 @@ de4x5_hw_init(struct net_device *dev, u_long iobase, struct device *gendev)
 	sprintf(lp->adapter_name,"%s (%s)", name, dev_name(gendev));
 
 	lp->dma_size = (NUM_RX_DESC + NUM_TX_DESC) * sizeof(struct de4x5_desc);
-#if defined(__alpha__) || defined(__powerpc__) || defined(CONFIG_SPARC) || defined(DE4X5_DO_MEMCPY)
+#if defined(__alpha__) || defined(__powerpc__) || defined(CONFIG_SPARC) || \
+	defined(DE4X5_DO_MEMCPY)
 	lp->dma_size += RX_BUFF_SZ * NUM_RX_DESC + DE4X5_ALIGN;
 #endif
 	lp->rx_ring = dma_alloc_coherent(gendev, lp->dma_size,
@@ -1185,7 +1186,8 @@ de4x5_hw_init(struct net_device *dev, u_long iobase, struct device *gendev)
 	** Set up the RX descriptor ring (Intels)
 	** Allocate contiguous receive buffers, long word aligned (Alphas)
 	*/
-#if !defined(__alpha__) && !defined(__powerpc__) && !defined(CONFIG_SPARC) && !defined(DE4X5_DO_MEMCPY)
+#if !defined(__alpha__) && !defined(__powerpc__) && !defined(CONFIG_SPARC) && \
+	!defined(DE4X5_DO_MEMCPY)
 	for (i=0; i<NUM_RX_DESC; i++) {
 	    lp->rx_ring[i].status = 0;
 	    lp->rx_ring[i].des1 = cpu_to_le32(RX_BUFF_SZ);
@@ -3603,7 +3605,8 @@ de4x5_alloc_rx_buff(struct net_device *dev, int index, int len)
     struct de4x5_private *lp = netdev_priv(dev);
     struct sk_buff *p;
 
-#if !defined(__alpha__) && !defined(__powerpc__) && !defined(CONFIG_SPARC) && !defined(DE4X5_DO_MEMCPY)
+#if !defined(__alpha__) && !defined(__powerpc__) && !defined(CONFIG_SPARC) && \
+	!defined(DE4X5_DO_MEMCPY)
     struct sk_buff *ret;
     u_long i=0, tmp;
 

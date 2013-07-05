@@ -64,4 +64,3 @@ int radeon_acpi_init(struct radeon_device *rdev)
 
 	return 0;
 }
-

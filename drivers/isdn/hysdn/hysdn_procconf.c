@@ -1,4 +1,4 @@
-/* $Id: hysdn_procconf.c,v 1.8.6.4 2001/09/23 22:24:54 kai Exp $
+/* $Id: hysdn_procconf.c,v 1.8.6.4 2001/09/23 22:24:54 Exp $
  *
  * Linux driver for HYSDN cards, /proc/net filesystem dir and conf functions.
  *

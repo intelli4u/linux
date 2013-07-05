@@ -73,4 +73,3 @@ extern struct pmu perf_ops_bp;
 
 #endif	/* __KERNEL__ */
 #endif	/* _I386_HW_BREAKPOINT_H */
-

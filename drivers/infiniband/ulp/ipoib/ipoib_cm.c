@@ -253,7 +253,7 @@ static struct ib_qp *ipoib_cm_create_rx_qp(struct net_device *dev,
 		.recv_cq = priv->recv_cq,
 		.srq = priv->cm.srq,
 		.cap.max_send_wr = 1, /* For drain WR */
-		.cap.max_send_sge = 1, /* FIXME: 0 Seems not to work */
+		.cap.max_send_sge = 1,
 		.sq_sig_type = IB_SIGNAL_ALL_WR,
 		.qp_type = IB_QPT_RC,
 		.qp_context = p,
@@ -299,14 +299,6 @@ static int ipoib_cm_modify_rx_qp(struct net_device *dev,
 		return ret;
 	}
 
-	/*
-	 * Current Mellanox HCA firmware won't generate completions
-	 * with error for drain WRs unless the QP has been moved to
-	 * RTS first. This work-around leaves a window where a QP has
-	 * moved to error asynchronously, but this will eventually get
-	 * fixed in firmware, so let's not error out if modify QP
-	 * fails.
-	 */
 	qp_attr.qp_state = IB_QPS_RTS;
 	ret = ib_cm_init_qp_attr(cm_id, &qp_attr, &qp_attr_mask);
 	if (ret) {
@@ -667,7 +659,6 @@ copied:
 	dev->stats.rx_bytes += skb->len;
 
 	skb->dev = dev;
-	/* XXX get correct PACKET_ type here */
 	skb->pkt_type = PACKET_HOST;
 	netif_receive_skb(skb);
 
@@ -783,7 +774,6 @@ void ipoib_cm_handle_tx_wc(struct net_device *dev, struct ib_wc *wc)
 
 	ib_dma_unmap_single(priv->ca, tx_req->mapping, tx_req->skb->len, DMA_TO_DEVICE);
 
-	/* FIXME: is this right? Shouldn't we only increment on success? */
 	++dev->stats.tx_packets;
 	dev->stats.tx_bytes += tx_req->skb->len;
 
@@ -969,7 +959,7 @@ static int ipoib_cm_rep_handler(struct ib_cm_id *cm_id, struct ib_cm_event *even
 		return ret;
 	}
 
-	qp_attr.rq_psn = 0 /* FIXME */;
+	qp_attr.rq_psn = 0;
 	ret = ib_modify_qp(p->qp, &qp_attr, qp_attr_mask);
 	if (ret) {
 		ipoib_warn(priv, "failed to modify QP to RTR: %d\n", ret);
@@ -1050,7 +1040,7 @@ static int ipoib_cm_send_req(struct net_device *dev,
 	req.private_data_len		= sizeof data;
 	req.flow_control		= 0;
 
-	req.starting_psn		= 0; /* FIXME */
+	req.starting_psn		= 0;
 
 	/*
 	 * Pick some arbitrary defaults here; we could make these

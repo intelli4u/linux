@@ -102,7 +102,7 @@ static int gameport_measure_speed(struct gameport *gameport)
 	gameport_close(gameport);
 	return 59659 / (tx < 1 ? 1 : tx);
 
-#elif defined (__x86_64__)
+#elif defined(__x86_64__)
 
 	unsigned int i, t;
 	unsigned long tx, t1, t2, flags;

@@ -623,11 +623,6 @@ enum dlm_status dlmlock(struct dlm_ctxt *dlm, int mode,
 		}
 		dlm_lockres_get(res);
 
-		/* XXX: for ocfs2 purposes, the ast/bast/astdata/lksb are
-	 	 * static after the original lock call.  convert requests will
-		 * ensure that everything is the same, or return DLM_BADARGS.
-	 	 * this means that DLM_DENIED_NOASTS will never be returned.
-	 	 */
 		if (lock->lksb != lksb || lock->ast != ast ||
 		    lock->bast != bast || lock->astdata != data) {
 			status = DLM_BADARGS;

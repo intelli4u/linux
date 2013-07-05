@@ -351,7 +351,6 @@ void fw_send_request(struct fw_card *card, struct fw_transaction *t, int tcode,
 	t->card = card;
 	setup_timer(&t->split_timeout_timer,
 		    split_transaction_timeout_callback, (unsigned long)t);
-	/* FIXME: start this timer later, relative to t->timestamp */
 	mod_timer(&t->split_timeout_timer,
 		  jiffies + card->split_timeout_jiffies);
 	t->callback = callback;
@@ -503,17 +502,6 @@ const struct fw_address_region fw_high_memory_region =
 	{ .start = 0x000100000000ULL, .end = 0xffffe0000000ULL,  };
 EXPORT_SYMBOL(fw_high_memory_region);
 
-#if 0
-const struct fw_address_region fw_low_memory_region =
-	{ .start = 0x000000000000ULL, .end = 0x000100000000ULL,  };
-const struct fw_address_region fw_private_region =
-	{ .start = 0xffffe0000000ULL, .end = 0xfffff0000000ULL,  };
-const struct fw_address_region fw_csr_region =
-	{ .start = CSR_REGISTER_BASE,
-	  .end   = CSR_REGISTER_BASE | CSR_CONFIG_ROM_END,  };
-const struct fw_address_region fw_unit_space_region =
-	{ .start = 0xfffff0000900ULL, .end = 0x1000000000000ULL, };
-#endif  /*  0  */
 
 static bool is_in_fcp_region(u64 offset, size_t length)
 {
@@ -818,13 +806,6 @@ static void handle_exclusive_region_request(struct fw_card *card,
 						   offset, request->length);
 	spin_unlock_irqrestore(&address_handler_lock, flags);
 
-	/*
-	 * FIXME: lookup the fw_node corresponding to the sender of
-	 * this request and pass that to the address handler instead
-	 * of the node ID.  We may also want to move the address
-	 * allocations to fw_node so we only do this callback if the
-	 * upper layers registered it for this node.
-	 */
 
 	if (handler == NULL)
 		fw_send_response(card, request, RCODE_ADDRESS_ERROR);
@@ -894,7 +875,6 @@ void fw_core_handle_request(struct fw_card *card, struct fw_packet *p)
 
 	request = allocate_request(card, p);
 	if (request == NULL) {
-		/* FIXME: send statically allocated busy packet. */
 		return;
 	}
 
@@ -943,10 +923,6 @@ void fw_core_handle_response(struct fw_card *card, struct fw_packet *p)
 		return;
 	}
 
-	/*
-	 * FIXME: sanity check packet, is length correct, does tcodes
-	 * and addresses match.
-	 */
 
 	switch (tcode) {
 	case TCODE_READ_QUADLET_RESPONSE:
@@ -1128,13 +1104,6 @@ static void handle_registers(struct fw_card *card, struct fw_request *request,
 	case CSR_BANDWIDTH_AVAILABLE:
 	case CSR_CHANNELS_AVAILABLE_HI:
 	case CSR_CHANNELS_AVAILABLE_LO:
-		/*
-		 * FIXME: these are handled by the OHCI hardware and
-		 * the stack never sees these request. If we add
-		 * support for a new type of controller that doesn't
-		 * handle this in hardware we need to deal with these
-		 * transactions.
-		 */
 		BUG();
 		break;
 

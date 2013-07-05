@@ -121,7 +121,7 @@ struct i1480 {
 	int (*cmd)(struct i1480 *, const char *cmd_name, size_t cmd_size);
 	const char *pre_fw_name;
 	const char *mac_fw_name;
-	const char *mac_fw_name_deprecate;	/* FIXME: Will go away */
+	const char *mac_fw_name_deprecate;
 	const char *phy_fw_name;
 	u8 hw_rev;
 

@@ -603,15 +603,6 @@ XX1( CFG_SCAN,					SCAN_RS_STRCT, scan_result[32]		 ) /*Scan results											*
 //#define HCF_ACT_WAKEUP		0x1D					// DDS Wakeup request
 #endif // HCF_DDS
 
-/*	HCF_ACT_MAX							// xxxx: start value for UIL-range, NOT to be passed to HCF
- *										Too bad, there was originally no spare room created to use
- *										HCF_ACT_MAX as an equivalent of HCF_ERR_MAX. Since creating
- *										this room in retrospect would create a backward incompatibility
- *										we will just have to live with the haphazard sequence of
- *										UIL- and HCF specific codes. Theoretically this could be
- *										corrected when and if there will ever be an overall
- *										incompatibility introduced for another reason
- */
 
 /*============================================================= HERMES RECORDS	============================*/
 #define CFG_RID_FW_MIN							0xFA00	//lowest value representing a Hermes-II based RID
@@ -1040,7 +1031,7 @@ XX1( CFG_SCAN,					SCAN_RS_STRCT, scan_result[32]		 ) /*Scan results											*
 //Quick&Dirty to get download for DOS ODI Hermes-II running typedef LTV_STRCT FAR *	LTVP;
 typedef LTV_STRCT FAR *	LTVP;   // i.s.o #define LTVP LTV_STRCT FAR *
 
-#if defined WVLAN_42 || defined WVLAN_43 //;?keepup with legacy a little while longer (4aug2003)
+#if defined WVLAN_42 || defined WVLAN_43     //;?keepup with legacy a little while longer (4aug2003)
 typedef struct DUI_STRCT {			/* "legacy", still used by WVLAN42/43, NDIS drivers use WLAPI			*/
 	void  FAR	*ifbp;				/* Pointer to IFB
 									 *	returned from MSF to USF by uil_connect
@@ -1153,4 +1144,3 @@ typedef struct CFG_DRV_INFO_STRCT {		//CFG_DRV_INFO (0x0825) driver information
 #endif // HCF_LEGACY
 
 #endif // MDD_H
-

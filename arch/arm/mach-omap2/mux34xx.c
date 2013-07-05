@@ -710,17 +710,8 @@ struct omap_mux __initdata omap3_cbc_subset[] = {
 #define omap3_cbc_subset	NULL
 #endif
 
-/*
- * Balls for CBC package
- * 515-pin s-PBGA Package, 0.65mm Ball Pitch (Top), 0.50mm Ball Pitch (Bottom)
- *
- * FIXME: What's up with the outdated TI documentation? See:
- *
- * http://wiki.davincidsp.com/index.php/Datasheet_Errata_for_OMAP35x_CBC_Package
- * http://community.ti.com/forums/t/10982.aspx
- */
-#if defined(CONFIG_OMAP_MUX) && defined(CONFIG_DEBUG_FS)	\
-		&& defined(CONFIG_OMAP_PACKAGE_CBC)
+#if defined(CONFIG_OMAP_MUX) && defined(CONFIG_DEBUG_FS) && \
+	defined(CONFIG_OMAP_PACKAGE_CBC)
 struct omap_ball __initdata omap3_cbc_ball[] = {
 	_OMAP3_BALLENTRY(CAM_D0, "ae16", NULL),
 	_OMAP3_BALLENTRY(CAM_D1, "ae15", NULL),
@@ -1075,8 +1066,8 @@ struct omap_mux __initdata omap3_cus_subset[] = {
  * Balls for CUS package
  * 423-pin s-PBGA Package, 0.65mm Ball Pitch (Bottom)
  */
-#if defined(CONFIG_OMAP_MUX) && defined(CONFIG_DEBUG_FS)		\
-		&& defined(CONFIG_OMAP_PACKAGE_CUS)
+#if defined(CONFIG_OMAP_MUX) && defined(CONFIG_DEBUG_FS) && \
+	defined(CONFIG_OMAP_PACKAGE_CUS)
 struct omap_ball __initdata omap3_cus_ball[] = {
 	_OMAP3_BALLENTRY(CAM_D0, "ab18", NULL),
 	_OMAP3_BALLENTRY(CAM_D1, "ac18", NULL),
@@ -1388,8 +1379,8 @@ struct omap_mux __initdata omap3_cbb_subset[] = {
  * Balls for CBB package
  * 515-pin s-PBGA Package, 0.50mm Ball Pitch (Top), 0.40mm Ball Pitch (Bottom)
  */
-#if defined(CONFIG_OMAP_MUX) && defined(CONFIG_DEBUG_FS)		\
-		&& defined(CONFIG_OMAP_PACKAGE_CBB)
+#if defined(CONFIG_OMAP_MUX) && defined(CONFIG_DEBUG_FS) && \
+	defined(CONFIG_OMAP_PACKAGE_CBB)
 struct omap_ball __initdata omap3_cbb_ball[] = {
 	_OMAP3_BALLENTRY(CAM_D0, "ag17", NULL),
 	_OMAP3_BALLENTRY(CAM_D1, "ah17", NULL),
@@ -1816,8 +1807,8 @@ struct omap_mux __initdata omap36xx_cbp_subset[] = {
  * Balls for 36XX CBP package
  * 515-pin s-PBGA Package, 0.50mm Ball Pitch (Top), 0.40mm Ball Pitch (Bottom)
  */
-#if defined(CONFIG_OMAP_MUX) && defined(CONFIG_DEBUG_FS)		\
-		&& defined (CONFIG_OMAP_PACKAGE_CBP)
+#if defined(CONFIG_OMAP_MUX) && defined(CONFIG_DEBUG_FS) && \
+	defined(CONFIG_OMAP_PACKAGE_CBP)
 struct omap_ball __initdata omap36xx_cbp_ball[] = {
 	_OMAP3_BALLENTRY(CAM_D0, "ag17", NULL),
 	_OMAP3_BALLENTRY(CAM_D1, "ah17", NULL),

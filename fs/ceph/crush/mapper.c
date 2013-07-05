@@ -605,5 +605,3 @@ int crush_do_rule(struct crush_map *map,
 out:
 	return rc;
 }
-
-

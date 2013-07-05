@@ -853,7 +853,6 @@ static void acm_tty_set_termios(struct tty_struct *tty,
 				(termios->c_cflag & PARODD ? 1 : 2) +
 				(termios->c_cflag & CMSPAR ? 2 : 0) : 0;
 	newline.bDataBits = acm_tty_size[(termios->c_cflag & CSIZE) >> 4];
-	/* FIXME: Needs to clear unsupported bits in the termios */
 	acm->clocal = ((termios->c_cflag & CLOCAL) != 0);
 
 	if (!newline.dwDTERate) {
@@ -1082,7 +1081,6 @@ look_for_collapsed_interface:
 
 skip_normal_probe:
 
-	/*workaround for switched interfaces */
 	if (data_interface->cur_altsetting->desc.bInterfaceClass
 						!= CDC_DATA_INTERFACE_TYPE) {
 		if (control_interface->cur_altsetting->desc.bInterfaceClass
@@ -1117,7 +1115,6 @@ skip_normal_probe:
 	epwrite = &data_interface->cur_altsetting->endpoint[1].desc;
 
 
-	/* workaround for switched endpoints */
 	if (!usb_endpoint_dir_in(epread)) {
 		/* descriptors are swapped */
 		struct usb_endpoint_descriptor *t;

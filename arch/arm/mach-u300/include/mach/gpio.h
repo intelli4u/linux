@@ -185,7 +185,7 @@
  * S365 schematic.
  */
 #if defined(CONFIG_MACH_U300_BS330) || defined(CONFIG_MACH_U300_BS365) || \
-    defined(CONFIG_MACH_U300_BS335)
+	defined(CONFIG_MACH_U300_BS335)
 #define U300_GPIO_PIN_UART_RX		0
 #define U300_GPIO_PIN_UART_TX		1
 #define U300_GPIO_PIN_UART_CTS		2
@@ -284,10 +284,6 @@ static inline unsigned gpio_to_irq(unsigned gpio)
 
 static inline unsigned irq_to_gpio(unsigned irq)
 {
-	/*
-	 * FIXME: This is no 1-1 mapping at all, it points to the
-	 * whole block of 8 pins.
-	 */
 	return (irq - IRQ_U300_GPIO_PORT0) << 3;
 }
 

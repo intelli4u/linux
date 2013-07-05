@@ -157,7 +157,7 @@ struct gendisk {
 	void *private_data;
 
 	int flags;
-	struct device *driverfs_dev;  // FIXME: remove
+	struct device *driverfs_dev;
 	struct kobject *slave_dir;
 
 	struct timer_rand_state *random;

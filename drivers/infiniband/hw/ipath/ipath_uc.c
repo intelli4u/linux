@@ -393,7 +393,6 @@ void ipath_uc_rcv(struct ipath_ibdev *dev, struct ipath_ib_header *hdr,
 		/* Get the number of bytes the message was padded by. */
 		pad = (be32_to_cpu(ohdr->bth[0]) >> 20) & 3;
 		/* Check for invalid length. */
-		/* XXX LAST len should be >= 1 */
 		if (unlikely(tlen < (hdrsize + pad + 4))) {
 			qp->r_flags |= IPATH_R_REUSE_SGE;
 			dev->n_pkt_drops++;
@@ -495,7 +494,6 @@ void ipath_uc_rcv(struct ipath_ibdev *dev, struct ipath_ib_header *hdr,
 		/* Get the number of bytes the message was padded by. */
 		pad = (be32_to_cpu(ohdr->bth[0]) >> 20) & 3;
 		/* Check for invalid length. */
-		/* XXX LAST len should be >= 1 */
 		if (unlikely(tlen < (hdrsize + pad + 4))) {
 			dev->n_pkt_drops++;
 			goto done;
@@ -521,7 +519,6 @@ void ipath_uc_rcv(struct ipath_ibdev *dev, struct ipath_ib_header *hdr,
 		/* Get the number of bytes the message was padded by. */
 		pad = (be32_to_cpu(ohdr->bth[0]) >> 20) & 3;
 		/* Check for invalid length. */
-		/* XXX LAST len should be >= 1 */
 		if (unlikely(tlen < (hdrsize + pad + 4))) {
 			dev->n_pkt_drops++;
 			goto done;

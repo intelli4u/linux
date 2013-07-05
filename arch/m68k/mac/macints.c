@@ -417,24 +417,7 @@ irqreturn_t mac_nmi_handler(int irq, void *dev_id)
 		udelay(1000);
 
 	if (console_loglevel >= 8) {
-#if 0
-		struct pt_regs *fp = get_irq_regs();
-		show_state();
-		printk("PC: %08lx\nSR: %04x  SP: %p\n", fp->pc, fp->sr, fp);
-		printk("d0: %08lx    d1: %08lx    d2: %08lx    d3: %08lx\n",
-		       fp->d0, fp->d1, fp->d2, fp->d3);
-		printk("d4: %08lx    d5: %08lx    a0: %08lx    a1: %08lx\n",
-		       fp->d4, fp->d5, fp->a0, fp->a1);
-
-		if (STACK_MAGIC != *(unsigned long *)current->kernel_stack_page)
-			printk("Corrupted stack page\n");
-		printk("Process %s (pid: %d, stackpage=%08lx)\n",
-			current->comm, current->pid, current->kernel_stack_page);
-		if (intr_count == 1)
-			dump_stack((struct frame *)fp);
-#else
 		/* printk("NMI "); */
-#endif
 	}
 	in_nmi--;
 	return IRQ_HANDLED;

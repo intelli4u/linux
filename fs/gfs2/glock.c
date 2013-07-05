@@ -375,7 +375,6 @@ restart:
 			if (gh->gh_list.prev == &gl->gl_holders &&
 			    glops->go_lock) {
 				spin_unlock(&gl->gl_spin);
-				/* FIXME: eliminate this eventually */
 				ret = glops->go_lock(gh);
 				spin_lock(&gl->gl_spin);
 				if (ret) {

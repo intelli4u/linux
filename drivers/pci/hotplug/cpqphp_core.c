@@ -659,9 +659,6 @@ static int ctrl_slot_setup(struct controller *ctrl,
 		slot->task_event.expires = jiffies + 5 * HZ;
 		slot->task_event.function = cpqhp_pushbutton_thread;
 
-		/*FIXME: these capabilities aren't used but if they are
-		 *	 they need to be correctly implemented
-		 */
 		slot->capabilities |= PCISLOT_REPLACE_SUPPORTED;
 		slot->capabilities |= PCISLOT_INTERLOCK_SUPPORTED;
 
@@ -760,10 +757,6 @@ static int one_time_init(void)
 	for (loop = 0; loop < 256; loop++)
 		cpqhp_slot_list[loop] = NULL;
 
-	/* FIXME: We also need to hook the NMI handler eventually.
-	 * this also needs to be worked with Christoph
-	 * register_NMI_handler();
-	 */
 	/* Map rom address */
 	cpqhp_rom_start = ioremap(ROM_PHY_ADDR, ROM_PHY_LEN);
 	if (!cpqhp_rom_start) {

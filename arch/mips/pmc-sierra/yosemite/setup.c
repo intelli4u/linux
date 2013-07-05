@@ -212,12 +212,4 @@ void __init plat_mem_setup(void)
 	/* Add memory regions */
 	add_memory_region(0x00000000, 0x10000000, BOOT_MEM_RAM);
 
-#if 0 /* XXX Crash ...  */
-	OCD_WRITE(RM9000x2_OCD_HTSC,
-	          OCD_READ(RM9000x2_OCD_HTSC) | HYPERTRANSPORT_ENABLE);
-
-	/* Set the BAR. Shifted mode */
-	OCD_WRITE(RM9000x2_OCD_HTBAR0, HYPERTRANSPORT_BAR0_ADDR);
-	OCD_WRITE(RM9000x2_OCD_HTMASK0, HYPERTRANSPORT_SIZE0);
-#endif
 }

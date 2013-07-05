@@ -16,7 +16,6 @@
 
 #include "ieee80211.h"
 
-/* FIXME: add A freqs */
 
 const long ieee80211_wlan_frequencies[] = {
 	2412, 2417, 2422, 2427,
@@ -222,7 +221,6 @@ int ieee80211_wx_set_rate(struct ieee80211_device *ieee,
 	} else {
 	ieee->rate = target_rate/100000;
 	}
-	//FIXME: we might want to limit rate also in management protocols.
 	return 0;
 }
 

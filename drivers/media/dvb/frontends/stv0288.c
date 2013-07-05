@@ -615,4 +615,3 @@ MODULE_PARM_DESC(debug, "Turn on/off frontend debugging (default:off).");
 MODULE_DESCRIPTION("ST STV0288 DVB Demodulator driver");
 MODULE_AUTHOR("Georg Acher, Bob Liu, Igor liplianin");
 MODULE_LICENSE("GPL");
-

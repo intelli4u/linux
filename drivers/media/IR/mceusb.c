@@ -300,12 +300,6 @@ static char GET_RX_TIMEOUT[]	= {0x9f, 0x0d};
 static char GET_TX_BITMASK[]	= {0x9f, 0x13};
 static char GET_RX_SENSOR[]	= {0x9f, 0x15};
 /* sub in desired values in lower byte or bytes for full command */
-/* FIXME: make use of these for transmit.
-static char SET_CARRIER_FREQ[]	= {0x9f, 0x06, 0x00, 0x00};
-static char SET_TX_BITMASK[]	= {0x9f, 0x08, 0x00};
-static char SET_RX_TIMEOUT[]	= {0x9f, 0x0c, 0x00, 0x00};
-static char SET_RX_SENSOR[]	= {0x9f, 0x14, 0x00};
-*/
 
 static void mceusb_dev_printdata(struct mceusb_dev *ir, char *buf,
 				 int len, bool out)

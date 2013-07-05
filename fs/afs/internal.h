@@ -801,7 +801,6 @@ do {							\
 /*
  * debug assertion checking
  */
-#if 1 // defined(__KDEBUGALL)
 
 #define ASSERT(X)						\
 do {								\
@@ -861,27 +860,3 @@ do {									\
 		BUG();							\
 	}								\
 } while(0)
-
-#else
-
-#define ASSERT(X)				\
-do {						\
-} while(0)
-
-#define ASSERTCMP(X, OP, Y)			\
-do {						\
-} while(0)
-
-#define ASSERTRANGE(L, OP1, N, OP2, H)		\
-do {						\
-} while(0)
-
-#define ASSERTIF(C, X)				\
-do {						\
-} while(0)
-
-#define ASSERTIFCMP(C, X, OP, Y)		\
-do {						\
-} while(0)
-
-#endif /* __KDEBUGALL */

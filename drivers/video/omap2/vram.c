@@ -99,13 +99,6 @@ static struct vram_region *omap_vram_create_region(unsigned long paddr,
 	return rm;
 }
 
-#if 0
-static void omap_vram_free_region(struct vram_region *vr)
-{
-	list_del(&vr->list);
-	kfree(vr);
-}
-#endif
 
 static struct vram_alloc *omap_vram_create_allocation(struct vram_region *vr,
 		unsigned long paddr, unsigned pages)

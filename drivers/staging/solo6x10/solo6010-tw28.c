@@ -22,8 +22,6 @@
 #include "solo6010.h"
 #include "solo6010-tw28.h"
 
-/* XXX: Some of these values are masked into an 8-bit regs, and shifted
- * around for other 8-bit regs. What are the magic bits in these values? */
 #define DEFAULT_HDELAY_NTSC		(32 - 4)
 #define DEFAULT_HACTIVE_NTSC		(720 + 16)
 #define DEFAULT_VDELAY_NTSC		(7 - 2)
@@ -429,7 +427,6 @@ static int tw2815_setup(struct solo6010_dev *solo_dev, u8 dev_addr)
 	/* Playback of right channel */
 	tbl_tw2815_sfr[0x6c - 0x40] |= 1 << 5;
 
-	/* Reserved value (XXX ??) */
 	tbl_tw2815_sfr[0x5c - 0x40] |= 1 << 5;
 
 	/* Analog output gain and mix ratio playback on full */
@@ -510,7 +507,6 @@ static void saa7128_setup(struct solo6010_dev *solo_dev)
 			(((LAST_ACTIVE_LINE >> 8) & 1) << 6) |
 			(((FIRST_ACTIVE_LINE >> 8) & 1) << 4));
 
-	/* PAL: XXX: We could do a second set of regs to avoid this */
 	if (solo_dev->video_type != SOLO_VO_FMT_TYPE_NTSC) {
 		regs[0x28] = 0xE1;
 
@@ -617,24 +613,6 @@ int tw28_get_video_status(struct solo6010_dev *solo_dev, u8 ch)
 	return val & (1 << ch) ? 1 : 0;
 }
 
-#if 0
-/* Status of audio from up to 4 techwell chips are combined into 1 variable.
- * See techwell datasheet for details. */
-u16 tw28_get_audio_status(struct solo6010_dev *solo_dev)
-{
-	u8 val;
-	u16 status = 0;
-	int i;
-
-	for (i = 0; i < solo_dev->tw28_cnt; i++) {
-		val = (tw_readbyte(solo_dev, i, TW286X_AV_STAT_ADDR,
-				   TW_AV_STAT_ADDR) & 0xf0) >> 4;
-		status |= val << (i * 4);
-	}
-
-	return status;
-}
-#endif
 
 int tw28_set_ctrl_val(struct solo6010_dev *solo_dev, u32 ctrl, u8 ch,
 		      s32 val)
@@ -763,28 +741,6 @@ int tw28_get_ctrl_val(struct solo6010_dev *solo_dev, u32 ctrl, u8 ch,
 	return 0;
 }
 
-#if 0
-/*
- * For audio output volume, the output channel is only 1. In this case we
- * don't need to offset TW_CHIP_OFFSET_ADDR. The TW_CHIP_OFFSET_ADDR used
- * is the base address of the techwell chip.
- */
-void tw2815_Set_AudioOutVol(struct solo6010_dev *solo_dev, unsigned int u_val)
-{
-	unsigned int val;
-	unsigned int chip_num;
-
-	chip_num = (solo_dev->nr_chans - 1) / 4;
-
-	val = tw_readbyte(solo_dev, chip_num, TW286x_AUDIO_OUTPUT_VOL_ADDR,
-			  TW_AUDIO_OUTPUT_VOL_ADDR);
-
-	u_val = (val & 0x0f) | (u_val << 4);
-
-	tw_writebyte(solo_dev, chip_num, TW286x_AUDIO_OUTPUT_VOL_ADDR,
-		     TW_AUDIO_OUTPUT_VOL_ADDR, u_val);
-}
-#endif
 
 u8 tw28_get_audio_gain(struct solo6010_dev *solo_dev, u8 ch)
 {

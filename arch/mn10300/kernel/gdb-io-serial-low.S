@@ -33,9 +33,7 @@
 gdbstub_io_rx_handler:
 	movm	[d2,d3,a2,a3],(sp)
 
-#if 1
 	movbu	(GDBPORT_SERIAL_IIR),d2
-#endif
 
 	mov	(gdbstub_rx_inp),a3
 gdbstub_io_rx_more:

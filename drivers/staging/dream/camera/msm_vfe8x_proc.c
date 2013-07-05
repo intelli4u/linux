@@ -835,10 +835,6 @@ static void vfe_send_bus_overflow_msg(void)
 		return;
 
 	msg->_d = VFE_MSG_ID_BUS_OVERFLOW;
-#if 0
-	memcpy(&(msg->_u.msgBusOverflow),
-		&ctrl->vfePmData, sizeof(ctrl->vfePmData));
-#endif
 
 	vfe_proc_ops(VFE_MSG_ID_BUS_OVERFLOW,
 		msg, sizeof(struct vfe_message));
@@ -846,20 +842,6 @@ static void vfe_send_bus_overflow_msg(void)
 
 static void vfe_send_camif_error_msg(void)
 {
-#if 0
-	struct vfe_message *msg;
-	msg =
-		kzalloc(sizeof(struct vfe_message), GFP_ATOMIC);
-	if (!msg)
-		return;
-
-	msg->_d = VFE_MSG_ID_CAMIF_ERROR;
-	memcpy(&(msg->_u.msgCamifError),
-		&ctrl->vfeCamifStatusLocal, sizeof(ctrl->vfeCamifStatusLocal));
-
-	vfe_proc_ops(VFE_MSG_ID_CAMIF_ERROR,
-		msg, sizeof(struct vfe_message));
-#endif
 }
 
 static void vfe_process_error_irq(
@@ -1212,16 +1194,6 @@ static inline void vfe_read_irq_status(struct vfe_irq_thread_msg *out)
 	temp = (uint32_t *)(ctrl->vfebase + VFE_BUS_ENC_Y_WR_PM_STATS_0);
 */
 
-#if 0
-	out->pmInfo.encPathPmInfo.yWrPmStats0      = readl(temp++);
-	out->pmInfo.encPathPmInfo.yWrPmStats1      = readl(temp++);
-	out->pmInfo.encPathPmInfo.cbcrWrPmStats0   = readl(temp++);
-	out->pmInfo.encPathPmInfo.cbcrWrPmStats1   = readl(temp++);
-	out->pmInfo.viewPathPmInfo.yWrPmStats0     = readl(temp++);
-	out->pmInfo.viewPathPmInfo.yWrPmStats1     = readl(temp++);
-	out->pmInfo.viewPathPmInfo.cbcrWrPmStats0  = readl(temp++);
-	out->pmInfo.viewPathPmInfo.cbcrWrPmStats1  = readl(temp);
-#endif /* if 0 Jeff */
 }
 
 static struct vfe_interrupt_status
@@ -1557,16 +1529,6 @@ static void vfe_send_output_msg(boolean whichOutputPath,
 	msgPayload.cbcrBuffer = cbcrPathAddr;
 
 	/* asf info is common for both output1 and output2 */
-#if 0
-	msgPayload.asfInfo.asfHbiCount = ctrl->vfeAsfFrameInfo.asfHbiCount;
-	msgPayload.asfInfo.asfMaxEdge = ctrl->vfeAsfFrameInfo.asfMaxEdge;
-
-	/* demosaic info is common for both output1 and output2 */
-	msgPayload.bpcInfo.greenDefectPixelCount =
-		ctrl->vfeBpcFrameInfo.greenDefectPixelCount;
-	msgPayload.bpcInfo.redBlueDefectPixelCount =
-		ctrl->vfeBpcFrameInfo.redBlueDefectPixelCount;
-#endif /* if 0 */
 
 	/* frame ID is common for both paths. */
 	msgPayload.frameCounter = ctrl->vfeFrameId;
@@ -1829,13 +1791,6 @@ static void vfe_do_tasklet(unsigned long data)
 	}
 	spin_unlock_irqrestore(&ctrl->state_lock, flags);
 
-#if 0
-	if (qcmd->vfeInterruptStatus.camifEpoch1Irq)
-		vfe_send_msg_no_payload(VFE_MSG_ID_EPOCH1);
-
-	if (qcmd->vfeInterruptStatus.camifEpoch2Irq)
-		vfe_send_msg_no_payload(VFE_MSG_ID_EPOCH2);
-#endif /* Jeff */
 
 	/* next, check output path related interrupts. */
 	if (qcmd->vfeInterruptStatus.anyOutputPathIrqs) {
@@ -1853,13 +1808,6 @@ static void vfe_do_tasklet(unsigned long data)
 	if (qcmd->vfeInterruptStatus.anyErrorIrqs)
 		vfe_process_error_irq(&qcmd->vfeInterruptStatus);
 
-#if 0
-	if (qcmd->vfeInterruptStatus.anySyncTimerIrqs)
-		vfe_process_sync_timer_irq();
-
-	if (qcmd->vfeInterruptStatus.anyAsyncTimerIrqs)
-		vfe_process_async_timer_irq();
-#endif /* Jeff */
 
 	if (qcmd->vfeInterruptStatus.camifSofIrq) {
 		CDBG("irq	camifSofIrq\n");

@@ -413,10 +413,6 @@ out_no_clnt:
 }
 EXPORT_SYMBOL_GPL(rpc_clone_client);
 
-/*
- * Kill all tasks for the given client.
- * XXX: kill their descendants as well?
- */
 void rpc_killall_tasks(struct rpc_clnt *clnt)
 {
 	struct rpc_task	*rovr;
@@ -1598,7 +1594,6 @@ rpc_encode_header(struct rpc_task *task)
 	struct rpc_rqst	*req = task->tk_rqstp;
 	__be32		*p = req->rq_svec[0].iov_base;
 
-	/* FIXME: check buffer size? */
 
 	p = xprt_skip_transport_header(task->tk_xprt, p);
 	*p++ = req->rq_xid;		/* XID */

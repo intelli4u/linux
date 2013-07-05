@@ -1,52 +1,14 @@
 #ifndef __ASM_SH_PGTABLE_32_H
 #define __ASM_SH_PGTABLE_32_H
 
-/*
- * Linux PTEL encoding.
- *
- * Hardware and software bit definitions for the PTEL value (see below for
- * notes on SH-X2 MMUs and 64-bit PTEs):
- *
- * - Bits 0 and 7 are reserved on SH-3 (_PAGE_WT and _PAGE_SZ1 on SH-4).
- *
- * - Bit 1 is the SH-bit, but is unused on SH-3 due to an MMU bug (the
- *   hardware PTEL value can't have the SH-bit set when MMUCR.IX is set,
- *   which is the default in cpu-sh3/mmu_context.h:MMU_CONTROL_INIT).
- *
- *   In order to keep this relatively clean, do not use these for defining
- *   SH-3 specific flags until all of the other unused bits have been
- *   exhausted.
- *
- * - Bit 9 is reserved by everyone and used by _PAGE_PROTNONE.
- *
- * - Bits 10 and 11 are low bits of the PPN that are reserved on >= 4K pages.
- *   Bit 10 is used for _PAGE_ACCESSED, and bit 11 is used for _PAGE_SPECIAL.
- *
- * - On 29 bit platforms, bits 31 to 29 are used for the space attributes
- *   and timing control which (together with bit 0) are moved into the
- *   old-style PTEA on the parts that support it.
- *
- * XXX: Leave the _PAGE_FILE and _PAGE_WT overhaul for a rainy day.
- *
- * SH-X2 MMUs and extended PTEs
- *
- * SH-X2 supports an extended mode TLB with split data arrays due to the
- * number of bits needed for PR and SZ (now EPR and ESZ) encodings. The PR and
- * SZ bit placeholders still exist in data array 1, but are implemented as
- * reserved bits, with the real logic existing in data array 2.
- *
- * The downside to this is that we can no longer fit everything in to a 32-bit
- * PTE encoding, so a 64-bit pte_t is necessary for these parts. On the plus
- * side, this gives us quite a few spare bits to play with for future usage.
- */
 /* Legacy and compat mode bits */
 #define	_PAGE_WT	0x001		/* WT-bit on SH-4, 0 on SH-3 */
 #define _PAGE_HW_SHARED	0x002		/* SH-bit  : shared among processes */
 #define _PAGE_DIRTY	0x004		/* D-bit   : page changed */
 #define _PAGE_CACHABLE	0x008		/* C-bit   : cachable */
 #define _PAGE_SZ0	0x010		/* SZ0-bit : Size of page */
-#define _PAGE_RW	0x020		/* PR0-bit : write access allowed */
-#define _PAGE_USER	0x040		/* PR1-bit : user space access allowed*/
+#define _PAGE_RW	0x020
+#define _PAGE_USER	0x040
 #define _PAGE_SZ1	0x080		/* SZ1-bit : Size of page (on SH-4) */
 #define _PAGE_PRESENT	0x100		/* V-bit   : page is valid */
 #define _PAGE_PROTNONE	0x200		/* software: if not present  */
@@ -175,7 +137,7 @@ static inline unsigned long copy_ptea_attributes(unsigned long x)
 
 #ifndef __ASSEMBLY__
 
-#if defined(CONFIG_X2TLB) /* SH-X2 TLB */
+#if defined(CONFIG_X2TLB)     /* SH-X2 TLB */
 #define PAGE_NONE	__pgprot(_PAGE_PROTNONE | _PAGE_CACHABLE | \
 				 _PAGE_ACCESSED | _PAGE_FLAGS_HARD)
 
@@ -244,7 +206,7 @@ static inline unsigned long copy_ptea_attributes(unsigned long x)
 				 (slot ? _PAGE_PCC_AREA5 : _PAGE_PCC_AREA6) | \
 				 (type))
 
-#elif defined(CONFIG_MMU) /* SH-X TLB */
+#elif defined(CONFIG_MMU)   /* SH-X TLB */
 #define PAGE_NONE	__pgprot(_PAGE_PROTNONE | _PAGE_CACHABLE | \
 				 _PAGE_ACCESSED | _PAGE_FLAGS_HARD)
 

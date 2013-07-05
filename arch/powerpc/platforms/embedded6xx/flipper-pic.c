@@ -260,4 +260,3 @@ int flipper_is_reset_button_pressed(void)
 	}
 	return 0;
 }
-

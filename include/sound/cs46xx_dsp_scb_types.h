@@ -308,20 +308,11 @@ struct dsp_timing_master_scb {
 	)
 
 	___DSP_DUAL_16BIT_ALLOC(
-	/* Initial values are 0000:xxxx */
  	    reserved,
 	    extra_sample_accum
 	)
 
   
-	/* Initial values are xxxx:0000
-	   hi: Current CODEC output FIFO pointer
-	       (0 to 0x0f)
-           lo: Flag indicating that the CODEC
-	       FIFO is sync'd (host clears to
-	       resynchronize the FIFO pointer
-	       upon start/restart) 
-	*/
 	___DSP_DUAL_16BIT_ALLOC(
 	    codec_FIFO_syncd, 
 	    codec_FIFO_ptr
@@ -795,8 +786,6 @@ struct dsp_async_codec_input_scb {
   
 	u16 o_fifo_base_addr;            
 	u16 ost_mo_format;
-	/* 1 = stereo; 0 = mono 
-	   xxx for ASER 1 (not allowed); 118 for ASER2 */
 
 	u32  ostrm_rs_config;
 	u32  ostrm_buf_ptr;

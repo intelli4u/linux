@@ -1583,7 +1583,7 @@ static const struct amd_flash_info jedec_table[] = {
 			ERASEINFO(0x10000,15),
 		}
 	}, {
-		.mfr_id		= CFI_MFR_ST,	/* FIXME - CFI device? */
+		.mfr_id		= CFI_MFR_ST,
 		.dev_id		= M29W800DT,
 		.name		= "ST M29W800DT",
 		.devtypes	= CFI_DEVICETYPE_X16|CFI_DEVICETYPE_X8,
@@ -1598,7 +1598,7 @@ static const struct amd_flash_info jedec_table[] = {
 			ERASEINFO(0x04000,1)
 		}
 	}, {
-		.mfr_id		= CFI_MFR_ST,	/* FIXME - CFI device? */
+		.mfr_id		= CFI_MFR_ST,
 		.dev_id		= M29W800DB,
 		.name		= "ST M29W800DB",
 		.devtypes	= CFI_DEVICETYPE_X16|CFI_DEVICETYPE_X8,
@@ -1643,7 +1643,7 @@ static const struct amd_flash_info jedec_table[] = {
 			ERASEINFO(0x10000,7)
 		}
 	}, {
-		.mfr_id		= CFI_MFR_ST,	/* FIXME - CFI device? */
+		.mfr_id		= CFI_MFR_ST,
 		.dev_id		= M29W160DT,
 		.name		= "ST M29W160DT",
 		.devtypes	= CFI_DEVICETYPE_X16|CFI_DEVICETYPE_X8,
@@ -1658,7 +1658,7 @@ static const struct amd_flash_info jedec_table[] = {
 			ERASEINFO(0x04000,1)
 		}
 	}, {
-		.mfr_id		= CFI_MFR_ST,	/* FIXME - CFI device? */
+		.mfr_id		= CFI_MFR_ST,
 		.dev_id		= M29W160DB,
 		.name		= "ST M29W160DB",
 		.devtypes	= CFI_DEVICETYPE_X16|CFI_DEVICETYPE_X8,
@@ -1931,7 +1931,6 @@ static void jedec_reset(u32 base, struct map_info *map, struct cfi_private *cfi)
 	 * this should be safe.
 	 */
 	cfi_send_gen_cmd(0xFF, 0, base, map, cfi, cfi->device_type, NULL);
-	/* FIXME - should have reset delay before continuing */
 }
 
 
@@ -2073,15 +2072,6 @@ static inline int jedec_match( uint32_t base,
 		goto match_done;
 	}
 
-	/*
-	 * Make sure the ID's dissappear when the device is taken out of
-	 * ID mode.  The only time this should fail when it should succeed
-	 * is when the ID's are written as data to the same
-	 * addresses.  For this rare and unfortunate case the chip
-	 * cannot be probed correctly.
-	 * FIXME - write a driver that takes all of the chip info as
-	 * module parameters, doesn't probe but forces a load.
-	 */
 	DEBUG( MTD_DEBUG_LEVEL3,
 	       "MTD %s(): check ID's disappear when not in ID mode\n",
 	       __func__ );
@@ -2109,7 +2099,6 @@ static inline int jedec_match( uint32_t base,
 		cfi_send_gen_cmd(0x55, cfi->addr_unlock2, base, map, cfi, cfi->device_type, NULL);
 	}
 	cfi_send_gen_cmd(0x90, cfi->addr_unlock1, base, map, cfi, cfi->device_type, NULL);
-	/* FIXME - should have a delay before continuing */
 
  match_done:
 	return rc;
@@ -2158,7 +2147,6 @@ static int jedec_probe_chip(struct map_info *map, __u32 base,
 		cfi_send_gen_cmd(0x55, cfi->addr_unlock2, base, map, cfi, cfi->device_type, NULL);
 	}
 	cfi_send_gen_cmd(0x90, cfi->addr_unlock1, base, map, cfi, cfi->device_type, NULL);
-	/* FIXME - should have a delay before continuing */
 
 	if (!cfi->numchips) {
 		/* This is the first time we're called. Set up the CFI
@@ -2221,7 +2209,6 @@ static int jedec_probe_chip(struct map_info *map, __u32 base,
 			/* Yes, it's actually got the device IDs as data. Most
 			 * unfortunate. Stick the new chip in read mode
 			 * too and if it's the same, assume it's an alias. */
-			/* FIXME: Use other modes to do a proper check */
 			jedec_reset(base, map, cfi);
 			if (jedec_read_mfr(map, base, cfi) == cfi->mfr &&
 			    jedec_read_id(map, base, cfi) == cfi->id) {

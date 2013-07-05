@@ -94,11 +94,6 @@ struct fc_exch_mgr {
 	u16		pool_max_index;
 	struct fc_exch_pool *pool;
 
-	/*
-	 * currently exchange mgr stats are updated but not used.
-	 * either stats can be expose via sysfs or remove them
-	 * all together if not used XXX
-	 */
 	struct {
 		atomic_t no_free_exch;
 		atomic_t no_free_exch_xid;
@@ -135,71 +130,6 @@ static void fc_seq_ls_rjt(struct fc_frame *, enum fc_els_rjt_reason,
 static void fc_exch_els_rec(struct fc_frame *);
 static void fc_exch_els_rrq(struct fc_frame *);
 
-/*
- * Internal implementation notes.
- *
- * The exchange manager is one by default in libfc but LLD may choose
- * to have one per CPU. The sequence manager is one per exchange manager
- * and currently never separated.
- *
- * Section 9.8 in FC-FS-2 specifies:  "The SEQ_ID is a one-byte field
- * assigned by the Sequence Initiator that shall be unique for a specific
- * D_ID and S_ID pair while the Sequence is open."   Note that it isn't
- * qualified by exchange ID, which one might think it would be.
- * In practice this limits the number of open sequences and exchanges to 256
- * per session.	 For most targets we could treat this limit as per exchange.
- *
- * The exchange and its sequence are freed when the last sequence is received.
- * It's possible for the remote port to leave an exchange open without
- * sending any sequences.
- *
- * Notes on reference counts:
- *
- * Exchanges are reference counted and exchange gets freed when the reference
- * count becomes zero.
- *
- * Timeouts:
- * Sequences are timed out for E_D_TOV and R_A_TOV.
- *
- * Sequence event handling:
- *
- * The following events may occur on initiator sequences:
- *
- *	Send.
- *	    For now, the whole thing is sent.
- *	Receive ACK
- *	    This applies only to class F.
- *	    The sequence is marked complete.
- *	ULP completion.
- *	    The upper layer calls fc_exch_done() when done
- *	    with exchange and sequence tuple.
- *	RX-inferred completion.
- *	    When we receive the next sequence on the same exchange, we can
- *	    retire the previous sequence ID.  (XXX not implemented).
- *	Timeout.
- *	    R_A_TOV frees the sequence ID.  If we're waiting for ACK,
- *	    E_D_TOV causes abort and calls upper layer response handler
- *	    with FC_EX_TIMEOUT error.
- *	Receive RJT
- *	    XXX defer.
- *	Send ABTS
- *	    On timeout.
- *
- * The following events may occur on recipient sequences:
- *
- *	Receive
- *	    Allocate sequence for first frame received.
- *	    Hold during receive handler.
- *	    Release when final frame received.
- *	    Keep status of last N of these for the ELS RES command.  XXX TBD.
- *	Receive ABTS
- *	    Deallocate sequence
- *	Send RJT
- *	    Deallocate
- *
- * For now, we neglect conditions where only part of a sequence was
- * received or transmitted, or where out-of-order receipt is detected.
- */
 
 /*
  * Locking notes:
@@ -876,11 +806,6 @@ static enum fc_pf_rjt_reason fc_seq_lookup_recip(struct fc_lport *lport,
 	} else {
 		xid = ntohs(fh->fh_rx_id);	/* we are the responder */
 
-		/*
-		 * Special case for MDS issuing an ELS TEST with a
-		 * bad rxid of 0.
-		 * XXX take this out once we do the proper reject.
-		 */
 		if (xid == 0 && fh->fh_r_ctl == FC_RCTL_ELS_REQ &&
 		    fc_frame_payload_op(fp) == ELS_TEST) {
 			fh->fh_rx_id = htons(FC_XID_UNKNOWN);
@@ -899,7 +824,7 @@ static enum fc_pf_rjt_reason fc_seq_lookup_recip(struct fc_lport *lport,
 			}
 			ep = fc_exch_resp(lport, mp, fp);
 			if (!ep) {
-				reject = FC_RJT_EXCH_EST;	/* XXX */
+				reject = FC_RJT_EXCH_EST;
 				goto out;
 			}
 			xid = ep->xid;	/* get our XID */
@@ -1279,7 +1204,7 @@ static void fc_exch_recv_req(struct fc_lport *lport, struct fc_exch_mgr *mp,
 	}
 	fr_dev(fp) = lport;
 
-	BUG_ON(fr_seq(fp));		/* XXX remove later */
+	BUG_ON(fr_seq(fp));
 
 	/*
 	 * If the RX_ID is 0xffff, don't allocate an exchange.

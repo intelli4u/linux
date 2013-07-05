@@ -557,7 +557,7 @@ static inline void mainstone_init_keypad(void) {}
 
 static void __init mainstone_init(void)
 {
-	int SW7 = 0;  /* FIXME: get from SCR (Mst doc section 3.2.1.1) */
+	int SW7 = 0;
 
 	pxa2xx_mfp_config(ARRAY_AND_SIZE(mainstone_pin_config));
 

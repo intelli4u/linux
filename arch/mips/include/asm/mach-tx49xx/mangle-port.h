@@ -8,9 +8,8 @@
 
 #define ioswabb(a, x)		(x)
 #define __mem_ioswabb(a, x)	(x)
-#if defined(CONFIG_TOSHIBA_RBTX4939) && \
-	(defined(CONFIG_SMC91X) || defined(CONFIG_SMC91X_MODULE)) && \
-	defined(__BIG_ENDIAN)
+#if defined(CONFIG_TOSHIBA_RBTX4939) && (defined(CONFIG_SMC91X) || \
+	defined(CONFIG_SMC91X_MODULE)) && defined(__BIG_ENDIAN)
 #define NEEDS_TXX9_IOSWABW
 extern u16 (*ioswabw)(volatile u16 *a, u16 x);
 extern u16 (*__mem_ioswabw)(volatile u16 *a, u16 x);

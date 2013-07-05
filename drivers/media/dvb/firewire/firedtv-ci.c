@@ -203,7 +203,6 @@ static int fdtv_ca_ioctl(struct file *file, unsigned int cmd, void *arg)
 		err = -EOPNOTSUPP;
 	}
 
-	/* FIXME Is this necessary? */
 	avc_tuner_status(fdtv, &stat);
 
 	return err;

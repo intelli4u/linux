@@ -524,4 +524,3 @@ static void remove_debug_files(struct imx21 *imx21)
 }
 
 #endif
-

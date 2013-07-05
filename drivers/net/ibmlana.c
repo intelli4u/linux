@@ -1,79 +1,4 @@
-/*
-net-3-driver for the IBM LAN Adapter/A
 
-This is an extension to the Linux operating system, and is covered by the
-same GNU General Public License that covers that work.
-
-Copyright 1999 by Alfred Arnold (alfred@ccac.rwth-aachen.de,
-                                 alfred.arnold@lancom.de)
-
-This driver is based both on the SK_MCA driver, which is itself based on the
-SK_G16 and 3C523 driver.
-
-paper sources:
-  'PC Hardware: Aufbau, Funktionsweise, Programmierung' by
-  Hans-Peter Messmer for the basic Microchannel stuff
-
-  'Linux Geraetetreiber' by Allesandro Rubini, Kalle Dalheimer
-  for help on Ethernet driver programming
-
-  'DP83934CVUL-20/25 MHz SONIC-T Ethernet Controller Datasheet' by National
-  Semiconductor for info on the MAC chip
-
-  'LAN Technical Reference Ethernet Adapter Interface Version 1 Release 1.0
-   Document Number SC30-3661-00' by IBM for info on the adapter itself
-
-  Also see http://www.natsemi.com/
-
-special acknowledgements to:
-  - Bob Eager for helping me out with documentation from IBM
-  - Jim Shorney for his endless patience with me while I was using
-    him as a beta tester to trace down the address filter bug ;-)
-
-  Missing things:
-
-  -> set debug level via ioctl instead of compile-time switches
-  -> I didn't follow the development of the 2.1.x kernels, so my
-     assumptions about which things changed with which kernel version
-     are probably nonsense
-
-History:
-  Nov 6th, 1999
-  	startup from SK_MCA driver
-  Dec 6th, 1999
-	finally got docs about the card.  A big thank you to Bob Eager!
-  Dec 12th, 1999
-	first packet received
-  Dec 13th, 1999
-	recv queue done, tcpdump works
-  Dec 15th, 1999
-	transmission part works
-  Dec 28th, 1999
-	added usage of the isa_functions for Linux 2.3 .  Things should
-	still work with 2.0.x....
-  Jan 28th, 2000
-	in Linux 2.2.13, the version.h file mysteriously didn't get
-	included.  Added a workaround for this.  Futhermore, it now
-	not only compiles as a modules ;-)
-  Jan 30th, 2000
-	newer kernels automatically probe more than one board, so the
-	'startslot' as a variable is also needed here
-  Apr 12th, 2000
-	the interrupt mask register is not set 'hard' instead of individually
-	setting registers, since this seems to set bits that shouldn't be
-	set
-  May 21st, 2000
-	reset interrupt status immediately after CAM load
-	add a recovery delay after releasing the chip's reset line
-  May 24th, 2000
-	finally found the bug in the address filter setup - damned signed
-        chars!
-  June 1st, 2000
-	corrected version codes, added support for the latest 2.3 changes
-  Oct 28th, 2002
-	cleaned up for the 2.5 tree <alan@lxorguk.ukuu.org.uk>
-
- *************************************************************************/
 
 #include <linux/kernel.h>
 #include <linux/string.h>
@@ -242,7 +167,7 @@ static void InitDscrs(struct net_device *dev)
 	/* initialize RAM */
 
 	memset_io(priv->base, 0xaa,
-		      dev->mem_start - dev->mem_start);	/* XXX: typo? */
+		      dev->mem_start - dev->mem_start);
 
 	/* setup n TX descriptors - independent of RAM size */
 
@@ -743,35 +668,6 @@ static irqreturn_t irq_handler(int dummy, void *device)
 
 /* MCA info */
 
-#if 0 /* info available elsewhere, but this is kept for reference */
-static int ibmlana_getinfo(char *buf, int slot, void *d)
-{
-	int len = 0, i;
-	struct net_device *dev = (struct net_device *) d;
-	ibmlana_priv *priv;
-
-	/* can't say anything about an uninitialized device... */
-
-	if (dev == NULL)
-		return len;
-	priv = netdev_priv(dev);
-
-	/* print info */
-
-	len += sprintf(buf + len, "IRQ: %d\n", priv->realirq);
-	len += sprintf(buf + len, "I/O: %#lx\n", dev->base_addr);
-	len += sprintf(buf + len, "Memory: %#lx-%#lx\n", dev->mem_start, dev->mem_end - 1);
-	len += sprintf(buf + len, "Transceiver: %s\n", MediaNames[priv->medium]);
-	len += sprintf(buf + len, "Device: %s\n", dev->name);
-	len += sprintf(buf + len, "MAC address:");
-	for (i = 0; i < 6; i++)
-		len += sprintf(buf + len, " %02x", dev->dev_addr[i]);
-	buf[len++] = '\n';
-	buf[len] = 0;
-
-	return len;
-}
-#endif
 
 /* open driver.  Means also initialization and start of LANCE */
 

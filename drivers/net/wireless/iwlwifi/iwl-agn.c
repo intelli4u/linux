@@ -1002,12 +1002,6 @@ void iwl_rx_handle(struct iwl_priv *priv)
 				pkt->hdr.cmd);
 		}
 
-		/*
-		 * XXX: After here, we should always check rxb->page
-		 * against NULL before touching it or its virtual
-		 * memory (pkt). Because some rx_handler might have
-		 * already taken or freed the pages.
-		 */
 
 		if (reclaim) {
 			/* Invoke any callbacks, transfer the buffer to caller,
@@ -1264,14 +1258,6 @@ static void iwl_irq_tasklet(struct iwl_priv *priv)
 
 	/* Ack/clear/reset pending uCode interrupts.
 	 * Note:  Some bits in CSR_INT are "OR" of bits in CSR_FH_INT_STATUS,
-	 */
-	/* There is a hardware bug in the interrupt mask function that some
-	 * interrupts (i.e. CSR_INT_BIT_SCD) can still be generated even if
-	 * they are disabled in the CSR_INT_MASK register. Furthermore the
-	 * ICT interrupt handling mechanism has another bug that might cause
-	 * these unmasked interrupts fail to be detected. We workaround the
-	 * hardware bugs here by ACKing all the possible interrupts so that
-	 * interrupt coalescing can still be achieved.
 	 */
 	iwl_write32(priv, CSR_INT, priv->_agn.inta | ~priv->inta_mask);
 
@@ -3342,9 +3328,6 @@ void iwl_config_ap(struct iwl_priv *priv, struct ieee80211_vif *vif)
 	}
 	iwl_send_beacon_cmd(priv);
 
-	/* FIXME - we need to add code here to detect a totally new
-	 * configuration, reset the AP, unassoc, rxon timing, assoc,
-	 * clear sta table, add BCAST sta... */
 }
 
 static void iwl_mac_update_tkip_key(struct ieee80211_hw *hw,

@@ -437,5 +437,3 @@ typedef struct _MPI2_SEP_REPLY
 
 
 #endif
-
-

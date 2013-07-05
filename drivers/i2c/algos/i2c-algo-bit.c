@@ -174,12 +174,6 @@ static int i2c_outb(struct i2c_adapter *i2c_adap, unsigned char c)
 				"timeout at bit #%d\n", (int)c, i);
 			return -ETIMEDOUT;
 		}
-		/* FIXME do arbitration here:
-		 * if (sb && !getsda(adap)) -> ouch! Get out of here.
-		 *
-		 * Report a unique code, so higher level code can retry
-		 * the whole (combined) message and *NOT* issue STOP.
-		 */
 		scllo(adap);
 	}
 	sdahi(adap);
@@ -365,13 +359,6 @@ static int sendbytes(struct i2c_adapter *i2c_adap, struct i2c_msg *msg)
 			dev_err(&i2c_adap->dev, "sendbytes: NAK bailout.\n");
 			return -EIO;
 
-		/* Timeout; or (someday) lost arbitration
-		 *
-		 * FIXME Lost ARB implies retrying the transaction from
-		 * the first message, after the "winning" master issues
-		 * its STOP.  As a rule, upper layer code has no reason
-		 * to know or care about this ... it is *NOT* an error.
-		 */
 		} else {
 			dev_err(&i2c_adap->dev, "sendbytes: error %d\n",
 					retval);

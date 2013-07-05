@@ -389,7 +389,6 @@ static int auide_ddma_init(ide_hwif_t *hwif, const struct ide_port_info *d)
 	auide->rx_desc_head = (void*)au1xxx_dbdma_ring_alloc(auide->rx_chan,
 							     NUM_DESCRIPTORS);
 
-	/* FIXME: check return value */
 	(void)ide_allocate_dma_engine(hwif);
 	
 	au1xxx_dbdma_start( auide->tx_chan );
@@ -450,7 +449,6 @@ static void auide_setup_ports(struct ide_hw *hw, _auide_hwif *ahwif)
 	int i;
 	unsigned long *ata_regs = hw->io_ports_array;
 
-	/* FIXME? */
 	for (i = 0; i < 8; i++)
 		*ata_regs++ = ahwif->regbase + (i << IDE_REG_SHIFT);
 

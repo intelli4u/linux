@@ -17,6 +17,8 @@
 
 #include "proc-macros.S"
 
+	.section .text.fastpath, "a"
+
 /*
  *	v7_flush_dcache_all()
  *
@@ -318,4 +320,5 @@ ENTRY(v7_cache_fns)
 	.long	v7_dma_map_area
 	.long	v7_dma_unmap_area
 	.long	v7_dma_flush_range
+	.long	v7_dma_inv_range
 	.size	v7_cache_fns, . - v7_cache_fns

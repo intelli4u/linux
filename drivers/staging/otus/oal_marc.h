@@ -110,28 +110,12 @@
 #endif
 
 /***** Debug message *****/
-#if 0
-#define zm_debug_msg0(msg) printk(KERN_DEBUG "%s:%s\n", __func__, msg);
-#define zm_debug_msg1(msg, val) printk(KERN_DEBUG "%s:%s%ld\n", __func__, \
-	msg, (u32_t)val);
-#define zm_debug_msg2(msg, val) printk(KERN_DEBUG "%s:%s%lxh\n", __func__, \
-	msg, (u32_t)val);
-#define zm_debug_msg_s(msg, val) printk(KERN_DEBUG "%s:%s%s\n", __func__, \
-	msg, val);
-#define zm_debug_msg_p(msg, val1, val2) do { 			\
-			printk(KERN_DEBUG "%s:%s%01ld.%02ld\n",	\
-						__func__, 	\
-			msg, (val1/val2), (((val1*100)/val2)%100));
-			} while (0)
-#define zm_dbg(S) printk S
-#else
 #define zm_debug_msg0(msg)
 #define zm_debug_msg1(msg, val)
 #define zm_debug_msg2(msg, val)
 #define zm_debug_msg_s(msg, val)
 #define zm_debug_msg_p(msg, val1, val2)
 #define zm_dbg(S)
-#endif
 
 #define zm_assert(expr) if (!(expr)) {					 \
 	printk(KERN_ERR "Atheors Assertion failed! %s, %s, %s,line=%d\n",\

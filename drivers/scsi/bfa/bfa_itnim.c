@@ -1084,5 +1084,3 @@ bfa_itnim_clear_stats(struct bfa_itnim_s *itnim)
 {
 	bfa_os_memset(&itnim->stats, 0, sizeof(itnim->stats));
 }
-
-

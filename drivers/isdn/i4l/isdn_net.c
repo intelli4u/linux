@@ -1,4 +1,4 @@
-/* $Id: isdn_net.c,v 1.1.2.2 2004/01/12 22:37:19 keil Exp $
+/* $Id: isdn_net.c,v 1.1.2.2 2004/01/12 22:37:19 Exp $
  *
  * Linux ISDN subsystem, network interfaces and related functions (linklevel).
  *
@@ -1076,7 +1076,7 @@ isdn_net_xmit(struct net_device *ndev, struct sk_buff *skb)
 	/* we have our lp locked from now on */
 
 	/* Reset hangup-timeout */
-	lp->huptimer = 0; // FIXME?
+	lp->huptimer = 0;
 	isdn_net_writebuf_skb(lp, skb);
 	spin_unlock_bh(&lp->xmit_lock);
 

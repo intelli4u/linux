@@ -1454,4 +1454,3 @@ int find_line_range(int fd, struct line_range *lr)
 
 	return (ret < 0) ? ret : lf.found;
 }
-

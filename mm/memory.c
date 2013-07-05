@@ -1698,7 +1698,7 @@ static int insert_pfn(struct vm_area_struct *vma, unsigned long addr,
 	/* Ok, finally just insert the thing.. */
 	entry = pte_mkspecial(pfn_pte(pfn, prot));
 	set_pte_at(mm, addr, pte, entry);
-	update_mmu_cache(vma, addr, pte); /* XXX: why not for insert_page? */
+	update_mmu_cache(vma, addr, pte);
 
 	retval = 0;
 out_unlock:

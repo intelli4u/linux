@@ -859,7 +859,6 @@ static void pdc_freeze(struct ata_port *ap)
 	void __iomem *mmio = ap->ioaddr.cmd_addr;
 	u32 tmp;
 
-	/* FIXME: if all 4 ATA engines are stopped, also stop HDMA engine */
 
 	tmp = readl(mmio + PDC_CTLSTAT);
 	tmp |= PDC_MASK_INT;
@@ -873,7 +872,6 @@ static void pdc_thaw(struct ata_port *ap)
 	void __iomem *mmio = ap->ioaddr.cmd_addr;
 	u32 tmp;
 
-	/* FIXME: start HDMA engine, if zero ATA engines running */
 
 	/* clear IRQ */
 	ioread8(ap->ioaddr.status_addr);
@@ -891,7 +889,6 @@ static void pdc_reset_port(struct ata_port *ap)
 	unsigned int i;
 	u32 tmp;
 
-	/* FIXME: handle HDMA copy engine */
 
 	for (i = 11; i > 0; i--) {
 		tmp = readl(mmio);
@@ -1214,7 +1211,7 @@ static int pdc20621_prog_dimm0(struct ata_host *host)
 	*/
 
 	bdimmsize = spd0[4] + (spd0[5] / 2) + spd0[3] + (spd0[17] / 2) + 3;
-	size = (1 << bdimmsize) >> 20;	/* size = xxx(MB) */
+	size = (1 << bdimmsize) >> 20;
 	data |= (((size / 16) - 1) << 16);
 	data |= (0 << 23);
 	data |= 8;

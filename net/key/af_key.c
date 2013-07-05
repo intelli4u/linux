@@ -230,9 +230,6 @@ static int pfkey_broadcast(struct sk_buff *skb, gfp_t allocation,
 	struct sk_buff *skb2 = NULL;
 	int err = -ESRCH;
 
-	/* XXX Do we need something like netlink_overrun?  I think
-	 * XXX PF_KEY socket apps will not mind current behavior.
-	 */
 	if (!skb)
 		return -ENOMEM;
 
@@ -395,15 +392,6 @@ static int verify_address_len(void *p)
 		break;
 #endif
 	default:
-		/* It is user using kernel to keep track of security
-		 * associations for another protocol, such as
-		 * OSPF/RSVP/RIPV2/MIP.  It is user's job to verify
-		 * lengths.
-		 *
-		 * XXX Actually, association/policy database is not yet
-		 * XXX able to cope with arbitrary sockaddr families.
-		 * XXX When it can, remove this -EINVAL.  -DaveM
-		 */
 		return -EINVAL;
 		break;
 	}
@@ -678,7 +666,7 @@ static inline int pfkey_mode_from_xfrm(int mode)
 static inline int pfkey_mode_to_xfrm(int mode)
 {
 	switch(mode) {
-	case IPSEC_MODE_ANY:	/*XXX*/
+	case IPSEC_MODE_ANY:
 	case IPSEC_MODE_TRANSPORT:
 		return XFRM_MODE_TRANSPORT;
 	case IPSEC_MODE_TUNNEL:
@@ -791,7 +779,7 @@ static struct sk_buff *__pfkey_xfrm_state2msg(struct xfrm_state *x,
 
 	/* call should fill header later */
 	hdr = (struct sadb_msg *) skb_put(skb, sizeof(struct sadb_msg));
-	memset(hdr, 0, size);	/* XXX do we need this ? */
+	memset(hdr, 0, size);
 	hdr->sadb_msg_len = size / sizeof(uint64_t);
 
 	/* sa */
@@ -1811,7 +1799,6 @@ static int pfkey_promisc(struct sock *sk, struct sk_buff *skb, struct sadb_msg *
 	int satype = hdr->sadb_msg_satype;
 
 	if (hdr->sadb_msg_len == (sizeof(*hdr) / sizeof(uint64_t))) {
-		/* XXX we mangle packet... */
 		hdr->sadb_msg_errno = 0;
 		if (satype != 0 && satype != 1)
 			return -EINVAL;
@@ -1867,7 +1854,7 @@ parse_ipsecrequest(struct xfrm_policy *xp, struct sadb_x_ipsecrequest *rq)
 	if (rq->sadb_x_ipsecrequest_mode == 0)
 		return -EINVAL;
 
-	t->id.proto = rq->sadb_x_ipsecrequest_proto; /* XXX check proto */
+	t->id.proto = rq->sadb_x_ipsecrequest_proto;
 	if ((mode = pfkey_mode_to_xfrm(rq->sadb_x_ipsecrequest_mode)) < 0)
 		return -EINVAL;
 	t->mode = mode;
@@ -1986,7 +1973,7 @@ static int pfkey_xfrm_policy2msg(struct sk_buff *skb, struct xfrm_policy *xp, in
 
 	/* call should fill header later */
 	hdr = (struct sadb_msg *) skb_put(skb, sizeof(struct sadb_msg));
-	memset(hdr, 0, size);	/* XXX do we need this ? */
+	memset(hdr, 0, size);
 
 	/* src address */
 	addr = (struct sadb_address*) skb_put(skb,

@@ -231,7 +231,6 @@ static void hardif_deactivate_interface(struct net_device *net_dev,
 
 int hardif_enable_interface(struct batman_if *batman_if)
 {
-	/* FIXME: each batman_if will be attached to a softif */
 	struct bat_priv *bat_priv = netdev_priv(soft_device);
 	struct batman_packet *batman_packet;
 
@@ -282,7 +281,6 @@ err:
 
 void hardif_disable_interface(struct batman_if *batman_if)
 {
-	/* FIXME: each batman_if will be attached to a softif */
 	struct bat_priv *bat_priv = netdev_priv(soft_device);
 
 	if (batman_if->if_status == IF_ACTIVE)
@@ -394,7 +392,6 @@ static int hard_if_event(struct notifier_block *this,
 {
 	struct net_device *net_dev = (struct net_device *)ptr;
 	struct batman_if *batman_if = get_batman_if_by_netdev(net_dev);
-	/* FIXME: each batman_if will be attached to a softif */
 	struct bat_priv *bat_priv = netdev_priv(soft_device);
 
 	if (!batman_if && event == NETDEV_REGISTER)
@@ -435,7 +432,6 @@ out:
 int batman_skb_recv(struct sk_buff *skb, struct net_device *dev,
 	struct packet_type *ptype, struct net_device *orig_dev)
 {
-	/* FIXME: each orig_node->batman_if will be attached to a softif */
 	struct bat_priv *bat_priv = netdev_priv(soft_device);
 	struct batman_packet *batman_packet;
 	struct batman_if *batman_if;

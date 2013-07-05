@@ -148,7 +148,9 @@ static int full_duplex[MAX_UNITS] = {0, };
  * This SUCKS.
  * We need a much better method to determine if dma_addr_t is 64-bit.
  */
-#if (defined(__i386__) && defined(CONFIG_HIGHMEM64G)) || defined(__x86_64__) || defined (__ia64__) || defined(__alpha__) || defined(__mips64__) || (defined(__mips__) && defined(CONFIG_HIGHMEM) && defined(CONFIG_64BIT_PHYS_ADDR))
+#if (defined(__i386__) && defined(CONFIG_HIGHMEM64G)) || defined(__x86_64__) || \
+	defined(__ia64__) || defined(__alpha__) || defined(__mips64__) || (defined(__mips__) && \
+	defined(CONFIG_HIGHMEM) && defined(CONFIG_64BIT_PHYS_ADDR))
 /* 64-bit dma_addr_t */
 #define ADDR_64BITS	/* This chip uses 64 bit addresses. */
 #define netdrv_addr_t __le64
@@ -486,7 +488,6 @@ struct full_rx_done_desc {
 	__le16 csum;			/* partial checksum */
 	__le32 timestamp;
 };
-/* XXX: this is ugly and I'm not sure it's worth the trouble -Ion */
 #ifdef VLAN_SUPPORT
 typedef struct full_rx_done_desc rx_done_desc;
 #define RxComplType RxComplType3
@@ -528,9 +529,6 @@ enum tx_desc_bits {
 };
 struct tx_done_desc {
 	__le32 status;			/* timestamp, index. */
-#if 0
-	__le32 intrstatus;		/* interrupt status */
-#endif
 };
 
 struct rx_ring_info {
@@ -739,7 +737,7 @@ static int __devinit starfire_init_one(struct pci_dev *pdev,
 	for (i = 0; i < 6; i++)
 		dev->dev_addr[i] = readb(base + EEPROMCtrl + 20 - i);
 
-#if ! defined(final_version) /* Dump the EEPROM contents during development. */
+#if !defined(final_version)     /* Dump the EEPROM contents during development. */
 	if (debug > 4)
 		for (i = 0; i < 0x20; i++)
 			printk("%2.2x%s",
@@ -1498,7 +1496,7 @@ static int __netdev_rx(struct net_device *dev, int *quota)
 			np->rx_info[entry].skb = NULL;
 			np->rx_info[entry].mapping = 0;
 		}
-#ifndef final_version			/* Remove after testing. */
+#ifndef final_version			    /* Remove after testing. */
 		/* You will want this info for the initial debug. */
 		if (debug > 5) {
 			printk(KERN_DEBUG "  Rx data %pM %pM %2.2x%2.2x.\n",
@@ -2045,7 +2043,6 @@ static void __devexit starfire_remove_one (struct pci_dev *pdev)
 		pci_free_consistent(pdev, np->queue_mem_size, np->queue_mem, np->queue_mem_dma);
 
 
-	/* XXX: add wakeup code -- requires firmware for MagicPacket */
 	pci_set_power_state(pdev, PCI_D3hot);	/* go to sleep in D3 mode */
 	pci_disable_device(pdev);
 

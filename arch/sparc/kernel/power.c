@@ -19,7 +19,6 @@ static irqreturn_t power_handler(int irq, void *dev_id)
 {
 	orderly_poweroff(true);
 
-	/* FIXME: Check registers for status... */
 	return IRQ_HANDLED;
 }
 

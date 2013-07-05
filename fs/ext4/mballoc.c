@@ -622,7 +622,6 @@ static int __mb_check_buddy(struct ext4_buddy *e4b, char *file,
 #define mb_check_buddy(e4b)
 #endif
 
-/* FIXME!! need more doc */
 static void ext4_mb_mark_free_simple(struct super_block *sb,
 				void *buddy, ext4_grpblk_t first, ext4_grpblk_t len,
 					struct ext4_group_info *grp)
@@ -1362,7 +1361,6 @@ static int mb_find_extent(struct ext4_buddy *e4b, int order, int block,
 		return 0;
 	}
 
-	/* FIXME dorp order completely ? */
 	if (likely(order == 0)) {
 		/* find actual order */
 		order = mb_find_order_for_block(e4b, block);
@@ -1565,16 +1563,6 @@ static void ext4_mb_check_limits(struct ext4_allocation_context *ac,
 	}
 }
 
-/*
- * The routine checks whether found extent is good enough. If it is,
- * then the extent gets marked used and flag is set to the context
- * to stop scanning. Otherwise, the extent is compared with the
- * previous found extent and if new one is better, then it's stored
- * in the context. Later, the best found extent will be used, if
- * mballoc can't find good enough extent.
- *
- * FIXME: real allocation policy is to be designed yet!
- */
 static void ext4_mb_measure_extent(struct ext4_allocation_context *ac,
 					struct ext4_free_extent *ex,
 					struct ext4_buddy *e4b)
@@ -2814,14 +2802,6 @@ out_err:
 	return err;
 }
 
-/*
- * here we normalize request for locality group
- * Group request are normalized to s_strip size if we set the same via mount
- * option. If not we set it to s_mb_group_prealloc which can be configured via
- * /sys/fs/ext4/<partition>/mb_group_prealloc
- *
- * XXX: should we try to preallocate more than the group has now?
- */
 static void ext4_mb_normalize_group_request(struct ext4_allocation_context *ac)
 {
 	struct super_block *sb = ac->ac_sb;
@@ -2887,7 +2867,6 @@ ext4_mb_normalize_request(struct ext4_allocation_context *ac,
 		(req <= (size) || max <= (chunk_size))
 
 	/* first, try to predict filesize */
-	/* XXX: should this table be tunable? */
 	start_off = 0;
 	if (size <= 16 * 1024) {
 		size = 16 * 1024;
@@ -2972,7 +2951,6 @@ ext4_mb_normalize_request(struct ext4_allocation_context *ac,
 	rcu_read_unlock();
 	size = end - start;
 
-	/* XXX: extra loop to check we really don't overlap preallocations */
 	rcu_read_lock();
 	list_for_each_entry_rcu(pa, &ei->i_prealloc_list, pa_inode_list) {
 		ext4_lblk_t pa_end;
@@ -2997,8 +2975,6 @@ ext4_mb_normalize_request(struct ext4_allocation_context *ac,
 
 	/* now prepare goal request */
 
-	/* XXX: is it better to align blocks WRT to logical
-	 * placement or satisfy big request as is */
 	ac->ac_g_ex.fe_logical = start;
 	ac->ac_g_ex.fe_len = size;
 
@@ -3747,15 +3723,6 @@ out:
 	return free;
 }
 
-/*
- * releases all non-used preallocated blocks for given inode
- *
- * It's important to discard preallocations under i_data_sem
- * We don't want another block to be served from the prealloc
- * space when we are discarding the inode prealloc space.
- *
- * FIXME!! Make sure it is valid at all the call sites
- */
 void ext4_discard_preallocations(struct inode *inode)
 {
 	struct ext4_inode_info *ei = EXT4_I(inode);
@@ -3822,10 +3789,6 @@ repeat:
 		 * pa from inode's list may access already
 		 * freed memory, bad-bad-bad */
 
-		/* XXX: if this happens too often, we can
-		 * add a flag to force wait only in case
-		 * of ->clear_inode(), but not in case of
-		 * regular truncate */
 		schedule_timeout_uninterruptible(HZ);
 		goto repeat;
 	}
@@ -3865,13 +3828,6 @@ repeat:
 		kmem_cache_free(ext4_ac_cachep, ac);
 }
 
-/*
- * finds all preallocated spaces and return blocks being freed to them
- * if preallocated space becomes full (no block is used from the space)
- * then the function frees space in buddy
- * XXX: at the moment, truncate (which is the only way to free blocks)
- * discards all preallocations
- */
 static void ext4_mb_return_to_preallocation(struct inode *inode,
 					struct ext4_buddy *e4b,
 					sector_t block, int count)

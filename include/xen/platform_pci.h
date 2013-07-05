@@ -27,10 +27,8 @@
 #define XEN_UNPLUG_NEVER	 		(1<<17)
 
 static inline int xen_must_unplug_nics(void) {
-#if (defined(CONFIG_XEN_NETDEV_FRONTEND) || \
-		defined(CONFIG_XEN_NETDEV_FRONTEND_MODULE)) && \
-		(defined(CONFIG_XEN_PLATFORM_PCI) || \
-		 defined(CONFIG_XEN_PLATFORM_PCI_MODULE))
+#if (defined(CONFIG_XEN_NETDEV_FRONTEND) || defined(CONFIG_XEN_NETDEV_FRONTEND_MODULE)) \
+	&& (defined(CONFIG_XEN_PLATFORM_PCI) || defined(CONFIG_XEN_PLATFORM_PCI_MODULE))
         return 1;
 #else
         return 0;
@@ -38,10 +36,8 @@ static inline int xen_must_unplug_nics(void) {
 }
 
 static inline int xen_must_unplug_disks(void) {
-#if (defined(CONFIG_XEN_BLKDEV_FRONTEND) || \
-		defined(CONFIG_XEN_BLKDEV_FRONTEND_MODULE)) && \
-		(defined(CONFIG_XEN_PLATFORM_PCI) || \
-		 defined(CONFIG_XEN_PLATFORM_PCI_MODULE))
+#if (defined(CONFIG_XEN_BLKDEV_FRONTEND) || defined(CONFIG_XEN_BLKDEV_FRONTEND_MODULE)) \
+	&& (defined(CONFIG_XEN_PLATFORM_PCI) || defined(CONFIG_XEN_PLATFORM_PCI_MODULE))
         return 1;
 #else
         return 0;

@@ -632,5 +632,3 @@
 #define I2SD_R    0x19L
 
 #endif /* CT20K1REG_H */
-
-

@@ -230,7 +230,7 @@ struct osd_sense_identification_data_descriptor {
 struct osd_sense_response_integrity_check_descriptor {
 /*0*/	u8	descriptor_type; /* (07h) */
 /*1*/	u8	additional_length; /* (20h) */
-/*2*/	u8	integrity_check_value[32]; /*FIXME: OSDv2_CRYPTO_KEYID_SIZE*/
+/*2*/	u8	integrity_check_value[32];
 } __packed;
 /*34*/
 
@@ -247,7 +247,6 @@ struct osd_sense_attributes_data_descriptor {
 
 /* Dig into scsi_sk_illegal_request/scsi_invalid_field_in_cdb errors */
 
-/*FIXME: Support also field in CAPS*/
 #define OSD_CDB_OFFSET(F) offsetof(struct osd_cdb_head, F)
 
 enum osdv2_cdb_field_offset {

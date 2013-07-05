@@ -29,10 +29,6 @@
 #include "drmP.h"
 #include "ttm/ttm_bo_driver.h"
 
-/**
- * FIXME: Adjust to the ttm lowmem / highmem storage to minimize
- * the number of used descriptors.
- */
 
 static int vmw_gmr_build_descriptors(struct list_head *desc_pages,
 				     struct page *pages[],
@@ -140,10 +136,6 @@ static void vmw_gmr_fire_descriptors(struct vmw_private *dev_priv,
 
 }
 
-/**
- * FIXME: Adjust to the ttm lowmem / highmem storage to minimize
- * the number of used descriptors.
- */
 
 static unsigned long vmw_gmr_count_descriptors(struct page *pages[],
 					       unsigned long num_pages)

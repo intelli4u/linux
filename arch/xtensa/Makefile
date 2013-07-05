@@ -93,4 +93,3 @@ zImage zImage.initrd: vmlinux
 define archhelp
   @echo '* zImage      - Compressed kernel image (arch/xtensa/boot/images/zImage.*)'
 endef
-

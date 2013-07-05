@@ -159,4 +159,3 @@ __cmpxchg_64:
 	bralr
 
 	.size		__cmpxchg_64, .-__cmpxchg_64
-

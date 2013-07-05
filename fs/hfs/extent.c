@@ -468,7 +468,6 @@ void hfs_file_truncate(struct inode *inode)
 		struct page *page;
 		int res;
 
-		/* XXX: Can use generic_cont_expand? */
 		size = inode->i_size - 1;
 		res = pagecache_write_begin(NULL, mapping, size+1, 0,
 				AOP_FLAG_UNINTERRUPTIBLE, &page, &fsdata);
@@ -521,5 +520,11 @@ out:
 	HFS_I(inode)->phys_size = inode->i_size;
 	HFS_I(inode)->fs_blocks = (inode->i_size + sb->s_blocksize - 1) >> sb->s_blocksize_bits;
 	inode_set_bytes(inode, HFS_I(inode)->fs_blocks << sb->s_blocksize_bits);
+    /*  added start pling 05/31/2010 */
+    /* Set the i_blocks field properly */
+    inode->i_blocks = inode->i_size/512;
+    if (inode->i_size % 512)
+        inode->i_blocks++;
+    /*  added end pling 05/31/2010 */
 	mark_inode_dirty(inode);
 }

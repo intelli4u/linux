@@ -289,11 +289,6 @@ static int __dccp_rcv_established(struct sock *sk, struct sk_buff *skb,
 	switch (dccp_hdr(skb)->dccph_type) {
 	case DCCP_PKT_DATAACK:
 	case DCCP_PKT_DATA:
-		/*
-		 * FIXME: schedule DATA_DROPPED (RFC 4340, 11.7.2) if and when
-		 * - sk_shutdown == RCV_SHUTDOWN, use Code 1, "Not Listening"
-		 * - sk_receive_queue is full, use Code 2, "Receive Buffer"
-		 */
 		dccp_enqueue_skb(sk, skb);
 		return 0;
 	case DCCP_PKT_ACK:
@@ -548,14 +543,6 @@ static int dccp_rcv_respond_partopen_state_process(struct sock *sk,
 			break;
 	case DCCP_PKT_DATAACK:
 	case DCCP_PKT_ACK:
-		/*
-		 * FIXME: we should be reseting the PARTOPEN (DELACK) timer
-		 * here but only if we haven't used the DELACK timer for
-		 * something else, like sending a delayed ack for a TIMESTAMP
-		 * echo, etc, for now were not clearing it, sending an extra
-		 * ACK when there is nothing else to do in DELACK is not a big
-		 * deal after all.
-		 */
 
 		/* Stop the PARTOPEN timer */
 		if (sk->sk_state == DCCP_PARTOPEN)

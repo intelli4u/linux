@@ -102,7 +102,6 @@
 #define PMC_IS_IMPL(i)	  (i< PMU_MAX_PMCS && (pmu_conf->pmc_desc[i].type & PFM_REG_IMPL))
 #define PMD_IS_IMPL(i)	  (i< PMU_MAX_PMDS && (pmu_conf->pmd_desc[i].type & PFM_REG_IMPL))
 
-/* XXX: these assume that register i is implemented */
 #define PMD_IS_COUNTING(i) ((pmu_conf->pmd_desc[i].type & PFM_REG_COUNTING) == PFM_REG_COUNTING)
 #define PMC_IS_COUNTING(i) ((pmu_conf->pmc_desc[i].type & PFM_REG_COUNTING) == PFM_REG_COUNTING)
 #define PMC_IS_MONITOR(i)  ((pmu_conf->pmc_desc[i].type & PFM_REG_MONITOR)  == PFM_REG_MONITOR)
@@ -122,7 +121,6 @@
 
 #define PMU_PMC_OI		5 /* position of pmc.oi bit */
 
-/* XXX: does not support more than 64 PMDs */
 #define CTX_USED_PMD(ctx, mask) (ctx)->ctx_used_pmds[0] |= (mask)
 #define CTX_IS_USED_PMD(ctx, c) (((ctx)->ctx_used_pmds[0] & (1UL << (c))) != 0UL)
 
@@ -1077,10 +1075,6 @@ pfm_restore_monitoring(struct task_struct *task)
 	}
 	ia64_srlz_d();
 
-	/*
-	 * must restore DBR/IBR because could be modified while masked
-	 * XXX: need to optimize 
-	 */
 	if (ctx->ctx_fl_using_dbreg) {
 		pfm_restore_ibrs(ctx->ctx_ibrs, pmu_conf->num_ibrs);
 		pfm_restore_dbrs(ctx->ctx_dbrs, pmu_conf->num_dbrs);
@@ -1289,9 +1283,6 @@ pfm_register_buffer_fmt(pfm_buffer_fmt_t *fmt)
 	/* we need at least a handler */
 	if (fmt->fmt_handler == NULL) return -EINVAL;
 
-	/*
-	 * XXX: need check validity of fmt_arg_size
-	 */
 
 	spin_lock(&pfm_buffer_fmt_lock);
 
@@ -1492,41 +1483,6 @@ pfm_remove_smpl_mapping(struct task_struct *task, void *vaddr, unsigned long siz
 /*
  * free actual physical storage used by sampling buffer
  */
-#if 0
-static int
-pfm_free_smpl_buffer(pfm_context_t *ctx)
-{
-	pfm_buffer_fmt_t *fmt;
-
-	if (ctx->ctx_smpl_hdr == NULL) goto invalid_free;
-
-	/*
-	 * we won't use the buffer format anymore
-	 */
-	fmt = ctx->ctx_buf_fmt;
-
-	DPRINT(("sampling buffer @%p size %lu vaddr=%p\n",
-		ctx->ctx_smpl_hdr,
-		ctx->ctx_smpl_size,
-		ctx->ctx_smpl_vaddr));
-
-	pfm_buf_fmt_exit(fmt, current, NULL, NULL);
-
-	/*
-	 * free the buffer
-	 */
-	pfm_rvfree(ctx->ctx_smpl_hdr, ctx->ctx_smpl_size);
-
-	ctx->ctx_smpl_hdr  = NULL;
-	ctx->ctx_smpl_size = 0UL;
-
-	return 0;
-
-invalid_free:
-	printk(KERN_ERR "perfmon: pfm_free_smpl_buffer [%d] no buffer\n", task_pid_nr(current));
-	return -EINVAL;
-}
-#endif
 
 static inline void
 pfm_exit_smpl_buffer(pfm_buffer_fmt_t *fmt)
@@ -2057,11 +2013,6 @@ pfm_close(struct inode *inode, struct file *filp)
 
 		UNPROTECT_CTX(ctx, flags);
 
-		/*
-		 * XXX: check for signals :
-		 * 	- ok for explicit close
-		 * 	- not ok when coming from exit_files()
-		 */
       		schedule();
 
 
@@ -2287,14 +2238,6 @@ pfm_smpl_buffer_alloc(struct task_struct *task, struct file *filp, pfm_context_t
 
 	DPRINT(("sampling buffer rsize=%lu size=%lu bytes\n", rsize, size));
 
-	/*
-	 * check requested size to avoid Denial-of-service attacks
-	 * XXX: may have to refine this test
-	 * Check against address space limit.
-	 *
-	 * if ((mm->total_vm << PAGE_SHIFT) + len> task->rlim[RLIMIT_AS].rlim_cur)
-	 * 	return -ENOMEM;
-	 */
 	if (size > task_rlimit(task, RLIMIT_MEMLOCK))
 		return -ENOMEM;
 
@@ -2325,7 +2268,7 @@ pfm_smpl_buffer_alloc(struct task_struct *task, struct file *filp, pfm_context_t
 	vma->vm_mm	     = mm;
 	vma->vm_file	     = filp;
 	vma->vm_flags	     = VM_READ| VM_MAYREAD |VM_RESERVED;
-	vma->vm_page_prot    = PAGE_READONLY; /* XXX may need to change */
+	vma->vm_page_prot    = PAGE_READONLY;
 
 	/*
 	 * Now we have everything we need and we can initialize
@@ -2391,9 +2334,6 @@ error_kmem:
 	return -ENOMEM;
 }
 
-/*
- * XXX: do something better here
- */
 static int
 pfm_bad_permissions(struct task_struct *task)
 {
@@ -2644,7 +2584,6 @@ pfm_get_task(pfm_context_t *ctx, pid_t pid, struct task_struct **task)
 	struct task_struct *p = current;
 	int ret;
 
-	/* XXX: need to add more checks here */
 	if (pid < 2) return -EPERM;
 
 	if (pid != task_pid_vnr(current)) {
@@ -3384,9 +3323,6 @@ pfm_read_pmds(pfm_context_t *ctx, void *arg, int count, struct pt_regs *regs)
 		rd_func = pmu_conf->pmd_desc[cnum].read_check;
 
 		if (is_counting) {
-			/*
-			 * XXX: need to check for overflow when loaded
-			 */
 			val &= ovfl_mask;
 			val += sval;
 		}
@@ -3638,9 +3574,6 @@ pfm_restart(pfm_context_t *ctx, void *arg, int count, struct pt_regs *regs)
 		 */
 		ctx->ctx_state = PFM_CTX_LOADED;
 
-		/*
-		 * XXX: not really useful for self monitoring
-		 */
 		ctx->ctx_fl_can_restart = 0;
 
 		return 0;
@@ -3691,9 +3624,6 @@ pfm_restart(pfm_context_t *ctx, void *arg, int count, struct pt_regs *regs)
 
 		set_notify_resume(task);
 
-		/*
-		 * XXX: send reschedule if task runs on another CPU
-		 */
 	}
 	return 0;
 }
@@ -4303,15 +4233,6 @@ pfm_context_load(pfm_context_t *ctx, void *arg, int count, struct pt_regs *regs)
 	ret = pfm_reserve_session(current, is_system, the_cpu);
 	if (ret) goto error;
 
-	/*
-	 * task is necessarily stopped at this point.
-	 *
-	 * If the previous context was zombie, then it got removed in
-	 * pfm_save_regs(). Therefore we should not see it here.
-	 * If we see a context, then this is an active context
-	 *
-	 * XXX: needs to be atomic
-	 */
 	DPRINT(("before cmpxchg() old_ctx=%p new_ctx=%p\n",
 		thread->pfm_context, ctx));
 
@@ -4956,10 +4877,6 @@ pfm_resume_after_ovfl(pfm_context_t *ctx, unsigned long ovfl_regs, struct pt_reg
 	int ret = 0;
 
 	state = ctx->ctx_state;
-	/*
-	 * Unlock sampling buffer and reset index atomically
-	 * XXX: not really needed when blocking
-	 */
 	if (CTX_HAS_SMPL(ctx)) {
 
 		rst_ctrl.bits.mask_monitoring = 0;
@@ -5377,7 +5294,7 @@ static void pfm_overflow_handler(struct task_struct *task, pfm_context_t *ctx,
 		 */
 		ovfl_ctrl.bits.notify_user     = ovfl_notify ? 1 : 0;
 		ovfl_ctrl.bits.block_task      = ovfl_notify ? 1 : 0;
-		ovfl_ctrl.bits.mask_monitoring = ovfl_notify ? 1 : 0; /* XXX: change for saturation */
+		ovfl_ctrl.bits.mask_monitoring = ovfl_notify ? 1 : 0;
 		ovfl_ctrl.bits.reset_ovfl_pmds = ovfl_notify ? 0 : 1;
 		/*
 		 * if needed, we reset all overflowed pmds
@@ -5991,15 +5908,6 @@ pfm_lazy_save_regs (struct task_struct *task)
 
 	ctx = PFM_GET_CTX(task);
 
-	/*
-	 * we need to mask PMU overflow here to
-	 * make sure that we maintain pmc0 until
-	 * we save it. overflow interrupts are
-	 * treated as spurious if there is no
-	 * owner.
-	 *
-	 * XXX: I don't think this is necessary
-	 */
 	PROTECT_CTX(ctx,flags);
 
 	/*
@@ -6133,13 +6041,6 @@ pfm_load_regs (struct task_struct *task)
 	 	 */
 		pmc_mask = ctx->ctx_all_pmcs[0];
 	}
-	/*
-	 * when context is MASKED, we will restore PMC with plm=0
-	 * and PMD with stale information, but that's ok, nothing
-	 * will be captured.
-	 *
-	 * XXX: optimize here
-	 */
 	if (pmd_mask) pfm_restore_pmds(ctx->th_pmds, pmd_mask);
 	if (pmc_mask) pfm_restore_pmcs(ctx->th_pmcs, pmc_mask);
 
@@ -6374,12 +6275,6 @@ pfm_flush_pmds(struct task_struct *task, pfm_context_t *ctx)
 		ctx->th_pmcs[0] = 0;
 	}
 	ovfl_val = pmu_conf->ovfl_val;
-	/*
-	 * we save all the used pmds
-	 * we take care of overflows for counting PMDs
-	 *
-	 * XXX: sampling situation is not taken into account here
-	 */
 	mask2 = ctx->ctx_used_pmds[0];
 
 	DPRINT(("is_self=%d ovfl_val=0x%lx mask2=0x%lx\n", is_self, ovfl_val, mask2));

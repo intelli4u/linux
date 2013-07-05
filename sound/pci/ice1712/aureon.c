@@ -2113,8 +2113,6 @@ static int aureon_resume(struct snd_ice1712 *ice)
 	if (err != 0)
 		return err;
 
-	/* workaround for poking volume with alsamixer after resume:
-	 * just set stored volume again */
 	for (i = 0; i < ice->num_total_dacs; i++)
 		wm_set_vol(ice, i, spec->vol[i], spec->master[i % 2]);
 	return 0;

@@ -373,7 +373,8 @@ int __init devtmpfs_init(void)
 {
 	int err;
 	struct vfsmount *mnt;
-	char options[] = "mode=0755";
+	char *options = "mode=0755";
+	/* LR: char options[] = "..."; caused misaligned access, gcc issue */
 
 	err = register_filesystem(&dev_fs_type);
 	if (err) {

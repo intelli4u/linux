@@ -609,7 +609,7 @@ static int __devinit hamachi_init_one (struct pci_dev *pdev,
 	}
 
 	base = pci_resource_start(pdev, 0);
-#ifdef __alpha__				/* Really "64 bit addrs" */
+#ifdef __alpha__				    /* Really "64 bit addrs" */
 	base |= (pci_resource_start(pdev, 1) << 32);
 #endif
 
@@ -639,7 +639,7 @@ static int __devinit hamachi_init_one (struct pci_dev *pdev,
 		dev->dev_addr[i] = 1 ? read_eeprom(ioaddr, 4 + i)
 			: readb(ioaddr + StationAddr + i);
 
-#if ! defined(final_version)
+#if !defined(final_version)
 	if (hamachi_debug > 4)
 		for (i = 0; i < 0x10; i++)
 			printk("%2.2x%s",
@@ -1383,7 +1383,7 @@ static irqreturn_t hamachi_interrupt(int irq, void *dev_instance)
 	long boguscnt = max_interrupt_work;
 	int handled = 0;
 
-#ifndef final_version			/* Can never occur. */
+#ifndef final_version			    /* Can never occur. */
 	if (dev == NULL) {
 		printk (KERN_ERR "hamachi_interrupt(): irq %d for unknown device.\n", irq);
 		return IRQ_NONE;
@@ -1577,14 +1577,9 @@ static int hamachi_rx(struct net_device *dev)
 							    hmp->rx_buf_sz,
 							    PCI_DMA_FROMDEVICE);
 				/* Call copy + cksum if available. */
-#if 1 || USE_IP_COPYSUM
 				skb_copy_to_linear_data(skb,
 					hmp->rx_skbuff[entry]->data, pkt_len);
 				skb_put(skb, pkt_len);
-#else
-				memcpy(skb_put(skb, pkt_len), hmp->rx_ring_dma
-					+ entry*sizeof(*desc), pkt_len);
-#endif
 				pci_dma_sync_single_for_device(hmp->pci_dev,
 							       leXX_to_cpu(hmp->rx_ring[entry].addr),
 							       hmp->rx_buf_sz,

@@ -129,21 +129,6 @@ show_stack(struct task_struct *task, unsigned long *sp)
 	show_trace(sp);
 }
 
-#if 0
-/* displays a short stack trace */
-
-int
-show_stack(void)
-{
-	unsigned long *sp = (unsigned long *)rdusp();
-	int i;
-
-	printk("Stack dump [0x%08lx]:\n", (unsigned long)sp);
-	for (i = 0; i < 16; i++)
-		printk("sp + %d: 0x%08lx\n", i*4, sp[i]);
-	return 0;
-}
-#endif
 
 void
 dump_stack(void)

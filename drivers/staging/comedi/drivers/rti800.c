@@ -465,11 +465,6 @@ static int rti800_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	s->range_table = &range_digital;
 
 /* don't yet know how to deal with counter/timers */
-#if 0
-	s++;
-	/* do */
-	s->type = COMEDI_SUBD_TIMER;
-#endif
 
 	return 0;
 }

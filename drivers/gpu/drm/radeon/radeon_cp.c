@@ -583,12 +583,6 @@ static void radeon_cp_load_microcode(drm_radeon_private_t *dev_priv)
 static void radeon_do_cp_flush(drm_radeon_private_t * dev_priv)
 {
 	DRM_DEBUG("\n");
-#if 0
-	u32 tmp;
-
-	tmp = RADEON_READ(RADEON_CP_RB_WPTR) | (1 << 31);
-	RADEON_WRITE(RADEON_CP_RB_WPTR, tmp);
-#endif
 }
 
 /* Wait for the CP to go idle.
@@ -623,9 +617,6 @@ static void radeon_do_cp_start(drm_radeon_private_t * dev_priv)
 
 	dev_priv->cp_running = 1;
 
-	/* on r420, any DMA from CP to system memory while 2D is active
-	 * can cause a hang.  workaround is to queue a CP RESYNC token
-	 */
 	if ((dev_priv->flags & RADEON_FAMILY_MASK) == CHIP_R420) {
 		BEGIN_RING(3);
 		OUT_RING(CP_PACKET0(R300_CP_RESYNC_ADDR, 1));
@@ -1915,22 +1906,6 @@ int radeon_fullscreen(struct drm_device *dev, void *data, struct drm_file *file_
  * Freelist management
  */
 
-/* Original comment: FIXME: ROTATE_BUFS is a hack to cycle through
- *   bufs until freelist code is used.  Note this hides a problem with
- *   the scratch register * (used to keep track of last buffer
- *   completed) being written to before * the last buffer has actually
- *   completed rendering.
- *
- * KW:  It's also a good way to find free buffers quickly.
- *
- * KW: Ideally this loop wouldn't exist, and freelist_get wouldn't
- * sleep.  However, bugs in older versions of radeon_accel.c mean that
- * we essentially have to do this, else old clients will break.
- *
- * However, it does leave open a potential deadlock where all the
- * buffers are held by other clients, which can't release them because
- * they can't get the lock.
- */
 
 struct drm_buf *radeon_freelist_get(struct drm_device * dev)
 {
@@ -2014,7 +1989,6 @@ int radeon_wait_ring(drm_radeon_private_t * dev_priv, int n)
 		DRM_UDELAY(1);
 	}
 
-	/* FIXME: This return value is ignored in the BEGIN_RING macro! */
 #if RADEON_FIFO_DEBUG
 	radeon_status(dev_priv);
 	DRM_ERROR("failed!\n");

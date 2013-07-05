@@ -242,11 +242,6 @@ xfs_dir2_block_addname(
 	if (args->op_flags & XFS_DA_OP_JUSTCHECK)
 		return 0;
 	needlog = needscan = 0;
-	/*
-	 * If need to compact the leaf entries, do it now.
-	 * Leave the highest-numbered stale entry stale.
-	 * XXX should be the one closest to mid but mid is not yet computed.
-	 */
 	if (compact) {
 		int	fromidx;		/* source leaf index */
 		int	toidx;			/* target leaf index */

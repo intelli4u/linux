@@ -22,10 +22,6 @@ static DEFINE_PER_CPU(struct cpu, cpu_devices);
 
 #ifdef CONFIG_PERFORMANCE_COUNTERS
 
-/*
- * XXX: If/when a SMP-capable implementation of AVR32 will ever be
- * made, we must make sure that the code executes on the correct CPU.
- */
 static ssize_t show_pc0event(struct sys_device *dev,
 			struct sysdev_attribute *attr, char *buf)
 {

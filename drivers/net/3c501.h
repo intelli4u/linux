@@ -88,4 +88,3 @@ struct net_local
 #define RX_RUNT 0x08
 #define RX_MISSED 0x01		/* Missed a packet due to 3c501 braindamage. */
 #define RX_GOOD	0x30		/* Good packet 0x20, or simple overflow 0x10. */
-

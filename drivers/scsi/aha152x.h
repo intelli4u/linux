@@ -2,7 +2,7 @@
 #define _AHA152X_H
 
 /*
- * $Id: aha152x.h,v 2.7 2004/01/24 11:39:03 fischer Exp $
+ * $Id: aha152x.h,v 2.7 2004/01/24 11:39:03 Exp $
  */
 
 /* number of queueable commands

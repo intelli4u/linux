@@ -33,6 +33,16 @@
 #include <net/netfilter/nf_conntrack_l4proto.h>
 #include <net/netfilter/nf_conntrack_zones.h>
 
+#ifdef HNDCTF
+#include <linux/if.h>
+#include <linux/if_vlan.h>
+#include <typedefs.h>
+#include <osl.h>
+#include <ctf/hndctf.h>
+
+#define NFC_CTF_ENABLED	(1 << 31)
+#endif /* HNDCTF */
+
 static DEFINE_SPINLOCK(nf_nat_lock);
 
 static struct nf_conntrack_l3proto *l3proto __read_mostly;
@@ -82,6 +92,12 @@ hash_by_src(const struct net *net, u16 zone,
 			    tuple->dst.protonum, 0);
 	return ((u64)hash * net->ipv4.nat_htable_size) >> 32;
 }
+
+#ifdef HNDCTF
+extern void ip_conntrack_ipct_add(struct sk_buff *skb, u_int32_t hooknum,
+	struct nf_conn *ct, enum ip_conntrack_info ci,
+	struct nf_conntrack_tuple *manip);
+#endif /* HNDCTF */
 
 /* Is this tuple already taken? (not by us) */
 int
@@ -407,10 +423,16 @@ unsigned int nf_nat_packet(struct nf_conn *ct,
 
 		/* We are aiming to look like inverse of other direction. */
 		nf_ct_invert_tuplepr(&target, &ct->tuplehash[!dir].tuple);
-
+#ifdef HNDCTF
+		ip_conntrack_ipct_add(skb, hooknum, ct, ctinfo, &target);
+#endif /* HNDCTF */
 		if (!manip_pkt(target.dst.protonum, skb, 0, &target, mtype))
 			return NF_DROP;
+	} else {
+#ifdef HNDCTF
+#endif /* HNDCTF */
 	}
+
 	return NF_ACCEPT;
 }
 EXPORT_SYMBOL_GPL(nf_nat_packet);

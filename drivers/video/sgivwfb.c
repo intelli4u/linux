@@ -188,7 +188,6 @@ static void dbe_TurnOffDma(struct sgivw_par *par)
 	DBE_SETREG(did_control, readVal);
 	udelay(1000);
 
-	// XXX HACK:
 	//
 	//    This was necessary for GBE--we had to wait through two
 	//    vertical retrace periods before the pixel DMA was
@@ -243,7 +242,6 @@ static int sgivwfb_check_var(struct fb_var_screeninfo *var,
 		var->yoffset = info->var.yoffset;
 	}
 
-	/* XXX FIXME - forcing var's */
 	var->xoffset = 0;
 	var->yoffset = 0;
 
@@ -269,7 +267,6 @@ static int sgivwfb_check_var(struct fb_var_screeninfo *var,
 	if (min_mode == ARRAY_SIZE(dbeVTimings))
 		return -EINVAL;	/* Resolution to high */
 
-	/* XXX FIXME - should try to pick best refresh rate */
 	/* for now, pick closest dot-clock within 3MHz */
 	req_dot = PICOS2KHZ(var->pixclock);
 	printk(KERN_INFO "sgivwfb: requested pixclock=%d ps (%d KHz)\n",
@@ -488,7 +485,6 @@ static int sgivwfb_set_par(struct fb_info *info)
 	SET_DBE_FIELD(FRM_SIZE_PIXEL, FB_HEIGHT_PIX, frmWrite2, ypmax);
 
 	// Tell dbe about the framebuffer location and type
-	// XXX What format is the FRM_TILE_PTR??  64K aligned address?
 	frmWrite3b = 0;
 	SET_DBE_FIELD(FRM_CONTROL, FRM_TILE_PTR, frmWrite3b,
 		      sgivwfb_mem_phys >> 9);
@@ -665,7 +661,6 @@ static int sgivwfb_set_par(struct fb_info *info)
 	// Turn off mouse cursor
 	par->regs->crs_ctl = 0;
 
-	// XXX What's this section for??
 	DBE_GETREG(ctrlstat, readVal);
 	readVal &= 0x02000000;
 

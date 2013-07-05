@@ -351,17 +351,6 @@ static int i460_remove_memory_small_io_page(struct agp_memory *mem,
 
 #if I460_LARGE_IO_PAGES
 
-/*
- * These functions are called when the I/O (GART) page size exceeds PAGE_SIZE.
- *
- * This situation is interesting since AGP memory allocations that are smaller than a
- * single GART page are possible.  The i460.lp_desc array tracks partial allocation of the
- * large GART pages to work around this issue.
- *
- * i460.lp_desc[pg_num].refcount tracks the number of kernel pages in use within GART page
- * pg_num.  i460.lp_desc[pg_num].paddr is the physical address of the large page and
- * i460.lp_desc[pg_num].alloced_map is a bitmap of kernel pages that are in use (allocated).
- */
 
 static int i460_alloc_large_page (struct lp_desc *lp)
 {

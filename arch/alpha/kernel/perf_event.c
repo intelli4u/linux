@@ -839,4 +839,3 @@ void __init init_hw_perf_events(void)
 	alpha_pmu = &ev67_pmu;
 	perf_max_events = alpha_pmu->num_pmcs;
 }
-

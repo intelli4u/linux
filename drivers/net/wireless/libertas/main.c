@@ -157,7 +157,6 @@ static void lbs_tx_timeout(struct net_device *dev)
 	   to kick it somehow? */
 	lbs_host_to_card_done(priv);
 
-	/* FIXME: reset the card */
 
 	lbs_deb_leave(LBS_DEB_TX);
 }
@@ -477,11 +476,6 @@ static int lbs_thread(void *data)
 
 				lbs_ps_confirm_sleep(priv);
 			} else {
-				/* workaround for firmware sending
-				 * deauth/linkloss event immediately
-				 * after sleep request; remove this
-				 * after firmware fixes it
-				 */
 				priv->psstate = PS_STATE_AWAKE;
 				lbs_pr_alert("ignore PS_SleepConfirm in "
 					"non-connected state\n");

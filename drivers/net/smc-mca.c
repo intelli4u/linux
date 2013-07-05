@@ -271,9 +271,6 @@ static int __init ultramca_probe(struct device *gen_dev)
 	if(!tirq || !tbase ||
 	   (irq && irq != tirq) ||
 	   (base_addr && tbase != base_addr))
-		/* FIXME: we're trying to force the ordering of the
-		 * devices here, there should be a way of getting this
-		 * to happen */
 		return -ENXIO;
 
         /* Adapter found. */
@@ -572,4 +569,3 @@ static void __exit ultramca_cleanup_module(void)
 }
 module_init(ultramca_init_module);
 module_exit(ultramca_cleanup_module);
-

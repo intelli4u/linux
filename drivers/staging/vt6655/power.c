@@ -409,4 +409,3 @@ PSbIsNextTBTTWakeUp(
 
     return bWakeUp;
 }
-

@@ -909,5 +909,3 @@ typedef struct __device_info {
 BOOL device_alloc_frag_buf(PSDevice pDevice, PSDeFragControlBlock pDeF);
 
 #endif
-
-

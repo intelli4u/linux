@@ -198,7 +198,6 @@ void tty_add_file(struct tty_struct *tty, struct file *file)
 {
 	struct tty_file_private *priv;
 
-	/* XXX: must implement proper error handling in callers */
 	priv = kmalloc(sizeof(*priv), GFP_KERNEL|__GFP_NOFAIL);
 
 	priv->tty = tty;
@@ -993,22 +992,6 @@ static inline ssize_t do_tty_write(
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * We chunk up writes into a temporary buffer. This
-	 * simplifies low-level drivers immensely, since they
-	 * don't have locking issues and user mode accesses.
-	 *
-	 * But if TTY_NO_WRITE_SPLIT is set, we should use a
-	 * big chunk-size..
-	 *
-	 * The default chunk-size is 2kB, because the NTTY
-	 * layer has problems with bigger chunks. It will
-	 * claim to be able to handle more characters than
-	 * it actually does.
-	 *
-	 * FIXME: This can probably go away now except that 64K chunks
-	 * are too likely to fail unless switched to vmalloc...
-	 */
 	chunk = 2048;
 	if (test_bit(TTY_NO_WRITE_SPLIT, &tty->flags))
 		chunk = 65536;
@@ -1426,7 +1409,6 @@ void tty_free_termios(struct tty_struct *tty)
 	int idx = tty->index;
 	/* Kill this flag and push into drivers for locking etc */
 	if (tty->driver->flags & TTY_DRIVER_RESET_TERMIOS) {
-		/* FIXME: Locking on ->termios array */
 		tp = tty->termios;
 		tty->driver->termios[idx] = NULL;
 		kfree(tp);
@@ -1509,19 +1491,6 @@ void tty_kref_put(struct tty_struct *tty)
 }
 EXPORT_SYMBOL(tty_kref_put);
 
-/**
- *	release_tty		-	release tty structure memory
- *
- *	Release both @tty and a possible linked partner (think pty pair),
- *	and decrement the refcount of the backing module.
- *
- *	Locking:
- *		tty_mutex - sometimes only
- *		takes the file list lock internally when working on the list
- *	of ttys that the driver keeps.
- *		FIXME: should we require tty_mutex is held here ??
- *
- */
 static void release_tty(struct tty_struct *tty, int idx)
 {
 	/* This should always be true but check for the moment */
@@ -1823,7 +1792,6 @@ retry_open:
 		index = tty->index;
 		filp->f_flags |= O_NONBLOCK; /* Don't let /dev/tty block */
 		/* noctty = 1; */
-		/* FIXME: Should we take a driver reference ? */
 		tty_kref_put(tty);
 		goto got_driver;
 	}
@@ -2025,22 +1993,6 @@ static int tty_fasync(int fd, struct file *filp, int on)
 	return retval;
 }
 
-/**
- *	tiocsti			-	fake input character
- *	@tty: tty to fake input into
- *	@p: pointer to character
- *
- *	Fake input to a tty device. Does the necessary locking and
- *	input management.
- *
- *	FIXME: does not honour flow control ??
- *
- *	Locking:
- *		Called functions take tty_ldisc_lock
- *		current->signal->tty check is safe without locks
- *
- *	FIXME: may race normal receive processing
- */
 
 static int tiocsti(struct tty_struct *tty, char __user *p)
 {
@@ -2684,25 +2636,6 @@ static long tty_compat_ioctl(struct file *file, unsigned int cmd,
 }
 #endif
 
-/*
- * This implements the "Secure Attention Key" ---  the idea is to
- * prevent trojan horses by killing all processes associated with this
- * tty when the user hits the "Secure Attention Key".  Required for
- * super-paranoid applications --- see the Orange Book for more details.
- *
- * This code could be nicer; ideally it should send a HUP, wait a few
- * seconds, then send a INT, and then a KILL signal.  But you then
- * have to coordinate with the init process, since all processes associated
- * with the current tty must be dead before the new getty is allowed
- * to spawn.
- *
- * Now, if it would be correct ;-/ The current code has a nasty hole -
- * it doesn't catch files in flight. We may send the descriptor to ourselves
- * via AF_UNIX socket, close it and later fetch from socket. FIXME.
- *
- * Nasty bug: do_SAK is being called in interrupt context.  This can
- * deadlock.  We punt it up to process context.  AKPM - 16Mar2001
- */
 void __do_SAK(struct tty_struct *tty)
 {
 #ifdef TTY_SOFT_SAK
@@ -3051,11 +2984,6 @@ EXPORT_SYMBOL(tty_register_driver);
  */
 int tty_unregister_driver(struct tty_driver *driver)
 {
-#if 0
-	/* FIXME */
-	if (driver->refcount)
-		return -EBUSY;
-#endif
 	unregister_chrdev_region(MKDEV(driver->major, driver->minor_start),
 				driver->num);
 	mutex_lock(&tty_mutex);
@@ -3204,4 +3132,3 @@ int __init tty_init(void)
 #endif
 	return 0;
 }
-

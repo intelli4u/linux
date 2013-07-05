@@ -407,19 +407,6 @@ ENTRY(xscale_cache_fns)
 	.long	xscale_dma_unmap_area
 	.long	xscale_dma_flush_range
 
-/*
- * On stepping A0/A1 of the 80200, invalidating D-cache by line doesn't
- * clear the dirty bits, which means that if we invalidate a dirty line,
- * the dirty data can still be written back to external memory later on.
- *
- * The recommended workaround is to always do a clean D-cache line before
- * doing an invalidate D-cache line, so on the affected processors,
- * dma_inv_range() is implemented as dma_flush_range().
- *
- * See erratum #25 of "Intel 80200 Processor Specification Update",
- * revision January 22, 2003, available at:
- *     http://www.intel.com/design/iio/specupdt/273415.htm
- */
 ENTRY(xscale_80200_A0_A1_cache_fns)
 	.long	xscale_flush_kern_cache_all
 	.long	xscale_flush_user_cache_all
@@ -962,4 +949,3 @@ __pxa270_proc_info:
 	.long	xscale_mc_user_fns
 	.long	xscale_cache_fns
 	.size	__pxa270_proc_info, . - __pxa270_proc_info
-

@@ -28,7 +28,8 @@
 #include "w1_log.h"
 #include "w1_netlink.h"
 
-#if defined(CONFIG_W1_CON) && (defined(CONFIG_CONNECTOR) || (defined(CONFIG_CONNECTOR_MODULE) && defined(CONFIG_W1_MODULE)))
+#if defined(CONFIG_W1_CON) && (defined(CONFIG_CONNECTOR) || \
+	(defined(CONFIG_CONNECTOR_MODULE) && defined(CONFIG_W1_MODULE)))
 void w1_netlink_send(struct w1_master *dev, struct w1_netlink_msg *msg)
 {
 	char buf[sizeof(struct cn_msg) + sizeof(struct w1_netlink_msg)];
@@ -325,10 +326,6 @@ static void w1_cn_callback(struct cn_msg *msg, struct netlink_skb_parms *nsp)
 		cmd = NULL;
 
 		memcpy(&id, m->id.id, sizeof(id));
-#if 0
-		printk("%s: %02x.%012llx.%02x: type=%02x, len=%u.\n",
-				__func__, id.family, (unsigned long long)id.id, id.crc, m->type, m->len);
-#endif
 		if (m->len + sizeof(struct w1_netlink_msg) > msg->len) {
 			err = -E2BIG;
 			break;

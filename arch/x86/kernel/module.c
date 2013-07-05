@@ -29,11 +29,7 @@
 #include <asm/page.h>
 #include <asm/pgtable.h>
 
-#if 0
-#define DEBUGP printk
-#else
 #define DEBUGP(fmt...)
-#endif
 
 void *module_alloc(unsigned long size)
 {
@@ -169,10 +165,6 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
 		case R_X86_64_PC32:
 			val -= (u64)loc;
 			*(u32 *)loc = val;
-#if 0
-			if ((s64)val != *(s32 *)loc)
-				goto overflow;
-#endif
 			break;
 		default:
 			printk(KERN_ERR "module %s: Unknown rela relocation: %llu\n",

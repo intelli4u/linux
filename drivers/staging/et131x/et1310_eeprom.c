@@ -348,12 +348,6 @@ int et131x_init_eeprom(struct et131x_adapter *etdev)
 	pci_read_config_byte(pdev, ET1310_PCI_EEPROM_STATUS,
 				      &eestatus);
 
-	/* THIS IS A WORKAROUND:
-	 * I need to call this function twice to get my card in a
-	 * LG M1 Express Dual running. I tried also a msleep before this
-	 * function, because I thougth there could be some time condidions
-	 * but it didn't work. Call the whole function twice also work.
-	 */
 	if (pci_read_config_byte(pdev, ET1310_PCI_EEPROM_STATUS, &eestatus)) {
 		dev_err(&pdev->dev,
 		       "Could not read PCI config space for EEPROM Status\n");

@@ -369,10 +369,6 @@ static const struct {
 		.model			= SBP2_ROM_VALUE_WILDCARD,
 		.workarounds		= SBP2_WORKAROUND_128K_MAX_TRANS,
 	},
-	/*
-	 * iPod 2nd generation: needs 128k max transfer size workaround
-	 * iPod 3rd generation: needs fix capacity workaround
-	 */
 	{
 		.firmware_revision	= 0x0a2700,
 		.model			= 0x000000,
@@ -944,13 +940,6 @@ static void sbp2_login(struct work_struct *work)
 
 	shost = container_of((void *)tgt, struct Scsi_Host, hostdata[0]);
 	sdev = __scsi_add_device(shost, 0, 0, sbp2_lun2int(lu->lun), lu);
-	/*
-	 * FIXME:  We are unable to perform reconnects while in sbp2_login().
-	 * Therefore __scsi_add_device() will get into trouble if a bus reset
-	 * happens in parallel.  It will either fail or leave us with an
-	 * unusable sdev.  As a workaround we check for this and retry the
-	 * whole login and SCSI probing.
-	 */
 
 	/* Reported error during __scsi_add_device() */
 	if (IS_ERR(sdev))
@@ -1417,13 +1406,6 @@ static int sbp2_map_scatterlist(struct sbp2_command_orb *orb,
 	if (n == 0)
 		goto fail;
 
-	/*
-	 * Handle the special case where there is only one element in
-	 * the scatter list by converting it to an immediate block
-	 * request. This is also a workaround for broken devices such
-	 * as the second generation iPod which doesn't support page
-	 * tables.
-	 */
 	if (n == 1) {
 		orb->request.data_descriptor.high =
 			cpu_to_be32(lu->tgt->address_high);

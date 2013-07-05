@@ -2414,7 +2414,6 @@ static int onenand_block_by_block_erase(struct mtd_info *mtd,
 			region_end = region->offset + region->erasesize * region->numblocks;
 
 			if (len & (block_size - 1)) {
-				/* FIXME: This should be handled at MTD partitioning level. */
 				printk(KERN_ERR "%s: Unaligned address\n",
 					__func__);
 				return -EIO;
@@ -2567,10 +2566,6 @@ static int onenand_default_block_markbad(struct mtd_info *mtd, loff_t ofs)
 
         /* We write two bytes, so we don't have to mess with 16-bit access */
         ofs += mtd->oobsize + (bbm->badblockpos & ~0x01);
-	/* FIXME : What to do when marking SLC block in partition
-	 * 	   with MLC erasesize? For now, it is not advisable to
-	 *	   create partitions containing both SLC and MLC regions.
-	 */
 	return onenand_write_oob_nolock(mtd, ofs, &ops);
 }
 
@@ -2784,7 +2779,6 @@ static void onenand_unlock_all(struct mtd_info *mtd)
 		if (onenand_check_lock_status(this))
 			return;
 
-		/* Workaround for all block unlock in DDP */
 		if (ONENAND_IS_DDP(this) && !FLEXONENAND(this)) {
 			/* All blocks on another chip */
 			ofs = this->chipsize >> 1;

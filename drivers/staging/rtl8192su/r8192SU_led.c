@@ -2334,5 +2334,3 @@ LedControl8192SUsb(
 	
 	RT_TRACE(COMP_LED, "LedStrategy:%d, LedAction %d\n", priv->LedStrategy,LedAction);
 }
-
-

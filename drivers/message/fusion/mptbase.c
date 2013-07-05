@@ -1024,15 +1024,6 @@ mpt_add_sge_64bit(void *pAddr, u32 flagslength, dma_addr_t dma_addr)
 			((flagslength | MPT_SGE_FLAGS_64_BIT_ADDRESSING));
 }
 
-/**
- *	mpt_add_sge_64bit_1078 - Place a simple 64 bit SGE at address pAddr (1078 workaround).
- *	@pAddr: virtual address for SGE
- *	@flagslength: SGE flags and data transfer length
- *	@dma_addr: Physical address
- *
- *	This routine places a MPT request frame back on the MPT adapter's
- *	FreeQ.
- **/
 static void
 mpt_add_sge_64bit_1078(void *pAddr, u32 flagslength, dma_addr_t dma_addr)
 {
@@ -1043,9 +1034,6 @@ mpt_add_sge_64bit_1078(void *pAddr, u32 flagslength, dma_addr_t dma_addr)
 			(lower_32_bits(dma_addr));
 	tmp = (u32)(upper_32_bits(dma_addr));
 
-	/*
-	 * 1078 errata workaround for the 36GB limitation
-	 */
 	if ((((u64)dma_addr + MPI_SGE_LENGTH(flagslength)) >> 32)  == 9) {
 		flagslength |=
 		    MPI_SGE_SET_FLAGS(MPI_SGE_FLAGS_LOCAL_ADDRESS);
@@ -2140,13 +2128,6 @@ mpt_resume(struct pci_dev *pdev)
 	    ioc->name, (mpt_GetIocState(ioc, 1) >> MPI_IOC_STATE_SHIFT),
 	    CHIPREG_READ32(&ioc->chip->Doorbell));
 
-	/*
-	 * Errata workaround for SAS pci express:
-	 * Upon returning to the D0 state, the contents of the doorbell will be
-	 * stale data, and this will incorrectly signal to the host driver that
-	 * the firmware is ready to process mpt commands.   The workaround is
-	 * to issue a diagnostic reset.
-	 */
 	if (ioc->bus_type == SAS && (pdev->device ==
 	    MPI_MANUFACTPAGE_DEVID_SAS1068E || pdev->device ==
 	    MPI_MANUFACTPAGE_DEVID_SAS1064E)) {
@@ -2764,12 +2745,6 @@ mpt_adapter_dispose(MPT_ADAPTER *ioc)
 	pci_disable_device(ioc->pcidev);
 	pci_release_selected_regions(ioc->pcidev, ioc->bars);
 
-#if defined(CONFIG_MTRR) && 0
-	if (ioc->mtrr_reg > 0) {
-		mtrr_del(ioc->mtrr_reg, 0, 0);
-		dprintk(ioc, printk(MYIOC_s_INFO_FMT "MTRR region de-registered\n", ioc->name));
-	}
-#endif
 
 	/*  Zap the adapter lookup ptr!  */
 	list_del(&ioc->list);
@@ -2814,15 +2789,6 @@ MptDisplayIocCapabilities(MPT_ADAPTER *ioc)
 		i++;
 	}
 
-#if 0
-	/*
-	 *  This would probably evoke more questions than it's worth
-	 */
-	if (ioc->pfacts[0].ProtocolFlags & MPI_PORTFACTS_PROTOCOL_TARGET) {
-		printk("%sLogBusAddr", i ? "," : "");
-		i++;
-	}
-#endif
 
 	printk("}\n");
 }
@@ -3722,10 +3688,6 @@ mpt_downloadboot(MPT_ADAPTER *ioc, MpiFwHeader_t *pFwHeader, int sleepFlag)
 	 * so must do two writes.
 	 */
 	if (ioc->bus_type == SPI) {
-		/*
-		 * 1030 and 1035 H/W errata, workaround to access
-		 * the ClearFlashBadSignatureBit
-		 */
 		CHIPREG_PIO_WRITE32(&ioc->pio_chip->DiagRwAddress, 0x3F000000);
 		diagRwData = CHIPREG_PIO_READ32(&ioc->pio_chip->DiagRwData);
 		diagRwData |= 0x40000000;
@@ -4379,9 +4341,6 @@ PrimeIocFifos(MPT_ADAPTER *ioc)
 	if (ioc->reply_frames == NULL) {
 		if ( (num_chain = initChainBuffers(ioc)) < 0)
 			return -1;
-		/*
-		 * 1078 errata workaround for the 36GB limitation
-		 */
 		if (ioc->pcidev->device == MPI_MANUFACTPAGE_DEVID_SAS1078 &&
 		    ioc->dma_mask > DMA_BIT_MASK(35)) {
 			if (!pci_set_dma_mask(ioc->pcidev, DMA_BIT_MASK(32))
@@ -4461,18 +4420,6 @@ PrimeIocFifos(MPT_ADAPTER *ioc)
 
 		ioc->req_frames_low_dma = (u32) (alloc_dma & 0xFFFFFFFF);
 
-#if defined(CONFIG_MTRR) && 0
-		/*
-		 *  Enable Write Combining MTRR for IOC's memory region.
-		 *  (at least as much as we can; "size and base must be
-		 *  multiples of 4 kiB"
-		 */
-		ioc->mtrr_reg = mtrr_add(ioc->req_frames_dma,
-					 sz,
-					 MTRR_TYPE_WRCOMB, 1);
-		dprintk(ioc, printk(MYIOC_s_DEBUG_FMT "MTRR region registered (base:size=%08x:%x)\n",
-				ioc->name, ioc->req_frames_dma, sz));
-#endif
 
 		for (i = 0; i < ioc->req_depth; i++) {
 			alloc_dma += ioc->req_sz;
@@ -4861,14 +4808,6 @@ WaitForDoorbellReply(MPT_ADAPTER *ioc, int howlong, int sleepFlag)
 				ioc->name);
 		return -failcnt;
 	}
-#if 0
-	else if (u16cnt != (2 * mptReply->MsgLength)) {
-		return -101;
-	}
-	else if ((mptReply->IOCStatus & MPI_IOCSTATUS_MASK) != MPI_IOCSTATUS_SUCCESS) {
-		return -102;
-	}
-#endif
 
 	dhsprintk(ioc, printk(MYIOC_s_DEBUG_FMT "Got Handshake reply:\n", ioc->name));
 	DBG_DUMP_REPLY_FRAME(ioc, (u32 *)mptReply);
@@ -4935,10 +4874,6 @@ GetLanConfigPages(MPT_ADAPTER *ioc)
 
 			pci_free_consistent(ioc->pcidev, data_sz, (u8 *) ppage0_alloc, page0_dma);
 
-			/* FIXME!
-			 *	Normalize endianness of structure data,
-			 *	by byte-swapping all > 1 byte fields!
-			 */
 
 		}
 
@@ -4979,10 +4914,6 @@ GetLanConfigPages(MPT_ADAPTER *ioc)
 
 		pci_free_consistent(ioc->pcidev, data_sz, (u8 *) ppage1_alloc, page1_dma);
 
-		/* FIXME!
-		 *	Normalize endianness of structure data,
-		 *	by byte-swapping all > 1 byte fields!
-		 */
 
 	}
 
@@ -6522,7 +6453,7 @@ mpt_ioc_reset(MPT_ADAPTER *ioc, int reset_phase)
 }
 
 
-#ifdef CONFIG_PROC_FS		/* { */
+#ifdef CONFIG_PROC_FS		    /* { */
 /*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
 /*
  *	procfs (%MPT_PROCFS_MPTBASEDIR/...) support stuff...
@@ -7726,7 +7657,6 @@ ProcessEventNotification(MPT_ADAPTER *ioc, EventNotificationReply_t *pEventReply
 			handlers++;
 		}
 	}
-	/* FIXME?  Examine results here? */
 
 	/*
 	 *  If needed, send (a single) EventAck.

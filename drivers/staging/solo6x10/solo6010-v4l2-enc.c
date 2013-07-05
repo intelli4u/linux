@@ -635,7 +635,6 @@ void solo_enc_v4l2_isr(struct solo6010_dev *solo_dev)
 			     jpeg_next - jpeg_current) %
 			    SOLO_JPEG_EXT_SIZE(solo_dev);
 
-		/* XXX I think this means we had a ring overflow? */
 		if (mpeg_current > mpeg_next && mpeg_size != reg_mpeg_size) {
 			enc_reset_gop(solo_dev, ch);
 			continue;
@@ -1133,7 +1132,6 @@ static int solo_g_parm(struct file *file, void *priv,
 	cp->timeperframe.numerator = solo_enc->interval;
 	cp->timeperframe.denominator = solo_dev->fps;
 	cp->capturemode = 0;
-	/* XXX: Shouldn't we be able to get/set this from videobuf? */
 	cp->readbuffers = 2;
 
         return 0;

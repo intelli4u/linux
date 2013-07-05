@@ -936,54 +936,6 @@ char *uuid_string(char *buf, char *end, const u8 *addr,
 	return string(buf, end, uuid, spec);
 }
 
-/*
- * Show a '%p' thing.  A kernel extension is that the '%p' is followed
- * by an extra set of alphanumeric characters that are extended format
- * specifiers.
- *
- * Right now we handle:
- *
- * - 'F' For symbolic function descriptor pointers with offset
- * - 'f' For simple symbolic function names without offset
- * - 'S' For symbolic direct pointers with offset
- * - 's' For symbolic direct pointers without offset
- * - 'R' For decoded struct resource, e.g., [mem 0x0-0x1f 64bit pref]
- * - 'r' For raw struct resource, e.g., [mem 0x0-0x1f flags 0x201]
- * - 'M' For a 6-byte MAC address, it prints the address in the
- *       usual colon-separated hex notation
- * - 'm' For a 6-byte MAC address, it prints the hex address without colons
- * - 'MF' For a 6-byte MAC FDDI address, it prints the address
- *       with a dash-separated hex notation
- * - 'I' [46] for IPv4/IPv6 addresses printed in the usual way
- *       IPv4 uses dot-separated decimal without leading 0's (1.2.3.4)
- *       IPv6 uses colon separated network-order 16 bit hex with leading 0's
- * - 'i' [46] for 'raw' IPv4/IPv6 addresses
- *       IPv6 omits the colons (01020304...0f)
- *       IPv4 uses dot-separated decimal with leading 0's (010.123.045.006)
- * - '[Ii]4[hnbl]' IPv4 addresses in host, network, big or little endian order
- * - 'I6c' for IPv6 addresses printed as specified by
- *       http://tools.ietf.org/html/draft-ietf-6man-text-addr-representation-00
- * - 'U' For a 16 byte UUID/GUID, it prints the UUID/GUID in the form
- *       "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
- *       Options for %pU are:
- *         b big endian lower case hex (default)
- *         B big endian UPPER case hex
- *         l little endian lower case hex
- *         L little endian UPPER case hex
- *           big endian output byte order is:
- *             [0][1][2][3]-[4][5]-[6][7]-[8][9]-[10][11][12][13][14][15]
- *           little endian output byte order is:
- *             [3][2][1][0]-[5][4]-[7][6]-[8][9]-[10][11][12][13][14][15]
- * - 'V' For a struct va_format which contains a format string * and va_list *,
- *       call vsnprintf(->format, *->va_list).
- *       Implements a "recursive vsnprintf".
- *       Do not use this feature without some mechanism to verify the
- *       correctness of the format string and va_list arguments.
- *
- * Note: The difference between 'S' and 'F' is that on ia64 and ppc64
- * function pointers are really function descriptors, which contain a
- * pointer to the real address.
- */
 static noinline_for_stack
 char *pointer(const char *fmt, char *buf, char *end, void *ptr,
 	      struct printf_spec spec)

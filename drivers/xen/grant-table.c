@@ -222,8 +222,6 @@ void gnttab_end_foreign_access(grant_ref_t ref, int readonly,
 		if (page != 0)
 			free_page(page);
 	} else {
-		/* XXX This needs to be fixed so that the ref and page are
-		   placed on a list to be freed up later. */
 		printk(KERN_WARNING
 		       "WARNING: leaking g.e. and page still in use!\n");
 	}

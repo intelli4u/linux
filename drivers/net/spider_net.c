@@ -2133,12 +2133,6 @@ spider_net_setup_phy(struct spider_net_card *card)
 	return 0;
 }
 
-/**
- * spider_net_workaround_rxramfull - work around firmware bug
- * @card: card structure
- *
- * no return value
- **/
 static void
 spider_net_workaround_rxramfull(struct spider_net_card *card)
 {

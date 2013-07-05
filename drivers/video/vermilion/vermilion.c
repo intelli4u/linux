@@ -111,12 +111,6 @@ static int vmlfb_alloc_vram_area(struct vram_area *va, unsigned max_order,
 	va->size = PAGE_SIZE << max_order;
 	va->order = max_order;
 
-	/*
-	 * It seems like __get_free_pages only ups the usage count
-	 * of the first page. This doesn't work with fault mapping, so
-	 * up the usage count once more (XXX: should use split_page or
-	 * compound page).
-	 */
 
 	memset((void *)va->logical, 0x00, va->size);
 	for (i = va->logical; i < va->logical + va->size; i += PAGE_SIZE) {
@@ -623,9 +617,6 @@ static int vmlfb_check_var_locked(struct fb_var_screeninfo *var,
 	clock_diff = nearest_clock - clock;
 	clock_diff = (clock_diff < 0) ? -clock_diff : clock_diff;
 	if (clock_diff > clock / 5) {
-#if 0
-		printk(KERN_DEBUG MODULE_NAME ": Diff failure. %d %d\n",clock_diff,clock);
-#endif
 		return -EINVAL;
 	}
 

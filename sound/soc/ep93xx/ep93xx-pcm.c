@@ -201,7 +201,6 @@ static snd_pcm_uframes_t ep93xx_pcm_pointer(struct snd_pcm_substream *substream)
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct ep93xx_runtime_data *rtd = substream->runtime->private_data;
 
-	/* FIXME: implement this with sub-period granularity */
 	return bytes_to_frames(runtime, rtd->pointer_bytes);
 }
 

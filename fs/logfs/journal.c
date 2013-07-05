@@ -192,11 +192,6 @@ static int __read_je_payload(struct super_block *sb, u64 ofs,
 	if (err)
 		return err;
 	if (jh->h_crc != logfs_crc32(jh, len + sizeof(*jh), 4)) {
-		/* Old code was confused.  It forgot about the header length
-		 * and stopped calculating the crc 16 bytes before the end
-		 * of data - ick!
-		 * FIXME: Remove this hack once the old code is fixed.
-		 */
 		if (jh->h_crc == logfs_crc32(jh, len, 4))
 			WARN_ON_ONCE(1);
 		else
@@ -347,7 +342,6 @@ static int logfs_read_journal(struct super_block *sb)
 	}
 	if (max_i == -1)
 		return -EIO;
-	/* FIXME: Try older segments in case of error */
 	return logfs_read_segment(sb, super->s_journal_seg[max_i]);
 }
 
@@ -831,7 +825,7 @@ void do_logfs_journal_wl_pass(struct super_block *sb)
 		err = btree_insert32(head, segno, (void *)1, GFP_KERNEL);
 		BUG_ON(err); /* mempool should prevent this */
 		err = logfs_erase_segment(sb, segno, 1);
-		BUG_ON(err); /* FIXME: remount-ro would be nicer */
+		BUG_ON(err);
 	}
 	/* Manually move journal_area */
 	freeseg(sb, area->a_segno);

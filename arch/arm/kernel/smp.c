@@ -38,6 +38,10 @@
 #include <asm/localtimer.h>
 #include <asm/smp_plat.h>
 
+#ifdef CONFIG_BCM47XX
+extern void soc_watchdog(void);
+#endif
+
 /*
  * as from 2.5, kernels no longer have an init_tasks structure
  * so we need some other way of telling a new secondary core
@@ -121,13 +125,17 @@ int __cpuinit __cpu_up(unsigned int cpu)
 	 */
 	ret = boot_secondary(cpu, idle);
 	if (ret == 0) {
-		unsigned long timeout;
+		/*
+		 * timeout is in fixed jiffies - for slow processor
+	 	 * the HZ is low, making the waiting longer as necesary.
+		 */
+		unsigned long timeout = 128 ;
 
 		/*
 		 * CPU was successfully started, wait for it
 		 * to come online or time out.
 		 */
-		timeout = jiffies + HZ;
+		timeout += jiffies ;
 		while (time_before(jiffies, timeout)) {
 			if (cpu_online(cpu))
 				break;
@@ -150,9 +158,6 @@ int __cpuinit __cpu_up(unsigned int cpu)
 	if (ret) {
 		printk(KERN_CRIT "CPU%u: processor failed to boot\n", cpu);
 
-		/*
-		 * FIXME: We need to clean up the new idle thread. --rmk
-		 */
 	}
 
 	return ret;
@@ -404,8 +409,15 @@ static DEFINE_PER_CPU(struct clock_event_device, percpu_clockevent);
 static void ipi_timer(void)
 {
 	struct clock_event_device *evt = &__get_cpu_var(percpu_clockevent);
+#ifdef CONFIG_BCM47XX
+	int cpu = smp_processor_id();
+#endif
 	irq_enter();
 	evt->event_handler(evt);
+#ifdef CONFIG_BCM47XX
+	if (cpu == 0)
+		soc_watchdog();
+#endif
 	irq_exit();
 }
 

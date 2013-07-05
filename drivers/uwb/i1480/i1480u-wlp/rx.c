@@ -230,12 +230,6 @@ void i1480u_rx_buffer(struct i1480u_rx_buf *rx_buf)
 	struct device *dev = &i1480u->usb_iface->dev;
 	struct sk_buff *new_skb;
 
-#if 0
-	dev_fnstart(dev,
-		    "(i1480u %p ptr %p size_left %zu)\n", i1480u, ptr, size_left);
-	dev_err(dev, "RX packet, %zu bytes\n", size_left);
-	dump_bytes(dev, ptr, size_left);
-#endif
 	i1480u_hdr_size = sizeof(struct wlp_rx_hdr);
 
 	while (size_left > 0) {
@@ -471,4 +465,3 @@ void i1480u_rx_cb(struct urb *urb)
 error:
 	return;
 }
-

@@ -356,4 +356,3 @@ int __init netfilter_queue_init(void)
 #endif
 	return 0;
 }
-

@@ -492,7 +492,6 @@ static int jffs2_garbage_collect_live(struct jffs2_sb_info *c,  struct jffs2_era
 		goto upnout;
 	}
 
-	/* FIXME. Read node and do lookup? */
 	for (frag = frag_first(&f->fragtree); frag; frag = frag_next(frag)) {
 		if (frag->node && frag->node->raw == raw) {
 			fn = frag->node;
@@ -933,8 +932,6 @@ static int jffs2_garbage_collect_deletion_dirent(struct jffs2_sb_info *c, struct
 		kfree(rd);
 	}
 
-	/* FIXME: If we're deleting a dirent which contains the current mtime and ctime,
-	   we should update the metadata node with those times accordingly */
 
 	/* No need for it any more. Just mark it obsolete and remove it from the list */
 	while (*fdp) {
@@ -995,7 +992,6 @@ static int jffs2_garbage_collect_hole(struct jffs2_sb_info *c, struct jffs2_eras
 			printk(KERN_WARNING "jffs2_garbage_collect_hole: Node at 0x%08x had CRC 0x%08x which doesn't match calculated CRC 0x%08x\n",
 			       ref_offset(fn->raw),
 			       je32_to_cpu(ri.node_crc), crc);
-			/* FIXME: We could possibly deal with this by writing new holes for each frag */
 			printk(KERN_WARNING "Data in the range 0x%08x to 0x%08x of inode #%u will be lost\n",
 			       start, end, f->inocache->ino);
 			goto fill;

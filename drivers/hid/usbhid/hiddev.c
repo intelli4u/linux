@@ -602,7 +602,6 @@ static long hiddev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	
 	/* Called without BKL by compat methods so no BKL taken */
 
-	/* FIXME: Who or what stop this racing with a disconnect ?? */
 	if (!hiddev->exist || !hid)
 		return -EIO;
 

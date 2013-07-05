@@ -153,9 +153,6 @@ static int __devinit neponset_probe(struct platform_device *dev)
 	 * unfortunately something on the Neponset activates
 	 * this IRQ on sleep (ethernet?)
 	 */
-#if 0
-	enable_irq_wake(IRQ_GPIO25);
-#endif
 
 	/*
 	 * Setup other Neponset IRQs.  SA1111 will be done by the

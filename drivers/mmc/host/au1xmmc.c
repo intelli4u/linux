@@ -354,7 +354,7 @@ static void au1xmmc_data_complete(struct au1xmmc_host *host, u32 status)
 
 	if (!data->error) {
 		if (host->flags & HOST_F_DMA) {
-#ifdef CONFIG_SOC_AU1200	/* DBDMA */
+#ifdef CONFIG_SOC_AU1200	    /* DBDMA */
 			u32 chan = DMA_CHANNEL(host);
 
 			chan_tab_t *c = *((chan_tab_t **)chan);
@@ -571,7 +571,7 @@ static void au1xmmc_cmd_complete(struct au1xmmc_host *host, u32 status)
 	host->status = HOST_S_DATA;
 
 	if (host->flags & HOST_F_DMA) {
-#ifdef CONFIG_SOC_AU1200	/* DBDMA */
+#ifdef CONFIG_SOC_AU1200	    /* DBDMA */
 		u32 channel = DMA_CHANNEL(host);
 
 		/* Start the DMA as soon as the buffer gets something in it */
@@ -634,7 +634,7 @@ static int au1xmmc_prepare_data(struct au1xmmc_host *host,
 	au_writel(data->blksz - 1, HOST_BLKSIZE(host));
 
 	if (host->flags & HOST_F_DMA) {
-#ifdef CONFIG_SOC_AU1200	/* DBDMA */
+#ifdef CONFIG_SOC_AU1200	    /* DBDMA */
 		int i;
 		u32 channel = DMA_CHANNEL(host);
 
@@ -806,17 +806,6 @@ static irqreturn_t au1xmmc_irq(int irq, void *dev_id)
 		/* IRQ_OFF(host, SD_CONFIG_TH | SD_CONFIG_RA | SD_CONFIG_RF); */
 		tasklet_schedule(&host->finish_task);
 	}
-#if 0
-	else if (status & SD_STATUS_DD) {
-		/* Sometimes we get a DD before a NE in PIO mode */
-		if (!(host->flags & HOST_F_DMA) && (status & SD_STATUS_NE))
-			au1xmmc_receive_pio(host);
-		else {
-			au1xmmc_data_complete(host, status);
-			/* tasklet_schedule(&host->data_task); */
-		}
-	}
-#endif
 	else if (status & SD_STATUS_CR) {
 		if (host->status == HOST_S_CMD)
 			au1xmmc_cmd_complete(host, status);

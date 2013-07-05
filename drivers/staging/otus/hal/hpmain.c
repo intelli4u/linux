@@ -434,21 +434,6 @@ void zfInitPhy(zdev_t* dev,  u32_t frequency, u8_t bw40)
     zm_msg1_scan(ZM_LV_2, "Modes register setting entries=", entries);
     for (i=0; i<entries; i++)
     {
-#if 0
-        if ( ((struct zsHpPriv*)wd->hpPrivate)->hwNotFirstInit && (ar5416Modes[i][0] == 0xa27c) )
-        {
-            /* Force disable CR671 bit20 / 7823                                            */
-            /* The bug has to do with the polarity of the pdadc offset calibration.  There */
-            /* is an initial calibration that is OK, and there is a continuous             */
-            /* calibration that updates the pddac with the wrong polarity.  Fortunately    */
-            /* the second loop can be disabled with a bit called en_pd_dc_offset_thr.      */
-
-            reg_write(ar5416Modes[i][0], (ar5416Modes[i][modesIndex]& 0xffefffff) );
-            ((struct zsHpPriv*)wd->hpPrivate)->hwNotFirstInit = 1;
-        }
-        else
-        {
-#endif
             /* FirstTime Init or not 0xa27c(CR671) */
             reg_write(ar5416Modes[i][0], ar5416Modes[i][modesIndex]);
 //        }
@@ -490,40 +475,6 @@ void zfInitPhy(zdev_t* dev,  u32_t frequency, u8_t bw40)
             }
         }
     }
-#if 0
-    zfFlushDelayWrite(dev);
-
-    /*
-     * Common Register setting
-     */
-    entries = ARRAY_SIZE(ar5416Common);
-    for (i=0; i<entries; i++)
-    {
-        reg_write(ar5416Common[i][0], ar5416Common[i][1]);
-    }
-    zfFlushDelayWrite(dev);
-
-    /*
-     * RF Gain setting by freqIndex
-     */
-    entries = ARRAY_SIZE(ar5416BB_RfGain);
-    for (i=0; i<entries; i++)
-    {
-        reg_write(ar5416BB_RfGain[i][0], ar5416BB_RfGain[i][freqIndex]);
-    }
-    zfFlushDelayWrite(dev);
-
-    /*
-     * Moved ar5416InitChainMask() here to ensure the swap bit is set before
-     * the pdadc table is written.  Swap must occur before any radio dependent
-     * replicated register access.  The pdadc curve addressing in particular
-     * depends on the consistent setting of the swap bit.
-     */
-    //ar5416InitChainMask(pDev);
-
-    /* Setup the transmit power values. */
-    // TODO
-#endif
 
     /* Update 5G board data */
     //Ant control common
@@ -543,13 +494,6 @@ void zfInitPhy(zdev_t* dev,  u32_t frequency, u8_t bw40)
     tmp = (tmp >> 16) & 0x7f;
     eepromBoardData[3][1] &= (~((u32_t)0x3f80));
     eepromBoardData[3][1] |= (tmp << 7);
-#if 0
-    //swSettleHt40
-    tmp = hpPriv->eepromImage[0x100+0x158*2/4];
-    tmp = (tmp) & 0x7f;
-    eepromBoardData[3][2] &= (~((u32_t)0x3f80));
-    eepromBoardData[3][2] |= (tmp << 7);
-#endif
     //adcDesired, pdaDesired
     tmp = hpPriv->eepromImage[0x100+0x148*2/4];
     tmp = (tmp >> 24);
@@ -642,29 +586,6 @@ void zfInitPhy(zdev_t* dev,  u32_t frequency, u8_t bw40)
     eepromBoardData[14][1] |= (zcXpdToPd[tmp] << 16);
     eepromBoardData[14][2] &= (~((u32_t)0xf0000));
     eepromBoardData[14][2] |= (zcXpdToPd[tmp] << 16);
-#if 0
-    //bsw_Atten chain_0
-    tmp = hpPriv->eepromImage[0x100+0x156*2/4];
-    tmp = (tmp) & 0x1f;
-    eepromBoardData[10][1] &= (~((u32_t)0x1f));
-    eepromBoardData[10][1] |= (tmp);
-    eepromBoardData[10][2] &= (~((u32_t)0x1f));
-    eepromBoardData[10][2] |= (tmp);
-    //bsw_Margin chain_2
-    tmp = hpPriv->eepromImage[0x100+0x156*2/4];
-    tmp = (tmp >> 24) & 0xf;
-    eepromBoardData[11][1] &= (~((u32_t)0x3c00));
-    eepromBoardData[11][1] |= (tmp << 10);
-    eepromBoardData[11][2] &= (~((u32_t)0x3c00));
-    eepromBoardData[11][2] |= (tmp << 10);
-    //bsw_Atten chain_2
-    tmp = hpPriv->eepromImage[0x100+0x156*2/4];
-    tmp = (tmp >> 8) & 0x1f;
-    eepromBoardData[11][1] &= (~((u32_t)0x1f));
-    eepromBoardData[11][1] |= (tmp);
-    eepromBoardData[11][2] &= (~((u32_t)0x1f));
-    eepromBoardData[11][2] |= (tmp);
-#endif
 
     /* Update 2.4G board data */
     //Ant control common
@@ -693,13 +614,6 @@ void zfInitPhy(zdev_t* dev,  u32_t frequency, u8_t bw40)
     tmp = (tmp >> 8) & 0x7f;
     eepromBoardData[3][4] &= (~((u32_t)0x3f80));
     eepromBoardData[3][4] |= (tmp << 7);
-#if 0
-    //swSettleHt40
-    tmp = hpPriv->eepromImage[0x100+0x184*2/4];
-    tmp = (tmp >> 24) & 0x7f;
-    eepromBoardData[3][3] &= (~((u32_t)0x3f80));
-    eepromBoardData[3][3] |= (tmp << 7);
-#endif
     //adcDesired, pdaDesired
     tmp = hpPriv->eepromImage[0x100+0x176*2/4];
     tmp = (tmp >> 16) & 0xff;
@@ -788,43 +702,7 @@ void zfInitPhy(zdev_t* dev,  u32_t frequency, u8_t bw40)
     eepromBoardData[14][3] |= (zcXpdToPd[tmp] << 16);
     eepromBoardData[14][4] &= (~((u32_t)0xf0000));
     eepromBoardData[14][4] |= (zcXpdToPd[tmp] << 16);
-#if 0
-    //bsw_Margin chain_0
-    tmp = hpPriv->eepromImage[0x100+0x184*2/4];
-    tmp = (tmp >> 8) & 0xf;
-    eepromBoardData[10][3] &= (~((u32_t)0x3c00));
-    eepromBoardData[10][3] |= (tmp << 10);
-    eepromBoardData[10][4] &= (~((u32_t)0x3c00));
-    eepromBoardData[10][4] |= (tmp << 10);
-    //bsw_Atten chain_0
-    tmp = hpPriv->eepromImage[0x100+0x182*2/4];
-    tmp = (tmp>>24) & 0x1f;
-    eepromBoardData[10][3] &= (~((u32_t)0x1f));
-    eepromBoardData[10][3] |= (tmp);
-    eepromBoardData[10][4] &= (~((u32_t)0x1f));
-    eepromBoardData[10][4] |= (tmp);
-    //bsw_Margin chain_2
-    tmp = hpPriv->eepromImage[0x100+0x184*2/4];
-    tmp = (tmp >> 16) & 0xf;
-    eepromBoardData[11][3] &= (~((u32_t)0x3c00));
-    eepromBoardData[11][3] |= (tmp << 10);
-    eepromBoardData[11][4] &= (~((u32_t)0x3c00));
-    eepromBoardData[11][4] |= (tmp << 10);
-    //bsw_Atten chain_2
-    tmp = hpPriv->eepromImage[0x100+0x184*2/4];
-    tmp = (tmp) & 0x1f;
-    eepromBoardData[11][3] &= (~((u32_t)0x1f));
-    eepromBoardData[11][3] |= (tmp);
-    eepromBoardData[11][4] &= (~((u32_t)0x1f));
-    eepromBoardData[11][4] |= (tmp);
-#endif
 
-#if 0
-    for (j=0; j<14; j++)
-    {
-        DbgPrint("%04x, %08x, %08x, %08x, %08x\n", eepromBoardData[j][0], eepromBoardData[j][1], eepromBoardData[j][2], eepromBoardData[j][3], eepromBoardData[j][4]);
-    }
-#endif
 
     if ((hpPriv->eepromImage[0x100+0x110*2/4]&0xff) == 0x80) //FEM TYPE
     {
@@ -982,46 +860,10 @@ void zfSetRfRegs(zdev_t* dev, u32_t frequency)
         zm_msg0_scan(ZM_LV_2, "Set to 2.4GHz");
     }
 
-#if 1
     for (i=0; i<ARRAY_SIZE(otusBank); i++)
     {
         reg_write(otusBank[i][0], otusBank[i][freqIndex]);
     }
-#else
-    /* Bank0 */
-    for (i=0; i<ARRAY_SIZE(ar5416Bank0); i++)
-    {
-        reg_write(ar5416Bank0[i][0], ar5416Bank0[i][1]);
-    }
-    /* Bank1 */
-    for (i=0; i<ARRAY_SIZE(ar5416Bank1); i++)
-    {
-        reg_write(ar5416Bank1[i][0], ar5416Bank1[i][1]);
-    }
-    /* Bank2 */
-    for (i=0; i<ARRAY_SIZE(ar5416Bank2); i++)
-    {
-        reg_write(ar5416Bank2[i][0], ar5416Bank2[i][1]);
-    }
-    /* Bank3 */
-    for (i=0; i<ARRAY_SIZE(ar5416Bank3); i++)
-    {
-        reg_write(ar5416Bank3[i][0], ar5416Bank3[i][freqIndex]);
-    }
-    /* Bank5 */
-    reg_write (0x98b0,  0x00000013);
-    reg_write (0x98e4,  0x00000002);
-    /* Bank6 */
-    for (i=0; i<ARRAY_SIZE(ar5416Bank6); i++)
-    {
-        reg_write(ar5416Bank6[i][0], ar5416Bank6[i][freqIndex]);
-    }
-    /* Bank7 */
-    for (i=0; i<ARRAY_SIZE(ar5416Bank7); i++)
-    {
-        reg_write(ar5416Bank7[i][0], ar5416Bank7[i][1]);
-    }
-#endif
 
     zfFlushDelayWrite(dev);
 }
@@ -1359,7 +1201,6 @@ void zfHpSetFrequencyEx(zdev_t* dev, u32_t frequency, u8_t bw40,
     {
         if ( frequency <= ZM_CH_G_14 )
         {
-            /* workaround for 11g Ad Hoc beacon distribution */
             zfDelayWriteInternalReg(dev, ZM_MAC_REG_AC0_CW, 0x7f0007);
             //zfDelayWriteInternalReg(dev, ZM_MAC_REG_AC1_AC0_AIFS, 0x1c04901c);
         }
@@ -1389,7 +1230,6 @@ void zfHpSetFrequencyEx(zdev_t* dev, u32_t frequency, u8_t bw40,
     else
         old_band = 0;
 
-    //Workaround for 2.4GHz only device
     if ((hpPriv->OpFlags & 0x1) == 0)
     {
         if ((((struct zsHpPriv*)wd->hpPrivate)->hwFrequency == ZM_CH_G_1) && (frequency == ZM_CH_G_2))
@@ -1424,7 +1264,6 @@ void zfHpSetFrequencyEx(zdev_t* dev, u32_t frequency, u8_t bw40,
             zfFlushDelayWrite(dev);
         }
 
-        /* reset workaround state to default */
         hpPriv->rxStrongRSSI = 0;
         hpPriv->strongRSSI = 0;
 
@@ -1451,12 +1290,6 @@ void zfHpSetFrequencyEx(zdev_t* dev, u32_t frequency, u8_t bw40,
        /* is an initial calibration that is OK, and there is a continuous             */
        /* calibration that updates the pddac with the wrong polarity.  Fortunately    */
        /* the second loop can be disabled with a bit called en_pd_dc_offset_thr.      */
-#if 0
-        cmdB[0] = 8 | (ZM_CMD_BITAND << 8);;
-        cmdB[1] = (0xa27c + 0x1bc000);
-        cmdB[2] = 0xffefffff;
-        ret = zfIssueCmd(dev, cmdB, 12, ZM_OID_INTERNAL_WRITE, 0);
-#endif
 
        /* Bank 4 */
        zfSetBank4AndPowerTable(dev, frequency, bw40, extOffset);
@@ -1608,14 +1441,6 @@ u32_t zfHpSetKey(zdev_t* dev, u8_t user, u8_t keyId, u8_t type,
     zmw_get_wlan_dev(dev);
     hpPriv=wd->hpPrivate;
 
-#if 0   /* remove to zfCoreSetKey() */
-    zmw_declare_for_critical_section();
-
-    zmw_enter_critical_section(dev);
-    wd->sta.flagKeyChanging++;
-    zm_debug_msg1("   zfHpSetKey++++ ", wd->sta.flagKeyChanging);
-    zmw_leave_critical_section(dev);
-#endif
 
     cmd[0] = 0x0000281C;
     cmd[1] = ((u32_t)keyId<<16) + (u32_t)user;
@@ -1797,8 +1622,6 @@ void zfInitMac(zdev_t* dev)
 
     /* TxQ0/1/2/3 Retry MAX=2 => transmit 3 times and degrade rate for retry */
     /* PB42 AP crash issue:                                                  */
-    /* Workaround the crash issue by CTS/RTS, set retry max to zero for      */
-    /*   workaround tx underrun which enable CTS/RTS */
     zfDelayWriteInternalReg(dev, ZM_MAC_REG_RETRY_MAX, 0); // 0x11111 => 0
 
     /* use hardware MIC check */
@@ -1864,13 +1687,6 @@ void zfInitMac(zdev_t* dev)
 	/* Phy register read timeout */
 	zfDelayWriteInternalReg(dev, 0x1c3680, 0xf00008);
 
-	/* Disable Rx TimeOut : workaround for BB.
-	 *  OTUS would interrupt the rx frame that sent by OWL TxUnderRun
-	 *  because OTUS rx timeout behavior, then OTUS would not ack the BA for
-	 *  this AMPDU from OWL.
-	 *  Fix by Perry Hwang.  2007/05/10.
-	 *  0x1c362c : Rx timeout value : bit 27~16
-	 */
 	zfDelayWriteInternalReg(dev, 0x1c362c, 0x0);
 
     //Set USB Rx stream mode MAX packet number to 2
@@ -2012,14 +1828,6 @@ u8_t zfHpUpdateQosParameter(zdev_t* dev, u16_t* cwminTbl, u16_t* cwmaxTbl,
     /*        otherwise driver will fail in Wifi beacon distribution */
     if (hpPriv->dot11Mode == ZM_HAL_80211_MODE_STA)
     {
-#if 0 //Restore CWmin to improve down link throughput
-        //cheating in BE traffic
-        if (wd->sta.EnableHT == 1)
-        {
-            //cheating in BE traffic
-            cwminTbl[0] = 7;//15;
-        }
-#endif
         cwmaxTbl[0] = 127;//1023;
         aifsTbl[0] = 2*9+10;//3 * 9 + 10;
     }
@@ -2444,7 +2252,6 @@ void zfHpHeartBeat(zdev_t* dev)
     zmw_get_wlan_dev(dev);
     hpPriv=wd->hpPrivate;
 
-    /* Workaround : Make OTUS fire more beacon in ad hoc mode in 2.4GHz */
     if (hpPriv->ibssBcnEnabled != 0)
     {
         if (hpPriv->hwFrequency <= ZM_CH_G_14)
@@ -2467,7 +2274,6 @@ void zfHpHeartBeat(zdev_t* dev)
 
     if ((wd->tick & 0x3f) == 0x25)
     {
-        /* Workaround for beacon stuck after SW reset */
         if (hpPriv->ibssBcnEnabled != 0)
         {
             zfDelayWriteInternalReg(dev, ZM_MAC_REG_BCN_ADDR, ZM_BEACON_BUFFER_ADDRESS);
@@ -2860,7 +2666,6 @@ s32_t zfInterpolateFunc(s32_t x, s32_t x1, s32_t y1, s32_t x2, s32_t y2)
 //#define ZM_ENABLE_TPC_WINDOWS_DEBUG
 //#define ZM_ENABLE_BANDEDGES_WINDOWS_DEBUG
 
-/* the tx power offset workaround for ART vs NDIS/MDK */
 #define HALTX_POWER_OFFSET      0
 
 u8_t zfInterpolateFuncX(u8_t x, u8_t x1, u8_t y1, u8_t x2, u8_t y2)
@@ -3135,7 +2940,6 @@ u32_t zfHpCheckDoHeavyClip(zdev_t* dev, u32_t freq, CAL_CTL_EDGES *pCtlEdges, u8
     {
         ret |= 0xf0;
     }
-#if 1
     /* HT20 : frequency bandedge */
     for (i = 0; (i < AR5416_NUM_BAND_EDGES) && (pCtlEdges[i].bChannel != AR5416_BCHAN_UNUSED) ; i++)
     {
@@ -3148,7 +2952,6 @@ u32_t zfHpCheckDoHeavyClip(zdev_t* dev, u32_t freq, CAL_CTL_EDGES *pCtlEdges, u8
             break;
         }
     }
-#endif
 
     return ret;
 }
@@ -3767,7 +3570,6 @@ void zfSetPowerCalTable(zdev_t* dev, u32_t frequency, u8_t bw40, u8_t extOffset)
             }
             else
             {
-                /* workaround for no data in Eeprom, replace by normal 2G */
                 ctlEdgesMaxPower2GHT20 = ctlEdgesMaxPower2G;
             }
             #ifdef ZM_ENABLE_BANDEDGES_WINDOWS_DEBUG
@@ -3783,7 +3585,6 @@ void zfSetPowerCalTable(zdev_t* dev, u32_t frequency, u8_t bw40, u8_t extOffset)
             }
             else
             {
-                /* workaround for no data in Eeprom, replace by normal 2G */
                 ctlEdgesMaxPower2GHT40 = ctlEdgesMaxPower2G;
             }
             #ifdef ZM_ENABLE_BANDEDGES_WINDOWS_DEBUG
@@ -3898,7 +3699,6 @@ void zfSetPowerCalTable(zdev_t* dev, u32_t frequency, u8_t bw40, u8_t extOffset)
             }
             else
             {
-                /* workaround for no data in Eeprom, replace by normal 5G */
                 ctlEdgesMaxPower5GHT20 = ctlEdgesMaxPower5G;
             }
             #ifdef ZM_ENABLE_BANDEDGES_WINDOWS_DEBUG
@@ -3914,7 +3714,6 @@ void zfSetPowerCalTable(zdev_t* dev, u32_t frequency, u8_t bw40, u8_t extOffset)
             }
             else
             {
-                /* workaround for no data in Eeprom, replace by normal 5G */
                 ctlEdgesMaxPower5GHT40 = ctlEdgesMaxPower5G;
             }
             #ifdef ZM_ENABLE_BANDEDGES_WINDOWS_DEBUG
@@ -3961,7 +3760,6 @@ void zfSetPowerCalTable(zdev_t* dev, u32_t frequency, u8_t bw40, u8_t extOffset)
         }/* end of bandedges of 5G */
     }/* end of  if ((desired_CtlIndex = zfHpGetRegulatoryDomain(dev)) == 0) */
 
-    /* workaround */
     /* 5. BB heavy clip */
     /*    only 2.4G do heavy clip */
     if (hpPriv->enableBBHeavyClip && hpPriv->hwBBHeavyClip && (frequency <= ZM_CH_G_14))
@@ -4020,15 +3818,6 @@ void zfSetPowerCalTable(zdev_t* dev, u32_t frequency, u8_t bw40, u8_t extOffset)
         /* Write MAC reg 0x694 for ACK's TPC */
         /* Write MAC reg 0xbb4 RTS and SF-CTS frame power control */
         /* Always use two stream for low legacy rate */
-        #if 0
-        //if (hpPriv->halCapability & ZM_HP_CAP_11N_ONE_TX_STREAM)
-        //{
-            zfDelayWriteInternalReg(dev, 0x1c3694, ((hpPriv->tPow2x2g[0]&0x3f) << 20) | (0x1<<26));
-            zfDelayWriteInternalReg(dev, 0x1c3bb4, ((hpPriv->tPow2x2g[0]&0x3f) << 5 ) | (0x1<<11) |
-                                                   ((hpPriv->tPow2x2g[0]&0x3f) << 21) | (0x1<<27)  );
-        //}
-        #endif
-        #if 1
         //else
         {
             #ifndef ZM_OTUS_LINUX_PHASE_2
@@ -4038,7 +3827,6 @@ void zfSetPowerCalTable(zdev_t* dev, u32_t frequency, u8_t bw40, u8_t extOffset)
             #endif
             hpPriv->currentAckRtsTpc = hpPriv->tPow2x2g[0];
     	}
-        #endif
         zfFlushDelayWrite(dev);
 
         zfPrintTargetPower2G(hpPriv->tPow2xCck,
@@ -4085,29 +3873,6 @@ void zfDumpEepBandEdges(struct ar5416Eeprom* eepromImage)
     #ifdef ZM_ENABLE_BANDEDGES_WINDOWS_DEBUG
     u8_t i, j, k;
 
-#if 0
-    zm_dbg(("\n === BandEdges index dump ==== \n"));
-
-    for (i = 0; i < AR5416_NUM_CTLS; i++)
-    {
-        zm_dbg(("%02x ", eepromImage->ctlIndex[i]));
-    }
-
-    zm_dbg(("\n === BandEdges data dump ==== \n"));
-
-    for (i = 0; i < AR5416_NUM_CTLS; i++)
-    {
-        for (j = 0; j < 2; j++)
-        {
-            for(k = 0; k < AR5416_NUM_BAND_EDGES; k++)
-            {
-                u8_t *pdata = (u8_t*)&(eepromImage->ctlData[i].ctlEdges[j][k]);
-                zm_dbg(("(%02x %02x)", pdata[0], pdata[1]));
-            }
-            zm_dbg(("\n"));
-        }
-    }
-#else
     zm_dbg(("\n === BandEdges index dump ==== \n"));
     for (i = 0; i < 24; i+=8)
     {
@@ -4134,7 +3899,6 @@ void zfDumpEepBandEdges(struct ar5416Eeprom* eepromImage)
                    ));
         }
     }
-#endif
     #endif
 }
 
@@ -4412,7 +4176,6 @@ void zfHpBeginSiteSurvey(zdev_t* dev, u8_t status)
         hpPriv->isSiteSurvey = 0;
     }
 
-    /* reset workaround state to default */
 //    if (hpPriv->rxStrongRSSI == 1)
     {
         hpPriv->rxStrongRSSI = 0;

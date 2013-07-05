@@ -302,14 +302,6 @@ static int qc_detect(struct qcam *q)
 	}
 
 
-#if 0
-	/* Force camera detection during testing. Sometimes the camera
-	   won't be flashing these bits. Possibly unloading the module
-	   in the middle of a grab? Or some timeout condition?
-	   I've seen this parameter as low as 19 on my 450Mhz box - mpc */
-	printk(KERN_DEBUG "Debugging: QCam detection counter <30-200 counts as detected>: %d\n", count);
-	return 1;
-#endif
 
 	/* Be (even more) liberal in what you accept...  */
 

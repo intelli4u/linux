@@ -29,9 +29,9 @@
 #include <pcmcia/ss.h>
 #include <pcmcia/cs.h>
 
-#undef MAX_IO_WIN	/* FIXME */
+#undef MAX_IO_WIN
 #define MAX_IO_WIN 1
-#undef MAX_WIN		/* FIXME */
+#undef MAX_WIN
 #define MAX_WIN 1
 
 #include "m32r_cfc.h"
@@ -206,13 +206,11 @@ void pcc_iowrite_word(int sock, unsigned long port, void *buf, size_t size,
 		printk("m32r_cfc:iowrite_word null addr :%#lx\n",port);
 		return;
 	}
-#if 1
 	if (addr & 1) {
 		printk("m32r_cfc:iowrite_word port addr (%#lx):%#lx\n", port,
 			addr);
 		return;
 	}
-#endif
 	pr_debug("m32r_cfc: pcc_iowrite_word: addr=%#lx\n", addr);
 
 	spin_lock_irqsave(&pcc_lock, flags);
@@ -348,7 +346,8 @@ static void add_pcc_socket(ulong base, int irq, ulong mapaddr,
 	pr_debug("m32r_cfc: enable CFMSK, RDYSEL\n");
 	pcc_set(pcc_sockets, (unsigned int)PLD_CFIMASK, 0x01);
 #endif	/* CONFIG_PLAT_USRV */
-#if defined(CONFIG_PLAT_M32700UT) || defined(CONFIG_PLAT_USRV) || defined(CONFIG_PLAT_OPSPUT)
+#if defined(CONFIG_PLAT_M32700UT) || defined(CONFIG_PLAT_USRV) || \
+	defined(CONFIG_PLAT_OPSPUT)
 	pcc_set(pcc_sockets, (unsigned int)PLD_CFCR1, 0x0200);
 #endif
 	pcc_sockets++;
@@ -402,7 +401,8 @@ static int _pcc_get_status(u_short sock, u_int *value)
 	*value = (status) ? SS_DETECT : 0;
 	pr_debug("m32r_cfc: _pcc_get_status: status=0x%08x\n", status);
 
-#if defined(CONFIG_PLAT_M32700UT) || defined(CONFIG_PLAT_USRV) || defined(CONFIG_PLAT_OPSPUT)
+#if defined(CONFIG_PLAT_M32700UT) || defined(CONFIG_PLAT_USRV) || \
+	defined(CONFIG_PLAT_OPSPUT)
 	if ( status ) {
 		/* enable CF power */
 		status = inw((unsigned int)PLD_CPCR);
@@ -471,7 +471,9 @@ static int _pcc_set_socket(u_short sock, socket_state_t *state)
 		  "io_irq %d, csc_mask %#2.2x)\n", sock, state->flags,
 		  state->Vcc, state->Vpp, state->io_irq, state->csc_mask);
 
-#if defined(CONFIG_PLAT_M32700UT) || defined(CONFIG_PLAT_USRV) || defined(CONFIG_PLAT_OPSPUT) || defined(CONFIG_PLAT_MAPPI2) || defined(CONFIG_PLAT_MAPPI3)
+#if defined(CONFIG_PLAT_M32700UT) || defined(CONFIG_PLAT_USRV) || \
+	defined(CONFIG_PLAT_OPSPUT) || defined(CONFIG_PLAT_MAPPI2) || \
+	defined(CONFIG_PLAT_MAPPI3)
 	if (state->Vcc) {
 		if ((state->Vcc != 50) && (state->Vcc != 33))
 			return -EINVAL;
@@ -578,33 +580,6 @@ static int _pcc_set_mem_map(u_short sock, struct pccard_mem_map *mem)
 
 } /* _set_mem_map */
 
-#if 0 /* driver model ordering issue */
-/*======================================================================
-
-	Routines for accessing socket information and register dumps via
-	/proc/bus/pccard/...
-
-======================================================================*/
-
-static ssize_t show_info(struct class_device *class_dev, char *buf)
-{
-	pcc_socket_t *s = container_of(class_dev, struct pcc_socket,
-		socket.dev);
-
-	return sprintf(buf, "type:     %s\nbase addr:    0x%08lx\n",
-		pcc[s->type].name, s->base);
-}
-
-static ssize_t show_exca(struct class_device *class_dev, char *buf)
-{
-	/* FIXME */
-
-	return 0;
-}
-
-static CLASS_DEVICE_ATTR(info, S_IRUGO, show_info, NULL);
-static CLASS_DEVICE_ATTR(exca, S_IRUGO, show_exca, NULL);
-#endif
 
 /*====================================================================*/
 
@@ -758,12 +733,6 @@ static int __init init_m32r_pcc(void)
 		if (!ret)
 			socket[i].flags |= IS_REGISTERED;
 
-#if 0	/* driver model ordering issue */
-		class_device_create_file(&socket[i].socket.dev,
-					 &class_device_attr_info);
-		class_device_create_file(&socket[i].socket.dev,
-					 &class_device_attr_exca);
-#endif
 	}
 
 	/* Finally, schedule a polling interrupt */

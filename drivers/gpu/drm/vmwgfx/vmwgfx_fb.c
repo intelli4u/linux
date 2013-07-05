@@ -223,9 +223,6 @@ static void vmw_fb_dirty_flush(struct vmw_fb_par *par)
 			iowrite32(src[k], vram_mem + k);
 	}
 
-#if 0
-	DRM_INFO("%s, (%u, %u) (%ux%u)\n", __func__, x, y, w, h);
-#endif
 
 	cmd = vmw_fifo_reserve(vmw_priv, sizeof(*cmd));
 	if (unlikely(cmd == NULL)) {
@@ -398,14 +395,12 @@ int vmw_fb_init(struct vmw_private *vmw_priv)
 	unsigned fb_bbp, fb_depth, fb_offset, fb_pitch, fb_size;
 	int ret;
 
-	/* XXX These shouldn't be hardcoded. */
 	initial_width = 800;
 	initial_height = 600;
 
 	fb_bbp = 32;
 	fb_depth = 24;
 
-	/* XXX As shouldn't these be as well. */
 	fb_width = min(vmw_priv->fb_max_width, (unsigned)2048);
 	fb_height = min(vmw_priv->fb_max_height, (unsigned)2048);
 
@@ -502,19 +497,11 @@ int vmw_fb_init(struct vmw_private *vmw_priv)
 	info->var.xres = initial_width;
 	info->var.yres = initial_height;
 
-#if 0
-	info->pixmap.size = 64*1024;
-	info->pixmap.buf_align = 8;
-	info->pixmap.access_align = 32;
-	info->pixmap.flags = FB_PIXMAP_SYSTEM;
-	info->pixmap.scan_align = 1;
-#else
 	info->pixmap.size = 0;
 	info->pixmap.buf_align = 8;
 	info->pixmap.access_align = 32;
 	info->pixmap.flags = FB_PIXMAP_SYSTEM;
 	info->pixmap.scan_align = 1;
-#endif
 
 	info->apertures = alloc_apertures(1);
 	if (!info->apertures) {

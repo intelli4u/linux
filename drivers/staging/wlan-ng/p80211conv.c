@@ -203,7 +203,6 @@ int skb_ether_to_p80211(wlandevice_t *wlandev, u32 ethconv,
 
 	if ((wlandev->hostwep & HOSTWEP_PRIVACYINVOKED)
 	    && (wlandev->hostwep & HOSTWEP_ENCRYPT)) {
-		/* XXXX need to pick keynum other than default? */
 
 		p80211_wep->data = kmalloc(skb->len, GFP_ATOMIC);
 		foo = wep_encrypt(wlandev, skb->data, p80211_wep->data,

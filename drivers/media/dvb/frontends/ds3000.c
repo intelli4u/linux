@@ -1039,7 +1039,7 @@ static int ds3000_tune(struct dvb_frontend *fe,
 
 	state->dnxt.delivery = c->modulation;
 	state->dnxt.frequency = c->frequency;
-	state->dnxt.rolloff = 2; /* fixme */
+	state->dnxt.rolloff = 2;
 	state->dnxt.fec = c->fec_inner;
 
 	ret = ds3000_set_inversion(state, p->inversion);

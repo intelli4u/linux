@@ -543,7 +543,7 @@ conf_lock:
 	dprintk("lockd: conflicting lock(ty=%d, %Ld-%Ld)\n",
 		lock->fl.fl_type, (long long)lock->fl.fl_start,
 		(long long)lock->fl.fl_end);
-	conflock->caller = "somehost";	/* FIXME */
+	conflock->caller = "somehost";
 	conflock->len = strlen(conflock->caller);
 	conflock->oh.len = 0;		/* don't return OH info */
 	conflock->svid = lock->fl.fl_pid;
@@ -804,14 +804,6 @@ static void nlmsvc_grant_callback(struct rpc_task *task, void *data)
 	dprintk("lockd: GRANT_MSG RPC callback\n");
 
 	lock_kernel();
-	/* if the block is not on a list at this point then it has
-	 * been invalidated. Don't try to requeue it.
-	 *
-	 * FIXME: it's possible that the block is removed from the list
-	 * after this check but before the nlmsvc_insert_block. In that
-	 * case it will be added back. Perhaps we need better locking
-	 * for nlm_blocked?
-	 */
 	if (list_empty(&block->b_list))
 		goto out;
 

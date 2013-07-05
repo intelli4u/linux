@@ -252,45 +252,6 @@ MD5Transform(__u32 buf[4], __u32 const in[16])
 	buf[3] += d;
 }
 
-#if 0   /* currently unused */
-/***********************************************************************
- the rfc 2104 version of hmac_md5 initialisation.
-***********************************************************************/
-static void
-hmac_md5_init_rfc2104(unsigned char *key, int key_len,
-		      struct HMACMD5Context *ctx)
-{
-	int i;
-
-	/* if key is longer than 64 bytes reset it to key=MD5(key) */
-	if (key_len > 64) {
-		unsigned char tk[16];
-		struct MD5Context tctx;
-
-		cifs_MD5_init(&tctx);
-		cifs_MD5_update(&tctx, key, key_len);
-		cifs_MD5_final(tk, &tctx);
-
-		key = tk;
-		key_len = 16;
-	}
-
-	/* start out by storing key in pads */
-	memset(ctx->k_ipad, 0, sizeof(ctx->k_ipad));
-	memset(ctx->k_opad, 0, sizeof(ctx->k_opad));
-	memcpy(ctx->k_ipad, key, key_len);
-	memcpy(ctx->k_opad, key, key_len);
-
-	/* XOR key with ipad and opad values */
-	for (i = 0; i < 64; i++) {
-		ctx->k_ipad[i] ^= 0x36;
-		ctx->k_opad[i] ^= 0x5c;
-	}
-
-	cifs_MD5_init(&ctx->ctx);
-	cifs_MD5_update(&ctx->ctx, ctx->k_ipad, 64);
-}
-#endif
 
 /***********************************************************************
  the microsoft version of hmac_md5 initialisation.
@@ -351,16 +312,3 @@ hmac_md5_final(unsigned char *digest, struct HMACMD5Context *ctx)
  single function to calculate an HMAC MD5 digest from data.
  use the microsoft hmacmd5 init method because the key is 16 bytes.
 ************************************************************/
-#if 0 /* currently unused */
-static void
-hmac_md5(unsigned char key[16], unsigned char *data, int data_len,
-	 unsigned char *digest)
-{
-	struct HMACMD5Context ctx;
-	hmac_md5_init_limK_to_64(key, 16, &ctx);
-	if (data_len != 0)
-		hmac_md5_update(data, data_len, &ctx);
-
-	hmac_md5_final(digest, &ctx);
-}
-#endif

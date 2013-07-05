@@ -337,7 +337,6 @@ static int __init at32_wdt_probe(struct platform_device *pdev)
 	spin_lock_init(&wdt->io_lock);
 	wdt->boot_status = at32_wdt_get_status();
 
-	/* Work-around for watchdog silicon errata. */
 	if (wdt->boot_status & WDIOF_CARDRESET) {
 		dev_info(&pdev->dev, "CPU must be reset with external "
 				"reset or POR due to silicon errata.\n");

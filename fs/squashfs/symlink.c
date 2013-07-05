@@ -124,4 +124,3 @@ const struct inode_operations squashfs_symlink_inode_ops = {
 	.getxattr = generic_getxattr,
 	.listxattr = squashfs_listxattr
 };
-

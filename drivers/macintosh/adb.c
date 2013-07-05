@@ -112,18 +112,6 @@ static struct adb_handler {
 static DEFINE_MUTEX(adb_handler_mutex);
 static DEFINE_RWLOCK(adb_handler_lock);
 
-#if 0
-static void printADBreply(struct adb_request *req)
-{
-        int i;
-
-        printk("adb reply (%d)", req->reply_len);
-        for(i = 0; i < req->reply_len; i++)
-                printk(" %x", req->reply[i]);
-        printk("\n");
-
-}
-#endif
 
 static int adb_scan_bus(void)
 {

@@ -1964,10 +1964,6 @@ static int __irda_setsockopt(struct socket *sock, int level, int optname,
 			return -EFAULT;
 		}
 
-		/* Find the object we target.
-		 * If the user gives us an empty string, we use the object
-		 * associated with this socket. This will workaround
-		 * duplicated class name - Jean II */
 		if(ias_opt->irda_class_name[0] == '\0') {
 			if(self->ias_obj == NULL) {
 				kfree(ias_opt);
@@ -2084,10 +2080,6 @@ static int __irda_setsockopt(struct socket *sock, int level, int optname,
 			return -EFAULT;
 		}
 
-		/* Find the object we target.
-		 * If the user gives us an empty string, we use the object
-		 * associated with this socket. This will workaround
-		 * duplicated class name - Jean II */
 		if(ias_opt->irda_class_name[0] == '\0')
 			ias_obj = self->ias_obj;
 		else
@@ -2345,10 +2337,6 @@ bed:
 			return -EFAULT;
 		}
 
-		/* Find the object we target.
-		 * If the user gives us an empty string, we use the object
-		 * associated with this socket. This will workaround
-		 * duplicated class name - Jean II */
 		if(ias_opt->irda_class_name[0] == '\0')
 			ias_obj = self->ias_obj;
 		else

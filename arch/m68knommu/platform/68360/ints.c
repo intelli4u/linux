@@ -138,4 +138,3 @@ void init_IRQ(void)
 		irq_desc[i].chip = &intc_irq_chip;
 	}
 }
-

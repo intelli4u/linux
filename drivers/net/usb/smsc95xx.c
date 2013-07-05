@@ -1191,8 +1191,6 @@ static struct sk_buff *smsc95xx_tx_fixup(struct usbnet *dev,
 
 	if (csum) {
 		if (skb->len <= 45) {
-			/* workaround - hardware tx checksum does not work
-			 * properly with extremely small packets */
 			long csstart = skb->csum_start - skb_headroom(skb);
 			__wsum calc = csum_partial(skb->data + csstart,
 				skb->len - csstart, 0);

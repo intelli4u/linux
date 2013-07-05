@@ -804,4 +804,3 @@ struct MSTE_RTC {
 #define mste_rtc ((*(volatile struct MSTE_RTC *)MSTE_RTC_BAS))
 
 #endif /* linux/atarihw.h */
-

@@ -244,8 +244,17 @@ static void tdi_reset (struct ehci_hcd *ehci)
 	 * controller reset. Set the required endian mode
 	 * for transfer buffers to match the host microprocessor
 	 */
+#if defined(CONFIG_MIPS)
+#if defined(CONFIG_CPU_BIG_ENDIAN)
+       tmp |= USBMODE_BE;
+#endif
+#if defined(CONFIG_CPU_LITTLE_ENDIAN)
+       tmp &= ~USBMODE_BE;
+#endif
+#else
 	if (ehci_big_endian_mmio(ehci))
 		tmp |= USBMODE_BE;
+#endif
 	ehci_writel(ehci, tmp, reg_ptr);
 }
 
@@ -686,11 +695,6 @@ static int ehci_run (struct usb_hcd *hcd)
 	hcc_params = ehci_readl(ehci, &ehci->caps->hcc_params);
 	if (HCC_64BIT_ADDR(hcc_params)) {
 		ehci_writel(ehci, 0, &ehci->regs->segment);
-#if 0
-// this is deeply broken on almost all architectures
-		if (!dma_set_mask(hcd->self.controller, DMA_BIT_MASK(64)))
-			ehci_info(ehci, "enabled 64bit DMA\n");
-#endif
 	}
 
 
@@ -1210,9 +1214,14 @@ MODULE_LICENSE ("GPL");
 #define	PLATFORM_DRIVER		ehci_atmel_driver
 #endif
 
+#ifdef CONFIG_MIPS_SEAD3
+#include "ehci-mips.c"
+#define	PLATFORM_DRIVER		ehci_hcd_mips_driver
+#endif
+
 #if !defined(PCI_DRIVER) && !defined(PLATFORM_DRIVER) && \
-    !defined(PS3_SYSTEM_BUS_DRIVER) && !defined(OF_PLATFORM_DRIVER) && \
-    !defined(XILINX_OF_PLATFORM_DRIVER)
+	!defined(PS3_SYSTEM_BUS_DRIVER) && !defined(OF_PLATFORM_DRIVER) && \
+	!defined(XILINX_OF_PLATFORM_DRIVER)
 #error "missing bus glue for ehci-hcd"
 #endif
 
@@ -1327,4 +1336,3 @@ static void __exit ehci_hcd_cleanup(void)
 	clear_bit(USB_EHCI_LOADED, &usb_hcds_loaded);
 }
 module_exit(ehci_hcd_cleanup);
-

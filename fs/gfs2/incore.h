@@ -677,4 +677,3 @@ struct gfs2_sbd {
 };
 
 #endif /* __INCORE_DOT_H__ */
-

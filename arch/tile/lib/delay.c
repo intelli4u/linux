@@ -30,5 +30,4 @@ void __ndelay(unsigned long nsecs)
 }
 EXPORT_SYMBOL(__ndelay);
 
-/* FIXME: should be declared in a header somewhere. */
 EXPORT_SYMBOL(__delay);

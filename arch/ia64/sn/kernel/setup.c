@@ -390,24 +390,6 @@ void __init sn_setup(char **cmdline_p)
 	acpi_table_init();
 
 #if defined(CONFIG_VT) && defined(CONFIG_VGA_CONSOLE)
-	/*
-	 * Handle SN vga console.
-	 *
-	 * SN systems do not have enough ACPI table information
-	 * being passed from prom to identify VGA adapters and the legacy
-	 * addresses to access them.  Until that is done, SN systems rely
-	 * on the PCDP table to identify the primary VGA console if one
-	 * exists.
-	 *
-	 * However, kernel PCDP support is optional, and even if it is built
-	 * into the kernel, it will not be used if the boot cmdline contains
-	 * console= directives.
-	 *
-	 * So, to work around this mess, we duplicate some of the PCDP code
-	 * here so that the primary VGA console (as defined by PCDP) will
-	 * work on SN systems even if a different console (e.g. serial) is
-	 * selected on the boot line (or CONFIG_EFI_PCDP is off).
-	 */
 
 	if (! vga_console_membase)
 		sn_scan_pcdp();
@@ -772,4 +754,3 @@ sn_kernel_launch_event(void)
 		printk(KERN_ERR "KEXEC is not supported in this PROM, Please update the PROM.\n");
 }
 EXPORT_SYMBOL(sn_prom_feature_available);
-

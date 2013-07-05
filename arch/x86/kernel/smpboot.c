@@ -1440,13 +1440,6 @@ static inline void mwait_play_dead(void)
 	wbinvd();
 
 	while (1) {
-		/*
-		 * The CLFLUSH is a workaround for erratum AAI65 for
-		 * the Xeon 7400 series.  It's not clear it is actually
-		 * needed, but it should be harmless in either case.
-		 * The WBINVD is insufficient due to the spurious-wakeup
-		 * case where we return around the loop.
-		 */
 		clflush(mwait_ptr);
 		__monitor(mwait_ptr, 0, 0);
 		mb();

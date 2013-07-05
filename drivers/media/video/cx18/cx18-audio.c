@@ -55,7 +55,6 @@ int cx18_audio_set_io(struct cx18 *cx)
 	if (err)
 		return err;
 
-	/* FIXME - this internal mux should be abstracted to a subdev */
 	u = cx18_read_reg(cx, CX18_AUDIO_ENABLE);
 	v = u & ~CX18_AI1_MUX_MASK;
 	switch (in->audio_input) {

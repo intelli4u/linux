@@ -12,7 +12,6 @@
  * bit of memory.  Use nr_cpu_ids instead of this except for static bitmaps.
  */
 #ifndef CONFIG_NR_CPUS
-/* FIXME: This should be fixed in the arch's Kconfig */
 #define CONFIG_NR_CPUS	1
 #endif
 

@@ -257,11 +257,7 @@ static void sirdev_config_fsm(struct work_struct *work)
 		case SIRDEV_STATE_ERROR:
 			IRDA_ERROR("%s - error: %d\n", __func__, fsm->result);
 
-#if 0	/* don't enable this before we have netdev->tx_timeout to recover */
-			netif_stop_queue(dev->netdev);
-#else
 			netif_wake_queue(dev->netdev);
-#endif
 			/* fall thru */
 
 		case SIRDEV_STATE_COMPLETE:
@@ -727,16 +723,6 @@ static int sirdev_ioctl(struct net_device *ndev, struct ifreq *rq, int cmd)
 		break;
 
 	case SIOCSMODE:
-#if 0
-		if (!capable(CAP_NET_ADMIN))
-			ret = -EPERM;
-		else
-			ret = sirdev_schedule_mode(dev, irq->ifr_mode);
-		/* cannot sleep here for completion
-		 * we are called from network layer with rtnl hold
-		 */
-		break;
-#endif
 	default:
 		ret = -EOPNOTSUPP;
 	}

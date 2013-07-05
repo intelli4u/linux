@@ -618,7 +618,8 @@ static void rebuild_rx_bufs(struct net_device *dev)
 static int init_i596_mem(struct net_device *dev)
 {
 	struct i596_private *lp = dev->ml_priv;
-#if !defined(ENABLE_MVME16x_NET) && !defined(ENABLE_BVME6000_NET) || defined(ENABLE_APRICOT)
+#if !defined(ENABLE_MVME16x_NET) && !defined(ENABLE_BVME6000_NET) || \
+	defined(ENABLE_APRICOT)
 	short ioaddr = dev->base_addr;
 #endif
 	unsigned long flags;
@@ -787,7 +788,6 @@ static inline int i596_rx(struct net_device *dev)
 			rbd = lp->rbd_head;
 		else {
 			printk(KERN_CRIT "%s: rbd chain broken!\n", dev->name);
-			/* XXX Now what? */
 			rbd = I596_NULL;
 		}
 		DEB(DEB_RXFRAME, printk(KERN_DEBUG "  rfd %p, rfd.rbd %p, rfd.stat %04x\n",
@@ -830,7 +830,6 @@ static inline int i596_rx(struct net_device *dev)
 				skb = dev_alloc_skb(pkt_len + 2);
 memory_squeeze:
 			if (skb == NULL) {
-				/* XXX tulip.c can defer packets here!! */
 				printk(KERN_WARNING "%s: i596_rx Memory squeeze, dropping packet.\n", dev->name);
 				dev->stats.rx_dropped++;
 			}
@@ -1290,9 +1289,6 @@ found:
 	return dev;
 out2:
 #ifdef __mc68000__
-	/* XXX This assumes default cache mode to be IOMAP_FULL_CACHING,
-	 * XXX which may be invalid (CONFIG_060_WRITETHROUGH)
-	 */
 	kernel_set_cachemode((void *)(dev->mem_start), 4096,
 			IOMAP_FULL_CACHING);
 #endif
@@ -1614,9 +1610,6 @@ void __exit cleanup_module(void)
 {
 	unregister_netdev(dev_82596);
 #ifdef __mc68000__
-	/* XXX This assumes default cache mode to be IOMAP_FULL_CACHING,
-	 * XXX which may be invalid (CONFIG_060_WRITETHROUGH)
-	 */
 
 	kernel_set_cachemode((void *)(dev_82596->mem_start), 4096,
 			IOMAP_FULL_CACHING);

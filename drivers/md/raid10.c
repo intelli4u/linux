@@ -490,10 +490,6 @@ static int raid10_mergeable_bvec(struct request_queue *q,
  * The rdev for the device selected will have nr_pending incremented.
  */
 
-/*
- * FIXME: possibly should rethink readbalancing and do it differently
- * depending on near_copies / far_copies geometry.
- */
 static int read_balance(conf_t *conf, r10bio_t *r10_bio)
 {
 	const sector_t this_sector = r10_bio->sector;

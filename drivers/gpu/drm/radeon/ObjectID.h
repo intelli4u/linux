@@ -637,7 +637,3 @@
 #endif
 
 #endif  /*GRAPHICTYPE */
-
-
-
-

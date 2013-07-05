@@ -2019,4 +2019,3 @@ int gfs2_diradd_alloc_required(struct inode *inode, const struct qstr *name)
 	brelse(bh);
 	return 0;
 }
-

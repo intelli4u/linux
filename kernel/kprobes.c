@@ -323,12 +323,6 @@ static inline void reset_kprobe_instance(void)
 	__get_cpu_var(kprobe_instance) = NULL;
 }
 
-/*
- * This routine is called either:
- * 	- under the kprobe_mutex - during kprobe_[un]register()
- * 				OR
- * 	- with preemption disabled - from arch/xxx/kernel/kprobes.c
- */
 struct kprobe __kprobes *get_kprobe(void *addr)
 {
 	struct hlist_head *head;
@@ -1422,7 +1416,6 @@ static int __kprobes pre_handler_kretprobe(struct kprobe *p,
 
 		arch_prepare_kretprobe(ri, regs);
 
-		/* XXX(hch): why is there no hlist_move_head? */
 		INIT_HLIST_NODE(&ri->hlist);
 		kretprobe_table_lock(hash, &flags);
 		hlist_add_head(&ri->hlist, &kretprobe_inst_table[hash]);
@@ -1714,7 +1707,6 @@ static int __init init_kprobes(void)
 	void *addr;
 	struct kprobe_blackpoint *kb;
 
-	/* FIXME allocate the probe table, currently defined statically */
 	/* initialize all list heads */
 	for (i = 0; i < KPROBE_TABLE_SIZE; i++) {
 		INIT_HLIST_HEAD(&kprobe_table[i]);
@@ -1944,11 +1936,6 @@ already_disabled:
 	return;
 }
 
-/*
- * XXX: The debugfs bool file interface doesn't allow for callbacks
- * when the bool state is switched. We can reuse that facility when
- * available
- */
 static ssize_t read_enabled_file_bool(struct file *file,
 	       char __user *user_buf, size_t count, loff_t *ppos)
 {

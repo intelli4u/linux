@@ -79,7 +79,6 @@ static u32 ca91cx42_LM_irqhandler(struct ca91cx42_driver *bridge, u32 stat)
 	return serviced;
 }
 
-/* XXX This needs to be split into 4 queues */
 static u32 ca91cx42_MB_irqhandler(struct ca91cx42_driver *bridge, int mbox_mask)
 {
 	wake_up(&(bridge->mbox_queue));
@@ -792,7 +791,6 @@ int __ca91cx42_master_get(struct vme_master_resource *image, int *enabled,
 		break;
 	}
 
-	/* XXX Not sure howto check for MBLT */
 	/* Setup cycle types */
 	if (ctl & CA91CX42_LSI_CTL_VCT_BLT)
 		*cycle |= VME_BLT;
@@ -942,7 +940,6 @@ int ca91cx42_dma_list_add(struct vme_dma_list *list, struct vme_dma_attr *src,
 
 	dev = list->parent->parent->parent;
 
-	/* XXX descriptor must be aligned on 64-bit boundaries */
 	entry = kmalloc(sizeof(struct ca91cx42_dma_entry), GFP_KERNEL);
 	if (entry == NULL) {
 		dev_err(dev, "Failed to allocate memory for dma resource "
@@ -1109,11 +1106,6 @@ int ca91cx42_dma_list_exec(struct vme_dma_list *list)
 	mutex_lock(&(ctrlr->mtx));
 
 	if (!(list_empty(&(ctrlr->running)))) {
-		/*
-		 * XXX We have an active DMA transfer and currently haven't
-		 *     sorted out the mechanism for "pending" DMA transfers.
-		 *     Return busy.
-		 */
 		/* Need to add to pending here */
 		mutex_unlock(&(ctrlr->mtx));
 		return -EBUSY;
@@ -1135,7 +1127,6 @@ int ca91cx42_dma_list_exec(struct vme_dma_list *list)
 	/* Start the operation */
 	val = ioread32(bridge->base + DGCS);
 
-	/* XXX Could set VMEbus On and Off Counters here */
 	val &= (CA91CX42_DGCS_VON_M | CA91CX42_DGCS_VOFF_M);
 
 	val |= (CA91CX42_DGCS_CHAIN | CA91CX42_DGCS_STOP | CA91CX42_DGCS_HALT |

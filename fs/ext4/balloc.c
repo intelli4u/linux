@@ -738,4 +738,3 @@ unsigned long ext4_bg_num_gdb(struct super_block *sb, ext4_group_t group)
 	return ext4_bg_num_gdb_meta(sb,group);
 
 }
-

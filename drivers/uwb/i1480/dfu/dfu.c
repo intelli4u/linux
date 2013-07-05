@@ -196,10 +196,6 @@ int i1480_fw_upload(struct i1480 *i1480)
 		i1480_print_state(i1480);
 		goto error_rc_release;
 	}
-	/*
-	 * FIXME: find some reliable way to check whether firmware is running
-	 * properly. Maybe use some standard request that has no side effects?
-	 */
 	dev_info(i1480->dev, "firmware uploaded successfully\n");
 error_rc_release:
 	if (i1480->rc_release)

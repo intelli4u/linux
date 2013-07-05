@@ -110,15 +110,6 @@ static inline void __dma_page_dev_to_cpu(struct page *page, unsigned long off,
 		___dma_page_dev_to_cpu(page, off, size, dir);
 }
 
-/*
- * Return whether the given device DMA address mask can be supported
- * properly.  For example, if your device can only drive the low 24-bits
- * during bus mastering, then you would pass 0x00ffffff as the mask
- * to this function.
- *
- * FIXME: This should really be a platform specific issue - we should
- * return false if GFP_DMA allocations may not satisfy the supplied 'mask'.
- */
 static inline int dma_supported(struct device *dev, u64 mask)
 {
 	if (mask < ISA_DMA_THRESHOLD)
@@ -233,17 +224,6 @@ int dma_mmap_writecombine(struct device *, struct vm_area_struct *,
 
 
 #ifdef CONFIG_DMABOUNCE
-/*
- * For SA-1111, IXP425, and ADI systems  the dma-mapping functions are "magic"
- * and utilize bounce buffers as needed to work around limited DMA windows.
- *
- * On the SA-1111, a bug limits DMA to only certain regions of RAM.
- * On the IXP425, the PCI inbound window is 64MB (256MB total RAM)
- * On some ADI engineering systems, PCI inbound window is 32MB (12MB total RAM)
- *
- * The following are helper functions used by the dmabounce subystem
- *
- */
 
 /**
  * dmabounce_register_dev

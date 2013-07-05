@@ -750,7 +750,6 @@ static void __read_persistent_clock(struct timespec *ts)
 	static int first = 1;
 
 	ts->tv_nsec = 0;
-	/* XXX this is a litle fragile but will work okay in the short term */
 	if (first) {
 		first = 0;
 		if (ppc_md.time_init)
@@ -808,7 +807,6 @@ void update_vsyscall(struct timespec *wall_time, struct timespec *wtm,
 	++vdso_data->tb_update_count;
 	smp_mb();
 
-	/* XXX this assumes clock->shift == 22 */
 	/* 4611686018 ~= 2^(20+64-22) / 1e9 */
 	new_tb_to_xs = (u64) mult * 4611686018ULL;
 	new_stamp_xsec = (u64) wall_time->tv_nsec * XSEC_PER_SEC;

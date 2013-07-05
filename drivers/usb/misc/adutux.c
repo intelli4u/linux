@@ -156,7 +156,6 @@ static void adu_abort_transfers(struct adu_device *dev)
 
 	/* shutdown transfer */
 
-	/* XXX Anchor these instead */
 	spin_lock_irqsave(&dev->buflock, flags);
 	if (!dev->read_urb_finished) {
 		spin_unlock_irqrestore(&dev->buflock, flags);

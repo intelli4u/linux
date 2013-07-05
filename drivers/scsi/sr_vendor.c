@@ -49,9 +49,6 @@
 
 #include "sr.h"
 
-#if 0
-#define DEBUG
-#endif
 
 /* here are some constants to sort the vendors into groups */
 
@@ -86,11 +83,6 @@ void sr_vendor_init(Scsi_CD *cd)
 		    !strncmp(model, "CD-ROM DRIVE:36", 15) ||
 		    !strncmp(model, "CD-ROM DRIVE:83", 15) ||
 		    !strncmp(model, "CD-ROM DRIVE:84 ", 16)
-#if 0
-		/* my NEC 3x returns the read-raw data if a read-raw
-		   is followed by a read for the same sector - aeb */
-		    || !strncmp(model, "CD-ROM DRIVE:500", 16)
-#endif
 		    )
 			/* these can't handle multisession, may hang */
 			cd->cdi.mask |= CDC_MULTI_SESSION;

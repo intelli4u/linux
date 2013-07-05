@@ -1098,4 +1098,3 @@ void gfs2_dinode_print(const struct gfs2_inode *ip)
 	printk(KERN_INFO "  i_eattr = %llu\n",
 	       (unsigned long long)ip->i_eattr);
 }
-

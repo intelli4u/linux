@@ -539,13 +539,6 @@ int intelfbhw_read_hw_state(struct intelfb_info *dinfo,
 	if (flag == 1)
 		return flag;
 
-#if 0
-	/* This seems to be a problem with the 852GM/855GM */
-	for (i = 0; i < PALETTE_8_ENTRIES; i++) {
-		hw->palette_a[i] = INREG(PALETTE_A + (i << 2));
-		hw->palette_b[i] = INREG(PALETTE_B + (i << 2));
-	}
-#endif
 
 	if (flag == 2)
 		return flag;
@@ -772,14 +765,6 @@ void intelfbhw_print_hw_state(struct intelfb_info *dinfo,
 	printk("	PLLA1: clock is %d\n",
 	       calc_vclock(index, m1, m2, n, p1, p2, 0));
 
-#if 0
-	printk("	PALETTE_A:\n");
-	for (i = 0; i < PALETTE_8_ENTRIES)
-		printk("	%3d:	0x%08x\n", i, hw->palette_a[i]);
-	printk("	PALETTE_B:\n");
-	for (i = 0; i < PALETTE_8_ENTRIES)
-		printk("	%3d:	0x%08x\n", i, hw->palette_b[i]);
-#endif
 
 	printk("	HTOTAL_A:		0x%08x\n", hw->htotal_a);
 	printk("	HBLANK_A:		0x%08x\n", hw->hblank_a);

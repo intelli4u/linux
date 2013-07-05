@@ -278,6 +278,11 @@ config NF_NAT_H323
 	depends on NF_CONNTRACK && NF_NAT
 	default NF_NAT && NF_CONNTRACK_H323
 
+config NF_NAT_AUTOFW
+	tristate
+	depends on IP_NF_IPTABLES && NF_CONNTRACK && NF_NAT
+	default NF_NAT
+
 config NF_NAT_SIP
 	tristate
 	depends on NF_CONNTRACK && NF_NAT

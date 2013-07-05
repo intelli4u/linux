@@ -151,7 +151,7 @@ static struct b43_pio_txqueue *b43_setup_pioqueue_tx(struct b43_wldev *dev,
 
 	q->free_packet_slots = B43_PIO_MAX_NR_TXPACKETS;
 	if (q->rev >= 8) {
-		q->buffer_size = 1920; //FIXME this constant is wrong.
+		q->buffer_size = 1920;
 	} else {
 		q->buffer_size = b43_piotx_read16(q, B43_PIO_TXQBUFSIZE);
 		q->buffer_size -= 80;

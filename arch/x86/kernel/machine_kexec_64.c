@@ -353,4 +353,3 @@ void arch_crash_save_vmcoreinfo(void)
 	VMCOREINFO_LENGTH(node_data, MAX_NUMNODES);
 #endif
 }
-

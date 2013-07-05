@@ -41,11 +41,7 @@
 #include <net/llc_c_ev.h>
 #include <net/llc_pdu.h>
 
-#if 1
 #define dprintk(args...) printk(KERN_DEBUG args)
-#else
-#define dprintk(args...)
-#endif
 
 /**
  *	llc_util_ns_inside_rx_window - check if sequence number is in rx window

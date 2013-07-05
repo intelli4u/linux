@@ -62,17 +62,6 @@ MODULE_LICENSE("GPL");
 /* Returns 0, unless there's a write error */
 static int qs6612_config_init(struct phy_device *phydev)
 {
-	/* The PHY powers up isolated on the RPX,
-	 * so send a command to allow operation.
-	 * XXX - My docs indicate this should be 0x0940
-	 * ...or something.  The current value sets three
-	 * reserved bits, bit 11, which specifies it should be
-	 * set to one, bit 10, which specifies it should be set
-	 * to 0, and bit 7, which doesn't specify.  However, my
-	 * docs are preliminary, and I will leave it like this
-	 * until someone more knowledgable corrects me or it.
-	 * -- Andy Fleming
-	 */
 	return phy_write(phydev, MII_QS6612_PCR, 0x0dc0);
 }
 

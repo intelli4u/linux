@@ -157,7 +157,6 @@ static int iuu_tiocmset(struct tty_struct *tty, struct file *file,
 	struct iuu_private *priv = usb_get_serial_port_data(port);
 	unsigned long flags;
 
-	/* FIXME: locking on tiomstatus */
 	dbg("%s (%d) msg : SET = 0x%04x, CLEAR = 0x%04x ", __func__,
 	    port->number, set, clear);
 

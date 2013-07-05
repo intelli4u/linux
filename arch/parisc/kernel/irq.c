@@ -155,9 +155,6 @@ static struct irq_chip cpu_interrupt_type = {
 #ifdef CONFIG_SMP
 	.set_affinity	= cpu_set_affinity_irq,
 #endif
-	/* XXX: Needs to be written.  We managed without it so far, but
-	 * we really ought to write it.
-	 */
 	.retrigger	= NULL,
 };
 

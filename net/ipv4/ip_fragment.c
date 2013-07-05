@@ -1,24 +1,4 @@
-/*
- * INET		An implementation of the TCP/IP protocol suite for the LINUX
- *		operating system.  INET is implemented using the  BSD Socket
- *		interface as the means of communication with the user level.
- *
- *		The IP fragmentation functionality.
- *
- * Authors:	Fred N. van Kempen <waltje@uWalt.NL.Mugnet.ORG>
- *		Alan Cox <alan@lxorguk.ukuu.org.uk>
- *
- * Fixes:
- *		Alan Cox	:	Split from ip.c , see ip_input.c for history.
- *		David S. Miller :	Begin massive cleanup...
- *		Andi Kleen	:	Add sysctls.
- *		xxxx		:	Overlapfrag bug.
- *		Ultima          :       ip_expire() kernel panic.
- *		Bill Hawes	:	Frag accounting and evictor fixes.
- *		John McDonald	:	0 length frag bug.
- *		Alexey Kuznetsov:	SMP races, threading, cleanup.
- *		Patrick McHardy :	LRU queue of frag heads for evictor.
- */
+
 
 #include <linux/compiler.h>
 #include <linux/module.h>

@@ -401,7 +401,6 @@ static int gxt4500_set_par(struct fb_info *info)
 	writereg(par, PLL_N, ndivtab[par->pll_n - 2]);
 	tmp = ((8 - par->pll_pd2) << 3) | (8 - par->pll_pd1);
 	if (par->pll_pd1 == 8 || par->pll_pd2 == 8) {
-		/* work around erratum */
 		writereg(par, PLL_POSTDIV, tmp | 0x9);
 		udelay(1);
 	}
@@ -455,7 +454,6 @@ static int gxt4500_set_par(struct fb_info *info)
 	/* Set up framebuffer definition */
 	wid_tiles = (var->xres_virtual + 63) >> 6;
 
-	/* XXX add proper FB allocation here someday */
 	writereg(par, FB_AB_CTRL, FB_CTRL_TYPE | (wid_tiles << 16) | 0);
 	writereg(par, REFRESH_AB_CTRL, FB_CTRL_TYPE | (wid_tiles << 16) | 0);
 	writereg(par, FB_CD_CTRL, FB_CTRL_TYPE | (wid_tiles << 16) | 0);

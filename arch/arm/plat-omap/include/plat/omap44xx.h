@@ -53,4 +53,3 @@
 #define OMAP4_MMU2_BASE			0x4A066000
 
 #endif /* __ASM_ARCH_OMAP44XX_H */
-

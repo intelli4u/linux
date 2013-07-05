@@ -120,7 +120,7 @@ static void b43_wa_rssi_lt(struct b43_wldev *dev) /* RSSI lookup table */
 {
 	int i;
 
-	if (0 /* FIXME: For APHY.rev=2 this might be needed */) {
+	if (0) {
 		for (i = 0; i < 8; i++)
 			b43_ofdmtab_write16(dev, B43_OFDMTAB_RSSI, i, i + 8);
 		for (i = 8; i < 16; i++)
@@ -595,7 +595,7 @@ void b43_wa_all(struct b43_wldev *dev)
 		b43_wa_boards_a(dev);
 	} else if (phy->type == B43_PHYTYPE_G) {
 		switch (phy->rev) {
-		case 1://XXX review rev1
+		case 1:
 			b43_wa_crs_ed(dev);
 			b43_wa_crs_thr(dev);
 			b43_wa_crs_blank(dev);

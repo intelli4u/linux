@@ -345,7 +345,6 @@ void flush_iotlb_range(struct iommu *obj, u32 start, u32 end)
 
 	while (da < end) {
 		flush_iotlb_page(obj, da);
-		/* FIXME: Optimize for multiple page size */
 		da += IOPTE_SIZE;
 	}
 }
@@ -468,7 +467,6 @@ EXPORT_SYMBOL_GPL(foreach_iommu_device);
  */
 static void flush_iopgd_range(u32 *first, u32 *last)
 {
-	/* FIXME: L2 cache should be taken care of if it exists */
 	do {
 		asm("mcr	p15, 0, %0, c7, c10, 1 @ flush_pgd"
 		    : : "r" (first));
@@ -478,7 +476,6 @@ static void flush_iopgd_range(u32 *first, u32 *last)
 
 static void flush_iopte_range(u32 *first, u32 *last)
 {
-	/* FIXME: L2 cache should be taken care of if it exists */
 	do {
 		asm("mcr	p15, 0, %0, c7, c10, 1 @ flush_pte"
 		    : : "r" (first));

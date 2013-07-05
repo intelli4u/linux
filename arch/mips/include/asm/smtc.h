@@ -33,6 +33,12 @@ typedef long asiduse;
 #endif
 #endif
 
+/*
+ * VPE Management information
+ */
+
+#define MAX_SMTC_VPES	MAX_SMTC_TLBS
+
 extern asiduse smtc_live_asid[MAX_SMTC_TLBS][MAX_SMTC_ASIDS];
 
 struct mm_struct;

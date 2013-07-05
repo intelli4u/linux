@@ -105,7 +105,6 @@
 #define I82443BXGX_DRB 0x60	/* 8x 8bit registers starting at this PCI
 				 * config space offset. */
 
-/* FIXME - don't poll when ECC disabled? */
 
 struct i82443bxgx_edacmc_error_info {
 	u32 eap;
@@ -221,7 +220,6 @@ static void i82443bxgx_init_csrows(struct mem_ctl_info *mci,
 		/* EAP reports in 4kilobyte granularity [61] */
 		csrow->grain = 1 << 12;
 		csrow->mtype = mtype;
-		/* I don't think 440BX can tell you device type? FIXME? */
 		csrow->dtype = DEV_UNKNOWN;
 		/* Mode is global to all rows on 440BX */
 		csrow->edac_mode = edac_mode;

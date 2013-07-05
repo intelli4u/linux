@@ -176,31 +176,6 @@ struct hvcall_ppp_data {
 	u32	entitled_proc_cap_avail;
 };
 
-/*
- * H_GET_PPP hcall returns info in 4 parms.
- *  entitled_capacity,unallocated_capacity,
- *  aggregation, resource_capability).
- *
- *  R4 = Entitled Processor Capacity Percentage.
- *  R5 = Unallocated Processor Capacity Percentage.
- *  R6 (AABBCCDDEEFFGGHH).
- *      XXXX - reserved (0)
- *          XXXX - reserved (0)
- *              XXXX - Group Number
- *                  XXXX - Pool Number.
- *  R7 (IIJJKKLLMMNNOOPP).
- *      XX - reserved. (0)
- *        XX - bit 0-6 reserved (0).   bit 7 is Capped indicator.
- *          XX - variable processor Capacity Weight
- *            XX - Unallocated Variable Processor Capacity Weight.
- *              XXXX - Active processors in Physical Processor Pool.
- *                  XXXX  - Processors active on platform.
- *  R8 (QQQQRRRRRRSSSSSS). if ibm,partition-performance-parameters-level >= 1
- *	XXXX - Physical platform procs allocated to virtualization.
- *	    XXXXXX - Max procs capacity % available to the partitions pool.
- *	          XXXXXX - Entitled procs capacity % available to the
- *			   partitions pool.
- */
 static unsigned int h_get_ppp(struct hvcall_ppp_data *ppp_data)
 {
 	unsigned long rc;

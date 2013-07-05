@@ -323,7 +323,6 @@ static snd_pcm_uframes_t snd_pmac_pcm_pointer(struct snd_pmac *chip,
 {
 	int count = 0;
 
-#if 1 /* hmm.. how can we get the current dma pointer?? */
 	int stat;
 	volatile struct dbdma_cmd __iomem *cp = &rec->cmd.cmds[rec->cur_period];
 	stat = ld_le16(&cp->xfer_status);
@@ -332,7 +331,6 @@ static snd_pcm_uframes_t snd_pmac_pcm_pointer(struct snd_pmac *chip,
 		if (count)
 			count = rec->period_size - count;
 	}
-#endif
 	count += rec->cur_period * rec->period_size;
 	/*printk(KERN_DEBUG "pointer=%d\n", count);*/
 	return bytes_to_frames(subs->runtime, count);
@@ -547,38 +545,6 @@ static struct snd_pcm_hardware snd_pmac_capture =
 };
 
 
-#if 0 // NYI
-static int snd_pmac_hw_rule_rate(struct snd_pcm_hw_params *params,
-				 struct snd_pcm_hw_rule *rule)
-{
-	struct snd_pmac *chip = rule->private;
-	struct pmac_stream *rec = snd_pmac_get_stream(chip, rule->deps[0]);
-	int i, freq_table[8], num_freqs;
-
-	if (! rec)
-		return -EINVAL;
-	num_freqs = 0;
-	for (i = chip->num_freqs - 1; i >= 0; i--) {
-		if (rec->cur_freqs & (1 << i))
-			freq_table[num_freqs++] = chip->freq_table[i];
-	}
-
-	return snd_interval_list(hw_param_interval(params, rule->var),
-				 num_freqs, freq_table, 0);
-}
-
-static int snd_pmac_hw_rule_format(struct snd_pcm_hw_params *params,
-				   struct snd_pcm_hw_rule *rule)
-{
-	struct snd_pmac *chip = rule->private;
-	struct pmac_stream *rec = snd_pmac_get_stream(chip, rule->deps[0]);
-
-	if (! rec)
-		return -EINVAL;
-	return snd_mask_refine_set(hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT),
-				   rec->cur_formats);
-}
-#endif // NYI
 
 static int snd_pmac_pcm_open(struct snd_pmac *chip, struct pmac_stream *rec,
 			     struct snd_pcm_substream *subs)
@@ -615,12 +581,6 @@ static int snd_pmac_pcm_open(struct snd_pmac *chip, struct pmac_stream *rec,
 	runtime->private_data = rec;
 	rec->substream = subs;
 
-#if 0 /* FIXME: still under development.. */
-	snd_pcm_hw_rule_add(runtime, 0, SNDRV_PCM_HW_PARAM_RATE,
-			    snd_pmac_hw_rule_rate, chip, rec->stream, -1);
-	snd_pcm_hw_rule_add(runtime, 0, SNDRV_PCM_HW_PARAM_FORMAT,
-			    snd_pmac_hw_rule_format, chip, rec->stream, -1);
-#endif
 
 	runtime->hw.periods_max = rec->cmd.size - 1;
 
@@ -1018,7 +978,7 @@ static int __devinit snd_pmac_detect(struct snd_pmac *chip)
 	/* This should be verified on older screamers */
 	if (of_device_is_compatible(sound, "screamer")) {
 		chip->model = PMAC_SCREAMER;
-		// chip->can_byte_swap = 0; /* FIXME: check this */
+		// chip->can_byte_swap = 0;
 	}
 	if (of_device_is_compatible(sound, "burgundy")) {
 		chip->model = PMAC_BURGUNDY;
@@ -1028,7 +988,7 @@ static int __devinit snd_pmac_detect(struct snd_pmac *chip)
 		chip->model = PMAC_DACA;
 		chip->can_capture = 0;  /* no capture */
 		chip->can_duplex = 0;
-		// chip->can_byte_swap = 0; /* FIXME: check this */
+		// chip->can_byte_swap = 0;
 		chip->control_mask = MASK_IEPC | 0x11; /* disable IEE */
 	}
 	if (of_device_is_compatible(sound, "tumbler")) {
@@ -1036,14 +996,14 @@ static int __devinit snd_pmac_detect(struct snd_pmac *chip)
 		chip->can_capture = of_machine_is_compatible("PowerMac4,2")
 				|| of_machine_is_compatible("PowerBook4,1");
 		chip->can_duplex = 0;
-		// chip->can_byte_swap = 0; /* FIXME: check this */
+		// chip->can_byte_swap = 0;
 		chip->num_freqs = ARRAY_SIZE(tumbler_freqs);
 		chip->freq_table = tumbler_freqs;
 		chip->control_mask = MASK_IEPC | 0x11; /* disable IEE */
 	}
 	if (of_device_is_compatible(sound, "snapper")) {
 		chip->model = PMAC_SNAPPER;
-		// chip->can_byte_swap = 0; /* FIXME: check this */
+		// chip->can_byte_swap = 0;
 		chip->num_freqs = ARRAY_SIZE(tumbler_freqs);
 		chip->freq_table = tumbler_freqs;
 		chip->control_mask = MASK_IEPC | 0x11; /* disable IEE */
@@ -1410,4 +1370,3 @@ void snd_pmac_resume(struct snd_pmac *chip)
 }
 
 #endif /* CONFIG_PM */
-

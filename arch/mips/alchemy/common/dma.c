@@ -41,7 +41,7 @@
 #include <asm/mach-au1x00/au1000_dma.h>
 
 #if defined(CONFIG_SOC_AU1000) || defined(CONFIG_SOC_AU1500) || \
-    defined(CONFIG_SOC_AU1100)
+	defined(CONFIG_SOC_AU1100)
 /*
  * A note on resource allocation:
  *

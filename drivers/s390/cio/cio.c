@@ -93,7 +93,6 @@ cio_set_options (struct subchannel *sch, int flags)
        return 0;
 }
 
-/* FIXME: who wants to use this? */
 int
 cio_get_options (struct subchannel *sch)
 {

@@ -35,7 +35,8 @@
 
 
 #if defined(CONFIG_FW_LOADER) || defined(CONFIG_FW_LOADER_MODULE)
-#if !defined(CONFIG_USE_PCXHRLOADER) && !defined(CONFIG_SND_PCXHR) /* built-in kernel */
+#if !defined(CONFIG_USE_PCXHRLOADER) && !defined(CONFIG_SND_PCXHR)     /* built-in \
+	kernel */
 #define SND_PCXHR_FW_LOADER	/* use the standard firmware loader */
 #endif
 #endif
@@ -212,35 +213,6 @@ static int pcxhr_dsp_allocate_pipe(struct pcxhr_mgr *mgr,
 /*
  *  free playback/capture pipe (pcmp0/pcmc0)
  */
-#if 0
-static int pcxhr_dsp_free_pipe( struct pcxhr_mgr *mgr, struct pcxhr_pipe *pipe)
-{
-	struct pcxhr_rmh rmh;
-	int capture_mask = 0;
-	int playback_mask = 0;
-	int err = 0;
-
-	if (pipe->is_capture)
-		capture_mask  = (1 << pipe->first_audio);
-	else
-		playback_mask = (1 << pipe->first_audio);
-
-	/* stop one pipe */
-	err = pcxhr_set_pipe_state(mgr, playback_mask, capture_mask, 0);
-	if (err < 0)
-		snd_printk(KERN_ERR "error stopping pipe!\n");
-	/* release the pipe */
-	pcxhr_init_rmh(&rmh, CMD_FREE_PIPE);
-	pcxhr_set_pipe_cmd_params(&rmh, pipe->is_capture, pipe->first_audio,
-				  0, 0);
-	err = pcxhr_send_msg(mgr, &rmh);
-	if (err < 0)
-		snd_printk(KERN_ERR "error pipe release "
-			   "(CMD_FREE_PIPE) err(%x)\n", err);
-	pipe->status = PCXHR_PIPE_UNDEFINED;
-	return err;
-}
-#endif
 
 
 static int pcxhr_config_pipes(struct pcxhr_mgr *mgr)

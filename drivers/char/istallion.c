@@ -3336,13 +3336,6 @@ static int stli_startbrd(struct stlibrd *brdp)
 	hdrp = (cdkhdr_t __iomem *) EBRDGETMEMPTR(brdp, CDK_CDKADDR);
 	nrdevs = hdrp->nrdevs;
 
-#if 0
-	printk("%s(%d): CDK version %d.%d.%d --> "
-		"nrdevs=%d memp=%x hostp=%x slavep=%x\n",
-		 __FILE__, __LINE__, readb(&hdrp->ver_release), readb(&hdrp->ver_modification),
-		 readb(&hdrp->ver_fix), nrdevs, (int) readl(&hdrp->memp), readl(&hdrp->hostp),
-		 readl(&hdrp->slavep));
-#endif
 
 	if (nrdevs < (brdp->nrports + 1)) {
 		printk(KERN_ERR "istallion: slave failed to allocate memory for "
@@ -3929,13 +3922,6 @@ out:
 
 /*****************************************************************************/
 
-/*
- *	Code to handle an "staliomem" write operation. This device is the 
- *	contents of the board shared memory. It is used for down loading
- *	the slave image (and debugging :-)
- *
- *	FIXME: copy under lock
- */
 
 static ssize_t stli_memwrite(struct file *fp, const char __user *buf, size_t count, loff_t *offp)
 {

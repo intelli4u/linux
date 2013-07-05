@@ -67,10 +67,6 @@ static int pcm970_pins[] = {
 	PA29_PF_VSYNC,
 	PA30_PF_CONTRAST,
 	PA31_PF_OE_ACD,
-	/*
-	 * it seems the data line misses a pullup, so we must enable
-	 * the internal pullup as a local workaround
-	 */
 	PD17_PF_I2C_DATA | GPIO_PUEN,
 	PD18_PF_I2C_CLK,
 	/* Camera */

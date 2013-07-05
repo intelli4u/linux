@@ -41,14 +41,12 @@ static int __devinit k8x800_init(struct snd_ice1712 *ice)
 	ice->num_total_adcs = 2;
 
 	/* WM8728 codec */
-	/* FIXME: TODO */
 
 	return 0;
 }
 
 static int __devinit k8x800_add_controls(struct snd_ice1712 *ice)
 {
-	/* FIXME: needs some quirks for VT1616? */
 	return 0;
 }
 
@@ -136,4 +134,3 @@ struct snd_ice1712_card_info snd_vt1720_mobo_cards[] __devinitdata = {
 	},
 	{ } /* terminator */
 };
-

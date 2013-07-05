@@ -59,16 +59,6 @@
 #define R_SH_FUNCDESC		76
 #define R_SH_FUNCDESC_VALUE	77
 
-#if 0 /* XXX - later .. */
-#define R_SH_GOT20		198
-#define R_SH_GOTOFF20		199
-#define R_SH_GOTFUNCDESC	200
-#define R_SH_GOTFUNCDESC20	201
-#define R_SH_GOTOFFFUNCDESC	202
-#define R_SH_GOTOFFFUNCDESC20	203
-#define R_SH_FUNCDESC		204
-#define R_SH_FUNCDESC_VALUE	205
-#endif
 
 /* SHmedia relocs */
 #define R_SH_IMM_LOW16		246

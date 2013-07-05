@@ -229,7 +229,6 @@ static ssize_t resource_to_user(int minor, char __user *buf, size_t count,
 		}
 
 	} else {
-		/* XXX Need to write this */
 		printk(KERN_INFO "Currently don't support large transfers\n");
 		/* Map in pages from userspace */
 
@@ -263,7 +262,6 @@ static ssize_t resource_from_user(unsigned int minor, const char *buf,
 		copied = vme_master_write(image[minor].resource,
 			image[minor].kern_buf, copied, *ppos);
 	} else {
-		/* XXX Need to write this */
 		printk(KERN_INFO "Currently don't support large transfers\n");
 		/* Map in pages from userspace */
 
@@ -322,7 +320,6 @@ static ssize_t vme_user_read(struct file *file, char *buf, size_t count,
 
 	down(&image[minor].sem);
 
-	/* XXX Do we *really* want this helper - we can use vme_*_get ? */
 	image_size = vme_get_size(image[minor].resource);
 
 	/* Ensure we are starting at a valid location */
@@ -466,9 +463,6 @@ static int vme_user_ioctl(struct inode *inode, struct file *file,
 		case VME_GET_MASTER:
 			memset(&master, 0, sizeof(struct vme_master));
 
-			/* XXX	We do not want to push aspace, cycle and width
-			 *	to userspace as they are
-			 */
 			retval = vme_master_get(image[minor].resource,
 				&(master.enable), &(master.vme_addr),
 				&(master.size), &(master.aspace),
@@ -495,9 +489,6 @@ static int vme_user_ioctl(struct inode *inode, struct file *file,
 				return -EFAULT;
 			}
 
-			/* XXX	We do not want to push aspace, cycle and width
-			 *	to userspace as they are
-			 */
 			return vme_master_set(image[minor].resource,
 				master.enable, master.vme_addr, master.size,
 				master.aspace, master.cycle, master.dwidth);
@@ -510,9 +501,6 @@ static int vme_user_ioctl(struct inode *inode, struct file *file,
 		case VME_GET_SLAVE:
 			memset(&slave, 0, sizeof(struct vme_slave));
 
-			/* XXX	We do not want to push aspace, cycle and width
-			 *	to userspace as they are
-			 */
 			retval = vme_slave_get(image[minor].resource,
 				&(slave.enable), &(slave.vme_addr),
 				&(slave.size), &pci_addr, &(slave.aspace),
@@ -539,9 +527,6 @@ static int vme_user_ioctl(struct inode *inode, struct file *file,
 				return -EFAULT;
 			}
 
-			/* XXX	We do not want to push aspace, cycle and width
-			 *	to userspace as they are
-			 */
 			return vme_slave_set(image[minor].resource,
 				slave.enable, slave.vme_addr, slave.size,
 				image[minor].pci_buf, slave.aspace,
@@ -713,7 +698,6 @@ static int __init vme_user_probe(struct device *dev, int cur_bus, int cur_slot)
 
 	/* Request slave resources and allocate buffers (128kB wide) */
 	for (i = SLAVE_MINOR; i < (SLAVE_MAX + 1); i++) {
-		/* XXX Need to properly request attributes */
 		/* For ca91cx42 bridge there are only two slave windows
 		 * supporting A16 addressing, so we request A24 supported
 		 * by all windows.
@@ -743,7 +727,6 @@ static int __init vme_user_probe(struct device *dev, int cur_bus, int cur_slot)
 	 * reads and writes
 	 */
 	for (i = MASTER_MINOR; i < (MASTER_MAX + 1); i++) {
-		/* XXX Need to properly request attributes */
 		image[i].resource = vme_master_request(vme_user_bridge,
 			VME_A32, VME_SCT, VME_D32);
 		if (image[i].resource == NULL) {

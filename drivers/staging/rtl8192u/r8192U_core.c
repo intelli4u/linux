@@ -71,7 +71,6 @@ double __extendsfdf2(float a) {return a;}
 //#include "r8192xU_phyreg.h"
 #include <linux/usb.h>
 #include <linux/slab.h>
-// FIXME: check if 2.6.7 is ok
 
 #ifdef CONFIG_RTL8192_PM
 #include "r8192_pm.h"
@@ -1188,13 +1187,11 @@ rtl819xusb_rx_command_packet(
 
 void rtl8192_data_hard_stop(struct net_device *dev)
 {
-	//FIXME !!
 }
 
 
 void rtl8192_data_hard_resume(struct net_device *dev)
 {
-	// FIXME !!
 }
 
 /* this function TX data frames when the ieee80211 stack requires this.
@@ -2705,7 +2702,7 @@ void rtl8192_SetWirelessMode(struct net_device* dev, u8 wireless_mode)
 			wireless_mode = WIRELESS_MODE_B;
 		}
 	}
-#ifdef TO_DO_LIST //// TODO: this function doesn't work well at this time, we should wait for FPGA
+#ifdef TO_DO_LIST //    // TODO: this function doesn't work well at this time, we should wait for FPGA
 	ActUpdateChannelAccessSetting( pAdapter, pHalData->CurrentWirelessMode, &pAdapter->MgntInfo.Info8185.ChannelAccessSetting );
 #endif
 	priv->ieee80211->mode = wireless_mode;
@@ -4273,7 +4270,6 @@ int rtl8192_down(struct net_device *dev)
 	priv->up=0;
 	priv->ieee80211->ieee_up = 0;
 	RT_TRACE(COMP_DOWN, "==========>%s()\n", __FUNCTION__);
-/* FIXME */
 	if (!netif_queue_stopped(dev))
 		netif_stop_queue(dev);
 
@@ -4351,7 +4347,6 @@ static void r8192_set_multicast(struct net_device *dev)
 
 	//down(&priv->wx_sem);
 
-	/* FIXME FIXME */
 
 	promisc = (dev->flags & IFF_PROMISC) ? 1:0;
 
@@ -5641,7 +5636,7 @@ rtl819xusb_process_received_packet(
 	pstats->virtual_address += get_rxpacket_shiftbytes_819xusb(pstats);
 	frame = pstats->virtual_address;
 	frame_len = pstats->packetlength;
-#ifdef TODO	// by amy about HCT
+#ifdef TODO	    // by amy about HCT
 	if(!Adapter->bInHctTest)
 		CountRxErrStatistics(Adapter, pRfd);
 #endif

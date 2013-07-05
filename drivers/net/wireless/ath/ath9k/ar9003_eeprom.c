@@ -960,13 +960,11 @@ static bool ath9k_hw_ar9300_fill_eeprom(struct ath_hw *ah)
 	return true;
 }
 
-/* XXX: review hardware docs */
 static int ath9k_hw_ar9300_get_eeprom_ver(struct ath_hw *ah)
 {
 	return ah->eeprom.ar9300_eep.eepromVersion;
 }
 
-/* XXX: could be read from the eepromVersion, not sure yet */
 static int ath9k_hw_ar9300_get_eeprom_rev(struct ath_hw *ah)
 {
 	return 0;
@@ -1447,7 +1445,6 @@ static int ar9003_hw_tx_power_regwrite(struct ath_hw *ah, u8 * pPwrArray)
 static void ar9003_hw_set_target_power_eeprom(struct ath_hw *ah, u16 freq,
 					      u8 *targetPowerValT2)
 {
-	/* XXX: hard code for now, need to get from eeprom struct */
 	u8 ht40PowerIncForPdadc = 0;
 	bool is2GHz = false;
 	unsigned int i = 0;

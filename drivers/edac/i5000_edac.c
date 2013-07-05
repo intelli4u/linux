@@ -1263,7 +1263,6 @@ static int i5000_init_csrows(struct mem_ctl_info *mci)
 		if (!MTR_DIMMS_PRESENT(mtr) && !MTR_DIMMS_PRESENT(mtr1))
 			continue;
 
-		/* FAKE OUT VALUES, FIXME */
 		p_csrow->first_page = 0 + csrow * 20;
 		p_csrow->last_page = 9 + csrow * 20;
 		p_csrow->page_mask = 0xFFF;
@@ -1434,9 +1433,6 @@ static int i5000_probe1(struct pci_dev *pdev, int dev_idx)
 	if (edac_mc_add_mc(mci)) {
 		debugf0("MC: %s: %s(): failed edac_mc_add_mc()\n",
 			__FILE__, __func__);
-		/* FIXME: perhaps some code should go here that disables error
-		 * reporting if we just enabled it
-		 */
 		goto fail1;
 	}
 
@@ -1577,4 +1573,3 @@ module_param(edac_op_state, int, 0444);
 MODULE_PARM_DESC(edac_op_state, "EDAC Error Reporting state: 0=Poll,1=NMI");
 module_param(misc_messages, int, 0444);
 MODULE_PARM_DESC(misc_messages, "Log miscellaneous non fatal messages");
-

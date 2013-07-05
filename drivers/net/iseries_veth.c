@@ -617,7 +617,6 @@ static int veth_process_caps(struct veth_lpar_connection *cnx)
 	num_acks_needed = (remote_caps->num_buffers
 			   / remote_caps->ack_threshold) + 1;
 
-	/* FIXME: locking on num_ack_events? */
 	if (cnx->num_ack_events < num_acks_needed) {
 		int num;
 
@@ -638,7 +637,6 @@ static int veth_process_caps(struct veth_lpar_connection *cnx)
 	return HvLpEvent_Rc_Good;
 }
 
-/* FIXME: The gotos here are a bit dubious */
 static void veth_statemachine(struct work_struct *work)
 {
 	struct veth_lpar_connection *cnx =
@@ -804,9 +802,6 @@ static void veth_statemachine(struct work_struct *work)
 	return;
 
  cant_cope:
-	/* FIXME: we get here if something happens we really can't
-	 * cope with.  The link will never work once we get here, and
-	 * all we can do is not lock the rest of the system up */
 	veth_error("Unrecoverable error on connection to LPAR %d, shutting down"
 			" (state = 0x%04lx)\n", rlp, cnx->state);
 	cnx->state |= VETH_STATE_SHUTDOWN;
@@ -1311,9 +1306,6 @@ static void veth_timed_reset(unsigned long ptr)
 	struct veth_lpar_connection *cnx = (struct veth_lpar_connection *)ptr;
 	unsigned long trigger_time, flags;
 
-	/* FIXME is it possible this fires after veth_stop_connection()?
-	 * That would reschedule the statemachine for 5 seconds and probably
-	 * execute it after the module's been unloaded. Hmm. */
 
 	spin_lock_irqsave(&cnx->lock, flags);
 
@@ -1383,11 +1375,6 @@ static inline void veth_build_dma_list(struct dma_chunk *list,
 	unsigned long done;
 	int i = 1;
 
-	/* FIXME: skbs are contiguous in real addresses.  Do we
-	 * really need to break it into PAGE_SIZE chunks, or can we do
-	 * it just at the granularity of iSeries real->absolute
-	 * mapping?  Indeed, given the way the allocator works, can we
-	 * count on them being absolutely contiguous? */
 	list[0].addr = iseries_hv_addr(p);
 	list[0].size = min(length,
 			   PAGE_SIZE - ((unsigned long)p & ~PAGE_MASK));
@@ -1435,7 +1422,6 @@ static void veth_receive(struct veth_lpar_connection *cnx,
 		struct net_device *dev;
 		struct veth_port *port;
 
-		/* FIXME: do we need this? */
 		memset(local_list, 0, sizeof(local_list));
 		memset(remote_list, 0, sizeof(VETH_MAX_FRAMES_PER_MSG));
 

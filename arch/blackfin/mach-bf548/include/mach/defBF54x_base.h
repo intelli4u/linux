@@ -2223,10 +2223,6 @@
 
 /* Bit masks for UARTx_LCR */
 
-#if 0
-/* conflicts with legacy one in last section */
-#define                       WLS  0x3        /* Word Length Select */
-#endif
 #define                       STB  0x4        /* Stop Bits */
 #define                       PEN  0x8        /* Parity Enable */
 #define                       EPS  0x10       /* Even Parity Select */

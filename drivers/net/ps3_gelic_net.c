@@ -1907,4 +1907,3 @@ module_init(ps3_gelic_driver_init);
 module_exit(ps3_gelic_driver_exit);
 
 MODULE_ALIAS(PS3_MODULE_ALIAS_GELIC);
-

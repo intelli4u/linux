@@ -330,30 +330,6 @@ cellrate_to_float(u32 cr)
   return flot;
 }
 
-#if 0
-/*
-** Conversion of 16-bit floating point format to 24-bit cellrate (cells/sec).
-*/
-static u32
-float_to_cellrate(u16 rate)
-{
-  u32   exp, mantissa, cps;
-  if ((rate & NZ) == 0)
-     return 0;
-  exp = (rate >> M_BITS) & E_MASK;
-  mantissa = rate & M_MASK;
-  if (exp == 0)
-     return 1;
-  cps = (1 << M_BITS) | mantissa;
-  if (exp == M_BITS)
-     cps = cps;
-  else if (exp > M_BITS)
-     cps <<= (exp - M_BITS);
-  else
-     cps >>= (M_BITS - exp);
-  return cps;
-}
-#endif 
 
 static void init_abr_vc (IADEV *dev, srv_cls_param_t *srv_p) {
   srv_p->class_type = ATM_ABR;
@@ -383,38 +359,6 @@ ia_open_abr_vc(IADEV *dev, srv_cls_param_t *srv_p,
   f_abr_vc += vcc->vci;       
   switch (flag) {
      case 1: /* FFRED initialization */
-#if 0  /* sanity check */
-       if (srv_p->pcr == 0)
-          return INVALID_PCR;
-       if (srv_p->pcr > dev->LineRate)
-          srv_p->pcr = dev->LineRate;
-       if ((srv_p->mcr + dev->sum_mcr) > dev->LineRate)
-	  return MCR_UNAVAILABLE;
-       if (srv_p->mcr > srv_p->pcr)
-	  return INVALID_MCR;
-       if (!(srv_p->icr))
-	  srv_p->icr = srv_p->pcr;
-       if ((srv_p->icr < srv_p->mcr) || (srv_p->icr > srv_p->pcr))
-	  return INVALID_ICR;
-       if ((srv_p->tbe < MIN_TBE) || (srv_p->tbe > MAX_TBE))
-	  return INVALID_TBE;
-       if ((srv_p->frtt < MIN_FRTT) || (srv_p->frtt > MAX_FRTT))
-	  return INVALID_FRTT;
-       if (srv_p->nrm > MAX_NRM)
-	  return INVALID_NRM;
-       if (srv_p->trm > MAX_TRM)
-	  return INVALID_TRM;
-       if (srv_p->adtf > MAX_ADTF)
-          return INVALID_ADTF;
-       else if (srv_p->adtf == 0)
-	  srv_p->adtf = 1;
-       if (srv_p->cdf > MAX_CDF)
-	  return INVALID_CDF;
-       if (srv_p->rif > MAX_RIF)
-	  return INVALID_RIF;
-       if (srv_p->rdf > MAX_RDF)
-	  return INVALID_RDF;
-#endif
        memset ((caddr_t)f_abr_vc, 0, sizeof(*f_abr_vc));
        f_abr_vc->f_vc_type = ABR;
        nrm = 2 << srv_p->nrm;     /* (2 ** (srv_p->nrm +1)) */
@@ -697,42 +641,6 @@ static void ia_tx_poll (IADEV *iadev) {
 out:
     return;
 }
-#if 0
-static void ia_eeprom_put (IADEV *iadev, u32 addr, u_short val)
-{
-        u32	t;
-	int	i;
-	/*
-	 * Issue a command to enable writes to the NOVRAM
-	 */
-	NVRAM_CMD (EXTEND + EWEN);
-	NVRAM_CLR_CE;
-	/*
-	 * issue the write command
-	 */
-	NVRAM_CMD(IAWRITE + addr);
-	/* 
-	 * Send the data, starting with D15, then D14, and so on for 16 bits
-	 */
-	for (i=15; i>=0; i--) {
-		NVRAM_CLKOUT (val & 0x8000);
-		val <<= 1;
-	}
-	NVRAM_CLR_CE;
-	CFG_OR(NVCE);
-	t = readl(iadev->reg+IPHASE5575_EEPROM_ACCESS); 
-	while (!(t & NVDO))
-		t = readl(iadev->reg+IPHASE5575_EEPROM_ACCESS); 
-
-	NVRAM_CLR_CE;
-	/*
-	 * disable writes again
-	 */
-	NVRAM_CMD(EXTEND + EWDS)
-	NVRAM_CLR_CE;
-	CFG_AND(~NVDI);
-}
-#endif
 
 static u16 ia_eeprom_get (IADEV *iadev, u32 addr)
 {
@@ -795,14 +703,6 @@ static void ia_hw_type(IADEV *iadev) {
          iadev->num_tx_desc, iadev->tx_buf_sz, iadev->num_rx_desc,
          iadev->rx_buf_sz, iadev->rx_pkt_ram);)
 
-#if 0
-   if ((memType & FE_MASK) == FE_SINGLE_MODE) {
-      iadev->phy_type = PHY_OC3C_S;
-   else if ((memType & FE_MASK) == FE_UTP_OPTION)
-      iadev->phy_type = PHY_UTP155;
-   else
-     iadev->phy_type = PHY_OC3C_M;
-#endif
    
    iadev->phy_type = memType & FE_MASK;
    IF_INIT(printk("memType = 0x%x iadev->phy_type = 0x%x\n", 
@@ -856,9 +756,6 @@ static void IaFrontEndIntr(IADEV *iadev) {
 static void ia_mb25_init (IADEV *iadev)
 {
    volatile ia_mb25_t  *mb25 = (ia_mb25_t*)iadev->phy;
-#if 0
-   mb25->mb25_master_ctrl = MB25_MC_DRIC | MB25_MC_DREC | MB25_MC_ENABLED;
-#endif
    mb25->mb25_master_ctrl = MB25_MC_DRIC | MB25_MC_DREC;
    mb25->mb25_diag_control = 0;
    /*
@@ -1029,31 +926,6 @@ static void desc_dbg(IADEV *iadev) {
  
 static void rx_excp_rcvd(struct atm_dev *dev)  
 {  
-#if 0 /* closing the receiving size will cause too many excp int */  
-  IADEV *iadev;  
-  u_short state;  
-  u_short excpq_rd_ptr;  
-  //u_short *ptr;  
-  int vci, error = 1;  
-  iadev = INPH_IA_DEV(dev);  
-  state = readl(iadev->reass_reg + STATE_REG) & 0xffff;  
-  while((state & EXCPQ_EMPTY) != EXCPQ_EMPTY)  
-  { printk("state = %x \n", state); 
-        excpq_rd_ptr = readw(iadev->reass_reg + EXCP_Q_RD_PTR) & 0xffff;  
- printk("state = %x excpq_rd_ptr = %x \n", state, excpq_rd_ptr); 
-        if (excpq_rd_ptr == *(u16*)(iadev->reass_reg + EXCP_Q_WR_PTR))
-            IF_ERR(printk("excpq_rd_ptr is wrong!!!\n");)
-        // TODO: update exception stat
-	vci = readw(iadev->reass_ram+excpq_rd_ptr);  
-	error = readw(iadev->reass_ram+excpq_rd_ptr+2) & 0x0007;  
-        // pwang_test
-	excpq_rd_ptr += 4;  
-	if (excpq_rd_ptr > (readw(iadev->reass_reg + EXCP_Q_ED_ADR)& 0xffff))  
- 	    excpq_rd_ptr = readw(iadev->reass_reg + EXCP_Q_ST_ADR)& 0xffff;
-	writew( excpq_rd_ptr, iadev->reass_reg + EXCP_Q_RD_PTR);  
-        state = readl(iadev->reass_reg + STATE_REG) & 0xffff;  
-  }  
-#endif
 }  
   
 static void free_desc(struct atm_dev *dev, int desc)  
@@ -2026,13 +1898,7 @@ static int tx_init(struct atm_dev *dev)
 	}  
 	/* CBR Table */  
         IF_INIT(printk("Start CBR Init\n");)
-#if 1  /* for 1K VC board, CBR_PTR_BASE is 0 */
         writew(0,iadev->seg_reg+CBR_PTR_BASE);
-#else /* Charlie's logic is wrong ? */
-        tmp16 = (iadev->seg_ram+CBR_SCHED_TABLE*iadev->memSize)>>17;
-        IF_INIT(printk("cbr_ptr_base = 0x%x ", tmp16);)
-        writew(tmp16,iadev->seg_reg+CBR_PTR_BASE);
-#endif
 
         IF_INIT(printk("value in register = 0x%x\n",
                                    readw(iadev->seg_reg+CBR_PTR_BASE));)
@@ -2700,16 +2566,6 @@ static int ia_open(struct atm_vcc *vcc)
   
 	set_bit(ATM_VF_READY,&vcc->flags);
 
-#if 0
-        {
-           static u8 first = 1; 
-           if (first) {
-              ia_timer.expires = jiffies + 3*HZ;
-              add_timer(&ia_timer);
-              first = 0;
-           }           
-        }
-#endif
 	IF_EVENT(printk("ia open returning\n");)  
 	return 0;  
 }  
@@ -3030,21 +2886,6 @@ static int ia_pkt_tx (struct atm_vcc *vcc, struct sk_buff *skb) {
 	/* Increment transaction counter */  
 	writel(2, iadev->dma+IPHASE5575_TX_COUNTER);  
         
-#if 0        
-        /* add flow control logic */ 
-        if (atomic_read(&vcc->stats->tx) % 20 == 0) {
-          if (iavcc->vc_desc_cnt > 10) {
-             vcc->tx_quota =  vcc->tx_quota * 3 / 4;
-            printk("Tx1:  vcc->tx_quota = %d \n", (u32)vcc->tx_quota );
-              iavcc->flow_inc = -1;
-              iavcc->saved_tx_quota = vcc->tx_quota;
-           } else if ((iavcc->flow_inc < 0) && (iavcc->vc_desc_cnt < 3)) {
-             // vcc->tx_quota = 3 * iavcc->saved_tx_quota / 4;
-             printk("Tx2:  vcc->tx_quota = %d \n", (u32)vcc->tx_quota ); 
-              iavcc->flow_inc = 0;
-           }
-        }
-#endif
 	IF_TX(printk("ia send done\n");)  
 	return 0;  
 }  

@@ -256,4 +256,3 @@ MODULE_DESCRIPTION("Toshiba TC6387XB core driver");
 MODULE_LICENSE("GPL v2");
 MODULE_AUTHOR("Ian Molton");
 MODULE_ALIAS("platform:tc6387xb");
-

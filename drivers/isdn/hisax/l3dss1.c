@@ -1,4 +1,4 @@
-/* $Id: l3dss1.c,v 2.32.2.3 2004/01/13 14:31:25 keil Exp $
+/* $Id: l3dss1.c,v 2.32.2.3 2004/01/13 14:31:25 Exp $
  *
  * EURO/DSS1 D-channel protocol
  *

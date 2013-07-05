@@ -659,22 +659,6 @@ static void tick_nohz_switch_to_nohz(void)
  */
 static void tick_nohz_kick_tick(int cpu, ktime_t now)
 {
-#if 0
-	/* Switch back to 2.6.27 behaviour */
-
-	struct tick_sched *ts = &per_cpu(tick_cpu_sched, cpu);
-	ktime_t delta;
-
-	/*
-	 * Do not touch the tick device, when the next expiry is either
-	 * already reached or less/equal than the tick period.
-	 */
-	delta =	ktime_sub(hrtimer_get_expires(&ts->sched_timer), now);
-	if (delta.tv64 <= tick_period.tv64)
-		return;
-
-	tick_nohz_restart(ts, now);
-#endif
 }
 
 static inline void tick_check_nohz(int cpu)

@@ -329,7 +329,6 @@ static int da9034_init_chip(struct da903x_chip *chip)
 	__da903x_write(chip->client, DA9034_SYS_CTRL_B, 0x20);
 	__da903x_write(chip->client, DA9034_SYS_CTRL_A, 0x60);
 
-	/* workaround to make LEDs work */
 	__da903x_write(chip->client, 0x90, 0x01);
 	__da903x_write(chip->client, 0xB0, 0x08);
 

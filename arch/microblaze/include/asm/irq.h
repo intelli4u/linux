@@ -27,10 +27,6 @@ extern unsigned int nr_irq;
 struct pt_regs;
 extern void do_IRQ(struct pt_regs *regs);
 
-/** FIXME - not implement
- * irq_dispose_mapping - Unmap an interrupt
- * @virq: linux virq number of the interrupt to unmap
- */
 static inline void irq_dispose_mapping(unsigned int virq)
 {
 	return;

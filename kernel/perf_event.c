@@ -1251,10 +1251,6 @@ void perf_event_task_sched_out(struct task_struct *task,
 		raw_spin_lock(&ctx->lock);
 		raw_spin_lock_nested(&next_ctx->lock, SINGLE_DEPTH_NESTING);
 		if (context_equiv(ctx, next_ctx)) {
-			/*
-			 * XXX do we need a memory barrier of sorts
-			 * wrt to rcu_dereference() of perf_event_ctxp
-			 */
 			task->perf_event_ctxp = next_ctx;
 			next->perf_event_ctxp = ctx;
 			ctx->task = next;
@@ -3252,9 +3248,6 @@ static void perf_output_read_one(struct perf_output_handle *handle,
 	perf_output_copy(handle, values, n * sizeof(u64));
 }
 
-/*
- * XXX PERF_FORMAT_GROUP vs inherited events seems difficult.
- */
 static void perf_output_read_group(struct perf_output_handle *handle,
 			    struct perf_event *event)
 {
@@ -4003,10 +3996,6 @@ static int __perf_event_overflow(struct perf_event *event, int nmi,
 			perf_adjust_period(event, delta, hwc->last_period);
 	}
 
-	/*
-	 * XXX event_limit might not quite work as expected on inherited
-	 * events
-	 */
 
 	event->pending_kill = POLL_IN;
 	if (events && atomic_dec_and_test(&event->event_limit)) {

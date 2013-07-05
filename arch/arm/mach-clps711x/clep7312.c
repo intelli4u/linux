@@ -45,4 +45,3 @@ MACHINE_START(CLEP7212, "Cirrus Logic 7212/7312")
 	.init_irq	= clps711x_init_irq,
 	.timer		= &clps711x_timer,
 MACHINE_END
-

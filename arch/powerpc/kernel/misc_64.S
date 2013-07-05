@@ -372,11 +372,6 @@ _GLOBAL(scom970_read)
 	mfspr	r0,SPRN_SCOMC
 	isync
 
-	/* XXX:	fixup result on some buggy 970's (ouch ! we lost a bit, bah
-	 * that's the best we can do). Not implemented yet as we don't use
-	 * the scom on any of the bogus CPUs yet, but may have to be done
-	 * ultimately
-	 */
 
 	/* restore interrupts */
 	mtmsrd	r4,1
@@ -475,7 +470,7 @@ _GLOBAL(kexec_wait)
 	SYNC
 
 99:	HMT_LOW
-#ifdef CONFIG_KEXEC		/* use no memory without kexec */
+#ifdef CONFIG_KEXEC		    /* use no memory without kexec */
 	lwz	r4,0(r5)
 	cmpwi	0,r4,0
 	bnea	0x60

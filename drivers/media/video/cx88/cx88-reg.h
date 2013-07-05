@@ -523,7 +523,6 @@
 
 /* ---------------------------------------------------------------------- */
 /* general purpose host registers                                         */
-/* FIXME: tyops?  s/0x35/0x38/ ??                                         */
 
 #define MO_GPHSTD_DMA       0x350000 // {64}RWp Host downstream
 #define MO_GPHSTU_DMA       0x350008 // {64}RWp Host upstream

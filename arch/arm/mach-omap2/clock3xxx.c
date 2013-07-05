@@ -80,11 +80,6 @@ void __init omap3_clk_lock_dpll5(void)
 
 /* Common clock code */
 
-/*
- * Switch the MPU rate if specified on cmdline.  We cannot do this
- * early until cmdline is parsed.  XXX This should be removed from the
- * clock code and handled by the OPP layer code in the near future.
- */
 static int __init omap3xxx_clk_arch_init(void)
 {
 	int ret;
@@ -100,5 +95,3 @@ static int __init omap3xxx_clk_arch_init(void)
 }
 
 arch_initcall(omap3xxx_clk_arch_init);
-
-

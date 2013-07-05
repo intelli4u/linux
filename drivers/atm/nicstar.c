@@ -2527,38 +2527,6 @@ static int ns_proc_read(struct atm_dev *dev, loff_t * pos, char *page)
 		card->intcnt = 0;
 		return retval;
 	}
-#if 0
-	/* Dump 25.6 Mbps PHY registers */
-	/* Now there's a 25.6 Mbps PHY driver this code isn't needed. I left it
-	   here just in case it's needed for debugging. */
-	if (card->max_pcr == ATM_25_PCR && !left--) {
-		u32 phy_regs[4];
-		u32 i;
-
-		for (i = 0; i < 4; i++) {
-			while (CMD_BUSY(card)) ;
-			writel(NS_CMD_READ_UTILITY | 0x00000200 | i,
-			       card->membase + CMD);
-			while (CMD_BUSY(card)) ;
-			phy_regs[i] = readl(card->membase + DR0) & 0x000000FF;
-		}
-
-		return sprintf(page, "PHY regs: 0x%02X 0x%02X 0x%02X 0x%02X \n",
-			       phy_regs[0], phy_regs[1], phy_regs[2],
-			       phy_regs[3]);
-	}
-#endif /* 0 - Dump 25.6 Mbps PHY registers */
-#if 0
-	/* Dump TST */
-	if (left-- < NS_TST_NUM_ENTRIES) {
-		if (card->tste2vc[left + 1] == NULL)
-			return sprintf(page, "%5d - VBR/UBR \n", left + 1);
-		else
-			return sprintf(page, "%5d - %d %d \n", left + 1,
-				       card->tste2vc[left + 1]->tx_vcc->vpi,
-				       card->tste2vc[left + 1]->tx_vcc->vci);
-	}
-#endif /* 0 */
 	return 0;
 }
 

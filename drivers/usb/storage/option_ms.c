@@ -166,4 +166,3 @@ int option_ms_init(struct us_data *us)
 
 	return 0;
 }
-

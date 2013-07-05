@@ -87,7 +87,6 @@ NCR_Q720_probe_one(struct NCR_Q720_private *p, int siop,
 	int error;
 
 	scsi_id = scsr1 >> 4;
-	/* enable burst length 16 (FIXME: should allow this) */
 	scsr1 |= 0x02;
 	/* force a siop reset */
 	scsr1 |= 0x04;

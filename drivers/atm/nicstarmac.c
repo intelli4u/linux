@@ -39,27 +39,6 @@ typedef void __iomem *virt_addr_t;
 #define SI_LOW		0x0000	/* Serial input data low */
 
 /* Read Status Register = 0000 0101b */
-#if 0
-static u_int32_t rdsrtab[] = {
-	CS_HIGH | CLK_HIGH,
-	CS_LOW | CLK_LOW,
-	CLK_HIGH,		/* 0 */
-	CLK_LOW,
-	CLK_HIGH,		/* 0 */
-	CLK_LOW,
-	CLK_HIGH,		/* 0 */
-	CLK_LOW,
-	CLK_HIGH,		/* 0 */
-	CLK_LOW,
-	CLK_HIGH,		/* 0 */
-	CLK_LOW | SI_HIGH,
-	CLK_HIGH | SI_HIGH,	/* 1 */
-	CLK_LOW | SI_LOW,
-	CLK_HIGH,		/* 0 */
-	CLK_LOW | SI_HIGH,
-	CLK_HIGH | SI_HIGH	/* 1 */
-};
-#endif /*  0  */
 
 /* Read from EEPROM = 0000 0011b */
 static u_int32_t readtab[] = {
@@ -117,40 +96,6 @@ static u_int32_t clocktab[] = {
  * eeprom, then pull the result from bit 16 of the NicSTaR's General Purpose 
  * register.  
  */
-#if 0
-u_int32_t nicstar_read_eprom_status(virt_addr_t base)
-{
-	u_int32_t val;
-	u_int32_t rbyte;
-	int32_t i, j;
-
-	/* Send read instruction */
-	val = NICSTAR_REG_READ(base, NICSTAR_REG_GENERAL_PURPOSE) & 0xFFFFFFF0;
-
-	for (i = 0; i < ARRAY_SIZE(rdsrtab); i++) {
-		NICSTAR_REG_WRITE(base, NICSTAR_REG_GENERAL_PURPOSE,
-				  (val | rdsrtab[i]));
-		osp_MicroDelay(CYCLE_DELAY);
-	}
-
-	/* Done sending instruction - now pull data off of bit 16, MSB first */
-	/* Data clocked out of eeprom on falling edge of clock */
-
-	rbyte = 0;
-	for (i = 7, j = 0; i >= 0; i--) {
-		NICSTAR_REG_WRITE(base, NICSTAR_REG_GENERAL_PURPOSE,
-				  (val | clocktab[j++]));
-		rbyte |= (((NICSTAR_REG_READ(base, NICSTAR_REG_GENERAL_PURPOSE)
-			    & 0x00010000) >> 16) << i);
-		NICSTAR_REG_WRITE(base, NICSTAR_REG_GENERAL_PURPOSE,
-				  (val | clocktab[j++]));
-		osp_MicroDelay(CYCLE_DELAY);
-	}
-	NICSTAR_REG_WRITE(base, NICSTAR_REG_GENERAL_PURPOSE, 2);
-	osp_MicroDelay(CYCLE_DELAY);
-	return rbyte;
-}
-#endif /*  0  */
 
 /*
  * This routine will clock the Read_data function into the X2520

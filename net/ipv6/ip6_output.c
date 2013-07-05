@@ -444,7 +444,6 @@ int ip6_forward(struct sk_buff *skb)
 		return -ETIMEDOUT;
 	}
 
-	/* XXX: idev->cnf.proxy_ndp? */
 	if (net->ipv6.devconf_all->proxy_ndp &&
 	    pneigh_lookup(&nd_tbl, net, &hdr->daddr, skb->dev, 0)) {
 		int proxied = ip6_forward_proxy_check(skb);
@@ -556,7 +555,7 @@ static void ip6_copy_metadata(struct sk_buff *to, struct sk_buff *from)
 #endif
 	nf_copy(to, from);
 #if defined(CONFIG_NETFILTER_XT_TARGET_TRACE) || \
-    defined(CONFIG_NETFILTER_XT_TARGET_TRACE_MODULE)
+	defined(CONFIG_NETFILTER_XT_TARGET_TRACE_MODULE)
 	to->nf_trace = from->nf_trace;
 #endif
 	skb_copy_secmark(to, from);
@@ -1207,21 +1206,6 @@ int ip6_append_data(struct sock *sk, int getfrag(void *from, char *to,
 		}
 	}
 
-	/*
-	 * Let's try using as much space as possible.
-	 * Use MTU if total length of the message fits into the MTU.
-	 * Otherwise, we need to reserve fragment header and
-	 * fragment alignment (= 8-15 octects, in total).
-	 *
-	 * Note that we may need to "move" the data from the tail of
-	 * of the buffer to the new fragment when we split
-	 * the message.
-	 *
-	 * FIXME: It may be fragmented into multiple chunks
-	 *        at once if non-fragmentable extension headers
-	 *        are too large.
-	 * --yoshfuji
-	 */
 
 	inet->cork.length += length;
 	if (length > mtu) {

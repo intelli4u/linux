@@ -200,7 +200,6 @@ IVc. Errata
 
 */
 
-/* Work-around for Kendin chip bugs. */
 #ifndef CONFIG_SUNDANCE_MMIO
 #define USE_IO_OPS 1
 #endif
@@ -1780,5 +1779,3 @@ static void __exit sundance_exit(void)
 
 module_init(sundance_init);
 module_exit(sundance_exit);
-
-

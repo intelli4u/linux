@@ -743,9 +743,7 @@ static int sd_start(struct gspca_dev *gspca_dev)
 		reg_w(gspca_dev, 0x00, 0x816b, Data);
 		break;
 	case CreativePCCam300:		/* Creative PC-CAM 300 640x480 CCD */
-	case IntelPocketPCCamera:	/* FIXME: Temporary fix for
-					 *	Intel Pocket PC Camera
-					 *	- NWG (Sat 29th March 2003) */
+	case IntelPocketPCCamera:
 
 		/* do a full reset */
 		err = spca500_full_reset(gspca_dev);

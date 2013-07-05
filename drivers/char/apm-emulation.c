@@ -373,13 +373,6 @@ static int apm_open(struct inode * inode, struct file * filp)
 	lock_kernel();
 	as = kzalloc(sizeof(*as), GFP_KERNEL);
 	if (as) {
-		/*
-		 * XXX - this is a tiny bit broken, when we consider BSD
-		 * process accounting. If the device is opened by root, we
-		 * instantly flag that we used superuser privs. Who knows,
-		 * we might close the device immediately without doing a
-		 * privileged operation -- cevans
-		 */
 		as->suser = capable(CAP_SYS_ADMIN);
 		as->writer = (filp->f_mode & FMODE_WRITE) == FMODE_WRITE;
 		as->reader = (filp->f_mode & FMODE_READ) == FMODE_READ;

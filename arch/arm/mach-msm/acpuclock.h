@@ -29,4 +29,3 @@ unsigned long acpuclk_get_wfi_rate(void);
 
 
 #endif
-

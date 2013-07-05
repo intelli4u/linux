@@ -108,7 +108,7 @@ void TAUupdate(int cpu)
 	printk("grew = %d\n", tau[cpu].grew);
 #endif
 
-#ifndef CONFIG_TAU_INT /* tau_timeout will do this if not using interrupts */
+#ifndef CONFIG_TAU_INT     /* tau_timeout will do this if not using interrupts */
 	set_thresholds(cpu);
 #endif
 
@@ -157,11 +157,9 @@ static void tau_timeout(void * info)
 			tau[cpu].high -= shrink;
 		} else { /* size must have been min_window + 1 */
 			tau[cpu].low += 1;
-#if 1 /* debug */
 			if ((tau[cpu].high - tau[cpu].low) != min_window){
 				printk(KERN_ERR "temp.c: line %d, logic error\n", __LINE__);
 			}
-#endif
 		}
 	}
 

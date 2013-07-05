@@ -397,7 +397,6 @@ linux_trap_ipi15_sun4d:
 	sethi	%hi(1 << 15), %l7
 	or	%l5, %l7, %l5
 	stha	%l5, [%l4] ASI_M_MXCC
-	/* FIXME */
 1:	b,a	1b
 
 #ifdef CONFIG_SPARC_LEON
@@ -1183,13 +1182,6 @@ sys_rt_sigreturn:
 	/* We are returning to a signal handler. */
 	RESTORE_ALL
 
-	/* Now that we have a real sys_clone, sys_fork() is
-	 * implemented in terms of it.  Our _real_ implementation
-	 * of SunOS vfork() will use sys_vfork().
-	 *
-	 * XXX These three should be consolidated into mostly shared
-	 * XXX code just like on sparc64... -DaveM
-	 */
 	.align	4
 	.globl	sys_fork, flush_patch_two
 sys_fork:

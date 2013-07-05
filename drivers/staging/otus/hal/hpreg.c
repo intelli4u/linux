@@ -32,27 +32,6 @@
 #define HAL_MODE_11A_TURBO	HAL_MODE_108A
 #define HAL_MODE_11G_TURBO	HAL_MODE_108G
 
-#if 0
-enum {
-    /* test groups */
-	FCC	       = 0x10,
-	MKK	       = 0x40,
-	ETSI	   = 0x30,
-    SD_NO_CTL  = 0xe0,
-	NO_CTL	   = 0xff,
-    /* test modes */
-    CTL_MODE_M = 0x0f,
-    CTL_11A    = 0,
-	CTL_11B	   = 1,
-	CTL_11G	   = 2,
-	CTL_TURBO  = 3,
-	CTL_108G   = 4,
-    CTL_2GHT20 = 5,
-    CTL_5GHT20 = 6,
-    CTL_2GHT40 = 7,
-    CTL_5GHT40 = 8
-};
-#endif
 
 /*
  * The following are flags for different requirements per reg domain.
@@ -92,35 +71,6 @@ typedef enum {
 			   NB: Must agree with macro below (BM) */
 #define BMZERO {(u64_t) 0, (u64_t) 0}	/* BMLEN zeros */
 
-#if 0
-
-#define BM(_fa, _fb, _fc, _fd, _fe, _ff, _fg, _fh, _fi, _fj, _fk, _fl) \
-      {((((_fa >= 0) && (_fa < 64)) ? (((u64_t) 1) << _fa) : (u64_t) 0) | \
-	(((_fb >= 0) && (_fb < 64)) ? (((u64_t) 1) << _fb) : (u64_t) 0) | \
-	(((_fc >= 0) && (_fc < 64)) ? (((u64_t) 1) << _fc) : (u64_t) 0) | \
-	(((_fd >= 0) && (_fd < 64)) ? (((u64_t) 1) << _fd) : (u64_t) 0) | \
-	(((_fe >= 0) && (_fe < 64)) ? (((u64_t) 1) << _fe) : (u64_t) 0) | \
-	(((_ff >= 0) && (_ff < 64)) ? (((u64_t) 1) << _ff) : (u64_t) 0) | \
-	(((_fg >= 0) && (_fg < 64)) ? (((u64_t) 1) << _fg) : (u64_t) 0) | \
-	(((_fh >= 0) && (_fh < 64)) ? (((u64_t) 1) << _fh) : (u64_t) 0) | \
-	(((_fi >= 0) && (_fi < 64)) ? (((u64_t) 1) << _fi) : (u64_t) 0) | \
-	(((_fj >= 0) && (_fj < 64)) ? (((u64_t) 1) << _fj) : (u64_t) 0) | \
-	(((_fk >= 0) && (_fk < 64)) ? (((u64_t) 1) << _fk) : (u64_t) 0) | \
-	(((_fl >= 0) && (_fl < 64)) ? (((u64_t) 1) << _fl) : (u64_t) 0) | \
-	       ((((_fa > 63) && (_fa < 128)) ? (((u64_t) 1) << (_fa - 64)) : (u64_t) 0) | \
-		(((_fb > 63) && (_fb < 128)) ? (((u64_t) 1) << (_fb - 64)) : (u64_t) 0) | \
-		(((_fc > 63) && (_fc < 128)) ? (((u64_t) 1) << (_fc - 64)) : (u64_t) 0) | \
-		(((_fd > 63) && (_fd < 128)) ? (((u64_t) 1) << (_fd - 64)) : (u64_t) 0) | \
-		(((_fe > 63) && (_fe < 128)) ? (((u64_t) 1) << (_fe - 64)) : (u64_t) 0) | \
-		(((_ff > 63) && (_ff < 128)) ? (((u64_t) 1) << (_ff - 64)) : (u64_t) 0) | \
-		(((_fg > 63) && (_fg < 128)) ? (((u64_t) 1) << (_fg - 64)) : (u64_t) 0) | \
-		(((_fh > 63) && (_fh < 128)) ? (((u64_t) 1) << (_fh - 64)) : (u64_t) 0) | \
-		(((_fi > 63) && (_fi < 128)) ? (((u64_t) 1) << (_fi - 64)) : (u64_t) 0) | \
-		(((_fj > 63) && (_fj < 128)) ? (((u64_t) 1) << (_fj - 64)) : (u64_t) 0) | \
-		(((_fk > 63) && (_fk < 128)) ? (((u64_t) 1) << (_fk - 64)) : (u64_t) 0) | \
-		(((_fl > 63) && (_fl < 128)) ? (((u64_t) 1) << (_fl - 64)) : (u64_t) 0)))}
-
-#else
 
 #define BM(_fa, _fb, _fc, _fd, _fe, _ff, _fg, _fh, _fi, _fj, _fk, _fl) \
       {((((_fa >= 0) && (_fa < 64)) ? (((u64_t) 1) << (_fa&0x3f)) : (u64_t) 0) | \
@@ -147,8 +97,6 @@ typedef enum {
 		(((_fj > 63) && (_fj < 128)) ? (((u64_t) 1) << ((_fj - 64)&0x3f)) : (u64_t) 0) | \
 		(((_fk > 63) && (_fk < 128)) ? (((u64_t) 1) << ((_fk - 64)&0x3f)) : (u64_t) 0) | \
 		(((_fl > 63) && (_fl < 128)) ? (((u64_t) 1) << ((_fl - 64)&0x3f)) : (u64_t) 0)))}
-
-#endif
 
 /* Mask to check whether a domain is a multidomain or a single
    domain */
@@ -1801,24 +1749,6 @@ void zfHpGetRegulationTable(zdev_t *dev, u16_t regionCode, u16_t c_lo, u16_t c_h
 	}
 	wd->regulationTable.allowChannelCnt = next;
 
-	#if 0
-	{
-		/* debug print */
-		u32_t i;
-		DbgPrint("\n-------------------------------------------\n");
-		DbgPrint("zfHpGetRegulationTable print all channel info regincode = 0x%x\n", wd->regulationTable.regionCode);
-		DbgPrint("index  channel  channelFlags   maxRegTxPower  privFlags  useDFS\n");
-
-		for (i = 0 ; i < wd->regulationTable.allowChannelCnt ; i++) {
-			DbgPrint("%02d       %d         %04x           %02d        %x     %x\n", i,
-			wd->regulationTable.allowChannel[i].channel,
-			wd->regulationTable.allowChannel[i].channelFlags,
-			wd->regulationTable.allowChannel[i].maxRegTxPower,
-			wd->regulationTable.allowChannel[i].privFlags,
-			wd->regulationTable.allowChannel[i].privFlags & ZM_REG_FLAG_CHANNEL_DFS);
-		}
-	}
-	#endif
 
 	zmw_leave_critical_section(dev);
 }

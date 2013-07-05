@@ -270,7 +270,6 @@ Caveats:
 /* A generic null function pointer value.  */
 #define NULLFUNC	0
 
-/* Current CPU.  XXX should this be hard_smp_processor_id()? */
 #define THISCPU		smp_processor_id()
 
 /* State bits for use with atomic bit operations. */

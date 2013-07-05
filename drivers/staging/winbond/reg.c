@@ -1385,7 +1385,7 @@ void BBProcessor_initial(struct hw_data *pHwData)
 		pltmp[9] = 0x00002A79; /* 0x1024 AGC_Ctrl10 */
 		pltmp[10] = (pHwData->phy_type == 3) ? 0x40000a28 : 0x40000228; /* 0x1028 MAXIM_331(b31=0) + WBRF_V1(b11=1) : MAXIM_331(b31=0) + WBRF_V2(b11=0) */
 		pltmp[11] = 0x232FDF30; /* 0x102c A_ACQ_Ctrl */
-		reg->BB2C = 0x232FDF30; /* Modify for 33's 1.0.95.xxx version, antenna 1 */
+		reg->BB2C = 0x232FDF30;
 		Wb35Reg_BurstWrite(pHwData, 0x1000, pltmp, 12, AUTO_INCREMENT);
 
 		pltmp[0] = 0x00002C54; /* 0x1030 B_ACQ_Ctrl */
@@ -2389,4 +2389,3 @@ void BBProcessor_RateChanging(struct hw_data *pHwData,  u8 rate)
 		break;
 	}
 }
-

@@ -103,7 +103,6 @@ static int radeon_apply_workarounds(struct radeonfb_info *rinfo)
 		if ((id->subsystem_vendor == rinfo->pdev->subsystem_vendor ) &&
 		    (id->subsystem_device == rinfo->pdev->subsystem_device )) {
 
-			/* we found a device that requires workaround */
 			printk(KERN_DEBUG "radeonfb: %s detected"
 			       ", enabling workaround\n", id->ident);
 
@@ -2088,13 +2087,12 @@ static void radeon_reinitialize_M9P(struct radeonfb_info *rinfo)
 	OUTPLL(pllMPLL_CNTL, rinfo->save_regs[73] | 0x03);
 	OUTPLL(pllSPLL_CNTL, rinfo->save_regs[74] | 0x03);
 
-	/* Default values for MDLL ... fixme */
 	OUTPLL(pllMDLL_CKO, 0x9c009c);
 	OUTPLL(pllMDLL_RDCKA, 0x08830883);
 	OUTPLL(pllMDLL_RDCKB, 0x08830883);
 	mdelay(5);
 
-	/* Restore PLL_PWRMGT_CNTL */ // XXXX
+	/* Restore PLL_PWRMGT_CNTL */
 	tmp = rinfo->save_regs[0];
 	tmp &= ~PLL_PWRMGT_CNTL_SU_SCLK_USE_BCLK;
 	tmp |= PLL_PWRMGT_CNTL_SU_MCLK_USE_BCLK;
@@ -2203,309 +2201,6 @@ static void radeon_reinitialize_M9P(struct radeonfb_info *rinfo)
 	radeon_pm_m10_enable_lvds_spread_spectrum(rinfo);
 }
 
-#if 0 /* Not ready yet */
-static void radeon_reinitialize_QW(struct radeonfb_info *rinfo)
-{
-	int i;
-	u32 tmp, tmp2;
-	u32 cko, cka, ckb;
-	u32 cgc, cec, c2gc;
-
-	OUTREG(MC_AGP_LOCATION, rinfo->save_regs[32]);
-	OUTREG(DISPLAY_BASE_ADDR, rinfo->save_regs[31]);
-	OUTREG(CRTC2_DISPLAY_BASE_ADDR, rinfo->save_regs[33]);
-	OUTREG(MC_FB_LOCATION, rinfo->save_regs[30]);
-	OUTREG(BUS_CNTL, rinfo->save_regs[36]);
-	OUTREG(RBBM_CNTL, rinfo->save_regs[39]);
-
-	INREG(PAD_CTLR_STRENGTH);
-	OUTREG(PAD_CTLR_STRENGTH, INREG(PAD_CTLR_STRENGTH) & ~0x10000);
-	for (i = 0; i < 65; ++i) {
-		mdelay(1);
-		INREG(PAD_CTLR_STRENGTH);
-	}
-
-	OUTREG(DISP_TEST_DEBUG_CNTL, INREG(DISP_TEST_DEBUG_CNTL) | 0x10000000);
-	OUTREG(OV0_FLAG_CNTRL, INREG(OV0_FLAG_CNTRL) | 0x100);
-	OUTREG(CRTC_GEN_CNTL, INREG(CRTC_GEN_CNTL));
-	OUTREG(DAC_CNTL, 0xff00410a);
-	OUTREG(CRTC2_GEN_CNTL, INREG(CRTC2_GEN_CNTL));
-	OUTREG(DAC_CNTL2, INREG(DAC_CNTL2) | 0x4000);
-
-	OUTREG(SURFACE_CNTL, rinfo->save_regs[29]);
-	OUTREG(AGP_CNTL, rinfo->save_regs[16]);
-	OUTREG(HOST_PATH_CNTL, rinfo->save_regs[41]);
-	OUTREG(DISP_MISC_CNTL, rinfo->save_regs[9]);
-
-	OUTMC(rinfo, ixMC_CHP_IO_CNTL_A0, 0xf7bb4433);
-	OUTREG(MC_IND_INDEX, 0);
-	OUTMC(rinfo, ixMC_CHP_IO_CNTL_B0, 0xf7bb4433);
-	OUTREG(MC_IND_INDEX, 0);
-
-	OUTREG(CRTC_MORE_CNTL, INREG(CRTC_MORE_CNTL));
-
-	tmp = INPLL(pllVCLK_ECP_CNTL);
-	OUTPLL(pllVCLK_ECP_CNTL, tmp);
-	tmp = INPLL(pllPIXCLKS_CNTL);
-	OUTPLL(pllPIXCLKS_CNTL, tmp);
-
-	OUTPLL(MCLK_CNTL, 0xaa3f0000);
-	OUTPLL(SCLK_CNTL, 0xffff0000);
-	OUTPLL(pllMPLL_AUX_CNTL, 6);
-	OUTPLL(pllSPLL_AUX_CNTL, 1);
-	OUTPLL(MDLL_CKO, 0x9f009f);
-	OUTPLL(MDLL_RDCKA, 0x830083);
-	OUTPLL(pllMDLL_RDCKB, 0x830083);
-	OUTPLL(PPLL_CNTL, 0xa433);
-	OUTPLL(P2PLL_CNTL, 0xa433);
-	OUTPLL(MPLL_CNTL, 0x0400a403);
-	OUTPLL(SPLL_CNTL, 0x0400a433);
-
-	tmp = INPLL(M_SPLL_REF_FB_DIV);
-	OUTPLL(M_SPLL_REF_FB_DIV, tmp);
-	tmp = INPLL(M_SPLL_REF_FB_DIV);
-	OUTPLL(M_SPLL_REF_FB_DIV, tmp | 0xc);
-	INPLL(M_SPLL_REF_FB_DIV);
-
-	tmp = INPLL(MPLL_CNTL);
-	OUTREG8(CLOCK_CNTL_INDEX, MPLL_CNTL + PLL_WR_EN);
-	radeon_pll_errata_after_index(rinfo);
-	OUTREG8(CLOCK_CNTL_DATA + 1, (tmp >> 8) & 0xff);
-	radeon_pll_errata_after_data(rinfo);
-
-	tmp = INPLL(M_SPLL_REF_FB_DIV);
-	OUTPLL(M_SPLL_REF_FB_DIV, tmp | 0x5900);
-
-	tmp = INPLL(MPLL_CNTL);
-	OUTPLL(MPLL_CNTL, tmp & ~0x2);
-	mdelay(1);
-	tmp = INPLL(MPLL_CNTL);
-	OUTPLL(MPLL_CNTL, tmp & ~0x1);
-	mdelay(10);
-
-	OUTPLL(MCLK_CNTL, 0xaa3f1212);
-	mdelay(1);
-
-	INPLL(M_SPLL_REF_FB_DIV);
-	INPLL(MCLK_CNTL);
-	INPLL(M_SPLL_REF_FB_DIV);
-
-	tmp = INPLL(SPLL_CNTL);
-	OUTREG8(CLOCK_CNTL_INDEX, SPLL_CNTL + PLL_WR_EN);
-	radeon_pll_errata_after_index(rinfo);
-	OUTREG8(CLOCK_CNTL_DATA + 1, (tmp >> 8) & 0xff);
-	radeon_pll_errata_after_data(rinfo);
-
-	tmp = INPLL(M_SPLL_REF_FB_DIV);
-	OUTPLL(M_SPLL_REF_FB_DIV, tmp | 0x780000);
-
-	tmp = INPLL(SPLL_CNTL);
-	OUTPLL(SPLL_CNTL, tmp & ~0x1);
-	mdelay(1);
-	tmp = INPLL(SPLL_CNTL);
-	OUTPLL(SPLL_CNTL, tmp & ~0x2);
-	mdelay(10);
-
-	tmp = INPLL(SCLK_CNTL);
-	OUTPLL(SCLK_CNTL, tmp | 2);
-	mdelay(1);
-
-	cko = INPLL(pllMDLL_CKO);
-	cka = INPLL(pllMDLL_RDCKA);
-	ckb = INPLL(pllMDLL_RDCKB);
-
-	cko &= ~(MDLL_CKO__MCKOA_SLEEP | MDLL_CKO__MCKOB_SLEEP);
-	OUTPLL(pllMDLL_CKO, cko);
-	mdelay(1);
-	cko &= ~(MDLL_CKO__MCKOA_RESET | MDLL_CKO__MCKOB_RESET);
-	OUTPLL(pllMDLL_CKO, cko);
-	mdelay(5);
-
-	cka &= ~(MDLL_RDCKA__MRDCKA0_SLEEP | MDLL_RDCKA__MRDCKA1_SLEEP);
-	OUTPLL(pllMDLL_RDCKA, cka);
-	mdelay(1);
-	cka &= ~(MDLL_RDCKA__MRDCKA0_RESET | MDLL_RDCKA__MRDCKA1_RESET);
-	OUTPLL(pllMDLL_RDCKA, cka);
-	mdelay(5);
-
-	ckb &= ~(MDLL_RDCKB__MRDCKB0_SLEEP | MDLL_RDCKB__MRDCKB1_SLEEP);
-	OUTPLL(pllMDLL_RDCKB, ckb);
-	mdelay(1);
-	ckb &= ~(MDLL_RDCKB__MRDCKB0_RESET | MDLL_RDCKB__MRDCKB1_RESET);
-	OUTPLL(pllMDLL_RDCKB, ckb);
-	mdelay(5);
-
-	OUTMC(rinfo, ixMC_CHP_IO_CNTL_A1, 0x151550ff);
-	OUTREG(MC_IND_INDEX, 0);
-	OUTMC(rinfo, ixMC_CHP_IO_CNTL_B1, 0x151550ff);
-	OUTREG(MC_IND_INDEX, 0);
-	mdelay(1);
-	OUTMC(rinfo, ixMC_CHP_IO_CNTL_A1, 0x141550ff);
-	OUTREG(MC_IND_INDEX, 0);
-	OUTMC(rinfo, ixMC_CHP_IO_CNTL_B1, 0x141550ff);
-	OUTREG(MC_IND_INDEX, 0);
-	mdelay(1);
-
-	OUTPLL(pllHTOTAL_CNTL, 0);
-	OUTPLL(pllHTOTAL2_CNTL, 0);
-
-	OUTREG(MEM_CNTL, 0x29002901);
-	OUTREG(MEM_SDRAM_MODE_REG, 0x45320032);	/* XXX use save_regs[35]? */
-	OUTREG(EXT_MEM_CNTL, 0x1a394333);
-	OUTREG(MEM_IO_CNTL_A1, 0x0aac0aac);
-	OUTREG(MEM_INIT_LATENCY_TIMER, 0x34444444);
-	OUTREG(MEM_REFRESH_CNTL, 0x1f1f7218);	/* XXX or save_regs[42]? */
-	OUTREG(MC_DEBUG, 0);
-	OUTREG(MEM_IO_OE_CNTL, 0x04300430);
-
-	OUTMC(rinfo, ixMC_IMP_CNTL, 0x00f460d6);
-	OUTREG(MC_IND_INDEX, 0);
-	OUTMC(rinfo, ixMC_IMP_CNTL_0, 0x00009249);
-	OUTREG(MC_IND_INDEX, 0);
-
-	OUTREG(CNFG_MEMSIZE, rinfo->video_ram);
-
-	radeon_pm_full_reset_sdram(rinfo);
-
-	INREG(FP_GEN_CNTL);
-	OUTREG(TMDS_CNTL, 0x01000000);	/* XXX ? */
-	tmp = INREG(FP_GEN_CNTL);
-	tmp |= FP_CRTC_DONT_SHADOW_HEND | FP_CRTC_DONT_SHADOW_VPAR | 0x200;
-	OUTREG(FP_GEN_CNTL, tmp);
-
-	tmp = INREG(DISP_OUTPUT_CNTL);
-	tmp &= ~0x400;
-	OUTREG(DISP_OUTPUT_CNTL, tmp);
-
-	OUTPLL(CLK_PIN_CNTL, rinfo->save_regs[4]);
-	OUTPLL(CLK_PWRMGT_CNTL, rinfo->save_regs[1]);
-	OUTPLL(PLL_PWRMGT_CNTL, rinfo->save_regs[0]);
-
-	tmp = INPLL(MCLK_MISC);
-	tmp |= MCLK_MISC__MC_MCLK_DYN_ENABLE | MCLK_MISC__IO_MCLK_DYN_ENABLE;
-	OUTPLL(MCLK_MISC, tmp);
-
-	tmp = INPLL(SCLK_CNTL);
-	OUTPLL(SCLK_CNTL, tmp);
-
-	OUTREG(CRTC_MORE_CNTL, 0);
-	OUTREG8(CRTC_GEN_CNTL+1, 6);
-	OUTREG8(CRTC_GEN_CNTL+3, 1);
-	OUTREG(CRTC_PITCH, 32);
-
-	tmp = INPLL(VCLK_ECP_CNTL);
-	OUTPLL(VCLK_ECP_CNTL, tmp);
-
-	tmp = INPLL(PPLL_CNTL);
-	OUTPLL(PPLL_CNTL, tmp);
-
-	/* palette stuff and BIOS_1_SCRATCH... */
-
-	tmp = INREG(FP_GEN_CNTL);
-	tmp2 = INREG(TMDS_TRANSMITTER_CNTL);
-	tmp |= 2;
-	OUTREG(FP_GEN_CNTL, tmp);
-	mdelay(5);
-	OUTREG(FP_GEN_CNTL, tmp);
-	mdelay(5);
-	OUTREG(TMDS_TRANSMITTER_CNTL, tmp2);
-	OUTREG(CRTC_MORE_CNTL, 0);
-	mdelay(20);
-
-	tmp = INREG(CRTC_MORE_CNTL);
-	OUTREG(CRTC_MORE_CNTL, tmp);
-
-	cgc = INREG(CRTC_GEN_CNTL);
-	cec = INREG(CRTC_EXT_CNTL);
-	c2gc = INREG(CRTC2_GEN_CNTL);
-
-	OUTREG(CRTC_H_SYNC_STRT_WID, 0x008e0580);
-	OUTREG(CRTC_H_TOTAL_DISP, 0x009f00d2);
-	OUTREG8(CLOCK_CNTL_INDEX, HTOTAL_CNTL + PLL_WR_EN);
-	radeon_pll_errata_after_index(rinfo);
-	OUTREG8(CLOCK_CNTL_DATA, 0);
-	radeon_pll_errata_after_data(rinfo);
-	OUTREG(CRTC_V_SYNC_STRT_WID, 0x00830403);
-	OUTREG(CRTC_V_TOTAL_DISP, 0x03ff0429);
-	OUTREG(FP_CRTC_H_TOTAL_DISP, 0x009f0033);
-	OUTREG(FP_H_SYNC_STRT_WID, 0x008e0080);
-	OUTREG(CRT_CRTC_H_SYNC_STRT_WID, 0x008e0080);
-	OUTREG(FP_CRTC_V_TOTAL_DISP, 0x03ff002a);
-	OUTREG(FP_V_SYNC_STRT_WID, 0x00830004);
-	OUTREG(CRT_CRTC_V_SYNC_STRT_WID, 0x00830004);
-	OUTREG(FP_HORZ_VERT_ACTIVE, 0x009f03ff);
-	OUTREG(FP_HORZ_STRETCH, 0);
-	OUTREG(FP_VERT_STRETCH, 0);
-	OUTREG(OVR_CLR, 0);
-	OUTREG(OVR_WID_LEFT_RIGHT, 0);
-	OUTREG(OVR_WID_TOP_BOTTOM, 0);
-
-	tmp = INPLL(PPLL_REF_DIV);
-	tmp = (tmp & ~PPLL_REF_DIV_MASK) | rinfo->pll.ref_div;
-	OUTPLL(PPLL_REF_DIV, tmp);
-	INPLL(PPLL_REF_DIV);
-
-	OUTREG8(CLOCK_CNTL_INDEX, PPLL_CNTL + PLL_WR_EN);
-	radeon_pll_errata_after_index(rinfo);
-	OUTREG8(CLOCK_CNTL_DATA + 1, 0xbc);
-	radeon_pll_errata_after_data(rinfo);
-
-	tmp = INREG(CLOCK_CNTL_INDEX);
-	radeon_pll_errata_after_index(rinfo);
-	OUTREG(CLOCK_CNTL_INDEX, tmp & 0xff);
-	radeon_pll_errata_after_index(rinfo);
-	radeon_pll_errata_after_data(rinfo);
-
-	OUTPLL(PPLL_DIV_0, 0x48090);
-
-	tmp = INPLL(PPLL_CNTL);
-	OUTPLL(PPLL_CNTL, tmp & ~0x2);
-	mdelay(1);
-	tmp = INPLL(PPLL_CNTL);
-	OUTPLL(PPLL_CNTL, tmp & ~0x1);
-	mdelay(10);
-
-	tmp = INPLL(VCLK_ECP_CNTL);
-	OUTPLL(VCLK_ECP_CNTL, tmp | 3);
-	mdelay(1);
-
-	tmp = INPLL(VCLK_ECP_CNTL);
-	OUTPLL(VCLK_ECP_CNTL, tmp);
-
-	c2gc |= CRTC2_DISP_REQ_EN_B;
-	OUTREG(CRTC2_GEN_CNTL, c2gc);
-	cgc |= CRTC_EN;
-	OUTREG(CRTC_GEN_CNTL, cgc);
-	OUTREG(CRTC_EXT_CNTL, cec);
-	OUTREG(CRTC_PITCH, 0xa0);
-	OUTREG(CRTC_OFFSET, 0);
-	OUTREG(CRTC_OFFSET_CNTL, 0);
-
-	OUTREG(GRPH_BUFFER_CNTL, 0x20117c7c);
-	OUTREG(GRPH2_BUFFER_CNTL, 0x00205c5c);
-
-	tmp2 = INREG(FP_GEN_CNTL);
-	tmp = INREG(TMDS_TRANSMITTER_CNTL);
-	OUTREG(0x2a8, 0x0000061b);
-	tmp |= TMDS_PLL_EN;
-	OUTREG(TMDS_TRANSMITTER_CNTL, tmp);
-	mdelay(1);
-	tmp &= ~TMDS_PLLRST;
-	OUTREG(TMDS_TRANSMITTER_CNTL, tmp);
-	tmp2 &= ~2;
-	tmp2 |= FP_TMDS_EN;
-	OUTREG(FP_GEN_CNTL, tmp2);
-	mdelay(5);
-	tmp2 |= FP_FPON;
-	OUTREG(FP_GEN_CNTL, tmp2);
-
-	OUTREG(CUR_HORZ_VERT_OFF, CUR_LOCK | 1);
-	cgc = INREG(CRTC_GEN_CNTL);
-	OUTREG(CUR_HORZ_VERT_POSN, 0xbfff0fff);
-	cgc |= 0x10000;
-	OUTREG(CUR_OFFSET, 0);
-}
-#endif /* 0 */
 
 #endif /* CONFIG_PPC_OF */
 
@@ -2843,12 +2538,6 @@ void radeonfb_pm_init(struct radeonfb_info *rinfo, int dynclk, int ignore_devlis
 			rinfo->reinit_func = radeon_reinitialize_M10;
 			rinfo->pm_mode |= radeon_pm_off;
 		}
-#if 0 /* Not ready yet */
-		if (!strcmp(rinfo->of_node->name, "ATY,BlueStoneParent")) {
-			rinfo->reinit_func = radeon_reinitialize_QW;
-			rinfo->pm_mode |= radeon_pm_off;
-		}
-#endif
 		if (!strcmp(rinfo->of_node->name, "ATY,ViaParent")) {
 			rinfo->reinit_func = radeon_reinitialize_M9P;
 			rinfo->pm_mode |= radeon_pm_off;
@@ -2871,13 +2560,6 @@ void radeonfb_pm_init(struct radeonfb_info *rinfo, int dynclk, int ignore_devlis
 #endif
 		}
 
-#if 0
-		/* Power down TV DAC, that saves a significant amount of power,
-		 * we'll have something better once we actually have some TVOut
-		 * support
-		 */
-		OUTREG(TV_DAC_CNTL, INREG(TV_DAC_CNTL) | 0x07000000);
-#endif
 	}
 #endif /* defined(CONFIG_PPC_PMAC) */
 #endif /* defined(CONFIG_PM) */

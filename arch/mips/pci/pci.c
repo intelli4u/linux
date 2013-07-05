@@ -13,6 +13,8 @@
 #include <linux/types.h>
 #include <linux/pci.h>
 
+
+
 /*
  * Indicate whether we respect the PCI setup left by the firmware.
  *
@@ -149,60 +151,10 @@ out:
 	       "Skipping PCI bus scan due to resource conflict\n");
 }
 
-static int __init pcibios_init(void)
-{
-	struct pci_controller *hose;
-
-	/* Scan all of the recorded PCI controllers.  */
-	for (hose = hose_head; hose; hose = hose->next)
-		pcibios_scanbus(hose);
-
-	pci_fixup_irqs(pci_common_swizzle, pcibios_map_irq);
-
-	pci_initialized = 1;
-
-	return 0;
-}
+extern int __init pcibios_init(void);
 
 subsys_initcall(pcibios_init);
 
-static int pcibios_enable_resources(struct pci_dev *dev, int mask)
-{
-	u16 cmd, old_cmd;
-	int idx;
-	struct resource *r;
-
-	pci_read_config_word(dev, PCI_COMMAND, &cmd);
-	old_cmd = cmd;
-	for (idx=0; idx < PCI_NUM_RESOURCES; idx++) {
-		/* Only set up the requested stuff */
-		if (!(mask & (1<<idx)))
-			continue;
-
-		r = &dev->resource[idx];
-		if (!(r->flags & (IORESOURCE_IO | IORESOURCE_MEM)))
-			continue;
-		if ((idx == PCI_ROM_RESOURCE) &&
-				(!(r->flags & IORESOURCE_ROM_ENABLE)))
-			continue;
-		if (!r->start && r->end) {
-			printk(KERN_ERR "PCI: Device %s not available "
-			       "because of resource collisions\n",
-			       pci_name(dev));
-			return -EINVAL;
-		}
-		if (r->flags & IORESOURCE_IO)
-			cmd |= PCI_COMMAND_IO;
-		if (r->flags & IORESOURCE_MEM)
-			cmd |= PCI_COMMAND_MEMORY;
-	}
-	if (cmd != old_cmd) {
-		printk("PCI: Enabling device %s (%04x -> %04x)\n",
-		       pci_name(dev), old_cmd, cmd);
-		pci_write_config_word(dev, PCI_COMMAND, cmd);
-	}
-	return 0;
-}
 
 /*
  *  If we set up a device for bus mastering, we need to check the latency
@@ -230,61 +182,6 @@ unsigned int pcibios_assign_all_busses(void)
 	return (pci_probe & PCI_ASSIGN_ALL_BUSSES) ? 1 : 0;
 }
 
-int pcibios_enable_device(struct pci_dev *dev, int mask)
-{
-	int err;
-
-	if ((err = pcibios_enable_resources(dev, mask)) < 0)
-		return err;
-
-	return pcibios_plat_dev_init(dev);
-}
-
-static void pcibios_fixup_device_resources(struct pci_dev *dev,
-	struct pci_bus *bus)
-{
-	/* Update device resources.  */
-	struct pci_controller *hose = (struct pci_controller *)bus->sysdata;
-	unsigned long offset = 0;
-	int i;
-
-	for (i = 0; i < PCI_NUM_RESOURCES; i++) {
-		if (!dev->resource[i].start)
-			continue;
-		if (dev->resource[i].flags & IORESOURCE_IO)
-			offset = hose->io_offset;
-		else if (dev->resource[i].flags & IORESOURCE_MEM)
-			offset = hose->mem_offset;
-
-		dev->resource[i].start += offset;
-		dev->resource[i].end += offset;
-	}
-}
-
-void __devinit pcibios_fixup_bus(struct pci_bus *bus)
-{
-	/* Propagate hose info into the subordinate devices.  */
-
-	struct pci_controller *hose = bus->sysdata;
-	struct list_head *ln;
-	struct pci_dev *dev = bus->self;
-
-	if (!dev) {
-		bus->resource[0] = hose->io_resource;
-		bus->resource[1] = hose->mem_resource;
-	} else if (pci_probe_only &&
-		   (dev->class >> 8) == PCI_CLASS_BRIDGE_PCI) {
-		pci_read_bridge_bases(bus);
-		pcibios_fixup_device_resources(dev, bus);
-	}
-
-	for (ln = bus->devices.next; ln != &bus->devices; ln = ln->next) {
-		dev = pci_dev_b(ln);
-
-		if ((dev->class >> 8) != PCI_CLASS_BRIDGE_PCI)
-			pcibios_fixup_device_resources(dev, bus);
-	}
-}
 
 void __init
 pcibios_update_irq(struct pci_dev *dev, int irq)
@@ -355,10 +252,3 @@ int pci_mmap_page_range(struct pci_dev *dev, struct vm_area_struct *vma,
 }
 
 char * (*pcibios_plat_setup)(char *str) __devinitdata;
-
-char *__devinit pcibios_setup(char *str)
-{
-	if (pcibios_plat_setup)
-		return pcibios_plat_setup(str);
-	return str;
-}

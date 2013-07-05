@@ -2016,7 +2016,7 @@ static void cy_set_line_char(struct cyclades_port *info, struct tty_struct *tty)
 	int baud, baud_rate = 0;
 	int i;
 
-	if (!tty->termios) /* XXX can this happen at all? */
+	if (!tty->termios)
 		return;
 
 	if (info->line == -1)
@@ -2844,17 +2844,6 @@ static void cy_set_termios(struct tty_struct *tty, struct ktermios *old_termios)
 		tty->hw_stopped = 0;
 		cy_start(tty);
 	}
-#if 0
-	/*
-	 * No need to wake up processes in open wait, since they
-	 * sample the CLOCAL flag once, and don't recheck it.
-	 * XXX  It's not clear whether the current behavior is correct
-	 * or not.  Hence, this may change.....
-	 */
-	if (!(old_termios->c_cflag & CLOCAL) &&
-	    (tty->termios->c_cflag & CLOCAL))
-		wake_up_interruptible(&info->port.open_wait);
-#endif
 }				/* cy_set_termios */
 
 /* This function is used to send a high-priority XON/XOFF character to
@@ -4003,7 +3992,6 @@ static int cyclades_proc_show(struct seq_file *m, void *v)
 			info = &cy_card[i].ports[j];
 
 			if (info->port.count) {
-				/* XXX is the ldisc num worth this? */
 				struct tty_struct *tty;
 				struct tty_ldisc *ld;
 				int num = 0;

@@ -1166,11 +1166,6 @@ pmac_ide_macio_attach(struct macio_dev *mdev, const struct of_device_id *match)
 		goto out_free_pmif;
 	}
 			
-	/* XXX This is bogus. Should be fixed in the registry by checking
-	 * the kind of host interrupt controller, a bit like gatwick
-	 * fixes in irq.c. That works well enough for the single case
-	 * where that happens though...
-	 */
 	if (macio_irq_count(mdev) == 0) {
 		printk(KERN_WARNING "ide-pmac: no intrs for device %s, using "
 				    "13\n", mdev->ofdev.dev.of_node->full_name);

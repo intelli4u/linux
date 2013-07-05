@@ -192,7 +192,6 @@ static int ma600_change_speed(struct sir_dev *dev, unsigned speed)
 	/* Wait at least 10ms: fake wait_until_sent - 10 bits at 9600 baud*/
 	msleep(15);					/* old ma600 uses 15ms */
 
-#if 1
 	/* read-back of the control byte. ma600 is the first dongle driver
 	 * which uses this so there might be some unidentified issues.
 	 * Disable this in case of problems with readback.
@@ -207,7 +206,6 @@ static int ma600_change_speed(struct sir_dev *dev, unsigned speed)
 	}
 	else
 		IRDA_DEBUG(2, "%s() control byte write read OK\n", __func__);
-#endif
 
 	/* Set DTR, Set RTS */
 	sirdev_set_dtr_rts(dev, TRUE, TRUE);
@@ -260,4 +258,3 @@ MODULE_ALIAS("irda-dongle-11"); /* IRDA_MA600_DONGLE */
 		
 module_init(ma600_sir_init);
 module_exit(ma600_sir_cleanup);
-

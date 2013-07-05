@@ -145,7 +145,6 @@ static void snd_seq_timer_interrupt(struct snd_timer_instance *timeri,
 
 	resolution *= ticks;
 	if (tmr->skew != tmr->skew_base) {
-		/* FIXME: assuming skew_base = 0x10000 */
 		resolution = (resolution >> 16) * tmr->skew +
 			(((resolution & 0xffff) * tmr->skew) >> 16);
 	}
@@ -250,7 +249,6 @@ int snd_seq_timer_set_skew(struct snd_seq_timer *tmr, unsigned int skew,
 	if (snd_BUG_ON(!tmr))
 		return -EINVAL;
 
-	/* FIXME */
 	if (base != SKEW_BASE) {
 		snd_printd("invalid skew base 0x%x\n", base);
 		return -EINVAL;
@@ -452,4 +450,3 @@ void snd_seq_info_timer_read(struct snd_info_entry *entry,
  	}
 }
 #endif /* CONFIG_PROC_FS */
-

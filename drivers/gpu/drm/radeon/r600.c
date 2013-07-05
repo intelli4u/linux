@@ -192,7 +192,6 @@ void r600_pm_get_dynpm_state(struct radeon_device *rdev)
 			return;
 		}
 	} else {
-		/* XXX select a power state based on AC/DC, single/dualhead, etc. */
 		/* for now just select the first power state and switch between clock modes */
 		/* power state array is low to high, default is first (0) */
 		if (rdev->pm.active_crtc_count > 1) {
@@ -408,7 +407,6 @@ void rs780_pm_init_profile(struct radeon_device *rdev)
 void r600_pm_init_profile(struct radeon_device *rdev)
 {
 	if (rdev->family == CHIP_R600) {
-		/* XXX */
 		/* default */
 		rdev->pm.profiles[PM_PROFILE_DEFAULT_IDX].dpms_off_ps_idx = rdev->pm.default_power_state_index;
 		rdev->pm.profiles[PM_PROFILE_DEFAULT_IDX].dpms_on_ps_idx = rdev->pm.default_power_state_index;
@@ -1504,7 +1502,6 @@ void r600_gpu_init(struct radeon_device *rdev)
 	u32 sq_stack_resource_mgmt_1 = 0;
 	u32 sq_stack_resource_mgmt_2 = 0;
 
-	/* FIXME: implement */
 	switch (rdev->family) {
 	case CHIP_R600:
 		rdev->config.r600.max_pipes = 4;
@@ -2376,13 +2373,11 @@ int r600_set_surface_reg(struct radeon_device *rdev, int reg,
 			 uint32_t tiling_flags, uint32_t pitch,
 			 uint32_t offset, uint32_t obj_size)
 {
-	/* FIXME: implement */
 	return 0;
 }
 
 void r600_clear_surface_reg(struct radeon_device *rdev, int reg)
 {
-	/* FIXME: implement */
 }
 
 
@@ -2517,7 +2512,6 @@ int r600_suspend(struct radeon_device *rdev)
 	int r;
 
 	r600_audio_fini(rdev);
-	/* FIXME: we should wait for ring to be empty */
 	r600_cp_stop(rdev);
 	rdev->cp.ready = false;
 	r600_irq_suspend(rdev);
@@ -2669,7 +2663,6 @@ void r600_fini(struct radeon_device *rdev)
  */
 void r600_ring_ib_execute(struct radeon_device *rdev, struct radeon_ib *ib)
 {
-	/* FIXME: implement */
 	radeon_ring_write(rdev, PACKET3(PACKET3_INDIRECT_BUFFER, 2));
 	radeon_ring_write(rdev, ib->gpu_addr & 0xFFFFFFFC);
 	radeon_ring_write(rdev, upper_32_bits(ib->gpu_addr) & 0xFF);
@@ -3246,7 +3239,6 @@ static inline u32 r600_get_ih_wptr(struct radeon_device *rdev)
 {
 	u32 wptr, tmp;
 
-	/* XXX use writeback */
 	wptr = RREG32(IH_RB_WPTR);
 
 	if (wptr & RB_OVERFLOW) {

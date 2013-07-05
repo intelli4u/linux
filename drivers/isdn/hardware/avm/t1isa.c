@@ -1,4 +1,4 @@
-/* $Id: t1isa.c,v 1.1.2.3 2004/02/10 01:07:12 keil Exp $
+/* $Id: t1isa.c,v 1.1.2.3 2004/02/10 01:07:12 Exp $
  * 
  * Module for AVM T1 HEMA-card.
  * 

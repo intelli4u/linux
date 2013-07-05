@@ -1,25 +1,4 @@
-/*
- * The low performance USB storage driver (ub).
- *
- * Copyright (c) 1999, 2000 Matthew Dharm (mdharm-usb@one-eyed-alien.net)
- * Copyright (C) 2004 Pete Zaitcev (zaitcev@yahoo.com)
- *
- * This work is a part of Linux kernel, is derived from it,
- * and is not licensed separately. See file COPYING for details.
- *
- * TODO (sorted by decreasing priority)
- *  -- Return sense now that rq allows it (we always auto-sense anyway).
- *  -- set readonly flag for CDs, set removable flag for CF readers
- *  -- do inquiry and verify we got a disk and not a tape (for LUN mismatch)
- *  -- verify the 13 conditions and do bulk resets
- *  -- highmem
- *  -- move top_sense and work_bcs into separate allocations (if they survive)
- *     for cache purists and esoteric architectures.
- *  -- Allocate structure for LUN 0 before the first ub_sync_tur, avoid NULL. ?
- *  -- prune comments, they are too volumnous
- *  -- Resove XXX's
- *  -- CLEAR, CLR2STS, CLRRS seem to be ripe for refactoring.
- */
+
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/usb.h>
@@ -865,12 +844,8 @@ static int ub_rw_cmd_retry(struct ub_dev *sc, struct ub_lun *lun,
 
 	cmd->tag = sc->tagcnt++;
 
-#if 0 /* Wasteful */
-	return ub_submit_scsi(sc, cmd);
-#else
 	ub_cmdq_add(sc, cmd);
 	return 0;
-#endif
 }
 
 /*
@@ -939,7 +914,6 @@ static int ub_scsi_cmd_start(struct ub_dev *sc, struct ub_scsi_cmd *cmd)
 	    bcb, US_BULK_CB_WRAP_LEN, ub_urb_complete, sc);
 
 	if ((rc = usb_submit_urb(&sc->work_urb, GFP_ATOMIC)) != 0) {
-		/* XXX Clear stalls */
 		ub_complete(&sc->work_done);
 		return rc;
 	}
@@ -1329,7 +1303,6 @@ static void ub_data_start(struct ub_dev *sc, struct ub_scsi_cmd *cmd)
 	    sg->length, ub_urb_complete, sc);
 
 	if ((rc = usb_submit_urb(&sc->work_urb, GFP_ATOMIC)) != 0) {
-		/* XXX Clear stalls */
 		ub_complete(&sc->work_done);
 		ub_state_done(sc, cmd, rc);
 		return;
@@ -1372,7 +1345,6 @@ static int __ub_state_stat(struct ub_dev *sc, struct ub_scsi_cmd *cmd)
 	    &sc->work_bcs, US_BULK_CS_WRAP_LEN, ub_urb_complete, sc);
 
 	if ((rc = usb_submit_urb(&sc->work_urb, GFP_ATOMIC)) != 0) {
-		/* XXX Clear stalls */
 		ub_complete(&sc->work_done);
 		ub_state_done(sc, cmd, rc);
 		return -1;
@@ -1548,19 +1520,7 @@ static void ub_reset_enter(struct ub_dev *sc, int try)
 	}
 	sc->reset = try + 1;
 
-#if 0 /* Not needed because the disconnect waits for us. */
-	unsigned long flags;
-	spin_lock_irqsave(&ub_lock, flags);
-	sc->openc++;
-	spin_unlock_irqrestore(&ub_lock, flags);
-#endif
 
-#if 0 /* We let them stop themselves. */
-	struct ub_lun *lun;
-	list_for_each_entry(lun, &sc->luns, link) {
-		blk_stop_queue(lun->disk->queue);
-	}
-#endif
 
 	schedule_work(&sc->reset_work);
 }
@@ -1620,14 +1580,6 @@ static void ub_reset_task(struct work_struct *work)
 	spin_unlock_irqrestore(sc->lock, flags);
 }
 
-/*
- * XXX Reset brackets are too much hassle to implement, so just stub them
- * in order to prevent forced unbinding (which deadlocks solid when our
- * ->disconnect method waits for the reset to complete and this kills keventd).
- *
- * XXX Tell Alan to move usb_unlock_device inside of usb_reset_device,
- * or else the post_reset is invoked, and restats I/O on a locked device.
- */
 static int ub_pre_reset(struct usb_interface *iface) {
 	return 0;
 }
@@ -1642,7 +1594,7 @@ static int ub_post_reset(struct usb_interface *iface) {
 static void ub_revalidate(struct ub_dev *sc, struct ub_lun *lun)
 {
 
-	lun->readonly = 0;	/* XXX Query this from the device */
+	lun->readonly = 0;
 
 	lun->capacity.nsec = 0;
 	lun->capacity.bsize = 512;
@@ -1770,7 +1722,6 @@ static int ub_bd_revalidate(struct gendisk *disk)
 
 	ub_revalidate(lun->udev, lun);
 
-	/* XXX Support sector size switching like in sr.c */
 	blk_queue_logical_block_size(disk->queue, lun->capacity.bsize);
 	set_capacity(disk, lun->capacity.nsec);
 	// set_disk_ro(sdkp->disk, lun->readonly);
@@ -2232,7 +2183,6 @@ static int ub_probe(struct usb_interface *intf,
 	snprintf(sc->name, 12, DRV_NAME "(%d.%d)",
 	    sc->dev->bus->busnum, sc->dev->devnum);
 
-	/* XXX Verify that we can handle the device (from descriptors) */
 
 	if (ub_get_pipes(sc, sc->dev, intf) != 0)
 		goto err_dev_desc;
@@ -2248,10 +2198,6 @@ static int ub_probe(struct usb_interface *intf,
 	 * This is needed to clear toggles. It is a problem only if we do
 	 * `rmmod ub && modprobe ub` without disconnects, but we like that.
 	 */
-#if 0 /* iPod Mini fails if we do this (big white iPod works) */
-	ub_probe_clear_stall(sc, sc->recv_bulk_pipe);
-	ub_probe_clear_stall(sc, sc->send_bulk_pipe);
-#endif
 
 	/*
 	 * The way this is used by the startup code is a little specific.
@@ -2320,7 +2266,7 @@ static int ub_probe_lun(struct ub_dev *sc, int lnum)
 	snprintf(lun->name, 16, DRV_NAME "%c(%d.%d.%d)",
 	    lun->id + 'a', sc->dev->bus->busnum, sc->dev->devnum, lun->num);
 
-	lun->removable = 1;		/* XXX Query this from the device */
+	lun->removable = 1;
 	lun->changed = 1;		/* ub_revalidate clears only */
 	ub_revalidate(sc, lun);
 
@@ -2375,11 +2321,6 @@ static void ub_disconnect(struct usb_interface *intf)
 	struct ub_lun *lun;
 	unsigned long flags;
 
-	/*
-	 * Prevent ub_bd_release from pulling the rug from under us.
-	 * XXX This is starting to look like a kref.
-	 * XXX Why not to take this ref at probe time?
-	 */
 	spin_lock_irqsave(&ub_lock, flags);
 	sc->openc++;
 	spin_unlock_irqrestore(&ub_lock, flags);

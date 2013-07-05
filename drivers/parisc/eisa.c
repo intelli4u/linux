@@ -45,11 +45,7 @@
 #include <asm/eisa_bus.h>
 #include <asm/eisa_eeprom.h>
 
-#if 0
-#define EISA_DBG(msg, arg... ) printk(KERN_DEBUG "eisa: " msg , ## arg )
-#else
 #define EISA_DBG(msg, arg... )  
-#endif
 
 #define SNAKES_EEPROM_BASE_ADDR 0xF0810400
 #define MIRAGE_EEPROM_BASE_ADDR 0xF00C0400
@@ -371,7 +367,6 @@ static int __init eisa_probe(struct parisc_device *dev)
 	init_eisa_pic();
 
 	if (result >= 0) {
-		/* FIXME : Don't enumerate the bus twice. */
 		eisa_dev.root.dev = &dev->dev;
 		dev_set_drvdata(&dev->dev, &eisa_dev.root);
 		eisa_dev.root.bus_base_addr = 0;
@@ -460,4 +455,3 @@ static int __init eisa_irq_setup(char *str)
 }
 
 __setup("eisa_irq_edge=", eisa_irq_setup);
-

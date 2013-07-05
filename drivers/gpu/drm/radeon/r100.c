@@ -1311,7 +1311,6 @@ int r100_cs_packet_next_reloc(struct radeon_cs_parser *p,
 		r100_cs_dump_packet(p, &p3reloc);
 		return -EINVAL;
 	}
-	/* FIXME: we assume reloc size is 4 dwords */
 	*cs_reloc = p->relocs_ptr[(idx / 4)];
 	return 0;
 }
@@ -1397,8 +1396,6 @@ static int r100_packet0_check(struct radeon_cs_parser *p,
 			return r;
 		}
 		break;
-		/* FIXME: only allow PACKET3 blit? easier to check for out of
-		 * range access */
 	case RADEON_DST_PITCH_OFFSET:
 	case RADEON_SRC_PITCH_OFFSET:
 		r = r100_reloc_pitch_offset(p, pkt, idx, reg);
@@ -2294,7 +2291,6 @@ void r100_vram_init_sizes(struct radeon_device *rdev)
 	rdev->mc.aper_base = pci_resource_start(rdev->pdev, 0);
 	rdev->mc.aper_size = pci_resource_len(rdev->pdev, 0);
 	rdev->mc.visible_vram_size = r100_get_accessible_vram(rdev);
-	/* FIXME we don't use the second aperture yet when we could use it */
 	if (rdev->mc.visible_vram_size > rdev->mc.aper_size)
 		rdev->mc.visible_vram_size = rdev->mc.aper_size;
 	rdev->mc.active_vram_size = rdev->mc.visible_vram_size;
@@ -2379,11 +2375,6 @@ static void r100_pll_errata_after_data(struct radeon_device *rdev)
 		udelay(5000);
 	}
 
-	/* This function is required to workaround a hardware bug in some (all?)
-	 * revisions of the R300.  This workaround should be called after every
-	 * CLOCK_CNTL_INDEX register access.  If not, register reads afterward
-	 * may not be correct.
-	 */
 	if (rdev->pll_errata & CHIP_ERRATA_R300_CG) {
 		uint32_t save, tmp;
 
@@ -2504,8 +2495,6 @@ static int r100_debugfs_cp_csq_fifo(struct seq_file *m, void *data)
 	seq_printf(m, "Indirect1 wptr %u\n", ib1_wptr);
 	seq_printf(m, "Indirect2 rptr %u\n", ib2_rptr);
 	seq_printf(m, "Indirect2 wptr %u\n", ib2_wptr);
-	/* FIXME: 0, 128, 640 depends on fifo setup see cp_init_kms
-	 * 128 = indirect1_start * 8 & 640 = indirect2_start * 8 */
 	seq_printf(m, "Ring fifo:\n");
 	for (i = 0; i < 256; i++) {
 		WREG32(RADEON_CP_CSQ_ADDR, i << 2);
@@ -3019,24 +3008,6 @@ void r100_bandwidth_update(struct radeon_device *rdev)
 		WREG32(RADEON_GRPH_BUFFER_CNTL, ((temp & ~RADEON_GRPH_CRITICAL_POINT_MASK) |
 						       (critical_point << RADEON_GRPH_CRITICAL_POINT_SHIFT)));
 
-#if 0
-		if ((rdev->family == CHIP_RS400) ||
-		    (rdev->family == CHIP_RS480)) {
-			/* attempt to program RS400 disp regs correctly ??? */
-			temp = RREG32(RS400_DISP1_REG_CNTL);
-			temp &= ~(RS400_DISP1_START_REQ_LEVEL_MASK |
-				  RS400_DISP1_STOP_REQ_LEVEL_MASK);
-			WREG32(RS400_DISP1_REQ_CNTL1, (temp |
-						       (critical_point << RS400_DISP1_START_REQ_LEVEL_SHIFT) |
-						       (critical_point << RS400_DISP1_STOP_REQ_LEVEL_SHIFT)));
-			temp = RREG32(RS400_DMIF_MEM_CNTL1);
-			temp &= ~(RS400_DISP1_CRITICAL_POINT_START_MASK |
-				  RS400_DISP1_CRITICAL_POINT_STOP_MASK);
-			WREG32(RS400_DMIF_MEM_CNTL1, (temp |
-						      (critical_point << RS400_DISP1_CRITICAL_POINT_START_SHIFT) |
-						      (critical_point << RS400_DISP1_CRITICAL_POINT_STOP_SHIFT)));
-		}
-#endif
 
 		DRM_DEBUG_KMS("GRPH_BUFFER_CNTL from to %x\n",
 			  /* 	  (unsigned int)info->SavedReg->grph_buffer_cntl, */
@@ -3113,21 +3084,6 @@ void r100_bandwidth_update(struct radeon_device *rdev)
 
 		if ((rdev->family == CHIP_RS400) ||
 		    (rdev->family == CHIP_RS480)) {
-#if 0
-			/* attempt to program RS400 disp2 regs correctly ??? */
-			temp = RREG32(RS400_DISP2_REQ_CNTL1);
-			temp &= ~(RS400_DISP2_START_REQ_LEVEL_MASK |
-				  RS400_DISP2_STOP_REQ_LEVEL_MASK);
-			WREG32(RS400_DISP2_REQ_CNTL1, (temp |
-						       (critical_point2 << RS400_DISP1_START_REQ_LEVEL_SHIFT) |
-						       (critical_point2 << RS400_DISP1_STOP_REQ_LEVEL_SHIFT)));
-			temp = RREG32(RS400_DISP2_REQ_CNTL2);
-			temp &= ~(RS400_DISP2_CRITICAL_POINT_START_MASK |
-				  RS400_DISP2_CRITICAL_POINT_STOP_MASK);
-			WREG32(RS400_DISP2_REQ_CNTL2, (temp |
-						       (critical_point2 << RS400_DISP2_CRITICAL_POINT_START_SHIFT) |
-						       (critical_point2 << RS400_DISP2_CRITICAL_POINT_STOP_SHIFT)));
-#endif
 			WREG32(RS400_DISP2_REQ_CNTL1, 0x105DC1CC);
 			WREG32(RS400_DISP2_REQ_CNTL2, 0x2749D000);
 			WREG32(RS400_DMIF_MEM_CNTL1,  0x29CA71DC);

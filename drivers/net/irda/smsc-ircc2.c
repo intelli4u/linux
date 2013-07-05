@@ -134,9 +134,6 @@ struct smsc_transceiver {
 
 struct smsc_chip {
 	char *name;
-	#if 0
-	u8	type;
-	#endif
 	u16 flags;
 	u8 devid;
 	u8 rev;
@@ -768,7 +765,7 @@ static void smsc_ircc_init_chip(struct smsc_ircc_cb *self)
 	outb(((inb(iobase + IRCC_SCE_CFGA) & 0x87) | IRCC_CFGA_IRDA_SIR_A),
 	     iobase + IRCC_SCE_CFGA);
 
-#ifdef smsc_669 /* Uses pin 88/89 for Rx/Tx */
+#ifdef smsc_669     /* Uses pin 88/89 for Rx/Tx */
 	outb(((inb(iobase + IRCC_SCE_CFGB) & 0x3f) | IRCC_CFGB_MUX_COM),
 	     iobase + IRCC_SCE_CFGB);
 #else
@@ -834,15 +831,6 @@ static int smsc_ircc_net_ioctl(struct net_device *dev, struct ifreq *rq, int cmd
 	case SIOCGRECEIVING: /* Check if we are receiving right now */
 		irq->ifr_receiving = smsc_ircc_is_receiving(self);
 		break;
-	#if 0
-	case SIOCSDTRRTS:
-		if (!capable(CAP_NET_ADMIN)) {
-			ret = -EPERM;
-			break;
-		}
-		smsc_ircc_sir_set_dtr_rts(dev, irq->ifr_dtr, irq->ifr_rts);
-		break;
-	#endif
 	default:
 		ret = -EOPNOTSUPP;
 	}
@@ -980,12 +968,6 @@ static void smsc_ircc_set_fir_speed(struct smsc_ircc_cb *self, u32 speed)
 			   __func__);
 		break;
 	}
-	#if 0
-	Now in tranceiver!
-	/* This causes an interrupt */
-	register_bank(fir_base, 0);
-	outb((inb(fir_base + IRCC_LCR_A) &  0xbf) | fast, fir_base + IRCC_LCR_A);
-	#endif
 
 	register_bank(fir_base, 1);
 	outb(((inb(fir_base + IRCC_SCE_CFGA) & IRCC_SCE_CFGA_BLOCK_CTRL_BITS_MASK) | ir_mode), fir_base + IRCC_SCE_CFGA);
@@ -1024,7 +1006,7 @@ static void smsc_ircc_fir_start(struct smsc_ircc_cb *self)
 	register_bank(fir_base, 1);
 
 	/* Select the TX/RX interface */
-#ifdef SMSC_669 /* Uses pin 88/89 for Rx/Tx */
+#ifdef SMSC_669     /* Uses pin 88/89 for Rx/Tx */
 	outb(((inb(fir_base + IRCC_SCE_CFGB) & 0x3f) | IRCC_CFGB_MUX_COM),
 	     fir_base + IRCC_SCE_CFGB);
 #else
@@ -1081,20 +1063,10 @@ static void smsc_ircc_change_speed(struct smsc_ircc_cb *self, u32 speed)
 
 	last_speed_was_sir = self->io.speed <= SMSC_IRCC2_MAX_SIR_SPEED;
 
-	#if 0
-	/* Temp Hack */
-	speed= 1152000;
-	self->io.speed = speed;
-	last_speed_was_sir = 0;
-	smsc_ircc_fir_start(self);
-	#endif
 
 	if (self->io.speed == 0)
 		smsc_ircc_sir_start(self);
 
-	#if 0
-	if (!last_speed_was_sir) speed = self->io.speed;
-	#endif
 
 	if (self->io.speed != speed)
 		smsc_ircc_set_transceiver_for_speed(self, speed);
@@ -1116,12 +1088,6 @@ static void smsc_ircc_change_speed(struct smsc_ircc_cb *self, u32 speed)
 		}
 		smsc_ircc_set_fir_speed(self, speed);
 
-		#if 0
-		self->tx_buff.len = 10;
-		self->tx_buff.data = self->tx_buff.head;
-
-		smsc_ircc_dma_xmit(self, 4000);
-		#endif
 		/* Be ready for incoming frames */
 		smsc_ircc_dma_receive(self);
 	}
@@ -1262,11 +1228,9 @@ static void smsc_ircc_dma_xmit(struct smsc_ircc_cb *self, int bofs)
 	u8 ctrl;
 
 	IRDA_DEBUG(3, "%s\n", __func__);
-#if 1
 	/* Disable Rx */
 	register_bank(iobase, 0);
 	outb(0x00, iobase + IRCC_LCR_B);
-#endif
 	register_bank(iobase, 1);
 	outb(inb(iobase + IRCC_SCE_CFGB) & ~IRCC_CFGB_DMA_ENABLE,
 	     iobase + IRCC_SCE_CFGB);
@@ -1316,11 +1280,6 @@ static void smsc_ircc_dma_xmit_complete(struct smsc_ircc_cb *self)
 	int iobase = self->io.fir_base;
 
 	IRDA_DEBUG(3, "%s\n", __func__);
-#if 0
-	/* Disable Tx */
-	register_bank(iobase, 0);
-	outb(0x00, iobase + IRCC_LCR_B);
-#endif
 	register_bank(iobase, 1);
 	outb(inb(iobase + IRCC_SCE_CFGB) & ~IRCC_CFGB_DMA_ENABLE,
 	     iobase + IRCC_SCE_CFGB);
@@ -1359,12 +1318,6 @@ static void smsc_ircc_dma_xmit_complete(struct smsc_ircc_cb *self)
 static int smsc_ircc_dma_receive(struct smsc_ircc_cb *self)
 {
 	int iobase = self->io.fir_base;
-#if 0
-	/* Turn off chip DMA */
-	register_bank(iobase, 1);
-	outb(inb(iobase + IRCC_SCE_CFGB) & ~IRCC_CFGB_DMA_ENABLE,
-	     iobase + IRCC_SCE_CFGB);
-#endif
 
 	/* Disable Tx */
 	register_bank(iobase, 0);
@@ -1420,11 +1373,6 @@ static void smsc_ircc_dma_receive_complete(struct smsc_ircc_cb *self)
 	register_bank(iobase, 0);
 
 	IRDA_DEBUG(3, "%s\n", __func__);
-#if 0
-	/* Disable Rx */
-	register_bank(iobase, 0);
-	outb(0x00, iobase + IRCC_LCR_B);
-#endif
 	register_bank(iobase, 0);
 	outb(inb(iobase + IRCC_LSAR) & ~IRCC_LSAR_ADDRESS_MASK, iobase + IRCC_LSAR);
 	lsr= inb(iobase + IRCC_LSR);
@@ -1627,30 +1575,6 @@ static irqreturn_t smsc_ircc_interrupt_sir(struct net_device *dev)
 }
 
 
-#if 0 /* unused */
-/*
- * Function ircc_is_receiving (self)
- *
- *    Return TRUE is we are currently receiving a frame
- *
- */
-static int ircc_is_receiving(struct smsc_ircc_cb *self)
-{
-	int status = FALSE;
-	/* int iobase; */
-
-	IRDA_DEBUG(1, "%s\n", __func__);
-
-	IRDA_ASSERT(self != NULL, return FALSE;);
-
-	IRDA_DEBUG(0, "%s: dma count = %d\n", __func__,
-		   get_dma_residue(self->io.dma));
-
-	status = (self->rx_buff.state != OUTSIDE_FRAME);
-
-	return status;
-}
-#endif /* unused */
 
 static int smsc_ircc_request_irq(struct smsc_ircc_cb *self)
 {
@@ -2302,10 +2226,6 @@ static const struct smsc_chip * __init smsc_ircc_probe(unsigned short cfg_base, 
 
 	outb(SMSCSIO_CFGACCESSKEY, cfg_base);
 
-	#if 0
-	if (smsc_access(cfg_base,0x55))	/* send second key and check */
-		return NULL;
-	#endif
 
 	/* probe device ID */
 

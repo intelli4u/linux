@@ -639,10 +639,6 @@ static int ipaq_startup(struct usb_serial *serial)
 		return -ENODEV;
 
 	if (serial->dev->actconfig->desc.bConfigurationValue != 1) {
-		/*
-		 * FIXME: HP iPaq rx3715, possibly others, have 1 config that
-		 * is labeled as 2
-		 */
 
 		dev_err(&serial->dev->dev, "active config #%d != 1 ??\n",
 			serial->dev->actconfig->desc.bConfigurationValue);

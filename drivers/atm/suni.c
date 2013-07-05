@@ -30,11 +30,7 @@
 #include "suni.h"
 
 
-#if 0
-#define DPRINTK(format,args...) printk(KERN_DEBUG format,##args)
-#else
 #define DPRINTK(format,args...)
-#endif
 
 #define PRIV(dev) ((struct suni_priv *) dev->phy_data)
 
@@ -330,10 +326,6 @@ static int suni_start(struct atm_dev *dev)
 		poll_timer.expires = jiffies+HZ;
 		poll_timer.function = suni_hz;
 		poll_timer.data = 1;
-#if 0
-printk(KERN_DEBUG "[u] p=0x%lx,n=0x%lx\n",(unsigned long) poll_timer.list.prev,
-    (unsigned long) poll_timer.list.next);
-#endif
 		add_timer(&poll_timer);
 	}
 	return 0;

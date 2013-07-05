@@ -43,7 +43,7 @@ void rt2x00ht_create_tx_descriptor(struct queue_entry *entry,
 	else
 		txdesc->mpdu_density = 0;
 
-	txdesc->ba_size = 7;	/* FIXME: What value is needed? */
+	txdesc->ba_size = 7;
 
 	txdesc->stbc =
 	    (tx_info->flags & IEEE80211_TX_CTL_STBC) >> IEEE80211_TX_CTL_STBC_SHIFT;

@@ -210,7 +210,6 @@ enum intr_status_bits {
 };
 
 /* Bits in the NetworkConfig register, W for writing, R for reading */
-/* FIXME: some names are invented by me. Marked with (name?) */
 /* If you have docs and know bit names, please fix 'em */
 enum rx_mode_bits {
 	CR_W_ENH	= 0x02000000,	/* enhanced mode (name?) */
@@ -849,21 +848,6 @@ static int netdev_open(struct net_device *dev)
 	iowrite32(np->tx_ring_dma, ioaddr + TXLBA);
 
 	/* Initialize other registers. */
-	/* Configure the PCI bus bursts and FIFO thresholds.
-	   486: Set 8 longword burst.
-	   586: no burst limit.
-	   Burst length 5:3
-	   0 0 0   1
-	   0 0 1   4
-	   0 1 0   8
-	   0 1 1   16
-	   1 0 0   32
-	   1 0 1   64
-	   1 1 0   128
-	   1 1 1   256
-	   Wait the specified 50 PCI cycles after a reset by initializing
-	   Tx and Rx queues and the address filter list.
-	   FIXME (Ueimor): optimistic for alpha + posted writes ? */
 
 	np->bcrvalue = 0x10;	/* little-endian, 8 burst length */
 #ifdef __BIG_ENDIAN
@@ -1192,7 +1176,7 @@ static void reset_timer(unsigned long data)
 	/* works for me without this:
 	reset_tx_descriptors(dev); */
 	enable_rxtx(dev);
-	netif_start_queue(dev); /* FIXME: or netif_wake_queue(dev); ? */
+	netif_start_queue(dev);
 
 	np->reset_timer_armed = 0;
 
@@ -1289,7 +1273,6 @@ static void init_ring(struct net_device *dev)
 
 	for (i = 0; i < TX_RING_SIZE; i++) {
 		np->tx_ring[i].status = 0;
-		/* do we need np->tx_ring[i].control = XXX; ?? */
 		np->tx_ring[i].next_desc = np->tx_ring_dma +
 			(i + 1)*sizeof(struct fealnx_desc);
 		np->tx_ring[i].next_desc_logical = &np->tx_ring[i + 1];
@@ -1712,7 +1695,7 @@ static int netdev_rx(struct net_device *dev)
 							    PCI_DMA_FROMDEVICE);
 				/* Call copy + cksum if available. */
 
-#if ! defined(__alpha__)
+#if !defined(__alpha__)
 				skb_copy_to_linear_data(skb,
 					np->cur_rx->skbuff->data, pkt_len);
 				skb_put(skb, pkt_len);

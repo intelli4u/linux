@@ -495,4 +495,3 @@ module_exit(windfarm_core_exit);
 MODULE_AUTHOR("Benjamin Herrenschmidt <benh@kernel.crashing.org>");
 MODULE_DESCRIPTION("Core component of PowerMac thermal control");
 MODULE_LICENSE("GPL");
-

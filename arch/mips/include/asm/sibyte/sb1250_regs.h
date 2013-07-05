@@ -55,12 +55,8 @@
     * Memory Controller Registers
     ********************************************************************* */
 
-/*
- * XXX: can't remove MC base 0 if 112x, since it's used by other macros,
- * since there is one reg there (but it could get its addr/offset constant).
- */
 
-#if SIBYTE_HDR_FEATURE_1250_112x		/* This MC only on 1250 & 112x */
+#if SIBYTE_HDR_FEATURE_1250_112x		    /* This MC only on 1250 & 112x */
 #define A_MC_BASE_0                 0x0010051000
 #define A_MC_BASE_1                 0x0010052000
 #define MC_REGISTER_SPACING         0x1000
@@ -107,7 +103,7 @@
     * L2 Cache Control Registers
     ********************************************************************* */
 
-#if SIBYTE_HDR_FEATURE_1250_112x	/* This L2C only on 1250/112x */
+#if SIBYTE_HDR_FEATURE_1250_112x	    /* This L2C only on 1250/112x */
 
 #define A_L2_READ_TAG               0x0010040018
 #define A_L2_ECC_TAG                0x0010040038
@@ -125,7 +121,6 @@
 #endif /* 1250 PASS2 || 112x PASS1 */
 
 /* Backward-compatibility definitions.  */
-/* XXX: discourage people from using these constants.  */
 #define A_L2_READ_ADDRESS           A_L2_READ_TAG
 #define A_L2_EEC_ADDRESS            A_L2_ECC_TAG
 
@@ -136,7 +131,7 @@
     * PCI Interface Registers
     ********************************************************************* */
 
-#if SIBYTE_HDR_FEATURE_1250_112x	/* This PCI/HT only on 1250/112x */
+#if SIBYTE_HDR_FEATURE_1250_112x	    /* This PCI/HT only on 1250/112x */
 #define A_PCI_TYPE00_HEADER         0x00DE000000
 #define A_PCI_TYPE01_HEADER         0x00DE000800
 #endif
@@ -159,7 +154,6 @@
 #define DMA_TX                      1
 #define MAC_NUM_DMACHAN		    2		    /* channels per direction */
 
-/* XXX: not correct; depends on SOC type.  */
 #define MAC_NUM_PORTS               3
 
 #define A_MAC_CHANNEL_BASE(macnum)                  \
@@ -244,7 +238,8 @@
 #define R_MAC_ADFILTER_CFG              0x00000200
 #define R_MAC_ETHERNET_ADDR             0x00000208
 #define R_MAC_PKT_TYPE                  0x00000210
-#if SIBYTE_HDR_FEATURE(1250, PASS3) || SIBYTE_HDR_FEATURE(112x, PASS1) || SIBYTE_HDR_FEATURE_CHIP(1480)
+#if SIBYTE_HDR_FEATURE(1250, PASS3) || SIBYTE_HDR_FEATURE(112x, PASS1) || \
+	SIBYTE_HDR_FEATURE_CHIP(1480)
 #define R_MAC_ADMASK0			0x00000218
 #define R_MAC_ADMASK1			0x00000220
 #endif /* 1250 PASS3 || 112x PASS1 || 1480 */
@@ -257,7 +252,8 @@
 #define R_MAC_INT_MASK                  0x00000410
 #define R_MAC_TXD_CTL                   0x00000420
 #define R_MAC_MDIO                      0x00000428
-#if SIBYTE_HDR_FEATURE(1250, PASS2) || SIBYTE_HDR_FEATURE(112x, PASS1) || SIBYTE_HDR_FEATURE_CHIP(1480)
+#if SIBYTE_HDR_FEATURE(1250, PASS2) || SIBYTE_HDR_FEATURE(112x, PASS1) || \
+	SIBYTE_HDR_FEATURE_CHIP(1480)
 #define R_MAC_STATUS1		        0x00000430
 #endif /* 1250 PASS2 || 112x PASS1 || 1480 */
 #define R_MAC_DEBUG_STATUS              0x00000448
@@ -272,7 +268,7 @@
     ********************************************************************* */
 
 
-#if SIBYTE_HDR_FEATURE_1250_112x    /* This MC only on 1250 & 112x */
+#if SIBYTE_HDR_FEATURE_1250_112x        /* This MC only on 1250 & 112x */
 #define R_DUART_NUM_PORTS           2
 
 #define A_DUART                     0x0010060000
@@ -291,7 +287,8 @@
 #define R_DUART_RX_HOLD		    0x060
 #define R_DUART_TX_HOLD		    0x070
 
-#if SIBYTE_HDR_FEATURE(1250, PASS2) || SIBYTE_HDR_FEATURE(112x, PASS1) || SIBYTE_HDR_FEATURE_CHIP(1480)
+#if SIBYTE_HDR_FEATURE(1250, PASS2) || SIBYTE_HDR_FEATURE(112x, PASS1) || \
+	SIBYTE_HDR_FEATURE_CHIP(1480)
 #define R_DUART_FULL_CTL	    0x040
 #define R_DUART_OPCR_X		    0x080
 #define R_DUART_AUXCTL_X	    0x090
@@ -303,7 +300,7 @@
  * so use these macros instead.
  */
 
-#if SIBYTE_HDR_FEATURE_1250_112x    /* This MC only on 1250 & 112x */
+#if SIBYTE_HDR_FEATURE_1250_112x        /* This MC only on 1250 & 112x */
 #define DUART_IMRISR_SPACING	    0x20
 #define DUART_INCHNG_SPACING	    0x10
 
@@ -389,7 +386,7 @@
     ********************************************************************* */
 
 
-#if SIBYTE_HDR_FEATURE_1250_112x	/* sync serial only on 1250/112x */
+#if SIBYTE_HDR_FEATURE_1250_112x	    /* sync serial only on 1250/112x */
 
 #define A_SER_BASE_0                0x0010060400
 #define A_SER_BASE_1                0x0010060800
@@ -661,7 +658,8 @@
 #define A_SCD_SCRATCH		   0x0010020C10
 #endif /* 1250 PASS2 || 112x PASS1 */
 
-#if SIBYTE_HDR_FEATURE(1250, PASS2) || SIBYTE_HDR_FEATURE(112x, PASS1) || SIBYTE_HDR_FEATURE_CHIP(1480)
+#if SIBYTE_HDR_FEATURE(1250, PASS2) || SIBYTE_HDR_FEATURE(112x, PASS1) || \
+	SIBYTE_HDR_FEATURE_CHIP(1480)
 #define A_SCD_ZBBUS_CYCLE_COUNT	   0x0010030000
 #define A_SCD_ZBBUS_CYCLE_CP0	   0x0010020C00
 #define A_SCD_ZBBUS_CYCLE_CP1	   0x0010020C08
@@ -693,7 +691,8 @@
 #define A_ADDR_TRAP_CFG_1           0x0010020448
 #define A_ADDR_TRAP_CFG_2           0x0010020450
 #define A_ADDR_TRAP_CFG_3           0x0010020458
-#if SIBYTE_HDR_FEATURE(1250, PASS2) || SIBYTE_HDR_FEATURE(112x, PASS1) || SIBYTE_HDR_FEATURE_CHIP(1480)
+#if SIBYTE_HDR_FEATURE(1250, PASS2) || SIBYTE_HDR_FEATURE(112x, PASS1) || \
+	SIBYTE_HDR_FEATURE_CHIP(1480)
 #define A_ADDR_TRAP_REG_DEBUG	    0x0010020460
 #endif /* 1250 PASS2 || 112x PASS1 || 1480 */
 

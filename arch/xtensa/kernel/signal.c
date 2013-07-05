@@ -302,7 +302,7 @@ gen_return_code(unsigned char *codemem)
 # error Generating the MOVI instruction below breaks!
 #endif
 
-#ifdef __XTENSA_EB__   /* Big Endian version */
+#ifdef __XTENSA_EB__       /* Big Endian version */
 	/* Generate instruction:  MOVI a2, __NR_rt_sigreturn */
 	err |= __put_user(0x22, &codemem[0]);
 	err |= __put_user(0x0a, &codemem[1]);
@@ -312,7 +312,7 @@ gen_return_code(unsigned char *codemem)
 	err |= __put_user(0x05, &codemem[4]);
 	err |= __put_user(0x00, &codemem[5]);
 
-#elif defined __XTENSA_EL__   /* Little Endian version */
+#elif defined __XTENSA_EL__     /* Little Endian version */
 	/* Generate instruction:  MOVI a2, __NR_rt_sigreturn */
 	err |= __put_user(0x22, &codemem[0]);
 	err |= __put_user(0xa0, &codemem[1]);
@@ -441,7 +441,6 @@ asmlinkage long xtensa_rt_sigsuspend(sigset_t __user *unewset,
 {
 	sigset_t saveset, newset;
 
-	/* XXX: Don't preclude handling different sized sigset_t's.  */
 	if (sigsetsize != sizeof(sigset_t))
 		return -EINVAL;
 
@@ -574,4 +573,3 @@ no_signal:
 		task_pt_regs(current)->icountlevel = 1;
 	return 0;
 }
-

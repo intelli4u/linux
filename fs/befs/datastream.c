@@ -277,29 +277,6 @@ befs_find_brun_direct(struct super_block *sb, befs_data_stream * data,
 	return BEFS_ERR;
 }
 
-/*
-	Finds the block run that starts at file block number blockno
-	in the file represented by the datastream data, if that 
-	blockno is in the indirect region of the datastream.
-	
-	sb: the superblock
-	data: the datastream
-	blockno: the blocknumber to find
-	run: The found run is passed back through this pointer
-	
-	Return value is BEFS_OK if the blockrun is found, BEFS_ERR
-	otherwise.
-	
-	Algorithm:
-	For each block in the indirect run of the datastream, read
-	it in and search through it for	search_blk.
-	
-	XXX:
-	Really should check to make sure blockno is inside indirect
-	region.
-	
-	2001-11-15 Will Dyson
-*/
 static int
 befs_find_brun_indirect(struct super_block *sb,
 			befs_data_stream * data, befs_blocknr_t blockno,

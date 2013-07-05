@@ -590,12 +590,6 @@ static void dn_fib_add_ifaddr(struct dn_ifaddr *ifa)
 
 	fib_magic(RTM_NEWROUTE, RTN_LOCAL, ifa->ifa_local, 16, ifa);
 
-#if 0
-	if (!(dev->flags&IFF_UP))
-		return;
-	/* In the future, we will want to add default routes here */
-
-#endif
 }
 
 static void dn_fib_del_ifaddr(struct dn_ifaddr *ifa)
@@ -763,5 +757,3 @@ void __init dn_fib_init(void)
 	rtnl_register(PF_DECnet, RTM_NEWROUTE, dn_fib_rtm_newroute, NULL);
 	rtnl_register(PF_DECnet, RTM_DELROUTE, dn_fib_rtm_delroute, NULL);
 }
-
-

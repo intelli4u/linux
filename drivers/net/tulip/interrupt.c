@@ -207,7 +207,7 @@ int tulip_poll(struct napi_struct *napi, int budget)
                                        pci_dma_sync_single_for_cpu(tp->pdev,
 								   tp->rx_buffers[entry].mapping,
 								   pkt_len, PCI_DMA_FROMDEVICE);
-#if ! defined(__alpha__)
+#if !defined(__alpha__)
                                        skb_copy_to_linear_data(skb, tp->rx_buffers[entry].skb->data,
                                                         pkt_len);
                                        skb_put(skb, pkt_len);
@@ -430,7 +430,7 @@ static int tulip_rx(struct net_device *dev)
 				pci_dma_sync_single_for_cpu(tp->pdev,
 							    tp->rx_buffers[entry].mapping,
 							    pkt_len, PCI_DMA_FROMDEVICE);
-#if ! defined(__alpha__)
+#if !defined(__alpha__)
 				skb_copy_to_linear_data(skb, tp->rx_buffers[entry].skb->data,
 						 pkt_len);
 				skb_put(skb, pkt_len);

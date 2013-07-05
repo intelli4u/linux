@@ -108,27 +108,18 @@ static void ppp_async_process(unsigned long arg);
 static void async_lcp_peek(struct asyncppp *ap, unsigned char *data,
 			   int len, int inbound);
 
-static const struct ppp_channel_ops async_ops = {
+/*  modified start, wklin 12/09/2010 
+ * makw async_ops public so it can be referenced in ppp_push() */
+/*static*/ const struct ppp_channel_ops async_ops = {
 	.start_xmit = ppp_async_send,
 	.ioctl      = ppp_async_ioctl,
 };
+/*  modified end, wklin, 12/09/2010 */
 
 /*
  * Routines implementing the PPP line discipline.
  */
 
-/*
- * We have a potential race on dereferencing tty->disc_data,
- * because the tty layer provides no locking at all - thus one
- * cpu could be running ppp_asynctty_receive while another
- * calls ppp_asynctty_close, which zeroes tty->disc_data and
- * frees the memory that ppp_asynctty_receive is using.  The best
- * way to fix this is to use a rwlock in the tty struct, but for now
- * we use a single global rwlock for all ttys in ppp line discipline.
- *
- * FIXME: this is no longer true. The _close path for the ldisc is
- * now guaranteed to be sane.
- */
 static DEFINE_RWLOCK(disc_data_lock);
 
 static struct asyncppp *ap_get(struct tty_struct *tty)

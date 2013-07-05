@@ -404,22 +404,6 @@ static int __unioxx5_digital_read(struct unioxx5_subd_priv *usp,
 	return 1;
 }
 
-#if 0				/* not used? */
-static void __unioxx5_digital_config(struct unioxx5_subd_priv *usp, int mode)
-{
-	int i, mask;
-
-	mask = (mode == ALL_2_OUTPUT) ? 0xFF : 0x00;
-	printk("COMEDI: mode = %d\n", mask);
-
-	outb(1, usp->usp_iobase + 0);
-
-	for (i = 0; i < 3; i++)
-		outb(mask, usp->usp_iobase + i);
-
-	outb(0, usp->usp_iobase + 0);
-}
-#endif
 
 static int __unioxx5_analog_write(struct unioxx5_subd_priv *usp,
 				  unsigned int *data, int channel, int minor)

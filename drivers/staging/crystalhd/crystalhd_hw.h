@@ -102,7 +102,6 @@
   F/W Copy engine definitions..
 **************************************************/
 #define BC_FWIMG_ST_ADDR	0x00000000
-/* FIXME: jarod: there's a kernel function that'll do this for us... */
 #define rotr32_1(x, n)		(((x) >> n) | ((x) << (32 - n)))
 #define bswap_32_1(x)		((rotr32_1((x), 24) & 0x00ff00ff) | (rotr32_1((x), 8) & 0xff00ff00))
 

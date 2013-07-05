@@ -2059,12 +2059,6 @@ static int lapic_resume(struct sys_device *dev)
 	if (x2apic_mode)
 		enable_x2apic();
 	else {
-		/*
-		 * Make sure the APICBASE points to the right address
-		 *
-		 * FIXME! This will be wrong if we ever support suspend on
-		 * SMP! We'll need to do this as part of the CPU restore!
-		 */
 		rdmsr(MSR_IA32_APICBASE, l, h);
 		l &= ~MSR_IA32_APICBASE_BASE;
 		l |= MSR_IA32_APICBASE_ENABLE | mp_lapic_addr;
@@ -2134,7 +2128,6 @@ static int __init init_lapic_sysfs(void)
 
 	if (!cpu_has_apic)
 		return 0;
-	/* XXX: remove suspend/resume procs if !apic_pm_state.active? */
 
 	error = sysdev_class_register(&lapic_sysclass);
 	if (!error)

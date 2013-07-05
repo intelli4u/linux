@@ -13,10 +13,8 @@
 
 #define ZFCP_QDIO_SBALE_LEN	PAGE_SIZE
 
-/* DMQ bug workaround: don't use last SBALE */
 #define ZFCP_QDIO_MAX_SBALES_PER_SBAL	(QDIO_MAX_ELEMENTS_PER_BUFFER - 1)
 
-/* index of last SBALE (with respect to DMQ bug workaround) */
 #define ZFCP_QDIO_LAST_SBALE_PER_SBAL	(ZFCP_QDIO_MAX_SBALES_PER_SBAL - 1)
 
 /* Max SBALS for chaining */

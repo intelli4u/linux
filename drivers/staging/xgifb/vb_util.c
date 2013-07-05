@@ -203,6 +203,3 @@ void Newdebugcode(unsigned char code)
     /* OutPortByte ( 0x300 , code ) ; */
     /* NewDelaySeconds( 0x3 ) ; */
 }
-
-
-

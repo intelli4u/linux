@@ -247,7 +247,6 @@ TRACE_EVENT(kvm_inj_exception,
 
 	TP_printk("%s (0x%x)",
 		  __print_symbolic(__entry->exception, kvm_trace_sym_exc),
-		  /* FIXME: don't print error_code if not present */
 		  __entry->has_error ? __entry->error_code : 0)
 );
 

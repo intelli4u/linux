@@ -236,11 +236,6 @@ static int hgpk_force_recalibrate(struct psmouse *psmouse)
 	/* according to ALPS, 150mS is required for recalibration */
 	msleep(150);
 
-	/* XXX: If a finger is down during this delay, recalibration will
-	 * detect capacitance incorrectly.  This is a hardware bug, and
-	 * we don't have a good way to deal with it.  The 2s window stuff
-	 * (below) is our best option for now.
-	 */
 
 	if (ps2_command(ps2dev, NULL, PSMOUSE_CMD_ENABLE))
 		return -1;

@@ -124,9 +124,6 @@ static int __devinit snd_sgalaxy_setup_wss(unsigned long port, int irq, int dma)
 		snd_printdd("I/O address dead (0x%lx)\n", port);
 		return 0;
 	}
-#if 0
-	snd_printdd("WSS signature = 0x%x\n", tmp);
-#endif
 
         if ((tmp & 0x3f) != 0x04 &&
             (tmp & 0x3f) != 0x0f &&
@@ -136,9 +133,6 @@ static int __devinit snd_sgalaxy_setup_wss(unsigned long port, int irq, int dma)
 		return 0;
 	}
 
-#if 0
-	snd_printdd(PFX "setting up IRQ/DMA for WSS\n");
-#endif
 
         /* initialize IRQ for WSS codec */
         tmp = interrupt_bits[irq % 16];
@@ -161,9 +155,6 @@ static int __devinit snd_sgalaxy_setup_wss(unsigned long port, int irq, int dma)
 
 static int __devinit snd_sgalaxy_detect(int dev, int irq, int dma)
 {
-#if 0
-	snd_printdd(PFX "switching to WSS mode\n");
-#endif
 
 	/* switch to WSS mode */
 	snd_sgalaxy_sbdsp_reset(sbport[dev]);

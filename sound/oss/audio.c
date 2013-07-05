@@ -865,10 +865,6 @@ static int dma_ioctl(int dev, unsigned int cmd, void __user *arg)
 					audio_devs[dev]->enable_bits &= ~PCM_ENABLE_OUTPUT;
 				spin_unlock_irqrestore(&dmap_out->lock,flags);
 			}
-#if 0
-			if (changed && audio_devs[dev]->d->trigger)
-				audio_devs[dev]->d->trigger(dev, bits * audio_devs[dev]->go);
-#endif				
 			/* Falls through... */
 
 		case SNDCTL_DSP_GETTRIGGER:

@@ -131,7 +131,6 @@ struct fwnet_partial_datagram {
 	struct list_head pd_link;
 	struct list_head fi_list;
 	struct sk_buff *skb;
-	/* FIXME Why not use skb->data? */
 	char *pbuf;
 	u16 datagram_label;
 	u16 ether_type;
@@ -301,7 +300,6 @@ static const struct header_ops fwnet_header_ops = {
 	.parse          = fwnet_header_parse,
 };
 
-/* FIXME: is this correct for all cases? */
 static bool fwnet_frag_overlap(struct fwnet_partial_datagram *pd,
 			       unsigned offset, unsigned len)
 {
@@ -624,10 +622,6 @@ static int fwnet_finish_incoming_packet(struct net_device *net,
 			if (memcmp(eth->h_dest, net->broadcast,
 				   net->addr_len) == 0)
 				skb->pkt_type = PACKET_BROADCAST;
-#if 0
-			else
-				skb->pkt_type = PACKET_MULTICAST;
-#endif
 		} else {
 			if (memcmp(eth->h_dest, net->dev_addr, net->addr_len))
 				skb->pkt_type = PACKET_OTHERHOST;
@@ -1163,7 +1157,6 @@ static int fwnet_broadcast_start(struct fwnet_device *dev)
 	if (retval < 0)
 		goto failed_rcv_queue;
 
-	/* FIXME: adjust it according to the min. speed of all known peers? */
 	dev->broadcast_xmt_max_payload = IEEE1394_MAX_PAYLOAD_S100
 			- IEEE1394_GASP_HDR_SIZE - RFC2374_UNFRAG_HDR_SIZE;
 	dev->broadcast_state = FWNET_BROADCAST_RUNNING;
@@ -1342,13 +1335,6 @@ static netdev_tx_t fwnet_tx(struct sk_buff *skb, struct net_device *net)
 	net->stats.tx_dropped++;
 	net->stats.tx_errors++;
 
-	/*
-	 * FIXME: According to a patch from 2003-02-26, "returning non-zero
-	 * causes serious problems" here, allegedly.  Before that patch,
-	 * -ERRNO was returned which is not appropriate under Linux 2.6.
-	 * Perhaps more needs to be done?  Stop the queue in serious
-	 * conditions and restart it elsewhere?
-	 */
 	return NETDEV_TX_OK;
 }
 
@@ -1578,10 +1564,6 @@ static int fwnet_remove(struct device *_dev)
 	return 0;
 }
 
-/*
- * FIXME abort partially sent fragmented datagrams,
- * discard partially received fragmented datagrams
- */
 static void fwnet_update(struct fw_unit *unit)
 {
 	struct fw_device *device = fw_parent_device(unit);

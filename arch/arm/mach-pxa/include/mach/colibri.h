@@ -60,4 +60,3 @@ static inline void colibri_pxa3xx_init_nand(void) {}
 #define GPIO113_COLIBRI_PXA270_TS_IRQ	113
 
 #endif /* _COLIBRI_H_ */
-

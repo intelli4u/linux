@@ -318,4 +318,3 @@ int dpi_init(struct platform_device *pdev)
 void dpi_exit(void)
 {
 }
-

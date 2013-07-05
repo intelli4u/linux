@@ -199,11 +199,6 @@ static int wl1271_tm_cmd_nvs_push(struct wl1271 *wl, struct nlattr *tb[])
 	buf = nla_data(tb[WL1271_TM_ATTR_DATA]);
 	len = nla_len(tb[WL1271_TM_ATTR_DATA]);
 
-	/*
-	 * FIXME: the LEGACY NVS image support (NVS's missing the 5GHz band
-	 * configurations) can be removed when those NVS files stop floating
-	 * around.
-	 */
 	if (len != sizeof(struct wl1271_nvs_file) &&
 	    (len != WL1271_INI_LEGACY_NVS_FILE_SIZE ||
 	     wl1271_11a_enabled())) {

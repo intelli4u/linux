@@ -971,7 +971,7 @@ static int sddr55_transport(struct scsi_cmnd *srb, struct us_data *us)
 
 	set_sense_info (5, 0x20, 0);	/* illegal command */
 
-	return USB_STOR_TRANSPORT_FAILED; // FIXME: sense buffer?
+	return USB_STOR_TRANSPORT_FAILED;
 }
 
 

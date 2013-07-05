@@ -72,4 +72,3 @@
 #define S5P_EXTINT_BOTHEDGE		(0x04)
 
 #endif /* __ASM_MACH_S5PC100_REGS_GPIO_H */
-

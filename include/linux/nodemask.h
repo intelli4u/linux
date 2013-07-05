@@ -228,8 +228,6 @@ static inline void __nodes_shift_left(nodemask_t *dstp,
 	bitmap_shift_left(dstp->bits, srcp->bits, n, nbits);
 }
 
-/* FIXME: better would be to fix all architectures to never return
-          > MAX_NUMNODES, then the silly min_ts could be dropped. */
 
 #define first_node(src) __first_node(&(src))
 static inline int __first_node(const nodemask_t *srcp)
@@ -478,7 +476,7 @@ static inline int num_node_state(enum node_states state)
  * NODEMASK_ALLOC(type, name) allocates an object with a specified type and
  * name.
  */
-#if NODES_SHIFT > 8 /* nodemask_t > 256 bytes */
+#if NODES_SHIFT > 8     /* nodemask_t > 256 bytes */
 #define NODEMASK_ALLOC(type, name, gfp_flags)	\
 			type *name = kmalloc(sizeof(*name), gfp_flags)
 #define NODEMASK_FREE(m)			kfree(m)

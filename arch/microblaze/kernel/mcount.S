@@ -13,7 +13,6 @@
 
 #define NOALIGN_ENTRY(name)	.globl name; name:
 
-/* FIXME MS: I think that I don't need to save all regs */
 #define SAVE_REGS		\
 	addik	r1, r1, -120;	\
 	swi	r2, r1, 4;	\

@@ -100,7 +100,6 @@ static int omap_check_spurious(unsigned int irq)
 	return 0;
 }
 
-/* XXX: FIQ and additional INTC support (only MPU at the moment) */
 static void omap_ack_irq(unsigned int irq)
 {
 	intc_bank_write_reg(0x1, &irq_banks[0], INTC_CONTROL);

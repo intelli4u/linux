@@ -111,22 +111,6 @@ static void __exit driver_dt2801_cleanup_module(void)
 module_init(driver_dt2801_init_module);
 module_exit(driver_dt2801_cleanup_module);
 
-#if 0
-/* ignore 'defined but not used' warning */
-static const struct comedi_lrange range_dt2801_ai_pgh_bipolar = { 4, {
-								      RANGE(-10,
-									    10),
-								      RANGE(-5,
-									    5),
-								      RANGE
-								      (-2.5,
-								       2.5),
-								      RANGE
-								      (-1.25,
-								       1.25),
-								      }
-};
-#endif
 static const struct comedi_lrange range_dt2801_ai_pgl_bipolar = { 4, {
 								      RANGE(-10,
 									    10),
@@ -141,20 +125,6 @@ static const struct comedi_lrange range_dt2801_ai_pgl_bipolar = { 4, {
 								      }
 };
 
-#if 0
-/* ignore 'defined but not used' warning */
-static const struct comedi_lrange range_dt2801_ai_pgh_unipolar = { 4, {
-								       RANGE(0,
-									     10),
-								       RANGE(0,
-									     5),
-								       RANGE(0,
-									     2.5),
-								       RANGE(0,
-									     1.25),
-								       }
-};
-#endif
 static const struct comedi_lrange range_dt2801_ai_pgl_unipolar = { 4, {
 								       RANGE(0,
 									     10),
@@ -331,13 +301,6 @@ static int dt2801_writedata(struct comedi_device *dev, unsigned int data)
 			outb_p(data & 0xff, dev->iobase + DT2801_DATA);
 			return 0;
 		}
-#if 0
-		if (stat & DT_S_READY) {
-			printk
-			    ("dt2801: ready flag set (bad!) in dt2801_writedata()\n");
-			return -EIO;
-		}
-#endif
 	} while (--timeout > 0);
 
 	return -ETIME;
@@ -564,14 +527,7 @@ havetype:
 	/* ai subdevice */
 	s->type = COMEDI_SUBD_AI;
 	s->subdev_flags = SDF_READABLE | SDF_GROUND;
-#if 1
 	s->n_chan = n_ai_chans;
-#else
-	if (it->options[2])
-		s->n_chan = boardtype.ad_chan;
-	else
-		s->n_chan = boardtype.ad_chan / 2;
-#endif
 	s->maxdata = (1 << boardtype.adbits) - 1;
 	s->range_table = ai_range_lkup(boardtype.adrangetype, it->options[3]);
 	s->insn_read = dt2801_ai_insn_read;

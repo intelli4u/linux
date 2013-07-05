@@ -33,8 +33,6 @@ int __kprobes arch_prepare_kprobe(struct kprobe *p)
 		ret = -EINVAL;
 	}
 
-	/* XXX: Might be a good idea to check if p->addr is a valid
-	 * kernel address as well... */
 
 	if (!ret) {
 		pr_debug("copy kprobe at %p\n", p->addr);
@@ -251,11 +249,6 @@ void __kprobes jprobe_return(void)
 
 int __kprobes longjmp_break_handler(struct kprobe *p, struct pt_regs *regs)
 {
-	/*
-	 * FIXME - we should ideally be validating that we got here 'cos
-	 * of the "trap" in jprobe_return() above, before restoring the
-	 * saved regs...
-	 */
 	memcpy(regs, &jprobe_saved_regs, sizeof(struct pt_regs));
 	return 1;
 }

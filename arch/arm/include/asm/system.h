@@ -45,14 +45,6 @@
 #define CR_AFE	(1 << 29)	/* Access flag enable			*/
 #define CR_TE	(1 << 30)	/* Thumb exception enable		*/
 
-/*
- * This is used to ensure the compiler did actually allocate the register we
- * asked it for some inline assembly sequences.  Apparently we can't trust
- * the compiler from one version to another so a bit of paranoia won't hurt.
- * This string is meant to be concatenated with the inline asm string and
- * will cause compilation to stop on mismatch.
- * (for details, see gcc PR 15089)
- */
 #define __asmeq(x, y)  ".ifnc " x "," y " ; .err ; .endif\n\t"
 
 #ifndef __ASSEMBLY__
@@ -61,6 +53,16 @@
 #include <linux/irqflags.h>
 
 #include <asm/outercache.h>
+
+#if defined(CONFIG_BUZZZ_FUNC)
+#ifndef __always_inline__
+#define __always_inline__ inline __attribute__((always_inline)) __attribute__((no_instrument_function))
+#endif
+#else	/* !CONFIG_BUZZZ_FUNC */
+#ifndef __always_inline__
+#define __always_inline__ inline
+#endif
+#endif	/* !CONFIG_BUZZZ_FUNC */
 
 #define __exception	__attribute__((section(".exception.text")))
 
@@ -170,14 +172,14 @@ extern unsigned int user_debug;
 extern unsigned long cr_no_alignment;	/* defined in entry-armv.S */
 extern unsigned long cr_alignment;	/* defined in entry-armv.S */
 
-static inline unsigned int get_cr(void)
+static __always_inline__ unsigned int get_cr(void)
 {
 	unsigned int val;
 	asm("mrc p15, 0, %0, c1, c0, 0	@ get CR" : "=r" (val) : : "cc");
 	return val;
 }
 
-static inline void set_cr(unsigned int val)
+static __always_inline__ void set_cr(unsigned int val)
 {
 	asm volatile("mcr p15, 0, %0, c1, c0, 0	@ set CR"
 	  : : "r" (val) : "cc");
@@ -192,7 +194,7 @@ extern void adjust_cr(unsigned long mask, unsigned long set);
 #define CPACC_SVC(n)		(1 << (n * 2))
 #define CPACC_DISABLE(n)	(0 << (n * 2))
 
-static inline unsigned int get_copro_access(void)
+static __always_inline__ unsigned int get_copro_access(void)
 {
 	unsigned int val;
 	asm("mrc p15, 0, %0, c1, c0, 2 @ get copro access"
@@ -200,7 +202,7 @@ static inline unsigned int get_copro_access(void)
 	return val;
 }
 
-static inline void set_copro_access(unsigned int val)
+static __always_inline__ void set_copro_access(unsigned int val)
 {
 	asm volatile("mcr p15, 0, %0, c1, c0, 2 @ set copro access"
 	  : : "r" (val) : "cc");
@@ -245,21 +247,19 @@ do {									\
 #define swp_is_buggy
 #endif
 
-static inline unsigned long __xchg(unsigned long x, volatile void *ptr, int size)
+static __always_inline__ unsigned long __xchg(unsigned long x, volatile void *ptr, int size)
 {
 	extern void __bad_xchg(volatile void *, int);
 	unsigned long ret;
 #ifdef swp_is_buggy
 	unsigned long flags;
 #endif
-#if __LINUX_ARM_ARCH__ >= 6
-	unsigned int tmp;
-#endif
 
 	smp_mb();
 
 	switch (size) {
 #if __LINUX_ARM_ARCH__ >= 6
+	unsigned int tmp;
 	case 1:
 		asm volatile("@	__xchg1\n"
 		"1:	ldrexb	%0, [%3]\n"
@@ -354,7 +354,7 @@ extern void __bad_cmpxchg(volatile void *ptr, int size);
  * cmpxchg only support 32-bits operands on ARMv6.
  */
 
-static inline unsigned long __cmpxchg(volatile void *ptr, unsigned long old,
+static __always_inline__ unsigned long __cmpxchg(volatile void *ptr, unsigned long old,
 				      unsigned long new, int size)
 {
 	unsigned long oldval, res;
@@ -406,7 +406,7 @@ static inline unsigned long __cmpxchg(volatile void *ptr, unsigned long old,
 	return oldval;
 }
 
-static inline unsigned long __cmpxchg_mb(volatile void *ptr, unsigned long old,
+static __always_inline__ unsigned long __cmpxchg_mb(volatile void *ptr, unsigned long old,
 					 unsigned long new, int size)
 {
 	unsigned long ret;
@@ -424,7 +424,7 @@ static inline unsigned long __cmpxchg_mb(volatile void *ptr, unsigned long old,
 					  (unsigned long)(n),		\
 					  sizeof(*(ptr))))
 
-static inline unsigned long __cmpxchg_local(volatile void *ptr,
+static __always_inline__ unsigned long __cmpxchg_local(volatile void *ptr,
 					    unsigned long old,
 					    unsigned long new, int size)
 {
@@ -450,14 +450,14 @@ static inline unsigned long __cmpxchg_local(volatile void *ptr,
 				       (unsigned long)(n),		\
 				       sizeof(*(ptr))))
 
-#ifdef CONFIG_CPU_32v6K
+#ifdef CONFIG_CPU_32v6K 
 
 /*
  * Note : ARMv7-M (currently unsupported by Linux) does not support
  * ldrexd/strexd. If ARMv7-M is ever supported by the Linux kernel, it should
  * not be allowed to use __cmpxchg64.
  */
-static inline unsigned long long __cmpxchg64(volatile void *ptr,
+static __always_inline__ unsigned long long __cmpxchg64(volatile void *ptr,
 					     unsigned long long old,
 					     unsigned long long new)
 {
@@ -482,7 +482,7 @@ static inline unsigned long long __cmpxchg64(volatile void *ptr,
 	return oldval;
 }
 
-static inline unsigned long long __cmpxchg64_mb(volatile void *ptr,
+static __always_inline__ unsigned long long __cmpxchg64_mb(volatile void *ptr,
 						unsigned long long old,
 						unsigned long long new)
 {

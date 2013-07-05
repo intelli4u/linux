@@ -103,9 +103,6 @@ int nouveau_reg_debug;
 module_param_named(reg_debug, nouveau_reg_debug, int, 0600);
 
 int nouveau_fbpercrtc;
-#if 0
-module_param_named(fbpercrtc, nouveau_fbpercrtc, int, 0400);
-#endif
 
 static struct pci_device_id pciidlist[] = {
 	{

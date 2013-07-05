@@ -277,15 +277,6 @@ static void __init g4evm_map_io(void)
 #define GPIO_SDHID1_D3	0xe6052106
 #define GPIO_SDHICMD1	0xe6052107
 
-/*
- * FIXME !!
- *
- * gpio_pull_up is quick_hack.
- *
- * current gpio frame work doesn't have
- * the method to control only pull up/down/free.
- * this function should be replaced by correct gpio function
- */
 static void __init gpio_pull_up(u32 addr)
 {
 	u8 data = __raw_readb(addr);

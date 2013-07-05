@@ -57,11 +57,6 @@ MODULE_DESCRIPTION("IPv6 packet filter");
 #define IP_NF_ASSERT(x)
 #endif
 
-#if 0
-/* All the better to debug you with... */
-#define static
-#define inline
-#endif
 
 void *ip6t_alloc_initial_table(const struct xt_table *info)
 {
@@ -222,7 +217,7 @@ ip6t_get_target_c(const struct ip6t_entry *e)
 }
 
 #if defined(CONFIG_NETFILTER_XT_TARGET_TRACE) || \
-    defined(CONFIG_NETFILTER_XT_TARGET_TRACE_MODULE)
+	defined(CONFIG_NETFILTER_XT_TARGET_TRACE_MODULE)
 /* This cries for unification! */
 static const char *const hooknames[] = {
 	[NF_INET_PRE_ROUTING]		= "PREROUTING",
@@ -393,7 +388,7 @@ ip6t_do_table(struct sk_buff *skb,
 		IP_NF_ASSERT(t->u.kernel.target);
 
 #if defined(CONFIG_NETFILTER_XT_TARGET_TRACE) || \
-    defined(CONFIG_NETFILTER_XT_TARGET_TRACE_MODULE)
+	defined(CONFIG_NETFILTER_XT_TARGET_TRACE_MODULE)
 		/* The packet is traced: log it */
 		if (unlikely(skb->nf_trace))
 			trace_packet(skb, hook, in, out,
@@ -981,7 +976,6 @@ copy_entries_to_user(unsigned int total_size,
 		goto free_counters;
 	}
 
-	/* FIXME: use iterator macros --RR */
 	/* ... then go back and fix counters and names */
 	for (off = 0, num = 0; off < total_size; off += e->next_offset, num++){
 		unsigned int i;

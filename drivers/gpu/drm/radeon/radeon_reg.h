@@ -26,28 +26,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-/*
- * Authors:
- *   Kevin E. Martin <martin@xfree86.org>
- *   Rickard E. Faith <faith@valinux.com>
- *   Alan Hourihane <alanh@fairlite.demon.co.uk>
- *
- * References:
- *
- * !!!! FIXME !!!!
- *   RAGE 128 VR/ RAGE 128 GL Register Reference Manual (Technical
- *   Reference Manual P/N RRG-G04100-C Rev. 0.04), ATI Technologies: April
- *   1999.
- *
- * !!!! FIXME !!!!
- *   RAGE 128 Software Development Manual (Technical Reference Manual P/N
- *   SDK-G04000 Rev. 0.01), ATI Technologies: June 1999.
- *
- */
 
-/* !!!! FIXME !!!!  NOTE: THIS FILE HAS BEEN CONVERTED FROM r128_reg.h
- * AND CONTAINS REGISTERS AND REGISTER DEFINITIONS THAT ARE NOT CORRECT
- * ON THE RADEON.  A FULL AUDIT OF THIS CODE IS NEEDED!  */
 #ifndef _RADEON_REG_H_
 #define _RADEON_REG_H_
 

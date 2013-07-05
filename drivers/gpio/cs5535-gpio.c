@@ -61,15 +61,6 @@ static void errata_outl(struct cs5535_gpio_chip *chip, u32 val,
 {
 	unsigned long addr = chip->base + 0x80 + reg;
 
-	/*
-	 * According to the CS5536 errata (#36), after suspend
-	 * a write to the high bank GPIO register will clear all
-	 * non-selected bits; the recommended workaround is a
-	 * read-modify-write operation.
-	 *
-	 * Don't apply this errata to the edge status GPIOs, as writing
-	 * to their lower bits will clear them.
-	 */
 	if (reg != GPIO_POSITIVE_EDGE_STS && reg != GPIO_NEGATIVE_EDGE_STS) {
 		if (val & 0xffff)
 			val |= (inl(addr) & 0xffff); /* ignore the high bits */

@@ -1339,11 +1339,6 @@ int ahci_do_softreset(struct ata_link *link, unsigned int *class,
 	/* wait for link to become ready */
 	rc = ata_wait_after_reset(link, deadline, check_ready);
 	if (rc == -EBUSY && hpriv->flags & AHCI_HFLAG_SRST_TOUT_IS_OFFLINE) {
-		/*
-		 * Workaround for cases where link online status can't
-		 * be trusted.  Treat device readiness timeout as link
-		 * offline.
-		 */
 		ata_link_printk(link, KERN_INFO,
 				"device not ready, treating as offline\n");
 		*class = ATA_DEV_NONE;
@@ -1689,14 +1684,6 @@ static void ahci_port_intr(struct ata_port *ap)
 		if (hpriv->cap & HOST_CAP_SNTF)
 			sata_async_notification(ap);
 		else {
-			/* If the 'N' bit in word 0 of the FIS is set,
-			 * we just received asynchronous notification.
-			 * Tell libata about it.
-			 *
-			 * Lack of SNotification should not appear in
-			 * ahci 1.2, so the workaround is unnecessary
-			 * when FBS is enabled.
-			 */
 			if (pp->fbs_enabled)
 				WARN_ON_ONCE(1);
 			else {

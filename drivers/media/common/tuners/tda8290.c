@@ -212,7 +212,6 @@ static void tda8290_set_params(struct dvb_frontend *fe,
 	if (params->mode == V4L2_TUNER_RADIO) {
 		unsigned char deemphasis[]  = { 0x13, 1 };
 
-		/* FIXME: allow using a different deemphasis */
 
 		if (deemphasis_50)
 			deemphasis[1] = 2;

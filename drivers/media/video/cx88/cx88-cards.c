@@ -1029,7 +1029,6 @@ static const struct cx88_board cx88_boards[] = {
 			.type	= CX88_VMUX_SVIDEO,
 			.vmux	= 2,
 		}},
-		/* fixme: Add radio support */
 		.mpeg           = CX88_MPEG_DVB,
 	},
 	[CX88_BOARD_HAUPPAUGE_HVR1100LP] = {
@@ -1046,7 +1045,6 @@ static const struct cx88_board cx88_boards[] = {
 			.type	= CX88_VMUX_COMPOSITE1,
 			.vmux	= 1,
 		}},
-		/* fixme: Add radio support */
 		.mpeg           = CX88_MPEG_DVB,
 	},
 	[CX88_BOARD_DNTV_LIVE_DVB_T_PRO] = {
@@ -1188,8 +1186,6 @@ static const struct cx88_board cx88_boards[] = {
 		.mpeg           = CX88_MPEG_DVB,
 	},
 	[CX88_BOARD_KWORLD_MCE200_DELUXE] = {
-		/* FIXME: tested TV input only, disabled composite,
-		   svideo and radio until they can be tested also. */
 		.name           = "Kworld MCE 200 Deluxe",
 		.tuner_type     = TUNER_TENA_9533_DI,
 		.radio_type     = UNSET,
@@ -1204,7 +1200,6 @@ static const struct cx88_board cx88_boards[] = {
 		.mpeg           = CX88_MPEG_BLACKBIRD,
 	},
 	[CX88_BOARD_PIXELVIEW_PLAYTV_P7000] = {
-		/* FIXME: SVideo, Composite and FM inputs are untested */
 		.name           = "PixelView PlayTV P7000",
 		.tuner_type     = TUNER_PHILIPS_FM1216ME_MK3,
 		.radio_type     = UNSET,
@@ -3098,11 +3093,6 @@ void cx88_setup_xc3028(struct cx88_core *core, struct xc2028_ctrl *ctl)
 		ctl->demod = XC3028_FE_OREN538;
 		break;
 	case CX88_BOARD_GENIATECH_X8000_MT:
-		/* FIXME: For this board, the xc3028 never recovers after being
-		   powered down (the reset GPIO probably is not set properly).
-		   We don't have access to the hardware so we cannot determine
-		   which GPIO is used for xc3028, so just disable power xc3028
-		   power management for now */
 		ctl->disable_power_mgmt = 1;
 		break;
 	case CX88_BOARD_WINFAST_TV2000_XP_GLOBAL:

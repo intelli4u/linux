@@ -50,7 +50,7 @@
 
 #ifdef CONFIG_USB_DYNAMIC_MINORS
 #define USB_TRANZPORT_MINOR_BASE	0
-#else  /* FIXME 177- is the another driver's minor - apply for a minor soon */
+#else
 #define USB_TRANZPORT_MINOR_BASE	177
 #endif
 
@@ -529,7 +529,6 @@ static ssize_t usb_tranzport_read(struct file *file, char __user *buffer,
 			retval = -EAGAIN;
 			goto unlock_exit;
 		}
-		/* tiny race - FIXME: make atomic? */
 		/* atomic_cmp_exchange(&dev->interrupt_in_done,0,0); */
 		dev->interrupt_in_done = 0;
 		retval = wait_event_interruptible(dev->read_wait,
@@ -562,10 +561,6 @@ static ssize_t usb_tranzport_read(struct file *file, char __user *buffer,
 		while (dev->ring_head != next_tail && cancompress == 1) {
 			newwheel = (*dev->ring_buffer)[next_tail].cmd[6];
 			oldwheel = (*dev->ring_buffer)[dev->ring_tail].cmd[6];
-			/* if both are wheel events, and
-			   no buttons have changes (FIXME, do I have to check?),
-			   and we are the same sign, we can compress +- 7F
-			*/
 			dbg_info(&dev->intf->dev,
 				"%s: trying to compress: "
 				"%02x%02x%02x%02x%02x%02x%02x%02x\n",
@@ -838,8 +833,6 @@ static int usb_tranzport_probe(struct usb_interface *intf,
 		ring_buffer_size = RING_BUFFER_SIZE;
 	true_size = min(ring_buffer_size, RING_BUFFER_SIZE);
 
-	/* FIXME - there are more usb_alloc routines for dma correctness.
-	   Needed? */
 
 	dev->ring_buffer =
 	    kmalloc((true_size * sizeof(struct tranzport_cmd)) + 8, GFP_KERNEL);

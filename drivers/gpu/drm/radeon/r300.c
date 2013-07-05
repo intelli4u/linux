@@ -59,7 +59,6 @@ void rv370_pcie_gart_tlb_flush(struct radeon_device *rdev)
 	uint32_t tmp;
 	int i;
 
-	/* Workaround HW bug do flush 2 times */
 	for (i = 0; i < 2; i++) {
 		tmp = RREG32_PCIE(RADEON_PCIE_TX_GART_CNTL);
 		WREG32_PCIE(RADEON_PCIE_TX_GART_CNTL, tmp | RADEON_PCIE_TX_GART_INVALIDATE_TLB);
@@ -131,7 +130,6 @@ int rv370_pcie_gart_enable(struct radeon_device *rdev)
 	WREG32_PCIE(RADEON_PCIE_TX_GART_END_HI, 0);
 	table_addr = rdev->gart.table_addr;
 	WREG32_PCIE(RADEON_PCIE_TX_GART_BASE, table_addr);
-	/* FIXME: setup default page */
 	WREG32_PCIE(RADEON_PCIE_TX_DISCARD_RD_ADDR_LO, rdev->mc.vram_start);
 	WREG32_PCIE(RADEON_PCIE_TX_DISCARD_RD_ADDR_HI, 0);
 	/* Clear error */
@@ -497,7 +495,6 @@ void rv370_set_pcie_lanes(struct radeon_device *rdev, int lanes)
 	if (!(rdev->flags & RADEON_IS_PCIE))
 		return;
 
-	/* FIXME wait for idle */
 
 	switch (lanes) {
 	case 0:
@@ -556,7 +553,6 @@ int rv370_get_pcie_lanes(struct radeon_device *rdev)
 	if (!(rdev->flags & RADEON_IS_PCIE))
 		return 0;
 
-	/* FIXME wait for idle */
 
 	if (rdev->family < CHIP_R600)
 		link_width_cntl = RREG32_PCIE(RADEON_PCIE_LC_LINK_WIDTH_CNTL);

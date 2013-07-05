@@ -531,9 +531,6 @@ typedef struct icbRevLvl {
 typedef struct icbUnsMask {	/* I'm totally guessing here */
 	unchar op;
 	volatile unchar mask[14];	/* mask bits                 */
-#if 0
-	unchar rsvd[12];	/* reserved                  */
-#endif
 	volatile unchar vue;	/* vendor-unique error code  */
 	volatile unchar status;	/* returned (icmb) status    */
 	volatile unchar phase;	/* used by interrupt handler */
@@ -823,7 +820,6 @@ static inline Scb *alloc_scbs(struct Scsi_Host *host, int needed)
 	while (freescbs < needed) {
 		timeout = jiffies + WAITnexttimeout;
 		do {
-			/* FIXME: can we actually just yield here ?? */
 			for (now = jiffies; now == jiffies;)
 				cpu_relax();	/* wait a jiffy */
 		} while (freescbs < needed && time_before_eq(jiffies, timeout));
@@ -1131,7 +1127,6 @@ static int wd7000_queuecommand(struct scsi_cmnd *SCpnt,
 		any2scsi(scb->maxlen, scsi_bufflen(SCpnt));
 	}
 
-	/* FIXME: drop lock and yield here ? */
 
 	while (!mail_out(host, scb))
 		cpu_relax();	/* keep trying */
@@ -1562,22 +1557,6 @@ static int wd7000_release(struct Scsi_Host *shost)
 	return 0;
 }
 
-#if 0
-/*
- *  I have absolutely NO idea how to do an abort with the WD7000...
- */
-static int wd7000_abort(Scsi_Cmnd * SCpnt)
-{
-	Adapter *host = (Adapter *) SCpnt->device->host->hostdata;
-
-	if (inb(host->iobase + ASC_STAT) & INT_IM) {
-		printk("wd7000_abort: lost interrupt\n");
-		wd7000_intr_handle(host->irq, NULL, NULL);
-		return FAILED;
-	}
-	return FAILED;
-}
-#endif
 
 /*
  *  Last resort. Reinitialize the board.

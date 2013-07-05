@@ -378,14 +378,11 @@ void lx_set_mode(struct fb_info *info)
 	wrmsrl(MSR_LX_GLD_MSR_CONFIG, msrval);
 
 	/* Clear the various buffers */
-	/* FIXME:  Adjust for panning here */
 
 	write_dc(par, DC_FB_ST_OFFSET, 0);
 	write_dc(par, DC_CB_ST_OFFSET, 0);
 	write_dc(par, DC_CURS_ST_OFFSET, 0);
 
-	/* FIXME: Add support for interlacing */
-	/* FIXME: Add support for scaling */
 
 	val = read_dc(par, DC_GENLK_CTL);
 	val &= ~(DC_GENLK_CTL_ALPHA_FLICK_EN | DC_GENLK_CTL_FLICK_EN |
@@ -397,7 +394,6 @@ void lx_set_mode(struct fb_info *info)
 	write_dc(par, DC_IRQ_FILT_CTL, 0);
 	write_dc(par, DC_GENLK_CTL, val);
 
-	/* FIXME:  Support compression */
 
 	if (info->fix.line_length > 4096)
 		dv = DC_DV_CTL_DV_LINE_SIZE_8K;
@@ -648,7 +644,6 @@ static void lx_restore_gfx_proc(struct lxfb_par *par)
 		case GP_BLT_MODE:
 		case GP_BLT_STATUS:
 		case GP_HST_SRC:
-			/* FIXME: restore LUT data */
 		case GP_LUT_INDEX:
 		case GP_LUT_DATA:
 			/* don't restore these registers */

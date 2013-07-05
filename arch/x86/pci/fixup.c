@@ -170,18 +170,6 @@ static void __devinit pci_fixup_transparent_bridge(struct pci_dev *dev)
 }
 DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, PCI_ANY_ID, pci_fixup_transparent_bridge);
 
-/*
- * Fixup for C1 Halt Disconnect problem on nForce2 systems.
- *
- * From information provided by "Allen Martin" <AMartin@nvidia.com>:
- *
- * A hang is caused when the CPU generates a very fast CONNECT/HALT cycle
- * sequence.  Workaround is to set the SYSTEM_IDLE_TIMEOUT to 80 ns.
- * This allows the state-machine and timer to return to a proper state within
- * 80 ns of the CONNECT and probe appearing together.  Since the CPU will not
- * issue another HALT within 80 ns of the initial HALT, the failure condition
- * is avoided.
- */
 static void pci_fixup_nforce2(struct pci_dev *dev)
 {
 	u32 val;

@@ -25,14 +25,6 @@
  * Contact Cavium Networks for more information
  ***********************license end**************************************/
 
-/**
- *
- * Fixes and workaround for Octeon chip errata. This file
- * contains functions called by cvmx-helper to workaround known
- * chip errata. For the most part, code doesn't need to call
- * these functions directly.
- *
- */
 #include <linux/module.h>
 
 #include <asm/octeon/octeon.h>

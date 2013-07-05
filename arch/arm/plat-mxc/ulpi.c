@@ -110,4 +110,3 @@ struct otg_io_access_ops mxc_ulpi_access_ops = {
 	.write	= ulpi_write,
 };
 EXPORT_SYMBOL_GPL(mxc_ulpi_access_ops);
-

@@ -90,7 +90,6 @@ ia64_getpriority (int which, int who)
 	return prio;
 }
 
-/* XXX obsolete, but leave it here until the old libc is gone... */
 asmlinkage unsigned long
 sys_getpagesize (void)
 {

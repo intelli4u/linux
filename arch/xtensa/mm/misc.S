@@ -444,4 +444,3 @@ ENTRY(__invalidate_dcache_all)
 	dsync
 
 	retw
-

@@ -347,7 +347,6 @@ static struct snd_pcm_ops snd_tm6000_pcm_ops = {
  * create a PCM device
  */
 
-/* FIXME: Control interface - How to control volume/mute? */
 
 /****************************************************************************
 			Basic Flow for Sound Devices

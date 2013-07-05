@@ -31,4 +31,3 @@
 
 
 #endif /* CSP_STRING_H */
-

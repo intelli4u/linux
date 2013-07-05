@@ -468,7 +468,6 @@ iommu_map_failed:
 			npages = iommu_num_pages(s->dma_address, s->dma_length,
 						 IO_PAGE_SIZE);
 			iommu_range_free(iommu, vaddr, npages);
-			/* XXX demap? XXX */
 			s->dma_address = DMA_ERROR_CODE;
 			s->dma_length = 0;
 		}
@@ -545,7 +544,6 @@ static void __devinit pci_sun4v_scan_bus(struct pci_pbm_info *pbm,
 	pbm->is_66mhz_capable = (prop != NULL);
 	pbm->pci_bus = pci_scan_one_pbm(pbm, parent);
 
-	/* XXX register error interrupt handlers XXX */
 }
 
 static unsigned long __devinit probe_existing_entries(struct pci_pbm_info *pbm,

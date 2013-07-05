@@ -374,9 +374,6 @@ int handle_unaligned_access(insn_size_t instruction, struct pt_regs *regs,
 	u_int rm;
 	int ret, index;
 
-	/*
-	 * XXX: We can't handle mixed 16/32-bit instructions yet
-	 */
 	if (instruction_size(instruction) != 2)
 		return -EINVAL;
 
@@ -819,8 +816,7 @@ void __init trap_init(void)
 	set_exception_table_vec(TRAP_RESERVED_INST, do_reserved_inst);
 	set_exception_table_vec(TRAP_ILLEGAL_SLOT_INST, do_illegal_slot_inst);
 
-#if defined(CONFIG_CPU_SH4) && !defined(CONFIG_SH_FPU) || \
-    defined(CONFIG_SH_FPU_EMU)
+#if defined(CONFIG_CPU_SH4) && !defined(CONFIG_SH_FPU) || defined(CONFIG_SH_FPU_EMU)
 	/*
 	 * For SH-4 lacking an FPU, treat floating point instructions as
 	 * reserved. They'll be handled in the math-emu case, or faulted on

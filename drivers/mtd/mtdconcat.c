@@ -375,10 +375,6 @@ static int concat_dev_erase(struct mtd_info *mtd, struct erase_info *erase)
 	erase->callback = concat_erase_callback;
 	erase->priv = (unsigned long) &waitq;
 
-	/*
-	 * FIXME: Allow INTERRUPTIBLE. Which means
-	 * not having the wait_queue head on the stack.
-	 */
 	err = mtd->erase(mtd, erase);
 	if (!err) {
 		set_current_state(TASK_UNINTERRUPTIBLE);

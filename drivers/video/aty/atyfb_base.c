@@ -112,7 +112,6 @@
 /*  - must be aligned to a PAGE boundary           */
 #define GUI_RESERVE	(1 * PAGE_SIZE)
 
-/* FIXME: remove the FAIL definition */
 #define FAIL(msg) do { \
 	if (!(var->activate & FB_ACTIVATE_TEST)) \
 		printk(KERN_CRIT "atyfb: " msg "\n"); \
@@ -135,7 +134,7 @@
 #define PRINTKE(fmt, args...)	printk(KERN_ERR "atyfb: " fmt, ## args)
 
 #if defined(CONFIG_PM) || defined(CONFIG_PMAC_BACKLIGHT) || \
-defined (CONFIG_FB_ATY_GENERIC_LCD) || defined(CONFIG_FB_ATY_BACKLIGHT)
+	defined(CONFIG_FB_ATY_GENERIC_LCD) || defined(CONFIG_FB_ATY_BACKLIGHT)
 static const u32 lt_lcd_regs[] = {
 	CNFG_PANEL_LG,
 	LCD_GEN_CNTL_LG,
@@ -353,7 +352,6 @@ static unsigned long phys_guiregbase[FB_MAX] __devinitdata = { 0, };
 #define ATI_CHIP_264VT3    (M64F_VT | M64F_INTEGRATED | M64F_VT_BUS | M64F_GTB_DSP | M64F_SDRAM_MAGIC_PLL)
 #define ATI_CHIP_264VT4    (M64F_VT | M64F_INTEGRATED               | M64F_GTB_DSP)
 
-/* FIXME what is this chip? */
 #define ATI_CHIP_264LT     (M64F_GT | M64F_INTEGRATED               | M64F_GTB_DSP)
 
 /* make sets shorter */
@@ -386,7 +384,6 @@ static struct {
 	{ PCI_CHIP_MACH64CT, "ATI264CT (Mach64 CT)", 135, 60, 60, 0, ATI_CHIP_264CT },
 	{ PCI_CHIP_MACH64ET, "ATI264ET (Mach64 ET)", 135, 60, 60, 0, ATI_CHIP_264ET },
 
-	/* FIXME what is this chip? */
 	{ PCI_CHIP_MACH64LT, "ATI264LT (Mach64 LT)", 135, 63, 63, 0, ATI_CHIP_264LT },
 
 	{ PCI_CHIP_MACH64VT, "ATI264VT (Mach64 VT)", 170, 67, 67, 80, ATI_CHIP_264VT },
@@ -728,11 +725,6 @@ static void aty_set_crtc(const struct atyfb_par *par, const struct crtc *crtc)
 	aty_st_le32(CRTC_VLINE_CRNT_VLINE, crtc->vline_crnt_vline, par);
 
 	aty_st_le32(CRTC_GEN_CNTL, crtc->gen_cntl, par);
-#if 0
-	FIXME
-	if (par->accel_flags & FB_ACCELF_TEXT)
-		aty_init_engine(par, info);
-#endif
 #ifdef CONFIG_FB_ATY_GENERIC_LCD
 	/* after setting the CRTC registers we should set the LCD registers. */
 	if (par->lcd_table != 0) {
@@ -1041,7 +1033,6 @@ static int aty_var_to_crtc(const struct fb_info *info,
 					SHADOW_EN | SHADOW_RW_EN);
 		crtc->lcd_gen_cntl |= DONT_SHADOW_VPAR/* | LOCK_8DOT*/;
 
-		/* MOBILITY M1 tested, FIXME: LT */
 		crtc->horz_stretching = aty_ld_lcd(HORZ_STRETCHING, par);
 		if (!M64_HAS(LT_LCD_REGS))
 			crtc->ext_vert_stretch = aty_ld_lcd(EXT_VERT_STRETCH, par) &
@@ -1139,7 +1130,6 @@ static int aty_var_to_crtc(const struct fb_info *info,
 #endif /* CONFIG_FB_ATY_GENERIC_LCD */
 
 	if (M64_HAS(MAGIC_FIFO)) {
-		/* FIXME: display FIFO low watermark values */
 		crtc->gen_cntl |= (aty_ld_le32(CRTC_GEN_CNTL, par) & CRTC_FIFO_LWM);
 	}
 	crtc->dp_pix_width = dp_pix_width;
@@ -1188,19 +1178,6 @@ static int aty_crtc_to_var(const struct crtc *crtc,
 		(c_sync ? FB_SYNC_COMP_HIGH_ACT : 0);
 
 	switch (pix_width) {
-#if 0
-	case CRTC_PIX_WIDTH_4BPP:
-		bpp = 4;
-		var->red.offset = 0;
-		var->red.length = 8;
-		var->green.offset = 0;
-		var->green.length = 8;
-		var->blue.offset = 0;
-		var->blue.length = 8;
-		var->transp.offset = 0;
-		var->transp.length = 0;
-		break;
-#endif
 	case CRTC_PIX_WIDTH_8BPP:
 		bpp = 8;
 		var->red.offset = 0;
@@ -1466,11 +1443,6 @@ static int atyfb_set_par(struct fb_info *info)
 		var->bits_per_pixel,
 		par->crtc.vxres * var->bits_per_pixel / 8);
 #endif /* CONFIG_BOOTX_TEXT */
-#if 0
-	/* switch to accelerator mode */
-	if (!(par->crtc.gen_cntl & CRTC_EXT_DISP_EN))
-		aty_st_le32(CRTC_GEN_CNTL, par->crtc.gen_cntl | CRTC_EXT_DISP_EN, par);
-#endif
 #ifdef DEBUG
 {
 	/* dump non shadow CRTC, pll, LCD registers */
@@ -2354,7 +2326,6 @@ static int __devinit aty_init(struct fb_info *info)
 		par->bus_type = (stat0 >> 0) & 0x07;
 		par->ram_type = (stat0 >> 3) & 0x07;
 		ramname = aty_gx_ram[par->ram_type];
-		/* FIXME: clockchip/RAMDAC probing? */
 		dac_type = (aty_ld_le32(DAC_CNTL, par) >> 16) & 0x07;
 #ifdef CONFIG_ATARI
 		clk_type = CLK_ATI18818_1;
@@ -2395,17 +2366,6 @@ static int __devinit aty_init(struct fb_info *info)
 #else
 		case CLK_IBMRGB514:
 			par->pll_ops = &aty_pll_ibm514;
-			break;
-#endif
-#if 0 /* dead code */
-		case CLK_STG1703:
-			par->pll_ops = &aty_pll_stg1703;
-			break;
-		case CLK_CH8398:
-			par->pll_ops = &aty_pll_ch8398;
-			break;
-		case CLK_ATT20C408:
-			par->pll_ops = &aty_pll_att20c408;
 			break;
 #endif
 		default:
@@ -2676,10 +2636,6 @@ static int __devinit aty_init(struct fb_info *info)
 	memset(&var, 0, sizeof(var));
 #ifdef CONFIG_PPC
 	if (machine_is(powermac)) {
-		/*
-		 * FIXME: The NVRAM stuff should be put in a Mac-specific file,
-		 *        as it applies to all Mac video cards
-		 */
 		if (mode) {
 			if (mac_find_mode(&var, info, mode, 8))
 				has_var = 1;

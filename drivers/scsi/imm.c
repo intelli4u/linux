@@ -490,16 +490,6 @@ static int imm_cpp(unsigned short ppb, unsigned char b)
 	w_dtr(ppb, 0x78);
 	udelay(10);		/* 7 usec - infinite */
 	s3 = r_str(ppb) & 0x38;
-	/*
-	 * Values for b are:
-	 * 0000 00aa    Assign address aa to current device
-	 * 0010 00aa    Select device aa in EPP Winbond mode
-	 * 0010 10aa    Select device aa in EPP mode
-	 * 0011 xxxx    Deselect all devices
-	 * 0110 00aa    Test device aa
-	 * 1101 00aa    Select device aa in ECP mode
-	 * 1110 00aa    Select device aa in Compatible mode
-	 */
 	w_dtr(ppb, b);
 	udelay(2);		/* 1 usec - infinite */
 	w_ctr(ppb, 0x0c);

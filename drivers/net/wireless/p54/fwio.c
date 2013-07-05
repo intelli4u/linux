@@ -83,7 +83,6 @@ int p54_parse_firmware(struct ieee80211_hw *dev, const struct firmware *fw)
 			struct bootrec_desc *desc =
 				(struct bootrec_desc *)bootrec->data;
 			priv->rx_start = le32_to_cpu(desc->rx_start);
-			/* FIXME add sanity checking */
 			priv->rx_end = le32_to_cpu(desc->rx_end) - 0x3500;
 			priv->headroom = desc->headroom;
 			priv->tailroom = desc->tailroom;

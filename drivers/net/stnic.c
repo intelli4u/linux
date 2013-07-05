@@ -54,7 +54,6 @@
 #define CR_STA		E8390_START
 #define CR_RDMA		E8390_NODMA
 
-/* FIXME! YOU MUST SET YOUR OWN ETHER ADDRESS.  */
 static byte stnic_eadr[6] =
 {0x00, 0xc0, 0x6e, 0x00, 0x00, 0x07};
 

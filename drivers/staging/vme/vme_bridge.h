@@ -111,7 +111,6 @@ struct vme_bridge {
 
 	struct list_head vme_errors;	/* List for errors generated on VME */
 
-	/* Bridge Info - XXX Move to private structure? */
 	struct device *parent;	/* Generic device struct (pdev->dev for PCI) */
 	void *driver_priv;	/* Private pointer for the bridge driver */
 

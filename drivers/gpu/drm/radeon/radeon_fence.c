@@ -50,9 +50,6 @@ int radeon_fence_emit(struct radeon_device *rdev, struct radeon_fence *fence)
 	}
 	fence->seq = atomic_add_return(1, &rdev->fence_drv.seq);
 	if (!rdev->cp.ready) {
-		/* FIXME: cp is not running assume everythings is done right
-		 * away
-		 */
 		WREG32(rdev->fence_drv.scratch_reg, fence->seq);
 	} else
 		radeon_fence_ring_emit(rdev, fence);
@@ -233,9 +230,6 @@ retry:
 		if (seq == rdev->fence_drv.last_seq && radeon_gpu_is_lockup(rdev)) {
 			/* good news we believe it's a lockup */
 			WARN(1, "GPU lockup (waiting for 0x%08X last fence id 0x%08X)\n", fence->seq, seq);
-			/* FIXME: what should we do ? marking everyone
-			 * as signaled for now
-			 */
 			rdev->gpu_lockup = true;
 			r = radeon_gpu_reset(rdev);
 			if (r)

@@ -234,9 +234,9 @@ static const __u16 Pb100_1map8300[][2] = {
 	{0x8303, 0x0125},	/* image area */
 	{0x8304, 0x0169},
 	{0x8328, 0x000b},
-	{0x833c, 0x0001},		/*fixme: win:07*/
+	{0x833c, 0x0001},
 
-	{0x832f, 0x1904},		/*fixme: was 0419*/
+	{0x832f, 0x1904},
 	{0x8307, 0x00aa},
 	{0x8301, 0x0003},
 	{0x8302, 0x000e},
@@ -415,7 +415,6 @@ static void init_161rev12A(struct gspca_dev *gspca_dev)
 {
 	write_vector(gspca_dev, spca561_161rev12A_data1);
 	sensor_mapwrite(gspca_dev, Pb100_1map8300);
-/*fixme: should be in sd_start*/
 	write_vector(gspca_dev, spca561_161rev12A_data2);
 	sensor_mapwrite(gspca_dev, Pb100_2map8300);
 }
@@ -682,7 +681,6 @@ static int sd_start_72a(struct gspca_dev *gspca_dev)
 	reg_w_val(dev, 0x8500, mode);	/* mode */
 	write_sensor_72a(gspca_dev, rev72a_init_sensor2);
 	setcontrast(gspca_dev);
-/*	setbrightness(gspca_dev);	 * fixme: bad values */
 	setautogain(gspca_dev);
 	reg_w_val(dev, 0x8112, 0x10 | 0x20);
 	return 0;

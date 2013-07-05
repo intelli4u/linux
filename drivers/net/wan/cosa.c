@@ -1,4 +1,4 @@
-/* $Id: cosa.c,v 1.31 2000/03/08 17:47:16 kas Exp $ */
+/* $Id: cosa.c,v 1.31 2000/03/08 17:47:16 Exp $ */
 
 /*
  *  Copyright (C) 1995-1997  Jan "Yenya" Kasprzak <kas@fi.muni.cz>
@@ -193,7 +193,7 @@ static int cosa_major = 117;
 #define DRIVER_RX_READY		0x0001
 #define DRIVER_TX_READY		0x0002
 #define DRIVER_TXMAP_SHIFT	2
-#define DRIVER_TXMAP_MASK	0x0c	/* FIXME: 0xfc for 8-channel version */
+#define DRIVER_TXMAP_MASK	0x0c
 
 /*
  * for cosa->rxtx - indicates whether either transmit or receive is
@@ -203,7 +203,7 @@ static int cosa_major = 117;
 #define RXBIT 1
 #define IRQBIT 2
 
-#define COSA_MTU 2000	/* FIXME: I don't know this exactly */
+#define COSA_MTU 2000
 
 #undef DEBUG_DATA //1	/* Dump the data read or written to the channel */
 #undef DEBUG_IRQS //1	/* Print the message when the IRQ is received */
@@ -510,12 +510,6 @@ static int cosa_probe(int base, int irq, int dma)
 		unsigned long irqs;
 /*		printk(KERN_INFO "IRQ autoprobe\n"); */
 		irqs = probe_irq_on();
-		/* 
-		 * Enable interrupt on tx buffer empty (it sure is) 
-		 * really sure ?
-		 * FIXME: When this code is not used as module, we should
-		 * probably call udelay() instead of the interruptible sleep.
-		 */
 		set_current_state(TASK_INTERRUPTIBLE);
 		cosa_putstatus(cosa, SR_TX_INT_ENA);
 		schedule_timeout(30);
@@ -541,7 +535,7 @@ static int cosa_probe(int base, int irq, int dma)
 	cosa->irq = irq;
 	cosa->num = nr_cards;
 	cosa->usage = 0;
-	cosa->nchannels = 2;	/* FIXME: how to determine this? */
+	cosa->nchannels = 2;
 
 	if (request_irq(cosa->irq, cosa_interrupt, 0, cosa->type, cosa)) {
 		err = -1;
@@ -1242,12 +1236,6 @@ static void cosa_disable_rx(struct channel_data *chan)
 		put_driver_status(cosa);
 }
 
-/*
- * FIXME: This routine probably should check for cosa_start_tx() called when
- * the previous transmit is still unfinished. In this case the non-zero
- * return value should indicate to the caller that the queuing(sp?) up
- * the transmit has failed.
- */
 static int cosa_start_tx(struct channel_data *chan, char *buf, int len)
 {
 	struct cosa_data *cosa = chan->cosa;
@@ -1338,11 +1326,6 @@ static void put_driver_status_nolock(struct cosa_data *cosa)
 #endif
 }
 
-/*
- * The "kickme" function: When the DMA times out, this is called to
- * clean up the driver status.
- * FIXME: Preliminary support, the interface is probably wrong.
- */
 static void cosa_kick(struct cosa_data *cosa)
 {
 	unsigned long flags, flags1;
@@ -1362,7 +1345,6 @@ static void cosa_kick(struct cosa_data *cosa)
 	clear_dma_ff(cosa->dma);
 	release_dma_lock(flags1);
 
-	/* FIXME: Anything else? */
 	udelay(100);
 	cosa_putstatus(cosa, 0);
 	udelay(100);
@@ -1438,9 +1420,6 @@ static int download(struct cosa_data *cosa, const char __user *microcode, int le
 	if (get_wait_data(cosa) != '\r') return -21;
 	if (get_wait_data(cosa) != '\n') return -22;
 	if (get_wait_data(cosa) != '.') return -23;
-#if 0
-	printk(KERN_DEBUG "cosa%d: download completed.\n", cosa->num);
-#endif
 	return 0;
 }
 
@@ -1464,9 +1443,6 @@ static int startmicrocode(struct cosa_data *cosa, int address)
 	if (get_wait_data(cosa) != '\n') return -8;
 	if (get_wait_data(cosa) != '\r') return -9;
 	if (get_wait_data(cosa) != '\n') return -10;
-#if 0
-	printk(KERN_DEBUG "cosa%d: microcode started\n", cosa->num);
-#endif
 	return 0;
 }
 
@@ -1503,21 +1479,14 @@ static int readmem(struct cosa_data *cosa, char __user *microcode, int length, i
 			return -11;
 		}
 		c=i;
-#if 1
 		if (put_user(c, microcode))
 			return -23; /* ??? */
-#else
-		*microcode = c;
-#endif
 		microcode++;
 	}
 
 	if (get_wait_data(cosa) != '\r') return -21;
 	if (get_wait_data(cosa) != '\n') return -22;
 	if (get_wait_data(cosa) != '.') return -23;
-#if 0
-	printk(KERN_DEBUG "cosa%d: readmem completed.\n", cosa->num);
-#endif
 	return 0;
 }
 
@@ -1581,9 +1550,6 @@ static int get_wait_data(struct cosa_data *cosa)
 		if (cosa_getstatus(cosa) & SR_RX_RDY) {
 			short r;
 			r = cosa_getdata8(cosa);
-#if 0
-			printk(KERN_INFO "cosa: get_wait_data returning after %d retries\n", 999-retries);
-#endif
 			return r;
 		}
 		/* sleep if not ready to read */
@@ -1606,15 +1572,8 @@ static int put_wait_data(struct cosa_data *cosa, int data)
 		/* read data and return them */
 		if (cosa_getstatus(cosa) & SR_TX_RDY) {
 			cosa_putdata8(cosa, data);
-#if 0
-			printk(KERN_INFO "Putdata: %d retries\n", 999-retries);
-#endif
 			return 0;
 		}
-#if 0
-		/* sleep if not ready to read */
-		schedule_timeout_interruptible(1);
-#endif
 	}
 	printk(KERN_INFO "cosa%d: timeout in put_wait_data (status 0x%x)\n",
 		cosa->num, cosa_getstatus(cosa));
@@ -1846,19 +1805,11 @@ static inline void rx_interrupt(struct cosa_data *cosa, int status)
 #ifdef DEBUG_IO
 			debug_data_in(cosa, cosa->rxsize & 0xff);
 #endif
-#if 0
-			printk(KERN_INFO "cosa%d: receive rxsize = (0x%04x).\n",
-				cosa->num, cosa->rxsize);
-#endif
 		}
 	} else {
 		cosa->rxsize = cosa_getdata16(cosa);
 #ifdef DEBUG_IO
 		debug_data_in(cosa, cosa->rxsize);
-#endif
-#if 0
-		printk(KERN_INFO "cosa%d: receive rxsize = (0x%04x).\n",
-			cosa->num, cosa->rxsize);
 #endif
 	}
 	if (((cosa->rxsize & 0xe000) >> 13) >= cosa->nchannels) {

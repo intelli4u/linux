@@ -87,7 +87,6 @@ void musb_platform_enable(struct musb *musb)
 {
 	u32	tmp, old, val;
 
-	/* workaround:  setup irqs through both register sets */
 	tmp = (musb->epmask & DAVINCI_USB_TX_ENDPTS_MASK)
 			<< DAVINCI_USB_TXINT_SHIFT;
 	musb_writel(musb->ctrl_base, DAVINCI_USB_INT_MASK_SET_REG, tmp);
@@ -118,11 +117,6 @@ void musb_platform_enable(struct musb *musb)
  */
 void musb_platform_disable(struct musb *musb)
 {
-	/* because we don't set CTRLR.UINT, "important" to:
-	 *  - not read/write INTRUSB/INTRUSBE
-	 *  - (except during initial setup, as workaround)
-	 *  - use INTSETR/INTCLRR instead
-	 */
 	musb_writel(musb->ctrl_base, DAVINCI_USB_INT_MASK_CLR_REG,
 			  DAVINCI_USB_USBINT_MASK
 			| DAVINCI_USB_TXINT_MASK
@@ -234,17 +228,6 @@ static void otg_timer(unsigned long _musb)
 		if (!is_peripheral_enabled(musb))
 			break;
 
-		/* There's no ID-changed IRQ, so we have no good way to tell
-		 * when to switch to the A-Default state machine (by setting
-		 * the DEVCTL.SESSION flag).
-		 *
-		 * Workaround:  whenever we're in B_IDLE, try setting the
-		 * session flag every few seconds.  If it works, ID was
-		 * grounded and we're now in the A-Default state machine.
-		 *
-		 * NOTE setting the session flag is _supposed_ to trigger
-		 * SRP, but clearly it doesn't.
-		 */
 		musb_writeb(mregs, MUSB_DEVCTL,
 				devctl | MUSB_DEVCTL_SESSION);
 		devctl = musb_readb(mregs, MUSB_DEVCTL);
@@ -314,16 +297,6 @@ static irqreturn_t davinci_interrupt(int irq, void *__hci)
 		err = is_host_enabled(musb)
 				&& (musb->int_usb & MUSB_INTR_VBUSERROR);
 		if (err) {
-			/* The Mentor core doesn't debounce VBUS as needed
-			 * to cope with device connect current spikes. This
-			 * means it's not uncommon for bus-powered devices
-			 * to get VBUS errors during enumeration.
-			 *
-			 * This is a workaround, but newer RTL from Mentor
-			 * seems to allow a better one: "re"starting sessions
-			 * without waiting (on EVM, a **long** time) for VBUS
-			 * to stop registering in devctl.
-			 */
 			musb->int_usb &= ~MUSB_INTR_VBUSERROR;
 			musb->xceiv->state = OTG_STATE_A_WAIT_VFALL;
 			mod_timer(&otg_workaround, jiffies + POLL_SECONDS * HZ);

@@ -88,6 +88,3 @@ MLME_SendComplete(struct wbsoft_priv *adapter, u8 PacketID, unsigned char SendOK
 	/* Return resource */
 	adapter->sMlmeFrame.IsInUsed = PACKET_FREE_TO_USE;
 }
-
-
-

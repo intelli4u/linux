@@ -580,4 +580,3 @@ module_exit(fm3130_exit);
 MODULE_DESCRIPTION("RTC driver for FM3130");
 MODULE_AUTHOR("Sergey Lapin <slapin@ossfans.org>");
 MODULE_LICENSE("GPL");
-

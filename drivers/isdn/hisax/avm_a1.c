@@ -1,4 +1,4 @@
-/* $Id: avm_a1.c,v 2.15.2.4 2004/01/13 21:46:03 keil Exp $
+/* $Id: avm_a1.c,v 2.15.2.4 2004/01/13 21:46:03 Exp $
  *
  * low level stuff for AVM A1 (Fritz) isdn cards
  *

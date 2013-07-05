@@ -232,20 +232,6 @@
 #define TIO_SWIN_WIDGETNUM(x)		(((x)  >> TIO_SWIN_SIZE_BITS) & TIO_SWIN_WIDGET_MASK)
 
 
-/*
- * The following macros produce the correct base virtual address for
- * the hub registers. The REMOTE_HUB_* macro produce
- * the address for the specified hub's registers.  The intent is
- * that the appropriate PI, MD, NI, or II register would be substituted
- * for x.
- *
- *   WARNING:
- *	When certain Hub chip workaround are defined, it's not sufficient
- *	to dereference the *_HUB_ADDR() macros.  You should instead use
- *	HUB_L() and HUB_S() if you must deal with pointers to hub registers.
- *	Otherwise, the recommended approach is to use *_HUB_L() and *_HUB_S().
- *	They're always safe.
- */
 /* Shub1 TIO & MMR addressing macros */
 #define SH1_TIO_IOSPACE_ADDR(n,x)					\
 	GLOBAL_MMR_ADDR(n,x)

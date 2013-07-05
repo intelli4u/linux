@@ -102,9 +102,6 @@ struct xhci_cap_regs {
 #define HCC_64BIT_ADDR(p)	((p) & (1 << 0))
 /* true: HC can do bandwidth negotiation */
 #define HCC_BANDWIDTH_NEG(p)	((p) & (1 << 1))
-/* true: HC uses 64-byte Device Context structures
- * FIXME 64-byte context structures aren't supported yet.
- */
 #define HCC_64BYTE_CONTEXT(p)	((p) & (1 << 2))
 /* true: HC has port power switches */
 #define HCC_PPC(p)		((p) & (1 << 3))
@@ -191,7 +188,6 @@ struct xhci_op_regs {
 /* bits 4:6 are reserved (and should be preserved on writes). */
 /* light reset (port status stays unchanged) - reset completed when this is 0 */
 #define CMD_LRESET	(1 << 7)
-/* FIXME: ignoring host controller save/restore state for now. */
 #define CMD_CSS		(1 << 8)
 #define CMD_CRS		(1 << 9)
 /* Enable Wrap Event - '1' means xHC generates an event when MFINDEX wraps. */
@@ -383,7 +379,6 @@ struct xhci_intr_reg {
 /* irq_pending bitmasks */
 #define	ER_IRQ_PENDING(p)	((p) & 0x1)
 /* bits 2:31 need to be preserved */
-/* THIS IS BUGGY - FIXME - IP IS WRITE 1 TO CLEAR */
 #define	ER_IRQ_CLEAR(p)		((p) & 0xfffffffe)
 #define	ER_IRQ_ENABLE(p)	((ER_IRQ_CLEAR(p)) | 0x2)
 #define	ER_IRQ_DISABLE(p)	((ER_IRQ_CLEAR(p)) & ~(0x2))
@@ -871,7 +866,6 @@ struct xhci_transfer_event {
 /* Invalid Stream ID Error */
 #define COMP_STRID_ERR	34
 /* Secondary Bandwidth Error - may be returned by a Configure Endpoint cmd */
-/* FIXME - check for this */
 #define COMP_2ND_BW_ERR	35
 /* Split Transaction Error */
 #define	COMP_SPLIT_ERR	36
@@ -941,6 +935,10 @@ struct xhci_event_cmd {
 
 /* Control transfer TRB specific fields */
 #define TRB_DIR_IN		(1<<16)
+
+#define	TRB_TX_TYPE(p)		((p)<<16)
+#define	TRB_DATA_OUT		2
+#define	TRB_DATA_IN		3
 
 /* Isochronous TRB specific fields */
 #define TRB_SIA			(1<<31)
@@ -1040,14 +1038,24 @@ union xhci_trb {
  * since the command ring is 64-byte aligned.
  * It must also be greater than 16.
  */
+
+#ifdef CONFIG_BCM47XX
+#define TRBS_PER_SEGMENT	128
+#else
 #define TRBS_PER_SEGMENT	64
+#endif
 /* Allow two commands + a link TRB, along with any reserved command TRBs */
 #define MAX_RSVD_CMD_TRBS	(TRBS_PER_SEGMENT - 3)
 #define SEGMENT_SIZE		(TRBS_PER_SEGMENT*16)
 /* SEGMENT_SHIFT should be log2(SEGMENT_SIZE).
  * Change this if you change TRBS_PER_SEGMENT!
  */
+#ifdef CONFIG_BCM47XX
+#define SEGMENT_SHIFT		11
+#else
 #define SEGMENT_SHIFT		10
+#endif
+
 /* TRB buffer pointers can't cross 64KB boundaries */
 #define TRB_MAX_BUFF_SHIFT		16
 #define TRB_MAX_BUFF_SIZE	(1 << TRB_MAX_BUFF_SHIFT)
@@ -1136,7 +1144,6 @@ struct urb_priv {
 #define	POLL_TIMEOUT	60
 /* Stop endpoint command timeout (secs) for URB cancellation watchdog timer */
 #define XHCI_STOP_EP_CMD_TIMEOUT	5
-/* XXX: Make these module parameters */
 
 
 /* There is one ehci_hci structure per controller */
@@ -1468,6 +1475,11 @@ void xhci_queue_config_ep_quirk(struct xhci_hcd *xhci,
 		unsigned int slot_id, unsigned int ep_index,
 		struct xhci_dequeue_state *deq_state);
 void xhci_stop_endpoint_command_watchdog(unsigned long arg);
+
+#ifdef CONFIG_BCM47XX
+void xhci_ring_ep_doorbell(struct xhci_hcd *xhci, unsigned int slot_id,
+                unsigned int ep_index, unsigned int stream_id);
+#endif /* CONFIG_BCM47XX */
 
 /* xHCI roothub code */
 int xhci_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue, u16 wIndex,

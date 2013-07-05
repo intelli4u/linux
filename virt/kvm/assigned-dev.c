@@ -817,4 +817,3 @@ long kvm_vm_ioctl_assigned_device(struct kvm *kvm, unsigned ioctl,
 out:
 	return r;
 }
-

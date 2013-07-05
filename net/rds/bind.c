@@ -36,13 +36,6 @@
 #include <linux/if_arp.h>
 #include "rds.h"
 
-/*
- * XXX this probably still needs more work.. no INADDR_ANY, and rbtrees aren't
- * particularly zippy.
- *
- * This is now called for every incoming frame so we arguably care much more
- * about it than we used to.
- */
 static DEFINE_SPINLOCK(rds_bind_lock);
 static struct rb_root rds_bind_tree = RB_ROOT;
 

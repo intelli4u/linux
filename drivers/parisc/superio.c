@@ -204,14 +204,6 @@ superio_init(struct pci_dev *pcidev)
 	ret = pci_enable_device(pdev);
 	BUG_ON(ret < 0);	/* not too much we can do about this... */
 
-	/*
-	 * Next project is programming the onboard interrupt controllers.
-	 * PDC hasn't done this for us, since it's using polled I/O.
-	 *
-	 * XXX Use dword writes to avoid bugs in Elroy or Suckyio Config
-	 *     space access.  PCI is by nature a 32-bit bus and config
-	 *     space can be sensitive to that.
-	 */
 
 	/* 0x64 - 0x67 :
 		DMA Rtg 2
@@ -476,7 +468,6 @@ superio_probe(struct pci_dev *dev, const struct pci_device_id *id)
 	if (dev->device == PCI_DEVICE_ID_NS_87560_LIO) {	/* Function 1 */
 		superio_parport_init();
 		superio_serial_init();
-		/* REVISIT XXX : superio_fdc_init() ? */
 		return 0;
 	} else if (dev->device == PCI_DEVICE_ID_NS_87415) {	/* Function 0 */
 		DBG_INIT("superio_probe: ignoring IDE 87415\n");

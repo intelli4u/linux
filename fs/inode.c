@@ -25,14 +25,6 @@
 #include <linux/async.h>
 #include <linux/posix_acl.h>
 
-/*
- * This is needed for the following functions:
- *  - inode_has_buffers
- *  - invalidate_inode_buffers
- *  - invalidate_bdev
- *
- * FIXME: remove all knowledge of the buffer layer from this file
- */
 #include <linux/buffer_head.h>
 
 /*

@@ -43,7 +43,7 @@
 /*
  * event set flags
  */
-#define PFM_SETFL_EXCL_IDLE      0x01   /* exclude idle task (syswide only) XXX: DO NOT USE YET */
+#define PFM_SETFL_EXCL_IDLE      0x01
 
 /*
  * PMC flags

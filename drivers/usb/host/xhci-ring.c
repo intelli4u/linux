@@ -248,12 +248,6 @@ static void inc_enq(struct xhci_hcd *xhci, struct xhci_ring *ring,
 		xhci_dbg(xhci, "Ring enq = 0x%llx (DMA)\n", addr);
 }
 
-/*
- * Check to see if there's room to enqueue num_trbs on the ring.  See rules
- * above.
- * FIXME: this would be simpler and faster if we just kept track of the number
- * of free TRBs in a ring.
- */
 static int room_on_ring(struct xhci_hcd *xhci, struct xhci_ring *ring,
 		unsigned int num_trbs)
 {
@@ -325,13 +319,6 @@ static void ring_ep_doorbell(struct xhci_hcd *xhci,
 
 	ep = &xhci->devs[slot_id]->eps[ep_index];
 	ep_state = ep->ep_state;
-	/* Don't ring the doorbell for this endpoint if there are pending
-	 * cancellations because the we don't want to interrupt processing.
-	 * We don't want to restart any stream rings if there's a set dequeue
-	 * pointer command pending because the device can choose to start any
-	 * stream once the endpoint is on the HW schedule.
-	 * FIXME - check all the stream rings for pending cancellations.
-	 */
 	if (!(ep_state & EP_HALT_PENDING) && !(ep_state & SET_DEQ_PENDING)
 			&& !(ep_state & EP_HALTED)) {
 		field = xhci_readl(xhci, db_addr) & DB_MASK;
@@ -339,6 +326,16 @@ static void ring_ep_doorbell(struct xhci_hcd *xhci,
 		xhci_writel(xhci, field, db_addr);
 	}
 }
+
+#ifdef CONFIG_BCM47XX
+void xhci_ring_ep_doorbell(struct xhci_hcd *xhci,
+		unsigned int slot_id,
+		unsigned int ep_index,
+		unsigned int stream_id)
+{
+	ring_ep_doorbell(xhci, slot_id, ep_index, stream_id);
+}
+#endif /* CONFIG_BCM47XX */
 
 /* Ring the doorbell for any rings with pending URBs */
 static void ring_doorbell_for_active_rings(struct xhci_hcd *xhci,
@@ -884,7 +881,6 @@ static void handle_set_deq_completion(struct xhci_hcd *xhci,
 		xhci_warn(xhci, "WARN Set TR deq ptr command for "
 				"freed stream ID %u\n",
 				stream_id);
-		/* XXX: Harmless??? */
 		dev->eps[ep_index].ep_state &= ~SET_DEQ_PENDING;
 		return;
 	}
@@ -1151,7 +1147,6 @@ static void handle_port_status(struct xhci_hcd *xhci,
 		xhci_warn(xhci, "WARN: xHC returned failed port status event\n");
 		xhci->error_bitmask |= 1 << 8;
 	}
-	/* FIXME: core doesn't care about all port link state changes yet */
 	port_id = GET_PORT_ID(event->generic.field[0]);
 	xhci_dbg(xhci, "Port Status Change Event for port %d\n", port_id);
 
@@ -1960,7 +1955,6 @@ static void xhci_handle_event(struct xhci_hcd *xhci)
 	}
 	xhci_dbg(xhci, "%s - OS owns TRB\n", __func__);
 
-	/* FIXME: Handle more event types. */
 	switch ((event->event_cmd.flags & TRB_TYPE_BITMASK)) {
 	case TRB_TYPE(TRB_COMPLETION):
 		xhci_dbg(xhci, "%s - calling handle_cmd_completion\n", __func__);
@@ -2056,7 +2050,6 @@ hw_died:
 	 */
 	status |= STS_EINT;
 	xhci_writel(xhci, status, &xhci->op_regs->status);
-	/* FIXME when MSI-X is supported and there are multiple vectors */
 	/* Clear the MSI-X event interrupt status */
 
 	if (hcd->irq != -1) {
@@ -2082,9 +2075,6 @@ hw_died:
 	}
 
 	event_ring_deq = xhci->event_ring->dequeue;
-	/* FIXME this should be a delayed service routine
-	 * that clears the EHB.
-	 */
 	xhci_handle_event(xhci);
 
 	temp_64 = xhci_read_64(xhci, &xhci->ir_set->erst_dequeue);
@@ -2143,10 +2133,6 @@ static void queue_trb(struct xhci_hcd *xhci, struct xhci_ring *ring,
 	inc_enq(xhci, ring, consumer, more_trbs_coming);
 }
 
-/*
- * Does various checks on the endpoint ring, and makes it ready to queue num_trbs.
- * FIXME allocate segments if the ring is full.
- */
 static int prepare_ring(struct xhci_hcd *xhci, struct xhci_ring *ep_ring,
 		u32 ep_state, unsigned int num_trbs, gfp_t mem_flags)
 {
@@ -2162,8 +2148,6 @@ static int prepare_ring(struct xhci_hcd *xhci, struct xhci_ring *ep_ring,
 		return -ENOENT;
 	case EP_STATE_ERROR:
 		xhci_warn(xhci, "WARN waiting for error on ep to be cleared\n");
-		/* FIXME event handling code for error needs to clear it */
-		/* XXX not sure if this should be -ENOENT or not */
 		return -EINVAL;
 	case EP_STATE_HALTED:
 		xhci_dbg(xhci, "WARN halted endpoint, queueing URB anyway.\n");
@@ -2172,14 +2156,9 @@ static int prepare_ring(struct xhci_hcd *xhci, struct xhci_ring *ep_ring,
 		break;
 	default:
 		xhci_err(xhci, "ERROR unknown endpoint state for ep\n");
-		/*
-		 * FIXME issue Configure Endpoint command to try to get the HC
-		 * back into a known state.
-		 */
 		return -EINVAL;
 	}
 	if (!room_on_ring(xhci, ep_ring, num_trbs)) {
-		/* FIXME allocate more room */
 		xhci_err(xhci, "ERROR no room on ep ring\n");
 		return -ENOMEM;
 	}
@@ -2369,9 +2348,6 @@ int xhci_queue_intr_tx(struct xhci_hcd *xhci, gfp_t mem_flags,
 	if (urb->dev->speed == USB_SPEED_LOW ||
 			urb->dev->speed == USB_SPEED_FULL)
 		ep_interval *= 8;
-	/* FIXME change this to a warning and a suggestion to use the new API
-	 * to set the polling interval (once the API is added).
-	 */
 	if (xhci_interval != ep_interval) {
 		if (!printk_ratelimit())
 			dev_dbg(&urb->dev->dev, "Driver uses different interval"
@@ -2405,6 +2381,47 @@ static u32 xhci_td_remainder(unsigned int remainder)
 		return (remainder >> 10) << 17;
 }
 
+#ifdef CONFIG_BCM47XX
+/*
+ * For xHCI 1.0 host controllers, TD size is the number of packets remaining in
+ * the TD (*not* including this TRB).
+ *
+ * Total TD packet count = total_packet_count =
+ *     roundup(TD size in bytes / wMaxPacketSize)
+ *
+ * Packets transferred up to and including this TRB = packets_transferred =
+ *     rounddown(total bytes transferred including this TRB / wMaxPacketSize)
+ *
+ * TD size = total_packet_count - packets_transferred
+ *
+ * It must fit in bits 21:17, so it can't be bigger than 31.
+*/
+static u32 xhci_v1_0_td_remainder(int running_total, int trb_buff_len,
+		unsigned int total_packet_count, struct urb *urb)
+{
+	int packets_transferred;
+	u32 max = (1 << (21 - 17 + 1)) - 1;
+	u32 remainder = 0;
+
+	/* One TRB with a zero-length data packet. */
+	if (running_total == 0 && trb_buff_len == 0)
+		return 0;
+
+	/* All the TRB queueing functions don't count the current TRB in
+	 * running_total.
+	 */
+	packets_transferred = (running_total + trb_buff_len) /
+				usb_endpoint_maxp(&urb->ep->desc);
+
+	remainder = total_packet_count - packets_transferred;
+
+	if (remainder >= max)
+		return (max << 17);
+	else
+		return (remainder << 17);  
+}
+#endif /* CONFIG_BCM47XX */
+
 static int queue_bulk_sg_tx(struct xhci_hcd *xhci, gfp_t mem_flags,
 		struct urb *urb, int slot_id, unsigned int ep_index)
 {
@@ -2415,6 +2432,9 @@ static int queue_bulk_sg_tx(struct xhci_hcd *xhci, gfp_t mem_flags,
 	struct scatterlist *sg;
 	int num_sgs;
 	int trb_buff_len, this_sg_len, running_total;
+#ifdef CONFIG_BCM47XX
+	unsigned int total_packet_count;   
+#endif /* CONFIG_BCM47XX */
 	bool first_trb;
 	u64 addr;
 	bool more_trbs_coming;
@@ -2428,6 +2448,11 @@ static int queue_bulk_sg_tx(struct xhci_hcd *xhci, gfp_t mem_flags,
 
 	num_trbs = count_sg_trbs_needed(xhci, urb);
 	num_sgs = urb->num_sgs;
+
+#ifdef CONFIG_BCM47XX
+	total_packet_count = DIV_ROUND_UP(urb->transfer_buffer_length, 
+					usb_endpoint_maxp(&urb->ep->desc));
+#endif /* CONFIG_BCM47XX */
 
 	trb_buff_len = prepare_transfer(xhci, xhci->devs[slot_id],
 			ep_index, urb->stream_id,
@@ -2486,10 +2511,15 @@ static int queue_bulk_sg_tx(struct xhci_hcd *xhci, gfp_t mem_flags,
 		if (num_trbs > 1) {
 			field |= TRB_CHAIN;
 		} else {
-			/* FIXME - add check for ZERO_PACKET flag before this */
 			td->last_trb = ep_ring->enqueue;
 			field |= TRB_IOC;
 		}
+#ifdef CONFIG_BCM47XX
+		/* Only set interrupt on short packet for IN endpoints */
+		if (usb_urb_dir_in(urb))
+#endif /* CONFIG_BCM47XX */
+			field |= TRB_ISP;
+
 		xhci_dbg(xhci, " sg entry: dma = %#x, len = %#x (%d), "
 				"64KB boundary at %#x, end dma = %#x\n",
 				(unsigned int) addr, trb_buff_len, trb_buff_len,
@@ -2502,8 +2532,20 @@ static int queue_bulk_sg_tx(struct xhci_hcd *xhci, gfp_t mem_flags,
 					(unsigned int) (addr + TRB_MAX_BUFF_SIZE) & ~(TRB_MAX_BUFF_SIZE - 1),
 					(unsigned int) addr + trb_buff_len);
 		}
-		remainder = xhci_td_remainder(urb->transfer_buffer_length -
-				running_total) ;
+
+#ifdef CONFIG_BCM47XX
+		/* Set the TRB length, TD size, and interrupter fields. */
+		if (xhci->hci_version < 0x100) {
+#endif /* CONFIG_BCM47XX */
+			remainder = xhci_td_remainder(
+					urb->transfer_buffer_length -
+					running_total);
+#ifdef CONFIG_BCM47XX
+		} else {
+			remainder = xhci_v1_0_td_remainder(running_total,
+					trb_buff_len, total_packet_count, urb);
+		}
+#endif /* CONFIG_BCM47XX */
 		length_field = TRB_LEN(trb_buff_len) |
 			remainder |
 			TRB_INTR_TARGET(0);
@@ -2520,7 +2562,7 @@ static int queue_bulk_sg_tx(struct xhci_hcd *xhci, gfp_t mem_flags,
 				 * (Unless we use event data TRBs, which are a
 				 * waste of space and HC resources.)
 				 */
-				field | TRB_ISP | TRB_TYPE(TRB_NORMAL));
+				field | TRB_TYPE(TRB_NORMAL));
 		--num_trbs;
 		running_total += trb_buff_len;
 
@@ -2568,6 +2610,9 @@ int xhci_queue_bulk_tx(struct xhci_hcd *xhci, gfp_t mem_flags,
 	u32 field, length_field;
 
 	int running_total, trb_buff_len, ret;
+#ifdef CONFIG_BCM47XX
+	unsigned int total_packet_count;
+#endif /* CONFIG_BCM47XX */
 	u64 addr;
 
 	if (urb->num_sgs)
@@ -2592,7 +2637,6 @@ int xhci_queue_bulk_tx(struct xhci_hcd *xhci, gfp_t mem_flags,
 		num_trbs++;
 		running_total += TRB_MAX_BUFF_SIZE;
 	}
-	/* FIXME: this doesn't deal with URB_ZERO_PACKET - need one more */
 
 	if (!in_interrupt())
 		dev_dbg(&urb->dev->dev, "ep %#x - urb len = %#x (%d), addr = %#llx, num_trbs = %d\n",
@@ -2620,6 +2664,12 @@ int xhci_queue_bulk_tx(struct xhci_hcd *xhci, gfp_t mem_flags,
 	start_cycle = ep_ring->cycle_state;
 
 	running_total = 0;
+
+#ifdef CONFIG_BCM47XX
+	total_packet_count = DIV_ROUND_UP(urb->transfer_buffer_length,
+						usb_endpoint_maxp(&urb->ep->desc));
+#endif /* CONFIG_BCM47XX */
+
 	/* How much data is in the first TRB? */
 	addr = (u64) urb->transfer_dma;
 	trb_buff_len = TRB_MAX_BUFF_SIZE -
@@ -2646,12 +2696,28 @@ int xhci_queue_bulk_tx(struct xhci_hcd *xhci, gfp_t mem_flags,
 		if (num_trbs > 1) {
 			field |= TRB_CHAIN;
 		} else {
-			/* FIXME - add check for ZERO_PACKET flag before this */
 			td->last_trb = ep_ring->enqueue;
 			field |= TRB_IOC;
 		}
-		remainder = xhci_td_remainder(urb->transfer_buffer_length -
-				running_total);
+#ifdef CONFIG_BCM47XX
+	      	/* Only set interrupt on short packet for IN endpoints */
+		if (usb_urb_dir_in(urb))
+#endif /* CONFIG_BCM47XX */
+			field |= TRB_ISP;
+
+#ifdef CONFIG_BCM47XX
+	        /* Set the TRB length, TD size, and interrupter fields. */
+		if (xhci->hci_version < 0x100) {
+#endif /* CONFIG_BCM47XX */
+			remainder = xhci_td_remainder(
+					urb->transfer_buffer_length -
+					running_total);
+#ifdef CONFIG_BCM47XX
+		} else {
+			remainder = xhci_v1_0_td_remainder(running_total,
+					trb_buff_len, total_packet_count, urb);
+		}
+#endif /* CONFIG_BCM47XX */
 		length_field = TRB_LEN(trb_buff_len) |
 			remainder |
 			TRB_INTR_TARGET(0);
@@ -2668,7 +2734,7 @@ int xhci_queue_bulk_tx(struct xhci_hcd *xhci, gfp_t mem_flags,
 				 * (Unless we use event data TRBs, which are a
 				 * waste of space and HC resources.)
 				 */
-				field | TRB_ISP | TRB_TYPE(TRB_NORMAL));
+				field | TRB_TYPE(TRB_NORMAL));
 		--num_trbs;
 		running_total += trb_buff_len;
 
@@ -2715,11 +2781,6 @@ int xhci_queue_ctrl_tx(struct xhci_hcd *xhci, gfp_t mem_flags,
 				slot_id, ep_index);
 	/* 1 TRB for setup, 1 for status */
 	num_trbs = 2;
-	/*
-	 * Don't need to check if we need additional event data and normal TRBs,
-	 * since data in control transfers will never get bigger than 16MB
-	 * XXX: can we get a buffer that crosses 64KB boundaries?
-	 */
 	if (urb->transfer_buffer_length > 0)
 		num_trbs++;
 	ret = prepare_transfer(xhci, xhci->devs[slot_id],
@@ -2740,15 +2801,29 @@ int xhci_queue_ctrl_tx(struct xhci_hcd *xhci, gfp_t mem_flags,
 	start_cycle = ep_ring->cycle_state;
 
 	/* Queue setup TRB - see section 6.4.1.2.1 */
-	/* FIXME better way to translate setup_packet into two u32 fields? */
 	setup = (struct usb_ctrlrequest *) urb->setup_packet;
+	field = 0;
+	field |= TRB_IDT | TRB_TYPE(TRB_SETUP);
+
+	if (start_cycle == 0)
+		field |= 0x1; /* Cycle bit */
+
+	/* xHCI 1.0 6.4.1.2.1: Transfer Type field */
+	if (xhci->hci_version == 0x100) {
+		if (urb->transfer_buffer_length > 0) {
+			if (setup->bRequestType & USB_DIR_IN)
+				field |= TRB_TX_TYPE(TRB_DATA_IN);
+			else
+				field |= TRB_TX_TYPE(TRB_DATA_OUT);
+		}
+	}
+
 	queue_trb(xhci, ep_ring, false, true,
-			/* FIXME endianness is probably going to bite my ass here. */
-			setup->bRequestType | setup->bRequest << 8 | setup->wValue << 16,
-			setup->wIndex | setup->wLength << 16,
+			setup->bRequestType | setup->bRequest << 8 | le16_to_cpu(setup->wValue) << 16,
+			le16_to_cpu(setup->wIndex) | le16_to_cpu(setup->wLength) << 16,
 			TRB_LEN(8) | TRB_INTR_TARGET(0),
 			/* Immediate data in pointer */
-			TRB_IDT | TRB_TYPE(TRB_SETUP));
+			field);
 
 	/* If there's data, queue data TRBs */
 	field = 0;
@@ -2984,9 +3059,6 @@ int xhci_queue_isoc_tx_prepare(struct xhci_hcd *xhci, gfp_t mem_flags,
 	if (urb->dev->speed == USB_SPEED_LOW ||
 			urb->dev->speed == USB_SPEED_FULL)
 		ep_interval *= 8;
-	/* FIXME change this to a warning and a suggestion to use the new API
-	 * to set the polling interval (once the API is added).
-	 */
 	if (xhci_interval != ep_interval) {
 		if (!printk_ratelimit())
 			dev_dbg(&urb->dev->dev, "Driver uses different interval"

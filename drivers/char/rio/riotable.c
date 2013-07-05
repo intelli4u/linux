@@ -394,12 +394,6 @@ int RIONewTable(struct rio_info *p)
 	return 0;
 }
 
-/*
-** User process needs the config table - build it from first
-** principles.
-**
-*	FIXME: SMP locking
-*/
 int RIOApel(struct rio_info *p)
 {
 	int Host;

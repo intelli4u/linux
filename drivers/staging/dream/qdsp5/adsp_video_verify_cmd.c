@@ -160,4 +160,3 @@ int adsp_video_verify_cmd(struct msm_adsp_module *module,
 		return 0;
 	}
 }
-

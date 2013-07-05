@@ -26,17 +26,6 @@ struct bug_frame {
 	unsigned char *filename;
 };
 
-#if 0
-/* Unfortunately this version of the macro does not work due to a problem
- * with the compiler (aka a bug) when compiling with -O2, which sometimes
- * erroneously causes the second input to be stored in a register...
- */
-#define BUG()								\
-	__asm__ __volatile__ ("clear.d [" __stringify(BUG_MAGIC) "]\n\t"\
-				"movu.w %0,$r0\n\t"			\
-				"jump %1\n\t"				\
-				: : "i" (__LINE__), "i" (__FILE__))
-#else
 /* This version will have to do for now, until the compiler is fixed.
  * The drawbacks of this version are that the file name will appear multiple
  * times in the .rodata section, and that __LINE__ and __FILE__ can probably
@@ -49,7 +38,6 @@ struct bug_frame {
 			      ".section .rodata\n"			\
 			      "0:\t.string \"" __FILE__ "\"\n\t"	\
 			      ".previous")
-#endif
 
 #else
 

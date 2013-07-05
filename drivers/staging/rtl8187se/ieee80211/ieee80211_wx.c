@@ -592,7 +592,6 @@ int ieee80211_wx_set_encode_ext(struct ieee80211_device *ieee,
                 ret = -EINVAL;
                 goto done;
         }
-#if 1
  //skip_host_crypt:
 	//printk("skip_host_crypt:ext_flags:%x\n", ext->ext_flags);
         if (ext->ext_flags & IW_ENCODE_EXT_SET_TX_KEY) {
@@ -622,7 +621,6 @@ int ieee80211_wx_set_encode_ext(struct ieee80211_device *ieee,
                 if (group_key)
                         sec.flags &= ~SEC_LEVEL;
         }
-#endif
 done:
         if (ieee->set_security)
                 ieee->set_security(ieee->dev, &sec);
@@ -642,7 +640,6 @@ int ieee80211_wx_set_mlme(struct ieee80211_device *ieee,
 {
 	struct iw_mlme *mlme = (struct iw_mlme *) extra;
 //	printk("\ndkgadfslkdjgalskdf===============>%s(), cmd:%x\n", __func__, mlme->cmd);
-#if 1
 	switch (mlme->cmd) {
         case IW_MLME_DEAUTH:
 	case IW_MLME_DISASSOC:
@@ -652,7 +649,6 @@ int ieee80211_wx_set_mlme(struct ieee80211_device *ieee,
 	 default:
                 return -EOPNOTSUPP;
         }
-#endif
 	return 0;
 }
 
@@ -691,13 +687,10 @@ int ieee80211_wx_set_auth(struct ieee80211_device *ieee,
 		//printk("open_wep:%d\n", ieee->open_wep);
 		break;
 
-#if 1
 	case IW_AUTH_WPA_ENABLED:
 		ieee->wpa_enabled = (data->value)?1:0;
 		//printk("enable wpa:%d\n", ieee->wpa_enabled);
 		break;
-
-#endif
 	case IW_AUTH_RX_UNENCRYPTED_EAPOL:
                 ieee->ieee802_1x = data->value;
 		break;
@@ -710,7 +703,6 @@ int ieee80211_wx_set_auth(struct ieee80211_device *ieee,
 	return 0;
 }
 
-#if 1
 int ieee80211_wx_set_gen_ie(struct ieee80211_device *ieee, u8 *ie, size_t len)
 {
 	u8 *buf = NULL;
@@ -745,4 +737,3 @@ int ieee80211_wx_set_gen_ie(struct ieee80211_device *ieee, u8 *ie, size_t len)
 	return 0;
 
 }
-#endif

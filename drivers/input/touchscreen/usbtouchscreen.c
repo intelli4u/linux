@@ -912,20 +912,6 @@ static int nexio_read_data(struct usbtouch_usb *usbtouch, unsigned char *pkt)
 					end_y = y - 1 - x_len;
 					w = end_x - begin_x;
 					h = end_y - begin_y;
-#if 0
-					/* multi-touch */
-					input_report_abs(usbtouch->input,
-						    ABS_MT_TOUCH_MAJOR, max(w,h));
-					input_report_abs(usbtouch->input,
-						    ABS_MT_TOUCH_MINOR, min(x,h));
-					input_report_abs(usbtouch->input,
-						    ABS_MT_POSITION_X, 2*begin_x+w);
-					input_report_abs(usbtouch->input,
-						    ABS_MT_POSITION_Y, 2*begin_y+h);
-					input_report_abs(usbtouch->input,
-						    ABS_MT_ORIENTATION, w > h);
-					input_mt_sync(usbtouch->input);
-#endif
 					/* single touch */
 					usbtouch->x = 2 * begin_x + w;
 					usbtouch->y = 2 * begin_y + h;

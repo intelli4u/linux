@@ -76,7 +76,6 @@ static void __cpuinit early_init_intel(struct cpuinfo_x86 *c)
 		c->x86_cache_alignment = 128;
 #endif
 
-	/* CPUID workaround for 0F33/0F34 CPU */
 	if (c->x86 == 0xF && c->x86_model == 0x3
 	    && (c->x86_mask == 0x3 || c->x86_mask == 0x4))
 		c->x86_phys_bits = 36;
@@ -193,12 +192,6 @@ static void __cpuinit intel_workarounds(struct cpuinfo_x86 *c)
 	unsigned long lo, hi;
 
 #ifdef CONFIG_X86_F00F_BUG
-	/*
-	 * All current models of Pentium and Pentium with MMX technology CPUs
-	 * have the F0 0F bug, which lets nonprivileged users lock up the
-	 * system.
-	 * Note that the workaround only should be initialized once...
-	 */
 	c->f00f_bug = 0;
 	if (!paravirt_enabled() && c->x86 == 5) {
 		static int f00f_workaround_enabled;
@@ -219,10 +212,6 @@ static void __cpuinit intel_workarounds(struct cpuinfo_x86 *c)
 	if ((c->x86<<8 | c->x86_model<<4 | c->x86_mask) < 0x633)
 		clear_cpu_cap(c, X86_FEATURE_SEP);
 
-	/*
-	 * P4 Xeon errata 037 workaround.
-	 * Hardware prefetcher may cause stale data to be loaded into the cache.
-	 */
 	if ((c->x86 == 15) && (c->x86_model == 1) && (c->x86_mask == 1)) {
 		rdmsr(MSR_IA32_MISC_ENABLE, lo, hi);
 		if ((lo & MSR_IA32_MISC_ENABLE_PREFETCH_DISABLE) == 0) {
@@ -445,7 +434,6 @@ static void __cpuinit init_intel(struct cpuinfo_x86 *c)
 #endif
 	}
 
-	/* Work around errata */
 	srat_detect_node(c);
 
 	if (cpu_has(c, X86_FEATURE_VMX))
@@ -528,4 +516,3 @@ static const struct cpu_dev __cpuinitconst intel_cpu_dev = {
 };
 
 cpu_dev_register(intel_cpu_dev);
-

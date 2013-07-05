@@ -42,10 +42,6 @@
  * Cache entry
  */
 
-/*
- * XXX we know that IDMAP_NAMESZ < PAGE_SIZE, but it's ugly to rely on
- * that.
- */
 
 #define IDMAP_TYPE_USER  0
 #define IDMAP_TYPE_GROUP 1

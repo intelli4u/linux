@@ -42,13 +42,8 @@
 
 #define inia100_REVID "Initio INI-A100U2W SCSI device driver; Revision: 1.02d"
 
-#if 1
 #define ORC_MAXQUEUE		245
 #define ORC_MAXTAGS		64
-#else
-#define ORC_MAXQUEUE		25
-#define ORC_MAXTAGS		8
-#endif
 
 #define TOTAL_SG_ENTRY		32
 #define MAX_TARGETS		16
@@ -368,4 +363,3 @@ struct orc_nvram {
 #define NCC_MAX_TAGS    0x20    /* Maximum tags per target        */
 #define NCC_RESET_TIME  0x0A    /* SCSI RESET recovering time     */
 #define NTC_DEFAULT     (NTC_1GIGA | NTC_NO_WIDESYNC | NTC_DISC_ENABLE)
-

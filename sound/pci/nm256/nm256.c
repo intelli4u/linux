@@ -225,8 +225,8 @@ struct nm256 {
 
 	unsigned int coeffs_current: 1;	/* coeff. table is loaded? */
 	unsigned int use_cache: 1;	/* use one big coef. table */
-	unsigned int reset_workaround: 1; /* Workaround for some laptops to avoid freeze */
-	unsigned int reset_workaround_2: 1; /* Extended workaround for some other laptops to avoid freeze */
+	unsigned int reset_workaround: 1;
+	unsigned int reset_workaround_2: 1;
 	unsigned int in_resume: 1;
 
 	int mixer_base;			/* register offset of ac97 mixer */

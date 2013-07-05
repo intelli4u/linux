@@ -462,12 +462,6 @@ static void set_type(struct i2c_client *c, unsigned int type,
 	if (t->mode_mask == T_UNINITIALIZED)
 		t->mode_mask = new_mode_mask;
 
-	/* Some tuners require more initialization setup before use,
-	   such as firmware download or device calibration.
-	   trying to set a frequency here will just fail
-	   FIXME: better to move set_freq to the tuner code. This is needed
-	   on analog tuners for PLL to properly work
-	 */
 	if (tune_now)
 		set_freq(c, (V4L2_TUNER_RADIO == t->mode) ?
 			    t->radio_freq : t->tv_freq);
@@ -931,7 +925,6 @@ static int tuner_suspend(struct i2c_client *c, pm_message_t state)
 	struct tuner *t = to_tuner(i2c_get_clientdata(c));
 
 	tuner_dbg("suspend\n");
-	/* FIXME: power down ??? */
 	return 0;
 }
 

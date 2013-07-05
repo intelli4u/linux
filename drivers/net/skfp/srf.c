@@ -426,4 +426,3 @@ static void smt_send_srf(struct s_smc *smc)
 
 #endif	/* no BOOT */
 #endif	/* no SLIM_SMT */
-

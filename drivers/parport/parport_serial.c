@@ -420,7 +420,6 @@ static int parport_serial_pci_suspend(struct pci_dev *dev, pm_message_t state)
 	if (priv->serial)
 		pciserial_suspend_ports(priv->serial);
 
-	/* FIXME: What about parport? */
 
 	pci_save_state(dev);
 	pci_set_power_state(dev, pci_choose_state(dev, state));
@@ -448,7 +447,6 @@ static int parport_serial_pci_resume(struct pci_dev *dev)
 	if (priv->serial)
 		pciserial_resume_ports(priv->serial);
 
-	/* FIXME: What about parport? */
 
 	return 0;
 }

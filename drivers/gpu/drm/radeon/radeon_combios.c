@@ -1388,7 +1388,6 @@ bool radeon_legacy_get_ext_tmds_info_from_table(struct radeon_encoder *encoder,
 	i2c_bus = combios_setup_i2c_bus(rdev, DDC_MONID, 0, 0);
 	tmds->i2c_bus = radeon_i2c_lookup(rdev, &i2c_bus);
 
-	/* XXX some macs have duallink chips */
 	switch (rdev->mode_info.connector_table) {
 	case CT_POWERBOOK_EXTERNAL:
 	case CT_MINI_EXTERNAL:
@@ -1687,7 +1686,6 @@ bool radeon_get_legacy_connector_info_from_table(struct drm_device *dev)
 								ATOM_DEVICE_CRT1_SUPPORT,
 								1),
 					  ATOM_DEVICE_CRT1_SUPPORT);
-		/* XXX some are SL */
 		radeon_add_legacy_connector(dev, 1,
 					    ATOM_DEVICE_DFP2_SUPPORT |
 					    ATOM_DEVICE_CRT1_SUPPORT,
@@ -1813,7 +1811,6 @@ bool radeon_get_legacy_connector_info_from_table(struct drm_device *dev)
 								ATOM_DEVICE_CRT2_SUPPORT,
 								2),
 					  ATOM_DEVICE_CRT2_SUPPORT);
-		/* XXX are any DL? */
 		radeon_add_legacy_connector(dev, 0,
 					    ATOM_DEVICE_DFP2_SUPPORT |
 					    ATOM_DEVICE_CRT2_SUPPORT,
@@ -2511,10 +2508,8 @@ void radeon_combios_get_power_modes(struct radeon_device *rdev)
 			rdev->pm.power_state[state_index].flags = RADEON_PM_STATE_SINGLE_DISPLAY_ONLY;
 			state_index++;
 		} else {
-			/* XXX figure out some good default low power mode for mobility cards w/out power tables */
 		}
 	} else {
-		/* XXX figure out some good default low power mode for desktop cards */
 	}
 
 default_mode:
@@ -2859,16 +2854,6 @@ static void combios_parse_pll_table(struct drm_device *dev, uint16_t offset)
 					tmp =
 					    RREG32_PLL(RADEON_CLK_PWRMGT_CNTL);
 					if (tmp & RADEON_CG_NO1_DEBUG_0) {
-#if 0
-						uint32_t mclk_cntl =
-						    RREG32_PLL
-						    (RADEON_MCLK_CNTL);
-						mclk_cntl &= 0xffff0000;
-						/*mclk_cntl |= 0x00001111;*//* ??? */
-						WREG32_PLL(RADEON_MCLK_CNTL,
-							   mclk_cntl);
-						udelay(10000);
-#endif
 						WREG32_PLL
 						    (RADEON_CLK_PWRMGT_CNTL,
 						     tmp &

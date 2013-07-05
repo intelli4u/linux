@@ -59,9 +59,6 @@ void cffrml_set_dnlayer(struct cflayer *this, struct cflayer *dn)
 
 static u16 cffrml_checksum(u16 chks, void *buf, u16 len)
 {
-	/* FIXME: FCS should be moved to glue in order to use OS-Specific
-	 * solutions
-	 */
 	return crc_ccitt(chks, buf, len);
 }
 

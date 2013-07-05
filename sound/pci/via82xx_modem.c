@@ -45,9 +45,6 @@
 #include <sound/ac97_codec.h>
 #include <sound/initval.h>
 
-#if 0
-#define POINTER_DEBUG
-#endif
 
 MODULE_AUTHOR("Jaroslav Kysela <perex@perex.cz>");
 MODULE_DESCRIPTION("VIA VT82xx modem");
@@ -189,8 +186,8 @@ DEFINE_VIA_REGSET(MI, 0x50);
 				 VIA_ACLINK_CTRL_RESET|\
 				 VIA_ACLINK_CTRL_PCM)
 #define VIA_FUNC_ENABLE		0x42
-#define  VIA_FUNC_MIDI_PNP	0x80 /* FIXME: it's 0x40 in the datasheet! */
-#define  VIA_FUNC_MIDI_IRQMASK	0x40 /* FIXME: not documented! */
+#define  VIA_FUNC_MIDI_PNP	0x80
+#define  VIA_FUNC_MIDI_IRQMASK	0x40
 #define  VIA_FUNC_RX2C_WRITE	0x20
 #define  VIA_FUNC_SB_FIFO_EMPTY	0x10
 #define  VIA_FUNC_ENABLE_GAME	0x08
@@ -960,15 +957,8 @@ static int snd_via82xx_chip_init(struct via82xx_modem *chip)
 				      VIA_ACLINK_CTRL_RESET |
 				      VIA_ACLINK_CTRL_SYNC);
 		udelay(100);
-#if 1 /* FIXME: should we do full reset here for all chip models? */
 		pci_write_config_byte(chip->pci, VIA_ACLINK_CTRL, 0x00);
 		udelay(100);
-#else
-		/* deassert ACLink reset, force SYNC (warm AC'97 reset) */
-		pci_write_config_byte(chip->pci, VIA_ACLINK_CTRL,
-				      VIA_ACLINK_CTRL_RESET|VIA_ACLINK_CTRL_SYNC);
-		udelay(2);
-#endif
 		/* ACLink on, deassert ACLink reset, VSR, SGD data out */
 		pci_write_config_byte(chip->pci, VIA_ACLINK_CTRL, VIA_ACLINK_CTRL_INIT);
 		udelay(100);

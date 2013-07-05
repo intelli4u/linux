@@ -104,13 +104,6 @@ static int smc91c96_gpmc_retime(void)
 		l |= GPMC_CONFIG1_WAIT_PIN_SEL(gpmc_cfg->wait_pin);
 	gpmc_cs_write_reg(gpmc_cfg->cs, GPMC_CS_CONFIG1, l);
 
-	/*
-	 * FIXME: Calculate the address and data bus muxed timings.
-	 * Note that at least adv_rd_off needs to be changed according
-	 * to omap3430 TRM Figure 11-11. Are the sdp boards using the
-	 * FPGA in between smc91x and omap as the timings are different
-	 * from above?
-	 */
 	if (gpmc_cfg->flags & GPMC_MUX_ADD_DATA)
 		return 0;
 

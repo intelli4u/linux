@@ -60,7 +60,6 @@ static void sd_print_item(struct item_head *ih, char *item)
 
 static void sd_check_item(struct item_head *ih, char *item)
 {
-	// FIXME: type something here!
 }
 
 static int sd_create_vi(struct virtual_node *vn,
@@ -125,7 +124,6 @@ static int direct_bytes_number(struct item_head *ih, int block_size)
 	return ih_item_len(ih);
 }
 
-// FIXME: this should probably switch to indirect as well
 static void direct_decrement_key(struct cpu_key *key)
 {
 	cpu_key_k_offset_dec(key);
@@ -153,7 +151,6 @@ static void direct_print_item(struct item_head *ih, char *item)
 
 static void direct_check_item(struct item_head *ih, char *item)
 {
-	// FIXME: type something here!
 }
 
 static int direct_create_vi(struct virtual_node *vn,
@@ -295,7 +292,6 @@ static void indirect_print_item(struct item_head *ih, char *item)
 
 static void indirect_check_item(struct item_head *ih, char *item)
 {
-	// FIXME: type something here!
 }
 
 static int indirect_create_vi(struct virtual_node *vn,
@@ -428,7 +424,6 @@ static void direntry_check_item(struct item_head *ih, char *item)
 	int i;
 	struct reiserfs_de_head *deh;
 
-	// FIXME: type something here!
 	deh = (struct reiserfs_de_head *)item;
 	for (i = 0; i < I_ENTRY_COUNT(ih); i++, deh++) {
 		;
@@ -463,9 +458,6 @@ static inline int old_entry_num(int is_affected, int virtual_entry_num,
 	return virtual_entry_num - 1;
 }
 
-/* Create an array of sizes of directory entries for virtual
-   item. Return space used by an item. FIXME: no control over
-   consuming of space used by this item handler */
 static int direntry_create_vi(struct virtual_node *vn,
 			      struct virtual_item *vi,
 			      int is_affected, int insert_size)
@@ -742,7 +734,7 @@ static struct item_operations errcatch_ops = {
 //////////////////////////////////////////////////////////////////////////////
 //
 //
-#if ! (TYPE_STAT_DATA == 0 && TYPE_INDIRECT == 1 && TYPE_DIRECT == 2 && TYPE_DIRENTRY == 3)
+#if ! (TYPE_STAT_DATA == 0 == TYPE_DIRECT == 2 && TYPE_DIRENTRY == 3)
 #error Item types must use disk-format assigned values.
 #endif
 

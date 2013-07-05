@@ -1,4 +1,4 @@
-/* $Id: divasi.c,v 1.25.6.2 2005/01/31 12:22:20 armin Exp $
+/* $Id: divasi.c,v 1.25.6.2 2005/01/31 12:22:20 Exp $
  *
  * Driver for Eicon DIVA Server ISDN cards.
  * User Mode IDI Interface 

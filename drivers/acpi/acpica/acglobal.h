@@ -304,7 +304,7 @@ extern char const *acpi_gbl_exception_names_ctrl[];
  *
  ****************************************************************************/
 
-#if !defined (ACPI_NO_METHOD_EXECUTION) || defined (ACPI_CONSTANT_EVAL_ONLY)
+#if !defined(ACPI_NO_METHOD_EXECUTION) || defined(ACPI_CONSTANT_EVAL_ONLY)
 #define NUM_PREDEFINED_NAMES            10
 #else
 #define NUM_PREDEFINED_NAMES            9

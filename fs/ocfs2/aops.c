@@ -293,16 +293,6 @@ static int ocfs2_readpage(struct file *file, struct page *page)
 		goto out_inode_unlock;
 	}
 
-	/*
-	 * i_size might have just been updated as we grabed the meta lock.  We
-	 * might now be discovering a truncate that hit on another node.
-	 * block_read_full_page->get_block freaks out if it is asked to read
-	 * beyond the end of a file, so we check here.  Callers
-	 * (generic_file_read, vm_ops->fault) are clever enough to check i_size
-	 * and notice that the page they just read isn't needed.
-	 *
-	 * XXX sys_readahead() seems to get that wrong?
-	 */
 	if (start >= i_size_read(inode)) {
 		zero_user(page, 0, PAGE_SIZE);
 		SetPageUptodate(page);
@@ -1716,11 +1706,6 @@ int ocfs2_write_begin_nolock(struct address_space *mapping,
 	 * cluster range.
 	 */
 	if (clusters_to_alloc || extents_to_split) {
-		/*
-		 * XXX: We are stretching the limits of
-		 * ocfs2_lock_allocators(). It greatly over-estimates
-		 * the work to be done.
-		 */
 		mlog(0, "extend inode %llu, i_size = %lld, di->i_clusters = %u,"
 		     " clusters_to_add = %u, extents_to_split = %u\n",
 		     (unsigned long long)OCFS2_I(inode)->ip_blkno,

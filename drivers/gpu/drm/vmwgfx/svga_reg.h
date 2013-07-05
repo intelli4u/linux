@@ -470,22 +470,6 @@ enum {
     */
    SVGA_FIFO_CURSOR_SCREEN_ID,
 
-   /*
-    * XXX: The gap here, up until SVGA_FIFO_3D_CAPS, can be used for new
-    * registers, but this must be done carefully and with judicious use of
-    * capability bits, since comparisons based on SVGA_FIFO_MIN aren't
-    * enough to tell you whether the register exists: we've shipped drivers
-    * and products that used SVGA_FIFO_3D_CAPS but didn't know about some of
-    * the earlier ones.  The actual order of introduction was:
-    * - PITCHLOCK
-    * - 3D_CAPS
-    * - CURSOR_* (cursor bypass 3)
-    * - RESERVED
-    * So, code that wants to know whether it can use any of the
-    * aforementioned registers, or anything else added after PITCHLOCK and
-    * before 3D_CAPS, needs to reason about something other than
-    * SVGA_FIFO_MIN.
-    */
 
    /*
     * 3D caps block space; valid with 3D hardware version >=
@@ -651,65 +635,6 @@ enum {
  */
 
 
-/*
- * FIFO Capabilities
- *
- *      Fence -- Fence register and command are supported
- *      Accel Front -- Front buffer only commands are supported
- *      Pitch Lock -- Pitch lock register is supported
- *      Video -- SVGA Video overlay units are supported
- *      Escape -- Escape command is supported
- *
- * XXX: Add longer descriptions for each capability, including a list
- *      of the new features that each capability provides.
- *
- * SVGA_FIFO_CAP_SCREEN_OBJECT --
- *
- *    Provides dynamic multi-screen rendering, for improved Unity and
- *    multi-monitor modes. With Screen Object, the guest can
- *    dynamically create and destroy 'screens', which can represent
- *    Unity windows or virtual monitors. Screen Object also provides
- *    strong guarantees that DMA operations happen only when
- *    guest-initiated. Screen Object deprecates the BAR1 guest
- *    framebuffer (GFB) and all commands that work only with the GFB.
- *
- *    New registers:
- *       FIFO_CURSOR_SCREEN_ID, VIDEO_DATA_GMRID, VIDEO_DST_SCREEN_ID
- *
- *    New 2D commands:
- *       DEFINE_SCREEN, DESTROY_SCREEN, DEFINE_GMRFB, BLIT_GMRFB_TO_SCREEN,
- *       BLIT_SCREEN_TO_GMRFB, ANNOTATION_FILL, ANNOTATION_COPY
- *
- *    New 3D commands:
- *       BLIT_SURFACE_TO_SCREEN
- *
- *    New guarantees:
- *
- *       - The host will not read or write guest memory, including the GFB,
- *         except when explicitly initiated by a DMA command.
- *
- *       - All DMA, including legacy DMA like UPDATE and PRESENT_READBACK,
- *         is guaranteed to complete before any subsequent FENCEs.
- *
- *       - All legacy commands which affect a Screen (UPDATE, PRESENT,
- *         PRESENT_READBACK) as well as new Screen blit commands will
- *         all behave consistently as blits, and memory will be read
- *         or written in FIFO order.
- *
- *         For example, if you PRESENT from one SVGA3D surface to multiple
- *         places on the screen, the data copied will always be from the
- *         SVGA3D surface at the time the PRESENT was issued in the FIFO.
- *         This was not necessarily true on devices without Screen Object.
- *
- *         This means that on devices that support Screen Object, the
- *         PRESENT_READBACK command should not be necessary unless you
- *         actually want to read back the results of 3D rendering into
- *         system memory. (And for that, the BLIT_SCREEN_TO_GMRFB
- *         command provides a strict superset of functionality.)
- *
- *       - When a screen is resized, either using Screen Object commands or
- *         legacy multimon registers, its contents are preserved.
- */
 
 #define SVGA_FIFO_CAP_NONE                  0
 #define SVGA_FIFO_CAP_FENCE             (1<<0)

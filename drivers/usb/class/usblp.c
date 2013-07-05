@@ -984,7 +984,7 @@ static int usblp_submit_read(struct usblp *usblp)
 	usb_anchor_urb(urb, &usblp->urbs);
 
 	spin_lock_irqsave(&usblp->lock, flags);
-	usblp->readcount = 0; /* XXX Why here? */
+	usblp->readcount = 0;
 	usblp->rcomplete = 0;
 	spin_unlock_irqrestore(&usblp->lock, flags);
 	if ((rc = usb_submit_urb(urb, GFP_KERNEL)) < 0) {
@@ -1370,11 +1370,6 @@ static int usblp_suspend(struct usb_interface *intf, pm_message_t message)
 	struct usblp *usblp = usb_get_intfdata(intf);
 
 	usblp_unlink_urbs(usblp);
-#if 0 /* XXX Do we want this? What if someone is reading, should we fail? */
-	/* not strictly necessary, but just in case */
-	wake_up(&usblp->wwait);
-	wake_up(&usblp->rwait);
-#endif
 
 	return 0;
 }

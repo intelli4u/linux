@@ -120,7 +120,6 @@ typedef struct {
 
 /* A SunOS sigstack */
 struct sigstack {
-	/* XXX 32-bit pointers pinhead XXX */
 	char *the_stack;
 	int   cur_status;
 };

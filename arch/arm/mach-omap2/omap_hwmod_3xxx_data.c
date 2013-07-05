@@ -1,18 +1,4 @@
-/*
- * omap_hwmod_3xxx_data.c - hardware modules present on the OMAP3xxx chips
- *
- * Copyright (C) 2009-2010 Nokia Corporation
- * Paul Walmsley
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * The data in this file should be completely autogeneratable from
- * the TI hardware database or other technical documentation.
- *
- * XXX these should be marked initdata for multi-OMAP kernels
- */
+
 #include <plat/omap_hwmod.h>
 #include <mach/irqs.h>
 #include <plat/cpu.h>
@@ -211,5 +197,3 @@ int __init omap3xxx_hwmod_init(void)
 {
 	return omap_hwmod_init(omap3xxx_hwmods);
 }
-
-

@@ -75,7 +75,6 @@ struct p54_channel_list {
 
 static int p54_get_band_from_freq(u16 freq)
 {
-	/* FIXME: sync these values with the 802.11 spec */
 
 	if ((freq >= 2412) && (freq <= 2484))
 		return IEEE80211_BAND_2GHZ;

@@ -409,4 +409,3 @@ void mvs_update_phyinfo(struct mvs_info *mvi, int i, int get_st);
 int mvs_int_rx(struct mvs_info *mvi, bool self_clear);
 void mvs_hexdump(u32 size, u8 *data, u32 baseaddr);
 #endif
-

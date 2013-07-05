@@ -111,7 +111,6 @@ static void rds_iw_cm_fill_conn_param(struct rds_connection *conn,
 	struct rds_iw_connection *ic = conn->c_transport_data;
 
 	memset(conn_param, 0, sizeof(struct rdma_conn_param));
-	/* XXX tune these? */
 	conn_param->responder_resources = 1;
 	conn_param->initiator_depth = 1;
 
@@ -278,10 +277,6 @@ static int rds_iw_setup_qp(struct rds_connection *conn)
 	ic->i_send_cq = attr.send_cq;
 	ic->i_recv_cq = attr.recv_cq;
 
-	/*
-	 * XXX this can fail if max_*_wr is too large?  Are we supposed
-	 * to back off until we get a value that the hardware can support?
-	 */
 	ret = rdma_create_qp(ic->i_cm_id, ic->i_pd, &attr);
 	if (ret) {
 		rdsdebug("rdma_create_qp failed: %d\n", ret);
@@ -519,7 +514,6 @@ int rds_iw_conn_connect(struct rds_connection *conn)
 	struct sockaddr_in src, dest;
 	int ret;
 
-	/* XXX I wonder what affect the port space has */
 	/* delegate cm event handler to rdma_transport */
 	ic->i_cm_id = rdma_create_id(rds_rdma_cm_event_handler, conn,
 				     RDMA_PS_TCP);
@@ -694,7 +688,6 @@ int rds_iw_conn_alloc(struct rds_connection *conn, gfp_t gfp)
 	struct rds_iw_connection *ic;
 	unsigned long flags;
 
-	/* XXX too lazy? */
 	ic = kzalloc(sizeof(struct rds_iw_connection), GFP_KERNEL);
 	if (ic == NULL)
 		return -ENOMEM;

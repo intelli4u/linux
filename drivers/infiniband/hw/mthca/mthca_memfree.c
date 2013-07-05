@@ -702,7 +702,6 @@ void mthca_free_db(struct mthca_dev *dev, int type, int db_index)
 
 		if (i == dev->db_tab->max_group1) {
 			--dev->db_tab->max_group1;
-			/* XXX may be able to unmap more pages now */
 		}
 		if (i == dev->db_tab->min_group2)
 			++dev->db_tab->min_group2;

@@ -2070,11 +2070,6 @@ static int ipath_close(struct inode *in, struct file *fp)
 	ipath_user_sdma_queue_destroy(fd->pq);
 
 	if (--pd->port_cnt) {
-		/*
-		 * XXX If the master closes the port before the slave(s),
-		 * revoke the mmap for the eager receive queue so
-		 * the slave(s) don't wait for receive data forever.
-		 */
 		pd->active_slaves &= ~(1 << fd->subport);
 		put_pid(pd->port_subpid[fd->subport]);
 		pd->port_subpid[fd->subport] = NULL;

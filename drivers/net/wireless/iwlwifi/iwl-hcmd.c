@@ -31,7 +31,7 @@
 #include <linux/sched.h>
 #include <net/mac80211.h>
 
-#include "iwl-dev.h" /* FIXME: remove */
+#include "iwl-dev.h"
 #include "iwl-debug.h"
 #include "iwl-eeprom.h"
 #include "iwl-core.h"

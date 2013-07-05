@@ -302,10 +302,6 @@ int ps2_handle_ack(struct ps2dev *ps2dev, unsigned char data)
 				break;
 			}
 
-		/*
-		 * Workaround for mice which don't ACK the Get ID command.
-		 * These are valid mouse IDs that we recognize.
-		 */
 		case 0x00:
 		case 0x03:
 		case 0x04:

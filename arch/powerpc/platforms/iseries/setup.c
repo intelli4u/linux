@@ -310,7 +310,6 @@ static void __init iSeries_init_early(void)
 }
 
 struct mschunks_map mschunks_map = {
-	/* XXX We don't use these, but Piranha might need them. */
 	.chunk_size  = MSCHUNKS_CHUNK_SIZE,
 	.chunk_shift = MSCHUNKS_CHUNK_SHIFT,
 	.chunk_mask  = MSCHUNKS_OFFSET_MASK,
@@ -669,7 +668,6 @@ define_machine(iseries) {
 #ifdef CONFIG_KEXEC
 	.machine_kexec_prepare	= iseries_kexec_prepare,
 #endif
-	/* XXX Implement enable_pmcs for iSeries */
 };
 
 void * __init iSeries_early_setup(void)

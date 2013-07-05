@@ -1,4 +1,4 @@
-/* $Id: packet.c,v 1.5.8.1 2001/09/23 22:24:59 kai Exp $
+/* $Id: packet.c,v 1.5.8.1 2001/09/23 22:24:59 Exp $
  *
  * Copyright (C) 1996  SpellCaster Telecommunications Inc.
  *
@@ -202,4 +202,3 @@ int setup_buffers(int card, int c)
 	} 
 	return 0;
 }
-

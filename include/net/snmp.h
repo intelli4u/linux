@@ -108,12 +108,6 @@ struct linux_xfrm_mib {
 	unsigned long	mibs[LINUX_MIB_XFRMMAX];
 };
 
-/* 
- * FIXME: On x86 and some other CPUs the split into user and softirq parts
- * is not needed because addl $1,memory is atomic against interrupts (but 
- * atomic_inc would be overkill because of the lock cycles). Wants new 
- * nonlocked_atomic_inc() primitives -AK
- */ 
 #define DEFINE_SNMP_STAT(type, name)	\
 	__typeof__(type) __percpu *name[2]
 #define DECLARE_SNMP_STAT(type, name)	\

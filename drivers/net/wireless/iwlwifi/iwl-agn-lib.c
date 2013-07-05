@@ -73,7 +73,6 @@ static int iwlagn_tx_status_reply_tx(struct iwl_priv *priv,
 		status = le16_to_cpu(frame_status[0].status);
 		idx = start_idx;
 
-		/* FIXME: code repetition */
 		IWL_DEBUG_TX_REPLY(priv, "FrameCnt = %d, StartIdx=%d idx=%d\n",
 				   agg->frame_count, agg->start_idx, idx);
 
@@ -83,7 +82,6 @@ static int iwlagn_tx_status_reply_tx(struct iwl_priv *priv,
 		info->flags |= iwl_tx_status_to_mac80211(status);
 		iwlagn_hwrate_to_tx_control(priv, rate_n_flags, info);
 
-		/* FIXME: code repetition end */
 
 		IWL_DEBUG_TX_REPLY(priv, "1 Frame 0x%x failure :%d\n",
 				    status & 0xff, tx_resp->failure_frame);
@@ -471,7 +469,7 @@ int iwlagn_rx_init(struct iwl_priv *priv, struct iwl_rx_queue *rxq)
 {
 	u32 rb_size;
 	const u32 rfdnlog = RX_QUEUE_SIZE_LOG; /* 256 RBDs */
-	u32 rb_timeout = 0; /* FIXME: RX_RB_TIMEOUT for all devices? */
+	u32 rb_timeout = 0;
 
 	if (!priv->cfg->use_isr_legacy)
 		rb_timeout = RX_RB_TIMEOUT;
@@ -1294,23 +1292,6 @@ void iwlagn_request_scan(struct iwl_priv *priv, struct ieee80211_vif *vif)
 		break;
 	case IEEE80211_BAND_5GHZ:
 		rate = IWL_RATE_6M_PLCP;
-		/*
-		 * If active scanning is requested but a certain channel is
-		 * marked passive, we can do active scanning if we detect
-		 * transmissions.
-		 *
-		 * There is an issue with some firmware versions that triggers
-		 * a sysassert on a "good CRC threshold" of zero (== disabled),
-		 * on a radar channel even though this means that we should NOT
-		 * send probes.
-		 *
-		 * The "good CRC threshold" is the number of frames that we
-		 * need to receive during our dwell time on a channel before
-		 * sending out probes -- setting this to a huge value will
-		 * mean we never reach it, but at the same time work around
-		 * the aforementioned issue. Thus use IWL_GOOD_CRC_TH_NEVER
-		 * here instead of IWL_GOOD_CRC_TH_DISABLED.
-		 */
 		scan->good_CRC_th = is_active ? IWL_GOOD_CRC_TH_DEFAULT :
 						IWL_GOOD_CRC_TH_NEVER;
 		break;

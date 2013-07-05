@@ -803,11 +803,6 @@ static void fc_lport_recv_flogi_req(struct fc_lport *lport,
 	}
 	FC_LPORT_DBG(lport, "FLOGI from port WWPN %16.16llx\n", remote_wwpn);
 
-	/*
-	 * XXX what is the right thing to do for FIDs?
-	 * The originator might expect our S_ID to be 0xfffffe.
-	 * But if so, both of us could end up with the same FID.
-	 */
 	local_fid = FC_LOCAL_PTP_FID_LO;
 	if (remote_wwpn < lport->wwpn) {
 		local_fid = FC_LOCAL_PTP_FID_HI;

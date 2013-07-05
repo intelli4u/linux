@@ -322,7 +322,6 @@ static void rtl819x_set_channel_map(u8 channel_plan, struct r8192_priv* priv)
 
 void CamResetAllEntry(struct net_device *dev)
 {
-#if 1
 	u32 ulcommand = 0;
         //2004/02/11  In static WEP, OID_ADD_KEY or OID_ADD_WEP are set before STA associate to AP.
         // However, ResetKey is called on OID_802_11_INFRASTRUCTURE_MODE and MlmeAssociateRequest
@@ -335,12 +334,6 @@ void CamResetAllEntry(struct net_device *dev)
         //DbgPrint("========================================\n\n");
 	ulcommand |= BIT31|BIT30;
 	write_nic_dword(dev, RWCAM, ulcommand);
-#else
-        for(ucIndex=0;ucIndex<TOTAL_CAM_ENTRY;ucIndex++)
-                CAM_mark_invalid(dev, ucIndex);
-        for(ucIndex=0;ucIndex<TOTAL_CAM_ENTRY;ucIndex++)
-                CAM_empty_entry(dev, ucIndex);
-#endif
 
 }
 
@@ -1588,13 +1581,11 @@ rtl819xusb_rx_command_packet(
 
 void rtl8192_data_hard_stop(struct net_device *dev)
 {
-	//FIXME !!
 }
 
 
 void rtl8192_data_hard_resume(struct net_device *dev)
 {
-	// FIXME !!
 }
 
 /* this function TX data frames when the ieee80211 stack requires this.
@@ -1877,11 +1868,9 @@ void rtl8192_net_update(struct net_device *dev)
 
 //temporary hw beacon is not used any more.
 //open it when necessary
-#if 1
 void rtl819xusb_beacon_tx(struct net_device *dev,u16  tx_rate)
 {
 }
-#endif
 inline u8 rtl8192_IsWirelessBMode(u16 rate)
 {
 	if( ((rate <= 110) && (rate != 60) && (rate != 90)) || (rate == 220) )
@@ -2887,7 +2876,6 @@ static u8 ccmp_ie[4] = {0x00,0x50,0xf2,0x04};
 static u8 ccmp_rsn_ie[4] = {0x00, 0x0f, 0xac, 0x04};
 bool GetNmodeSupportBySecCfg8192(struct net_device*dev)
 {
-#if 1
 	struct r8192_priv* priv = ieee80211_priv(dev);
 	struct ieee80211_device* ieee = priv->ieee80211;
 	struct ieee80211_network * network = &ieee->current_network;
@@ -2917,7 +2905,6 @@ bool GetNmodeSupportBySecCfg8192(struct net_device*dev)
 	}
 
 	return true;
-#endif
 }
 
 bool GetHalfNmodeSupportByAPs819xUsb(struct net_device* dev)
@@ -2978,7 +2965,6 @@ void rtl8192_SetWirelessMode(struct net_device* dev, u8 wireless_mode)
 	struct r8192_priv *priv = ieee80211_priv(dev);
 	u8 bSupportMode = rtl8192_getSupportedWireleeMode(dev);
 
-#if 1
 	if ((wireless_mode == WIRELESS_MODE_AUTO) || ((wireless_mode&bSupportMode)==0))
 	{
 		if(bSupportMode & WIRELESS_MODE_N_24G)
@@ -3006,7 +2992,7 @@ void rtl8192_SetWirelessMode(struct net_device* dev, u8 wireless_mode)
 			wireless_mode = WIRELESS_MODE_B;
 		}
 	}
-#ifdef TO_DO_LIST //// TODO: this function doesn't work well at this time, we should wait for FPGA
+#ifdef TO_DO_LIST //    // TODO: this function doesn't work well at this time, we should wait for FPGA
 	ActUpdateChannelAccessSetting( pAdapter, pHalData->CurrentWirelessMode, &pAdapter->MgntInfo.Info8185.ChannelAccessSetting );
 #endif
 	//LZM 090306 usb crash here, mark it temp
@@ -3019,7 +3005,6 @@ void rtl8192_SetWirelessMode(struct net_device* dev, u8 wireless_mode)
 		priv->ieee80211->pHTInfo->bEnableHT = 0;
 	RT_TRACE(COMP_INIT, "Current Wireless Mode is %x\n", wireless_mode);
 	rtl8192_refresh_supportrate(priv);
-#endif
 
 }
 
@@ -3073,7 +3058,6 @@ void rtl8192_hw_wakeup(struct net_device* dev)
 #ifdef TODO
 //	MgntActSet_RF_State(dev, eRfSleep, RF_CHANGE_BY_PS);
 #endif
-	//FIXME: will we send package stored while nic is sleep?
 //	spin_unlock_irqrestore(&priv->ps_lock,flags);
 }
 
@@ -3108,7 +3092,6 @@ void rtl8192_hw_to_sleep(struct net_device *dev, u32 th, u32 tl)
 
 	//if(tl == 0) tl = 1;
 
-	/* FIXME HACK FIXME HACK */
 //	force_pci_posting(dev);
 	//mdelay(1);
 
@@ -3135,14 +3118,12 @@ void rtl8192_hw_to_sleep(struct net_device *dev, u32 th, u32 tl)
 	/* if we suspect the TimerInt is gone beyond tl
 	 * while setting it, then give up
 	 */
-#if 1
 	if(((tl > rb) && ((tl-rb) > MSECS(MAX_SLEEP_TIME)))||
 		((tl < rb) && ((rb-tl) > MSECS(MAX_SLEEP_TIME)))) {
 		printk("========>too long to sleep:%x, %x, %lx\n", tl, rb,  MSECS(MAX_SLEEP_TIME));
 		spin_unlock_irqrestore(&priv->ps_lock,flags);
 		return;
 	}
-#endif
 //	if(priv->rf_sleep)
 //		priv->rf_sleep(dev);
 
@@ -4899,7 +4880,6 @@ start:
 
 	{
 	u8  tmpU1b = 0;
-	// EEPROM R/W workaround
 	tmpU1b = read_nic_byte(dev, MAC_PINMUX_CFG);
 	write_nic_byte(dev, MAC_PINMUX_CFG, tmpU1b&(~GPIOMUX_EN));
 	}
@@ -4985,17 +4965,14 @@ TxCheckStuck(struct net_device *dev)
 	     {
 	     		if(QueueID == TXCMD_QUEUE)
 		         continue;
-#if 1
 		     	if((skb_queue_len(&priv->ieee80211->skb_waitQ[QueueID]) == 0)  && (skb_queue_len(&priv->ieee80211->skb_aggQ[QueueID]) == 0))
 			 	continue;
-#endif
 
 	             bCheckFwTxCnt = true;
 	     }
 //	     PlatformReleaseSpinLock(Adapter, RT_TX_SPINLOCK);
 //	spin_unlock_irqrestore(&priv->ieee80211->lock,flags);
 //	RT_TRACE(COMP_RESET,"bCheckFwTxCnt is %d\n",bCheckFwTxCnt);
-#if 1
 	if(bCheckFwTxCnt)
 	{
 		if(HalTxCheckStuck819xUsb(dev))
@@ -5004,7 +4981,6 @@ TxCheckStuck(struct net_device *dev)
 			return RESET_TYPE_SILENT;
 		}
 	}
-#endif
 	return RESET_TYPE_NORESET;
 }
 
@@ -5129,7 +5105,6 @@ rtl819x_ifcheck_resetornot(struct net_device *dev)
 	rfState = priv->ieee80211->eRFPowerState;
 
 	TxResetType = TxCheckStuck(dev);
-#if 1
 	if( rfState != eRfOff ||
 		/*ADAPTER_TEST_STATUS_FLAG(Adapter, ADAPTER_STATUS_FW_DOWNLOAD_FAILURE)) &&*/
 		(priv->ieee80211->iw_mode != IW_MODE_ADHOC))
@@ -5144,7 +5119,6 @@ rtl819x_ifcheck_resetornot(struct net_device *dev)
 		// set, STA cannot hear any packet a all. Emily, 2008.04.12
 		RxResetType = RxCheckStuck(dev);
 	}
-#endif
 	if(TxResetType==RESET_TYPE_NORMAL || RxResetType==RESET_TYPE_NORMAL)
 		return RESET_TYPE_NORMAL;
 	else if(TxResetType==RESET_TYPE_SILENT || RxResetType==RESET_TYPE_SILENT){
@@ -5324,7 +5298,6 @@ RESET_START:
 		// Set the variable for reset.
 		priv->ResetProgress = RESET_TYPE_SILENT;
 //		rtl8192_close(dev);
-#if 1
 		down(&priv->wx_sem);
 		if(priv->up == 0)
 		{
@@ -5376,18 +5349,13 @@ RESET_START:
 				RT_TRACE(COMP_ERR," ERR!!! %s():  Reset Failed!!\n", __FUNCTION__);
 			}
 		}
-#endif
 		ieee->is_silent_reset = 1;
-#if 1
 		EnableHWSecurityConfig8192(dev);
-#if 1
 		if(ieee->state == IEEE80211_LINKED && ieee->iw_mode == IW_MODE_INFRA)
 		{
 			ieee->set_chan(ieee->dev, ieee->current_network.channel);
 
-#if 1
 			queue_work(ieee->wq, &ieee->associate_complete_wq);
-#endif
 
 		}
 		else if(ieee->state == IEEE80211_LINKED && ieee->iw_mode == IW_MODE_ADHOC)
@@ -5403,7 +5371,6 @@ RESET_START:
 				ieee->data_hard_resume(ieee->dev);
 			netif_carrier_on(ieee->dev);
 		}
-#endif
 
 		CamRestoreAllEntry(dev);
 
@@ -5416,7 +5383,6 @@ RESET_START:
 		// For test --> force write UFWP.
 		write_nic_byte(dev, UFWP, 1);
 		RT_TRACE(COMP_RESET, "Reset finished!! ====>[%d]\n", priv->reset_count);
-#endif
 	}
 }
 
@@ -5439,7 +5405,6 @@ void CAM_read_entry(
 
 	//Check polling bit is clear
 //	mdelay(1);
-#if 1
 		while((i--)>=0)
 		{
 			ulStatus = read_nic_dword(dev, RWCAM);
@@ -5450,7 +5415,6 @@ void CAM_read_entry(
 				break;
 			}
 		}
-#endif
   		write_nic_dword(dev, RWCAM, target_command);
    	 	RT_TRACE(COMP_SEC,"CAM_read_entry(): WRITE A0: %x \n",target_command);
    	 //	printk("CAM_read_entry(): WRITE A0: %lx \n",target_command);
@@ -5659,7 +5623,6 @@ int rtl8192_down(struct net_device *dev)
 	priv->up=0;
 	priv->ieee80211->ieee_up = 0;
 	RT_TRACE(COMP_DOWN, "==========>%s()\n", __FUNCTION__);
-/* FIXME */
 	if (!netif_queue_stopped(dev))
 		netif_stop_queue(dev);
 
@@ -5737,7 +5700,6 @@ static void r8192_set_multicast(struct net_device *dev)
 
 	//down(&priv->wx_sem);
 
-	/* FIXME FIXME */
 
 	promisc = (dev->flags & IFF_PROMISC) ? 1:0;
 
@@ -5822,7 +5784,6 @@ int rtl8192_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 
 					if (ieee->pairwise_key_type)
 					{
-				//	FIXME:these two lines below just to fix ipw interface bug, that is, it will never set mode down to driver. So treat it as ADHOC mode, if no association procedure. WB. 2009.02.04
 						if (memcmp(ieee->ap_mac_addr, zero_addr, 6) == 0)
 							ieee->iw_mode = IW_MODE_ADHOC;
 						memcpy((u8*)key, ipw->u.crypt.key, 16);
@@ -6237,7 +6198,6 @@ void rtl8192_process_phyinfo(struct r8192_priv * priv,u8* buffer, struct ieee802
 			priv->undecorated_smoothed_pwdb = pprevious_stats->RxPWDBAll;
 			//DbgPrint("First pwdb initialize \n");
 		}
-#if 1
 		if(pprevious_stats->RxPWDBAll > (u32)priv->undecorated_smoothed_pwdb)
 		{
 			priv->undecorated_smoothed_pwdb =
@@ -6251,20 +6211,6 @@ void rtl8192_process_phyinfo(struct r8192_priv * priv,u8* buffer, struct ieee802
 					( ((priv->undecorated_smoothed_pwdb)*(Rx_Smooth_Factor-1)) +
 					(pprevious_stats->RxPWDBAll)) /(Rx_Smooth_Factor);
 		}
-#else
-		//Fixed by Jacken 2008-03-20
-		if(pPreviousRfd->Status.RxPWDBAll > (u32)pHalData->UndecoratedSmoothedPWDB)
-		{
-			pHalData->UndecoratedSmoothedPWDB =
-					( ((pHalData->UndecoratedSmoothedPWDB)* 5) + (pPreviousRfd->Status.RxPWDBAll)) / 6;
-			pHalData->UndecoratedSmoothedPWDB = pHalData->UndecoratedSmoothedPWDB + 1;
-		}
-		else
-		{
-			pHalData->UndecoratedSmoothedPWDB =
-					( ((pHalData->UndecoratedSmoothedPWDB)* 5) + (pPreviousRfd->Status.RxPWDBAll)) / 6;
-		}
-#endif
 
 	}
 
@@ -6776,7 +6722,6 @@ void rtl8192SU_TranslateRxSignalStuff(struct sk_buff *skb,
                                 				 && (!pstats->bHwError) && (!pstats->bCRC)&& (!pstats->bICV));
 	bpacket_toself =  bpacket_match_bssid & (eqMacAddr(praddr, priv->ieee80211->dev->dev_addr));
 
-#if 1//cosa
 		if(WLAN_FC_GET_FRAMETYPE(fc)== IEEE80211_STYPE_BEACON)
 		{
 			bPacketBeacon = true;
@@ -6788,8 +6733,6 @@ void rtl8192SU_TranslateRxSignalStuff(struct sk_buff *skb,
 				bToSelfBA = true;
 				//DbgPrint("BlockAck, MatchBSSID = %d, ToSelf = %d \n", bPacketMatchBSSID, bPacketToSelf);
 		}
-
-#endif
 
 
 	if(bpacket_match_bssid)
@@ -7136,7 +7079,7 @@ rtl819xusb_process_received_packet(
 	pstats->virtual_address += get_rxpacket_shiftbytes_819xusb(pstats);
 	frame = pstats->virtual_address;
 	frame_len = pstats->packetlength;
-#ifdef TODO	// by amy about HCT
+#ifdef TODO	    // by amy about HCT
 	if(!Adapter->bInHctTest)
 		CountRxErrStatistics(Adapter, pRfd);
 #endif
@@ -7411,12 +7354,10 @@ static int __devinit rtl8192_usb_probe(struct usb_interface *intf,
         }
 
 	RT_TRACE(COMP_INIT, "Driver probe completed1\n");
-#if 1
 	if(rtl8192_init(dev)!=0){
 		RT_TRACE(COMP_ERR, "Initialization failed");
 		goto fail;
 	}
-#endif
 	netif_carrier_off(dev);
 	netif_stop_queue(dev);
 

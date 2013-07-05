@@ -587,7 +587,6 @@ megaraid_detach_one(struct pci_dev *pdev)
 
 	// do not allow any more requests from the management module for this
 	// adapter.
-	// FIXME: How do we account for the request which might still be
 	// pending with us?
 	atomic_set(&adapter->being_detached, 1);
 
@@ -601,7 +600,6 @@ megaraid_detach_one(struct pci_dev *pdev)
 
 	// Unregister from common management module
 	//
-	// FIXME: this must return success or failure for conditions if there
 	// is a command pending with LLD or not.
 	megaraid_cmm_unregister(adapter);
 
@@ -2579,7 +2577,6 @@ megaraid_abort_handler(struct scsi_cmnd *scp)
 			"megaraid abort: scsi cmd:%ld, do now own\n",
 			scp->serial_number));
 
-		// FIXME: Should there be a callback for this command?
 		return SUCCESS;
 	}
 
@@ -3579,14 +3576,6 @@ megaraid_cmm_register(adapter_t *adapter)
 }
 
 
-/**
- * megaraid_cmm_unregister - un-register with the management module
- * @adapter		: HBA soft state
- *
- * Un-register with the management module.
- * FIXME: mgmt module must return failure for unregister if it has pending
- * commands in LLD.
- */
 static int
 megaraid_cmm_unregister(adapter_t *adapter)
 {

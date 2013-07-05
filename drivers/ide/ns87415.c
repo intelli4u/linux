@@ -242,10 +242,6 @@ static void __devinit init_hwif_ns87415 (ide_hwif_t *hwif)
 		pci_write_config_byte(dev, 0x55, 0xee);
 
 #ifdef __sparc_v9__
-		/*
-		 * XXX: Reset the device, if we don't it will not respond to
-		 *      dev_select() properly during first ide_probe_port().
-		 */
 		timeout = 10000;
 		outb(12, hwif->io_ports.ctl_addr);
 		udelay(10);

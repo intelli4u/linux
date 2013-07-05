@@ -28,7 +28,6 @@ extern void xor_vis_4(unsigned long, unsigned long *, unsigned long *,
 extern void xor_vis_5(unsigned long, unsigned long *, unsigned long *,
 		      unsigned long *, unsigned long *, unsigned long *);
 
-/* XXX Ugh, write cheetah versions... -DaveM */
 
 static struct xor_block_template xor_block_VIS = {
         .name	= "VIS",

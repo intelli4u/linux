@@ -40,10 +40,6 @@ out_free_self:
 
 void ui_progress__update(struct ui_progress *self, u64 curr)
 {
-	/*
-	 * FIXME: We should have a per UI backend way of showing progress,
-	 * stdio will just show a percentage as NN%, etc.
-	 */
 	if (use_browser <= 0)
 		return;
 	newtScaleSet(self->scale, curr);

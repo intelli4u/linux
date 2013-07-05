@@ -235,7 +235,7 @@ static int dib7000m_set_adc_state(struct dib7000m_state *state, enum dibx000_adc
 			break;
 
 		case DIBX000_ADC_ON:
-			if (state->revision == 0x4000) { // workaround for PA/MA
+			if (state->revision == 0x4000) {
 				// power-up ADC
 				dib7000m_write_word(state, 913, 0);
 				dib7000m_write_word(state, 914, reg_914 & 0x3);
@@ -1285,55 +1285,6 @@ struct i2c_adapter * dib7000m_get_i2c_master(struct dvb_frontend *demod, enum di
 }
 EXPORT_SYMBOL(dib7000m_get_i2c_master);
 
-#if 0
-/* used with some prototype boards */
-int dib7000m_i2c_enumeration(struct i2c_adapter *i2c, int no_of_demods,
-		u8 default_addr, struct dib7000m_config cfg[])
-{
-	struct dib7000m_state st = { .i2c_adap = i2c };
-	int k = 0;
-	u8 new_addr = 0;
-
-	for (k = no_of_demods-1; k >= 0; k--) {
-		st.cfg = cfg[k];
-
-		/* designated i2c address */
-		new_addr          = (0x40 + k) << 1;
-		st.i2c_addr = new_addr;
-		if (dib7000m_identify(&st) != 0) {
-			st.i2c_addr = default_addr;
-			if (dib7000m_identify(&st) != 0) {
-				dprintk("DiB7000M #%d: not identified", k);
-				return -EIO;
-			}
-		}
-
-		/* start diversity to pull_down div_str - just for i2c-enumeration */
-		dib7000m_set_output_mode(&st, OUTMODE_DIVERSITY);
-
-		dib7000m_write_word(&st, 1796, 0x0); // select DVB-T output
-
-		/* set new i2c address and force divstart */
-		dib7000m_write_word(&st, 1794, (new_addr << 2) | 0x2);
-
-		dprintk("IC %d initialized (to i2c_address 0x%x)", k, new_addr);
-	}
-
-	for (k = 0; k < no_of_demods; k++) {
-		st.cfg = cfg[k];
-		st.i2c_addr = (0x40 + k) << 1;
-
-		// unforce divstr
-		dib7000m_write_word(&st,1794, st.i2c_addr << 2);
-
-		/* deactivate div - it was just for i2c-enumeration */
-		dib7000m_set_output_mode(&st, OUTMODE_HIGH_Z);
-	}
-
-	return 0;
-}
-EXPORT_SYMBOL(dib7000m_i2c_enumeration);
-#endif
 
 static struct dvb_frontend_ops dib7000m_ops;
 struct dvb_frontend * dib7000m_attach(struct i2c_adapter *i2c_adap, u8 i2c_addr, struct dib7000m_config *cfg)

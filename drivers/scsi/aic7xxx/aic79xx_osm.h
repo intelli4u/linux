@@ -198,14 +198,6 @@ int	ahd_dmamap_unload(struct ahd_softc *, bus_dma_tag_t, bus_dmamap_t);
 #define BUS_DMASYNC_PREWRITE	0x04	/* pre-write synchronization */
 #define BUS_DMASYNC_POSTWRITE	0x08	/* post-write synchronization */
 
-/*
- * XXX
- * ahd_dmamap_sync is only used on buffers allocated with
- * the pci_alloc_consistent() API.  Although I'm not sure how
- * this works on architectures with a write buffer, Linux does
- * not have an API to sync "coherent" memory.  Perhaps we need
- * to do an mb()?
- */
 #define ahd_dmamap_sync(ahd, dma_tag, dmamap, offset, len, op)
 
 /************************** Timer DataStructures ******************************/
@@ -508,7 +500,6 @@ static inline void ahd_flush_device_writes(struct ahd_softc *);
 static inline void
 ahd_flush_device_writes(struct ahd_softc *ahd)
 {
-	/* XXX Is this sufficient for all architectures??? */
 	ahd_inb(ahd, INTSTAT);
 }
 

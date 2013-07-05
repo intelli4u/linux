@@ -22,15 +22,6 @@
 #define BTB_FLUSH_SIZE		8
 
 #ifdef CONFIG_ARM_ERRATA_411920
-/*
- * Invalidate the entire I cache (this code is a workaround for the ARM1136
- * erratum 411920 - Invalidate Instruction Cache operation can fail. This
- * erratum is present in 1136, 1156 and 1176. It does not affect the MPCore.
- *
- * Registers:
- *   r0 - set to 0
- *   r1 - corrupted
- */
 ENTRY(v6_icache_inval_all)
 	mov	r0, #0
 	mrs	r1, cpsr

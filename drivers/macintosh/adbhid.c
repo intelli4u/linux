@@ -411,44 +411,6 @@ adbhid_mouse_input(unsigned char *data, int nb, int autopoll)
 		return;
 	}
 
-  /*
-    Handler 1 -- 100cpi original Apple mouse protocol.
-    Handler 2 -- 200cpi original Apple mouse protocol.
-
-    For Apple's standard one-button mouse protocol the data array will
-    contain the following values:
-
-                BITS    COMMENTS
-    data[0] = dddd 1100 ADB command: Talk, register 0, for device dddd.
-    data[1] = bxxx xxxx First button and x-axis motion.
-    data[2] = byyy yyyy Second button and y-axis motion.
-
-    Handler 4 -- Apple Extended mouse protocol.
-
-    For Apple's 3-button mouse protocol the data array will contain the
-    following values:
-
-		BITS    COMMENTS
-    data[0] = dddd 1100 ADB command: Talk, register 0, for device dddd.
-    data[1] = bxxx xxxx Left button and x-axis motion.
-    data[2] = byyy yyyy Second button and y-axis motion.
-    data[3] = byyy bxxx Third button and fourth button.  Y is additional
-	      high bits of y-axis motion.  XY is additional
-	      high bits of x-axis motion.
-
-    MacAlly 2-button mouse protocol.
-
-    For MacAlly 2-button mouse protocol the data array will contain the
-    following values:
-
-		BITS    COMMENTS
-    data[0] = dddd 1100 ADB command: Talk, register 0, for device dddd.
-    data[1] = bxxx xxxx Left button and x-axis motion.
-    data[2] = byyy yyyy Right button and y-axis motion.
-    data[3] = ???? ???? unknown
-    data[4] = ???? ???? unknown
-
-  */
 
 	/* If it's a trackpad, we alias the second button to the first.
 	   NOTE: Apple sends an ADB flush command to the trackpad when
@@ -544,10 +506,6 @@ adbhid_buttons_input(unsigned char *data, int nb, int autopoll)
 	  {
 		int down = (data[1] == (data[1] & 0xf));
 
-		/*
-		 * XXX: Where is the contrast control for the passive?
-		 *  -- Cort
-		 */
 
 		switch (data[1] & 0x0f) {
 		case 0x8:	/* mute */
@@ -971,11 +929,6 @@ adbhid_probe(void)
 		/* Enable full feature set of the keyboard
 		   ->get it to send separate codes for left and right shift,
 		   control, option keys */
-#if 0		/* handler 5 doesn't send separate codes for R modifiers */
-		if (adb_try_handler_change(id, 5))
-			printk("ADB keyboard at %d, handler set to 5\n", id);
-		else
-#endif
 		if (adb_try_handler_change(id, 3))
 			printk("ADB keyboard at %d, handler set to 3\n", id);
 		else

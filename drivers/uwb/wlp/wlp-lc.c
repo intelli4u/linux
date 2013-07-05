@@ -1,26 +1,4 @@
-/*
- * WiMedia Logical Link Control Protocol (WLP)
- *
- * Copyright (C) 2005-2006 Intel Corporation
- * Reinette Chatre <reinette.chatre@intel.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
- *
- *
- * FIXME: docs
- */
+
 #include <linux/wlp.h>
 #include <linux/slab.h>
 
@@ -134,14 +112,7 @@ int wlp_add_neighbor(struct wlp *wlp, struct uwb_dev *dev)
 	int discoverable;
 	struct wlp_neighbor_e *neighbor;
 
-	/*
-	 * FIXME:
-	 * Use contents of WLP IE found in beacon cache to determine if
-	 * neighbor is discoverable.
-	 * The device does not support WLP IE yet so this still needs to be
-	 * done. Until then we assume all devices are discoverable.
-	 */
-	discoverable = 1; /* will be changed when FIXME disappears */
+	discoverable = 1;
 	if (discoverable) {
 		/* Add neighbor to cache for discovery */
 		neighbor = kzalloc(sizeof(*neighbor), GFP_KERNEL);

@@ -172,9 +172,6 @@ static void update_page_reclaim_stat(struct zone *zone, struct page *page,
 		memcg_reclaim_stat->recent_rotated[file]++;
 }
 
-/*
- * FIXME: speed this up?
- */
 void activate_page(struct page *page)
 {
 	struct zone *zone = page_zone(page);

@@ -230,11 +230,6 @@ ahd_print_path(struct ahd_softc *ahd, struct scb *scb)
 	       scb != NULL ? SCB_GET_LUN(scb) : -1);
 }
 
-/*
- * XXX - these options apply unilaterally to _all_ adapters
- *       cards in the system.  This should be fixed.  Exceptions to this
- *       rule are noted in the comments.
- */
 
 /*
  * Skip the scsi bus reset.  Non 0 make us skip the reset at startup.  This
@@ -411,21 +406,6 @@ ahd_inb(struct ahd_softc * ahd, long port)
 	return (x);
 }
 
-#if 0 /* unused */
-static uint16_t
-ahd_inw_atomic(struct ahd_softc * ahd, long port)
-{
-	uint8_t x;
-
-	if (ahd->tags[0] == BUS_SPACE_MEMIO) {
-		x = readw(ahd->bshs[0].maddr + port);
-	} else {
-		x = inw(ahd->bshs[(port) >> 8].ioport + ((port) & 0xFF));
-	}
-	mb();
-	return (x);
-}
-#endif
 
 void
 ahd_outb(struct ahd_softc * ahd, long port, uint8_t val)
@@ -1167,10 +1147,6 @@ aic79xx_setup(char *s)
 
 	end = strchr(s, '\0');
 
-	/*
-	 * XXX ia64 gcc isn't smart enough to know that ARRAY_SIZE
-	 * will never be 0 in this case.
-	 */
 	n = 0;
 
 	while ((p = strsep(&s, ",.")) != NULL) {

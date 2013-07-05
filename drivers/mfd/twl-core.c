@@ -43,18 +43,6 @@
 #include <plat/cpu.h>
 #endif
 
-/*
- * The TWL4030 "Triton 2" is one of a family of a multi-function "Power
- * Management and System Companion Device" chips originally designed for
- * use in OMAP2 and OMAP 3 based systems.  Its control interfaces use I2C,
- * often at around 3 Mbit/sec, including for interrupt handling.
- *
- * This driver core provides genirq support for the interrupts emitted,
- * by the various modules, and exports register access primitives.
- *
- * FIXME this driver currently requires use of the first interrupt line
- * (and associated registers).
- */
 
 #define DRIVER_NAME			"twl"
 
@@ -70,8 +58,7 @@
 #define twl_has_gpio()	false
 #endif
 
-#if defined(CONFIG_REGULATOR_TWL4030) \
-	|| defined(CONFIG_REGULATOR_TWL4030_MODULE)
+#if defined(CONFIG_REGULATOR_TWL4030) || defined(CONFIG_REGULATOR_TWL4030_MODULE)
 #define twl_has_regulator()	true
 #else
 #define twl_has_regulator()	false
@@ -101,14 +88,13 @@
 #define twl_has_usb()	false
 #endif
 
-#if defined(CONFIG_TWL4030_WATCHDOG) || \
-	defined(CONFIG_TWL4030_WATCHDOG_MODULE)
+#if defined(CONFIG_TWL4030_WATCHDOG) || defined(CONFIG_TWL4030_WATCHDOG_MODULE)
 #define twl_has_watchdog()        true
 #else
 #define twl_has_watchdog()        false
 #endif
 
-#if defined(CONFIG_TWL4030_CODEC) || defined(CONFIG_TWL4030_CODEC_MODULE) ||\
+#if defined(CONFIG_TWL4030_CODEC) || defined(CONFIG_TWL4030_CODEC_MODULE) || \
 	defined(CONFIG_SND_SOC_TWL6040) || defined(CONFIG_SND_SOC_TWL6040_MODULE)
 #define twl_has_codec()	true
 #else
@@ -122,8 +108,8 @@
 
 #define TWL_NUM_SLAVES		4
 
-#if defined(CONFIG_INPUT_TWL4030_PWRBUTTON) \
-	|| defined(CONFIG_INPUT_TWL4030_PWRBUTTON_MODULE)
+#if defined(CONFIG_INPUT_TWL4030_PWRBUTTON) || \
+	defined(CONFIG_INPUT_TWL4030_PWRBUTTON_MODULE)
 #define twl_has_pwrbutton()	true
 #else
 #define twl_has_pwrbutton()	false

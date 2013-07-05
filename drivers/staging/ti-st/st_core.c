@@ -54,21 +54,6 @@ const unsigned char *protocol_strngs[] = {
 void (*st_recv) (void*, const unsigned char*, long);
 
 /********************************************************************/
-#if 0
-/* internal misc functions */
-bool is_protocol_list_empty(void)
-{
-	unsigned char i = 0;
-	pr_debug(" %s ", __func__);
-	for (i = 0; i < ST_MAX; i++) {
-		if (st_gdata->list[i] != NULL)
-			return ST_NOTEMPTY;
-		/* not empty */
-	}
-	/* list empty */
-	return ST_EMPTY;
-}
-#endif
 
 /* can be called in from
  * -- KIM (during fw download)
@@ -772,7 +757,7 @@ long st_write(struct sk_buff *skb)
 		pr_err("data/tty unavailable to perform write");
 		return -1;
 	}
-#ifdef DEBUG			/* open-up skb to read the 1st byte */
+#ifdef DEBUG			    /* open-up skb to read the 1st byte */
 	switch (skb->data[0]) {
 	case HCI_COMMAND_PKT:
 	case HCI_ACLDATA_PKT:
@@ -981,18 +966,6 @@ int st_core_init(struct st_data_s **core_data)
 	/* ldisc_ops ref to be only used in __exit of module */
 	st_gdata->ldisc_ops = st_ldisc_ops;
 
-#if 0
-	err = st_kim_init();
-	if (err) {
-		pr_err("error during kim initialization(%ld)", err);
-		kfree(st_gdata);
-		err = tty_unregister_ldisc(N_TI_WL);
-		if (err)
-			pr_err("unable to un-register ldisc");
-		kfree(st_ldisc_ops);
-		return -1;
-	}
-#endif
 
 	err = st_ll_init(st_gdata);
 	if (err) {
@@ -1015,11 +988,6 @@ void st_core_exit(struct st_data_s *st_gdata)
 	err = st_ll_deinit(st_gdata);
 	if (err)
 		pr_err("error during deinit of ST LL %ld", err);
-#if 0
-	err = st_kim_deinit();
-	if (err)
-		pr_err("error during deinit of ST KIM %ld", err);
-#endif
 	if (st_gdata != NULL) {
 		/* Free ST Tx Qs and skbs */
 		skb_queue_purge(&st_gdata->txq);
@@ -1035,5 +1003,3 @@ void st_core_exit(struct st_data_s *st_gdata)
 		kfree(st_gdata);
 	}
 }
-
-

@@ -130,7 +130,7 @@ static struct us_unusual_dev us_unusual_dev_list[] = {
 #undef USUAL_DEV
 
 
-#ifdef CONFIG_PM	/* Minimal support for suspend and resume */
+#ifdef CONFIG_PM	    /* Minimal support for suspend and resume */
 
 int usb_stor_suspend(struct usb_interface *iface, pm_message_t message)
 {
@@ -175,8 +175,6 @@ int usb_stor_reset_resume(struct usb_interface *iface)
 	/* Report the reset to the SCSI core */
 	usb_stor_report_bus_reset(us);
 
-	/* FIXME: Notify the subdrivers that they need to reinitialize
-	 * the device */
 	return 0;
 }
 EXPORT_SYMBOL_GPL(usb_stor_reset_resume);
@@ -209,8 +207,6 @@ int usb_stor_post_reset(struct usb_interface *iface)
 	/* Report the reset to the SCSI core */
 	usb_stor_report_bus_reset(us);
 
-	/* FIXME: Notify the subdrivers that they need to reinitialize
-	 * the device */
 
 	mutex_unlock(&us->dev_mutex);
 	return 0;

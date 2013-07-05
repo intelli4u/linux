@@ -211,9 +211,6 @@ static int ixp2000_flash_probe(struct platform_device *dev)
 	}
 
 #if defined(__ARMEB__)
-	/*
-	 * Enable erratum 44 workaround for NPUs with broken slowport
-	 */
 
 	erratum44_workaround = ixp2000_has_broken_slowport();
 	dev_info(&dev->dev, "Erratum 44 workaround %s\n",

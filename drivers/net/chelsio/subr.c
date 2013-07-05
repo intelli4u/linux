@@ -878,7 +878,6 @@ int t1_slow_intr_handler(adapter_t *adapter)
 	return asic_slow_intr(adapter);
 }
 
-/* Power sequencing is a work-around for Intel's XPAKs. */
 static void power_sequence_xpak(adapter_t* adapter)
 {
 	u32 mod_detect;
@@ -934,9 +933,6 @@ static int board_init(adapter_t *adapter, const struct board_info *bi)
 		t1_tpi_par(adapter, 0xf);
 		t1_tpi_write(adapter, A_ELMER0_GPO, 0x1800);
 
-		/* TBD XXX Might not need.  This fixes a problem
-		 *         described in the Intel SR XPAK errata.
-		 */
 		power_sequence_xpak(adapter);
 		break;
 #ifdef CONFIG_CHELSIO_T1_1G

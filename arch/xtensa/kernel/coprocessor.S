@@ -332,4 +332,3 @@ ENTRY(coprocessor_owner)
 	.fill XCHAL_CP_MAX, 4, 0
 
 #endif /* XTENSA_HAVE_COPROCESSORS */
-

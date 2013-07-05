@@ -263,4 +263,3 @@ sl811_read_buf(struct sl811 *sl811, int addr, void *buf, size_t count)
 #define ERR(stuff...)		printk(KERN_ERR "sl811: " stuff)
 #define WARNING(stuff...)	printk(KERN_WARNING "sl811: " stuff)
 #define INFO(stuff...)		printk(KERN_INFO "sl811: " stuff)
-

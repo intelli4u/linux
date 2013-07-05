@@ -1277,4 +1277,3 @@ static inline int crypto_comp_decompress(struct crypto_comp *tfm,
 }
 
 #endif	/* _LINUX_CRYPTO_H */
-

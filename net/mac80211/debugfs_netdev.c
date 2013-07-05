@@ -383,7 +383,6 @@ static void add_files(struct ieee80211_sub_if_data *sdata)
 		add_sta_files(sdata);
 		break;
 	case NL80211_IFTYPE_ADHOC:
-		/* XXX */
 		break;
 	case NL80211_IFTYPE_AP:
 		add_ap_files(sdata);

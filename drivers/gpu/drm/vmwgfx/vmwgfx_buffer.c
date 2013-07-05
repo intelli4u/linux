@@ -165,9 +165,6 @@ void vmw_evict_flags(struct ttm_buffer_object *bo,
 	*placement = vmw_sys_placement;
 }
 
-/**
- * FIXME: Proper access checks on buffers.
- */
 
 static int vmw_verify_access(struct ttm_buffer_object *bo, struct file *filp)
 {
@@ -222,10 +219,6 @@ static int vmw_ttm_fault_reserve_notify(struct ttm_buffer_object *bo)
 	return 0;
 }
 
-/**
- * FIXME: We're using the old vmware polling method to sync.
- * Do this with fences instead.
- */
 
 static void *vmw_sync_obj_ref(void *sync_obj)
 {

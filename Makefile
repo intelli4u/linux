@@ -188,7 +188,7 @@ SUBARCH := $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ \
 # Default value for CROSS_COMPILE is not to prefix executables
 # Note: Some architectures assign CROSS_COMPILE in their arch/*/Makefile
 export KBUILD_BUILDHOST := $(SUBARCH)
-ARCH		?= $(SUBARCH)
+ARCH		?= arm
 CROSS_COMPILE	?= $(CONFIG_CROSS_COMPILE:"%"=%)
 
 # Architecture as present in compile.h
@@ -359,6 +359,43 @@ KBUILD_AFLAGS_MODULE  := -DMODULE
 KBUILD_CFLAGS_MODULE  := -DMODULE
 KBUILD_LDFLAGS_MODULE := -T $(srctree)/scripts/module-common.lds
 
+# Broadcom source tree
+KBUILD_CFLAGS += -I$(SRCBASE)/include
+KBUILD_CFLAGS += $(WLAN_ComponentIncPath)
+KBUILD_AFLAGS += -I$(SRCBASE)/include
+KBUILD_CFLAGS += -DBCMDRIVER -Dlinux
+
+
+
+#[MJ] add for debugging 5G crash.
+#CFLAGS += -DBCMDBG -DBCMDBG_ASSERT -DBCMDBG_ERR -DWLMSG_ASSOC -DWLTEST
+#Enable debug flag start
+#CFLAGS += -DBCMDBG -DWLTEST
+#Enable debug flag end
+
+KBUILD_CFLAGS += -DMULTIPLE_SSID -DSAMBA_ENABLE -DX_ST_ML
+
+KBUILD_CFLAGS += -DU12H240 -DR6300v2
+KBUILD_CFLAGS += -DBCM53125
+
+KBUILD_CFLAGS += -DINCLUDE_USB_LED
+KBUILD_CFLAGS += -DIGMP_PROXY
+KBUILD_CFLAGS += -D__CONFIG_IGMP_SNOOPING__
+KBUILD_CFLAGS += -DINCLUDE_L2TP
+KBUILD_CFLAGS += -DAP_MODE
+KBUILD_CFLAGS += -DINCLUDE_DUAL_BAND
+KBUILD_CFLAGS += -DCONFIG_RUSSIA_IPTV
+KBUILD_CFLAGS += -DCONFIG_KERNEL_2_6_36
+#KBUILD_CFLAGS += -DINCLUDE_ACCESSCONTROL
+
+
+KBUILD_CFLAGS += -DWW_VERSION
+
+
+KBUILD_CFLAGS	+= -DBCMVISTAROUTER
+KBUILD_CFLAGS += -DINCLUDE_QOS
+KBUILD_CFLAGS += -DRESTART_ALL_PROCESSES
+
 # Read KERNELRELEASE from include/config/kernel.release (if it exists)
 KERNELRELEASE = $(shell cat include/config/kernel.release 2> /dev/null)
 KERNELVERSION = $(VERSION).$(PATCHLEVEL).$(SUBLEVEL)$(EXTRAVERSION)
@@ -484,7 +521,7 @@ scripts: scripts_basic include/config/auto.conf include/config/tristate.conf
 # Objects we will link into vmlinux / subdirs we need to visit
 init-y		:= init/
 drivers-y	:= drivers/ sound/ firmware/
-net-y		:= net/
+net-y		:= net/ ../../../../ap/acos/acos_nat/
 libs-y		:= lib/
 core-y		:= usr/
 endif # KBUILD_EXTMOD
@@ -534,6 +571,22 @@ endif # $(dot-config)
 # Defaults to vmlinux, but the arch makefile usually adds further targets
 all: vmlinux
 
+# Broadcom features compile options
+ifneq ($(CONFIG_BCM_CTF),)
+#KBUILD_CFLAGS += -DHNDCTF -DCTFPOOL -DCTFMAP -DPKTC -DCTF_PPPOE
+KBUILD_CFLAGS += -DHNDCTF -DCTFPOOL -DCTFMAP -DPKTC
+ifneq ($(CONFIG_WL_USBAP),)
+KBUILD_CFLAGS += -DCTFPOOL_SPINLOCK
+endif
+ifneq ($(CONFIG_IPV6),)
+KBUILD_CFLAGS += -DCTF_IPV6
+endif
+endif
+
+ifneq ($(CONFIG_PROXYARP),)
+KBUILD_CFLAGS += -DPROXYARP
+endif
+
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 KBUILD_CFLAGS	+= -Os
 else
@@ -554,7 +607,11 @@ endif
 ifdef CONFIG_FRAME_POINTER
 KBUILD_CFLAGS	+= -fno-omit-frame-pointer -fno-optimize-sibling-calls
 else
-KBUILD_CFLAGS	+= -fomit-frame-pointer
+ifeq ($(CONFIG_BUZZZ_FUNC),y)
+KBUILD_CFLAGS   += -fno-omit-frame-pointer
+else
+KBUILD_CFLAGS   += -fomit-frame-pointer
+endif # CONFIG_BUZZZ_FUNC
 endif
 
 ifdef CONFIG_DEBUG_INFO
@@ -609,6 +666,7 @@ ifneq ($(KCFLAGS),)
         KBUILD_CFLAGS += $(KCFLAGS)
 endif
 
+#KBUILD_CFLAGS += -DDHD_DEBUG -DWLTEST -DBCMDBG
 # Use --build-id when available.
 LDFLAGS_BUILD_ID = $(patsubst -Wl$(comma)%,%,\
 			      $(call cc-ldoption, -Wl$(comma)--build-id,))
@@ -637,6 +695,7 @@ export	INSTALL_PATH ?= /boot
 # makefile but the argument can be passed to make if needed.
 #
 
+INSTALL_MOD_PATH = $(TARGETDIR)
 MODLIB	= $(INSTALL_MOD_PATH)/lib/modules/$(KERNELRELEASE)
 export MODLIB
 
@@ -646,6 +705,9 @@ export MODLIB
 #  the default option --strip-debug will be used.  Otherwise,
 #  INSTALL_MOD_STRIP will used as the options to the strip command.
 
+ifeq ($(CONFIG_BUZZZ_FUNC),y)
+mod_strip_cmd = $(STRIP) --strip-debug
+else
 ifdef INSTALL_MOD_STRIP
 ifeq ($(INSTALL_MOD_STRIP),1)
 mod_strip_cmd = $(STRIP) --strip-debug
@@ -655,6 +717,7 @@ endif # INSTALL_MOD_STRIP=1
 else
 mod_strip_cmd = true
 endif # INSTALL_MOD_STRIP
+endif # CONFIG_BUZZZ_FUNC
 export mod_strip_cmd
 
 
@@ -1073,7 +1136,7 @@ _modinst_:
 	@cp -f $(objtree)/modules.order $(MODLIB)/
 	@cp -f $(objtree)/modules.builtin $(MODLIB)/
 	$(Q)$(MAKE) -f $(srctree)/scripts/Makefile.modinst
-
+	@echo "================================================"
 # This depmod is only for convenience to give the initial
 # boot a modules.dep even before / is mounted read-write.  However the
 # boot script depmod is the master version.
@@ -1320,7 +1383,10 @@ modules_install: _emodinst_ _emodinst_post
 install-dir := $(if $(INSTALL_MOD_DIR),$(INSTALL_MOD_DIR),extra)
 PHONY += _emodinst_
 _emodinst_:
+	@echo WinsDbg _emodinst_ MODLIB = $(MODLIB)
+	@echo WinsDbg _emodinst_ TARGETDIR = $(TARGETDIR)
 	$(Q)mkdir -p $(MODLIB)/$(install-dir)
+	@echo WinsDbg _emodinst_ install-dir = $(install-dir)
 	$(Q)$(MAKE) -f $(srctree)/scripts/Makefile.modinst
 
 PHONY += _emodinst_post
@@ -1463,7 +1529,6 @@ endif
 	$(build)=$(build-dir) $(@:.ko=.o)
 	$(Q)$(MAKE) -f $(srctree)/scripts/Makefile.modpost
 
-# FIXME Should go into a make.lib or something 
 # ===========================================================================
 
 quiet_cmd_rmdirs = $(if $(wildcard $(rm-dirs)),CLEAN   $(wildcard $(rm-dirs)))

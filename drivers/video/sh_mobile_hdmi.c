@@ -650,7 +650,6 @@ static void sh_hdmi_configure(struct sh_hdmi *hdmi)
 	 */
 	hdmi_write(hdmi, 0x8E, HDMI_CTRL_PKT_AUTO_SEND);
 
-	/* FIXME */
 	msleep(10);
 
 	/* PS mode b->d, reset PLLA and PLLB */
@@ -692,7 +691,6 @@ static void sh_hdmi_read_edid(struct sh_hdmi *hdmi)
 		 var->upper_margin, var->yres, var->lower_margin, var->vsync_len,
 		 PICOS2KHZ(var->pixclock));
 
-	/* FIXME: Use user-provided configuration instead of EDID */
 	var->width		= width;
 	var->xres		= lcd_cfg->xres;
 	var->xres_virtual	= lcd_cfg->xres;
@@ -796,10 +794,6 @@ static void hdmi_display_on(void *arg, struct fb_info *info)
 	}
 
 	pr_debug("%s(%p): state %x\n", __func__, pdata->lcd_dev, info->state);
-	/*
-	 * FIXME: not a good place to store fb_info. And we cannot nullify it
-	 * even on monitor disconnect. What should the lifecycle be?
-	 */
 	hdmi->info = info;
 	switch (hdmi->hp_state) {
 	case HDMI_HOTPLUG_EDID_DONE:
@@ -940,11 +934,9 @@ static int __init sh_hdmi_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, hdmi);
 
-#if 1
 	/* Product and revision IDs are 0 in sh-mobile version */
 	dev_info(&pdev->dev, "Detected HDMI controller 0x%x:0x%x\n",
 		 hdmi_read(hdmi, HDMI_PRODUCT_ID), hdmi_read(hdmi, HDMI_REVISION_ID));
-#endif
 
 	/* Set up LCDC callbacks */
 	pdata->lcd_chan->board_cfg.board_data = hdmi;

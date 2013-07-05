@@ -1547,14 +1547,6 @@ unlock:
 
 	spin_unlock_irqrestore(&lockres->l_lock, flags);
 out:
-	/*
-	 * This is helping work around a lock inversion between the page lock
-	 * and dlm locks.  One path holds the page lock while calling aops
-	 * which block acquiring dlm locks.  The voting thread holds dlm
-	 * locks while acquiring page locks while down converting data locks.
-	 * This block is helping an aop path notice the inversion and back
-	 * off to unlock its page lock before trying the dlm lock again.
-	 */
 	if (wait && arg_flags & OCFS2_LOCK_NONBLOCK &&
 	    mw.mw_mask & (OCFS2_LOCK_BUSY|OCFS2_LOCK_BLOCKED)) {
 		wait = 0;
@@ -3175,9 +3167,6 @@ static int ocfs2_drop_lock(struct ocfs2_super *osb,
 
 		spin_unlock_irqrestore(&lockres->l_lock, flags);
 
-		/* XXX: Today we just wait on any busy
-		 * locks... Perhaps we need to cancel converts in the
-		 * future? */
 		ocfs2_wait_on_busy_lock(lockres);
 
 		spin_lock_irqsave(&lockres->l_lock, flags);
@@ -3459,29 +3448,6 @@ recheck:
 	}
 
 	if (lockres->l_flags & OCFS2_LOCK_BUSY) {
-		/* XXX
-		 * This is a *big* race.  The OCFS2_LOCK_PENDING flag
-		 * exists entirely for one reason - another thread has set
-		 * OCFS2_LOCK_BUSY, but has *NOT* yet called dlm_lock().
-		 *
-		 * If we do ocfs2_cancel_convert() before the other thread
-		 * calls dlm_lock(), our cancel will do nothing.  We will
-		 * get no ast, and we will have no way of knowing the
-		 * cancel failed.  Meanwhile, the other thread will call
-		 * into dlm_lock() and wait...forever.
-		 *
-		 * Why forever?  Because another node has asked for the
-		 * lock first; that's why we're here in unblock_lock().
-		 *
-		 * The solution is OCFS2_LOCK_PENDING.  When PENDING is
-		 * set, we just requeue the unblock.  Only when the other
-		 * thread has called dlm_lock() and cleared PENDING will
-		 * we then cancel their request.
-		 *
-		 * All callers of dlm_lock() must set OCFS2_DLM_PENDING
-		 * at the same time they set OCFS2_DLM_BUSY.  They must
-		 * clear OCFS2_DLM_PENDING after dlm_lock() returns.
-		 */
 		if (lockres->l_flags & OCFS2_LOCK_PENDING) {
 			mlog(ML_BASTS, "lockres %s, ReQ: Pending\n",
 			     lockres->l_name);

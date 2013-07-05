@@ -48,47 +48,6 @@
 #include "musb_core.h"
 
 
-/* MUSB PERIPHERAL status 3-mar-2006:
- *
- * - EP0 seems solid.  It passes both USBCV and usbtest control cases.
- *   Minor glitches:
- *
- *     + remote wakeup to Linux hosts work, but saw USBCV failures;
- *       in one test run (operator error?)
- *     + endpoint halt tests -- in both usbtest and usbcv -- seem
- *       to break when dma is enabled ... is something wrongly
- *       clearing SENDSTALL?
- *
- * - Mass storage behaved ok when last tested.  Network traffic patterns
- *   (with lots of short transfers etc) need retesting; they turn up the
- *   worst cases of the DMA, since short packets are typical but are not
- *   required.
- *
- * - TX/IN
- *     + both pio and dma behave in with network and g_zero tests
- *     + no cppi throughput issues other than no-hw-queueing
- *     + failed with FLAT_REG (DaVinci)
- *     + seems to behave with double buffering, PIO -and- CPPI
- *     + with gadgetfs + AIO, requests got lost?
- *
- * - RX/OUT
- *     + both pio and dma behave in with network and g_zero tests
- *     + dma is slow in typical case (short_not_ok is clear)
- *     + double buffering ok with PIO
- *     + double buffering *FAILS* with CPPI, wrong data bytes sometimes
- *     + request lossage observed with gadgetfs
- *
- * - ISO not tested ... might work, but only weakly isochronous
- *
- * - Gadget driver disabling of softconnect during bind() is ignored; so
- *   drivers can't hold off host requests until userspace is ready.
- *   (Workaround:  they can turn it off later.)
- *
- * - PORTABILITY (assumes PIO works):
- *     + DaVinci, basically works with cppi dma
- *     + OMAP 2430, ditto with mentor dma
- *     + TUSB 6010, platform-specific dma in the works
- */
 
 /* ----------------------------------------------------------------------- */
 
@@ -1342,7 +1301,6 @@ static int musb_gadget_fifo_status(struct usb_ep *ep)
 		spin_lock_irqsave(&musb->lock, flags);
 
 		musb_ep_select(mbase, epnum);
-		/* FIXME return zero unless RXPKTRDY is set */
 		retval = musb_readw(epio, MUSB_RXCOUNT);
 
 		spin_unlock_irqrestore(&musb->lock, flags);
@@ -1469,7 +1427,6 @@ static int musb_gadget_wakeup(struct usb_gadget *gadget)
 	musb_writeb(mregs, MUSB_POWER, power);
 	DBG(2, "issue wakeup\n");
 
-	/* FIXME do this next chunk in a timer callback, no udelay */
 	mdelay(2);
 
 	power = musb_readb(mregs, MUSB_POWER);
@@ -1499,26 +1456,12 @@ static void musb_pullup(struct musb *musb, int is_on)
 	else
 		power &= ~MUSB_POWER_SOFTCONN;
 
-	/* FIXME if on, HdrcStart; if off, HdrcStop */
 
 	DBG(3, "gadget %s D+ pullup %s\n",
 		musb->gadget_driver->function, is_on ? "on" : "off");
 	musb_writeb(musb->mregs, MUSB_POWER, power);
 }
 
-#if 0
-static int musb_gadget_vbus_session(struct usb_gadget *gadget, int is_active)
-{
-	DBG(2, "<= %s =>\n", __func__);
-
-	/*
-	 * FIXME iff driver's softconnect flag is set (as it is during probe,
-	 * though that can clear it), just musb_pullup().
-	 */
-
-	return -EINVAL;
-}
-#endif
 
 static int musb_gadget_vbus_draw(struct usb_gadget *gadget, unsigned mA)
 {
@@ -1752,11 +1695,6 @@ int usb_gadget_register_driver(struct usb_gadget_driver *driver)
 		musb->xceiv->state = OTG_STATE_B_IDLE;
 		musb->is_active = 1;
 
-		/* FIXME this ignores the softconnect flag.  Drivers are
-		 * allowed hold the peripheral inactive until for example
-		 * userspace hooks up printer hardware or DSP codecs, so
-		 * hosts only see fully functional devices.
-		 */
 
 		if (!is_otg_enabled(musb))
 			musb_start(musb);
@@ -1879,10 +1817,6 @@ int usb_gadget_unregister_driver(struct usb_gadget_driver *driver)
 
 	if (is_otg_enabled(musb) && retval == 0) {
 		usb_remove_hcd(musb_to_hcd(musb));
-		/* FIXME we need to be able to register another
-		 * gadget driver here and have everything work;
-		 * that currently misbehaves.
-		 */
 	}
 
 	return retval;

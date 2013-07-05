@@ -1,25 +1,6 @@
 #ifndef _S390_TLB_H
 #define _S390_TLB_H
 
-/*
- * TLB flushing on s390 is complicated. The following requirement
- * from the principles of operation is the most arduous:
- *
- * "A valid table entry must not be changed while it is attached
- * to any CPU and may be used for translation by that CPU except to
- * (1) invalidate the entry by using INVALIDATE PAGE TABLE ENTRY,
- * or INVALIDATE DAT TABLE ENTRY, (2) alter bits 56-63 of a page
- * table entry, or (3) make a change by means of a COMPARE AND SWAP
- * AND PURGE instruction that purges the TLB."
- *
- * The modification of a pte of an active mm struct therefore is
- * a two step process: i) invalidate the pte, ii) store the new pte.
- * This is true for the page protection bit as well.
- * The only possible optimization is to flush at the beginning of
- * a tlb_gather_mmu cycle if the mm_struct is currently not in use.
- *
- * Pages used for the page tables is a different story. FIXME: more
- */
 
 #include <linux/mm.h>
 #include <linux/swap.h>

@@ -417,4 +417,3 @@ int ps2pp_init(struct psmouse *psmouse, bool set_properties)
 
 	return use_ps2pp ? 0 : -1;
 }
-

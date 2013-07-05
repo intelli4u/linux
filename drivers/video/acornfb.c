@@ -1,21 +1,4 @@
-/*
- *  linux/drivers/video/acornfb.c
- *
- *  Copyright (C) 1998-2001 Russell King
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * Frame buffer code for Acorn platforms
- *
- * NOTE: Most of the modes with X!=640 will disappear shortly.
- * NOTE: Startup setting of HS & VS polarity not supported.
- *       (do we need to support it if we're coming up in 640x480?)
- *
- * FIXME: (things broken by the "new improved" FBCON API)
- *  - Blanking 8bpp displays with VIDC
- */
+
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -702,9 +685,6 @@ acornfb_check_var(struct fb_var_screeninfo *var, struct fb_info *info)
 	u_int fontht;
 	int err;
 
-	/*
-	 * FIXME: Find the font height
-	 */
 	fontht = 8;
 
 	var->red.msb_right = 0;

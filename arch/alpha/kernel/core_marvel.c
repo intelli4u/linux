@@ -318,10 +318,8 @@ io7_init_hose(struct io7 *io7, int port)
 	 */
 	csrs->POx_CTRL.csr &= ~(1UL << 61);
 
-#if 1
 	printk("FIXME: disabling master aborts\n");
 	csrs->POx_MSK_HEI.csr &= ~(3UL << 14);
-#endif
 	/*
 	 * TBIA after modifying windows.
 	 */
@@ -378,11 +376,6 @@ marvel_find_console_vga_hose(void)
 		struct io7 *io7;
 		int pid, port;
 
-		/* FIXME - encoding is going to have to change for Marvel
-		 *         since hose will be able to overflow a byte...
-		 *         need to fix this decode when the console 
-		 *         changes its encoding
-		 */
 		printk("console graphics is on hose %d (console)\n", h);
 
 		/*
@@ -840,11 +833,6 @@ EXPORT_SYMBOL(marvel_iowrite8);
 /*
  * NUMA Support
  */
-/**********
- * FIXME - for now each cpu is a node by itself 
- *              -- no real support for striped mode 
- **********
- */
 int
 marvel_pa_to_nid(unsigned long pa)
 {
@@ -1066,12 +1054,6 @@ marvel_agp_info(void)
 	alpha_agp_info *agp;
 	struct io7 *io7;
 
-	/*
-	 * Find the first IO7 with an AGP card.
-	 *
-	 * FIXME -- there should be a better way (we want to be able to
-	 * specify and what if the agp card is not video???)
-	 */
 	hose = NULL;
 	for (io7 = NULL; (io7 = marvel_next_io7(io7)) != NULL; ) {
 		struct pci_controller *h;

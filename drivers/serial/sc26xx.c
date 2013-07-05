@@ -485,7 +485,6 @@ static void sc26xx_set_termios(struct uart_port *port, struct ktermios *termios,
 	while ((READ_SC_PORT(port, SR) & ((1 << 3) | (1 << 2))) != 0xc)
 		udelay(2);
 
-	/* XXX */
 	uart_update_timeout(port, cflag,
 			    (port->uartclk / (16 * quot)));
 

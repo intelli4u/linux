@@ -2346,12 +2346,6 @@ xscale1pmu_handle_irq(int irq_num, void *dev)
 	struct pt_regs *regs;
 	int idx;
 
-	/*
-	 * NOTE: there's an A stepping erratum that states if an overflow
-	 *       bit already exists and another occurs, the previous
-	 *       Overflow bit gets cleared. There's no workaround.
-	 *	 Fixed in B stepping or later.
-	 */
 	pmnc = xscale1pmu_read_pmnc();
 
 	/*
@@ -3009,14 +3003,6 @@ callchain_store(struct perf_callchain_entry *entry,
 		entry->ip[entry->nr++] = ip;
 }
 
-/*
- * The registers we're interested in are at the end of the variable
- * length saved register structure. The fp points at the end of this
- * structure so the address of this struct is:
- * (struct frame_tail *)(xxx->fp)-1
- *
- * This code has been adapted from the ARM OProfile support.
- */
 struct frame_tail {
 	struct frame_tail   *fp;
 	unsigned long	    sp;

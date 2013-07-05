@@ -96,7 +96,6 @@ static void bnep_net_set_mc_list(struct net_device *dev)
 			memcpy(__skb_put(skb, ETH_ALEN), dev->broadcast, ETH_ALEN);
 		}
 
-		/* FIXME: We should group addresses here. */
 
 		i = 0;
 		netdev_for_each_mc_addr(ha, dev) {

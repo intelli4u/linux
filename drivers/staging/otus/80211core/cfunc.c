@@ -86,7 +86,6 @@ void zfCopyFromRxBuffer(zdev_t* dev, zbuf_t* buf, u8_t* dst,
     }
 }
 
-#if 1
 void zfMemoryCopy(u8_t* dst, u8_t* src, u16_t length)
 {
     zfwMemoryCopy(dst, src, length);
@@ -106,7 +105,6 @@ u8_t zfMemoryIsEqual(u8_t* m1, u8_t* m2, u16_t length)
 {
     return zfwMemoryIsEqual(m1, m2, length);
 }
-#endif
 
 u8_t zfRxBufferEqualToStr(zdev_t* dev, zbuf_t* buf,
                           const u8_t* str, u16_t offset, u16_t length)
@@ -468,16 +466,12 @@ void zfCoreSetKeyComplete(zdev_t* dev)
     zmw_get_wlan_dev(dev);
     zmw_declare_for_critical_section();
 
-#if 0
-    wd->sta.flagKeyChanging = 0;
-#else
     if(wd->sta.flagKeyChanging)
     {
         zmw_enter_critical_section(dev);
         wd->sta.flagKeyChanging--;
         zmw_leave_critical_section(dev);
     }
-#endif
     zm_debug_msg1("  zfCoreSetKeyComplete--- ", wd->sta.flagKeyChanging);
 
     zfPushVtxq(dev);
@@ -1136,17 +1130,6 @@ u16_t zfFindCleanFrequency(zdev_t* dev, u32_t adhocMode)
         pBssInfo = pBssInfo->next;
     }
 
-#if 0
-    for(i=0; i<=(count_24G+3); i++)
-    {
-        printk("2.4GHz Before combin, %d BSS network : %d", i, BssNumberIn24G[i]);
-    }
-
-    for(i=0; i<count_5G; i++)
-    {
-        printk("5GHz Before combin, %d BSS network : %d", i, BssNumberIn5G[i]);
-    }
-#endif
 
     if( adhocMode == ZM_ADHOCBAND_B || adhocMode == ZM_ADHOCBAND_G ||
         adhocMode == ZM_ADHOCBAND_BG || adhocMode == ZM_ADHOCBAND_ABG )

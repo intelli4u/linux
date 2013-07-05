@@ -1,38 +1,4 @@
-/*
- * Front panel driver for Linux
- * Copyright (C) 2000-2008, Willy Tarreau <w@1wt.eu>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
- *
- * This code drives an LCD module (/dev/lcd), and a keypad (/dev/keypad)
- * connected to a parallel printer port.
- *
- * The LCD module may either be an HD44780-like 8-bit parallel LCD, or a 1-bit
- * serial module compatible with Samsung's KS0074. The pins may be connected in
- * any combination, everything is programmable.
- *
- * The keypad consists in a matrix of push buttons connecting input pins to
- * data output pins or to the ground. The combinations have to be hard-coded
- * in the driver, though several profiles exist and adding new ones is easy.
- *
- * Several profiles are provided for commonly found LCD+keypad modules on the
- * market, such as those found in Nexcom's appliances.
- *
- * FIXME:
- *      - the initialization/deinitialization process is very dirty and should
- *        be rewritten. It may even be buggy.
- *
- * TODO:
- *	- document 24 keys keyboard (3 rows of 8 cols, 32 diodes + 2 inputs)
- *      - make the LCD a part of a virtual screen of Vx*Vy
- *	- make the inputs list smp-safe
- *      - change the keyboard to a double mapping : signals -> key_id -> values
- *        so that applications can change values without knowing signals
- *
- */
+
 
 #include <linux/module.h>
 
@@ -330,7 +296,7 @@ static unsigned char lcd_bits[LCD_PORTS][LCD_BITS][BIT_STATES];
 #define DEFAULT_PARPORT CONFIG_PANEL_PARPORT
 #endif
 
-#if DEFAULT_PROFILE == 0	/* custom */
+#if DEFAULT_PROFILE == 0	    /* custom */
 #ifdef CONFIG_PANEL_KEYPAD
 #undef DEFAULT_KEYPAD
 #define DEFAULT_KEYPAD CONFIG_PANEL_KEYPAD
@@ -601,7 +567,6 @@ char nexcom_keypad_profile[][4][9] = {
 
 static char (*keypad_profile)[4][9] = old_keypad_profile;
 
-/* FIXME: this should be converted to a bit array containing signals states */
 static struct {
 	unsigned char e;  /* parallel LCD E (data latch on falling edge) */
 	unsigned char rs; /* parallel LCD RS  (0 = cmd, 1 = data) */
@@ -1175,7 +1140,7 @@ static inline int handle_lcd_special_code(void)
 		break;
 	}
 	case 'x':	/* gotoxy : LxXXX[yYYY]; */
-	case 'y':	/* gotoxy : LyYYY[xXXX]; */
+	case 'y':
 		if (strchr(esc, ';') == NULL)
 			break;
 
@@ -1720,30 +1685,6 @@ static void phys_scan_contacts(void)
 
 static inline int input_state_high(struct logical_input *input)
 {
-#if 0
-	/* FIXME:
-	 * this is an invalid test. It tries to catch
-	 * transitions from single-key to multiple-key, but
-	 * doesn't take into account the contacts polarity.
-	 * The only solution to the problem is to parse keys
-	 * from the most complex to the simplest combinations,
-	 * and mark them as 'caught' once a combination
-	 * matches, then unmatch it for all other ones.
-	 */
-
-	/* try to catch dangerous transitions cases :
-	 * someone adds a bit, so this signal was a false
-	 * positive resulting from a transition. We should
-	 * invalidate the signal immediately and not call the
-	 * release function.
-	 * eg: 0 -(press A)-> A -(press B)-> AB : don't match A's release.
-	 */
-	if (((phys_prev & input->mask) == input->value)
-	    && ((phys_curr & input->mask) > input->value)) {
-		input->state = INPUT_ST_LOW; /* invalidate */
-		return 1;
-	}
-#endif
 
 	if ((phys_curr & input->mask) == input->value) {
 		if ((input->type == INPUT_TYPE_STD) &&
@@ -1787,14 +1728,6 @@ static inline int input_state_high(struct logical_input *input)
 
 static inline void input_state_falling(struct logical_input *input)
 {
-#if 0
-	/* FIXME !!! same comment as in input_state_high */
-	if (((phys_prev & input->mask) == input->value)
-	    && ((phys_curr & input->mask) > input->value)) {
-		input->state = INPUT_ST_LOW;	/* invalidate */
-		return;
-	}
-#endif
 
 	if ((phys_curr & input->mask) == input->value) {
 		if (input->type == INPUT_TYPE_KBD) {
@@ -1840,11 +1773,6 @@ static void panel_process_inputs(void)
 	struct list_head *item;
 	struct logical_input *input;
 
-#if 0
-	printk(KERN_DEBUG
-	       "entering panel_process_inputs with pp=%016Lx & pc=%016Lx\n",
-	       phys_prev, phys_curr);
-#endif
 
 	keypressed = 0;
 	inputs_stable = 1;
@@ -2005,10 +1933,6 @@ static struct logical_input *panel_bind_key(char *name, char *press,
 	key->rise_time = 1;
 	key->fall_time = 1;
 
-#if 0
-	printk(KERN_DEBUG "bind: <%s> : m=%016Lx v=%016Lx\n", name, key->mask,
-	       key->value);
-#endif
 	strncpy(key->u.kbd.press_str, press, sizeof(key->u.kbd.press_str));
 	strncpy(key->u.kbd.repeat_str, repeat, sizeof(key->u.kbd.repeat_str));
 	strncpy(key->u.kbd.release_str, release,
@@ -2017,43 +1941,6 @@ static struct logical_input *panel_bind_key(char *name, char *press,
 	return key;
 }
 
-#if 0
-/* tries to bind a callback function to the signal name <name>. The function
- * <press_fct> will be called with the <press_data> arg when the signal is
- * activated, and so on for <release_fct>/<release_data>
- * Returns the pointer to the new signal if ok, NULL if the signal could not
- * be bound.
- */
-static struct logical_input *panel_bind_callback(char *name,
-						 void (*press_fct) (int),
-						 int press_data,
-						 void (*release_fct) (int),
-						 int release_data)
-{
-	struct logical_input *callback;
-
-	callback = kmalloc(sizeof(struct logical_input), GFP_KERNEL);
-	if (!callback) {
-		printk(KERN_ERR "panel: not enough memory\n");
-		return NULL;
-	}
-	memset(callback, 0, sizeof(struct logical_input));
-	if (!input_name2mask(name, &callback->mask, &callback->value,
-			     &scan_mask_i, &scan_mask_o))
-		return NULL;
-
-	callback->type = INPUT_TYPE_STD;
-	callback->state = INPUT_ST_LOW;
-	callback->rise_time = 1;
-	callback->fall_time = 1;
-	callback->u.std.press_fct = press_fct;
-	callback->u.std.press_data = press_data;
-	callback->u.std.release_fct = release_fct;
-	callback->u.std.release_data = release_data;
-	list_add(&callback->list, &logical_inputs);
-	return callback;
-}
-#endif
 
 static void keypad_init(void)
 {

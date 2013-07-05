@@ -21,7 +21,7 @@ struct file_ra_state;
 struct user_struct;
 struct writeback_control;
 
-#ifndef CONFIG_DISCONTIGMEM          /* Don't use mapnrs, do it properly */
+#ifndef CONFIG_DISCONTIGMEM              /* Don't use mapnrs, do it properly */
 extern unsigned long max_mapnr;
 #endif
 
@@ -114,7 +114,7 @@ extern unsigned int kobjsize(const void *objp);
 /* Bits set in the VMA until the stack is in its final location */
 #define VM_STACK_INCOMPLETE_SETUP	(VM_RAND_READ | VM_SEQ_READ)
 
-#ifndef VM_STACK_DEFAULT_FLAGS		/* arch can override this */
+#ifndef VM_STACK_DEFAULT_FLAGS		    /* arch can override this */
 #define VM_STACK_DEFAULT_FLAGS VM_DATA_DEFAULT_FLAGS
 #endif
 
@@ -236,10 +236,6 @@ struct inode;
 #define page_private(page)		((page)->private)
 #define set_page_private(page, v)	((page)->private = (v))
 
-/*
- * FIXME: take this include out, include page-flags.h in
- * files which need it (119 of them)
- */
 #include <linux/page-flags.h>
 
 /*
@@ -1183,7 +1179,7 @@ extern void sparse_memory_present_with_active_regions(int nid);
 #endif /* CONFIG_ARCH_POPULATES_NODE_MAP */
 
 #if !defined(CONFIG_ARCH_POPULATES_NODE_MAP) && \
-    !defined(CONFIG_HAVE_ARCH_EARLY_PFN_TO_NID)
+	!defined(CONFIG_HAVE_ARCH_EARLY_PFN_TO_NID)
 static inline int __early_pfn_to_nid(unsigned long pfn)
 {
 	return 0;

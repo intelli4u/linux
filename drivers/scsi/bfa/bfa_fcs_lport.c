@@ -933,5 +933,3 @@ bfa_fcs_port_get_attr(struct bfa_fcs_port_s *port,
 	}
 
 }
-
-

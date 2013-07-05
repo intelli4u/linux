@@ -174,7 +174,6 @@ main (int argc, char *argv[])
 	mem_size = elf_phdr->p_memsz;
 	fil_size = elf_phdr->p_filesz;
 
-	/* work around ELF bug: */
 	if (elf_phdr->p_vaddr < e_entry) {
 	    unsigned long delta = e_entry - elf_phdr->p_vaddr;
 	    offset   += delta;

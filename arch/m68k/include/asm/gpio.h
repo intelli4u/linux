@@ -34,9 +34,9 @@
  * This implementation attempts accomodate the differences while presenting
  * a generic interface that will optimize to as few instructions as possible.
  */
-#if defined(CONFIG_M5206) || defined(CONFIG_M5206e) || \
-    defined(CONFIG_M520x) || defined(CONFIG_M523x) || \
-    defined(CONFIG_M527x) || defined(CONFIG_M528x) || defined(CONFIG_M532x)
+#if defined(CONFIG_M5206) || defined(CONFIG_M5206e) || defined(CONFIG_M520x) || \
+	defined(CONFIG_M523x) || defined(CONFIG_M527x) || defined(CONFIG_M528x) || \
+	defined(CONFIG_M532x)
 
 /* These parts have GPIO organized by 8 bit ports */
 
@@ -68,8 +68,8 @@
 #define mcfgpio_bit(gpio)		(1 << ((gpio) %  MCFGPIO_PORTSIZE))
 #define mcfgpio_port(gpio)		((gpio) / MCFGPIO_PORTSIZE)
 
-#if defined(CONFIG_M520x) || defined(CONFIG_M523x) || \
-    defined(CONFIG_M527x) || defined(CONFIG_M528x) || defined(CONFIG_M532x)
+#if defined(CONFIG_M520x) || defined(CONFIG_M523x) || defined(CONFIG_M527x) || \
+	defined(CONFIG_M528x) || defined(CONFIG_M532x)
 /*
  * These parts have an 'Edge' Port module (external interrupt/GPIO) which uses
  * read-modify-write to change an output and a GPIO module which has separate
@@ -105,8 +105,8 @@
 /* return the port pin data register for a gpio */
 static inline u32 __mcf_gpio_ppdr(unsigned gpio)
 {
-#if defined(CONFIG_M5206) || defined(CONFIG_M5206e) || \
-    defined(CONFIG_M5307) || defined(CONFIG_M5407)
+#if defined(CONFIG_M5206) || defined(CONFIG_M5206e) || defined(CONFIG_M5307) || \
+	defined(CONFIG_M5407)
 	return MCFSIM_PADAT;
 #elif defined(CONFIG_M5272)
 	if (gpio < 16)
@@ -142,8 +142,8 @@ static inline u32 __mcf_gpio_ppdr(unsigned gpio)
 /* return the port output data register for a gpio */
 static inline u32 __mcf_gpio_podr(unsigned gpio)
 {
-#if defined(CONFIG_M5206) || defined(CONFIG_M5206e) || \
-    defined(CONFIG_M5307) || defined(CONFIG_M5407)
+#if defined(CONFIG_M5206) || defined(CONFIG_M5206e) || defined(CONFIG_M5307) || \
+	defined(CONFIG_M5407)
 	return MCFSIM_PADAT;
 #elif defined(CONFIG_M5272)
 	if (gpio < 16)

@@ -76,19 +76,6 @@ struct zdap_ioctl {
 
 /* Declaration of macro and function for handling WEP Keys */
 
-#if 0
-
-#define SKIP_ELEM { \
-	while (isxdigit(*p)) \
-		p++; \
-}
-
-#define SKIP_DELIMETER { \
-	if (*p == ':' || *p == ' ') \
-		p++; \
-}
-
-#endif
 
 char *prgname;
 
@@ -376,4 +363,3 @@ int main(int argc, char **argv)
 fail:
 	exit(0);
 }
-

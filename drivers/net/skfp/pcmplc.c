@@ -544,23 +544,18 @@ static int plc_send_bits(struct s_smc *smc, struct s_phy *phy, int len)
 		n = (n<<1) | phy->t_val[phy->bitn+i] ;
 	}
 	if (inpw(PLC(np,PL_STATUS_B)) & PL_PCM_SIGNAL) {
-#if	0
-		printf("PL_PCM_SIGNAL is set\n") ;
-#endif
 		return(1) ;
 	}
 	/* write bit[n] & length = 1 to regs */
 	outpw(PLC(np,PL_VECTOR_LEN),len-1) ;	/* len=nr-1 */
 	outpw(PLC(np,PL_XMIT_VECTOR),n) ;
 #ifdef	DEBUG
-#if 1
 #ifdef	DEBUG_BRD
 	if (smc->debug.d_plc & 0x80)
 #else
 	if (debug.d_plc & 0x80)
 #endif
 		printf("SIGNALING bit %d .. %d\n",phy->bitn,phy->bitn+len-1) ;
-#endif
 #endif
 	return(0) ;
 }
@@ -749,12 +744,6 @@ static void pcm_fsm(struct s_smc *smc, struct s_phy *phy, int cmd)
 		/*
 		 * if vector is already loaded, go to OFF to clear PCM_SIGNAL
 		 */
-#if	0
-		if (inpw(PLC(np,PL_STATUS_B)) & PL_PCM_SIGNAL) {
-			plc_go_state(smc,np,PL_PCM_STOP) ;
-			/* TB_MIN ? */
-		}
-#endif
 		/*
 		 * Go to OFF state in any case.
 		 */
@@ -796,26 +785,9 @@ static void pcm_fsm(struct s_smc *smc, struct s_phy *phy, int cmd)
 			}
 		}
 
-		/*
-		 * Now give the Start command.
-		 * - The start command shall be done before setting the bits
-		 *   to be signaled. (In PLC-S description and PLCS in SN3.
-		 * - The start command shall be issued AFTER setting the
-		 *   XMIT vector and the XMIT length register.
-		 *
-		 * We do it exactly according this specs for the old PLC and
-		 * the new PLCS inside the SN3.
-		 * For the usual PLCS we try it the way it is done for the
-		 * old PLC and set the XMIT registers again, if the PLC is
-		 * not in SIGNAL state. This is done according to an PLCS
-		 * errata workaround.
-		 */
 
 		plc_go_state(smc,np,PL_PCM_START) ;
 
-		/*
-		 * workaround for PLC-S eng. sample errata
-		 */
 #ifdef	MOT_ELM
 		if (!(inpw(PLC(np,PL_STATUS_B)) & PL_PCM_SIGNAL))
 #else	/* nMOT_ELM */
@@ -830,9 +802,6 @@ static void pcm_fsm(struct s_smc *smc, struct s_phy *phy, int cmd)
 			 */
 			(void) plc_send_bits(smc,phy,3) ;
 		}
-		/*
-		 * end of workaround
-		 */
 
 		GO_STATE(PC5_SIGNAL) ;
 		plc->p_state = PS_BIT3 ;
@@ -1841,21 +1810,6 @@ void plc_irq(struct s_smc *smc, int np, unsigned int cmd)
 			}
 		}
 	}
-#if	0
-	if (cmd & PL_NP_ERR) {		/* NP has requested to r/w an inv reg*/
-		/*
-		 * It's a bug by AMD
-		 */
-		plc->np_err++ ;
-	}
-	/* pin inactiv (GND) */
-	if (cmd & PL_PARITY_ERR) {	/* p. error dedected on TX9-0 inp */
-		plc->parity_err++ ;
-	}
-	if (cmd & PL_LSDO) {		/* carrier detected */
-		;
-	}
-#endif
 }
 
 #ifdef	DEBUG

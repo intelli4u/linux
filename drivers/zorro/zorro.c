@@ -63,20 +63,6 @@ struct zorro_dev *zorro_find_device(zorro_id id, struct zorro_dev *from)
 EXPORT_SYMBOL(zorro_find_device);
 
 
-    /*
-     *  Bitmask indicating portions of available Zorro II RAM that are unused
-     *  by the system. Every bit represents a 64K chunk, for a maximum of 8MB
-     *  (128 chunks, physical 0x00200000-0x009fffff).
-     *
-     *  If you want to use (= allocate) portions of this RAM, you should clear
-     *  the corresponding bits.
-     *
-     *  Possible uses:
-     *      - z2ram device
-     *      - SCSI DMA bounce buffers
-     *
-     *  FIXME: use the normal resource management
-     */
 
 DECLARE_BITMAP(zorro_unused_z2ram, 128);
 EXPORT_SYMBOL(zorro_unused_z2ram);

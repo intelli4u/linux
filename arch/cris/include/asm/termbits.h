@@ -1,4 +1,4 @@
-/* $Id: termbits.h,v 1.1 2000/07/10 16:32:31 bjornw Exp $ */
+/* $Id: termbits.h,v 1.1 2000/07/10 16:32:31 Exp $ */
 
 #ifndef __ARCH_ETRAX100_TERMBITS_H__
 #define __ARCH_ETRAX100_TERMBITS_H__
@@ -111,29 +111,6 @@ struct ktermios {
 #define   FF1	0100000
 
 /* c_cflag bit meaning */
-/*
- *     3             2            1
- *    10 987 654 321 098 765 432 109 876 543 210
- *                             |           | ||| CBAUD
- *                                         obaud    
- *
- *                                       ||CSIZE
- *
- *                                     |CSTOP
- *                                    |CREAD
- *                                   |CPARENB
- *
- *                                 |CPARODD 
- *                                |HUPCL
- *                               |CLOCAL
- *                             |CBAUDEX
- *    10 987 654 321 098 765 432 109 876 543 210
- *        |           || ||   CIBAUD, IBSHIFT=16
- *                    ibaud
- *     |CMSPAR
- *    | CRTSCTS
- *       x x xxx xxx x     x xx Free bits
- */
 
 #define CBAUD	0010017
 #define  B0	0000000		/* hang up */

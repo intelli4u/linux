@@ -1,41 +1,4 @@
-/*
- * Ours Technology Inc. OTi-6858 USB to serial adapter driver.
- *
- * Copyleft  (C) 2007 Kees Lemmens (adapted for kernel 2.6.20)
- * Copyright (C) 2006 Tomasz Michal Lukaszewski (FIXME: add e-mail)
- * Copyright (C) 2001-2004 Greg Kroah-Hartman (greg@kroah.com)
- * Copyright (C) 2003 IBM Corp.
- *
- * Many thanks to the authors of pl2303 driver: all functions in this file
- * are heavily based on pl2303 code, buffering code is a 1-to-1 copy.
- *
- * Warning! You use this driver on your own risk! The only official
- * description of this device I have is datasheet from manufacturer,
- * and it doesn't contain almost any information needed to write a driver.
- * Almost all knowlegde used while writing this driver was gathered by:
- *  - analyzing traffic between device and the M$ Windows 2000 driver,
- *  - trying different bit combinations and checking pin states
- *    with a voltmeter,
- *  - receiving malformed frames and producing buffer overflows
- *    to learn how errors are reported,
- * So, THIS CODE CAN DESTROY OTi-6858 AND ANY OTHER DEVICES, THAT ARE
- * CONNECTED TO IT!
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License.
- *
- * See Documentation/usb/usb-serial.txt for more information on using this
- * driver
- *
- * TODO:
- *  - implement correct flushing for ioctls and oti6858_close()
- *  - check how errors (rx overflow, parity error, framing error) are reported
- *  - implement oti6858_break_ctl()
- *  - implement more ioctls
- *  - test/implement flow control
- *  - allow setting custom baud rates
- */
+
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -510,21 +473,6 @@ static void oti6858_set_termios(struct tty_struct *tty,
 		control |= (CONTROL_DTR_HIGH | CONTROL_RTS_HIGH);
 
 	/* change control lines if we are switching to or from B0 */
-	/* FIXME:
-	spin_lock_irqsave(&priv->lock, flags);
-	control = priv->line_control;
-	if ((cflag & CBAUD) == B0)
-		priv->line_control &= ~(CONTROL_DTR | CONTROL_RTS);
-	else
-		priv->line_control |= (CONTROL_DTR | CONTROL_RTS);
-	if (control != priv->line_control) {
-		control = priv->line_control;
-		spin_unlock_irqrestore(&priv->lock, flags);
-		set_control_lines(serial->dev, control);
-	} else {
-		spin_unlock_irqrestore(&priv->lock, flags);
-	}
-	*/
 
 	spin_lock_irqsave(&priv->lock, flags);
 	if (divisor != priv->pending_setup.divisor
@@ -595,7 +543,7 @@ static int oti6858_open(struct tty_struct *tty, struct usb_serial_port *port)
 	/* setup termios */
 	if (tty)
 		oti6858_set_termios(tty, port, &tmp_termios);
-	port->port.drain_delay = 256;	/* FIXME: check the FIFO length */
+	port->port.drain_delay = 256;
 	return 0;
 }
 
@@ -639,7 +587,6 @@ static int oti6858_tiocmset(struct tty_struct *tty, struct file *file,
 	if (!usb_get_intfdata(port->serial->interface))
 		return -ENODEV;
 
-	/* FIXME: check if this is correct (active high/low) */
 	spin_lock_irqsave(&priv->lock, flags);
 	control = priv->pending_setup.control;
 	if ((set & TIOCM_RTS) != 0)
@@ -675,7 +622,6 @@ static int oti6858_tiocmget(struct tty_struct *tty, struct file *file)
 	pin_state = priv->status.pin_state & PIN_MASK;
 	spin_unlock_irqrestore(&priv->lock, flags);
 
-	/* FIXME: check if this is correct (active high/low) */
 	if ((pin_state & PIN_RTS) != 0)
 		result |= TIOCM_RTS;
 	if ((pin_state & PIN_CTS) != 0)
@@ -716,7 +662,6 @@ static int wait_modem_info(struct usb_serial_port *port, unsigned int arg)
 		spin_unlock_irqrestore(&priv->lock, flags);
 
 		changed = prev ^ status;
-		/* FIXME: check if this is correct (active high/low) */
 		if (((arg & TIOCM_RNG) && (changed & PIN_RI)) ||
 		    ((arg & TIOCM_DSR) && (changed & PIN_DSR)) ||
 		    ((arg & TIOCM_CD)  && (changed & PIN_DCD)) ||
@@ -1009,4 +954,3 @@ MODULE_LICENSE("GPL");
 
 module_param(debug, bool, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(debug, "enable debug output");
-

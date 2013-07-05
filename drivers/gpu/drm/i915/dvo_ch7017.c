@@ -298,7 +298,7 @@ static void ch7017_mode_set(struct intel_dvo_device *dvo,
 		lvds_pll_feedback_div = 35;
 		lvds_control_2 = (3 << CH7017_LOOP_FILTER_SHIFT) |
 			(0 << CH7017_PHASE_DETECTOR_SHIFT);
-		if (1) { /* XXX: dual channel panel detection.  Assume yes for now. */
+		if (1) {
 			outputs_enable |= CH7017_LVDS_CHANNEL_B;
 			lvds_pll_vco_control = CH7017_LVDS_PLL_VCO_DEFAULT_RESERVED |
 				(2 << CH7017_LVDS_PLL_VCO_SHIFT) |
@@ -367,7 +367,6 @@ static void ch7017_dpms(struct intel_dvo_device *dvo, int mode)
 			     val | CH7017_LVDS_POWER_DOWN_EN);
 	}
 
-	/* XXX: Should actually wait for update power status somehow */
 	udelay(20000);
 }
 

@@ -1009,13 +1009,6 @@ s32 ixgbe_reinit_fdir_tables_82599(struct ixgbe_hw *hw)
 
 	IXGBE_WRITE_REG(hw, IXGBE_FDIRFREE, 0);
 	IXGBE_WRITE_FLUSH(hw);
-	/*
-	 * 82599 adapters flow director init flow cannot be restarted,
-	 * Workaround 82599 silicon errata by performing the following steps
-	 * before re-writing the FDIRCTRL control register with the same value.
-	 * - write 1 to bit 8 of FDIRCMD register &
-	 * - write 0 to bit 8 of FDIRCMD register
-	 */
 	IXGBE_WRITE_REG(hw, IXGBE_FDIRCMD,
 	                (IXGBE_READ_REG(hw, IXGBE_FDIRCMD) |
 	                 IXGBE_FDIRCMD_CLEARHT));
@@ -2207,12 +2200,6 @@ static s32 ixgbe_enable_rx_dma_82599(struct ixgbe_hw *hw, u32 regval)
 	int i;
 	int secrxreg;
 
-	/*
-	 * Workaround for 82599 silicon errata when enabling the Rx datapath.
-	 * If traffic is incoming before we enable the Rx unit, it could hang
-	 * the Rx DMA unit.  Therefore, make sure the security engine is
-	 * completely disabled prior to enabling the Rx unit.
-	 */
 	secrxreg = IXGBE_READ_REG(hw, IXGBE_SECRXCTRL);
 	secrxreg |= IXGBE_SECRXCTRL_RX_DIS;
 	IXGBE_WRITE_REG(hw, IXGBE_SECRXCTRL, secrxreg);

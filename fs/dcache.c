@@ -1665,9 +1665,6 @@ static void d_move_locked(struct dentry * dentry, struct dentry * target)
 		printk(KERN_WARNING "VFS: moving negative dcache entry\n");
 
 	write_seqlock(&rename_lock);
-	/*
-	 * XXXX: do we really need to take target->d_lock?
-	 */
 	if (target < dentry) {
 		spin_lock(&target->d_lock);
 		spin_lock_nested(&dentry->d_lock, DENTRY_D_LOCK_NESTED);

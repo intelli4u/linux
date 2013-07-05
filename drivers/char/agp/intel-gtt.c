@@ -818,7 +818,7 @@ static int intel_i830_create_gatt_table(struct agp_bridge_data *bridge)
 		return -ENOMEM;
 
 	temp = readl(intel_private.registers+I810_PGETBL_CTL) & 0xfffff000;
-	global_cache_flush();	/* FIXME: ?? */
+	global_cache_flush();
 
 	/* we have to call this as early as possible after the MMIO base address is known */
 	intel_i830_init_gtt_entries();
@@ -1314,7 +1314,7 @@ static int intel_i915_create_gatt_table(struct agp_bridge_data *bridge)
 	intel_private.gtt_total_size = gtt_map_size / 4;
 
 	temp = readl(intel_private.registers+I810_PGETBL_CTL) & 0xfffff000;
-	global_cache_flush();	/* FIXME: ? */
+	global_cache_flush();
 
 	/* we have to call this as early as possible after the MMIO base address is known */
 	intel_i830_init_gtt_entries();
@@ -1438,7 +1438,7 @@ static int intel_i965_create_gatt_table(struct agp_bridge_data *bridge)
 	}
 
 	temp = readl(intel_private.registers+I810_PGETBL_CTL) & 0xfffff000;
-	global_cache_flush();   /* FIXME: ? */
+	global_cache_flush();
 
 	/* we have to call this as early as possible after the MMIO base address is known */
 	intel_i830_init_gtt_entries();

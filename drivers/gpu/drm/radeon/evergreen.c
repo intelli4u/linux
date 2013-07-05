@@ -286,7 +286,6 @@ void evergreen_hpd_fini(struct radeon_device *rdev)
 
 void evergreen_bandwidth_update(struct radeon_device *rdev)
 {
-	/* XXX */
 }
 
 static int evergreen_mc_wait_for_idle(struct radeon_device *rdev)
@@ -1416,7 +1415,6 @@ int evergreen_mc_init(struct radeon_device *rdev)
 
 bool evergreen_gpu_is_lockup(struct radeon_device *rdev)
 {
-	/* FIXME: implement for evergreen */
 	return false;
 }
 
@@ -1745,7 +1743,6 @@ static inline u32 evergreen_get_ih_wptr(struct radeon_device *rdev)
 {
 	u32 wptr, tmp;
 
-	/* XXX use writeback */
 	wptr = RREG32(IH_RB_WPTR);
 
 	if (wptr & RB_OVERFLOW) {
@@ -2033,26 +2030,6 @@ static int evergreen_startup(struct radeon_device *rdev)
 			return r;
 	}
 	evergreen_gpu_init(rdev);
-#if 0
-	if (!rdev->r600_blit.shader_obj) {
-		r = r600_blit_init(rdev);
-		if (r) {
-			DRM_ERROR("radeon: failed blitter (%d).\n", r);
-			return r;
-		}
-	}
-
-	r = radeon_bo_reserve(rdev->r600_blit.shader_obj, false);
-	if (unlikely(r != 0))
-		return r;
-	r = radeon_bo_pin(rdev->r600_blit.shader_obj, RADEON_GEM_DOMAIN_VRAM,
-			&rdev->r600_blit.shader_gpu_addr);
-	radeon_bo_unreserve(rdev->r600_blit.shader_obj);
-	if (r) {
-		DRM_ERROR("failed to pin blit object %d\n", r);
-		return r;
-	}
-#endif
 
 	/* Enable IRQ */
 	r = r600_irq_init(rdev);
@@ -2112,23 +2089,11 @@ int evergreen_resume(struct radeon_device *rdev)
 
 int evergreen_suspend(struct radeon_device *rdev)
 {
-#if 0
-	int r;
-#endif
-	/* FIXME: we should wait for ring to be empty */
 	r700_cp_stop(rdev);
 	rdev->cp.ready = false;
 	evergreen_irq_suspend(rdev);
 	r600_wb_disable(rdev);
 	evergreen_pcie_gart_disable(rdev);
-#if 0
-	/* unpin shaders bo */
-	r = radeon_bo_reserve(rdev->r600_blit.shader_obj, false);
-	if (likely(r == 0)) {
-		radeon_bo_unpin(rdev->r600_blit.shader_obj);
-		radeon_bo_unreserve(rdev->r600_blit.shader_obj);
-	}
-#endif
 	return 0;
 }
 

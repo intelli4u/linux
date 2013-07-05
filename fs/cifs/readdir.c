@@ -85,7 +85,6 @@ cifs_readdir_lookup(struct dentry *parent, struct qstr *name,
 
 	dentry = d_lookup(parent, name);
 	if (dentry) {
-		/* FIXME: check for inode number changes? */
 		if (dentry->d_inode != NULL)
 			return dentry;
 		d_drop(dentry);
@@ -265,7 +264,7 @@ ffirst_retry:
 		cifsFile->srch_inf.info_level = SMB_FIND_FILE_INFO_STANDARD;
 	} else if (cifs_sb->mnt_cifs_flags & CIFS_MOUNT_SERVER_INUM) {
 		cifsFile->srch_inf.info_level = SMB_FIND_FILE_ID_FULL_DIR_INFO;
-	} else /* not srvinos - BB fixme add check for backlevel? */ {
+	} else {
 		cifsFile->srch_inf.info_level = SMB_FIND_FILE_DIRECTORY_INFO;
 	}
 
@@ -582,7 +581,6 @@ static int find_cifs_entry(const int xid, struct cifsTconInfo *pTcon,
 						cifsFile->srch_inf.info_level);
 		}
 		if ((current_entry == NULL) && (i < pos_in_buf)) {
-			/* BB fixme - check if we should flag this error */
 			cERROR(1, "reached end of buf searching for pos in buf"
 			  " %d index to find %lld rc %d",
 			  pos_in_buf, index_to_find, rc);
@@ -744,14 +742,6 @@ static int cifs_filldir(char *pfindEntry, struct file *file, filldir_t filldir,
 	rc = filldir(direntry, qstring.name, qstring.len, file->f_pos,
 		     ino, fattr.cf_dtype);
 
-	/*
-	 * we can not return filldir errors to the caller since they are
-	 * "normal" when the stat blocksize is too small - we return remapped
-	 * error instead
-	 *
-	 * FIXME: This looks bogus. filldir returns -EOVERFLOW in the above
-	 * case already. Why should we be clobbering other errors from it?
-	 */
 	if (rc) {
 		cFYI(1, "filldir rc = %d", rc);
 		rc = -EOVERFLOW;

@@ -89,7 +89,7 @@ struct uart_sunsu_port {
 
 	/* Probing information.  */
 	enum su_type		su_type;
-	unsigned int		type_probed;	/* XXX Stupid */
+	unsigned int		type_probed;
 	unsigned long		reg_size;
 
 #ifdef CONFIG_SERIO
@@ -165,19 +165,6 @@ static void serial_icr_write(struct uart_sunsu_port *up, int offset, int value)
 	serial_out(up, UART_ICR, value);
 }
 
-#if 0 /* Unused currently */
-static unsigned int serial_icr_read(struct uart_sunsu_port *up, int offset)
-{
-	unsigned int value;
-
-	serial_icr_write(up, UART_ACR, up->acr | UART_ACR_ICRRD);
-	serial_out(up, UART_SCR, offset);
-	value = serial_in(up, UART_ICR);
-	serial_icr_write(up, UART_ACR, up->acr);
-
-	return value;
-}
-#endif
 
 #ifdef CONFIG_SERIAL_8250_RSA
 /*
@@ -798,11 +785,6 @@ sunsu_change_speed(struct uart_port *port, unsigned int cflag,
 		cval |= UART_LCR_SPAR;
 #endif
 
-	/*
-	 * Work around a bug in the Oxford Semiconductor 952 rev B
-	 * chip which causes it to seriously miscalculate baud rates
-	 * when DLL is 0.
-	 */
 	if ((quot & 0xff) == 0 && up->port.type == PORT_16C950 &&
 	    up->rev == 0x5201)
 		quot ++;
@@ -926,7 +908,7 @@ static void sunsu_config_port(struct uart_port *port, int flags)
 		 * splitting all the OBP probing crap from the UART probing.
 		 * We'll do it when we kill sunsu.c altogether.
 		 */
-		port->type = up->type_probed;	/* XXX */
+		port->type = up->type_probed;
 	}
 }
 
@@ -1151,7 +1133,7 @@ static void sunsu_autoconfig(struct uart_sunsu_port *up)
 
 	if (up->port.type == PORT_UNKNOWN)
 		goto out;
-	up->type_probed = up->port.type;	/* XXX */
+	up->type_probed = up->port.type;
 
 	/*
 	 * Reset the UART.

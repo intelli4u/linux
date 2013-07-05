@@ -1,23 +1,4 @@
-/*
-**  System Bus Adapter (SBA) I/O MMU manager
-**
-**	(c) Copyright 2000-2004 Grant Grundler <grundler @ parisc-linux x org>
-**	(c) Copyright 2004 Naresh Kumar Inna <knaresh at india x hp x com>
-**	(c) Copyright 2000-2004 Hewlett-Packard Company
-**
-**	Portions (c) 1999 Dave S. Miller (from sparc64 I/O MMU code)
-**
-**	This program is free software; you can redistribute it and/or modify
-**	it under the terms of the GNU General Public License as published by
-**      the Free Software Foundation; either version 2 of the License, or
-**      (at your option) any later version.
-**
-**
-** This module initializes the IOC (I/O Controller) found on B1000/C3000/
-** J5000/J7000/N-class/L-class machines and their successors.
-**
-** FIXME: add DMA hint support programming in both sba and lba modules.
-*/
+
 
 #include <linux/types.h>
 #include <linux/kernel.h>
@@ -99,7 +80,6 @@ static unsigned long ioc_needs_fdc = 0;
 /* global count of IOMMUs in the system */
 static unsigned int global_ioc_cnt = 0;
 
-/* PA8700 (Piranha 2.2) bug workaround */
 static unsigned long piranha_bad_128k = 0;
 
 /* Looks nice and keeps the compiler happy */
@@ -624,12 +604,6 @@ sba_mark_invalid(struct ioc *ioc, dma_addr_t iova, size_t byte_cnt)
 
 	if (byte_cnt > IOVP_SIZE)
 	{
-#if 0
-		unsigned long entries_per_cacheline = ioc_needs_fdc ?
-				L1_CACHE_ALIGN(((unsigned long) pdir_ptr))
-					- (unsigned long) pdir_ptr;
-				: 262144;
-#endif
 
 		/* set "size" field for PCOM */
 		iovp |= get_order(byte_cnt) + PAGE_SHIFT;
@@ -639,9 +613,6 @@ sba_mark_invalid(struct ioc *ioc, dma_addr_t iova, size_t byte_cnt)
 			((u8 *) pdir_ptr)[7] = 0;
 			if (ioc_needs_fdc) {
 				asm volatile("fdc %%r0(%0)" : : "r" (pdir_ptr));
-#if 0
-				entries_per_cacheline = L1_CACHE_SHIFT - 3;
-#endif
 			}
 			pdir_ptr++;
 			byte_cnt -= IOVP_SIZE;
@@ -844,14 +815,6 @@ sba_unmap_single(struct device *dev, dma_addr_t iova, size_t size,
 
 	spin_unlock_irqrestore(&ioc->res_lock, flags);
 
-	/* XXX REVISIT for 2.5 Linux - need syncdma for zero-copy support.
-	** For Astro based systems this isn't a big deal WRT performance.
-	** As long as 2.4 kernels copyin/copyout data from/to userspace,
-	** we don't need the syncdma. The issue here is I/O MMU cachelines
-	** are *not* coherent in all cases.  May be hwrev dependent.
-	** Need to investigate more.
-	asm volatile("syncdma");	
-	*/
 }
 
 
@@ -1085,20 +1048,6 @@ static struct hppa_dma_ops sba_ops = {
 static void
 sba_get_pat_resources(struct sba_device *sba_dev)
 {
-#if 0
-/*
-** TODO/REVISIT/FIXME: support for directed ranges requires calls to
-**      PAT PDC to program the SBA/LBA directed range registers...this
-**      burden may fall on the LBA code since it directly supports the
-**      PCI subsystem. It's not clear yet. - ggg
-*/
-PAT_MOD(mod)->mod_info.mod_pages   = PAT_GET_MOD_PAGES(temp);
-	FIXME : ???
-PAT_MOD(mod)->mod_info.dvi         = PAT_GET_DVI(temp);
-	Tells where the dvi bits are located in the address.
-PAT_MOD(mod)->mod_info.ioc         = PAT_GET_IOC(temp);
-	FIXME : ???
-#endif
 }
 
 
@@ -1425,7 +1374,6 @@ sba_ioc_init(struct parisc_device *sba, struct ioc *ioc, int ioc_num)
 			__func__, ioc->pdir_base, pdir_size);
 
 #ifdef SBA_HINT_SUPPORT
-	/* FIXME : DMA HINTs not used */
 	ioc->hint_shift_pdir = iov_order + PAGE_SHIFT;
 	ioc->hint_mask_pdir = ~(0x3 << (iov_order + PAGE_SHIFT));
 
@@ -1452,11 +1400,6 @@ sba_ioc_init(struct parisc_device *sba, struct ioc *ioc, int ioc_num)
 	DBG_INIT("%s() IOV base 0x%lx mask 0x%0lx\n",
 		__func__, ioc->ibase, ioc->imask);
 
-	/*
-	** FIXME: Hint registers are programmed with default hint
-	** values during boot, so hints should be sane even if we
-	** can't reprogram them the way drivers want.
-	*/
 
 	setup_ibase_imask(sba, ioc, ioc_num);
 
@@ -1482,16 +1425,6 @@ sba_ioc_init(struct parisc_device *sba, struct ioc *ioc, int ioc_num)
 
 
 
-/**************************************************************************
-**
-**   SBA initialization code (HW and SW)
-**
-**   o identify SBA chip itself
-**   o initialize SBA chip modes (HardFail)
-**   o initialize SBA chip modes (HardFail)
-**   o FIXME: initialize DMA hints for reasonable defaults
-**
-**************************************************************************/
 
 static void __iomem *ioc_remap(struct sba_device *sba_dev, unsigned int offset)
 {
@@ -1505,23 +1438,6 @@ static void sba_hw_init(struct sba_device *sba_dev)
 	u64 ioc_ctl;
 
 	if (!is_pdc_pat()) {
-		/* Shutdown the USB controller on Astro-based workstations.
-		** Once we reprogram the IOMMU, the next DMA performed by
-		** USB will HPMC the box. USB is only enabled if a
-		** keyboard is present and found.
-		**
-		** With serial console, j6k v5.0 firmware says:
-		**   mem_kbd hpa 0xfee003f8 sba 0x0 pad 0x0 cl_class 0x7
-		**
-		** FIXME: Using GFX+USB console at power up but direct
-		**	linux to serial console is still broken.
-		**	USB could generate DMA so we must reset USB.
-		**	The proper sequence would be:
-		**	o block console output
-		**	o reset USB device
-		**	o reprogram serial port
-		**	o unblock console output
-		*/
 		if (PAGE0->mem_kbd.cl_class == CL_KEYBD) {
 			pdc_io_reset_devices();
 		}
@@ -1529,24 +1445,6 @@ static void sba_hw_init(struct sba_device *sba_dev)
 	}
 
 
-#if 0
-printk("sba_hw_init(): mem_boot 0x%x 0x%x 0x%x 0x%x\n", PAGE0->mem_boot.hpa,
-	PAGE0->mem_boot.spa, PAGE0->mem_boot.pad, PAGE0->mem_boot.cl_class);
-
-	/*
-	** Need to deal with DMA from LAN.
-	**	Maybe use page zero boot device as a handle to talk
-	**	to PDC about which device to shutdown.
-	**
-	** Netbooting, j6k v5.0 firmware says:
-	** 	mem_boot hpa 0xf4008000 sba 0x0 pad 0x0 cl_class 0x1002
-	** ARGH! invalid class.
-	*/
-	if ((PAGE0->mem_boot.cl_class != CL_RANDOM)
-		&& (PAGE0->mem_boot.cl_class != CL_SEQU)) {
-			pdc_io_reset();
-	}
-#endif
 
 	if (!IS_PLUTO(sba_dev->dev)) {
 		ioc_ctl = READ_REG(sba_dev->sba_hpa+IOC_CTRL);
@@ -1601,7 +1499,6 @@ printk("sba_hw_init(): mem_boot 0x%x 0x%x 0x%x 0x%x\n", PAGE0->mem_boot.hpa,
 
 		/* TODO - LOOKUP Ike/Stretch chipset mem map */
 	}
-	/* XXX: What about Reo Grande? */
 
 	sba_dev->num_ioc = num_ioc;
 	for (i = 0; i < num_ioc; i++) {
@@ -1756,7 +1653,7 @@ sba_common_init(struct sba_device *sba_dev)
 static int sba_proc_info(struct seq_file *m, void *p)
 {
 	struct sba_device *sba_dev = sba_list;
-	struct ioc *ioc = &sba_dev->ioc[0];	/* FIXME: Multi-IOC support! */
+	struct ioc *ioc = &sba_dev->ioc[0];
 	int total_pages = (int) (ioc->res_size << 3); /* 8 bits per byte */
 #ifdef SBA_COLLECT_STATS
 	unsigned long avg = 0, min, max;
@@ -1843,7 +1740,7 @@ static int
 sba_proc_bitmap_info(struct seq_file *m, void *p)
 {
 	struct sba_device *sba_dev = sba_list;
-	struct ioc *ioc = &sba_dev->ioc[0];	/* FIXME: Multi-IOC support! */
+	struct ioc *ioc = &sba_dev->ioc[0];
 	unsigned int *res_ptr = (unsigned int *)ioc->res_map;
 	int i, len = 0;
 

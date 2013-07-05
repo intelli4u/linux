@@ -177,9 +177,6 @@ static unsigned long clk_pll_get_rate(struct clk *clk)
 	else
 		mfn_abs = mfn;
 
-/* XXX: actually this asumes that ckih is fed to pll, but spec says
- * that ckih_x2 is also possible. need to check this out.
- */
 	ref_clk = clk_get_rate(&ckih_clk);
 
 	ref_clk *= 2;

@@ -128,4 +128,3 @@ int ceph_auth_none_init(struct ceph_auth_client *ac)
 	ac->ops = &ceph_auth_none_ops;
 	return 0;
 }
-

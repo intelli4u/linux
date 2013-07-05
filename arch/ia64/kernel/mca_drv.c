@@ -409,17 +409,6 @@ is_mca_global(peidx_table_t *peidx, pal_bus_check_info_t *pbci,
 	if (!pbci || pbci->ib)
 		return MCA_IS_GLOBAL;
 
-	/*
-	 * Bus_Check structure with Bus_Check.eb (external bus error) flag set
-	 * could be either a local MCA or a global MCA.
-	 *
-	 * Referring Bus_Check.bsi:
-	 *   0: Unknown/unclassified
-	 *   1: BERR#
-	 *   2: BINIT#
-	 *   3: Hard Fail
-	 * (FIXME: Are these SGI specific or generic bsi values?)
-	 */
 	if (pbci->eb)
 		switch (pbci->bsi) {
 			case 0:

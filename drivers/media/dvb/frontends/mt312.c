@@ -744,9 +744,8 @@ static struct dvb_frontend_ops mt312_ops = {
 		.type = FE_QPSK,
 		.frequency_min = 950000,
 		.frequency_max = 2150000,
-		/* FIXME: adjust freq to real used xtal */
 		.frequency_stepsize = (MT312_PLL_CLK / 1000) / 128,
-		.symbol_rate_min = MT312_SYS_CLK / 128, /* FIXME as above */
+		.symbol_rate_min = MT312_SYS_CLK / 128,
 		.symbol_rate_max = MT312_SYS_CLK / 2,
 		.caps =
 		    FE_CAN_FEC_1_2 | FE_CAN_FEC_2_3 |
@@ -837,4 +836,3 @@ MODULE_DESCRIPTION("Zarlink VP310/MT312/ZL10313 DVB-S Demodulator driver");
 MODULE_AUTHOR("Andreas Oberritter <obi@linuxtv.org>");
 MODULE_AUTHOR("Matthias Schwarzott <zzam@gentoo.org>");
 MODULE_LICENSE("GPL");
-

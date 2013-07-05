@@ -52,23 +52,10 @@
 
 #define D(x)
 
-#if 0
-static int dp_cnt;
-#define DP(x) \
-	do { \
-		dp_cnt++; \
-		if (dp_cnt % 1000 == 0) \
-			x; \
-	} while (0)
-#else
 #define DP(x)
-#endif
 
 static char gpio_name[] = "etrax gpio";
 
-#if 0
-static wait_queue_head_t *gpio_wq;
-#endif
 
 #ifdef CONFIG_ETRAX_VIRTUAL_GPIO
 static int virtual_gpio_ioctl(struct file *file, unsigned int cmd,

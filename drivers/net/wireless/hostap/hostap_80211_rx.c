@@ -758,7 +758,7 @@ void hostap_80211_rx(struct net_device *dev, struct sk_buff *skb,
 
 	/* Put this code here so that we avoid duplicating it in all
 	 * Rx paths. - Jean II */
-#ifdef IW_WIRELESS_SPY		/* defined in iw_handler.h */
+#ifdef IW_WIRELESS_SPY		    /* defined in iw_handler.h */
 	/* If spy monitoring on */
 	if (iface->spy_data.spy_number > 0) {
 		struct iw_quality wstats;
@@ -802,15 +802,6 @@ void hostap_80211_rx(struct net_device *dev, struct sk_buff *skb,
 			crypt = NULL;
 
 		if (!crypt && (fc & IEEE80211_FCTL_PROTECTED)) {
-#if 0
-			/* This seems to be triggered by some (multicast?)
-			 * frames from other than current BSS, so just drop the
-			 * frames silently instead of filling system log with
-			 * these reports. */
-			printk(KERN_DEBUG "%s: WEP decryption failed (not set)"
-			       " (SA=%pM)\n",
-			       local->dev->name, hdr->addr2);
-#endif
 			local->comm_tallies.rx_discards_wep_undecryptable++;
 			goto rx_dropped;
 		}

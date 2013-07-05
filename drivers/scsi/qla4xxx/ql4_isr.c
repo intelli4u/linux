@@ -999,7 +999,6 @@ void qla4xxx_process_aen(struct scsi_qla_host * ha, uint8_t process_aen)
 				struct ddb_entry *ddb_entry;
 
 				ddb_entry =
-					/* FIXME: name length? */
 					qla4xxx_lookup_ddb_by_fw_index(ha,
 								       mbox_sts[2]);
 				if (!ddb_entry)

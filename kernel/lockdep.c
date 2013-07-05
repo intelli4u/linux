@@ -342,15 +342,6 @@ EXPORT_SYMBOL(lockdep_on);
  */
 static int class_filter(struct lock_class *class)
 {
-#if 0
-	/* Example */
-	if (class->name_version == 1 &&
-			!strcmp(class->name, "lockname"))
-		return 1;
-	if (class->name_version == 1 &&
-			!strcmp(class->name, "&struct->lockfield"))
-		return 1;
-#endif
 	/* Filter everything else. 1 would be to allow everything else */
 	return 0;
 }
@@ -3151,7 +3142,7 @@ static int __lock_is_held(struct lockdep_map *lock)
 static void check_flags(unsigned long flags)
 {
 #if defined(CONFIG_PROVE_LOCKING) && defined(CONFIG_DEBUG_LOCKDEP) && \
-    defined(CONFIG_TRACE_IRQFLAGS)
+	defined(CONFIG_TRACE_IRQFLAGS)
 	if (!debug_locks)
 		return;
 

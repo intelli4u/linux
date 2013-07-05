@@ -621,4 +621,3 @@ MACHINE_START(DAVINCI_DM365_EVM, "DaVinci DM365 EVM")
 	.timer		= &davinci_timer,
 	.init_machine	= dm365_evm_init,
 MACHINE_END
-

@@ -302,5 +302,3 @@ storedigit:
 
 	goto again;
 }
-
-

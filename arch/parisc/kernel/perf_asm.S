@@ -1689,4 +1689,3 @@ perf_rdr_shift_out_U_leave:
 	MTDIAG_2	(23)			; restore DR2
 	.procend
 ENDPROC(perf_rdr_shift_out_U)
-

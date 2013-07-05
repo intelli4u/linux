@@ -351,10 +351,6 @@ static int __init sim710_init(void)
 #ifdef CONFIG_EISA
 	err = eisa_driver_register(&sim710_eisa_driver);
 #endif
-	/* FIXME: what we'd really like to return here is -ENODEV if
-	 * no devices have actually been found.  Instead, the err
-	 * above actually only reports problems with kobject_register,
-	 * so for the moment return success */
 
 	return 0;
 }

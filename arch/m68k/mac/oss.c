@@ -106,16 +106,13 @@ static irqreturn_t oss_irq(int irq, void *dev_id)
 			(int) oss->irq_pending);
 	}
 #endif
-	/* FIXME: how do you clear a pending IRQ?    */
 
 	if (events & OSS_IP_SOUND) {
 		oss->irq_pending &= ~OSS_IP_SOUND;
-		/* FIXME: call sound handler */
 	} else if (events & OSS_IP_SCSI) {
 		oss->irq_pending &= ~OSS_IP_SCSI;
 		m68k_handle_int(IRQ_MAC_SCSI);
 	} else {
-		/* FIXME: error check here? */
 	}
 	return IRQ_HANDLED;
 }
@@ -240,7 +237,6 @@ void oss_irq_disable(int irq) {
  */
 
 void oss_irq_clear(int irq) {
-	/* FIXME: how to do this on OSS? */
 	switch(irq) {
 		case IRQ_MAC_SCC:
 			oss->irq_pending &= ~OSS_IP_IOPSCC;

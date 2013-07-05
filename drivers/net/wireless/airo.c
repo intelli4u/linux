@@ -3678,7 +3678,7 @@ badmic:
 			struct iw_quality wstats;
 			/* Prepare spy data : addr + qual */
 			sa = buffer + ETH_ALEN;
-			wstats.qual = 0; /* XXX Where do I get that info from ??? */
+			wstats.qual = 0;
 			wstats.level = 0;
 			wstats.updated = 0;
 			/* Update spy records */
@@ -3750,7 +3750,7 @@ static void mpi_receive_802_11(struct airo_info *ai)
 	}
 	memcpy ((char *)buffer + hdrlen, ptr, len);
 	ptr += len;
-#ifdef IW_WIRELESS_SPY	  /* defined in iw_handler.h */
+#ifdef IW_WIRELESS_SPY	      /* defined in iw_handler.h */
 	if (ai->spy_data.spy_number > 0) {
 		char *sa;
 		struct iw_quality wstats;
@@ -6729,9 +6729,6 @@ static int airo_set_auth(struct net_device *dev,
 		break;
 
 	case IW_AUTH_80211_AUTH_ALG: {
-			/* FIXME: What about AUTH_OPEN?  This API seems to
-			 * disallow setting our auth to AUTH_OPEN.
-			 */
 			if (param->value & IW_AUTH_ALG_SHARED_KEY) {
 				local->config.authType = AUTH_SHAREDKEY;
 			} else if (param->value & IW_AUTH_ALG_OPEN_SYSTEM) {
@@ -7104,7 +7101,6 @@ static int airo_set_power(struct net_device *dev,
 			local->config.rmode |= RXMODE_BC_MC_ADDR;
 			set_bit (FLAG_COMMIT, &local->flags);
 		case IW_POWER_ON:
-			/* This is broken, fixme ;-) */
 			break;
 		default:
 			return -EINVAL;

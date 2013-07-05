@@ -104,19 +104,7 @@ long arch_ptrace(struct task_struct *child, long request, long addr, long data)
 			if (request == PTRACE_PEEKUSR)
 				val = *reg_addr;
 			else {
-#if 1
 				*reg_addr = data;
-#else
-				/* MS potential problem on WB system
-				 * Be aware that reg_addr is virtual address
-				 * virt_to_phys conversion is necessary.
-				 * This could be sensible solution.
-				 */
-				u32 paddr = virt_to_phys((u32)reg_addr);
-				invalidate_icache_range(paddr, paddr + 4);
-				*reg_addr = data;
-				flush_dcache_range(paddr, paddr + 4);
-#endif
 			}
 		} else
 			rval = -EIO;
@@ -165,28 +153,6 @@ asmlinkage void do_syscall_trace_leave(struct pt_regs *regs)
 		tracehook_report_syscall_exit(regs, step);
 }
 
-#if 0
-static asmlinkage void syscall_trace(void)
-{
-	if (!test_thread_flag(TIF_SYSCALL_TRACE))
-		return;
-	if (!(current->ptrace & PT_PTRACED))
-		return;
-	/* The 0x80 provides a way for the tracing parent to distinguish
-	 between a syscall stop and SIGTRAP delivery */
-	ptrace_notify(SIGTRAP | ((current->ptrace & PT_TRACESYSGOOD)
-				? 0x80 : 0));
-	/*
-	 * this isn't the same as continuing with a signal, but it will do
-	 * for normal use. strace only continues with a signal if the
-	 * stopping signal is not SIGTRAP. -brl
-	 */
-	if (current->exit_code) {
-		send_sig(current->exit_code, current, 1);
-		current->exit_code = 0;
-	}
-}
-#endif
 
 void ptrace_disable(struct task_struct *child)
 {

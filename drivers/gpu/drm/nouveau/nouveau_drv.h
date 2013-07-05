@@ -205,7 +205,6 @@ struct nouveau_channel {
 	struct nouveau_gpuobj_ref *cache;
 
 	/* PGRAPH context */
-	/* XXX may be merge 2 pointers as private data ??? */
 	struct nouveau_gpuobj_ref *ramin_grctx;
 	void *pgraph_ctx;
 

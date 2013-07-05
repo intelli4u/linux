@@ -14,7 +14,7 @@
 #include <asm/ppc_asm.h>
 #include <asm/unistd.h>
 #include <asm/vdso.h>
-#include <asm/ptrace.h>		/* XXX for __SIGNAL_FRAMESIZE */
+#include <asm/ptrace.h>
 
 	.text
 

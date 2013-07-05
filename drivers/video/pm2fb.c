@@ -725,7 +725,7 @@ static int pm2fb_set_par(struct fb_info *info)
 	htotal = to3264(xres, depth, data64) + hbend - 1;
 	vsstart = (info->var.lower_margin)
 		? info->var.lower_margin - 1
-		: 0;	/* FIXME! */
+		: 0;
 	vsend = info->var.lower_margin + info->var.vsync_len - 1;
 	vbend = info->var.lower_margin + info->var.vsync_len +
 		info->var.upper_margin;

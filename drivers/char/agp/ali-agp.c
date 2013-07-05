@@ -88,32 +88,6 @@ static int ali_configure(void)
 	pci_read_config_dword(agp_bridge->dev, AGP_APBASE, &temp);
 	agp_bridge->gart_bus_addr = (temp & PCI_BASE_ADDRESS_MEM_MASK);
 
-#if 0
-	if (agp_bridge->type == ALI_M1541) {
-		u32 nlvm_addr = 0;
-
-		switch (current_size->size_value) {
-			case 0:  break;
-			case 1:  nlvm_addr = 0x100000;break;
-			case 2:  nlvm_addr = 0x200000;break;
-			case 3:  nlvm_addr = 0x400000;break;
-			case 4:  nlvm_addr = 0x800000;break;
-			case 6:  nlvm_addr = 0x1000000;break;
-			case 7:  nlvm_addr = 0x2000000;break;
-			case 8:  nlvm_addr = 0x4000000;break;
-			case 9:  nlvm_addr = 0x8000000;break;
-			case 10: nlvm_addr = 0x10000000;break;
-			default: break;
-		}
-		nlvm_addr--;
-		nlvm_addr&=0xfff00000;
-
-		nlvm_addr+= agp_bridge->gart_bus_addr;
-		nlvm_addr|=(agp_bridge->gart_bus_addr>>12);
-		dev_info(&agp_bridge->dev->dev, "nlvm top &base = %8x\n",
-			 nlvm_addr);
-	}
-#endif
 
 	pci_read_config_dword(agp_bridge->dev, ALI_TLBCTRL, &temp);
 	temp &= 0xffffff7f;		//enable TLB
@@ -420,4 +394,3 @@ module_exit(agp_ali_cleanup);
 
 MODULE_AUTHOR("Dave Jones <davej@redhat.com>");
 MODULE_LICENSE("GPL and additional rights");
-

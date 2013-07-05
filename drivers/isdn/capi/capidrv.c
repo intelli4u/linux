@@ -1,4 +1,4 @@
-/* $Id: capidrv.c,v 1.1.2.2 2004/01/12 23:17:24 keil Exp $
+/* $Id: capidrv.c,v 1.1.2.2 2004/01/12 23:17:24 Exp $
  *
  * ISDN4Linux Driver, using capi20 interface (kernelcapi)
  *
@@ -2140,9 +2140,6 @@ static int capidrv_delcontr(u16 contr)
 		return -1;
 	}
 
-	/* FIXME: maybe a race condition the card should be removed
-	 * here from global list /kkeil
-	 */
 	spin_unlock_irqrestore(&global_lock, flags);
 
 	del_timer(&card->listentimer);

@@ -559,7 +559,6 @@ int cifs_mknod(struct inode *inode, struct dentry *direntry, int mode,
 		return rc;
 	}
 
-	/* FIXME: would WRITE_OWNER | WRITE_DAC be better? */
 	rc = CIFSSMBOpen(xid, pTcon, full_path, FILE_CREATE,
 			 GENERIC_WRITE, CREATE_NOT_DIR | CREATE_OPTION_SPECIAL,
 			 &fileHandle, &oplock, buf, cifs_sb->local_nls,
@@ -597,7 +596,6 @@ int cifs_mknod(struct inode *inode, struct dentry *direntry, int mode,
 	CIFSSMBClose(xid, pTcon, fileHandle);
 	d_drop(direntry);
 
-	/* FIXME: add code here to set EAs */
 
 mknod_out:
 	kfree(full_path);

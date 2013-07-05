@@ -535,7 +535,6 @@ static void coh901318_pause(struct dma_chan *chan)
 
 
 	val &= ~COH901318_CX_CFG_CH_ENABLE;
-	/* Enable twice, HW bug work around */
 	writel(val, virtbase + COH901318_CX_CFG +
 	       COH901318_CX_CFG_SPACING * channel);
 	writel(val, virtbase + COH901318_CX_CFG +

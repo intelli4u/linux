@@ -45,7 +45,6 @@ void __fat_fs_error(struct super_block *s, int report, const char *fmt, ...)
 EXPORT_SYMBOL_GPL(__fat_fs_error);
 
 /* Flushes the number of free clusters on FAT32 */
-/* XXX: Need to write one per FSINFO block.  Currently only writes 1 */
 int fat_clusters_flush(struct super_block *sb)
 {
 	struct msdos_sb_info *sbi = MSDOS_SB(sb);

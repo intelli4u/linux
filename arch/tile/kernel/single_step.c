@@ -15,7 +15,7 @@
  * Derived from iLib's single-stepping code.
  */
 
-#ifndef __tilegx__   /* No support for single-step yet. */
+#ifndef __tilegx__       /* No support for single-step yet. */
 
 /* These functions are only used on the TILE platform */
 #include <linux/slab.h>
@@ -129,18 +129,6 @@ static tile_bundle_bits rewrite_load_store_unaligned(
 		val_reg  = get_SrcB_X1(bundle);
 	}
 
-	/*
-	 * If registers are not GPRs, don't try to handle it.
-	 *
-	 * FIXME: we could handle non-GPR loads by getting the real value
-	 * from memory, writing it to the single step buffer, using a
-	 * temp_reg to hold a pointer to that memory, then executing that
-	 * instruction and resetting temp_reg.  For non-GPR stores, it's a
-	 * little trickier; we could use the single step buffer for that
-	 * too, but we'd have to add some more state bits so that we could
-	 * call back in here to copy that value to the real target.  For
-	 * now, we just handle the simple case.
-	 */
 	if ((val_reg >= PTREGS_NR_GPRS &&
 	     (val_reg != TREG_ZERO ||
 	      mem_op == MEMOP_LOAD ||

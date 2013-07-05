@@ -744,9 +744,6 @@ static int cdrom_media_erasable(struct cdrom_device_info *cdi)
 	return di.erasable;
 }
 
-/*
- * FIXME: check RO bit
- */
 static int cdrom_dvdram_open_write(struct cdrom_device_info *cdi)
 {
 	int ret = cdrom_media_erasable(cdi);
@@ -964,11 +961,7 @@ static void cdrom_dvd_rw_close_write(struct cdrom_device_info *cdi)
 
 static int cdrom_close_write(struct cdrom_device_info *cdi)
 {
-#if 0
-	return cdrom_flush_cache(cdi);
-#else
 	return 0;
-#endif
 }
 
 /* We use the open-option O_NONBLOCK to indicate that the
@@ -2831,7 +2824,6 @@ static noinline int mmc_ioctl_cdrom_read_data(struct cdrom_device_info *cdi,
 	}
 	IOCTL_IN(arg, struct cdrom_msf, msf);
 	lba = msf_to_lba(msf.cdmsf_min0, msf.cdmsf_sec0, msf.cdmsf_frame0);
-	/* FIXME: we need upper bound checking, too!! */
 	if (lba < 0)
 		return -EINVAL;
 
@@ -2850,7 +2842,6 @@ static noinline int mmc_ioctl_cdrom_read_data(struct cdrom_device_info *cdi,
 		 * SCSI-II devices are not required to support
 		 * READ_CD, so let's try switching block size
 		 */
-		/* FIXME: switch back again... */
 		ret = cdrom_switch_blocksize(cdi, blocksize);
 		if (ret)
 			goto out;
@@ -2882,7 +2873,6 @@ static noinline int mmc_ioctl_cdrom_read_audio(struct cdrom_device_info *cdi,
 	else
 		return -EINVAL;
 
-	/* FIXME: we need upper bound checking, too!! */
 	if (lba < 0 || ra.nframes <= 0 || ra.nframes > CD_FRAMES)
 		return -EINVAL;
 

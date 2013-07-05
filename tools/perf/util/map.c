@@ -451,9 +451,6 @@ move_map:
 	return 0;
 }
 
-/*
- * XXX This should not really _copy_ te maps, but refcount them.
- */
 int map_groups__clone(struct map_groups *self,
 		      struct map_groups *parent, enum map_type type)
 {

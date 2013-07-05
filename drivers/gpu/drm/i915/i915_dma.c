@@ -399,9 +399,6 @@ i915_emit_box(struct drm_device *dev,
 	return 0;
 }
 
-/* XXX: Emitting the counter should really be moved to part of the IRQ
- * emit. For now, do it in both places:
- */
 
 static void i915_emit_breadcrumb(struct drm_device *dev)
 {
@@ -1447,7 +1444,6 @@ static int i915_load_modeset_init(struct drm_device *dev,
 		goto cleanup_vga_switcheroo;
 
 	/* Always safe in the mode setting case. */
-	/* FIXME: do pre/post-mode set stuff in core KMS code */
 	dev->vblank_disable_allowed = 1;
 
 	/*
@@ -1777,7 +1773,6 @@ unsigned long i915_chipset_val(struct drm_i915_private *dev_priv)
 
 	total_count = count1 + count2 + count3;
 
-	/* FIXME: handle per-counter overflow */
 	if (total_count < dev_priv->last_count1) {
 		diff = ~0UL - dev_priv->last_count1;
 		diff += total_count;
@@ -2258,7 +2253,6 @@ int i915_driver_load(struct drm_device *dev, unsigned long flags)
 	dev_priv->mchdev_lock = &mchdev_lock;
 	spin_unlock(&mchdev_lock);
 
-	/* XXX Prevent module unload due to memory corruption bugs. */
 	__module_get(THIS_MODULE);
 
 	ips_ping_for_i915_load();

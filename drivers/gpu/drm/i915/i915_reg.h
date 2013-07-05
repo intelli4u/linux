@@ -1630,13 +1630,10 @@
 # define TV_HBLANK_START_MASK		0x0001fff
 
 #define TV_V_CTL_1		0x6803c
-/** XXX */
 # define TV_NBR_END_SHIFT		16
 # define TV_NBR_END_MASK		0x07ff0000
-/** XXX */
 # define TV_VI_END_F1_SHIFT		8
 # define TV_VI_END_F1_MASK		0x00003f00
-/** XXX */
 # define TV_VI_END_F2_SHIFT		0
 # define TV_VI_END_F2_MASK		0x0000003f
 

@@ -372,11 +372,6 @@ static void WSFR(struct cirrusfb_info *cinfo, unsigned char val);
 static void WSFR2(struct cirrusfb_info *cinfo, unsigned char val);
 static void WClut(struct cirrusfb_info *cinfo, unsigned char regnum,
 		  unsigned char red, unsigned char green, unsigned char blue);
-#if 0
-static void RClut(struct cirrusfb_info *cinfo, unsigned char regnum,
-		  unsigned char *red, unsigned char *green,
-		  unsigned char *blue);
-#endif
 static void cirrusfb_WaitBLT(u8 __iomem *regbase);
 static void cirrusfb_BitBLT(u8 __iomem *regbase, int bits_per_pixel,
 			    u_short curx, u_short cury,
@@ -1132,7 +1127,6 @@ static int cirrusfb_set_par_foo(struct fb_info *info)
 #ifdef CONFIG_PCI
 		WHDR(cinfo, cinfo->doubleVCLK ? 0xe1 : 0xc1);
 #elif defined(CONFIG_ZORRO)
-		/* FIXME: CONFIG_PCI and CONFIG_ZORRO may be defined both */
 		WHDR(cinfo, 0xa0);	/* hidden dac reg: nothing special */
 #endif
 	}
@@ -1666,8 +1660,8 @@ static void init_vgachip(struct fb_info *info)
 
 static void switch_monitor(struct cirrusfb_info *cinfo, int on)
 {
-#ifdef CONFIG_ZORRO /* only works on Zorro boards */
-	static int IsOn = 0;	/* XXX not ok for multiple boards */
+#ifdef CONFIG_ZORRO     /* only works on Zorro boards */
+	static int IsOn = 0;
 
 	if (cinfo->btype == BT_PICASSO4)
 		return;		/* nothing to switch */
@@ -1941,9 +1935,6 @@ static void cirrusfb_pci_unmap(struct fb_info *info)
 	if (cinfo->laguna_mmio == NULL)
 		iounmap(cinfo->laguna_mmio);
 	iounmap(info->screen_base);
-#if 0 /* if system didn't claim this region, we would... */
-	release_mem_region(0xA0000, 65535);
-#endif
 	if (release_io_ports)
 		release_region(0x3C0, 32);
 	pci_release_regions(pdev);
@@ -2026,7 +2017,6 @@ static int __devinit cirrusfb_set_fbinfo(struct fb_info *info)
 	info->fix.ypanstep   = 1;
 	info->fix.ywrapstep  = 0;
 
-	/* FIXME: map region at 0xB8000 if available, fill in here */
 	info->fix.mmio_len   = 0;
 
 	fb_alloc_cmap(&info->cmap, 256, 0);
@@ -2132,7 +2122,6 @@ static int __devinit cirrusfb_pci_register(struct pci_dev *pdev,
 		dev_dbg(info->device,
 			"Attempt to get PCI info for Cirrus Graphics Card\n");
 		get_pci_addrs(pdev, &board_addr, &info->fix.mmio_start);
-		/* FIXME: this forces VGA.  alternatives? */
 		cinfo->regbase = NULL;
 		cinfo->laguna_mmio = ioremap(info->fix.mmio_start, 0x1000);
 	}
@@ -2149,14 +2138,6 @@ static int __devinit cirrusfb_pci_register(struct pci_dev *pdev,
 			board_addr);
 		goto err_release_fb;
 	}
-#if 0 /* if the system didn't claim this region, we would... */
-	if (!request_mem_region(0xA0000, 65535, "cirrusfb")) {
-		dev_err(info->device, "cannot reserve region 0x%lx, abort\n",
-			0xA0000L);
-		ret = -EBUSY;
-		goto err_release_regions;
-	}
-#endif
 	if (request_region(0x3C0, 32, "cirrusfb"))
 		release_io_ports = 1;
 
@@ -2184,10 +2165,6 @@ static int __devinit cirrusfb_pci_register(struct pci_dev *pdev,
 err_release_legacy:
 	if (release_io_ports)
 		release_region(0x3C0, 32);
-#if 0
-	release_mem_region(0xA0000, 65535);
-err_release_regions:
-#endif
 	pci_release_regions(pdev);
 err_release_fb:
 	if (cinfo->laguna_mmio != NULL)
@@ -2210,10 +2187,6 @@ static struct pci_driver cirrusfb_pci_driver = {
 	.probe		= cirrusfb_pci_register,
 	.remove		= __devexit_p(cirrusfb_pci_unregister),
 #ifdef CONFIG_PM
-#if 0
-	.suspend	= cirrusfb_pci_suspend,
-	.resume		= cirrusfb_pci_resume,
-#endif
 #endif
 };
 #endif /* CONFIG_PCI */
@@ -2574,29 +2547,6 @@ static void WClut(struct cirrusfb_info *cinfo, unsigned char regnum, unsigned ch
 	}
 }
 
-#if 0
-/*** RClut - read CLUT entry (range 0..63) ***/
-static void RClut(struct cirrusfb_info *cinfo, unsigned char regnum, unsigned char *red,
-	    unsigned char *green, unsigned char *blue)
-{
-	unsigned int data = VGA_PEL_D;
-
-	vga_w(cinfo->regbase, VGA_PEL_IR, regnum);
-
-	if (cinfo->btype == BT_PICASSO || cinfo->btype == BT_PICASSO4 ||
-	    cinfo->btype == BT_ALPINE || cinfo->btype == BT_GD5480) {
-		if (cinfo->btype == BT_PICASSO)
-			data += 0xfff;
-		*red = vga_r(cinfo->regbase, data);
-		*green = vga_r(cinfo->regbase, data);
-		*blue = vga_r(cinfo->regbase, data);
-	} else {
-		*blue = vga_r(cinfo->regbase, data);
-		*green = vga_r(cinfo->regbase, data);
-		*red = vga_r(cinfo->regbase, data);
-	}
-}
-#endif
 
 /*******************************************************************
 	cirrusfb_WaitBLT()
@@ -2604,7 +2554,6 @@ static void RClut(struct cirrusfb_info *cinfo, unsigned char regnum, unsigned ch
 	Wait for the BitBLT engine to complete a possible earlier job
 *********************************************************************/
 
-/* FIXME: use interrupts instead */
 static void cirrusfb_WaitBLT(u8 __iomem *regbase)
 {
 	while (vga_rgfx(regbase, CL_GR31) & 0x08)
@@ -2973,4 +2922,3 @@ static void cirrusfb_dbg_reg_dump(struct fb_info *info, caddr_t regbase)
 }
 
 #endif				/* CIRRUSFB_DEBUG */
-

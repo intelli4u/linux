@@ -435,22 +435,6 @@ static void cell_iommu_setup_hardware(struct cbe_iommu *iommu,
 	cell_iommu_enable_hardware(iommu);
 }
 
-#if 0/* Unused for now */
-static struct iommu_window *find_window(struct cbe_iommu *iommu,
-		unsigned long offset, unsigned long size)
-{
-	struct iommu_window *window;
-
-	/* todo: check for overlapping (but not equal) windows) */
-
-	list_for_each_entry(window, &(iommu->windows), list) {
-		if (window->offset == offset && window->size == size)
-			return window;
-	}
-
-	return NULL;
-}
-#endif
 
 static inline u32 cell_iommu_get_ioid(struct device_node *np)
 {
@@ -504,13 +488,6 @@ cell_iommu_setup_window(struct cbe_iommu *iommu, struct device_node *np,
 	if (offset != 0)
 		return window;
 
-	/* We need to map and reserve the first IOMMU page since it's used
-	 * by the spider workaround. In theory, we only need to do that when
-	 * running on spider but it doesn't really matter.
-	 *
-	 * This code also assumes that we have a window that starts at 0,
-	 * which is the case on all spider based blades.
-	 */
 	page = alloc_pages_node(iommu->nid, GFP_KERNEL, 0);
 	BUG_ON(!page);
 	iommu->pad_page = page_address(page);
@@ -728,13 +705,6 @@ static struct cbe_iommu * __init cell_iommu_alloc(struct device_node *np)
 	pr_debug("iommu: setting up iommu for node %d (%s)\n",
 		 nid, np->full_name);
 
-	/* XXX todo: If we can have multiple windows on the same IOMMU, which
-	 * isn't the case today, we probably want here to check wether the
-	 * iommu for that node is already setup.
-	 * However, there might be issue with getting the size right so let's
-	 * ignore that for now. We might want to completely get rid of the
-	 * multiple window support since the cell iommu supports per-page ioids
-	 */
 
 	if (cbe_nr_iommus >= NR_IOMMUS) {
 		printk(KERN_ERR "iommu: too many IOMMUs detected ! (%s)\n",
@@ -1210,4 +1180,3 @@ static int __init cell_iommu_init(void)
 }
 machine_arch_initcall(cell, cell_iommu_init);
 machine_arch_initcall(celleb_native, cell_iommu_init);
-

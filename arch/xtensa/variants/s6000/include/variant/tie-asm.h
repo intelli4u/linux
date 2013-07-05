@@ -301,4 +301,3 @@
 	.macro xchal_cp7_load	p a b c d continue=0 ofs=-1 select=-1 ; .endm
 
 #endif /*_XTENSA_CORE_TIE_ASM_H*/
-

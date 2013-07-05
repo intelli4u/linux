@@ -28,7 +28,8 @@
 # error "ANOMALY 05000273, please make sure CCLK is at least 2x SCLK"
 # endif
 
-# if (CONFIG_SCLK_HZ > CONFIG_CCLK_HZ) && (CONFIG_SCLK_HZ != CONFIG_CLKIN_HZ) && (CONFIG_CCLK_HZ != CONFIG_CLKIN_HZ)
+# if (CONFIG_SCLK_HZ > CONFIG_CCLK_HZ) && (CONFIG_SCLK_HZ != CONFIG_CLKIN_HZ) && \
+	(CONFIG_CCLK_HZ != CONFIG_CLKIN_HZ)
 # error "Please select sclk less than cclk"
 # endif
 
@@ -56,8 +57,8 @@
 #endif
 
 /* if 220 exists, can not set External Memory WB and L2 not_cached, either External Memory not_cached and L2 WB */
-#if ANOMALY_05000220 && \
-	(defined(CONFIG_BFIN_EXTMEM_WRITEBACK) || defined(CONFIG_BFIN_L2_WRITEBACK))
+#if ANOMALY_05000220 && (defined(CONFIG_BFIN_EXTMEM_WRITEBACK) || \
+	defined(CONFIG_BFIN_L2_WRITEBACK))
 # error "Anomaly 05000220 does not allow you to use Write Back cache with L2 or External Memory"
 #endif
 

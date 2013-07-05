@@ -49,4 +49,3 @@ struct nuc93x_uartcfg {
 #endif /* __ASSEMBLY__ */
 
 #endif /* __ASM_ARM_REGS_SERIAL_H */
-

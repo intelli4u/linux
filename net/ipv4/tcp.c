@@ -277,6 +277,9 @@
 #include <asm/uaccess.h>
 #include <asm/ioctls.h>
 
+#include <typedefs.h>
+#include <bcmdefs.h>
+
 int sysctl_tcp_fin_timeout __read_mostly = TCP_FIN_TIMEOUT;
 
 struct percpu_counter tcp_orphan_count;
@@ -851,7 +854,11 @@ wait_for_memory:
 	}
 
 out:
+#ifdef CONFIG_BCM47XX
+	if (copied && !(flags & MSG_MORE))
+#else
 	if (copied)
+#endif
 		tcp_push(sk, flags, mss_now, tp->nonagle);
 	return copied;
 
@@ -2734,7 +2741,7 @@ out:
 }
 EXPORT_SYMBOL(tcp_tso_segment);
 
-struct sk_buff **tcp_gro_receive(struct sk_buff **head, struct sk_buff *skb)
+struct sk_buff ** BCMFASTPATH_HOST tcp_gro_receive(struct sk_buff **head, struct sk_buff *skb)
 {
 	struct sk_buff **pp = NULL;
 	struct sk_buff *p;
@@ -2830,7 +2837,7 @@ out:
 }
 EXPORT_SYMBOL(tcp_gro_receive);
 
-int tcp_gro_complete(struct sk_buff *skb)
+int BCMFASTPATH_HOST tcp_gro_complete(struct sk_buff *skb)
 {
 	struct tcphdr *th = tcp_hdr(skb);
 

@@ -116,11 +116,6 @@ ia64_patch_vtop (unsigned long start, unsigned long end)
 	ia64_srlz_i();
 }
 
-/*
- * Disable the RSE workaround by turning the conditional branch
- * that we tagged in each place the workaround was used into an
- * unconditional branch.
- */
 void __init
 ia64_patch_rse (unsigned long start, unsigned long end)
 {

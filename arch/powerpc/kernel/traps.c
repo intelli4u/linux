@@ -1314,7 +1314,6 @@ void altivec_assist_exception(struct pt_regs *regs)
 		_exception(SIGSEGV, regs, SEGV_ACCERR, regs->nip);
 	} else {
 		/* didn't recognize the instruction */
-		/* XXX quick hack for now: set the non-Java bit in the VSCR */
 		if (printk_ratelimit())
 			printk(KERN_ERR "Unrecognized altivec instruction "
 			       "in %s at %lx\n", current->comm, regs->nip);

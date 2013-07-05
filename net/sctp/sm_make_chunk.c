@@ -282,17 +282,6 @@ struct sctp_chunk *sctp_make_init(const struct sctp_association *asoc,
 		chunksize += WORD_ROUND(sizeof(sctp_supported_ext_param_t) +
 					num_ext);
 
-	/* RFC 2960 3.3.2 Initiation (INIT) (1)
-	 *
-	 * Note 3: An INIT chunk MUST NOT contain more than one Host
-	 * Name address parameter. Moreover, the sender of the INIT
-	 * MUST NOT combine any other address types with the Host Name
-	 * address in the INIT. The receiver of INIT MUST ignore any
-	 * other address types if the Host Name address parameter is
-	 * present in the received INIT chunk.
-	 *
-	 * PLEASE DO NOT FIXME [This version does not support Host Name.]
-	 */
 
 	retval = sctp_make_chunk(asoc, SCTP_CID_INIT, 0, chunksize);
 	if (!retval)
@@ -386,9 +375,6 @@ struct sctp_chunk *sctp_make_init_ack(const struct sctp_association *asoc,
 	initack.num_inbound_streams	= htons(asoc->c.sinit_max_instreams);
 	initack.initial_tsn		= htonl(asoc->c.initial_tsn);
 
-	/* FIXME:  We really ought to build the cookie right
-	 * into the packet instead of allocating more fresh memory.
-	 */
 	cookie = sctp_pack_cookie(asoc->ep, asoc, chunk, &cookie_len,
 				  addrs.v, addrs_len);
 	if (!cookie)
@@ -1228,9 +1214,6 @@ struct sctp_chunk *sctp_make_auth(const struct sctp_association *asoc)
  * 2nd Level Abstractions
  ********************************************************************/
 
-/* Turn an skb into a chunk.
- * FIXME: Eventually move the structure directly inside the skb->cb[].
- */
 struct sctp_chunk *sctp_chunkify(struct sk_buff *skb,
 			    const struct sctp_association *asoc,
 			    struct sock *sk)
@@ -2066,10 +2049,6 @@ static sctp_ierror_t sctp_verify_param(const struct sctp_association *asoc,
 	__u16 n_elt, id = 0;
 	int i;
 
-	/* FIXME - This routine is not looking at each parameter per the
-	 * chunk type, i.e., unrecognized parameters should be further
-	 * identified based on the chunk id.
-	 */
 
 	switch (param.p->type) {
 	case SCTP_PARAM_IPV4_ADDRESS:
@@ -2236,10 +2215,6 @@ int sctp_verify_init(const struct sctp_association *asoc,
 	return 1;
 }
 
-/* Unpack the parameters in an INIT packet into an association.
- * Returns 0 on failure, else success.
- * FIXME:  This is an association method.
- */
 int sctp_process_init(struct sctp_association *asoc, sctp_cid_t cid,
 		      const union sctp_addr *peer_addr,
 		      sctp_init_chunk_t *peer_init, gfp_t gfp)
@@ -2547,9 +2522,6 @@ do_addr_param:
 		af->from_addr_param(&addr, addr_param,
 				    htons(asoc->peer.port), 0);
 
-		/* if the address is invalid, we can't process it.
-		 * XXX: see spec for what to do.
-		 */
 		if (!af->addr_valid(&addr, NULL, NULL))
 			break;
 

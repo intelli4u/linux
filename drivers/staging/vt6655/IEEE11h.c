@@ -302,4 +302,3 @@ bool IEEE11hbMSRRepTx (
 //    return (CARDbSendPacket(pMgmt->pAdapter, pMSRRep, PKT_TYPE_802_11_MNG, uLength));
 
 }
-

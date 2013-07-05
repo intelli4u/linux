@@ -63,7 +63,6 @@ static void dbg_hcs_params (struct ehci_hcd *ehci, char *label)
 
 		buf[0] = 0;
 		for (i = 0; i < HCS_N_PORTS (params); i++) {
-			// FIXME MIPS won't readb() ...
 			byte = readb (&ehci->caps->portroute[(i>>1)]);
 			sprintf(tmp, "%d ",
 				((i & 0x1) ? ((byte)&0xf) : ((byte>>4)&0xf)));
@@ -775,7 +774,6 @@ static ssize_t fill_registers_buffer(struct debug_buffer *buf)
 	}
 #endif
 
-	// FIXME interpret both types of params
 	i = ehci_readl(ehci, &ehci->caps->hcs_params);
 	temp = scnprintf (next, size, "structural params 0x%08x\n", i);
 	size -= temp;

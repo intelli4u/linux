@@ -399,14 +399,6 @@ v3_pci_fault(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
 {
 	unsigned long pc = instruction_pointer(regs);
 	unsigned long instr = *(unsigned long *)pc;
-#if 0
-	char buf[128];
-
-	sprintf(buf, "V3 fault: addr 0x%08lx, FSR 0x%03x, PC 0x%08lx [%08lx] LBFADDR=%08x LBFCODE=%02x ISTAT=%02x\n",
-		addr, fsr, pc, instr, __raw_readl(SC_LBFADDR), __raw_readl(SC_LBFCODE) & 255,
-		v3_readb(V3_LB_ISTAT));
-	printk(KERN_DEBUG "%s", buf);
-#endif
 
 	v3_writeb(V3_LB_ISTAT, 0);
 	__raw_writel(3, SC_PCI);
@@ -598,12 +590,6 @@ void __init pci_v3_postinit(void)
 	v3_writeb(V3_LB_ISTAT, ~0x40);
 	v3_writeb(V3_LB_IMASK, 0x68);
 
-#if 0
-	ret = request_irq(IRQ_AP_LBUSTIMEOUT, lb_timeout, 0, "bus timeout", NULL);
-	if (ret)
-		printk(KERN_ERR "PCI: unable to grab local bus timeout "
-		       "interrupt: %d\n", ret);
-#endif
 
 	register_isa_ports(PHYS_PCI_MEM_BASE, PHYS_PCI_IO_BASE, 0);
 }

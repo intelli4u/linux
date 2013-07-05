@@ -225,7 +225,6 @@ static void ar9003_hw_fill_txdesc(struct ath_hw *ah, void *ds, u32 seglen,
 		ads->ctl13 = AR9003TXC_CONST(ds0)->ctl13;
 		ads->ctl14 = AR9003TXC_CONST(ds0)->ctl14;
 	} else {
-		/* XXX Intermediate descriptor in a multi-descriptor frame.*/
 		ads->ctl11 = 0;
 		ads->ctl12 = AR_TxMore;
 		ads->ctl13 = 0;
@@ -540,7 +539,6 @@ int ath9k_hw_process_rxdesc_edma(struct ath_hw *ah, struct ath_rx_status *rxs,
 	rxs->rs_datalen = rxsp->status2 & AR_DataLen;
 	rxs->rs_tstamp =  rxsp->status3;
 
-	/* XXX: Keycache */
 	rxs->rs_rssi = MS(rxsp->status5, AR_RxRSSICombined);
 	rxs->rs_rssi_ctl0 = MS(rxsp->status1, AR_RxRSSIAnt00);
 	rxs->rs_rssi_ctl1 = MS(rxsp->status1, AR_RxRSSIAnt01);

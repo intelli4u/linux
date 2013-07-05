@@ -83,7 +83,8 @@
  */
 
 #ifndef _SIOWR
-#if defined(_IOWR) && (defined(_AIX) || (!defined(sun) && !defined(sparc) && !defined(__sparc__) && !defined(__INCioctlh) && !defined(__Lynx__)))
+#if defined(_IOWR) && (defined(_AIX) || (!defined(sun) && !defined(sparc) && \
+	!defined(__sparc__) && !defined(__INCioctlh) && !defined(__Lynx__)))
 /* Use already defined ioctl defines if they exist (except with Sun or Sparc) */
 #define	SIOCPARM_MASK	IOCPARM_MASK
 #define	SIOC_VOID	IOC_VOID

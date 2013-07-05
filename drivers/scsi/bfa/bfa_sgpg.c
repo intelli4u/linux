@@ -222,5 +222,3 @@ bfa_sgpg_winit(struct bfa_sgpg_wqe_s *wqe, void (*cbfn) (void *cbarg),
 	wqe->cbfn = cbfn;
 	wqe->cbarg = cbarg;
 }
-
-

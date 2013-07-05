@@ -73,7 +73,6 @@ static void tmio_mmc_clk_start(struct tmio_mmc_host *host)
 
 static void reset(struct tmio_mmc_host *host)
 {
-	/* FIXME - should we set stop clock reg here */
 	sd_ctrl_write16(host, CTL_RESET_SD, 0x0000);
 	sd_ctrl_write16(host, CTL_RESET_SDIO, 0x0000);
 	msleep(10);
@@ -132,11 +131,6 @@ tmio_mmc_start_command(struct tmio_mmc_host *host, struct mmc_command *cmd)
 
 	host->cmd = cmd;
 
-/* FIXME - this seems to be ok commented out but the spec suggest this bit
- *         should be set when issuing app commands.
- *	if(cmd->flags & MMC_FLAG_ACMD)
- *		c |= APP_CMD;
- */
 	if (data) {
 		c |= DATA_PRESENT;
 		if (data->blocks > 1) {
@@ -213,7 +207,6 @@ static void tmio_mmc_do_data_irq(struct tmio_mmc_host *host)
 	}
 	stop = data->stop;
 
-	/* FIXME - return correct transfer count on errors */
 	if (!data->error)
 		data->bytes_xfered = data->blocks * data->blksz;
 	else
@@ -221,14 +214,6 @@ static void tmio_mmc_do_data_irq(struct tmio_mmc_host *host)
 
 	pr_debug("Completed data request\n");
 
-	/*
-	 * FIXME: other drivers allow an optional stop command of any given type
-	 *        which we dont do, as the chip can auto generate them.
-	 *        Perhaps we can be smarter about when to use auto CMD12 and
-	 *        only issue the auto request when we know this is the desired
-	 *        stop command, allowing fallback to the stop command the
-	 *        upper layers expect. For now, we do what works.
-	 */
 
 	if (data->flags & MMC_DATA_READ) {
 		if (!host->chan_rx)

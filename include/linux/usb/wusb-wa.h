@@ -1,33 +1,4 @@
-/*
- * Wireless USB Wire Adapter constants and structures.
- *
- * Copyright (C) 2005-2006 Intel Corporation.
- * Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
- *
- *
- * FIXME: docs
- * FIXME: organize properly, group logically
- *
- * All the event structures are defined in uwb/spec.h, as they are
- * common to the WHCI and WUSB radio control interfaces.
- *
- * References:
- *   [WUSB] Wireless Universal Serial Bus Specification, revision 1.0, ch8
- */
+
 #ifndef __LINUX_USB_WUSB_WA_H
 #define __LINUX_USB_WUSB_WA_H
 
@@ -81,11 +52,6 @@ enum rpipe_crs {
 	RPIPE_CRS_INTR = 0x08
 };
 
-/**
- * RPipe descriptor ([WUSB] section 8.5.2.11)
- *
- * FIXME: explain rpipes
- */
 struct usb_rpipe_descriptor {
 	u8	bLength;
 	u8	bDescriptorType;
@@ -94,7 +60,7 @@ struct usb_rpipe_descriptor {
 	__le16	wBlocks;		/* rw if 0 */
 	__le16	wMaxPacketSize;		/* rw? */
 	u8	bHSHubAddress;		/* reserved: 0 */
-	u8	bHSHubPort;		/* ??? FIXME ??? */
+	u8	bHSHubPort;
 	u8	bSpeed;			/* rw: xfer rate 'enum uwb_phy_rate' */
 	u8	bDeviceAddress;		/* rw: Target device address */
 	u8	bEndpointAddress;	/* rw: Target EP address */
@@ -187,7 +153,6 @@ struct wa_xfer_hwaiso {
 	u8 bReserved;
 	__le16 wPresentationTime;
 	__le32 dwNumOfPackets;
-	/* FIXME: u8 pktdata[]? */
 } __attribute__((packed));
 
 /* [WUSB] section 8.3.3.5 */
@@ -256,14 +221,14 @@ struct usb_wa_descriptor {
 	u8	bRPipeBlockSize;
 	u8	bPwrOn2PwrGood;
 	u8	bNumMMCIEs;
-	u8	DeviceRemovable;	/* FIXME: in DWA this is up to 16 bytes */
+	u8	DeviceRemovable;
 } __attribute__((packed));
 
 /**
  * HWA Device Information Buffer (WUSB1.0[T8.54])
  */
 struct hwa_dev_info {
-	u8	bmDeviceAvailability[32];       /* FIXME: ignored for now */
+	u8	bmDeviceAvailability[32];
 	u8	bDeviceAddress;
 	__le16	wPHYRates;
 	u8	bmDeviceAttribute;

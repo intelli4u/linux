@@ -50,4 +50,3 @@ int ixgbe_ndo_get_vf_config(struct net_device *netdev,
 			    int vf, struct ifla_vf_info *ivi);
 
 #endif /* _IXGBE_SRIOV_H_ */
-

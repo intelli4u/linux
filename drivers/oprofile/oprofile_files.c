@@ -17,7 +17,7 @@
 
 #define BUFFER_SIZE_DEFAULT		131072
 #define CPU_BUFFER_SIZE_DEFAULT		8192
-#define BUFFER_WATERSHED_DEFAULT	32768	/* FIXME: tune */
+#define BUFFER_WATERSHED_DEFAULT	32768
 #define TIME_SLICE_DEFAULT		1
 
 unsigned long oprofile_buffer_size;

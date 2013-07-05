@@ -833,14 +833,6 @@ static void __init lguest_init_IRQ(void)
 	irq_ctx_init(smp_processor_id());
 }
 
-/*
- * With CONFIG_SPARSE_IRQ, interrupt descriptors are allocated as-needed, so
- * rather than set them in lguest_init_IRQ we are called here every time an
- * lguest device needs an interrupt.
- *
- * FIXME: irq_to_desc_alloc_node() can fail due to lack of memory, we should
- * pass that up!
- */
 void lguest_setup_irq(unsigned int irq)
 {
 	irq_to_desc_alloc_node(irq, 0);
@@ -923,8 +915,6 @@ static struct clocksource lguest_clock = {
 static int lguest_clockevent_set_next_event(unsigned long delta,
                                            struct clock_event_device *evt)
 {
-	/* FIXME: I don't think this can ever happen, but James tells me he had
-	 * to put this code in.  Maybe we should remove it now.  Anyone? */
 	if (delta < LG_CLOCK_MIN_DELTA) {
 		if (printk_ratelimit())
 			printk(KERN_DEBUG "%s: small delta %lu ns\n",
@@ -1032,7 +1022,6 @@ static void lguest_load_sp0(struct tss_struct *tss,
 /* Let's just say, I wouldn't do debugging under a Guest. */
 static void lguest_set_debugreg(int regno, unsigned long value)
 {
-	/* FIXME: Implement */
 }
 
 /*

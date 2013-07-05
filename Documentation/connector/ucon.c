@@ -75,10 +75,6 @@ static int netlink_send(int s, struct cn_msg *msg)
 	nlh->nlmsg_flags = 0;
 
 	m = NLMSG_DATA(nlh);
-#if 0
-	ulog("%s: [%08x.%08x] len=%u, seq=%u, ack=%u.\n",
-	       __func__, msg->id.idx, msg->id.val, msg->len, msg->seq, msg->ack);
-#endif
 	memcpy(m, msg, sizeof(*m) + msg->len);
 
 	err = send(s, nlh, size, 0);
@@ -168,12 +164,6 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-#if 0
-	{
-		int on = 0x57; /* Additional group number */
-		setsockopt(s, SOL_NETLINK, NETLINK_ADD_MEMBERSHIP, &on, sizeof(on));
-	}
-#endif
 	if (send_msgs) {
 		int i, j;
 

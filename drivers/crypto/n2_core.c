@@ -126,7 +126,6 @@ static irqreturn_t cwq_intr(int irq, void *dev_id)
 	       smp_processor_id(), new_head, hv_ret);
 
 	for (off = q->head; off != new_head; off = spu_next_offset(q, off)) {
-		/* XXX ... XXX */
 	}
 
 	hv_ret = sun4v_ncs_sethead_marker(q->qhandle, new_head);
@@ -229,15 +228,6 @@ static u64 control_word_base(unsigned int len, unsigned int hmac_key_len,
 	return word;
 }
 
-#if 0
-static inline bool n2_should_run_async(struct spu_queue *qp, int this_len)
-{
-	if (this_len >= 64 ||
-	    qp->head != qp->tail)
-		return true;
-	return false;
-}
-#endif
 
 struct n2_ahash_alg {
 	struct list_head	entry;
@@ -545,9 +535,6 @@ static int n2_do_async_digest(struct ahash_request *req,
 
 	spin_lock_irqsave(&qp->lock, flags);
 
-	/* XXX can do better, improve this later by doing a by-hand scatterlist
-	 * XXX walk, etc.
-	 */
 	ent = qp->q + qp->tail;
 
 	ent->control = control_word_base(nbytes, auth_key_len, 0,

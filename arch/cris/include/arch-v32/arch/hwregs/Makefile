@@ -183,4 +183,3 @@ doc: $(REGDESC)
 ## clean  - Remove .h files and .axw files.
 clean:
 	rm -rf $(INCL_FILES) *.axw
-

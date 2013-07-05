@@ -334,32 +334,6 @@ save_full_context_ex:
 
 	/* Low-level exception handlers */
 handle_critical:
-	/*
-	 * AT32AP700x errata:
-	 *
-	 * After a Java stack overflow or underflow trap, any CPU
-	 * memory access may cause erratic behavior. This will happen
-	 * when the four least significant bits of the JOSP system
-	 * register contains any value between 9 and 15 (inclusive).
-	 *
-	 * Possible workarounds:
-	 *   - Don't use the Java Extension Module
-	 *   - Ensure that the stack overflow and underflow trap
-	 *     handlers do not do any memory access or trigger any
-	 *     exceptions before the overflow/underflow condition is
-	 *     cleared (by incrementing or decrementing the JOSP)
-	 *   - Make sure that JOSP does not contain any problematic
-	 *     value before doing any exception or interrupt
-	 *     processing.
-	 *   - Set up a critical exception handler which writes a
-	 *     known-to-be-safe value, e.g. 4, to JOSP before doing
-	 *     any further processing.
-	 *
-	 * We'll use the last workaround for now since we cannot
-	 * guarantee that user space processes don't use Java mode.
-	 * Non-well-behaving userland will be terminated with extreme
-	 * prejudice.
-	 */
 #ifdef CONFIG_CPU_AT32AP700X
 	/*
 	 * There's a chance we can't touch memory, so temporarily

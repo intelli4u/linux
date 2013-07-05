@@ -138,10 +138,6 @@ static unsigned long shmedia_opcode_table[64] = {
 
 void do_reserved_inst(unsigned long error_code, struct pt_regs *regs)
 {
-	/* Workaround SH5-101 cut2 silicon defect #2815 :
-	   in some situations, inter-mode branches from SHcompact -> SHmedia
-	   which should take ITLBMISS or EXECPROT exceptions at the target
-	   falsely take RESINST at the target instead. */
 
 	unsigned long opcode = 0x6ff4fff0; /* guaranteed reserved opcode */
 	unsigned long pc, aligned_pc;
@@ -230,8 +226,6 @@ void do_reserved_inst(unsigned long error_code, struct pt_regs *regs)
 
 #else /* CONFIG_SH64_ID2815_WORKAROUND */
 
-/* If the workaround isn't needed, this is just a straightforward reserved
-   instruction */
 DO_ERROR(12, SIGILL,  "reserved instruction", reserved_inst, current)
 
 #endif /* CONFIG_SH64_ID2815_WORKAROUND */

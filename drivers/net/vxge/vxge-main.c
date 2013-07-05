@@ -3263,15 +3263,13 @@ vxge_device_unregister(struct __vxge_hw_device *hldev)
 	struct vxgedev *vdev;
 	struct net_device *dev;
 	char buf[IFNAMSIZ];
-#if ((VXGE_DEBUG_INIT & VXGE_DEBUG_MASK) || \
-	(VXGE_DEBUG_ENTRYEXIT & VXGE_DEBUG_MASK))
+#if ((VXGE_DEBUG_INIT & VXGE_DEBUG_MASK) || (VXGE_DEBUG_ENTRYEXIT & VXGE_DEBUG_MASK))
 	u32 level_trace;
 #endif
 
 	dev = hldev->ndev;
 	vdev = netdev_priv(dev);
-#if ((VXGE_DEBUG_INIT & VXGE_DEBUG_MASK) || \
-	(VXGE_DEBUG_ENTRYEXIT & VXGE_DEBUG_MASK))
+#if ((VXGE_DEBUG_INIT & VXGE_DEBUG_MASK) || (VXGE_DEBUG_ENTRYEXIT & VXGE_DEBUG_MASK))
 	level_trace = vdev->level_trace;
 #endif
 	vxge_debug_entryexit(level_trace,
@@ -4357,8 +4355,7 @@ vxge_remove(struct pci_dev *pdev)
 	struct vxgedev *vdev = NULL;
 	struct net_device *dev;
 	int i = 0;
-#if ((VXGE_DEBUG_INIT & VXGE_DEBUG_MASK) || \
-	(VXGE_DEBUG_ENTRYEXIT & VXGE_DEBUG_MASK))
+#if ((VXGE_DEBUG_INIT & VXGE_DEBUG_MASK) || (VXGE_DEBUG_ENTRYEXIT & VXGE_DEBUG_MASK))
 	u32 level_trace;
 #endif
 
@@ -4369,8 +4366,7 @@ vxge_remove(struct pci_dev *pdev)
 	dev = hldev->ndev;
 	vdev = netdev_priv(dev);
 
-#if ((VXGE_DEBUG_INIT & VXGE_DEBUG_MASK) || \
-	(VXGE_DEBUG_ENTRYEXIT & VXGE_DEBUG_MASK))
+#if ((VXGE_DEBUG_INIT & VXGE_DEBUG_MASK) || (VXGE_DEBUG_ENTRYEXIT & VXGE_DEBUG_MASK))
 	level_trace = vdev->level_trace;
 #endif
 	vxge_debug_entryexit(level_trace,

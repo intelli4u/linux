@@ -113,7 +113,6 @@ int radeon_gem_set_domain(struct drm_gem_object *gobj,
 	uint32_t domain;
 	int r;
 
-	/* FIXME: reeimplement */
 	robj = gobj->driver_private;
 	/* work out where to validate the buffer to */
 	domain = wdomain;

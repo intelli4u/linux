@@ -60,11 +60,6 @@
 
 /* Sun4c VAC Virtual Address */
 /* These aren't used, why bother? (Anton) */
-#if 0
-#define S4CVACVA_TID       0x3fff0000
-#define S4CVACVA_LINE      0x0000fff0
-#define S4CVACVA_BIL       0x0000000f
-#endif
 
 /* The indexing of cache lines creates a problem.  Because the line
  * field of a virtual address extends past the page offset within

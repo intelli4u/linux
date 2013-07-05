@@ -571,8 +571,6 @@ static int orc_reset_scsi_bus(struct orc_host * host)
 	init_alloc_map(host);
 	/* reset scsi bus */
 	outb(SCSIRST, host->base + ORC_HCTRL);
-	/* FIXME: We can spend up to a second with the lock held and
-	   interrupts off here */
 	if (wait_scsi_reset_done(host) == 0) {
 		spin_unlock_irqrestore(&host->allocation_lock, flags);
 		return FAILED;
@@ -607,8 +605,6 @@ static int orc_device_reset(struct orc_host * host, struct scsi_cmnd *cmd, unsig
 	/* setup scatter list address with one buffer */
 	host_scb = host->scb_virt;
 
-	/* FIXME: is this safe if we then fail to issue the reset or race
-	   a completion ? */
 	init_alloc_map(host);
 
 	/* Find the scb corresponding to the command */

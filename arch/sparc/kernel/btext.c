@@ -64,9 +64,6 @@ static int __init btext_initialize(unsigned int node)
 	if (prom_getproperty(node, "address", (char *)&prop, 4) >= 0)
 		address = prop;
 
-	/* FIXME: Add support for PCI reg properties. Right now, only
-	 * reliable on macs
-	 */
 	if (address == 0)
 		return -EINVAL;
 

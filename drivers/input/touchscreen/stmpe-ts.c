@@ -101,13 +101,6 @@ static void stmpe_work(struct work_struct *work)
 
 	int_sta = stmpe_reg_read(ts->stmpe, STMPE_REG_INT_STA);
 
-	/*
-	 * touch_det sometimes get desasserted or just get stuck. This appears
-	 * to be a silicon bug, We still have to clearify this with the
-	 * manufacture. As a workaround We release the key anyway if the
-	 * touch_det keeps coming in after 4ms, while the FIFO contains no value
-	 * during the whole time.
-	 */
 	while ((int_sta & (1 << STMPE_IRQ_TOUCH_DET)) && (timeout > 0)) {
 		timeout--;
 		int_sta = stmpe_reg_read(ts->stmpe, STMPE_REG_INT_STA);
@@ -133,12 +126,6 @@ static irqreturn_t stmpe_ts_handler(int irq, void *data)
 	 */
 	cancel_delayed_work_sync(&ts->work);
 
-	/*
-	 * The FIFO sometimes just crashes and stops generating interrupts. This
-	 * appears to be a silicon bug. We still have to clearify this with
-	 * the manufacture. As a workaround we disable the TSC while we are
-	 * collecting data and flush the FIFO after reading
-	 */
 	stmpe_set_bits(ts->stmpe, STMPE_REG_TSC_CTRL,
 				STMPE_TSC_CTRL_TSC_EN, 0);
 

@@ -1712,20 +1712,6 @@ static struct snd_kcontrol_new ad1981_hp_mixers[] = {
 	},
 	HDA_CODEC_VOLUME("PCM Playback Volume", 0x11, 0x0, HDA_OUTPUT),
 	HDA_CODEC_MUTE("PCM Playback Switch", 0x11, 0x0, HDA_OUTPUT),
-#if 0
-	/* FIXME: analog mic/line loopback doesn't work with my tests...
-	 *        (although recording is OK)
-	 */
-	HDA_CODEC_VOLUME("Mic Playback Volume", 0x12, 0x0, HDA_OUTPUT),
-	HDA_CODEC_MUTE("Mic Playback Switch", 0x12, 0x0, HDA_OUTPUT),
-	HDA_CODEC_VOLUME("Docking-Station Playback Volume", 0x13, 0x0, HDA_OUTPUT),
-	HDA_CODEC_MUTE("Docking-Station Playback Switch", 0x13, 0x0, HDA_OUTPUT),
-	HDA_CODEC_VOLUME("Internal Mic Playback Volume", 0x1c, 0x0, HDA_OUTPUT),
-	HDA_CODEC_MUTE("Internal Mic Playback Switch", 0x1c, 0x0, HDA_OUTPUT),
-	/* FIXME: does this laptop have analog CD connection? */
-	HDA_CODEC_VOLUME("CD Playback Volume", 0x1d, 0x0, HDA_OUTPUT),
-	HDA_CODEC_MUTE("CD Playback Switch", 0x1d, 0x0, HDA_OUTPUT),
-#endif
 	HDA_CODEC_VOLUME("Mic Boost", 0x08, 0x0, HDA_INPUT),
 	HDA_CODEC_VOLUME("Internal Mic Boost", 0x18, 0x0, HDA_INPUT),
 	HDA_CODEC_VOLUME("Capture Volume", 0x15, 0x0, HDA_OUTPUT),
@@ -3244,23 +3230,6 @@ static int patch_ad1988(struct hda_codec *codec)
 }
 
 
-/*
- * AD1884 / AD1984
- *
- * port-B - front line/mic-in
- * port-E - aux in/out
- * port-F - aux in/out
- * port-C - rear line/mic-in
- * port-D - rear line/hp-out
- * port-A - front line/hp-out
- *
- * AD1984 = AD1884 + two digital mic-ins
- *
- * FIXME:
- * For simplicity, we share the single DAC for both HP and line-outs
- * right now.  The inidividual playbacks could be easily implemented,
- * but no build-up framework is given, so far.
- */
 
 static hda_nid_t ad1884_dac_nids[1] = {
 	0x04,
@@ -3689,23 +3658,6 @@ static int patch_ad1984(struct hda_codec *codec)
 }
 
 
-/*
- * AD1883 / AD1884A / AD1984A / AD1984B
- *
- * port-B (0x14) - front mic-in
- * port-E (0x1c) - rear mic-in
- * port-F (0x16) - CD / ext out
- * port-C (0x15) - rear line-in
- * port-D (0x12) - rear line-out
- * port-A (0x11) - front hp-out
- *
- * AD1984A = AD1884A + digital-mic
- * AD1883 = equivalent with AD1984A
- * AD1984B = AD1984A + extra SPDIF-out
- *
- * FIXME:
- * We share the single DAC for both HP and line-outs (see AD1884/1984).
- */
 
 static hda_nid_t ad1884a_dac_nids[1] = {
 	0x03,

@@ -853,7 +853,6 @@ static void eraser(unsigned char c, struct tty_struct *tty)
 	int head, seen_alnums, cnt;
 	unsigned long flags;
 
-	/* FIXME: locking needed ? */
 	if (tty->read_head == tty->canon_head) {
 		/* process_output('\a', tty); */ /* what do you think? */
 		return;
@@ -888,7 +887,6 @@ static void eraser(unsigned char c, struct tty_struct *tty)
 	}
 
 	seen_alnums = 0;
-	/* FIXME: Locking ?? */
 	while (tty->read_head != tty->canon_head) {
 		head = tty->read_head;
 
@@ -1268,9 +1266,6 @@ send_signal:
 					process_output('\a', tty);
 				return;
 			}
-			/*
-			 * XXX are EOL_CHAR and EOL2_CHAR echoed?!?
-			 */
 			if (L_ECHO(tty)) {
 				/* Record the column of first canon char. */
 				if (tty->canon_head == tty->read_head)
@@ -1278,10 +1273,6 @@ send_signal:
 				echo_char(c, tty);
 				process_echoes(tty);
 			}
-			/*
-			 * XXX does PARMRK doubling happen for
-			 * EOL_CHAR and EOL2_CHAR?
-			 */
 			if (parmrk)
 				put_tty_queue(c, tty);
 
@@ -1653,20 +1644,6 @@ static int copy_from_read_buf(struct tty_struct *tty,
 extern ssize_t redirected_tty_write(struct file *, const char __user *,
 							size_t, loff_t *);
 
-/**
- *	job_control		-	check job control
- *	@tty: tty
- *	@file: file handle
- *
- *	Perform job control management checks on this file/tty descriptor
- *	and if appropriate send any needed signals and return a negative
- *	error code if action should be taken.
- *
- *	FIXME:
- *	Locking: None - redirected write test is safe, testing
- *	current->signal should possibly lock current->sighand
- *	pgrp locking ?
- */
 
 static int job_control(struct tty_struct *tty, struct file *file)
 {
@@ -1806,7 +1783,6 @@ do_it_again:
 				retval = -ERESTARTSYS;
 				break;
 			}
-			/* FIXME: does n_tty_set_room need locking ? */
 			n_tty_set_room(tty);
 			timeout = schedule_timeout(timeout);
 			continue;
@@ -2078,7 +2054,6 @@ static int n_tty_ioctl(struct tty_struct *tty, struct file *file,
 	case TIOCOUTQ:
 		return put_user(tty_chars_in_buffer(tty), (int __user *) arg);
 	case TIOCINQ:
-		/* FIXME: Locking */
 		retval = tty->read_cnt;
 		if (L_ICANON(tty))
 			retval = inq_canon(tty);

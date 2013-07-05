@@ -184,15 +184,6 @@ void zfGatherBMode(zdev_t* dev, u8_t* rateArray, u8_t* extrateArray)
 
 u16_t zfGetRandomNumber(zdev_t* dev, u16_t initValue)
 {
-#if 0
-    /* Compiler/Linker error on Linux */
-    if ( initValue )
-    {
-        srand(initValue);
-    }
-
-    return ((u16_t)rand());
-#endif
     return 0;
 }
 

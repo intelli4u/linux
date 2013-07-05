@@ -142,8 +142,8 @@ struct pci_iommu_arena
 	unsigned int align_entry;
 };
 
-#if defined(CONFIG_ALPHA_SRM) && \
-    (defined(CONFIG_ALPHA_CIA) || defined(CONFIG_ALPHA_LCA))
+#if defined(CONFIG_ALPHA_SRM) && (defined(CONFIG_ALPHA_CIA) || \
+	defined(CONFIG_ALPHA_LCA))
 # define NEED_SRM_SAVE_RESTORE
 #else
 # undef NEED_SRM_SAVE_RESTORE
@@ -200,5 +200,3 @@ extern int iommu_reserve(struct pci_iommu_arena *, long, long);
 extern int iommu_release(struct pci_iommu_arena *, long, long);
 extern int iommu_bind(struct pci_iommu_arena *, long, long, struct page **);
 extern int iommu_unbind(struct pci_iommu_arena *, long, long);
-
-

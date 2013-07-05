@@ -63,47 +63,6 @@ static int snd_trident_free(struct snd_trident *trident);
  */
 
 
-#if 0
-static void snd_trident_print_voice_regs(struct snd_trident *trident, int voice)
-{
-	unsigned int val, tmp;
-
-	printk(KERN_DEBUG "Trident voice %i:\n", voice);
-	outb(voice, TRID_REG(trident, T4D_LFO_GC_CIR));
-	val = inl(TRID_REG(trident, CH_LBA));
-	printk(KERN_DEBUG "LBA: 0x%x\n", val);
-	val = inl(TRID_REG(trident, CH_GVSEL_PAN_VOL_CTRL_EC));
-	printk(KERN_DEBUG "GVSel: %i\n", val >> 31);
-	printk(KERN_DEBUG "Pan: 0x%x\n", (val >> 24) & 0x7f);
-	printk(KERN_DEBUG "Vol: 0x%x\n", (val >> 16) & 0xff);
-	printk(KERN_DEBUG "CTRL: 0x%x\n", (val >> 12) & 0x0f);
-	printk(KERN_DEBUG "EC: 0x%x\n", val & 0x0fff);
-	if (trident->device != TRIDENT_DEVICE_ID_NX) {
-		val = inl(TRID_REG(trident, CH_DX_CSO_ALPHA_FMS));
-		printk(KERN_DEBUG "CSO: 0x%x\n", val >> 16);
-		printk("Alpha: 0x%x\n", (val >> 4) & 0x0fff);
-		printk(KERN_DEBUG "FMS: 0x%x\n", val & 0x0f);
-		val = inl(TRID_REG(trident, CH_DX_ESO_DELTA));
-		printk(KERN_DEBUG "ESO: 0x%x\n", val >> 16);
-		printk(KERN_DEBUG "Delta: 0x%x\n", val & 0xffff);
-		val = inl(TRID_REG(trident, CH_DX_FMC_RVOL_CVOL));
-	} else {		// TRIDENT_DEVICE_ID_NX
-		val = inl(TRID_REG(trident, CH_NX_DELTA_CSO));
-		tmp = (val >> 24) & 0xff;
-		printk(KERN_DEBUG "CSO: 0x%x\n", val & 0x00ffffff);
-		val = inl(TRID_REG(trident, CH_NX_DELTA_ESO));
-		tmp |= (val >> 16) & 0xff00;
-		printk(KERN_DEBUG "Delta: 0x%x\n", tmp);
-		printk(KERN_DEBUG "ESO: 0x%x\n", val & 0x00ffffff);
-		val = inl(TRID_REG(trident, CH_NX_ALPHA_FMS_FMC_RVOL_CVOL));
-		printk(KERN_DEBUG "Alpha: 0x%x\n", val >> 20);
-		printk(KERN_DEBUG "FMS: 0x%x\n", (val >> 16) & 0x0f);
-	}
-	printk(KERN_DEBUG "FMC: 0x%x\n", (val >> 14) & 3);
-	printk(KERN_DEBUG "RVol: 0x%x\n", (val >> 7) & 0x7f);
-	printk(KERN_DEBUG "CVol: 0x%x\n", val & 0x7f);
-}
-#endif
 
 /*---------------------------------------------------------------------------
    unsigned short snd_trident_codec_read(struct snd_ac97 *ac97, unsigned short reg)
@@ -495,19 +454,6 @@ void snd_trident_write_voice_regs(struct snd_trident * trident,
 	outl(regs[3], TRID_REG(trident, CH_START + 12));
 	outl(regs[4], TRID_REG(trident, CH_START + 16));
 
-#if 0
-	printk(KERN_DEBUG "written %i channel:\n", voice->number);
-	printk(KERN_DEBUG "  regs[0] = 0x%x/0x%x\n",
-	       regs[0], inl(TRID_REG(trident, CH_START + 0)));
-	printk(KERN_DEBUG "  regs[1] = 0x%x/0x%x\n",
-	       regs[1], inl(TRID_REG(trident, CH_START + 4)));
-	printk(KERN_DEBUG "  regs[2] = 0x%x/0x%x\n",
-	       regs[2], inl(TRID_REG(trident, CH_START + 8)));
-	printk(KERN_DEBUG "  regs[3] = 0x%x/0x%x\n",
-	       regs[3], inl(TRID_REG(trident, CH_START + 12)));
-	printk(KERN_DEBUG "  regs[4] = 0x%x/0x%x\n",
-	       regs[4], inl(TRID_REG(trident, CH_START + 16)));
-#endif
 }
 
 EXPORT_SYMBOL(snd_trident_write_voice_regs);
@@ -797,9 +743,6 @@ static int snd_trident_ioctl(struct snd_pcm_substream *substream,
 			     unsigned int cmd,
 			     void *arg)
 {
-	/* FIXME: it seems that with small periods the behaviour of
-	          trident hardware is unpredictable and interrupt generator
-	          is broken */
 	return snd_pcm_lib_ioctl(substream, cmd, arg);
 }
 
@@ -976,12 +919,7 @@ static int snd_trident_playback_prepare(struct snd_pcm_substream *substream)
 	voice->CVol = mix->cvol;
 	voice->Pan = mix->pan;
 	voice->Attribute = 0;
-#if 0
-	voice->Attribute = (1<<(30-16))|(2<<(26-16))|
-			   (0<<(24-16))|(0x1f<<(19-16));
-#else
 	voice->Attribute = 0;
-#endif
 
 	snd_trident_write_voice_regs(trident, voice);
 
@@ -1000,12 +938,7 @@ static int snd_trident_playback_prepare(struct snd_pcm_substream *substream)
 		evoice->Vol = 0x3ff;			/* mute */
 		evoice->RVol = evoice->CVol = 0x7f;	/* mute */
 		evoice->Pan = 0x7f;			/* mute */
-#if 0
-		evoice->Attribute = (1<<(30-16))|(2<<(26-16))|
-				    (0<<(24-16))|(0x1f<<(19-16));
-#else
 		evoice->Attribute = 0;
-#endif
 		snd_trident_write_voice_regs(trident, evoice);
 		evoice->isync2 = 1;
 		evoice->isync_mark = runtime->period_size;
@@ -2723,7 +2656,6 @@ static struct snd_kcontrol_new snd_trident_pcm_vol_control __devinitdata =
 	.info =		snd_trident_pcm_vol_control_info,
 	.get =		snd_trident_pcm_vol_control_get,
 	.put =		snd_trident_pcm_vol_control_put,
-	/* FIXME: no tlv yet */
 };
 
 /*---------------------------------------------------------------------------
@@ -3013,14 +2945,6 @@ static int __devinit snd_trident_mixer(struct snd_trident * trident, int pcm_spd
 		err = snd_ac97_mixer(trident->ac97_bus, &_ac97, &trident->ac97_sec);
 		if (err < 0)
 			snd_printk(KERN_ERR "SI7018: the secondary codec - invalid access\n");
-#if 0	// only for my testing purpose --jk
-		{
-			struct snd_ac97 *mc97;
-			err = snd_ac97_modem(trident->card, &_ac97, &mc97);
-			if (err < 0)
-				snd_printk(KERN_ERR "snd_ac97_modem returned error %i\n", err);
-		}
-#endif
 	}
 	
 	trident->ac97_detect = 0;
@@ -3795,14 +3719,6 @@ static irqreturn_t snd_trident_interrupt(int irq, void *dev_id)
 				snd_trident_write_eso_reg(trident, voice, voice->ESO);
 				snd_trident_start_voice(trident, voice->number);
 			}
-#if 0
-			if (voice->extra) {
-				/* update CSO for extra voice to preserve sync */
-				snd_trident_stop_voice(trident, voice->extra->number);
-				snd_trident_write_cso_reg(trident, voice->extra, 0);
-				snd_trident_start_voice(trident, voice->extra->number);
-			}
-#endif
 			spin_unlock(&trident->reg_lock);
 			snd_pcm_period_elapsed(voice->substream);
 			spin_lock(&trident->reg_lock);

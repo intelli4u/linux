@@ -850,4 +850,3 @@ MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Sean Young <sean@mess.org>");
 MODULE_DESCRIPTION("Support code for RFD Flash Translation Layer, "
 		"used by General Software's Embedded BIOS");
-

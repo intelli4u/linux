@@ -5,7 +5,6 @@
 klibcdirs:;
 PHONY += klibcdirs
 
-
 # Gzip
 suffix_$(CONFIG_INITRAMFS_COMPRESSION_GZIP)   = .gz
 
@@ -58,7 +57,22 @@ $(deps_initramfs): klibcdirs
 # 2) There are changes in which files are included (added or deleted)
 # 3) If gen_init_cpio are newer than initramfs_data.cpio
 # 4) arguments to gen_initramfs.sh changes
+
+# Broadcom patched
+BUILD_MFG := 0
+ifeq ($(CONFIG_BLK_DEV_INITRD),y)
+ifeq ($(CONFIG_BLK_DEV_RAM),)
+BUILD_MFG := 1
+endif
+endif
+
+ifeq ($(MFG_WAR), 1)
+BUILD_MFG = 0
+ramfs-input = -d
+endif
+
+ifeq ($(BUILD_MFG), 0)
 $(obj)/initramfs_data.cpio$(suffix_y): $(obj)/gen_init_cpio $(deps_initramfs) klibcdirs
 	$(Q)$(initramfs) -l $(ramfs-input) > $(obj)/.initramfs_data.cpio.d
 	$(call if_changed,initfs)
-
+endif

@@ -428,14 +428,6 @@ static int __devinit dmfe_init_one (struct pci_dev *pdev,
 		goto err_out_disable;
 	}
 
-#if 0	/* pci_{enable_device,set_master} sets minimum latency for us now */
-
-	/* Set Latency Timer 80h */
-	/* FIXME: setting values > 32 breaks some SiS 559x stuff.
-	   Need a PCI quirk.. */
-
-	pci_write_config_byte(pdev, PCI_LATENCY_TIMER, 0x80);
-#endif
 
 	if (pci_request_regions(pdev, DRV_NAME)) {
 		pr_err("Failed to request PCI regions\n");
@@ -773,14 +765,6 @@ static int dmfe_stop(struct DEVICE *dev)
 	/* free allocated rx buffer */
 	dmfe_free_rxbuffer(db);
 
-#if 0
-	/* show statistic counter */
-	printk("FU:%lx EC:%lx LC:%lx NC:%lx LOC:%lx TXJT:%lx RESET:%lx RCR8:%lx FAL:%lx TT:%lx\n",
-	       db->tx_fifo_underrun, db->tx_excessive_collision,
-	       db->tx_late_collision, db->tx_no_carrier, db->tx_loss_carrier,
-	       db->tx_jabber_timeout, db->reset_count, db->reset_cr8,
-	       db->reset_fatal, db->reset_TXtimeout);
-#endif
 
 	return 0;
 }
@@ -1004,7 +988,7 @@ static void dmfe_rx_packet(struct DEVICE *dev, struct dmfe_board_info * db)
 				/* Received Packet CRC check need or not */
 				if ( (db->dm910x_chk_mode & 1) &&
 					(cal_CRC(skb->data, rxlen, 1) !=
-					(*(u32 *) (skb->data+rxlen) ))) { /* FIXME (?) */
+					(*(u32 *) (skb->data+rxlen) ))) {
 					/* Found a error received packet */
 					dmfe_reuse_skb(db, rxptr->rx_skb_ptr);
 					db->dm910x_chk_mode = 3;
@@ -1564,7 +1548,7 @@ static void allocate_rx_buffer(struct dmfe_board_info *db)
 	while(db->rx_avail_cnt < RX_DESC_CNT) {
 		if ( ( skb = dev_alloc_skb(RX_ALLOC_SIZE) ) == NULL )
 			break;
-		rxptr->rx_skb_ptr = skb; /* FIXME (?) */
+		rxptr->rx_skb_ptr = skb;
 		rxptr->rdes2 = cpu_to_le32( pci_map_single(db->pdev, skb->data,
 				    RX_ALLOC_SIZE, PCI_DMA_FROMDEVICE) );
 		wmb();

@@ -407,9 +407,6 @@ spi_register_board_info(struct spi_board_info const *info, unsigned n)
 	return 0;
 }
 
-/* FIXME someone should add support for a __setup("spi", ...) that
- * creates board info from kernel command lines
- */
 
 static void scan_boardinfo(struct spi_master *master)
 {
@@ -526,9 +523,6 @@ int spi_register_master(struct spi_master *master)
 
 	/* convention:  dynamically assigned bus IDs count down from the max */
 	if (master->bus_num < 0) {
-		/* FIXME switch to an IDR based scheme, something like
-		 * I2C now uses, so we can't run out of "dynamic" IDs
-		 */
 		master->bus_num = atomic_dec_return(&dyn_bus_id);
 		dynamic = 1;
 	}
@@ -1058,4 +1052,3 @@ err0:
  * include needing to have boardinfo data structures be much more public.
  */
 postcore_initcall(spi_init);
-

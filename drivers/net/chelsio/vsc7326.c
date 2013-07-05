@@ -13,11 +13,6 @@
 
 #define MAX_MTU 9600
 
-/* The egress WM value 0x01a01fff should be used only when the
- * interface is down (MAC port disabled). This is a workaround
- * for disabling the T2/MAC flow-control. When the interface is
- * enabled, the WM value should be set to 0x014a03F0.
- */
 #define WM_DISABLE	0x01a01fff
 #define WM_ENABLE	0x014a03F0
 

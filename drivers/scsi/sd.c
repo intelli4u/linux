@@ -875,10 +875,6 @@ static int sd_release(struct gendisk *disk, fmode_t mode)
 			scsi_set_medium_removal(sdev, SCSI_REMOVAL_ALLOW);
 	}
 
-	/*
-	 * XXX and what if there are packets in flight and this close()
-	 * XXX is followed by a "rmmod sd_mod"?
-	 */
 
 	scsi_autopm_put_device(sdev);
 	scsi_disk_put(sdkp);
@@ -2648,4 +2644,3 @@ static void sd_print_result(struct scsi_disk *sdkp, int result)
 	sd_printk(KERN_INFO, sdkp, " ");
 	scsi_show_result(result);
 }
-

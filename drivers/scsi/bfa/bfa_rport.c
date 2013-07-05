@@ -902,5 +902,3 @@ bfa_rport_clear_stats(struct bfa_rport_s *rport)
 {
 	bfa_os_memset(&rport->stats, 0, sizeof(rport->stats));
 }
-
-

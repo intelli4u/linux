@@ -268,6 +268,3 @@ void irda_sysctl_unregister(void)
 {
 	unregister_sysctl_table(irda_table_header);
 }
-
-
-

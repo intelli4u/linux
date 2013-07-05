@@ -106,4 +106,3 @@ int ebi1_clk_set_min_rate(enum clkvote_client client, unsigned long rate);
 unsigned long clk_get_max_axi_khz(void);
 
 #endif
-

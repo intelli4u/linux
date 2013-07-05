@@ -48,12 +48,6 @@
 #define MLOG_MASK_PREFIX (ML_DLM|ML_DLM_DOMAIN)
 #include "cluster/masklog.h"
 
-/*
- * ocfs2 node maps are array of long int, which limits to send them freely
- * across the wire due to endianness issues. To workaround this, we convert
- * long ints to byte arrays. Following 3 routines are helper functions to
- * set/test/copy bits within those array of bytes
- */
 static inline void byte_set_bit(u8 nr, u8 map[])
 {
 	map[nr >> 3] |= (1UL << (nr & 7));
@@ -896,7 +890,6 @@ static int dlm_assert_joined_handler(struct o2net_msg *msg, u32 len, void *data,
 
 	spin_lock(&dlm_domain_lock);
 	dlm = __dlm_lookup_domain_full(assert->domain, assert->name_len);
-	/* XXX should we consider no dlm ctxt an error? */
 	if (dlm) {
 		spin_lock(&dlm->spinlock);
 

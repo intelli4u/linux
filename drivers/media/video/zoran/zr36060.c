@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2002 Laurent Pinchart <laurent.pinchart@skynet.be>
  *
- * $Id: zr36060.c,v 1.1.2.22 2003/05/06 09:35:36 rbultje Exp $
+ * $Id: zr36060.c,v 1.1.2.22 2003/05/06 09:35:36 Exp $
  *
  * ------------------------------------------------------------------------
  *
@@ -433,7 +433,6 @@ zr36060_init (struct zr36060 *ptr)
 		zr36060_write(ptr, ZR060_CIR, ZR060_CIR_CodeMstr);
 
 		/* Compression with or without variable scale factor */
-		/*FIXME: What about ptr->bitrate_ctrl? */
 		zr36060_write(ptr, ZR060_CMR,
 			      ZR060_CMR_Comp | ZR060_CMR_Pass2 |
 			      ZR060_CMR_BRB);

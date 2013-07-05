@@ -242,4 +242,3 @@ nouveau_fence_fini(struct nouveau_channel *chan)
 		kref_put(&fence->refcount, nouveau_fence_del);
 	}
 }
-

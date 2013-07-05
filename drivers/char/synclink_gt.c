@@ -80,7 +80,8 @@
 #include <asm/types.h>
 #include <asm/uaccess.h>
 
-#if defined(CONFIG_HDLC) || (defined(CONFIG_HDLC_MODULE) && defined(CONFIG_SYNCLINK_GT_MODULE))
+#if defined(CONFIG_HDLC) || (defined(CONFIG_HDLC_MODULE) && \
+	defined(CONFIG_SYNCLINK_GT_MODULE))
 #define SYNCLINK_GENERIC_HDLC 1
 #else
 #define SYNCLINK_GENERIC_HDLC 0
@@ -5046,4 +5047,3 @@ static void rx_timeout(unsigned long context)
 	spin_unlock_irqrestore(&info->lock, flags);
 	bh_handler(&info->task);
 }
-

@@ -853,7 +853,6 @@ spi_dv_device_internal(struct scsi_device *sdev, u8 *buffer)
 	if (spi_dv_device_compare_inquiry(sdev, buffer, buffer, DV_LOOPS)
 	    != SPI_COMPARE_SUCCESS) {
 		starget_printk(KERN_ERR, starget, "Domain Validation Initial Inquiry Failed\n");
-		/* FIXME: should probably offline the device here? */
 		return;
 	}
 

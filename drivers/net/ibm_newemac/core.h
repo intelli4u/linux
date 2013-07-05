@@ -309,21 +309,12 @@ struct emac_instance {
  * Set if we have new type STACR with STAOPC
  */
 #define EMAC_FTR_HAS_NEW_STACR		0x00000040
-/*
- * Set if we need phy clock workaround for 440gx
- */
 #define EMAC_FTR_440GX_PHY_CLK_FIX	0x00000080
-/*
- * Set if we need phy clock workaround for 440ep or 440gr
- */
 #define EMAC_FTR_440EP_PHY_CLK_FIX	0x00000100
 /*
  * The 405EX and 460EX contain the EMAC4SYNC core
  */
 #define EMAC_FTR_EMAC4SYNC		0x00000200
-/*
- * Set if we need phy clock workaround for 460ex or 460gt
- */
 #define EMAC_FTR_460EX_PHY_CLK_FIX	0x00000400
 
 

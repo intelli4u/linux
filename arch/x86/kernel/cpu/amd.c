@@ -35,12 +35,6 @@ __asm__(".align 4\nvide: ret");
 
 static void __cpuinit init_amd_k5(struct cpuinfo_x86 *c)
 {
-/*
- * General Systems BIOSen alias the cpu frequency registers
- * of the Elan at 0x000df000. Unfortuantly, one of the Linux
- * drivers subsequently pokes it, and changes the CPU speed.
- * Workaround : Remove the unneeded alias.
- */
 #define CBAR		(0xfffc) /* Configuration Base Address  (32-bit) */
 #define CBAR_ENB	(0x80000000)
 #define CBAR_KEY	(0X000000CB)
@@ -472,11 +466,6 @@ static void __cpuinit init_amd(struct cpuinfo_x86 *c)
 	c->apicid = hard_smp_processor_id();
 #else
 
-	/*
-	 *	FIXME: We should handle the K5 here. Set up the write
-	 *	range and also turn on MSR 83 bits 4 and 31 (write alloc,
-	 *	no bus pipeline)
-	 */
 
 	switch (c->x86) {
 	case 4:
@@ -495,7 +484,6 @@ static void __cpuinit init_amd(struct cpuinfo_x86 *c)
 		clear_cpu_cap(c, X86_FEATURE_MCE);
 #endif
 
-	/* Enable workaround for FXSAVE leak */
 	if (c->x86 >= 6)
 		set_cpu_cap(c, X86_FEATURE_FXSAVE_LEAK);
 

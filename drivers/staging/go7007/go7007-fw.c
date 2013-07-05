@@ -1032,25 +1032,6 @@ static int brctrl_to_package(struct go7007 *go,
 		0xBF1B,		framelen[7],
 		0,		0,
 
-#if 0
-		/* Remove once we don't care about matching */
-		0x200e,		0x0000,
-		0xBF56,		4,
-		0xBF57,		0,
-		0xBF58,		5,
-		0xBF59,		0,
-		0xBF5A,		6,
-		0xBF5B,		0,
-		0xBF5C,		8,
-		0xBF5D,		0,
-		0xBF5E,		1,
-		0xBF5F,		0,
-		0xBF60,		1,
-		0xBF61,		0,
-		0xBF62,		0,
-		0xBF63,		0,
-		0,		0,
-#else
 		0x2008,		0x0000,
 		0xBF56,		4,
 		0xBF57,		0,
@@ -1067,7 +1048,6 @@ static int brctrl_to_package(struct go7007 *go,
 		0,		0,
 		0,		0,
 		0,		0,
-#endif
 
 		0x200e,		0x0000,
 		0xBF10,		0,

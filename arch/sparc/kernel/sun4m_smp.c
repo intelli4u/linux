@@ -93,7 +93,6 @@ void __cpuinit smp4m_callin(void)
 	/* Allow master to continue. */
 	swap_ulong(&cpu_callin_map[cpuid], 1);
 
-	/* XXX: What's up with all the flushes? */
 	local_flush_cache_all();
 	local_flush_tlb_all();
 	
@@ -193,12 +192,6 @@ void __init smp4m_smp_done(void)
 	/* Ok, they are spinning and ready to go. */
 }
 
-/* At each hardware IRQ, we get this called to forward IRQ reception
- * to the next processor.  The caller must disable the IRQ level being
- * serviced globally so that there are no double interrupts received.
- *
- * XXX See sparc64 irq.c.
- */
 void smp4m_irq_rotate(int cpu)
 {
 	int next = cpu_data(cpu).next;

@@ -51,12 +51,6 @@ static u64 get64(const u64 *p)
 		u32 *p32 = (u32 *)p;
 		u32 h, l;
 
-		/*
-		 * Read high then low, and then make sure high is
-		 * still the same; this will only loop if low wraps
-		 * and carries into high.
-		 * XXX some clean way to make this endian-proof?
-		 */
 		do {
 			h = p32[1];
 			barrier();

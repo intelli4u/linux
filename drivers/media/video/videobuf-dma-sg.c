@@ -495,7 +495,6 @@ static int __videobuf_iolock(struct videobuf_queue *q,
 	case V4L2_MEMORY_OVERLAY:
 		if (NULL == fbuf)
 			return -EINVAL;
-		/* FIXME: need sanity checks for vb->boff */
 		/*
 		 * Using a double cast to avoid compiler warnings when
 		 * building for PAE. Compiler doesn't like direct casting
@@ -660,4 +659,3 @@ void videobuf_queue_sg_init(struct videobuf_queue *q,
 				 priv, &sg_ops);
 }
 EXPORT_SYMBOL_GPL(videobuf_queue_sg_init);
-

@@ -1,4 +1,4 @@
-/* $Id: jade.c,v 1.9.2.4 2004/01/14 16:04:48 keil Exp $
+/* $Id: jade.c,v 1.9.2.4 2004/01/14 16:04:48 Exp $
  *
  * JADE stuff (derived from original hscx.c)
  *
@@ -312,4 +312,3 @@ initjade(struct IsdnCardState *cs)
 	modejade(cs->bcs, 0, 0);
 	modejade(cs->bcs + 1, 0, 0);
 }
-

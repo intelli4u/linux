@@ -31,7 +31,7 @@ int ceph_flags_to_mode(int flags)
 {
 	int mode;
 
-#ifdef O_DIRECTORY  /* fixme */
+#ifdef O_DIRECTORY
 	if ((flags & O_DIRECTORY) == O_DIRECTORY)
 		return CEPH_FILE_MODE_PIN;
 #endif

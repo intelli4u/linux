@@ -1,48 +1,4 @@
-/*
- * SMP/VPE-safe functions to access "registers" (see note).
- *
- * NOTES:
-* - These macros use ll/sc instructions, so it is your responsibility to
- * ensure these are available on your platform before including this file.
- * - The MIPS32 spec states that ll/sc results are undefined for uncached
- * accesses. This means they can't be used on HW registers accessed
- * through kseg1. Code which requires these macros for this purpose must
- * front-end the registers with cached memory "registers" and have a single
- * thread update the actual HW registers.
- * - A maximum of 2k of code can be inserted between ll and sc. Every
- * memory accesses between the instructions will increase the chance of
- * sc failing and having to loop.
- * - When using custom_read_reg32/custom_write_reg32 only perform the
- * necessary logical operations on the register value in between these
- * two calls. All other logic should be performed before the first call.
-  * - There is a bug on the R10000 chips which has a workaround. If you
- * are affected by this bug, make sure to define the symbol 'R10000_LLSC_WAR'
- * to be non-zero.  If you are using this header from within linux, you may
- * include <asm/war.h> before including this file to have this defined
- * appropriately for you.
- *
- * Copyright 2005-2007 PMC-Sierra, Inc.
- *
- *  This program is free software; you can redistribute  it and/or modify it
- *  under  the terms of  the GNU General  Public License as published by the
- *  Free Software Foundation;  either version 2 of the  License, or (at your
- *  option) any later version.
- *
- *  THIS  SOFTWARE  IS PROVIDED   ``AS  IS'' AND   ANY  EXPRESS OR IMPLIED
- *  WARRANTIES,   INCLUDING, BUT NOT  LIMITED  TO, THE IMPLIED WARRANTIES OF
- *  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO
- *  EVENT  SHALL   THE AUTHOR  BE    LIABLE FOR ANY   DIRECT, INDIRECT,
- *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- *  LIMITED   TO, PROCUREMENT OF  SUBSTITUTE GOODS  OR SERVICES; LOSS OF USE,
- *  DATA,  OR PROFITS; OR  BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- *  THEORY OF LIABILITY, WHETHER IN  CONTRACT, STRICT LIABILITY, OR TORT
- *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- *  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- *  You should have received a copy of the  GNU General Public License along
- *  with this program; if not, write  to the Free Software Foundation, Inc., 675
- *  Mass Ave, Cambridge, MA 02139, USA.
- */
+
 
 #ifndef __ASM_REGOPS_H__
 #define __ASM_REGOPS_H__

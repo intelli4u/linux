@@ -436,7 +436,6 @@ static int rs_collect_tx_data(struct iwl_scale_tbl_info *tbl,
 /*
  * Fill uCode API rate_n_flags field, based on "search" or "active" table.
  */
-/* FIXME:RS:remove this function and put the flags statically in the table */
 static u32 rate_n_flags_from_tbl(struct iwl_priv *priv,
 				 struct iwl_scale_tbl_info *tbl,
 				 int index, u8 use_green)
@@ -3011,4 +3010,3 @@ void iwlagn_rate_control_unregister(void)
 {
 	ieee80211_rate_control_unregister(&rs_ops);
 }
-

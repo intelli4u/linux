@@ -177,9 +177,6 @@ size_t wlp_wss_uuid_print(char *buf, size_t bufsize, struct wlp_uuid *uuid)
 	return result;
 }
 
-/**
- * FIXME: How should a nonce be displayed?
- */
 static inline
 size_t wlp_wss_nonce_print(char *buf, size_t bufsize, struct wlp_nonce *nonce)
 {

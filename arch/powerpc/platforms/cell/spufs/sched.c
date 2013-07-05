@@ -664,16 +664,6 @@ static struct spu *find_victim(struct spu_context *ctx)
 		mutex_unlock(&cbe_spu_info[node].list_mutex);
 
 		if (victim) {
-			/*
-			 * This nests ctx->state_mutex, but we always lock
-			 * higher priority contexts before lower priority
-			 * ones, so this is safe until we introduce
-			 * priority inheritance schemes.
-			 *
-			 * XXX if the highest priority context is locked,
-			 * this can loop a long time.  Might be better to
-			 * look at another context or give up after X retries.
-			 */
 			if (!mutex_trylock(&victim->state_mutex)) {
 				put_spu_context(victim);
 				victim = NULL;
@@ -846,7 +836,6 @@ static struct spu_context *grab_runnable_context(int prio, int node)
 		struct list_head *rq = &spu_prio->runq[best];
 
 		list_for_each_entry(ctx, rq, rq) {
-			/* XXX(hch): check for affinity here aswell */
 			if (__node_allowed(ctx, node)) {
 				__spu_del_from_rq(ctx);
 				goto found;

@@ -123,5 +123,3 @@ extern int s3c2410_dma_getposition(unsigned int channel,
 
 extern int s3c2410_dma_set_opfn(unsigned int, s3c2410_dma_opfn_t rtn);
 extern int s3c2410_dma_set_buffdone_fn(unsigned int, s3c2410_dma_cbfn_t rtn);
-
-

@@ -307,8 +307,6 @@ static long __ncp_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		}
 		ncp_lock_server(server);
 
-		/* FIXME: We hack around in the server's structures
-		   here to be able to use ncp_request */
 
 		server->has_subfunction = 0;
 		server->current_size = request.size;

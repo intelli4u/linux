@@ -239,7 +239,7 @@ PTS_COMMON_INFO SearchAdmitTRStream(struct ieee80211_device *ieee, u8*	Addr, u8 
 	//DIRECTION_VALUE 	dir;
 	u8 	dir;
 	bool				search_dir[4] = {0, 0, 0, 0};
-	struct list_head*		psearch_list; //FIXME
+	struct list_head*		psearch_list;
 	PTS_COMMON_INFO	pRet = NULL;
 	if(ieee->iw_mode == IW_MODE_MASTER) //ap mode
 	{

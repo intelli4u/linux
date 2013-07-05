@@ -339,7 +339,6 @@ static void vmi_update_pte_defer(struct mm_struct *mm, unsigned long addr, pte_t
 
 static void vmi_set_pte(pte_t *ptep, pte_t pte)
 {
-	/* XXX because of set_pmd_pte, this can be called on PT or PD layers */
 	vmi_ops.set_pte(pte, ptep, VMI_PAGE_PT);
 }
 
@@ -362,13 +361,6 @@ static void vmi_set_pmd(pmd_t *pmdp, pmd_t pmdval)
 
 static void vmi_set_pte_atomic(pte_t *ptep, pte_t pteval)
 {
-	/*
-	 * XXX This is called from set_pmd_pte, but at both PT
-	 * and PD layers so the VMI_PAGE_PT flag is wrong.  But
-	 * it is only called for large page mapping changes,
-	 * the Xen backend, doesn't support large pages, and the
-	 * ESX backend doesn't depend on the flag.
-	 */
 	set_64bit((unsigned long long *)ptep,pte_val(pteval));
 	vmi_ops.update_pte(ptep, VMI_PAGE_PT);
 }

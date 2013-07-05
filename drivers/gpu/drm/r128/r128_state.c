@@ -621,7 +621,6 @@ static void r128_cce_dispatch_vertex(struct drm_device *dev, struct drm_buf *buf
 
 		buf->pending = 1;
 		buf->used = 0;
-		/* FIXME: Check dispatched field */
 		buf_priv->dispatched = 0;
 	}
 
@@ -679,7 +678,6 @@ static void r128_cce_dispatch_indirect(struct drm_device *dev,
 
 		buf->pending = 1;
 		buf->used = 0;
-		/* FIXME: Check dispatched field */
 		buf_priv->dispatched = 0;
 	}
 
@@ -759,7 +757,6 @@ static void r128_cce_dispatch_indices(struct drm_device *dev,
 		ADVANCE_RING();
 
 		buf->pending = 1;
-		/* FIXME: Check dispatched field */
 		buf_priv->dispatched = 0;
 	}
 
@@ -874,12 +871,6 @@ static int r128_cce_dispatch_blit(struct drm_device *dev,
 	return 0;
 }
 
-/* ================================================================
- * Tiled depth buffer management
- *
- * FIXME: These should all set the destination write mask for when we
- * have hardware stencil support.
- */
 
 static int r128_cce_dispatch_write_span(struct drm_device *dev,
 					drm_r128_depth_t *depth)
@@ -1543,9 +1534,6 @@ static int r128_cce_indirect(struct drm_device *dev, void *data, struct drm_file
 	struct drm_buf *buf;
 	drm_r128_buf_priv_t *buf_priv;
 	drm_r128_indirect_t *indirect = data;
-#if 0
-	RING_LOCALS;
-#endif
 
 	LOCK_TEST_WITH_RETURN(dev, file_priv);
 
@@ -1586,14 +1574,6 @@ static int r128_cce_indirect(struct drm_device *dev, void *data, struct drm_file
 	buf->used = indirect->end;
 	buf_priv->discard = indirect->discard;
 
-#if 0
-	/* Wait for the 3D stream to idle before the indirect buffer
-	 * containing 2D acceleration commands is processed.
-	 */
-	BEGIN_RING(2);
-	RADEON_WAIT_UNTIL_3D_IDLE();
-	ADVANCE_RING();
-#endif
 
 	/* Dispatch the indirect buffer full of commands from the
 	 * X server.  This is insecure and is thus only available to

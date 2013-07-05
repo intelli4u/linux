@@ -337,7 +337,7 @@ static int parse_atr(struct cm4000_dev *dev)
 	ix = 1;
 	ifno = 1;
 	ch = dev->atr[1];
-	dev->proto = 0;		/* XXX PROTO */
+	dev->proto = 0;
 	any_t1 = any_t0 = done = 0;
 	dev->ta1 = 0x11;	/* defaults to 9600 baud */
 	do {
@@ -391,7 +391,7 @@ static int parse_atr(struct cm4000_dev *dev)
 		}
 #endif
 		if (any_t0 == 0)
-			dev->proto = 1;	/* XXX PROTO */
+			dev->proto = 1;
 		set_bit(IS_ANY_T1, &dev->flags);
 	}
 

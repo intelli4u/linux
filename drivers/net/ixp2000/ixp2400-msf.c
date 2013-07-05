@@ -95,11 +95,6 @@ static void ixp2400_msf_free_rbuf_entries(struct ixp2400_msf_parameters *mp)
 	int size_bits;
 	int i;
 
-	/*
-	 * Work around IXP2400 erratum #69 (silent RBUF-to-DRAM transfer
-	 * corruption) in the Intel-recommended way: do not add the RBUF
-	 * elements susceptible to corruption to the freelist.
-	 */
 	size_bits = mp->rx_mode & IXP2400_RX_MODE_RBUF_SIZE_MASK;
 	if (size_bits == IXP2400_RX_MODE_RBUF_SIZE_64) {
 		for (i = 1; i < 128; i++) {

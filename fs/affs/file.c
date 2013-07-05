@@ -628,9 +628,6 @@ static int affs_write_begin_ofs(struct file *file, struct address_space *mapping
 
 	pr_debug("AFFS: write_begin(%u, %llu, %llu)\n", (u32)inode->i_ino, (unsigned long long)pos, (unsigned long long)pos + len);
 	if (pos > AFFS_I(inode)->mmu_private) {
-		/* XXX: this probably leaves a too-big i_size in case of
-		 * failure. Should really be updating i_size at write_end time
-		 */
 		err = affs_extent_file_ofs(inode, pos);
 		if (err)
 			return err;
@@ -645,7 +642,6 @@ static int affs_write_begin_ofs(struct file *file, struct address_space *mapping
 	if (PageUptodate(page))
 		return 0;
 
-	/* XXX: inefficient but safe in the face of short writes */
 	err = affs_do_readpage_ofs(file, page, 0, PAGE_CACHE_SIZE);
 	if (err) {
 		unlock_page(page);
@@ -669,11 +665,6 @@ static int affs_write_end_ofs(struct file *file, struct address_space *mapping,
 
 	from = pos & (PAGE_CACHE_SIZE - 1);
 	to = pos + len;
-	/*
-	 * XXX: not sure if this can handle short copies (len < copied), but
-	 * we don't have to, because the page should always be uptodate here,
-	 * due to write_begin.
-	 */
 
 	pr_debug("AFFS: write_begin(%u, %llu, %llu)\n", (u32)inode->i_ino, (unsigned long long)pos, (unsigned long long)pos + len);
 	bsize = AFFS_SB(sb)->s_data_blksize;

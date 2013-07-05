@@ -367,7 +367,6 @@ static int jffs2_do_reserve_space(struct jffs2_sb_info *c, uint32_t minsize,
 			jffs2_link_node_ref(c, jeb,
 					    (jeb->offset + c->sector_size - waste) | REF_OBSOLETE,
 					    waste, NULL);
-			/* FIXME: that made it count as dirty. Convert to wasted */
 			jeb->dirty_size -= waste;
 			c->dirty_size -= waste;
 			jeb->wasted_size += waste;
@@ -436,7 +435,6 @@ struct jffs2_raw_node_ref *jffs2_add_physical_node_ref(struct jffs2_sb_info *c,
 
 	D1(printk(KERN_DEBUG "jffs2_add_physical_node_ref(): Node at 0x%x(%d), size 0x%x\n",
 		  ofs & ~3, ofs & 3, len));
-#if 1
 	/* Allow non-obsolete nodes only to be added at the end of c->nextblock, 
 	   if c->nextblock is set. Note that wbuf.c will file obsolete nodes
 	   even after refiling c->nextblock */
@@ -450,7 +448,6 @@ struct jffs2_raw_node_ref *jffs2_add_physical_node_ref(struct jffs2_sb_info *c,
 		printk(", expected at %08x\n", jeb->offset + (c->sector_size - jeb->free_size));
 		return ERR_PTR(-EINVAL);
 	}
-#endif
 	spin_lock(&c->erase_completion_lock);
 
 	new = jffs2_link_node_ref(c, jeb, ofs, len, ic);
@@ -683,7 +680,6 @@ void jffs2_mark_node_obsolete(struct jffs2_sb_info *c, struct jffs2_raw_node_ref
 		D1(printk(KERN_DEBUG "Node at 0x%08x was already marked obsolete (nodetype 0x%04x)\n", ref_offset(ref), je16_to_cpu(n.nodetype)));
 		goto out_erase_sem;
 	}
-	/* XXX FIXME: This is ugly now */
 	n.nodetype = cpu_to_je16(je16_to_cpu(n.nodetype) & ~JFFS2_NODE_ACCURATE);
 	ret = jffs2_flash_write(c, ref_offset(ref), sizeof(n), &retlen, (char *)&n);
 	if (ret) {

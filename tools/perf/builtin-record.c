@@ -452,14 +452,6 @@ static void event__synthesize_guest_os(struct machine *machine, void *data)
 	if (machine__is_host(machine))
 		return;
 
-	/*
-	 *As for guest kernel when processing subcommand record&report,
-	 *we arrange module mmap prior to guest kernel mmap and trigger
-	 *a preload dso because default guest module symbols are loaded
-	 *from guest kallsyms instead of /lib/modules/XXX/XXX. This
-	 *method is used to avoid symbol missing when the first addr is
-	 *in module instead of in guest kernel.
-	 */
 	err = event__synthesize_modules(process_synthesized_event,
 					psession, machine);
 	if (err < 0)
@@ -666,14 +658,6 @@ static int __cmd_record(int argc, const char **argv)
 		}
 
 		if (have_tracepoints(attrs, nr_counters)) {
-			/*
-			 * FIXME err <= 0 here actually means that
-			 * there were no tracepoints so its not really
-			 * an error, just that we don't need to
-			 * synthesize anything.  We really have to
-			 * return this more properly and also
-			 * propagate errors that now are calling die()
-			 */
 			err = event__synthesize_tracing_data(output, attrs,
 							     nr_counters,
 							     process_synthesized_event,

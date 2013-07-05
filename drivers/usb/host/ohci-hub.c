@@ -784,7 +784,6 @@ static int ohci_hub_control (
 	case SetHubFeature:
 		switch (wValue) {
 		case C_HUB_OVER_CURRENT:
-			// FIXME:  this can be cleared, yes?
 		case C_HUB_LOCAL_POWER:
 			break;
 		default:
@@ -825,4 +824,3 @@ error:
 	}
 	return retval;
 }
-

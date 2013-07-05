@@ -433,10 +433,6 @@ static int budget_patch_attach (struct saa7146_dev* dev, struct saa7146_pci_exte
 	// test if GPIO3 will generate vertical blank signal
 	// in budget patch GPIO3 is connected to VSYNC_B
 	count = 0;
-#if 0
-	WRITE_RPS1(CMD_UPLOAD |
-	  MASK_10 | MASK_09 | MASK_08 | MASK_06 | MASK_05 | MASK_04 | MASK_03 | MASK_02 );
-#endif
 	WRITE_RPS1(CMD_PAUSE | EVT_VBI_B);
 	WRITE_RPS1(CMD_WR_REG_MASK | (GPIO_CTRL>>2));
 	WRITE_RPS1(GPIO3_MSK);

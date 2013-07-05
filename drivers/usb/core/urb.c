@@ -366,7 +366,6 @@ int usb_submit_urb(struct urb *urb, gfp_t mem_flags)
 	if (xfertype == USB_ENDPOINT_XFER_ISOC) {
 		int	n, len;
 
-		/* FIXME SuperSpeed isoc endpoints have up to 16 bursts */
 		/* "high bandwidth" mode, 1-3 packets/uframe? */
 		if (dev->speed == USB_SPEED_HIGH) {
 			int	mult = 1 + ((max >> 11) & 0x03);
@@ -433,14 +432,6 @@ int usb_submit_urb(struct urb *urb, gfp_t mem_flags)
 	}
 	}
 #endif
-	/*
-	 * Force periodic transfer intervals to be legal values that are
-	 * a power of two (so HCDs don't need to).
-	 *
-	 * FIXME want bus->{intr,iso}_sched_horizon values here.  Each HC
-	 * supports different values... this uses EHCI/UHCI defaults (and
-	 * EHCI can use smaller non-default values).
-	 */
 	switch (xfertype) {
 	case USB_ENDPOINT_XFER_ISOC:
 	case USB_ENDPOINT_XFER_INT:
@@ -842,4 +833,3 @@ int usb_anchor_empty(struct usb_anchor *anchor)
 }
 
 EXPORT_SYMBOL_GPL(usb_anchor_empty);
-

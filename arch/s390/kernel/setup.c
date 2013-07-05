@@ -706,19 +706,6 @@ static void __init setup_hwcaps(void)
 	    && (facility_list & (1UL << (31 - 30))))
 		elf_hwcap |= HWCAP_S390_ETF3EH;
 
-	/*
-	 * Check for additional facilities with store-facility-list-extended.
-	 * stfle stores doublewords (8 byte) with bit 1ULL<<63 as bit 0
-	 * and 1ULL<<0 as bit 63. Bits 0-31 contain the same information
-	 * as stored by stfl, bits 32-xxx contain additional facilities.
-	 * How many facility words are stored depends on the number of
-	 * doublewords passed to the instruction. The additional facilites
-	 * are:
-	 *   Bit 42: decimal floating point facility is installed
-	 *   Bit 44: perform floating point operation facility is installed
-	 * translated to:
-	 *   HWCAP_S390_DFP bit 6 (42 && 44).
-	 */
 	if ((elf_hwcap & (1UL << 2)) &&
 	    __stfle(&facility_list_extended, 1) > 0) {
 		if ((facility_list_extended & (1ULL << (63 - 42)))

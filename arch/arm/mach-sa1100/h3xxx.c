@@ -310,4 +310,3 @@ void __init h3xxx_map_io(void)
 	GPCR = 0x0fffffff;	/* All outputs are set low by default */
 	GPDR = 0;		/* Configure all GPIOs as input */
 }
-

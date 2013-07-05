@@ -558,7 +558,6 @@ void fw_core_handle_bus_reset(struct fw_card *card, int node_id, int generation,
 
 	if (local_node == NULL) {
 		fw_error("topology build failed\n");
-		/* FIXME: We need to issue a bus reset in this case. */
 	} else if (card->local_node == NULL) {
 		card->local_node = local_node;
 		for_each_fw_node(card, local_node, report_found_node);

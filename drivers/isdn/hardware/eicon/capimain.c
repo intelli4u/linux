@@ -1,4 +1,4 @@
-/* $Id: capimain.c,v 1.24 2003/09/09 06:51:05 schindler Exp $
+/* $Id: capimain.c,v 1.24 2003/09/09 06:51:05 Exp $
  *
  * ISDN interface module for Eicon active cards DIVA.
  * CAPI Interface

@@ -222,7 +222,6 @@ int omap1_select_table_rate(struct clk *clk, unsigned long rate)
 	else
 		omap_sram_reprogram_clock(ptr->dpllctl_val, ptr->ckctl_val);
 
-	/* XXX Do we need to recalculate the tree below DPLL1 at this point? */
 	ck_dpll1_p->rate = ptr->pll_rate;
 
 	return 0;
@@ -325,7 +324,6 @@ static unsigned calc_ext_dsor(unsigned long rate)
 	return dsor;
 }
 
-/* XXX Only needed on 1510 */
 int omap1_set_uart_rate(struct clk *clk, unsigned long rate)
 {
 	unsigned int val;
@@ -522,7 +520,6 @@ const struct clkops clkops_dspck = {
 	.disable	= omap1_clk_disable_dsp_domain,
 };
 
-/* XXX SYSC register handling does not belong in the clock framework */
 static int omap1_clk_enable_uart_functional_16xx(struct clk *clk)
 {
 	int ret;
@@ -539,7 +536,6 @@ static int omap1_clk_enable_uart_functional_16xx(struct clk *clk)
 	return ret;
 }
 
-/* XXX SYSC register handling does not belong in the clock framework */
 static void omap1_clk_disable_uart_functional_16xx(struct clk *clk)
 {
 	struct uart_clk *uclk;
@@ -551,7 +547,6 @@ static void omap1_clk_disable_uart_functional_16xx(struct clk *clk)
 	omap1_clk_disable_generic(clk);
 }
 
-/* XXX SYSC register handling does not belong in the clock framework */
 const struct clkops clkops_uart_16xx = {
 	.enable		= omap1_clk_enable_uart_functional_16xx,
 	.disable	= omap1_clk_disable_uart_functional_16xx,

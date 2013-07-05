@@ -253,13 +253,6 @@ static void ks8842_reset(struct ks8842_adapter *adapter)
 		msleep(10);
 		iowrite16(0, adapter->hw_addr + REG_GRR);
 	} else {
-		/* The KS8842 goes haywire when doing softare reset
-		* a work around in the timberdale IP is implemented to
-		* do a hardware reset instead
-		ks8842_write16(adapter, 3, 1, REG_GRR);
-		msleep(10);
-		iowrite16(0, adapter->hw_addr + REG_GRR);
-		*/
 		iowrite32(0x1, adapter->hw_addr + REG_TIMB_RST);
 		msleep(20);
 	}
@@ -1280,4 +1273,3 @@ MODULE_DESCRIPTION("Timberdale KS8842 ethernet driver");
 MODULE_AUTHOR("Mocean Laboratories <info@mocean-labs.com>");
 MODULE_LICENSE("GPL v2");
 MODULE_ALIAS("platform:ks8842");
-

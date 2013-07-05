@@ -90,7 +90,6 @@ static void power_timeout(unsigned long data)
 
 static void blink_timeout(unsigned long data)
 {
-	/* XXX fix this for fullhouse  */
 	sgi_ioc_reset ^= (SGIOC_RESET_LC0OFF|SGIOC_RESET_LC1OFF);
 	sgioc->reset = sgi_ioc_reset;
 

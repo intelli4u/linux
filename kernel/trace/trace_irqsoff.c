@@ -689,8 +689,7 @@ static struct tracer preemptoff_tracer __read_mostly =
 # define register_preemptoff(trace) do { } while (0)
 #endif
 
-#if defined(CONFIG_IRQSOFF_TRACER) && \
-	defined(CONFIG_PREEMPT_TRACER)
+#if defined(CONFIG_IRQSOFF_TRACER) && defined(CONFIG_PREEMPT_TRACER)
 
 static int preemptirqsoff_tracer_init(struct trace_array *tr)
 {

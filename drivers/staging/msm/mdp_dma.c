@@ -72,11 +72,6 @@ static void mdp_dma2_update_lcd(struct msm_fb_data_type *mfd)
 	    DMA_OUT_SEL_AHB | DMA_IBUF_NONCONTIGUOUS;
 
 #ifdef CONFIG_FB_MSM_MDP30
-	/*
-	 * Software workaround:  On 7x25/7x27, the MDP will not
-	 * respond if dma_w is 1 pixel.  Set the update width to
-	 * 2 pixels and adjust the x offset if needed.
-	 */
 	if (iBuf->dma_w == 1) {
 		iBuf->dma_w = 2;
 		if (iBuf->dma_x == (iBuf->ibuf_width - 2))

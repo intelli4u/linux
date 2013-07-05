@@ -97,9 +97,6 @@ extern struct file_perms nullperms;
 
 #define COMBINED_PERM_MASK(X) ((X).allow | (X).audit | (X).quiet | (X).kill)
 
-/* FIXME: split perms from dfa and match this to description
- *        also add delegation info.
- */
 static inline u16 dfa_map_xindex(u16 mask)
 {
 	u16 old_index = (mask >> 10) & 0xf;

@@ -64,8 +64,7 @@ const char * const medianame[32] = {
 
 /* Set the copy breakpoint for the copy-only-tiny-buffer Rx structure. */
 #if defined(__alpha__) || defined(__arm__) || defined(__hppa__) || \
-	defined(CONFIG_SPARC) || defined(__ia64__) || \
-	defined(__sh__) || defined(__mips__)
+	defined(CONFIG_SPARC) || defined(__ia64__) || defined(__sh__) || defined(__mips__)
 static int rx_copybreak = 1518;
 #else
 static int rx_copybreak = 100;
@@ -1378,13 +1377,6 @@ static int __devinit tulip_init_one (struct pci_dev *pdev,
 	 *	without the workarounds being on.
 	 */
 
-	/* 1. Intel Saturn. Switch to 8 long words burst, 8 long word cache
-	      aligned.  Aries might need this too. The Saturn errata are not
-	      pretty reading but thankfully it's an old 486 chipset.
-
-	   2. The dreaded SiS496 486 chipset. Same workaround as Intel
-	      Saturn.
-	*/
 
 	if (pci_dev_present(early_486_chipsets)) {
 		csr0 = MRL | MRM | (8 << BurstLenShift) | (1 << CALShift);
@@ -1649,7 +1641,7 @@ static int __devinit tulip_init_one (struct pci_dev *pdev,
 		if (addr && len == 6)
 			memcpy(dev->dev_addr, addr, 6);
 #endif
-#if defined(__i386__) || defined(__x86_64__)	/* Patch up x86 BIOS bug. */
+#if defined(__i386__) || defined(__x86_64__)	    /* Patch up x86 BIOS bug. */
 		if (last_irq)
 			irq = last_irq;
 #endif

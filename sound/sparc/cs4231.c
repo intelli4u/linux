@@ -124,7 +124,6 @@ struct snd_cs4231 {
 /* IO ports */
 #include <sound/cs4231-regs.h>
 
-/* XXX offsets are different than PC ISA chips... */
 #define CS4231U(chip, x)	((chip)->port + ((c_d_c_CS4231##x) << 2))
 
 /* SBUS DMA register defines.  */
@@ -1192,9 +1191,6 @@ static int snd_cs4231_capture_close(struct snd_pcm_substream *substream)
 	return 0;
 }
 
-/* XXX We can do some power-management, in particular on EBUS using
- * XXX the audio AUXIO register...
- */
 
 static struct snd_pcm_ops snd_cs4231_playback_ops = {
 	.open		=	snd_cs4231_playback_open,

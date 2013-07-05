@@ -34,7 +34,7 @@
 #include <net/mac80211.h>
 
 #include "iwl-eeprom.h"
-#include "iwl-dev.h" /* FIXME: remove */
+#include "iwl-dev.h"
 #include "iwl-debug.h"
 #include "iwl-core.h"
 #include "iwl-io.h"
@@ -106,7 +106,6 @@ const struct iwl_rate_info iwl_rates[IWL_RATE_COUNT] = {
 	IWL_DECLARE_RATE_INFO(48, 48, 36, 54, 36, 54, 36, 54),   /* 48mbps */
 	IWL_DECLARE_RATE_INFO(54, 54, 48, INV, 48, INV, 48, INV),/* 54mbps */
 	IWL_DECLARE_RATE_INFO(60, 60, 48, INV, 48, INV, 48, INV),/* 60mbps */
-	/* FIXME:RS:          ^^    should be INV (legacy) */
 };
 EXPORT_SYMBOL(iwl_rates);
 
@@ -327,7 +326,6 @@ int iwlcore_init_geos(struct iwl_priv *priv)
 	for (i = 0;  i < priv->channel_count; i++) {
 		ch = &priv->channel_info[i];
 
-		/* FIXME: might be removed if scan is OK */
 		if (!is_channel_valid(ch))
 			continue;
 
@@ -703,9 +701,6 @@ void iwl_set_rxon_ht(struct iwl_priv *priv, struct iwl_ht_config *ht_conf)
 		return;
 	}
 
-	/* FIXME: if the definition of ht_protection changed, the "translation"
-	 * will be needed for rxon->flags
-	 */
 	rxon->flags |= cpu_to_le32(ht_conf->ht_protection << RXON_FLG_HT_OPERATING_MODE_POS);
 
 	/* Set up channel bandwidth:
@@ -1009,14 +1004,6 @@ void iwl_connection_init_rx_config(struct iwl_priv *priv,
 		break;
 	}
 
-#if 0
-	/* TODO:  Figure out when short_preamble would be set and cache from
-	 * that */
-	if (!hw_to_local(priv->hw)->short_preamble)
-		priv->staging_rxon.flags &= ~RXON_FLG_SHORT_PREAMBLE_MSK;
-	else
-		priv->staging_rxon.flags |= RXON_FLG_SHORT_PREAMBLE_MSK;
-#endif
 
 	ch_info = iwl_get_channel_info(priv, priv->band,
 				       le16_to_cpu(priv->active_rxon.channel));
@@ -1848,20 +1835,6 @@ void iwl_bss_info_changed(struct ieee80211_hw *hw,
 	}
 
 	if (changes & BSS_CHANGED_BASIC_RATES) {
-		/* XXX use this information
-		 *
-		 * To do that, remove code from iwl_set_rate() and put something
-		 * like this here:
-		 *
-		if (A-band)
-			priv->staging_rxon.ofdm_basic_rates =
-				bss_conf->basic_rates;
-		else
-			priv->staging_rxon.ofdm_basic_rates =
-				bss_conf->basic_rates >> 4;
-			priv->staging_rxon.cck_basic_rates =
-				bss_conf->basic_rates & 0xF;
-		 */
 	}
 
 	if (changes & BSS_CHANGED_HT) {

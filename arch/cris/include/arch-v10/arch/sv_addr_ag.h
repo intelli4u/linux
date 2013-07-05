@@ -136,4 +136,3 @@ IO_RD(R_EXT_DMA_0_STAT) & IO_MASK( R_EXT_DMA_0_STAT, S )
 
 
 #endif  /* ifndef __sv_addr_ag_h__ */
-

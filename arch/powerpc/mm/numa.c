@@ -1166,11 +1166,6 @@ static int hot_add_drconf_scn_to_nid(struct device_node *memory,
 	return nid;
 }
 
-/*
- * Find the node associated with a hot added memory section for memory
- * represented in the device tree as a node (i.e. memory@XXXX) for
- * each memblock.
- */
 int hot_add_node_scn_to_nid(unsigned long scn_addr)
 {
 	struct device_node *memory = NULL;

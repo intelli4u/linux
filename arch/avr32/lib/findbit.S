@@ -67,8 +67,6 @@ ENTRY(find_next_zero_bit)
 	rsub	r9, r11
 	add	r10, r9
 
-	/* XXX: If we don't have to return exactly "size" when the bit
-	   is not found, we may drop this "min" thing */
 	min	r12, r11, r10
 	retal	r12
 

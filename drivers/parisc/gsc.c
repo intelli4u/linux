@@ -135,10 +135,6 @@ static void gsc_asic_enable_irq(unsigned int irq)
 	imr = gsc_readl(irq_dev->hpa + OFFSET_IMR);
 	imr |= 1 << local_irq;
 	gsc_writel(imr, irq_dev->hpa + OFFSET_IMR);
-	/*
-	 * FIXME: read IPR to make sure the IRQ isn't already pending.
-	 *   If so, we need to read IRR and manually call do_irq().
-	 */
 }
 
 static unsigned int gsc_asic_startup_irq(unsigned int irq)
@@ -195,8 +191,6 @@ static int gsc_fixup_irqs_callback(struct device *dev, void *data)
 	struct parisc_device *padev = to_parisc_device(dev);
 	struct gsc_fixup_struct *gf = data;
 
-	/* work-around for 715/64 and others which have parent
-	   at path [5] and children at path [5/0/x] */
 	if (padev->id.hw_type == HPHW_FAULTY)
 		gsc_fixup_irqs(padev, gf->ctrl, gf->choose_irq);
 	gf->choose_irq(padev, gf->ctrl);
@@ -233,14 +227,6 @@ int gsc_common_setup(struct parisc_device *parent, struct gsc_asic *gsc_asic)
 		res->flags = IORESOURCE_MEM; 	/* do not mark it busy ! */
 	}
 
-#if 0
-	printk(KERN_WARNING "%s IRQ %d EIM 0x%x", gsc_asic->name,
-			parent->irq, gsc_asic->eim);
-	if (gsc_readl(gsc_asic->hpa + OFFSET_IMR))
-		printk("  IMR is non-zero! (0x%x)",
-				gsc_readl(gsc_asic->hpa + OFFSET_IMR));
-	printk("\n");
-#endif
 
 	return 0;
 }

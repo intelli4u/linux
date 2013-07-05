@@ -1,26 +1,4 @@
-/*
- *	IPv6 BSD socket options interface
- *	Linux INET6 implementation
- *
- *	Authors:
- *	Pedro Roque		<roque@di.fc.ul.pt>
- *
- *	Based on linux/net/ipv4/ip_sockglue.c
- *
- *	This program is free software; you can redistribute it and/or
- *      modify it under the terms of the GNU General Public License
- *      as published by the Free Software Foundation; either version
- *      2 of the License, or (at your option) any later version.
- *
- *	FIXME: Make the setsockopt code POSIX compliant: That is
- *
- *	o	Truncate getsockopt returns
- *	o	Return an optlen of the truncated length if need be
- *
- *	Changes:
- *	David L Stevens <dlstevens@us.ibm.com>:
- *		- added multicast source filtering API for MLDv2
- */
+
 
 #include <linux/module.h>
 #include <linux/capability.h>
@@ -1155,7 +1133,6 @@ static int do_ipv6_getsockopt(struct sock *sk, int level, int optname,
 		else if (np->srcprefs & IPV6_PREFER_SRC_PUBLIC)
 			val |= IPV6_PREFER_SRC_PUBLIC;
 		else {
-			/* XXX: should we return system default? */
 			val |= IPV6_PREFER_SRC_PUBTMP_DEFAULT;
 		}
 
@@ -1259,4 +1236,3 @@ int compat_ipv6_getsockopt(struct sock *sk, int level, int optname,
 
 EXPORT_SYMBOL(compat_ipv6_getsockopt);
 #endif
-

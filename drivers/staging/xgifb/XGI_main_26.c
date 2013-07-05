@@ -152,11 +152,7 @@ static inline void dumpVGAReg(void) {}
 struct video_info  xgi_video_info;
 
 
-#if 1
 #define DEBUGPRN(x)
-#else
-#define DEBUGPRN(x) printk(KERN_INFO x "\n");
-#endif
 
 
 /* --------------- Hardware Access Routines -------------------------- */
@@ -669,7 +665,6 @@ static int XGIfb_validate_mode(int myindex)
 
     }
 
-    /* FIXME: for now, all is valid on XG27 */
     if (xgi_video_info.chip == XG27)
 	    return(myindex);
 
@@ -2248,24 +2243,6 @@ static int XGIfb_heap_init(void)
 		 * to IND_XGI_CMDQUEUE_SET. I doubt that this is
 		 * enough. Reserve memory in any way.
 		 */
-// FIXME 	   	XGIfb_heap_end -= COMMAND_QUEUE_AREA_SIZE;
-// FIXME 		XGIfb_heap_size -= COMMAND_QUEUE_AREA_SIZE;
-// FIXME
-// FIXME 		outXGIIDXREG(XGISR, IND_XGI_CMDQUEUE_THRESHOLD, COMMAND_QUEUE_THRESHOLD);
-// FIXME 		outXGIIDXREG(XGISR, IND_XGI_CMDQUEUE_SET, XGI_CMD_QUEUE_RESET);
-// FIXME
-// FIXME 		*write_port = *read_port;
-// FIXME
-// FIXME 		/* TW: Set Auto_Correction bit */
-// FIXME 		temp |= (XGI_MMIO_CMD_ENABLE | XGI_CMD_AUTO_CORR);
-// FIXME 		// FIXME outXGIIDXREG(XGISR, IND_XGI_CMDQUEUE_SET, temp);
-// FIXME
-// FIXME 		*cmdq_baseport = xgi_video_info.video_size - COMMAND_QUEUE_AREA_SIZE;
-// FIXME
-// FIXME 		XGIfb_caps |= MMIO_CMD_QUEUE_CAP;
-// FIXME
-// FIXME 		DPRINTK("XGIfb: MMIO Cmd Queue offset = 0x%lx, size is %dK\n",
-// FIXME 			*cmdq_baseport, COMMAND_QUEUE_AREA_SIZE/1024);
 		break;
 	}
 
@@ -3665,4 +3642,3 @@ module_exit(xgifb_remove_module);
 
 EXPORT_SYMBOL(XGI_malloc);
 EXPORT_SYMBOL(XGI_free);
-

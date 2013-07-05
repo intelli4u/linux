@@ -1,16 +1,4 @@
-/*
- * omap_hwmod_2420_data.c - hardware modules present on the OMAP2420 chips
- *
- * Copyright (C) 2009-2010 Nokia Corporation
- * Paul Walmsley
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * XXX handle crossbar/shared link difference for L3?
- * XXX these should be marked initdata for multi-OMAP kernels
- */
+
 #include <plat/omap_hwmod.h>
 #include <mach/irqs.h>
 #include <plat/cpu.h>
@@ -178,5 +166,3 @@ int __init omap2420_hwmod_init(void)
 {
 	return omap_hwmod_init(omap2420_hwmods);
 }
-
-

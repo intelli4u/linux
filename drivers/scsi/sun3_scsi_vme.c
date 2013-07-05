@@ -120,9 +120,6 @@ static inline void sun3scsi_write(int reg, int value)
 	sun3_scsi_regp[reg] = value;
 }
 
-/*
- * XXX: status debug
- */
 static struct Scsi_Host *default_instance;
 
 /*
@@ -383,19 +380,6 @@ static irqreturn_t scsi_sun3_intr(int irq, void *dummy)
  */
 
 /* this doesn't seem to get used at all -- sam */
-#if 0
-void sun3_sun3_debug (void)
-{
-	unsigned long flags;
-	NCR5380_local_declare();
-
-	if (default_instance) {
-			local_irq_save(flags);
-			NCR5380_print_status(default_instance);
-			local_irq_restore(flags);
-	}
-}
-#endif
 
 
 /* sun3scsi_dma_setup() -- initialize the dma controller for a read/write */
@@ -417,11 +401,6 @@ static unsigned long sun3scsi_dma_setup(void *data, unsigned long count, int wri
 #endif
 
 //	dregs->fifo_count = 0;
-#if 0	
-	/* reset fifo */
-	dregs->csr &= ~CSR_FIFO;
-	dregs->csr |= CSR_FIFO;
-#endif	
 	/* set direction */
 	if(write_flag)
 		dregs->csr |= CSR_SEND;
@@ -551,11 +530,6 @@ static int sun3scsi_dma_finish(int write_flag)
 	
 //	dregs->csr |= CSR_DMA_ENABLE;
 	
-#if 0
-	/* reset fifo */
-	dregs->csr &= ~CSR_FIFO;
-	dregs->csr |= CSR_FIFO;
-#endif	
 	sun3_dma_setup_done = NULL;
 
 	return ret;

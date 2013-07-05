@@ -226,15 +226,6 @@ static inline unsigned char rtc_is_updating(void)
 }
 
 #ifdef RTC_IRQ
-/*
- *	A very tiny interrupt handler. It runs with IRQF_DISABLED set,
- *	but there is possibility of conflicting with the set_rtc_mmss()
- *	call (the rtc irq and the timer irq can easily run at the same
- *	time in two different CPUs). So we need to serialize
- *	accesses to the chip with the rtc_lock spinlock that each
- *	architecture should implement in the timer code.
- *	(See ./arch/XXXX/kernel/time.c for the set_rtc_mmss() function.)
- */
 
 static irqreturn_t rtc_interrupt(int irq, void *dev_id)
 {
@@ -993,10 +984,6 @@ found:
 		goto no_irq;
 	}
 
-	/*
-	 * XXX Interrupt pin #7 in Espresso is shared between RTC and
-	 * PCI Slot 2 INTA# (and some INTx# in Slot 1).
-	 */
 	if (request_irq(rtc_irq, rtc_interrupt, IRQF_SHARED, "rtc",
 			(void *)&rtc_port)) {
 		rtc_has_irq = 0;

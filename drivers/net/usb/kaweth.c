@@ -1181,11 +1181,6 @@ err_fw:
 	INIT_DELAYED_WORK(&kaweth->lowmem_work, kaweth_resubmit_tl);
 	usb_set_intfdata(intf, kaweth);
 
-#if 0
-// dma_supported() is deeply broken on almost all architectures
-	if (dma_supported (&intf->dev, 0xffffffffffffffffULL))
-		kaweth->net->features |= NETIF_F_HIGHDMA;
-#endif
 
 	SET_NETDEV_DEV(netdev, &intf->dev);
 	if (register_netdev(netdev) != 0) {
@@ -1248,7 +1243,6 @@ static void kaweth_disconnect(struct usb_interface *intf)
 }
 
 
-// FIXME this completion stuff is a modified clone of
 // an OLD version of some stuff in usb.c ...
 struct usb_api_data {
 	wait_queue_head_t wqh;
@@ -1352,12 +1346,3 @@ static void __exit kaweth_exit(void)
 
 module_init(kaweth_init);
 module_exit(kaweth_exit);
-
-
-
-
-
-
-
-
-

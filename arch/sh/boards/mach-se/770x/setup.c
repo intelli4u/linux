@@ -24,7 +24,6 @@ static void __init smsc_config(int index, int data)
 	outb_p(data, DATA_PORT);
 }
 
-/* XXX: Another candidate for a more generic cchip machine vector */
 static void __init smsc_setup(char **cmdline_p)
 {
 	outb_p(CONFIG_ENTER, CONFIG_PORT);
@@ -59,7 +58,6 @@ static void __init smsc_setup(char **cmdline_p)
 	smsc_config(ACTIVATE_INDEX, 0x01);
 	smsc_config(IRQ_SELECT_INDEX, 8); /* IRQ8 */
 
-	/* XXX: PARPORT, KBD, and MOUSE will come here... */
 	outb_p(CONFIG_EXIT, CONFIG_PORT);
 }
 
@@ -111,8 +109,7 @@ static struct platform_device heartbeat_device = {
 	.resource	= &heartbeat_resource,
 };
 
-#if defined(CONFIG_CPU_SUBTYPE_SH7710) ||\
-	defined(CONFIG_CPU_SUBTYPE_SH7712)
+#if defined(CONFIG_CPU_SUBTYPE_SH7710) || defined(CONFIG_CPU_SUBTYPE_SH7712)
 /* SH771X Ethernet driver */
 static struct resource sh_eth0_resources[] = {
 	[0] = {
@@ -164,8 +161,7 @@ static struct platform_device sh_eth1_device = {
 static struct platform_device *se_devices[] __initdata = {
 	&heartbeat_device,
 	&cf_ide_device,
-#if defined(CONFIG_CPU_SUBTYPE_SH7710) ||\
-	defined(CONFIG_CPU_SUBTYPE_SH7712)
+#if defined(CONFIG_CPU_SUBTYPE_SH7710) || defined(CONFIG_CPU_SUBTYPE_SH7712)
 	&sh_eth0_device,
 	&sh_eth1_device,
 #endif

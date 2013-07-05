@@ -253,4 +253,3 @@ void vhci_rx_loop(struct usbip_task *ut)
 		vhci_rx_pdu(ud);
 	}
 }
-

@@ -602,11 +602,6 @@ static int fc_fcp_send_data(struct fc_fcp_pkt *fsp, struct fc_seq *seq,
 		if (!fp) {
 			tlen = min(t_blen, remaining);
 
-			/*
-			 * TODO.  Temporary workaround.	 fc_seq_send() can't
-			 * handle odd lengths in non-linear skbs.
-			 * This will be the final fragment only.
-			 */
 			if (tlen % 4)
 				using_sg = 0;
 			fp = fc_frame_alloc(lport, using_sg ? 0 : tlen);

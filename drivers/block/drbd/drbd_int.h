@@ -2196,8 +2196,6 @@ static inline int __inc_ap_bio_cond(struct drbd_conf *mdev)
 	if (!drbd_state_is_stable(mdev->state))
 		return 0;
 
-	/* since some older kernels don't have atomic_add_unless,
-	 * and we are within the spinlock anyways, we have this workaround.  */
 	if (atomic_read(&mdev->ap_bio_cnt) > mxb)
 		return 0;
 	if (test_bit(BITMAP_IO, &mdev->flags))

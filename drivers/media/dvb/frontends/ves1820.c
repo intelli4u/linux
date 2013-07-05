@@ -250,7 +250,7 @@ static int ves1820_read_status(struct dvb_frontend* fe, fe_status_t* status)
 	if (sync & 2)
 		*status |= FE_HAS_CARRIER;
 
-	if (sync & 2)	/* XXX FIXME! */
+	if (sync & 2)
 		*status |= FE_HAS_VITERBI;
 
 	if (sync & 4)

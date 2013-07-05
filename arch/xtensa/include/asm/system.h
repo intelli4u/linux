@@ -64,7 +64,7 @@ static inline int irqs_disabled(void)
 
 #define set_mb(var, value)	do { var = value; mb(); } while (0)
 
-#if !defined (__ASSEMBLY__)
+#if !defined(__ASSEMBLY__)
 
 /* * switch_to(n) should switch tasks to task nr n, first
  * checking that n isn't the current task, in which case it does nothing.

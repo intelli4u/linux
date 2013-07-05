@@ -157,10 +157,8 @@ decompress_kernel(void *output_start,
 	input_data		= (uch *)input_start;
 	input_data_size		= kzsize; /* use compressed size */
 
-	/* FIXME FIXME FIXME */
 	free_mem_ptr		= (ulg)output_start + ksize;
 	free_mem_end_ptr	= (ulg)output_start + ksize + 0x200000;
-	/* FIXME FIXME FIXME */
 
 	/* put in temp area to reduce initial footprint */
 	window = malloc(WSIZE);

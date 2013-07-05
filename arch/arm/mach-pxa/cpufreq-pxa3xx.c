@@ -211,7 +211,7 @@ static int pxa3xx_cpufreq_init(struct cpufreq_policy *policy)
 	/* set default policy and cpuinfo */
 	policy->cpuinfo.min_freq = 104000;
 	policy->cpuinfo.max_freq = (cpu_is_pxa320()) ? 806000 : 624000;
-	policy->cpuinfo.transition_latency = 1000; /* FIXME: 1 ms, assumed */
+	policy->cpuinfo.transition_latency = 1000;
 	policy->cur = policy->min = policy->max = get_clk_frequency_khz(0);
 
 	if (cpu_is_pxa300() || cpu_is_pxa310())

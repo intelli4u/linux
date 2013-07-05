@@ -114,7 +114,7 @@ static inline void sb800_prefetch(struct ohci_hcd *ohci, int on)
  * On architectures with edge-triggered interrupts we must never return
  * IRQ_NONE.
  */
-#if defined(CONFIG_SA1111)  /* ... or other edge-triggered systems */
+#if defined(CONFIG_SA1111)      /* ... or other edge-triggered systems */
 #define IRQ_NOTMINE	IRQ_HANDLED
 #else
 #define IRQ_NOTMINE	IRQ_NONE
@@ -780,9 +780,6 @@ static irqreturn_t ohci_irq (struct usb_hcd *hcd)
 	if (ints & OHCI_INTR_UE) {
 		// e.g. due to PCI Master/Target Abort
 		if (quirk_nec(ohci)) {
-			/* Workaround for a silicon bug in some NEC chips used
-			 * in Apple's PowerBooks. Adapted from Darwin code.
-			 */
 			ohci_err (ohci, "OHCI Unrecoverable Error, scheduling NEC chip restart\n");
 
 			ohci_writel (ohci, OHCI_INTR_UE, &regs->intrdisable);
@@ -1061,10 +1058,8 @@ MODULE_LICENSE ("GPL");
 #define PLATFORM_DRIVER		ohci_hcd_da8xx_driver
 #endif
 
-#if defined(CONFIG_CPU_SUBTYPE_SH7720) || \
-    defined(CONFIG_CPU_SUBTYPE_SH7721) || \
-    defined(CONFIG_CPU_SUBTYPE_SH7763) || \
-    defined(CONFIG_CPU_SUBTYPE_SH7786)
+#if defined(CONFIG_CPU_SUBTYPE_SH7720) || defined(CONFIG_CPU_SUBTYPE_SH7721) || \
+	defined(CONFIG_CPU_SUBTYPE_SH7763) || defined(CONFIG_CPU_SUBTYPE_SH7786)
 #include "ohci-sh.c"
 #define PLATFORM_DRIVER		ohci_hcd_sh_driver
 #endif
@@ -1100,16 +1095,11 @@ MODULE_LICENSE ("GPL");
 #define PLATFORM_DRIVER	ohci_hcd_jz4740_driver
 #endif
 
-#if	!defined(PCI_DRIVER) &&		\
-	!defined(PLATFORM_DRIVER) &&	\
-	!defined(OMAP1_PLATFORM_DRIVER) &&	\
-	!defined(OMAP3_PLATFORM_DRIVER) &&	\
-	!defined(OF_PLATFORM_DRIVER) &&	\
-	!defined(SA1111_DRIVER) &&	\
-	!defined(PS3_SYSTEM_BUS_DRIVER) && \
-	!defined(SM501_OHCI_DRIVER) && \
-	!defined(TMIO_OHCI_DRIVER) && \
-	!defined(SSB_OHCI_DRIVER)
+#if	!defined(PCI_DRIVER) && !defined(PLATFORM_DRIVER) && \
+	!defined(OMAP1_PLATFORM_DRIVER) && !defined(OMAP3_PLATFORM_DRIVER) && \
+	!defined(OF_PLATFORM_DRIVER) && !defined(SA1111_DRIVER) && \
+	!defined(PS3_SYSTEM_BUS_DRIVER) && !defined(SM501_OHCI_DRIVER) && \
+	!defined(TMIO_OHCI_DRIVER) && !defined(SSB_OHCI_DRIVER)
 #error "missing bus glue for ohci-hcd"
 #endif
 
@@ -1279,4 +1269,3 @@ static void __exit ohci_hcd_mod_exit(void)
 	clear_bit(USB_OHCI_LOADED, &usb_hcds_loaded);
 }
 module_exit(ohci_hcd_mod_exit);
-

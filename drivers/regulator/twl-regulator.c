@@ -176,7 +176,7 @@ static int twlreg_get_status(struct regulator_dev *rdev)
 	int	state = twlreg_grp(rdev);
 
 	if (twl_class_is_6030())
-		return 0; /* FIXME return for 6030 regulator */
+		return 0;
 
 	if (state < 0)
 		return state;
@@ -197,7 +197,7 @@ static int twlreg_set_mode(struct regulator_dev *rdev, unsigned mode)
 	int			status;
 
 	if (twl_class_is_6030())
-		return 0; /* FIXME return for 6030 regulator */
+		return 0;
 
 	/* We can only set the mode through state machine commands... */
 	switch (mode) {
@@ -651,9 +651,6 @@ MODULE_ALIAS("platform:twl_reg");
 static struct platform_driver twlreg_driver = {
 	.probe		= twlreg_probe,
 	.remove		= __devexit_p(twlreg_remove),
-	/* NOTE: short name, to work around driver model truncation of
-	 * "twl_regulator.12" (and friends) to "twl_regulator.1".
-	 */
 	.driver.name	= "twl_reg",
 	.driver.owner	= THIS_MODULE,
 };

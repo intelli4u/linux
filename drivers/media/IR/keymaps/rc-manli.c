@@ -28,7 +28,7 @@ static struct ir_scancode manli[] = {
 	 * FUNCTION         POWER *
 	 *   FM              (|)  *
 	 *                        */
-	{ 0x1c, KEY_RADIO },	/*XXX*/
+	{ 0x1c, KEY_RADIO },
 	{ 0x12, KEY_POWER },
 
 	/*  0x01    0x02    0x03  *
@@ -54,9 +54,9 @@ static struct ir_scancode manli[] = {
 	 * RECALL    0      +100  *
 	 *                  PLUS  *
 	 *                        */
-	{ 0x0a, KEY_AGAIN },	/*XXX KEY_REWIND? */
+	{ 0x0a, KEY_AGAIN },
 	{ 0x00, KEY_0 },
-	{ 0x17, KEY_DIGITS },	/*XXX*/
+	{ 0x17, KEY_DIGITS },
 
 	/*  0x14            0x10  *
 	 *  MENU            INFO  *
@@ -75,7 +75,7 @@ static struct ir_scancode manli[] = {
 	 *                        */
 	{ 0x0b, KEY_UP },
 	{ 0x18, KEY_LEFT },
-	{ 0x16, KEY_OK },	/*XXX KEY_SELECT? KEY_ENTER? */
+	{ 0x16, KEY_OK },
 	{ 0x0c, KEY_RIGHT },
 	{ 0x15, KEY_DOWN },
 
@@ -83,8 +83,8 @@ static struct ir_scancode manli[] = {
 	 *  TV/AV           MODE  *
 	 *  SOURCE         STEREO *
 	 *                        */
-	{ 0x11, KEY_TV },	/*XXX*/
-	{ 0x0d, KEY_MODE },	/*XXX there's no KEY_STEREO	*/
+	{ 0x11, KEY_TV },
+	{ 0x0d, KEY_MODE },
 
 	/*  0x0f    0x1b    0x1a  *
 	 *  AUDIO   Vol+    Chan+ *

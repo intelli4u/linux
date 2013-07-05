@@ -132,4 +132,3 @@ extern void PHY_SetBeaconHwReg( struct net_device* dev, u16 BeaconInterval);
 void ChkFwCmdIoDone(struct net_device* dev);
 
 #endif	// __INC_HAL8192SPHYCFG_H
-

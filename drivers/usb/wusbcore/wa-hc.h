@@ -121,40 +121,6 @@ struct wa_rpipe {
 };
 
 
-/**
- * Instance of a HWA Host Controller
- *
- * Except where a more specific lock/mutex applies or atomic, all
- * fields protected by @mutex.
- *
- * @wa_descr  Can be accessed without locking because it is in
- *            the same area where the device descriptors were
- *            read, so it is guaranteed to exist umodified while
- *            the device exists.
- *
- *            Endianess has been converted to CPU's.
- *
- * @nep_* can be accessed without locking as its processing is
- *        serialized; we submit a NEP URB and it comes to
- *        hwahc_nep_cb(), which won't issue another URB until it is
- *        done processing it.
- *
- * @xfer_list:
- *
- *   List of active transfers to verify existence from a xfer id
- *   gotten from the xfer result message. Can't use urb->list because
- *   it goes by endpoint, and we don't know the endpoint at the time
- *   when we get the xfer result message. We can't really rely on the
- *   pointer (will have to change for 64 bits) as the xfer id is 32 bits.
- *
- * @xfer_delayed_list:   List of transfers that need to be started
- *                       (with a workqueue, because they were
- *                       submitted from an atomic context).
- *
- * FIXME: this needs to be layered up: a wusbhc layer (for sharing
- *        comonalities with WHCI), a wa layer (for sharing
- *        comonalities with DWA-RC).
- */
 struct wahc {
 	struct usb_device *usb_dev;
 	struct usb_interface *usb_iface;
@@ -293,17 +259,6 @@ extern int wa_urb_dequeue(struct wahc *, struct urb *);
 extern void wa_handle_notif_xfer(struct wahc *, struct wa_notif_hdr *);
 
 
-/* Misc
- *
- * FIXME: Refcounting for the actual @hwahc object is not correct; I
- *        mean, this should be refcounting on the HCD underneath, but
- *        it is not. In any case, the semantics for HCD refcounting
- *        are *weird*...on refcount reaching zero it just frees
- *        it...no RC specific function is called...unless I miss
- *        something.
- *
- * FIXME: has to go away in favour of an 'struct' hcd based sollution
- */
 static inline struct wahc *wa_get(struct wahc *wa)
 {
 	usb_get_intf(wa->usb_iface);
@@ -323,7 +278,7 @@ static inline int __wa_feature(struct wahc *wa, unsigned op, u16 feature)
 			USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE,
 			feature,
 			wa->usb_iface->cur_altsetting->desc.bInterfaceNumber,
-			NULL, 0, 1000 /* FIXME: arbitrary */);
+			NULL, 0, 1000);
 }
 
 
@@ -358,25 +313,13 @@ s32 __wa_get_status(struct wahc *wa)
 		USB_DIR_IN | USB_TYPE_CLASS | USB_RECIP_INTERFACE,
 		0, wa->usb_iface->cur_altsetting->desc.bInterfaceNumber,
 		&wa->status, sizeof(wa->status),
-		1000 /* FIXME: arbitrary */);
+		1000);
 	if (result >= 0)
 		result = wa->status;
 	return result;
 }
 
 
-/**
- * Waits until the Wire Adapter's status matches @mask/@value
- *
- * @wa:		Wire Adapter instance.
- * @returns     < 0 errno code on error, otherwise status.
- *
- * Loop until the WAs status matches the mask and value (status & mask
- * == value). Timeout if it doesn't happen.
- *
- * FIXME: is there an official specification on how long status
- *        changes can take?
- */
 static inline s32 __wa_wait_status(struct wahc *wa, u32 mask, u32 value)
 {
 	s32 result;

@@ -88,15 +88,6 @@ void xhci_quiesce(struct xhci_hcd *xhci)
 	xhci_writel(xhci, cmd, &xhci->op_regs->command);
 }
 
-/*
- * Force HC into halt state.
- *
- * Disable any IRQs and clear the run/stop bit.
- * HC will complete any current and actively pipelined transactions, and
- * should halt within 16 microframes of the run/stop bit being cleared.
- * Read HC Halted bit in the status register to see when the HC is finished.
- * XXX: shouldn't we set HC_STATE_HALT here somewhere?
- */
 int xhci_halt(struct xhci_hcd *xhci)
 {
 	xhci_dbg(xhci, "// Halt the HC\n");
@@ -105,6 +96,64 @@ int xhci_halt(struct xhci_hcd *xhci)
 	return handshake(xhci, &xhci->op_regs->status,
 			STS_HALT, STS_HALT, XHCI_MAX_HALT_USEC);
 }
+
+#ifdef CONFIG_BCM47XX
+int xhci_fake_doorbell(struct xhci_hcd *xhci, int slot_id)
+{
+	unsigned int temp1, ret;
+
+	/* alloc a virt device for slot */
+	if (!xhci_alloc_virt_device(xhci, slot_id, 0, GFP_NOIO)) {
+                xhci_warn(xhci, "Could not allocate xHCI USB device data structures\n");
+		return 1;
+        }
+
+	/* ring fake doorbell for slot_id ep 0 */
+	xhci_ring_ep_doorbell(xhci, slot_id, 0, 0);
+	mdelay(1);
+
+	/* read the status register to check if HSE is set or not? */
+        temp1 = xhci_readl(xhci, &xhci->op_regs->status);
+	xhci_dbg(xhci, "op reg status = %x\n",temp1);
+
+	/* clear HSE if set */
+	if(temp1 & STS_FATAL) {
+		xhci_dbg(xhci, "HSE problem detected\n");
+		temp1 &= ~(0x1fff);
+		temp1 |= STS_FATAL;
+		xhci_dbg(xhci, "temp1=%x\n",temp1);
+		xhci_writel(xhci, temp1, &xhci->op_regs->status);
+		mdelay(1);
+	        temp1 = xhci_readl(xhci, &xhci->op_regs->status);
+        	xhci_dbg(xhci, "After clear op reg status=%x\n", temp1);
+	}
+	
+	/* Free virt device */
+	xhci_free_virt_device(xhci, slot_id);
+
+	/* Run the controller if needed */
+	temp1 = xhci_readl(xhci, &xhci->op_regs->command);
+	if (temp1 & CMD_RUN)
+		return 0;
+	temp1 |= (CMD_RUN);
+
+	xhci_writel(xhci, temp1, &xhci->op_regs->command);
+	/*
+	 * Wait for the HCHalted Status bit to be 0 to indicate the host is running.
+	 */
+	ret = handshake(xhci, &xhci->op_regs->status,
+		STS_HALT, 0, XHCI_MAX_HALT_USEC);
+
+	if (ret == -ETIMEDOUT) {
+		xhci_err(xhci, "Host took too long to start, "
+				"waited %u microseconds.\n",
+				XHCI_MAX_HALT_USEC);
+		return 1;
+	}
+
+	return 0;
+}
+#endif /* CONFIG_BCM47XX */
 
 /*
  * Set the run bit and wait for the host to be running.
@@ -130,6 +179,11 @@ int xhci_start(struct xhci_hcd *xhci)
 		xhci_err(xhci, "Host took too long to start, "
 				"waited %u microseconds.\n",
 				XHCI_MAX_HALT_USEC);
+
+#ifdef CONFIG_BCM47XX
+	xhci_fake_doorbell(xhci, 1);
+#endif /* CONFIG_BCM47XX */
+
 	return ret;
 }
 
@@ -156,7 +210,6 @@ int xhci_reset(struct xhci_hcd *xhci)
 	command = xhci_readl(xhci, &xhci->op_regs->command);
 	command |= CMD_RESET;
 	xhci_writel(xhci, command, &xhci->op_regs->command);
-	/* XXX: Why does EHCI set this here?  Shouldn't other code do this? */
 	xhci_to_hcd(xhci)->state = HC_STATE_HALT;
 
 	ret = handshake(xhci, &xhci->op_regs->command,
@@ -670,9 +723,6 @@ static int xhci_check_maxpacket(struct xhci_hcd *xhci, unsigned int slot_id,
 		ep_ctx->ep_info2 |= MAX_PACKET(max_packet_size);
 
 		/* Set up the input context flags for the command */
-		/* FIXME: This won't work if a non-default control endpoint
-		 * changes max packet sizes.
-		 */
 		ctrl_ctx = xhci_get_input_control_ctx(xhci, in_ctx);
 		ctrl_ctx->add_flags = EP0_FLAG;
 		ctrl_ctx->drop_flags = 0;
@@ -1091,10 +1141,6 @@ int xhci_add_endpoint(struct usb_hcd *hcd, struct usb_device *udev,
 	added_ctxs = xhci_get_endpoint_flag(&ep->desc);
 	last_ctx = xhci_last_valid_endpoint(added_ctxs);
 	if (added_ctxs == SLOT_FLAG || added_ctxs == EP0_FLAG) {
-		/* FIXME when we have to issue an evaluate endpoint command to
-		 * deal with ep0 max packet size changing once we get the
-		 * descriptors
-		 */
 		xhci_dbg(xhci, "xHCI %s - can't add slot or ep 0 %#x\n",
 				__func__, added_ctxs);
 		return 0;
@@ -1201,13 +1247,11 @@ static int xhci_configure_endpoint_result(struct xhci_hcd *xhci,
 		dev_warn(&udev->dev, "Not enough host controller resources "
 				"for new device state.\n");
 		ret = -ENOMEM;
-		/* FIXME: can we allocate more resources for the HC? */
 		break;
 	case COMP_BW_ERR:
 		dev_warn(&udev->dev, "Not enough bandwidth "
 				"for new device state.\n");
 		ret = -ENOSPC;
-		/* FIXME: can we go back to the old state? */
 		break;
 	case COMP_TRB_ERR:
 		/* the HCD set up something wrong */
@@ -1329,7 +1373,6 @@ static int xhci_configure_endpoint(struct xhci_hcd *xhci,
 				ctx_change == 0 ?
 					"configure endpoint" :
 					"evaluate context");
-		/* FIXME cancel the configure endpoint command */
 		return -ETIME;
 	}
 
@@ -1507,11 +1550,6 @@ void xhci_cleanup_stalled_ring(struct xhci_hcd *xhci,
 		xhci_queue_new_dequeue_state(xhci, udev->slot_id,
 				ep_index, ep->stopped_stream, &deq_state);
 	} else {
-		/* Better hope no one uses the input context between now and the
-		 * reset endpoint completion!
-		 * XXX: No idea how this hardware will react when stream rings
-		 * are enabled.
-		 */
 		xhci_dbg(xhci, "Setting up input context for "
 				"configure endpoint command\n");
 		xhci_setup_input_ctx_for_quirk(xhci, udev->slot_id,
@@ -1806,9 +1844,6 @@ int xhci_alloc_streams(struct usb_hcd *hcd, struct usb_device *udev,
 				num_streams, mem_flags);
 		if (!vdev->eps[ep_index].stream_info)
 			goto cleanup;
-		/* Set maxPstreams in endpoint context and update deq ptr to
-		 * point to stream context array. FIXME
-		 */
 	}
 
 	/* Set up the input context for a configure endpoint command. */
@@ -1860,9 +1895,6 @@ cleanup:
 		ep_index = xhci_get_endpoint_index(&eps[i]->desc);
 		xhci_free_stream_info(xhci, vdev->eps[ep_index].stream_info);
 		vdev->eps[ep_index].stream_info = NULL;
-		/* FIXME Unset maxPstreams in endpoint context and
-		 * update deq ptr to point to normal string ring.
-		 */
 		vdev->eps[ep_index].ep_state &= ~EP_GETTING_STREAMS;
 		vdev->eps[ep_index].ep_state &= ~EP_HAS_STREAMS;
 		xhci_endpoint_zero(xhci, vdev, eps[i]);
@@ -1941,9 +1973,6 @@ int xhci_free_streams(struct usb_hcd *hcd, struct usb_device *udev,
 		ep_index = xhci_get_endpoint_index(&eps[i]->desc);
 		xhci_free_stream_info(xhci, vdev->eps[ep_index].stream_info);
 		vdev->eps[ep_index].stream_info = NULL;
-		/* FIXME Unset maxPstreams in endpoint context and
-		 * update deq ptr to point to normal string ring.
-		 */
 		vdev->eps[ep_index].ep_state &= ~EP_GETTING_NO_STREAMS;
 		vdev->eps[ep_index].ep_state &= ~EP_HAS_STREAMS;
 	}
@@ -2127,10 +2156,6 @@ void xhci_free_dev(struct usb_hcd *hcd, struct usb_device *udev)
 	}
 	xhci_ring_cmd_db(xhci);
 	spin_unlock_irqrestore(&xhci->lock, flags);
-	/*
-	 * Event command completion handler will free any data structures
-	 * associated with the slot.  XXX Can free sleep?
-	 */
 }
 
 /*
@@ -2154,13 +2179,11 @@ int xhci_alloc_dev(struct usb_hcd *hcd, struct usb_device *udev)
 	xhci_ring_cmd_db(xhci);
 	spin_unlock_irqrestore(&xhci->lock, flags);
 
-	/* XXX: how much time for xHC slot assignment? */
 	timeleft = wait_for_completion_interruptible_timeout(&xhci->addr_dev,
 			USB_CTRL_SET_TIMEOUT);
 	if (timeleft <= 0) {
 		xhci_warn(xhci, "%s while waiting for a slot\n",
 				timeleft == 0 ? "Timeout" : "Signal");
-		/* FIXME cancel the enable slot request */
 		return 0;
 	}
 
@@ -2235,17 +2258,11 @@ int xhci_address_device(struct usb_hcd *hcd, struct usb_device *udev)
 	xhci_ring_cmd_db(xhci);
 	spin_unlock_irqrestore(&xhci->lock, flags);
 
-	/* ctrl tx can take up to 5 sec; XXX: need more time for xHC? */
 	timeleft = wait_for_completion_interruptible_timeout(&xhci->addr_dev,
 			USB_CTRL_SET_TIMEOUT);
-	/* FIXME: From section 4.3.4: "Software shall be responsible for timing
-	 * the SetAddress() "recovery interval" required by USB and aborting the
-	 * command on a timeout.
-	 */
 	if (timeleft <= 0) {
 		xhci_warn(xhci, "%s while waiting for a slot\n",
 				timeleft == 0 ? "Timeout" : "Signal");
-		/* FIXME cancel the address device command */
 		return -ETIME;
 	}
 
@@ -2299,7 +2316,6 @@ int xhci_address_device(struct usb_hcd *hcd, struct usb_device *udev)
 	ctrl_ctx->drop_flags = 0;
 
 	xhci_dbg(xhci, "Device address = %d\n", udev->devnum);
-	/* XXX Meh, not sure if anyone else but choose_address uses this. */
 	set_bit(udev->devnum, udev->bus->devmap.devicemap);
 
 	return 0;

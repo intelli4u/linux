@@ -143,16 +143,8 @@ trap_setup_from_user:
 	/* Build pt_regs frame. */
 	STORE_PT_ALL(t_kstack, t_psr, t_pc, t_npc, g2)
 
-#if 0
-	/* If we're sure every task_struct is THREAD_SIZE aligned,
-	   we can speed this up. */
-	sethi	%hi(STACK_OFFSET), %curptr
-	or	%curptr, %lo(STACK_OFFSET), %curptr
-	sub	%t_kstack, %curptr, %curptr
-#else
 	sethi	%hi(~(THREAD_SIZE - 1)), %curptr
 	and	%t_kstack, %curptr, %curptr
-#endif
 
 	/* Clear current_thread_info->w_saved */
 	st	%g0, [%curptr + TI_W_SAVED]
@@ -317,4 +309,3 @@ trap_setup_user_stack_is_bolixed:
 
 	jmpl	%t_retpc + 0x8, %g0
 	 mov	%t_kstack, %sp
-

@@ -384,7 +384,6 @@ struct e1000_info {
 	struct e1000_nvm_operations *nvm_ops;
 };
 
-/* hardware capability, feature, and workaround flags */
 #define FLAG_HAS_AMT                      (1 << 0)
 #define FLAG_HAS_FLASH                    (1 << 1)
 #define FLAG_HAS_HW_VLAN_FILTER           (1 << 2)

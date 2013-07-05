@@ -132,7 +132,7 @@ const u64 mpoly = UINT64_C(0x1fffffff1fffffff);  /* Poly key mask     */
 		}							\
 	} while (0)
 
-#if (VMAC_NHBYTES >= 64) /* These versions do 64-bytes of message at a time */
+#if (VMAC_NHBYTES >= 64)     /* These versions do 64-bytes of message at a time */
 #define nh_vmac_nhbytes(mp, kp, nw, rh, rl)				\
 	do {								\
 		int i; u64 th, tl;					\
@@ -672,4 +672,3 @@ module_exit(vmac_module_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("VMAC hash algorithm");
-

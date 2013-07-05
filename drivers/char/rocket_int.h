@@ -810,13 +810,6 @@ Return:   Byte_t: The channel status low byte.  Can be any combination
  * Get RI status of channel
  * Defined as a function in rocket.c   -aes
  */
-#if 0
-#define sGetChanRI(ChP) ((ChP)->CtlP->AltChanRingIndicator ? \
-                          (sInB((ByteIO_t)((ChP)->ChanStat+8)) & DSR_ACT) : \
-                            (((ChP)->CtlP->boardType == ROCKET_TYPE_PC104) ? \
-                               (!(sInB((ChP)->CtlP->AiopIO[3]) & sBitMapSetTbl[(ChP)->ChanNum])) : \
-                             0))
-#endif
 
 /***************************************************************************
 Function: sGetControllerIntStatus
@@ -1211,4 +1204,3 @@ struct r_port {
 
 /* Compact PCI device */ 
 #define PCI_DEVICE_ID_CRP16INTF		0x0903	/* Rocketport Compact PCI 16 port w/external I/F */
-

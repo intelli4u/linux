@@ -33,10 +33,6 @@ extern void iop_ism_irq(int, void *);
 
 static struct adb_request *current_req;
 static struct adb_request *last_req;
-#if 0
-static unsigned char reply_buff[16];
-static unsigned char *reply_ptr;
-#endif
 
 static enum adb_iop_state {
     idle,

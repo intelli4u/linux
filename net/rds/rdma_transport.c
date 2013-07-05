@@ -75,13 +75,11 @@ int rds_rdma_cm_event_handler(struct rdma_cm_id *cm_id,
 		break;
 
 	case RDMA_CM_EVENT_ADDR_RESOLVED:
-		/* XXX do we need to clean up if this fails? */
 		ret = rdma_resolve_route(cm_id,
 					 RDS_RDMA_RESOLVE_TIMEOUT_MS);
 		break;
 
 	case RDMA_CM_EVENT_ROUTE_RESOLVED:
-		/* XXX worry about racing with listen acceptance */
 		ret = trans->cm_initiate_connect(cm_id);
 		break;
 
@@ -140,10 +138,6 @@ static int __init rds_rdma_listen_init(void)
 	sin.sin_addr.s_addr = (__force u32)htonl(INADDR_ANY);
 	sin.sin_port = (__force u16)htons(RDS_PORT);
 
-	/*
-	 * XXX I bet this binds the cm_id to a device.  If we want to support
-	 * fail-over we'll have to take this into consideration.
-	 */
 	ret = rdma_bind_addr(cm_id, (struct sockaddr *)&sin);
 	if (ret) {
 		printk(KERN_ERR "RDS/RDMA: failed to setup listener, "
@@ -216,4 +210,3 @@ module_exit(rds_rdma_exit);
 MODULE_AUTHOR("Oracle Corporation <rds-devel@oss.oracle.com>");
 MODULE_DESCRIPTION("RDS: IB/iWARP transport");
 MODULE_LICENSE("Dual BSD/GPL");
-

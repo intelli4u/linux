@@ -413,7 +413,7 @@ static int pxa_cpufreq_init(struct cpufreq_policy *policy)
 	init_sdram_rows();
 
 	/* set default policy and cpuinfo */
-	policy->cpuinfo.transition_latency = 1000; /* FIXME: 1 ms, assumed */
+	policy->cpuinfo.transition_latency = 1000;
 	policy->cur = get_clk_frequency_khz(0);	   /* current freq */
 	policy->min = policy->max = policy->cur;
 

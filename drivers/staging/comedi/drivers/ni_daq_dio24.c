@@ -125,7 +125,7 @@ static int dio24_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	/*  get base address, irq etc. based on bustype */
 	switch (thisboard->bustype) {
 	case pcmcia_bustype:
-		link = pcmcia_cur_dev;	/* XXX hack */
+		link = pcmcia_cur_dev;
 		if (!link)
 			return -EIO;
 		iobase = link->resource[0]->start;

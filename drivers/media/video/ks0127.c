@@ -300,19 +300,6 @@ static void init_reg_defaults(void)
 }
 
 
-/* We need to manually read because of a bug in the KS0127 chip.
- *
- * An explanation from kayork@mail.utexas.edu:
- *
- * During I2C reads, the KS0127 only samples for a stop condition
- * during the place where the acknowledge bit should be. Any standard
- * I2C implementation (correctly) throws in another clock transition
- * at the 9th bit, and the KS0127 will not recognize the stop condition
- * and will continue to clock out data.
- *
- * So we have to do the read ourself.  Big deal.
- *	   workaround in i2c-algo-bit
- */
 
 
 static u8 ks0127_read(struct v4l2_subdev *sd, u8 reg)

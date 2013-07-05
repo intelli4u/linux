@@ -327,15 +327,6 @@ static void __flush_cache_one(unsigned long addr, unsigned long phys,
 	way_count = dcache->ways;
 	way_incr = dcache->way_incr;
 
-	/*
-	 * Apply exec_offset (i.e. branch to P2 if required.).
-	 *
-	 * FIXME:
-	 *
-	 *	If I write "=r" for the (temp_pc), it puts this in r6 hence
-	 *	trashing exec_offset before it's been added on - why?  Hence
-	 *	"=&r" as a 'workaround'
-	 */
 	asm volatile("mov.l 1f, %0\n\t"
 		     "add   %1, %0\n\t"
 		     "jmp   @%0\n\t"

@@ -170,7 +170,7 @@ nv2a_graph_context_init(struct drm_device *dev, struct nouveau_gpuobj *ctx)
 	nv_wo32(dev, ctx, 0x0610/4, 0x00000001);
 	nv_wo32(dev, ctx, 0x0618/4, 0x00040000);
 	nv_wo32(dev, ctx, 0x061c/4, 0x00010000);
-	for (i = 0x1a9c; i <= 0x22fc; i += 16) { /*XXX: check!! */
+	for (i = 0x1a9c; i <= 0x22fc; i += 16) {
 		nv_wo32(dev, ctx, (i + 0)/4, 0x10700ff9);
 		nv_wo32(dev, ctx, (i + 4)/4, 0x0436086c);
 		nv_wo32(dev, ctx, (i + 8)/4, 0x000c001b);
@@ -790,4 +790,3 @@ struct nouveau_pgraph_object_class nv30_graph_grclass[] = {
 	{ 0x0697, false, NULL }, /* rankine (nv34) */
 	{}
 };
-

@@ -74,7 +74,7 @@ struct lgdt3305_config {
 };
 
 #if defined(CONFIG_DVB_LGDT3305) || (defined(CONFIG_DVB_LGDT3305_MODULE) && \
-				     defined(MODULE))
+	defined(MODULE))
 extern
 struct dvb_frontend *lgdt3305_attach(const struct lgdt3305_config *config,
 				     struct i2c_adapter *i2c_adap);

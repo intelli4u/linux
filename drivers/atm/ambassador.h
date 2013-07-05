@@ -241,7 +241,6 @@
 /* #define VERSION_NUMBER 0x01020000 // changed SUNI reset timings; allowed r/w onchip */
 
 /* #define VERSION_NUMBER 0x01030000 // clear local doorbell int reg on reset */
-/* #define VERSION_NUMBER 0x01040000 // PLX bug work around version PLUS */
 /* remove race conditions on basic interface */
 /* indicate to the host that diagnostics */
 /* have finished; if failed, how and what  */
@@ -441,12 +440,6 @@ typedef struct {
   struct sk_buff * skb;
 } tx_simple;
 
-#if 0
-typedef union {
-  tx_frag	fragment;
-  tx_frag_end	end_of_list;
-} tx_descr;
-#endif
 
 /* this "points" to the sequence of fragments and trailer */
 

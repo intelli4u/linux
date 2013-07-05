@@ -109,7 +109,6 @@ int usb_wwan_tiocmset(struct tty_struct *tty, struct file *file,
 	if (!intfdata->send_setup)
 		return -EINVAL;
 
-	/* FIXME: what locks portdata fields ? */
 	if (set & TIOCM_RTS)
 		portdata->rts_state = 1;
 	if (set & TIOCM_DTR)
@@ -298,8 +297,6 @@ int usb_wwan_chars_in_buffer(struct tty_struct *tty)
 
 	for (i = 0; i < N_OUT_URB; i++) {
 		this_urb = portdata->out_urbs[i];
-		/* FIXME: This locking is insufficient as this_urb may
-		   go unused during the test */
 		if (this_urb && test_bit(i, &portdata->out_busy))
 			data_len += this_urb->transfer_buffer_length;
 	}

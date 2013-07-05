@@ -58,7 +58,6 @@ static int ste10Xp_config_intr(struct phy_device *phydev)
 	int err, value;
 
 	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
-		/* Enable all STe101P interrupts (PR12) */
 		err = phy_write(phydev, MII_XIE, MII_XIE_DEFAULT_MASK);
 		/* clear any pending interrupts */
 		if (err == 0) {

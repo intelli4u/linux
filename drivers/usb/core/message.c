@@ -1316,11 +1316,6 @@ int usb_set_interface(struct usb_device *dev, int interface, int alternate)
 	}
 	mutex_unlock(&hcd->bandwidth_mutex);
 
-	/* FIXME drivers shouldn't need to replicate/bugfix the logic here
-	 * when they implement async or easily-killable versions of this or
-	 * other "should-be-internal" functions (like clear_halt).
-	 * should hcd+usbcore postprocess control requests?
-	 */
 
 	/* prevent submissions using previous endpoint settings */
 	if (iface->cur_altsetting != alt) {

@@ -246,14 +246,6 @@ static int __init sb1250_pcibios_init(void)
 		sb1250_bus_status |= PCI_BUS_ENABLED;
 	}
 
-	/*
-	 * Establish mappings in KSEG2 (kernel virtual) to PCI I/O
-	 * space.  Use "match bytes" policy to make everything look
-	 * little-endian.  So, you need to also set
-	 * CONFIG_SWAP_IO_SPACE, but this is the combination that
-	 * works correctly with most of Linux's drivers.
-	 * XXX ehs: Should this happen in PCI Device mode?
-	 */
 	io_map_base = ioremap(A_PHYS_LDTPCI_IO_MATCH_BYTES, 1024 * 1024);
 	sb1250_controller.io_map_base = (unsigned long)io_map_base;
 	set_io_port_base((unsigned long)io_map_base);

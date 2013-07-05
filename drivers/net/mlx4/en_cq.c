@@ -150,5 +150,3 @@ int mlx4_en_arm_cq(struct mlx4_en_priv *priv, struct mlx4_en_cq *cq)
 
 	return 0;
 }
-
-

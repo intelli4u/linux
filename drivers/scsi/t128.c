@@ -318,12 +318,6 @@ static int t128_release(struct Scsi_Host *shost)
  *	
  */
 
-/* 
- * XXX Most SCSI boards use this mapping, I could be incorrect.  Some one
- * using hard disks on a trantor should verify that this mapping corresponds
- * to that used by the BIOS / ASPI driver by running the linux fdisk program
- * and matching the H_C_S coordinates to what DOS uses.
- */
 
 int t128_biosparam(struct scsi_device *sdev, struct block_device *bdev,
 		sector_t capacity, int * ip)
@@ -357,13 +351,8 @@ static inline int NCR5380_pread (struct Scsi_Host *instance, unsigned char *dst,
     NCR5380_setup(instance);
     reg = base + T_DATA_REG_OFFSET;
 
-#if 0
-    for (; i; --i) {
-	while (!(readb(base+T_STATUS_REG_OFFSET) & T_ST_RDY)) barrier();
-#else
     while (!(readb(base+T_STATUS_REG_OFFSET) & T_ST_RDY)) barrier();
     for (; i; --i) {
-#endif
 	*d++ = readb(reg);
     }
 
@@ -403,13 +392,8 @@ static inline int NCR5380_pwrite (struct Scsi_Host *instance, unsigned char *src
     NCR5380_setup(instance);
     reg = base + T_DATA_REG_OFFSET;
 
-#if 0
-    for (; i; --i) {
-	while (!(readb(base+T_STATUS_REG_OFFSET) & T_ST_RDY)) barrier();
-#else
     while (!(readb(base+T_STATUS_REG_OFFSET) & T_ST_RDY)) barrier();
     for (; i; --i) {
-#endif
 	writeb(*s++, reg);
     }
 

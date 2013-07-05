@@ -220,11 +220,6 @@ extern int CIFSSMBSetFileInfo(const int xid, struct cifsTconInfo *tcon,
 			__u32 pid_of_opener);
 extern int CIFSSMBSetFileDisposition(const int xid, struct cifsTconInfo *tcon,
 			bool delete_file, __u16 fid, __u32 pid_of_opener);
-#if 0
-extern int CIFSSMBSetAttrLegacy(int xid, struct cifsTconInfo *tcon,
-			char *fileName, __u16 dos_attributes,
-			const struct nls_table *nls_codepage);
-#endif /* possibly unneeded function */
 extern int CIFSSMBSetEOF(const int xid, struct cifsTconInfo *tcon,
 			const char *fileName, __u64 size,
 			bool setAllocationSizeFlag,

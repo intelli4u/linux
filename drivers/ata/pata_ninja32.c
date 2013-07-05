@@ -148,7 +148,6 @@ static int ninja32_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 	ap->pflags = ATA_PFLAG_PIO32 | ATA_PFLAG_PIO32CHANGE;
 
 	ninja32_program(base);
-	/* FIXME: Should we disable them at remove ? */
 	return ata_host_activate(host, dev->irq, ata_bmdma_interrupt,
 				 IRQF_SHARED, &ninja32_sht);
 }

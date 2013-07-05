@@ -179,7 +179,7 @@ static int blktrans_open(struct block_device *bdev, fmode_t mode)
 	int ret;
 
 	if (!dev)
-		return -ERESTARTSYS; /* FIXME: busy loop! -arnd*/
+		return -ERESTARTSYS;
 
 	lock_kernel();
 	mutex_lock(&dev->lock);

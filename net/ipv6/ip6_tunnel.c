@@ -979,7 +979,6 @@ ip4ip6_tnl_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	err = ip6_tnl_xmit2(skb, dev, dsfield, &fl, encap_limit, &mtu);
 	if (err != 0) {
-		/* XXX: send ICMP error even if DF is not set. */
 		if (err == -EMSGSIZE)
 			icmp_send(skb, ICMP_DEST_UNREACH, ICMP_FRAG_NEEDED,
 				  htonl(mtu));

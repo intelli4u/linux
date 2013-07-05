@@ -217,7 +217,7 @@ static int lcd_enabled;
 static int dvi_enabled;
 
 #if defined(CONFIG_PANEL_SHARP_LQ043T1DG01) || \
-		defined(CONFIG_PANEL_SHARP_LQ043T1DG01_MODULE)
+	defined(CONFIG_PANEL_SHARP_LQ043T1DG01_MODULE)
 static void __init am3517_evm_display_init(void)
 {
 	int r;
@@ -378,7 +378,7 @@ static void __init am3517_evm_init_irq(void)
 static const struct ehci_hcd_omap_platform_data ehci_pdata __initconst = {
 	.port_mode[0] = EHCI_HCD_OMAP_MODE_PHY,
 #if defined(CONFIG_PANEL_SHARP_LQ043T1DG01) || \
-		defined(CONFIG_PANEL_SHARP_LQ043T1DG01_MODULE)
+	defined(CONFIG_PANEL_SHARP_LQ043T1DG01_MODULE)
 	.port_mode[1] = EHCI_HCD_OMAP_MODE_UNKNOWN,
 #else
 	.port_mode[1] = EHCI_HCD_OMAP_MODE_PHY,

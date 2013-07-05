@@ -1108,7 +1108,6 @@ static int ata_dev_set_dipm(struct ata_device *dev, enum link_pm policy)
 		break;
 	}
 
-	/* FIXME: handle SET FEATURES failure */
 	(void) err_mask;
 
 	return 0;
@@ -1618,21 +1617,6 @@ static inline void ata_dump_id(const u16 *id)
 		id[93]);
 }
 
-/**
- *	ata_id_xfermask - Compute xfermask from the given IDENTIFY data
- *	@id: IDENTIFY data to compute xfer mask from
- *
- *	Compute the xfermask for this device. This is not as trivial
- *	as it seems if we must consider early devices correctly.
- *
- *	FIXME: pre IDE drive timing (do we care ?).
- *
- *	LOCKING:
- *	None.
- *
- *	RETURNS:
- *	Computed xfermask
- */
 unsigned long ata_id_xfermask(const u16 *id)
 {
 	unsigned long pio_mask, mwdma_mask, udma_mask;
@@ -1744,11 +1728,6 @@ unsigned ata_exec_internal_sg(struct ata_device *dev,
 
 	/* initialize internal qc */
 
-	/* XXX: Tag 0 is used for drivers with legacy EH as some
-	 * drivers choke if any other tag is given.  This breaks
-	 * ata_tag_internal() test for those drivers.  Don't use new
-	 * EH stuff without converting to it.
-	 */
 	if (ap->ops->error_handler)
 		tag = ATA_TAG_INTERNAL;
 	else
@@ -2008,27 +1987,6 @@ unsigned int ata_do_dev_read_id(struct ata_device *dev,
 				     id, sizeof(id[0]) * ATA_ID_WORDS, 0);
 }
 
-/**
- *	ata_dev_read_id - Read ID data from the specified device
- *	@dev: target device
- *	@p_class: pointer to class of the target device (may be changed)
- *	@flags: ATA_READID_* flags
- *	@id: buffer to read IDENTIFY data into
- *
- *	Read ID data from the specified device.  ATA_CMD_ID_ATA is
- *	performed on ATA devices and ATA_CMD_ID_ATAPI on ATAPI
- *	devices.  This function also issues ATA_CMD_INIT_DEV_PARAMS
- *	for pre-ATA4 drives.
- *
- *	FIXME: ATA_CMD_ID_ATA is optional for early drives and right
- *	now we abort if we hit that case.
- *
- *	LOCKING:
- *	Kernel thread context (may sleep)
- *
- *	RETURNS:
- *	0 on success, -errno otherwise.
- */
 int ata_dev_read_id(struct ata_device *dev, unsigned int *p_class,
 		    unsigned int flags, u16 *id)
 {
@@ -4953,19 +4911,6 @@ void ata_qc_complete(struct ata_queued_cmd *qc)
 {
 	struct ata_port *ap = qc->ap;
 
-	/* XXX: New EH and old EH use different mechanisms to
-	 * synchronize EH with regular execution path.
-	 *
-	 * In new EH, a failed qc is marked with ATA_QCFLAG_FAILED.
-	 * Normal execution path is responsible for not accessing a
-	 * failed qc.  libata core enforces the rule by returning NULL
-	 * from ata_qc_from_tag() for failed qcs.
-	 *
-	 * Old EH depends on ata_qc_complete() nullifying completion
-	 * requests if ATA_QCFLAG_EH_SCHEDULED is set.  Old EH does
-	 * not synchronize with interrupt handler.  Only PIO task is
-	 * taken care of.
-	 */
 	if (ap->ops->error_handler) {
 		struct ata_device *dev = qc->dev;
 		struct ata_eh_info *ehi = &dev->link->eh_info;
@@ -6039,12 +5984,6 @@ static void async_port_probe(void *data, async_cookie_t cookie)
 		DPRINTK("ata%u: bus probe end\n", ap->print_id);
 
 		if (rc) {
-			/* FIXME: do something useful here?
-			 * Current libata behavior will
-			 * tear down everything when
-			 * the module is removed
-			 * or the h/w is unplugged.
-			 */
 		}
 	}
 
@@ -6365,11 +6304,6 @@ static int __init ata_parse_force_one(char **cur,
 				      struct ata_force_ent *force_ent,
 				      const char **reason)
 {
-	/* FIXME: Currently, there's no way to tag init const data and
-	 * using __initdata causes build failure on some versions of
-	 * gcc.  Once __initdataconst is implemented, add const to the
-	 * following structure.
-	 */
 	static struct ata_force_param force_tbl[] __initdata = {
 		{ "40c",	.cbl		= ATA_CBL_PATA40 },
 		{ "80c",	.cbl		= ATA_CBL_PATA80 },

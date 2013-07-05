@@ -117,7 +117,7 @@ void zfAggInit(zdev_t* dev)
     success_mpdu = 0;
     total_mpdu = 0;
 #ifdef ZM_ENABLE_AGGREGATION
-#ifndef ZM_ENABLE_FW_BA_RETRANSMISSION //disable BAW
+#ifndef ZM_ENABLE_FW_BA_RETRANSMISSION     //disable BAW
     BAW = zfwMemAllocate(dev, sizeof(struct baw_enabler));
     if(!BAW)
     {
@@ -582,7 +582,7 @@ struct dest* zfAggDestGetNext(zdev_t* dev, u16_t ac)
 }
 
 #ifdef ZM_ENABLE_AGGREGATION
-#ifndef ZM_ENABLE_FW_BA_RETRANSMISSION //disable BAW
+#ifndef ZM_ENABLE_FW_BA_RETRANSMISSION     //disable BAW
 u16_t   zfAggTidTxInsertHead(zdev_t* dev, struct bufInfo *buf_info,TID_TX tid_tx)
 {
     zbuf_t* buf;
@@ -1423,7 +1423,7 @@ u16_t zfAggTxDeleteQueue(zdev_t* dev, u16_t qnum)
 }
 
 #ifdef ZM_ENABLE_AGGREGATION
-#ifndef ZM_ENABLE_FW_BA_RETRANSMISSION //disable BAW
+#ifndef ZM_ENABLE_FW_BA_RETRANSMISSION     //disable BAW
 void zfBawCore(zdev_t* dev, u16_t baw_seq, u32_t bitmap, u16_t aggLen) {
     TID_BAW tid_baw;
     s16_t i;
@@ -2358,29 +2358,6 @@ u16_t   zfAggRxFreeBuf(zdev_t* dev, u16_t destroy)
             }
         }
 
-        #if 0
-        if ( tid_rx->baw_head != tid_rx->baw_tail )
-        {
-            while (tid_rx->baw_head != tid_rx->baw_tail)
-            {
-                buf = tid_rx->frame[tid_rx->baw_tail].buf;
-                tid_rx->frame[tid_rx->baw_tail].buf = 0;
-                if (buf)
-                {
-                    zfwBufFree(dev, buf, 0);
-
-                    zmw_enter_critical_section(dev);
-                    tid_rx->frame[tid_rx->baw_tail].buf = 0;
-                    zmw_leave_critical_section(dev);
-                }
-                zmw_enter_critical_section(dev);
-                //if (tid_rx->baw_size > 0)tid_rx->baw_size--;
-                tid_rx->baw_tail = (tid_rx->baw_tail + 1) & ZM_AGG_BAW_MASK;
-                tid_rx->seq_start++;
-                zmw_leave_critical_section(dev);
-            }
-        }
-        #endif
 
         zmw_enter_critical_section(dev);
         tid_rx->seq_start = 0;
@@ -2431,7 +2408,7 @@ void zfAggRecvBAR(zdev_t* dev, zbuf_t *buf) {
 }
 
 #ifdef ZM_ENABLE_AGGREGATION
-#ifndef ZM_ENABLE_FW_BA_RETRANSMISSION //disable BAW
+#ifndef ZM_ENABLE_FW_BA_RETRANSMISSION     //disable BAW
 void zfAggTxRetransmit(zdev_t* dev, struct bufInfo *buf_info, struct aggControl *aggControl, TID_TX tid_tx) {
     u16_t removeLen;
     u16_t err;
@@ -2659,26 +2636,6 @@ u16_t zfAggTxSendEth(zdev_t* dev, zbuf_t* buf, u16_t port, u16_t bufType, u8_t f
     frameLen = zfwBufGetSize(dev, buf);
     frameLen -= removeLen;
 
-#if 0
-    /* Create MIC */
-    if ( (wd->wlanMode == ZM_MODE_INFRASTRUCTURE)&&
-         (wd->sta.encryMode == ZM_TKIP) )
-    {
-        if ( frameLen > fragLen )
-        {
-            micLen = zfTxGenWlanTail(dev, buf, snap, snapLen, mic);
-        }
-        else
-        {
-            /* append MIC by HMAC */
-            micLen = 8;
-        }
-    }
-    else
-    {
-        micLen = 0;
-    }
-#else
     if ( frameLen > fragLen )
     {
         micLen = zfTxGenWlanTail(dev, buf, snap, snapLen, mic);
@@ -2688,7 +2645,6 @@ u16_t zfAggTxSendEth(zdev_t* dev, zbuf_t* buf, u16_t port, u16_t bufType, u8_t f
         /* append MIC by HMAC */
         micLen = 0;
     }
-#endif
 
     /* Access Category */
     if (wd->wlanMode == ZM_MODE_AP)
@@ -2749,14 +2705,6 @@ u16_t zfAggTxSendEth(zdev_t* dev, zbuf_t* buf, u16_t port, u16_t bufType, u8_t f
         /* Flush buffer on cache */
         //zfwBufFlush(dev, frag.buf[i]);
 
-#if 0
-        zm_msg1_tx(ZM_LV_0, "headerLen=", headerLen);
-        zm_msg1_tx(ZM_LV_0, "snapLen=", snapLen);
-        zm_msg1_tx(ZM_LV_0, "micLen=", micLen);
-        zm_msg1_tx(ZM_LV_0, "removeLen=", removeLen);
-        zm_msg1_tx(ZM_LV_0, "addrTblSize=", addrTblSize);
-        zm_msg1_tx(ZM_LV_0, "frag.bufType[0]=", frag.bufType[0]);
-#endif
 
         fragLen = zfwBufGetSize(dev, frag.buf[i]);
         if ((da[0]&0x1) == 0)
@@ -2776,12 +2724,6 @@ u16_t zfAggTxSendEth(zdev_t* dev, zbuf_t* buf, u16_t port, u16_t bufType, u8_t f
         }
         wd->ledStruct.txTraffic++;
 
-#if 0 //Who care this?
-        if ( (i)&&(i == (fragNum-1)) )
-        {
-            wd->trafTally.txDataByteCount -= micLen;
-        }
-#endif
 
         /*if (aggControl->tid_baw && aggControl->aggEnabled) {
             struct baw_header_r header_r;
@@ -2894,17 +2836,8 @@ u16_t   zfAggSendAddbaRequest(zdev_t* dev, u16_t *dst, u16_t ac, u16_t up)
     //zm_msg2_mm(ZM_LV_2, "addrTbl.physAddrl[0]=", addrTbl.physAddrl[0]);
     //zm_msg2_mm(ZM_LV_2, "buf->data=", buf->data);
 
-    #if 0
-    err = zfHpSend(dev, NULL, 0, NULL, 0, NULL, 0, buf, 0,
-		   ZM_INTERNAL_ALLOC_BUF, 0, 0xff);
-    if (err != ZM_SUCCESS)
-    {
-        goto zlError;
-    }
-    #else
     zfPutVmmq(dev, buf);
     zfPushVtxq(dev);
-    #endif
 
     return ZM_SUCCESS;
 
@@ -2987,15 +2920,9 @@ u16_t zfAggGenAddbaHeader(zdev_t* dev, u16_t* dst,
     header[0] = 24+len+4;   //Length
     header[1] = 0x8;        //MAC control, backoff + (ack)
 
-#if 0
-    /* CCK 1M */
-    header[2] = 0x0f00;          //PHY control L
-    header[3] = 0x0000;          //PHY control H
-#else
     /* OFDM 6M */
     header[2] = 0x0f01;          //PHY control L
     header[3] = 0x000B;          //PHY control H
-#endif
 
     /*
      * Generate WLAN header
@@ -3341,17 +3268,8 @@ u16_t   zfAggSendAddbaResponse(zdev_t* dev, struct aggBaFrameParameter *bf)
     //zm_msg2_mm(ZM_LV_2, "addrTbl.physAddrl[0]=", addrTbl.physAddrl[0]);
     //zm_msg2_mm(ZM_LV_2, "buf->data=", buf->data);
 
-    #if 0
-    err = zfHpSend(dev, NULL, 0, NULL, 0, NULL, 0, buf, 0,
-		   ZM_INTERNAL_ALLOC_BUF, 0, 0xff);
-    if (err != ZM_SUCCESS)
-    {
-        goto zlError;
-    }
-    #else
     zfPutVmmq(dev, buf);
     zfPushVtxq(dev);
-    #endif
 
     //zfAggSendAddbaRequest(dev, dst, zcUpToAc[bf->tid&0x7] & 0x3, bf->tid);
     return ZM_SUCCESS;
@@ -3492,17 +3410,8 @@ u16_t   zfAggSendBar(zdev_t* dev, TID_TX tid_tx, struct aggBarControl *aggBarCon
     //zm_msg2_mm(ZM_LV_2, "addrTbl.physAddrl[0]=", addrTbl.physAddrl[0]);
     //zm_msg2_mm(ZM_LV_2, "buf->data=", buf->data);
 
-    #if 0
-    err = zfHpSend(dev, NULL, 0, NULL, 0, NULL, 0, buf, 0,
-		   ZM_INTERNAL_ALLOC_BUF, 0, 0xff);
-    if (err != ZM_SUCCESS)
-    {
-        goto zlError;
-    }
-    #else
     zfPutVmmq(dev, buf);
     zfPushVtxq(dev);
-    #endif
 
     return ZM_SUCCESS;
 
@@ -3570,16 +3479,9 @@ u16_t zfAggGenBarHeader(zdev_t* dev, u16_t* dst,
     header[0] = 16+len+4;   //Length
     header[1] = 0x8;        //MAC control, backoff + (ack)
 
-#if 1
     /* CCK 1M */
     header[2] = 0x0f00;          //PHY control L
     header[3] = 0x0000;          //PHY control H
-#else
-    /* CCK 6M */
-    header[2] = 0x0f01;          //PHY control L
-    header[3] = 0x000B;          //PHY control H
-
-#endif
     /*
      * Generate WLAN header
      * Frame control frame type and subtype

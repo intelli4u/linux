@@ -55,17 +55,13 @@
 #include <asm/pgtable.h>
 #endif
 
-#if defined(CONFIG_ATM_FORE200E_USE_TASKLET) /* defer interrupt work to a tasklet */
+#if defined(CONFIG_ATM_FORE200E_USE_TASKLET)     /* defer interrupt work to a tasklet \
+	*/
 #define FORE200E_USE_TASKLET
 #endif
 
-#if 0 /* enable the debugging code of the buffer supply queues */
-#define FORE200E_BSQ_DEBUG
-#endif
 
-#if 1 /* ensure correct handling of 52-byte AAL0 SDUs expected by atmdump-like apps */
 #define FORE200E_52BYTE_AAL0_SDU
-#endif
 
 #include "fore200e.h"
 #include "suni.h"
@@ -74,9 +70,6 @@
 
 #define FORE200E         "fore200e: "
 
-#if 0 /* override .config */
-#define CONFIG_ATM_FORE200E_DEBUG 1
-#endif
 #if defined(CONFIG_ATM_FORE200E_DEBUG) && (CONFIG_ATM_FORE200E_DEBUG > 0)
 #define DPRINTK(level, format, args...)  do { if (CONFIG_ATM_FORE200E_DEBUG >= (level)) \
                                                   printk(FORE200E format, ##args); } while (0)
@@ -94,15 +87,11 @@
 
 #define FORE200E_NEXT_ENTRY(index, modulo)         (index = ++(index) % (modulo))
 
-#if 1
 #define ASSERT(expr)     if (!(expr)) { \
 			     printk(FORE200E "assertion failed! %s[%d]: %s\n", \
 				    __func__, __LINE__, #expr); \
 			     panic(FORE200E "%s", __func__); \
 			 }
-#else
-#define ASSERT(expr)     do {} while (0)
-#endif
 
 
 static const struct atmdev_ops   fore200e_ops;
@@ -132,19 +121,6 @@ static const char* fore200e_traffic_class[] = { "NONE", "UBR", "CBR", "VBR", "AB
 #endif
 
 
-#if 0 /* currently unused */
-static int 
-fore200e_fore2atm_aal(enum fore200e_aal aal)
-{
-    switch(aal) {
-    case FORE200E_AAL0:  return ATM_AAL0;
-    case FORE200E_AAL34: return ATM_AAL34;
-    case FORE200E_AAL5:  return ATM_AAL5;
-    }
-
-    return -EINVAL;
-}
-#endif
 
 
 static enum fore200e_aal
@@ -233,12 +209,10 @@ fore200e_poll(struct fore200e* fore200e, volatile u32* addr, u32 val, int msecs)
 
     } while (time_before(jiffies, timeout));
 
-#if 1
     if (!ok) {
 	printk(FORE200E "cmd polling failed, got status 0x%08x, expected 0x%08x\n",
 	       *addr, val);
     }
-#endif
 
     return ok;
 }
@@ -256,12 +230,10 @@ fore200e_io_poll(struct fore200e* fore200e, volatile u32 __iomem *addr, u32 val,
 
     } while (time_before(jiffies, timeout));
 
-#if 1
     if (!ok) {
 	printk(FORE200E "I/O polling failed, got status 0x%08x, expected 0x%08x\n",
 	       fore200e->bus->read(addr), val);
     }
-#endif
 
     return ok;
 }
@@ -394,7 +366,6 @@ fore200e_shutdown(struct fore200e* fore200e)
 	/* nothing to do for that state */
 
     case FORE200E_STATE_REGISTER:
-	/* XXX shouldn't we *start* by deregistering the device? */
 	atm_dev_deregister(fore200e->atm_dev);
 
     case FORE200E_STATE_BLANK:
@@ -580,12 +551,6 @@ fore200e_pca_configure(struct fore200e* fore200e)
 #if defined(__BIG_ENDIAN)
 	/* request the PCA board to convert the endianess of slave RAM accesses */
 	| PCA200E_CTRL_CONVERT_ENDIAN
-#endif
-#if 0
-        | PCA200E_CTRL_DIS_CACHE_RD
-        | PCA200E_CTRL_DIS_WRT_INVAL
-        | PCA200E_CTRL_ENA_CONT_REQ_MODE
-        | PCA200E_CTRL_2_CACHE_WRT_INVAL
 #endif
 	| PCA200E_CTRL_LARGE_PCI_BURSTS;
     
@@ -786,7 +751,7 @@ static int __init fore200e_sba_map(struct fore200e *fore200e)
 
 	DPRINTK(1, "device %s mapped to 0x%p\n", fore200e->name, fore200e->virt_base);
     
-	fore200e->bus->write(0x02, fore200e->regs.sba.isr); /* XXX hardwired interrupt level */
+	fore200e->bus->write(0x02, fore200e->regs.sba.isr);
 
 	/* get the supported DVMA burst sizes */
 	bursts = of_getintprop_default(op->dev.of_node->parent, "burst-sizes", 0x00);
@@ -925,12 +890,10 @@ fore200e_tx_irq(struct fore200e* fore200e)
 		else {
 		    dev_kfree_skb_any(entry->skb);
 		}
-#if 1
 		/* race fixed by the above incarnation mechanism, but... */
 		if (atomic_read(&sk_atm(vcc)->sk_wmem_alloc) < 0) {
 		    atomic_set(&sk_atm(vcc)->sk_wmem_alloc, 0);
 		}
-#endif
 		/* check error condition */
 		if (*entry->status & STATUS_ERROR)
 		    atomic_inc(&vcc->stats->tx_err);
@@ -1376,7 +1339,7 @@ fore200e_activate_vcin(struct fore200e* fore200e, int activate, struct atm_vcc* 
 }
 
 
-#define FORE200E_MAX_BACK2BACK_CELLS 255    /* XXX depends on CDVT */
+#define FORE200E_MAX_BACK2BACK_CELLS 255
 
 static void
 fore200e_rate_ctrl(struct atm_qos* qos, struct tpd_rate* rate)
@@ -1808,45 +1771,6 @@ fore200e_setsockopt(struct atm_vcc* vcc, int level, int optname, void __user *op
 }
 
 
-#if 0 /* currently unused */
-static int
-fore200e_get_oc3(struct fore200e* fore200e, struct oc3_regs* regs)
-{
-    struct host_cmdq*       cmdq  = &fore200e->host_cmdq;
-    struct host_cmdq_entry* entry = &cmdq->host_entry[ cmdq->head ];
-    struct oc3_opcode       opcode;
-    int                     ok;
-    u32                     oc3_regs_dma_addr;
-
-    oc3_regs_dma_addr = fore200e->bus->dma_map(fore200e, regs, sizeof(struct oc3_regs), DMA_FROM_DEVICE);
-
-    FORE200E_NEXT_ENTRY(cmdq->head, QUEUE_SIZE_CMD);
-
-    opcode.opcode = OPCODE_GET_OC3;
-    opcode.reg    = 0;
-    opcode.value  = 0;
-    opcode.mask   = 0;
-
-    fore200e->bus->write(oc3_regs_dma_addr, &entry->cp_entry->cmd.oc3_block.regs_haddr);
-    
-    *entry->status = STATUS_PENDING;
-
-    fore200e->bus->write(*(u32*)&opcode, (u32*)&entry->cp_entry->cmd.oc3_block.opcode);
-
-    ok = fore200e_poll(fore200e, entry->status, STATUS_COMPLETE, 400);
-
-    *entry->status = STATUS_FREE;
-
-    fore200e->bus->dma_unmap(fore200e, oc3_regs_dma_addr, sizeof(struct oc3_regs), DMA_FROM_DEVICE);
-    
-    if (ok == 0) {
-	printk(FORE200E "unable to get OC-3 regs of device %s\n", fore200e->name);
-	return -EIO;
-    }
-
-    return 0;
-}
-#endif
 
 
 static int
@@ -2445,9 +2369,6 @@ fore200e_monitor_putc(struct fore200e* fore200e, char c)
 {
     struct cp_monitor __iomem * monitor = fore200e->cp_monitor;
 
-#if 0
-    printk("%c", c);
-#endif
     fore200e->bus->write(((u32) c) | FORE200E_CP_MONITOR_UART_AVAIL, &monitor->soft_uart.send);
 }
 
@@ -2466,9 +2387,6 @@ fore200e_monitor_getc(struct fore200e* fore200e)
 	if (c & FORE200E_CP_MONITOR_UART_AVAIL) {
 
 	    fore200e->bus->write(FORE200E_CP_MONITOR_UART_FREE, &monitor->soft_uart.recv);
-#if 0
-	    printk("%c", c & 0xFF);
-#endif
 	    return c & 0xFF;
 	}
     }

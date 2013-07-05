@@ -137,10 +137,15 @@ static int cp_old_stat(struct kstat *stat, struct __old_kernel_stat __user * sta
 	SET_UID(tmp.st_uid, stat->uid);
 	SET_GID(tmp.st_gid, stat->gid);
 	tmp.st_rdev = old_encode_dev(stat->rdev);
+    /*  modified start pling 12/04/2009 */
+    /* Remove large file size limitation */
+#if (!defined SAMBA_ENABLE)    
 #if BITS_PER_LONG == 32
 	if (stat->size > MAX_NON_LFS)
 		return -EOVERFLOW;
 #endif	
+#endif
+    /*  modified end pling 12/04/2009 */
 	tmp.st_size = stat->size;
 	tmp.st_atime = stat->atime.tv_sec;
 	tmp.st_mtime = stat->mtime.tv_sec;
@@ -219,10 +224,15 @@ static int cp_new_stat(struct kstat *stat, struct stat __user *statbuf)
 #else
 	tmp.st_rdev = new_encode_dev(stat->rdev);
 #endif
+    /*  modified start pling 12/04/2009 */
+    /* Remove large file size limitation */
+#if (!defined SAMBA_ENABLE)    
 #if BITS_PER_LONG == 32
 	if (stat->size > MAX_NON_LFS)
 		return -EOVERFLOW;
 #endif	
+#endif
+    /*  modified end pling 12/04/2009 */
 	tmp.st_size = stat->size;
 	tmp.st_atime = stat->atime.tv_sec;
 	tmp.st_mtime = stat->mtime.tv_sec;

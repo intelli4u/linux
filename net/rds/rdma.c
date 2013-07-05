@@ -37,13 +37,6 @@
 
 #include "rdma.h"
 
-/*
- * XXX
- *  - build with sparse
- *  - should we limit the size of a mr region?  let transport return failure?
- *  - should we detect duplicate keys on a socket?  hmm.
- *  - an rdma is an mlock, apply rlimit?
- */
 
 /*
  * get the number of pages by looking at the page indices that the start and
@@ -177,7 +170,7 @@ static int __rds_rdma_map(struct rds_sock *rs, struct rds_get_mr_args *args,
 	int ret;
 
 	if (rs->rs_bound_addr == 0) {
-		ret = -ENOTCONN; /* XXX not a great errno */
+		ret = -ENOTCONN;
 		goto out;
 	}
 
@@ -195,7 +188,6 @@ static int __rds_rdma_map(struct rds_sock *rs, struct rds_get_mr_args *args,
 	rdsdebug("RDS: get_mr addr %llx len %llu nr_pages %u\n",
 		args->vec.addr, args->vec.bytes, nr_pages);
 
-	/* XXX clamp nr_pages to limit the size of this alloc? */
 	pages = kcalloc(nr_pages, sizeof(struct page *), GFP_KERNEL);
 	if (pages == NULL) {
 		ret = -ENOMEM;
@@ -470,7 +462,7 @@ static struct rds_rdma_op *rds_rdma_prepare(struct rds_sock *rs,
 
 
 	if (rs->rs_bound_addr == 0) {
-		ret = -ENOTCONN; /* XXX not a great errno */
+		ret = -ENOTCONN;
 		goto out;
 	}
 
@@ -536,13 +528,6 @@ static struct rds_rdma_op *rds_rdma_prepare(struct rds_sock *rs,
 		op->r_notifier->n_status = RDS_RDMA_SUCCESS;
 	}
 
-	/* The cookie contains the R_Key of the remote memory region, and
-	 * optionally an offset into it. This is how we implement RDMA into
-	 * unaligned memory.
-	 * When setting up the RDMA, we need to add that offset to the
-	 * destination address (which is really an offset into the MR)
-	 * FIXME: We may want to move this into ib_rdma.c
-	 */
 	op->r_key = rds_rdma_cookie_key(args->cookie);
 	op->r_remote_addr = args->remote_vec.addr + rds_rdma_cookie_offset(args->cookie);
 

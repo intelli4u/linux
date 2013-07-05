@@ -113,10 +113,6 @@ static int sn_hwperf_geoid_to_cnode(char *location)
 	if (sn_hwperf_location_to_bpos(location, &rack, &bay, &slot, &slab))
 		return -1;
 
-	/*
-	 * FIXME: replace with cleaner for_each_XXX macro which addresses
-	 * both compute and IO nodes once ACPI3.0 is available.
-	 */
 	for (cnode = 0; cnode < num_cnodes; cnode++) {
 		geoid = cnodeid_get_geoid(cnode);
 		module_id = geo_module(geoid);

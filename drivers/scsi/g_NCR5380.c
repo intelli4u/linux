@@ -530,22 +530,6 @@ int generic_NCR5380_release_resources(struct Scsi_Host *instance)
 }
 
 #ifdef BIOSPARAM
-/**
- *	generic_NCR5380_biosparam
- *	@disk: disk to compute geometry for
- *	@dev: device identifier for this disk
- *	@ip: sizes to fill in
- *
- *	Generates a BIOS / DOS compatible H-C-S mapping for the specified 
- *	device / size.
- * 
- * 	XXX Most SCSI boards use this mapping, I could be incorrect.  Someone
- *	using hard disks on a trantor should verify that this mapping
- *	corresponds to that used by the BIOS / ASPI driver by running the linux
- *	fdisk program and matching the H_C_S coordinates to what DOS uses.
- *
- *	Locks: none
- */
 
 static int
 generic_NCR5380_biosparam(struct scsi_device *sdev, struct block_device *bdev,
@@ -608,7 +592,6 @@ static inline int NCR5380_pread(struct Scsi_Host *instance, unsigned char *dst, 
 	if (blocks) {
 		while (NCR5380_read(C400_CONTROL_STATUS_REG) & CSR_HOST_BUF_NOT_RDY)
 		{
-			// FIXME - no timeout
 		}
 
 #ifndef SCSI_G_NCR5380_MEM
@@ -628,14 +611,6 @@ static inline int NCR5380_pread(struct Scsi_Host *instance, unsigned char *dst, 
 	if (!(NCR5380_read(C400_CONTROL_STATUS_REG) & CSR_GATED_53C80_IRQ))
 		printk("53C400r: no 53C80 gated irq after transfer");
 
-#if 0
-	/*
-	 *	DON'T DO THIS - THEY NEVER ARRIVE!
-	 */
-	printk("53C400r: Waiting for 53C80 registers\n");
-	while (NCR5380_read(C400_CONTROL_STATUS_REG) & CSR_53C80_REG)
-		;
-#endif
 	if (!(NCR5380_read(BUS_AND_STATUS_REG) & BASR_END_DMA_TRANSFER))
 		printk(KERN_ERR "53C400r: no end dma signal\n");
 		
@@ -676,7 +651,7 @@ static inline int NCR5380_pwrite(struct Scsi_Host *instance, unsigned char *src,
 			break;
 		}
 		while (NCR5380_read(C400_CONTROL_STATUS_REG) & CSR_HOST_BUF_NOT_RDY)
-			; // FIXME - timeout
+			;
 #ifndef SCSI_G_NCR5380_MEM
 		{
 			for (i = 0; i < 128; i++)
@@ -691,7 +666,7 @@ static inline int NCR5380_pwrite(struct Scsi_Host *instance, unsigned char *src,
 	}
 	if (blocks) {
 		while (NCR5380_read(C400_CONTROL_STATUS_REG) & CSR_HOST_BUF_NOT_RDY)
-			; // FIXME - no timeout
+			;
 
 #ifndef SCSI_G_NCR5380_MEM
 		{
@@ -706,18 +681,13 @@ static inline int NCR5380_pwrite(struct Scsi_Host *instance, unsigned char *src,
 		blocks--;
 	}
 
-#if 0
-	printk("53C400w: waiting for registers to be available\n");
-	THEY NEVER DO ! while (NCR5380_read(C400_CONTROL_STATUS_REG) & CSR_53C80_REG);
-	printk("53C400w: Got em\n");
-#endif
 
 	/* Let's wait for this instead - could be ugly */
 	/* All documentation says to check for this. Maybe my hardware is too
 	 * fast. Waiting for it seems to work fine! KLL
 	 */
 	while (!(i = NCR5380_read(C400_CONTROL_STATUS_REG) & CSR_GATED_53C80_IRQ))
-		;	// FIXME - no timeout
+		;
 
 	/*
 	 * I know. i is certainly != 0 here but the loop is new. See previous
@@ -729,11 +699,6 @@ static inline int NCR5380_pwrite(struct Scsi_Host *instance, unsigned char *src,
 	} else
 		printk(KERN_ERR "53C400w: no 53C80 gated irq after transfer (last block)\n");
 
-#if 0
-	if (!(NCR5380_read(BUS_AND_STATUS_REG) & BASR_END_DMA_TRANSFER)) {
-		printk(KERN_ERR "53C400w: no end dma signal\n");
-	}
-#endif
 	while (!(NCR5380_read(TARGET_COMMAND_REG) & TCR_LAST_BYTE_SENT))
 		; 	// TIMEOUT
 	return 0;

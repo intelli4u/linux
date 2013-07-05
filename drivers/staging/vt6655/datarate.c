@@ -434,4 +434,3 @@ RATEuSetIE (
     }
     return (unsigned char)uRateCnt;
 }
-

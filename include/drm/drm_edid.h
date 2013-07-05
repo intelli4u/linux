@@ -170,7 +170,7 @@ struct edid {
 	/* Vendor & product info */
 	u8 mfg_id[2];
 	u8 prod_code[2];
-	u32 serial; /* FIXME: byte order */
+	u32 serial;
 	u8 mfg_week;
 	u8 mfg_year;
 	/* EDID version */

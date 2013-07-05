@@ -1103,12 +1103,6 @@ static int sctp_side_effects(sctp_event_t event_type, sctp_subtype_t subtype,
 {
 	int error;
 
-	/* FIXME - Most of the dispositions left today would be categorized
-	 * as "exceptional" dispositions.  For those dispositions, it
-	 * may not be proper to run through any of the commands at all.
-	 * For example, the command interpreter might be run only with
-	 * disposition SCTP_DISPOSITION_CONSUME.
-	 */
 	if (0 != (error = sctp_cmd_interpreter(event_type, subtype, state,
 					       ep, asoc,
 					       event_arg, status,
@@ -1334,18 +1328,6 @@ static int sctp_cmd_interpreter(sctp_event_t event_type,
 				asoc->init_last_sent_to = new_obj->transport;
 			}
 
-			/* FIXME - Eventually come up with a cleaner way to
-			 * enabling COOKIE-ECHO + DATA bundling during
-			 * multihoming stale cookie scenarios, the following
-			 * command plays with asoc->peer.retran_path to
-			 * avoid the problem of sending the COOKIE-ECHO and
-			 * DATA in different paths, which could result
-			 * in the association being ABORTed if the DATA chunk
-			 * is processed first by the server.  Checking the
-			 * init error counter simply causes this command
-			 * to be executed only during failed attempts of
-			 * association establishment.
-			 */
 			if ((asoc->peer.retran_path !=
 			     asoc->peer.primary_path) &&
 			    (asoc->init_err_counter > 0)) {
@@ -1703,4 +1685,3 @@ nomem:
 	error = -ENOMEM;
 	goto out;
 }
-

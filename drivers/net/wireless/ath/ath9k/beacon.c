@@ -76,11 +76,6 @@ static void ath_beacon_setup(struct ath_softc *sc, struct ath_vif *avp,
 	flags = ATH9K_TXDESC_NOACK;
 
 	ds->ds_link = 0;
-	/*
-	 * Switch antenna every beacon.
-	 * Should only switch every beacon period, not for every SWBA
-	 * XXX assumes two antennae
-	 */
 	antenna = ((sc->beacon.ast_be_xmit / sc->nbcnvifs) & 1 ? 2 : 1);
 
 	sband = &sc->sbands[common->hw->conf.channel->band];
@@ -453,7 +448,7 @@ void ath_beacon_tasklet(unsigned long data)
 		ath9k_hw_puttxbuf(ah, sc->beacon.beaconq, bfaddr);
 		ath9k_hw_txstart(ah, sc->beacon.beaconq);
 
-		sc->beacon.ast_be_xmit += bc;     /* XXX per-vif? */
+		sc->beacon.ast_be_xmit += bc;
 	}
 }
 
@@ -610,14 +605,6 @@ static void ath_beacon_config_sta(struct ath_softc *sc,
 			bs.bs_bmissthreshold = 1;
 	}
 
-	/*
-	 * Calculate sleep duration. The configuration is given in ms.
-	 * We ensure a multiple of the beacon period is used. Also, if the sleep
-	 * duration is greater than the DTIM period then it makes senses
-	 * to make it a multiple of that.
-	 *
-	 * XXX fixed at 100ms
-	 */
 
 	bs.bs_sleepduration = roundup(IEEE80211_MS_TO_TU(100), sleepduration);
 	if (bs.bs_sleepduration > bs.bs_dtimperiod)

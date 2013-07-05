@@ -1678,4 +1678,3 @@ void sunrpc_cache_unregister_pipefs(struct cache_detail *cd)
 	sunrpc_destroy_cache_detail(cd);
 }
 EXPORT_SYMBOL_GPL(sunrpc_cache_unregister_pipefs);
-

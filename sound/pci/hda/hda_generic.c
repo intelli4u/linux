@@ -203,7 +203,6 @@ static int build_afg_tree(struct hda_codec *codec)
 /*
  * look for the node record for the given NID
  */
-/* FIXME: should avoid the braindead linear search */
 static struct hda_gnode *hda_get_node(struct hda_gspec *spec, hda_nid_t nid)
 {
 	struct hda_gnode *node;
@@ -475,10 +474,6 @@ static const char *get_input_type(struct hda_gnode *node, unsigned int *pinctl)
 			return "Front Line";
 		return "Line";
 	case AC_JACK_CD:
-#if 0
-		if (pinctl)
-			*pinctl |= AC_PINCTL_VREF_GRD;
-#endif
 		return "CD";
 	case AC_JACK_AUX:
 		if ((location & 0x0f) == AC_JACK_LOC_FRONT)

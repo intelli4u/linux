@@ -136,12 +136,6 @@ static void quirk_passive_release(struct pci_dev *dev)
 DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_INTEL,	PCI_DEVICE_ID_INTEL_82441,	quirk_passive_release);
 DECLARE_PCI_FIXUP_RESUME(PCI_VENDOR_ID_INTEL,	PCI_DEVICE_ID_INTEL_82441,	quirk_passive_release);
 
-/*  The VIA VP2/VP3/MVP3 seem to have some 'features'. There may be a workaround
-    but VIA don't answer queries. If you happen to have good contacts at VIA
-    ask them for me please -- Alan 
-    
-    This appears to be BIOS not version dependent. So presumably there is a 
-    chipset level fix */
     
 static void __devinit quirk_isa_dma_hangs(struct pci_dev *dev)
 {
@@ -306,12 +300,6 @@ static void __devinit quirk_vsfx(struct pci_dev *dev)
 }
 DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_VIA,	PCI_DEVICE_ID_VIA_82C576,	quirk_vsfx);
 
-/*
- *	Ali Magik requires workarounds to be used by the drivers
- *	that DMA to AGP space. Latency must be set to 0xA and triton
- *	workaround applied too
- *	[Info kindly provided by ALi]
- */	
 static void __init quirk_alimagik(struct pci_dev *dev)
 {
 	if ((pci_pci_problems&PCIPCI_ALIMAGIK)==0) {
@@ -825,14 +813,6 @@ static void __init quirk_amd_8131_mmrbc(struct pci_dev *dev)
 }
 DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_8131_BRIDGE, quirk_amd_8131_mmrbc);
 
-/*
- * FIXME: it is questionable that quirk_via_acpi
- * is needed.  It shows up as an ISA bridge, and does not
- * support the PCI_INTERRUPT_LINE register at all.  Therefore
- * it seems like setting the pci_dev's 'irq' to the
- * value of the ACPI SCI interrupt is only done for convenience.
- *	-jgarzik
- */
 static void __devinit quirk_via_acpi(struct pci_dev *d)
 {
 	/*
@@ -985,13 +965,6 @@ static void quirk_amd_ordering(struct pci_dev *dev)
 DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_AMD,	PCI_DEVICE_ID_AMD_FE_GATE_700C, quirk_amd_ordering);
 DECLARE_PCI_FIXUP_RESUME_EARLY(PCI_VENDOR_ID_AMD,	PCI_DEVICE_ID_AMD_FE_GATE_700C, quirk_amd_ordering);
 
-/*
- *	DreamWorks provided workaround for Dunord I-3000 problem
- *
- *	This card decodes and responds to addresses not apparently
- *	assigned to it. We force a larger allocation to ensure that
- *	nothing gets put too close to it.
- */
 static void __devinit quirk_dunord ( struct pci_dev * dev )
 {
 	struct resource *r = &dev->resource [1];

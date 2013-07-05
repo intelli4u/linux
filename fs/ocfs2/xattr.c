@@ -1386,10 +1386,6 @@ static int __ocfs2_xattr_set_value_outside(struct inode *inode,
 			brelse(bh);
 			bh = NULL;
 
-			/*
-			 * XXX: do we need to empty all the following
-			 * blocks in this cluster?
-			 */
 			if (!value_len)
 				break;
 		}
@@ -4267,11 +4263,6 @@ static int ocfs2_xattr_create_index_block(struct inode *inode,
 	BUG_ON(xb_flags & OCFS2_XATTR_INDEXED);
 	BUG_ON(!xs->bucket);
 
-	/*
-	 * XXX:
-	 * We can use this lock for now, and maybe move to a dedicated mutex
-	 * if performance becomes a problem later.
-	 */
 	down_write(&oi->ip_alloc_sem);
 
 	ret = ocfs2_journal_access_xb(handle, INODE_CACHE(inode), xb_bh,

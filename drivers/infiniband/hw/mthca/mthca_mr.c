@@ -977,7 +977,6 @@ err_mtt_buddy:
 
 void mthca_cleanup_mr_table(struct mthca_dev *dev)
 {
-	/* XXX check if any MRs are still allocated? */
 	if (dev->limits.fmr_reserved_mtts)
 		mthca_buddy_cleanup(&dev->mr_table.tavor_fmr.mtt_buddy);
 

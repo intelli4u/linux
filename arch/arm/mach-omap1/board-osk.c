@@ -487,13 +487,6 @@ static void __init osk_mistral_init(void)
 	spi_register_board_info(mistral_boardinfo,
 			ARRAY_SIZE(mistral_boardinfo));
 
-	/* the sideways button (SW1) is for use as a "wakeup" button
-	 *
-	 * NOTE:  The Mistral board has the wakeup button (SW1) wired
-	 * to the LCD 3.3V rail, which is powered down during suspend.
-	 * To allow this button to wake up the omap, work around this
-	 * HW bug by rewiring SW1 to use the main 3.3V rail.
-	 */
 	omap_cfg_reg(N15_1610_MPUIO2);
 	if (gpio_request(OMAP_MPUIO(2), "wakeup") == 0) {
 		int ret = 0;
@@ -541,11 +534,6 @@ static void __init osk_init(void)
 {
 	u32 l;
 
-	/* Workaround for wrong CS3 (NOR flash) timing
-	 * There are some U-Boot versions out there which configure
-	 * wrong CS3 memory timings. This mainly leads to CRC
-	 * or similar errors if you use NOR flash (e.g. with JFFS2)
-	 */
 	l = omap_readl(EMIFS_CCS(3));
 	if (l != EMIFS_CS3_VAL)
 		omap_writel(EMIFS_CS3_VAL, EMIFS_CCS(3));

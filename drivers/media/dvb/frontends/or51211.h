@@ -37,7 +37,8 @@ struct or51211_config
 	void (*sleep)(struct dvb_frontend * fe);
 };
 
-#if defined(CONFIG_DVB_OR51211) || (defined(CONFIG_DVB_OR51211_MODULE) && defined(MODULE))
+#if defined(CONFIG_DVB_OR51211) || (defined(CONFIG_DVB_OR51211_MODULE) && \
+	defined(MODULE))
 extern struct dvb_frontend* or51211_attach(const struct or51211_config* config,
 					   struct i2c_adapter* i2c);
 #else
@@ -50,4 +51,3 @@ static inline struct dvb_frontend* or51211_attach(const struct or51211_config* c
 #endif // CONFIG_DVB_OR51211
 
 #endif // OR51211_H
-

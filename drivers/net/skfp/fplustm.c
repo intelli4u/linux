@@ -147,25 +147,6 @@ static void write_mdr(struct s_smc *smc, u_long val)
 	MDRW(val) ;
 }
 
-#if 0
-/*
- * read long value from buffer memory over memory data register (MDR),
- */
-static u_long read_mdr(struct s_smc *smc, unsigned int addr)
-{
-	long p ;
-	CHECK_NPP() ;
-	MARR(addr) ;
-	outpw(FM_A(FM_CMDREG1),FM_IRMEMWO) ;
-	CHECK_NPP() ;	/* needed for PCI to prevent from timeing violations */
-/*	p = MDRR() ; */	/* bad read values if the workaround */
-			/* smc->hw.mc_dummy = *((short volatile far *)(addr)))*/
-			/* is used */
-	p = (u_long)inpw(FM_A(FM_MDRU))<<16 ;
-	p += (u_long)inpw(FM_A(FM_MDRL)) ;
-	return(p) ;
-}
-#endif
 
 /*
  * clear buffer memory
@@ -557,85 +538,6 @@ static void enable_formac(struct s_smc *smc)
 	outpw(FM_A(FM_IMSK3L),(unsigned short)~mac_imsk3l);
 }
 
-#if 0	/* Removed because the driver should use the ASICs TX complete IRQ. */
-	/* The FORMACs tx complete IRQ should be used any longer */
-
-/*
-	BEGIN_MANUAL_ENTRY(if,func;others;4)
-
-	void enable_tx_irq(smc, queue)
-	struct s_smc *smc ;
-	u_short	queue ;
-
-Function	DOWNCALL	(SMT, fplustm.c)
-		enable_tx_irq() enables the FORMACs transmit complete
-		interrupt of the queue.
-
-Para	queue	= QUEUE_S:	synchronous queue
-		= QUEUE_A0:	asynchronous queue
-
-Note	After any ring operational change the transmit complete
-	interrupts are disabled.
-	The operating system dependent module must enable
-	the transmit complete interrupt of a queue,
-		- when it queues the first frame,
-		  because of no transmit resources are beeing
-		  available and
-		- when it escapes from the function llc_restart_tx
-		  while some frames are still queued.
-
-	END_MANUAL_ENTRY
- */
-void enable_tx_irq(struct s_smc *smc, u_short queue)
-/* u_short queue; 0 = synchronous queue, 1 = asynchronous queue 0 */
-{
-	u_short	imask ;
-
-	imask = ~(inpw(FM_A(FM_IMSK1U))) ;
-
-	if (queue == 0) {
-		outpw(FM_A(FM_IMSK1U),~(imask|FM_STEFRMS)) ;
-	}
-	if (queue == 1) {
-		outpw(FM_A(FM_IMSK1U),~(imask|FM_STEFRMA0)) ;
-	}
-}
-
-/*
-	BEGIN_MANUAL_ENTRY(if,func;others;4)
-
-	void disable_tx_irq(smc, queue)
-	struct s_smc *smc ;
-	u_short	queue ;
-
-Function	DOWNCALL	(SMT, fplustm.c)
-		disable_tx_irq disables the FORMACs transmit complete
-		interrupt of the queue
-
-Para	queue	= QUEUE_S:	synchronous queue
-		= QUEUE_A0:	asynchronous queue
-
-Note	The operating system dependent module should disable
-	the transmit complete interrupts if it escapes from the
-	function llc_restart_tx and no frames are queued.
-
-	END_MANUAL_ENTRY
- */
-void disable_tx_irq(struct s_smc *smc, u_short queue)
-/* u_short queue; 0 = synchronous queue, 1 = asynchronous queue 0 */
-{
-	u_short	imask ;
-
-	imask = ~(inpw(FM_A(FM_IMSK1U))) ;
-
-	if (queue == 0) {
-		outpw(FM_A(FM_IMSK1U),~(imask&~FM_STEFRMS)) ;
-	}
-	if (queue == 1) {
-		outpw(FM_A(FM_IMSK1U),~(imask&~FM_STEFRMA0)) ;
-	}
-}
-#endif
 
 static void disable_formac(struct s_smc *smc)
 {
@@ -1488,4 +1390,3 @@ void formac_reinit_tx(struct s_smc *smc)
 		(void)init_mac(smc,0) ;
 	}
 }
-

@@ -53,6 +53,7 @@
 	.endm
 
 	.text
+	.section .text.fastpath, "a"
 
 /* Prototype: void *memcpy(void *dest, const void *src, size_t n); */
 

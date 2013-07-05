@@ -521,10 +521,6 @@ dummy_queue (struct usb_ep *_ep, struct usb_request *_req,
 	if (!dum->driver || !is_enabled (dum))
 		return -ESHUTDOWN;
 
-#if 0
-	dev_dbg (udc_dev(dum), "ep %p queue req %p to %s, len %d buf %p\n",
-			ep, _req, _ep->name, _req->length, _req->buf);
-#endif
 
 	_req->status = -EINPROGRESS;
 	_req->actual = 0;
@@ -618,7 +614,6 @@ dummy_set_halt_and_wedge(struct usb_ep *_ep, int value, int wedged)
 		if (wedged)
 			ep->wedged = 1;
 	}
-	/* FIXME clear emulated data toggle too */
 	return 0;
 }
 
@@ -674,7 +669,6 @@ static int dummy_wakeup (struct usb_gadget *_gadget)
 			 dum->rh_state != DUMMY_RH_SUSPENDED)
 		return -EIO;
 
-	/* FIXME: What if the root hub is suspended but the port isn't? */
 
 	/* hub notices our request, issues downstream resume, etc */
 	dum->resuming = 1;
@@ -1051,7 +1045,6 @@ top:
 		dev_len = req->req.length - req->req.actual;
 		len = min (host_len, dev_len);
 
-		/* FIXME update emulated data toggle too */
 
 		to_host = usb_pipein (urb->pipe);
 		if (unlikely (len == 0))
@@ -1222,7 +1215,6 @@ static void dummy_timer (unsigned long _dum)
 		return;
 	}
 
-	/* FIXME if HZ != 1000 this will probably misbehave ... */
 
 	/* look at each urb queued by the host side driver */
 	spin_lock_irqsave (&dum->lock, flags);
@@ -1256,10 +1248,6 @@ restart:
 			continue;
 		type = usb_pipetype (urb->pipe);
 
-		/* used up this frame's non-periodic bandwidth?
-		 * FIXME there's infinite bandwidth for control and
-		 * periodic transfers ... unrealistic.
-		 */
 		if (total <= 0 && type == PIPE_BULK)
 			continue;
 
@@ -1291,7 +1279,6 @@ restart:
 			status = -EPIPE;
 			goto return_urb;
 		}
-		/* FIXME make sure both ends agree on maxpacket */
 
 		/* handle control requests */
 		if (ep == &dum->ep [0] && ep->setup_stage) {
@@ -1471,19 +1458,11 @@ restart:
 		limit = total;
 		switch (usb_pipetype (urb->pipe)) {
 		case PIPE_ISOCHRONOUS:
-			/* FIXME is it urb->interval since the last xfer?
-			 * use urb->iso_frame_desc[i].
-			 * complete whether or not ep has requests queued.
-			 * report random errors, to debug drivers.
-			 */
 			limit = max (limit, periodic_bytes (dum, ep));
 			status = -ENOSYS;
 			break;
 
 		case PIPE_INTERRUPT:
-			/* FIXME is it urb->interval since the last xfer?
-			 * this almost certainly polls too fast.
-			 */
 			limit = max (limit, periodic_bytes (dum, ep));
 			/* FALLTHROUGH */
 
@@ -1830,7 +1809,6 @@ static int dummy_start (struct usb_hcd *hcd)
 	hcd->self.otg_port = 1;
 #endif
 
-	/* FIXME 'urbs' should be a per-device thing, maybe in usbcore */
 	return device_create_file (dummy_dev(dum), &dev_attr_urbs);
 }
 

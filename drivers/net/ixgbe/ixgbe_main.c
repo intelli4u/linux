@@ -1401,7 +1401,6 @@ static void ixgbe_configure_msix(struct ixgbe_adapter *adapter)
 	 */
 	for (v_idx = 0; v_idx < q_vectors; v_idx++) {
 		q_vector = adapter->q_vector[v_idx];
-		/* XXX for_each_set_bit(...) */
 		r_idx = find_first_bit(q_vector->rxr_idx,
 		                       adapter->num_rx_queues);
 
@@ -1713,12 +1712,6 @@ static irqreturn_t ixgbe_msix_lsc(int irq, void *data)
 	struct ixgbe_hw *hw = &adapter->hw;
 	u32 eicr;
 
-	/*
-	 * Workaround for Silicon errata.  Use clear-by-write instead
-	 * of clear-by-read.  Reading with EICS will return the
-	 * interrupt causes without clearing, which later be done
-	 * with the write to EICR.
-	 */
 	eicr = IXGBE_READ_REG(hw, IXGBE_EICS);
 	IXGBE_WRITE_REG(hw, IXGBE_EICR, eicr);
 
@@ -2274,10 +2267,6 @@ static irqreturn_t ixgbe_intr(int irq, void *data)
 	struct ixgbe_q_vector *q_vector = adapter->q_vector[0];
 	u32 eicr;
 
-	/*
-	 * Workaround for silicon errata.  Mask the interrupts
-	 * before the read of EICR.
-	 */
 	IXGBE_WRITE_REG(hw, IXGBE_EIMC, IXGBE_IRQ_CLEAR_MASK);
 
 	/* for NAPI, using EIAM to auto-mask tx/rx interrupt bits on read
@@ -3174,7 +3163,6 @@ static void ixgbe_configure_dcb(struct ixgbe_adapter *adapter)
 	for (i = 0; i < adapter->num_tx_queues; i++) {
 		j = adapter->tx_ring[i]->reg_idx;
 		txdctl = IXGBE_READ_REG(hw, IXGBE_TXDCTL(j));
-		/* PThresh workaround for Tx hang with DFP enabled. */
 		txdctl |= 32;
 		IXGBE_WRITE_REG(hw, IXGBE_TXDCTL(j), txdctl);
 	}
@@ -3357,7 +3345,6 @@ static int ixgbe_up_complete(struct ixgbe_adapter *adapter)
 			gpie &= ~IXGBE_GPIE_VTMODE_MASK;
 			gpie |= IXGBE_GPIE_VTMODE_64;
 		}
-		/* XXX: to interrupt immediately for EICS writes, enable this */
 		/* gpie |= IXGBE_GPIE_EIMEN; */
 		IXGBE_WRITE_REG(hw, IXGBE_GPIE, gpie);
 	}
@@ -5399,7 +5386,6 @@ void ixgbe_update_stats(struct ixgbe_adapter *adapter)
 		                                             IXGBE_PXOFFTXC(i));
 	}
 	adapter->stats.gprc += IXGBE_READ_REG(hw, IXGBE_GPRC);
-	/* work around hardware counting issue */
 	adapter->stats.gprc -= missed_rx;
 
 	/* 82598 hardware only has a 32 bit counter in the high register */
@@ -5863,7 +5849,6 @@ static bool ixgbe_tx_csum(struct ixgbe_adapter *adapter,
 					        IXGBE_ADVTXD_TUCMD_L4T_SCTP;
 				break;
 			case cpu_to_be16(ETH_P_IPV6):
-				/* XXX what about other V6 headers?? */
 				if (ipv6_hdr(skb)->nexthdr == IPPROTO_TCP)
 					type_tucmd_mlhl |=
 					        IXGBE_ADVTXD_TUCMD_L4T_TCP;

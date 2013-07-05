@@ -628,7 +628,6 @@ static int mdio_read(struct net_device *dev, int phy_id, int location)
 	for (i = 400; i > 0; i--) {
 		barrier();
 		if ((inl(ioaddr + MIICtrl) & MII_READOP) == 0) {
-			/* Work around read failure bug. */
 			if (phy_id == 1 && location < 6 &&
 			    inw(ioaddr + MIIData) == 0xffff) {
 				outl(read_cmd, ioaddr + MIICtrl);
@@ -683,9 +682,6 @@ static int epic_open(struct net_device *dev)
 	   required by the details of which bits are reset and the transceiver
 	   wiring on the Ositech CardBus card.
 	*/
-#if 0
-	outl(dev->if_port == 1 ? 0x13 : 0x12, ioaddr + MIICfg);
-#endif
 	if (ep->chip_flags & MII_PWRDWN)
 		outl((inl(ioaddr + NVCTL) & ~0x003C) | 0x4800, ioaddr + NVCTL);
 
@@ -700,7 +696,7 @@ static int epic_open(struct net_device *dev)
 	outl(0x0412 | (RX_FIFO_THRESH<<8), ioaddr + GENCTL);
 #endif
 
-	udelay(20); /* Looks like EPII needs that if you want reliable RX init. FIXME: pci posting bug? */
+	udelay(20);
 
 	for (i = 0; i < 3; i++)
 		outl(le16_to_cpu(((__le16*)dev->dev_addr)[i]), ioaddr + LAN0 + i*4);

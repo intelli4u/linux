@@ -1194,7 +1194,6 @@ static void copy_from_user_policy(struct xfrm_policy *xp, struct xfrm_userpolicy
 	xp->action = p->action;
 	xp->flags = p->flags;
 	xp->family = p->sel.family;
-	/* XXX xp->share = p->share; */
 }
 
 static void copy_to_user_policy(struct xfrm_policy *xp, struct xfrm_userpolicy_info *p, int dir)
@@ -1208,7 +1207,7 @@ static void copy_to_user_policy(struct xfrm_policy *xp, struct xfrm_userpolicy_i
 	p->dir = dir;
 	p->action = xp->action;
 	p->flags = xp->flags;
-	p->share = XFRM_SHARE_ANY; /* XXX xp->share */
+	p->share = XFRM_SHARE_ANY;
 }
 
 static struct xfrm_policy *xfrm_policy_construct(struct net *net, struct xfrm_userpolicy_info *p, struct nlattr **attrs, int *errp)
@@ -1631,11 +1630,6 @@ static int xfrm_get_ae(struct sk_buff *skb, struct nlmsghdr *nlh,
 		return -ESRCH;
 	}
 
-	/*
-	 * XXX: is this lock really needed - none of the other
-	 * gets lock (the concern is things getting updated
-	 * while we are still reading) - jhs
-	*/
 	spin_lock_bh(&x->lock);
 	c.data.aevent = p->flags;
 	c.seq = nlh->nlmsg_seq;
@@ -2845,4 +2839,3 @@ module_init(xfrm_user_init);
 module_exit(xfrm_user_exit);
 MODULE_LICENSE("GPL");
 MODULE_ALIAS_NET_PF_PROTO(PF_NETLINK, NETLINK_XFRM);
-

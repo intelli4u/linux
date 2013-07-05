@@ -701,18 +701,6 @@ static const struct das16_board das16_boards[] = {
 	 .i8254_offset = 0x0c,
 	 .size = 0x14,
 	 .id = 0xf0},
-#if 0
-	{
-	 .name = "das16/330i",	/*  ? */
-	 },
-	{
-	 .name = "das16/jr/ctr5",	/*  ? */
-	 },
-	{
-	/*  cio-das16_m1_16.pdf, this board is a bit quirky, no dma */
-	 .name = "cio-das16/m1/16",
-	 },
-#endif
 };
 
 static int das16_attach(struct comedi_device *dev, struct comedi_devconfig *it);
@@ -1415,10 +1403,6 @@ static int das16_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	struct comedi_krange *user_ai_range, *user_ao_range;
 
 	iobase = it->options[0];
-#if 0
-	irq = it->options[1];
-	timer_mode = it->options[8];
-#endif
 	/* always use time_mode since using irq can drop samples while
 	 * waiting for dma done interrupt (due to hardware limitations) */
 	irq = 0;

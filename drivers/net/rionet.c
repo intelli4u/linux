@@ -496,9 +496,6 @@ static int rionet_setup_netdev(struct rio_mport *mport)
 	return rc;
 }
 
-/*
- * XXX Make multi-net safe
- */
 static int rionet_probe(struct rio_dev *rdev, const struct rio_device_id *id)
 {
 	int rc = -ENODEV;

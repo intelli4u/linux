@@ -31,12 +31,6 @@ struct perf_session {
 	struct machine		host_machine;
 	struct rb_root		machines;
 	struct rb_root		hists_tree;
-	/*
-	 * FIXME: should point to the first entry in hists_tree and
-	 *        be a hists instance. Right now its only 'report'
-	 *        that is using ->hists_tree while all the rest use
-	 *        ->hists.
-	 */
 	struct hists		hists;
 	u64			sample_type;
 	int			fd;

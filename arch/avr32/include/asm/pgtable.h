@@ -103,16 +103,6 @@ extern struct page *empty_zero_page;
 #define _PAGE_PRESENT		(1 << _PAGE_BIT_PRESENT)
 #define _PAGE_FILE		(1 << _PAGE_BIT_FILE)
 
-/*
- * Page types, i.e. sizes. _PAGE_TYPE_NONE corresponds to what is
- * usually called _PAGE_PROTNONE on other architectures.
- *
- * XXX: Find out if _PAGE_PROTNONE is equivalent with !_PAGE_USER. If
- * so, we can encode all possible page sizes (although we can't really
- * support 1K pages anyway due to the _PAGE_PRESENT and _PAGE_ACCESSED
- * bits)
- *
- */
 #define _PAGE_TYPE_MASK		((1 << _PAGE_BIT_SZ0) | (1 << _PAGE_BIT_SZ1))
 #define _PAGE_TYPE_NONE		(0 << _PAGE_BIT_SZ0)
 #define _PAGE_TYPE_SMALL	(1 << _PAGE_BIT_SZ0)

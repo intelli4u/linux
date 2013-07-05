@@ -478,4 +478,3 @@ typedef enum _HT_IOT_ACTION{
 }HT_IOT_ACTION_E, *PHT_IOT_ACTION_E;
 
 #endif //_RTL819XU_HTTYPE_H_
-

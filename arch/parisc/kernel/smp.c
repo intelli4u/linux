@@ -83,10 +83,6 @@ enum ipi_message_type {
 
 #undef PER_CPU_IRQ_REGION
 #ifdef PER_CPU_IRQ_REGION
-/* XXX REVISIT Ignore for now.
-**    *May* need this "hook" to register IPI handler
-**    once we have perCPU ExtIntr switch tables.
-*/
 static void
 ipi_init(int cpuid)
 {

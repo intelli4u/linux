@@ -305,12 +305,6 @@ static int fsl_ssi_startup(struct snd_pcm_substream *substream,
 		 */
 		clrbits32(&ssi->scr, CCSR_SSI_SCR_SSIEN);
 
-		/*
-		 * Program the SSI into I2S Slave Non-Network Synchronous mode.
-		 * Also enable the transmit and receive FIFO.
-		 *
-		 * FIXME: Little-endian samples require a different shift dir
-		 */
 		clrsetbits_be32(&ssi->scr,
 			CCSR_SSI_SCR_I2S_MODE_MASK | CCSR_SSI_SCR_SYN,
 			CCSR_SSI_SCR_TFR_CLK_DIS | CCSR_SSI_SCR_I2S_MODE_SLAVE
@@ -356,23 +350,6 @@ static int fsl_ssi_startup(struct snd_pcm_substream *substream,
 	if (!ssi_private->first_stream)
 		ssi_private->first_stream = substream;
 	else {
-		/* This is the second stream open, so we need to impose sample
-		 * rate and maybe sample size constraints.  Note that this can
-		 * cause a race condition if the second stream is opened before
-		 * the first stream is fully initialized.
-		 *
-		 * We provide some protection by checking to make sure the first
-		 * stream is initialized, but it's not perfect.  ALSA sometimes
-		 * re-initializes the driver with a different sample rate or
-		 * size.  If the second stream is opened before the first stream
-		 * has received its final parameters, then the second stream may
-		 * be constrained to the wrong sample rate or size.
-		 *
-		 * FIXME: This code does not handle opening and closing streams
-		 * repeatedly.  If you open two streams and then close the first
-		 * one, you may not be able to open another stream until you
-		 * close the second one as well.
-		 */
 		struct snd_pcm_runtime *first_runtime =
 			ssi_private->first_stream->runtime;
 

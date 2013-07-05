@@ -462,4 +462,3 @@ void i2400mu_rx_release(struct i2400mu *i2400mu)
 	else
 		d_printf(1, dev, "RX: kthread had already exited\n");
 }
-

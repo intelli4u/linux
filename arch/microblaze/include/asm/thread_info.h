@@ -127,7 +127,6 @@ static inline struct thread_info *current_thread_info(void)
 #define TIF_SECCOMP		10      /* secure computing */
 #define TIF_FREEZE		14	/* Freezing for suspend */
 
-/* FIXME change in entry.S */
 #define TIF_KERNEL_TRACE	8	/* kernel trace active */
 
 /* true if poll_idle() is polling TIF_NEED_RESCHED */

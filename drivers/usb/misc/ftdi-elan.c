@@ -75,11 +75,6 @@ static struct list_head ftdi_static_list;
 #include <asm/io.h>
 #include <linux/usb/hcd.h>
 
-	/* FIXME ohci.h is ONLY for internal use by the OHCI driver.
-	 * If you're going to try stuff like this, you need to split
-	 * out shareable stuff (register declarations?) into its own
-	 * file, maybe name <linux/usb/ohci.h>
-	 */
 
 #include "../host/ohci.h"
 /* Define these values to match your devices*/

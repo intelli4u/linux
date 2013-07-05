@@ -132,6 +132,12 @@ static int arp_constructor(struct neighbour *neigh);
 static void arp_solicit(struct neighbour *neigh, struct sk_buff *skb);
 static void arp_error_report(struct neighbour *neigh, struct sk_buff *skb);
 static void parp_redo(struct sk_buff *skb);
+/*  wklin modified start, 2010/06/15 @attach_dev */
+static int attadev_update(u32 sip, char *sha, struct net_device *dev);
+/*  wklin modified end, 2010/06/15 */
+/* add start by Hank 08/25/2012*/
+static int attadev_init(struct net *net);
+/* add end by Hank 08/25/2012*/
 
 static const struct neigh_ops arp_generic_ops = {
 	.family =		AF_INET,
@@ -272,7 +278,6 @@ static int arp_constructor(struct neighbour *neigh)
 		   in old paradigm.
 		 */
 
-#if 1
 		/* So... these "amateur" devices are hopeless.
 		   The only thing, that I can say now:
 		   It is very sad that we need to keep ugly obsolete
@@ -298,7 +303,6 @@ static int arp_constructor(struct neighbour *neigh)
 			return 0;
 #endif
 		;}
-#endif
 		if (neigh->type == RTN_MULTICAST) {
 			neigh->nud_state = NUD_NOARP;
 			arp_mc_map(addr, neigh->ha, dev, 1);
@@ -732,6 +736,14 @@ void arp_send(int type, int ptype, __be32 dest_ip,
 
 	if (dev->flags&IFF_NOARP)
 		return;
+    	/*  added start pling 03/25/2011 */
+	/* If we are using auto IP, the ARP reply should be in Broadcast */
+	if (type == ARPOP_REPLY &&
+		((htonl(src_ip) & 0xFFFF0000) == 0xa9fe0000))
+		skb = arp_create(type, ptype, dest_ip, dev, src_ip,
+			 NULL, src_hw, target_hw);
+	else
+	/*  added end pling 03/25/2011 */
 
 	skb = arp_create(type, ptype, dest_ip, dev, src_ip,
 			 dest_hw, src_hw, target_hw);
@@ -750,6 +762,8 @@ EXPORT_SYMBOL(arp_send);
 static int arp_process(struct sk_buff *skb)
 {
 	struct net_device *dev = skb->dev;
+    /*  wklin added, 2010/06/15 @attach_dev */
+	struct net_device *bridge_indev = NULL;
 	struct in_device *in_dev = __in_dev_get_rcu(dev);
 	struct arphdr *arp;
 	unsigned char *arp_ptr;
@@ -768,6 +782,8 @@ static int arp_process(struct sk_buff *skb)
 	if (in_dev == NULL)
 		goto out;
 
+    /*  wklin added, 2010/06/15 @attach_dev */
+    bridge_indev = *(pp_bridge_indev(skb));
 	arp = arp_hdr(skb);
 
 	switch (dev_type) {
@@ -861,6 +877,22 @@ static int arp_process(struct sk_buff *skb)
 				 dev->dev_addr, sha);
 		goto out;
 	}
+
+    /*  wklin modified sart, 02/02/2007 */
+#define ATTADEV
+#ifdef ATTADEV
+		/* modify start by Hank 08/10/2012 */
+		/*kernel function be modified*/
+    if ((arp->ar_op == htons(ARPOP_REQUEST) || arp->ar_op == htons(ARPOP_REPLY))
+       && inet_addr_type(net,sip)==RTN_UNICAST && memcmp(dev->name,"br0", 3) == 0) {
+	   /* modify end by Hank 08/10/2012 */
+        /*  wklin modified start, 2010/06/15 @attach_dev */
+        //static int attadev_update(u32 sip, char *sha, struct net_device *indev);
+        attadev_update(sip, sha, bridge_indev);
+        /*  wklin modified end, 2010/06/15 */
+    }
+#endif
+    /*  wklin modified end, 02/02/2007 */
 
 	if (arp->ar_op == htons(ARPOP_REQUEST) &&
 	    ip_route_input_noref(skb, tip, sip, 0, dev) == 0) {
@@ -1290,6 +1322,7 @@ void __init arp_init(void)
 
 	dev_add_pack(&arp_packet_type);
 	arp_proc_init();
+
 #ifdef CONFIG_SYSCTL
 	neigh_sysctl_register(NULL, &arp_tbl.parms, "ipv4", NULL);
 #endif
@@ -1433,6 +1466,13 @@ static int __net_init arp_net_init(struct net *net)
 {
 	if (!proc_net_fops_create(net, "arp", S_IRUGO, &arp_seq_fops))
 		return -ENOMEM;
+		
+        /* add start by Hank 08/25/2012*/
+		/*for attadev init*/
+#ifdef ATTADEV
+    attadev_init(net);
+#endif
+        /* add end by Hank 08/25/2012*/
 	return 0;
 }
 
@@ -1459,3 +1499,149 @@ static int __init arp_proc_init(void)
 }
 
 #endif /* CONFIG_PROC_FS */
+/*  wklin added start, 02/06/2007 */
+
+#ifdef ATTADEV
+#define FLAG_VALID 1
+#define FLAG_INVALID 0
+#define MAX_ATTADEV_ENTRY 128
+#define ATTADEV_HASHMASK 0x7f
+
+typedef struct {
+    u32 sip;
+    unsigned char sha[6];
+    unsigned short flag;
+    /*  added, 2010/06/15 @attach_dev */
+    char ifname[IFNAMSIZ];
+} attadev_t;
+
+static rwlock_t attadev_lock = RW_LOCK_UNLOCKED;
+static attadev_t attadevs[MAX_ATTADEV_ENTRY];
+/* modify start by Hank 08/25/2012*/
+/*change init, create, and get information function of attadev, delatta
+  Because the kernel function is changed in 2.6.36*/		
+static int attadev_get_info(struct seq_file *seq, void *v)
+{
+    attadev_t *p = &attadevs[0];
+    int i, size, len=0;
+
+    read_lock_bh(&attadev_lock);
+    for (i=0; i<MAX_ATTADEV_ENTRY; i++) {
+        if ((p+i)->flag == FLAG_VALID) {
+            seq_printf(seq, "%08X %02X:%02X:%02X:%02X:%02X:%02X %s\n",
+                    ntohl((p+i)->sip),
+                    ((p+i)->sha)[0], ((p+i)->sha)[1], ((p+i)->sha)[2],
+                    ((p+i)->sha)[3], ((p+i)->sha)[4], ((p+i)->sha)[5], 
+                    (p+i)->ifname);/* add by Mos: 05/30/2011 : for attached devices read wifi/wireless device*/
+        }
+    }
+    read_unlock_bh(&attadev_lock);
+        return 0;
+}
+
+static int attadev_del_info(struct seq_file *seq, void *v)
+{
+    attadev_t *p = &attadevs[0];
+    int i=0;
+
+    write_lock_bh(&attadev_lock);
+    for (i=0; i<MAX_ATTADEV_ENTRY; i++) {
+        (p+i)->sip = 0;
+        memset((p+i)->sha,'\0', 6);
+        (p+i)->flag = FLAG_INVALID;
+    }
+    write_unlock_bh(&attadev_lock);
+    return 0;
+}
+
+static int attadev_seq_open(struct inode *inode, struct file *file)
+{
+    return single_open_net(inode, file, attadev_get_info);
+}
+
+static int delatta_seq_open(struct inode *inode, struct file *file)
+{
+    return single_open_net(inode, file, attadev_del_info);
+}
+
+static const struct file_operations attadev_seq_fops = {
+        .owner          = THIS_MODULE,
+        .open       = attadev_seq_open,
+        .read       = seq_read,
+        .llseek     = seq_lseek,
+        .release        = single_release_net,
+};
+
+static const struct file_operations delatta_seq_fops = {
+        .owner          = THIS_MODULE,
+        .open       = delatta_seq_open,
+        .read       = seq_read,
+        .llseek     = seq_lseek,
+        .release        = single_release_net,
+};
+
+static int attadev_init(struct net *net) {
+    int i;
+    attadev_t *p = &attadevs[0];
+
+    /* init data structure */
+    for (i=0; i<MAX_ATTADEV_ENTRY; i++) {
+        (p+i)->sip = 0;
+        memset((p+i)->sha,'\0', 6);
+        (p+i)->flag = FLAG_INVALID;
+    }
+
+	proc_net_fops_create(net, "attadev", S_IRUGO, &attadev_seq_fops);
+    proc_net_fops_create(net, "delatta", S_IRUGO, &delatta_seq_fops);
+	
+    return 0;
+}
+/* modify end by Hank 08/25/2012*/
+
+static u32 attadev_hash(u32 *pkey)
+{
+	u32 hash_val;
+
+	hash_val = *(u32*)pkey;
+	hash_val ^= (hash_val>>16);
+	hash_val ^= hash_val>>8;
+	hash_val ^= hash_val>>3;
+	hash_val &= ATTADEV_HASHMASK;
+
+	return hash_val;
+}
+
+/*  wklin modified ,2010/06/15 @attach_dev */
+static int attadev_update(u32 sip, char *sha, struct net_device *dev) {
+    int hash_id = attadev_hash(&sip);
+    int i;
+    i = hash_id;
+    attadev_t *p = &attadevs[0];
+
+    /* printk("sip=%08x, hashid = %d\n", sip, hash_id); */
+    write_lock_bh(&attadev_lock);
+    for(;;) {
+        if ((p+i)->flag == FLAG_INVALID || (p+i)->sip == sip) {
+            (p+i)->sip = sip;
+            (p+i)->flag = FLAG_VALID;
+            memcpy((p+i)->sha, sha, 6);
+            /*  wklin modified start, 2010/06/15 @attach_dev */
+            if (dev && dev->name) {
+                strcpy((p+i)->ifname, dev->name);
+            }
+            /*  wklin modified end, 2010/06/15 */
+            break;
+        } 
+        i++;
+        if (i >= MAX_ATTADEV_ENTRY) /*  wklin modified, 08/01/2007 */
+            i = 0;
+        if (i == hash_id) {
+            /* printk("attadev table is full\n"); */
+            break;
+        }
+    }
+    write_unlock_bh(&attadev_lock);
+    return 0;
+}
+#endif
+/*  wklin added end, 02/06/2007 */

@@ -169,7 +169,6 @@ free_voice(struct snd_emux_voice *vp)
 	struct snd_emu10k1 *hw;
 	
 	hw = vp->hw;
-	/* FIXME: emu10k1_synth is broken. */
 	/* This can get called with hw == 0 */
 	/* Problem apparent on plug, unplug then plug */
 	/* on the Audigy 2 ZS Notebook. */
@@ -227,7 +226,7 @@ lookup_voices(struct snd_emux *emu, struct snd_emu10k1 *hw,
 	int  i;
 
 	for (i = 0; i < V_END; i++) {
-		best[i].time = (unsigned int)-1; /* XXX MAX_?INT really */;
+		best[i].time = (unsigned int)-1;;
 		best[i].voice = -1;
 	}
 
@@ -251,11 +250,9 @@ lookup_voices(struct snd_emux *emu, struct snd_emu10k1 *hw,
 		else if (state == SNDRV_EMUX_ST_RELEASED ||
 			 state == SNDRV_EMUX_ST_PENDING) {
 			bp = best + V_RELEASED;
-#if 1
 			val = snd_emu10k1_ptr_read(hw, CVCF_CURRENTVOL, vp->ch);
 			if (! val)
 				bp = best + V_OFF;
-#endif
 		}
 		else if (state == SNDRV_EMUX_ST_STANDBY)
 			continue;
@@ -419,35 +416,6 @@ start_voice(struct snd_emux_voice *vp)
 	temp = (hw->silent_page.addr << 1) | MAP_PTI_MASK;
 	snd_emu10k1_ptr_write(hw, MAPA, ch, temp);
 	snd_emu10k1_ptr_write(hw, MAPB, ch, temp);
-#if 0
-	/* cache */
-	{
-		unsigned int val, sample;
-		val = 32;
-		if (vp->reg.sample_mode & SNDRV_SFNT_SAMPLE_8BITS)
-			sample = 0x80808080;
-		else {
-			sample = 0;
-			val *= 2;
-		}
-
-		/* cache */
-		snd_emu10k1_ptr_write(hw, CCR, ch, 0x1c << 16);
-		snd_emu10k1_ptr_write(hw, CDE, ch, sample);
-		snd_emu10k1_ptr_write(hw, CDF, ch, sample);
-
-		/* invalidate maps */
-		temp = ((unsigned int)hw->silent_page.addr << 1) | MAP_PTI_MASK;
-		snd_emu10k1_ptr_write(hw, MAPA, ch, temp);
-		snd_emu10k1_ptr_write(hw, MAPB, ch, temp);
-		
-		/* fill cache */
-		val -= 4;
-		val <<= 25;
-		val |= 0x1c << 16;
-		snd_emu10k1_ptr_write(hw, CCR, ch, val);
-	}
-#endif
 
 	/* Q & current address (Q 4bit value, MSB) */
 	addr = vp->reg.start;
@@ -486,11 +454,7 @@ trigger_voice(struct snd_emux_voice *vp)
 	if (! emem || emem->mapped_page < 0)
 		return; /* not mapped */
 
-#if 0
-	ptarget = (unsigned int)vp->ptarget << 16;
-#else
 	ptarget = IP_TO_CP(vp->apitch);
-#endif
 	/* set pitch target and pan (volume) */
 	temp = ptarget | (vp->apan << 8) | vp->aaux;
 	snd_emu10k1_ptr_write(hw, PTRX, vp->ch, temp);

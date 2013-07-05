@@ -181,7 +181,6 @@ asmlinkage int sys_fork(long r10, long r11, long r12, long r13, long mof, long s
 }
 
 /* if newusp is 0, we just grab the old usp */
-/* FIXME: Is parent_tid/child_tid really third/fourth argument? Update lib? */
 asmlinkage int sys_clone(unsigned long newusp, unsigned long flags,
 			 int* parent_tid, int* child_tid, long mof, long srp,
 			 struct pt_regs *regs)
@@ -226,29 +225,6 @@ asmlinkage int sys_execve(const char *fname,
 
 unsigned long get_wchan(struct task_struct *p)
 {
-#if 0
-	/* YURGH. TODO. */
-
-        unsigned long ebp, esp, eip;
-        unsigned long stack_page;
-        int count = 0;
-        if (!p || p == current || p->state == TASK_RUNNING)
-                return 0;
-        stack_page = (unsigned long)p;
-        esp = p->thread.esp;
-        if (!stack_page || esp < stack_page || esp > 8188+stack_page)
-                return 0;
-        /* include/asm-i386/system.h:switch_to() pushes ebp last. */
-        ebp = *(unsigned long *) esp;
-        do {
-                if (ebp < stack_page || ebp > 8184+stack_page)
-                        return 0;
-                eip = *(unsigned long *) (ebp+4);
-		if (!in_sched_functions(eip))
-			return eip;
-                ebp = *(unsigned long *) ebp;
-        } while (count++ < 16);
-#endif
         return 0;
 }
 #undef last_sched
@@ -268,4 +244,3 @@ void show_regs(struct pt_regs * regs)
 	printk("r12: %08lx r13: %08lx oR10: %08lx\n",
 	       regs->r12, regs->r13, regs->orig_r10);
 }
-

@@ -1655,11 +1655,6 @@ static void rt73usb_fill_rxdone(struct queue_entry *entry,
 		 */
 		rxdesc->flags |= RX_FLAG_IV_STRIPPED;
 
-		/*
-		 * FIXME: Legacy driver indicates that the frame does
-		 * contain the Michael Mic. Unfortunately, in rt2x00
-		 * the MIC seems to be missing completely...
-		 */
 		rxdesc->flags |= RX_FLAG_MMIC_STRIPPED;
 
 		if (rxdesc->cipher_status == RX_CRYPTO_SUCCESS)

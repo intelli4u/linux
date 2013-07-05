@@ -1181,14 +1181,12 @@ static irqreturn_t ax_interrupt(int irq, void *dev_id)
 
 	if (ei_local->irqlock) 
 	{
-#if 1 /* This might just be an interrupt for a PCI device sharing this line */
 		/* The "irqlock" check is only for testing. */
 		printk(ei_local->irqlock
 			   ? "%s: Interrupted while interrupts are masked! isr=%#2x imr=%#2x.\n"
 			   : "%s: Reentering the interrupt handler! isr=%#2x imr=%#2x.\n",
 			   dev->name, inb_p(e8390_base + EN0_ISR),
 			   inb_p(e8390_base + EN0_IMR));
-#endif
 		spin_unlock_irqrestore(&ei_local->page_lock, flags);
 		return IRQ_NONE;
 	}

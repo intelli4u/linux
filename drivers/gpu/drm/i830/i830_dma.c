@@ -737,16 +737,6 @@ static void i830EmitState(struct drm_device *dev)
 
 		/* 1.3:
 		 */
-#if 0
-		if (dirty & I830_UPLOAD_TEX_PALETTE_N(2)) {
-			i830EmitTexPalette(dev, sarea_priv->Palette2[0], 0, 0);
-			sarea_priv->dirty &= ~I830_UPLOAD_TEX_PALETTE_N(2);
-		}
-		if (dirty & I830_UPLOAD_TEX_PALETTE_N(3)) {
-			i830EmitTexPalette(dev, sarea_priv->Palette2[1], 1, 0);
-			sarea_priv->dirty &= ~I830_UPLOAD_TEX_PALETTE_N(2);
-		}
-#endif
 	}
 
 	/* 1.3:

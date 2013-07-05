@@ -231,8 +231,6 @@ static int gs_wait_tx_flushed (void * ptr, unsigned long timeout)
 	gs_dprintk (GS_DEBUG_FLUSH, "now=%lx, end=%lx (%ld).\n", 
 		    jiffies, end_jiffies, end_jiffies-jiffies); 
 
-	/* the expression is actually jiffies < end_jiffies, but that won't
-	   work around the wraparound. Tricky eh? */
 	while ((charsleft = gs_real_chars_in_buffer (port->port.tty)) &&
 	        time_after (end_jiffies, jiffies)) {
 		/* Units check: 
@@ -275,7 +273,6 @@ void gs_flush_buffer(struct tty_struct *tty)
 
 	if (!port) return;
 
-	/* XXX Would the write semaphore do? */
 	spin_lock_irqsave (&port->driver_lock, flags);
 	port->xmit_cnt = port->xmit_head = port->xmit_tail = 0;
 	spin_unlock_irqrestore (&port->driver_lock, flags);

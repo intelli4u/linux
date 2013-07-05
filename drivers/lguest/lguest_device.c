@@ -296,14 +296,6 @@ static struct virtqueue *lg_find_vq(struct virtio_device *vdev,
 	/* Make sure the interrupt is allocated. */
 	lguest_setup_irq(lvq->config.irq);
 
-	/*
-	 * Tell the interrupt for this virtqueue to go to the virtio_ring
-	 * interrupt handler.
-	 *
-	 * FIXME: We used to have a flag for the Host to tell us we could use
-	 * the interrupt as a source of randomness: it'd be nice to have that
-	 * back.
-	 */
 	err = request_irq(lvq->config.irq, vring_interrupt, IRQF_SHARED,
 			  dev_name(&vdev->dev), vq);
 	if (err)

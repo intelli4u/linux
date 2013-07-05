@@ -1,4 +1,4 @@
-/* $Id: checksum.S,v 1.10 2001/07/06 13:11:32 gniibe Exp $
+/* $Id: checksum.S,v 1.10 2001/07/06 13:11:32 Exp $
  *
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
  *		operating system.  INET is implemented using the  BSD Socket
@@ -180,16 +180,6 @@ unsigned int csum_partial_copy_generic (const char *src, char *dst, int len,
 					int sum, int *src_err_ptr, int *dst_err_ptr)
  */ 
 
-/*
- * Copy from ds while checksumming, otherwise like csum_partial
- *
- * The macros SRC and DST specify the type of access for the instruction.
- * thus we can call a custom exception handler for all access types.
- *
- * FIXME: could someone double-check whether I haven't mixed up some SRC and
- *	  DST definitions? It's damn hard to trigger all cases.  I hope I got
- *	  them all but there's no guarantee.
- */
 
 #define SRC(...)			\
 	9999: __VA_ARGS__ ;		\

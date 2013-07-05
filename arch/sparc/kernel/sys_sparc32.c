@@ -354,7 +354,6 @@ asmlinkage long compat_sys_rt_sigaction(int sig,
         int ret;
 	compat_sigset_t set32;
 
-        /* XXX: Don't preclude handling different sized sigset_t's.  */
         if (sigsetsize != sizeof(compat_sigset_t))
                 return -EINVAL;
 

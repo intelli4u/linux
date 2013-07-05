@@ -970,7 +970,6 @@ vt6655_probe(struct pci_dev *pcid, const struct pci_device_id *ent)
         return -ENODEV;
     }
 
-#if 1
 
 #ifdef	DEBUG
 
@@ -1014,9 +1013,6 @@ vt6655_probe(struct pci_dev *pcid, const struct pci_device_id *ent)
 			}
 		}
 	}
-#endif
-
-
 #endif
 
 #ifdef	DEBUG
@@ -1093,13 +1089,6 @@ vt6655_probe(struct pci_dev *pcid, const struct pci_device_id *ent)
     }
 //2008-07-21-01<Add>by MikeLiu
 //register wpadev
-#if 0
-   if(wpa_set_wpadev(pDevice, 1)!=0) {
-     printk("Fail to Register WPADEV?\n");
-        unregister_netdev(pDevice->dev);
-        free_netdev(dev);
-   }
-#endif
     device_print_info(pDevice);
     pci_set_drvdata(pcid, pDevice);
     return 0;
@@ -1858,14 +1847,12 @@ int MlmeThread(
 
 	//printk("Enter MlmeThread,packet _num is %d\n",pDevice->rxManeQueue.packet_num);
 	//i = 0;
-#if 1
 	while (1)
 	{
 
 	//printk("DDDD\n");
 	//down(&pDevice->mlme_semaphore);
         // pRxMgmtPacket =  DeQueue(pDevice);
-#if 1
 		spin_lock_irq(&pDevice->lock);
 		 while(pDevice->rxManeQueue.packet_num != 0)
 	 	{
@@ -1880,7 +1867,6 @@ int MlmeThread(
 		if (mlme_kill == 0)
 		break;
 		//udelay(200);
-#endif
 	//printk("Before schedule thread jiffies is %x\n",jiffies);
 	schedule();
 	//printk("after schedule thread jiffies is %x\n",jiffies);
@@ -1888,8 +1874,6 @@ int MlmeThread(
 		break;
 	//printk("i is %d\n",i);
 	}
-
-#endif
 	return 0;
 
 }
@@ -1953,14 +1937,6 @@ device_init_rd0_ring(pDevice);
 
 
 
-#if 0
-	pDevice->MLMEThr_pid = kernel_thread(MlmeThread, pDevice, CLONE_VM);
-	if (pDevice->MLMEThr_pid <0 )
-	{
-		printk("unable start thread MlmeThread\n");
-		return -1;
-	}
-#endif
 
 	//printk("thread id is %d\n",pDevice->MLMEThr_pid);
 	//printk("Create thread time is %x\n",jiffies);
@@ -2498,20 +2474,7 @@ static int  device_xmit(struct sk_buff *skb, struct net_device *dev) {
                                 &(pDevice->byTopCCKBasicRate),
                                 &(pDevice->byTopOFDMBasicRate));
 
-#if 0
-printk("auto rate:Rate : %d,AckRate:%d,TopCCKRate:%d,TopOFDMRate:%d\n",
-pDevice->wCurrentRate,pDevice->byACKRate,
-pDevice->byTopCCKBasicRate,pDevice->byTopOFDMBasicRate);
 
-#endif
-
-#if 0
-
-	pDevice->wCurrentRate = 11;
-	pDevice->byACKRate = 8;
-	pDevice->byTopCCKBasicRate = 3;
-	pDevice->byTopOFDMBasicRate = 8;
-#endif
 
 
 		}
@@ -2748,7 +2711,6 @@ static  irqreturn_t  device_intr(int irq,  void *dev_instance) {
                 VNSvInPortD(pDevice->PortOffset + MAC_REG_MAR0, &(pDevice->dwOrgMAR0));
                 VNSvInPortD(pDevice->PortOffset + MAC_REG_MAR4, &(pDevice->dwOrgMAR4));
                 MACvSelectPage0(pDevice->PortOffset);
-               //xxxx
                // WCMDbFlushCommandQueue(pDevice->pMgmt, true);
                 if (set_channel(pDevice, pDevice->pCurrMeasureEID->sReq.byChannel) == true) {
                     pDevice->bMeasureInProgress = true;
@@ -3732,7 +3694,3 @@ viawget_resume(struct pci_dev *pcid)
 }
 
 #endif
-
-
-
-

@@ -424,7 +424,6 @@ static int tc6393xb_gpio_get(struct gpio_chip *chip,
 {
 	struct tc6393xb *tc6393xb = container_of(chip, struct tc6393xb, gpio);
 
-	/* XXX: does dsr also represent inputs? */
 	return tmio_ioread8(tc6393xb->scr + SCR_GPO_DSR(offset / 8))
 		& TC_GPIO_BIT(offset);
 }
@@ -874,4 +873,3 @@ MODULE_LICENSE("GPL v2");
 MODULE_AUTHOR("Ian Molton, Dmitry Baryshkov and Dirk Opfer");
 MODULE_DESCRIPTION("tc6393xb Toshiba Mobile IO Controller");
 MODULE_ALIAS("platform:tc6393xb");
-

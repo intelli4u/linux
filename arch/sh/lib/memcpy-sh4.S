@@ -796,4 +796,3 @@ ENTRY(memcpy)
 	mov.b	@(r0,r5),r1
 	rts
 	 mov.b	r1,@-r0
-

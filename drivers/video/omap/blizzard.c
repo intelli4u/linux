@@ -1646,4 +1646,3 @@ struct lcd_ctrl blizzard_ctrl = {
 	.suspend		= blizzard_suspend,
 	.resume			= blizzard_resume,
 };
-

@@ -364,23 +364,6 @@ titan_init_pachips(titan_pachip *pachip0, titan_pachip *pachip1)
 void __init
 titan_init_arch(void)
 {
-#if 0
-	printk("%s: titan_init_arch()\n", __func__);
-	printk("%s: CChip registers:\n", __func__);
-	printk("%s: CSR_CSC 0x%lx\n", __func__, TITAN_cchip->csc.csr);
-	printk("%s: CSR_MTR 0x%lx\n", __func__, TITAN_cchip->mtr.csr);
-	printk("%s: CSR_MISC 0x%lx\n", __func__, TITAN_cchip->misc.csr);
-	printk("%s: CSR_DIM0 0x%lx\n", __func__, TITAN_cchip->dim0.csr);
-	printk("%s: CSR_DIM1 0x%lx\n", __func__, TITAN_cchip->dim1.csr);
-	printk("%s: CSR_DIR0 0x%lx\n", __func__, TITAN_cchip->dir0.csr);
-	printk("%s: CSR_DIR1 0x%lx\n", __func__, TITAN_cchip->dir1.csr);
-	printk("%s: CSR_DRIR 0x%lx\n", __func__, TITAN_cchip->drir.csr);
-
-	printk("%s: DChip registers:\n", __func__);
-	printk("%s: CSR_DSC 0x%lx\n", __func__, TITAN_dchip->dsc.csr);
-	printk("%s: CSR_STR 0x%lx\n", __func__, TITAN_dchip->str.csr);
-	printk("%s: CSR_DREV 0x%lx\n", __func__, TITAN_dchip->drev.csr);
-#endif
 
 	boot_cpuid = __hard_smp_processor_id();
 
@@ -647,10 +630,6 @@ titan_agp_configure(alpha_agp_info *agp)
 	pctl.pctl_r_bits.apctl_v_agp_rate = 0;		/* 1x */
 	if (agp->mode.bits.rate & 2) 
 		pctl.pctl_r_bits.apctl_v_agp_rate = 1;	/* 2x */
-#if 0
-	if (agp->mode.bits.rate & 4) 
-		pctl.pctl_r_bits.apctl_v_agp_rate = 2;	/* 4x */
-#endif
 	
 	/* RQ Depth? */
 	pctl.pctl_r_bits.apctl_v_agp_hp_rd = 2;
@@ -767,11 +746,6 @@ titan_agp_info(void)
 	agp->private = port;
 	agp->ops = &titan_agp_ops;
 
-	/*
-	 * Aperture - not configured until ops.setup().
-	 *
-	 * FIXME - should we go ahead and allocate it here?
-	 */
 	agp->aperture.bus_base = 0;
 	agp->aperture.size = 0;
 	agp->aperture.sysdata = NULL;

@@ -171,10 +171,6 @@ extern pid_t __kernel_thread(int (*fn)(void *), void *arg, unsigned long flags);
 pid_t kernel_thread(int (*fn)(void *), void *arg, unsigned long flags)
 {
 
-	/*
-	 * FIXME: Once we are sure we don't need any debug here,
-	 *	  kernel_thread can become a #define.
-	 */
 
 	return __kernel_thread(fn, arg, flags);
 }

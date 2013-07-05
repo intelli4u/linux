@@ -252,7 +252,6 @@ static void sky2_power_on(struct sky2_hw *hw)
 
 		sky2_write16(hw, B0_CTST, Y2_HW_WOL_ON);
 
-		/* Enable workaround for dev 4.107 on Yukon-Ultra & Extreme */
 		reg = sky2_read32(hw, B2_GP_IO);
 		reg |= GLB_GPIO_STAT_RACE_DIS;
 		sky2_write32(hw, B2_GP_IO, reg);
@@ -383,7 +382,6 @@ static void sky2_phy_init(struct sky2_hw *hw, unsigned port)
 			}
 		}
 	} else {
-		/* workaround for deviation #4.88 (CRC errors) */
 		/* disable Automatic Crossover */
 
 		ctrl &= ~PHY_M_PC_MDIX_MSK;
@@ -602,14 +600,12 @@ static void sky2_phy_init(struct sky2_hw *hw, unsigned port)
 		gm_phy_write(hw, port, PHY_MARV_EXT_ADR, 0);
 	} else if (hw->chip_id == CHIP_ID_YUKON_FE_P &&
 		   hw->chip_rev == CHIP_REV_YU_FE2_A0) {
-		/* apply workaround for integrated resistors calibration */
 		gm_phy_write(hw, port, PHY_MARV_PAGE_ADDR, 17);
 		gm_phy_write(hw, port, PHY_MARV_PAGE_DATA, 0x3f60);
 	} else if (hw->chip_id == CHIP_ID_YUKON_OPT && hw->chip_rev == 0) {
 		/* apply fixes in PHY AFE */
 		gm_phy_write(hw, port, PHY_MARV_EXT_ADR, 0x00ff);
 
-		/* apply RDAC termination workaround */
 		gm_phy_write(hw, port, 24, 0x2800);
 		gm_phy_write(hw, port, 23, 0x2001);
 
@@ -924,9 +920,7 @@ static void sky2_mac_init(struct sky2_hw *hw, unsigned port)
 		sky2_write16(hw, SK_REG(port, RX_GMF_FL_MSK), GMR_FS_ANY_ERR);
 	}
 
-	/* Set threshold to 0xa (64 bytes) + 1 to workaround pause bug  */
 	reg = RX_GMF_FL_THR_DEF + 1;
-	/* Another magic mystery workaround from sk98lin */
 	if (hw->chip_id == CHIP_ID_YUKON_FE_P &&
 	    hw->chip_rev == CHIP_REV_YU_FE2_A0)
 		reg = 0x178;
@@ -1382,12 +1376,6 @@ static struct sk_buff *sky2_rx_alloc(struct sky2_port *sky2)
 
 	if (sky2->hw->flags & SKY2_HW_RAM_BUFFER) {
 		unsigned char *start;
-		/*
-		 * Workaround for a bug in FIFO that cause hang
-		 * if the FIFO if the receive buffer is not 64 byte aligned.
-		 * The buffer returned from netdev_alloc_skb is
-		 * aligned except if slab debugging is enabled.
-		 */
 		start = PTR_ALIGN(skb->data, 8);
 		skb_reserve(skb, start - skb->data);
 	} else
@@ -1480,12 +1468,6 @@ static void sky2_rx_start(struct sky2_port *sky2)
 		sky2_rx_submit(sky2, re);
 	}
 
-	/*
-	 * The receiver hangs if it receives frames larger than the
-	 * packet buffer. As a workaround, truncate oversize frames, but
-	 * the register is limited to 9 bits, so if you do frames > 2052
-	 * you better get the MTU right!
-	 */
 	thresh = sky2_get_rx_threshold(sky2);
 	if (thresh > 0x1ff)
 		sky2_write32(hw, SK_REG(sky2->port, RX_GMF_CTRL_T), RX_TRUNC_OFF);
@@ -1975,7 +1957,6 @@ static void sky2_hw_down(struct sky2_port *sky2)
 
 	sky2_write8(hw, SK_REG(port, GPHY_CTRL), GPC_RST_SET);
 
-	/* Workaround shared GMAC reset */
 	if (!(hw->chip_id == CHIP_ID_YUKON_XL && hw->chip_rev == 0 &&
 	      port == 0 && hw->dev[1] && netif_running(hw->dev[1])))
 		sky2_write8(hw, SK_REG(port, GMAC_CTRL), GMC_RST_SET);
@@ -4590,7 +4571,6 @@ static __devinit struct net_device *sky2_init_netdev(struct sky2_hw *hw,
 		dev->features |= NETIF_F_RXHASH;
 
 #ifdef SKY2_VLAN_TAG_USED
-	/* The workaround for FE+ status conflicts with VLAN tag detection. */
 	if (!(sky2->hw->chip_id == CHIP_ID_YUKON_FE_P &&
 	      sky2->hw->chip_rev == CHIP_REV_YU_FE2_A0)) {
 		dev->features |= NETIF_F_HW_VLAN_TX | NETIF_F_HW_VLAN_RX;

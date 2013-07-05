@@ -16,7 +16,6 @@
 
 #include <linux/dm-io.h>
 
-/* FIXME: make this configurable */
 #define DM_KCOPYD_MAX_REGIONS 8
 
 #define DM_KCOPYD_IGNORE_ERROR 1

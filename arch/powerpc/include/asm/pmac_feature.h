@@ -60,9 +60,6 @@
 #define PMAC_TYPE_GAZELLE		0x24	/* Spartacus, some 5xxx/6xxx */
 #define PMAC_TYPE_UNKNOWN_OHARE		0x2f	/* Unknown, but OHare based */
 
-/* Here are the Heathrow based machines
- * FIXME: Differenciate wallstreet,mainstreet,wallstreetII
- */
 #define PMAC_TYPE_GOSSAMER		0x30	/* Gossamer motherboard */
 #define PMAC_TYPE_SILK			0x31	/* Desktop PowerMac G3 */
 #define PMAC_TYPE_WALLSTREET		0x32	/* Wallstreet/Mainstreet PowerBook*/

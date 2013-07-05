@@ -69,7 +69,7 @@
 
 #define IF_IADBG(f) if (IADebugFlag & (f))
 
-#ifdef  CONFIG_ATM_IA_DEBUG   /* Debug build */
+#ifdef  CONFIG_ATM_IA_DEBUG       /* Debug build */
 
 #define IF_LOUD(A) IF_IADBG(IF_IADBG_LOUD) { A }
 #define IF_ERR(A) IF_IADBG(IF_IADBG_ERR) { A }
@@ -819,12 +819,6 @@ typedef struct srv_cls_param {
         u32 tbe;                /* Transient Buffer Exposure (24-bit) */
         u32 frtt;               /* Fixed Round Trip Time (24-bit) */
  
-#if 0   /* Additional Parameters of TM 4.0 */
-bits  31          30           29          28       27-25 24-22 21-19  18-9
------------------------------------------------------------------------------
-| NRM present | TRM prsnt | CDF prsnt | ADTF prsnt | NRM | TRM | CDF | ADTF |
------------------------------------------------------------------------------
-#endif /* 0 */
  
         u8 nrm;                 /* Max # of Cells for each forward RM
                                         cell (3-bit) */

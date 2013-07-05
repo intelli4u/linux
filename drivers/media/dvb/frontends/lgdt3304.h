@@ -30,7 +30,8 @@ struct lgdt3304_config
 	u8 i2c_address;
 };
 
-#if defined(CONFIG_DVB_LGDT3304) || (defined(CONFIG_DVB_LGDT3304_MODULE) && defined(MODULE))
+#if defined(CONFIG_DVB_LGDT3304) || (defined(CONFIG_DVB_LGDT3304_MODULE) && \
+	defined(MODULE))
 extern struct dvb_frontend* lgdt3304_attach(const struct lgdt3304_config *config,
 					   struct i2c_adapter *i2c);
 #else

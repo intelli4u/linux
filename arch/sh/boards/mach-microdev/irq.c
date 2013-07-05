@@ -61,7 +61,7 @@ static const struct {
 #  error Inconsistancy in defining the IRQ# for secondary IDE!
 #endif
 
-#if (MICRODEV_LINUX_IRQ_IDE1 != 14)
+#if MICRODEV_LINUX_IRQ_IDE04
 #  error Inconsistancy in defining the IRQ# for primary IDE!
 #endif
 

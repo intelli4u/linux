@@ -331,4 +331,3 @@ static inline void bi_windup(deflate_state *s)
     s->bits_sent = (s->bits_sent+7) & ~7;
 #endif
 }
-

@@ -1142,7 +1142,6 @@ void ssb_device_enable(struct ssb_device *dev, u32 core_specific_flags)
 		    SSB_TMSLOW_FGC | core_specific_flags);
 	ssb_flush_tmslow(dev);
 
-	/* Clear SERR if set. This is a hw bug workaround. */
 	if (ssb_read32(dev, SSB_TMSHIGH) & SSB_TMSHIGH_SERR)
 		ssb_write32(dev, SSB_TMSHIGH, 0);
 

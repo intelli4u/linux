@@ -16,11 +16,7 @@
 #include <linux/string.h>
 #include <linux/kernel.h>
 
-#if 0
-#define DEBUGP printk
-#else
 #define DEBUGP(fmt...)
-#endif
 
 void *module_alloc(unsigned long size)
 {

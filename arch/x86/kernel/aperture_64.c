@@ -1,15 +1,4 @@
-/*
- * Firmware replacement code.
- *
- * Work around broken BIOSes that don't set an aperture, only set the
- * aperture in the AGP bridge, or set too small aperture.
- *
- * If all fails map the aperture over some low memory.  This is cheaper than
- * doing bounce buffering. The memory is lost. This is done at early boot
- * because only the bootmem allocator can allocate 32+MB.
- *
- * Copyright 2002 Andi Kleen, SuSE Labs.
- */
+
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/init.h>
@@ -198,19 +187,6 @@ static u32 __init read_agp(int bus, int slot, int func, int cap, u32 *order)
 	return (u32)aper;
 }
 
-/*
- * Look for an AGP bridge. Windows only expects the aperture in the
- * AGP bridge and some BIOS forget to initialize the Northbridge too.
- * Work around this here.
- *
- * Do an PCI bus scan by hand because we're running before the PCI
- * subsystem.
- *
- * All K8 AGP bridges are AGPv3 compliant, so we can do this scan
- * generically. It's probably overkill to always scan all slots because
- * the AGP bridges should be always an own bus on the HT hierarchy,
- * but do it here for future safety.
- */
 static u32 __init search_agp_bridge(u32 *order, int *valid_agp)
 {
 	int bus, slot, func;

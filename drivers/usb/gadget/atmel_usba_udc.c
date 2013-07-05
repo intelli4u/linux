@@ -1019,7 +1019,6 @@ static struct usb_endpoint_descriptor usba_ep0_desc = {
 	.bEndpointAddress = 0,
 	.bmAttributes = USB_ENDPOINT_XFER_CONTROL,
 	.wMaxPacketSize = cpu_to_le16(64),
-	/* FIXME: I have no idea what to put here */
 	.bInterval = 1,
 };
 
@@ -1057,12 +1056,6 @@ static void reset_all_endpoints(struct usba_udc *udc)
 		request_complete(ep, req, -ECONNRESET);
 	}
 
-	/* NOTE:  normally, the next call to the gadget driver is in
-	 * charge of disabling endpoints... usually disconnect().
-	 * The exception would be entering a high speed test mode.
-	 *
-	 * FIXME remove this code ... and retest thoroughly.
-	 */
 	list_for_each_entry(ep, &udc->gadget.ep_list, ep.ep_list) {
 		if (ep->desc) {
 			spin_unlock(&udc->lock);

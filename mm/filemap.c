@@ -36,9 +36,6 @@
 #include <linux/mm_inline.h> /* for page_is_file_cache() */
 #include "internal.h"
 
-/*
- * FIXME: remove all knowledge of the buffer layer from the core VM
- */
 #include <linux/buffer_head.h> /* for try_to_free_buffers */
 
 #include <asm/mman.h>
@@ -2028,10 +2025,11 @@ inline int generic_write_checks(struct file *file, loff_t *pos, size_t *count, i
                 return -EINVAL;
 
 	if (!isblk) {
-		/* FIXME: this is for backwards compatibility with 2.4 */
 		if (file->f_flags & O_APPEND)
                         *pos = i_size_read(inode);
-
+        /*  modified start pling 12/04/2009 */
+        /* Remove large file limitation */
+#if (!defined SAMBA_ENABLE)
 		if (limit != RLIM_INFINITY) {
 			if (*pos >= limit) {
 				send_sig(SIGXFSZ, current, 0);
@@ -2041,8 +2039,13 @@ inline int generic_write_checks(struct file *file, loff_t *pos, size_t *count, i
 				*count = limit - (typeof(limit))*pos;
 			}
 		}
+#endif
+        /*  modified end pling 12/04/2009 */
 	}
 
+    /*  modified start pling 12/04/2009 */
+    /* Ignore LFS rule to support large files */
+#if (!defined SAMBA_ENABLE)
 	/*
 	 * LFS rule
 	 */
@@ -2055,6 +2058,8 @@ inline int generic_write_checks(struct file *file, loff_t *pos, size_t *count, i
 			*count = MAX_NON_LFS - (unsigned long)*pos;
 		}
 	}
+#endif
+    /*  modified end pling 12/04/2009 */
 
 	/*
 	 * Are we about to exceed the fs block limit ?

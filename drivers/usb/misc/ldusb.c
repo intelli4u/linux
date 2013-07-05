@@ -654,7 +654,6 @@ static int ld_usb_probe(struct usb_interface *intf, const struct usb_device_id *
 	init_waitqueue_head(&dev->read_wait);
 	init_waitqueue_head(&dev->write_wait);
 
-	/* workaround for early firmware versions on fast computers */
 	if ((le16_to_cpu(udev->descriptor.idVendor) == USB_VENDOR_ID_LD) &&
 	    ((le16_to_cpu(udev->descriptor.idProduct) == USB_DEVICE_ID_LD_CASSY) ||
 	     (le16_to_cpu(udev->descriptor.idProduct) == USB_DEVICE_ID_LD_COM3LAB)) &&
@@ -814,4 +813,3 @@ static void __exit ld_usb_exit(void)
 
 module_init(ld_usb_init);
 module_exit(ld_usb_exit);
-

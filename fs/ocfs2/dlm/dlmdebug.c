@@ -784,12 +784,10 @@ static int debug_state_print(struct dlm_ctxt *dlm, struct debug_buffer *db)
 	out += snprintf(db->buf + out, db->len - out,
 			"Domain: %s  Key: 0x%08x\n", dlm->name, dlm->key);
 
-	/* Thread Pid: xxx  Node: xxx  State: xxxxx */
 	out += snprintf(db->buf + out, db->len - out,
 			"Thread Pid: %d  Node: %d  State: %s\n",
 			dlm->dlm_thread_task->pid, dlm->node_num, state);
 
-	/* Number of Joins: xxx  Joining Node: xxx */
 	out += snprintf(db->buf + out, db->len - out,
 			"Number of Joins: %d  Joining Node: %d\n",
 			dlm->num_joins, dlm->joining_node);
@@ -806,7 +804,6 @@ static int debug_state_print(struct dlm_ctxt *dlm, struct debug_buffer *db)
 				 db->buf + out, db->len - out);
 	out += snprintf(db->buf + out, db->len - out, "\n");
 
-	/* Lock Resources: xxx (xxx) */
 	out += snprintf(db->buf + out, db->len - out,
 			"Lock Resources: %d (%d)\n",
 			atomic_read(&dlm->res_cur_count),
@@ -818,23 +815,19 @@ static int debug_state_print(struct dlm_ctxt *dlm, struct debug_buffer *db)
 	for (i = 0; i < DLM_MLE_NUM_TYPES; ++i)
 		cur_mles += atomic_read(&dlm->mle_cur_count[i]);
 
-	/* MLEs: xxx (xxx) */
 	out += snprintf(db->buf + out, db->len - out,
 			"MLEs: %d (%d)\n", cur_mles, tot_mles);
 
-	/*  Blocking: xxx (xxx) */
 	out += snprintf(db->buf + out, db->len - out,
 			"  Blocking: %d (%d)\n",
 			atomic_read(&dlm->mle_cur_count[DLM_MLE_BLOCK]),
 			atomic_read(&dlm->mle_tot_count[DLM_MLE_BLOCK]));
 
-	/*  Mastery: xxx (xxx) */
 	out += snprintf(db->buf + out, db->len - out,
 			"  Mastery: %d (%d)\n",
 			atomic_read(&dlm->mle_cur_count[DLM_MLE_MASTER]),
 			atomic_read(&dlm->mle_tot_count[DLM_MLE_MASTER]));
 
-	/*  Migration: xxx (xxx) */
 	out += snprintf(db->buf + out, db->len - out,
 			"  Migration: %d (%d)\n",
 			atomic_read(&dlm->mle_cur_count[DLM_MLE_MIGRATION]),
@@ -849,12 +842,10 @@ static int debug_state_print(struct dlm_ctxt *dlm, struct debug_buffer *db)
 			(list_empty(&dlm->pending_asts) ? "Empty" : "InUse"),
 			(list_empty(&dlm->pending_basts) ? "Empty" : "InUse"));
 
-	/* Purge Count: xxx  Refs: xxx */
 	out += snprintf(db->buf + out, db->len - out,
 			"Purge Count: %d  Refs: %d\n", dlm->purge_count,
 			atomic_read(&dlm->dlm_refs.refcount));
 
-	/* Dead Node: xxx */
 	out += snprintf(db->buf + out, db->len - out,
 			"Dead Node: %d\n", dlm->reco.dead_node);
 
@@ -864,7 +855,6 @@ static int debug_state_print(struct dlm_ctxt *dlm, struct debug_buffer *db)
 	else
 		state = "INACTIVE";
 
-	/* Recovery Pid: xxxx  Master: xxx  State: xxxx */
 	out += snprintf(db->buf + out, db->len - out,
 			"Recovery Pid: %d  Master: %d  State: %s\n",
 			dlm->dlm_reco_thread_task->pid,

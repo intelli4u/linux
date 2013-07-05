@@ -489,10 +489,8 @@ NCR_700_readl(struct Scsi_Host *host, __u32 reg)
 		= (struct NCR_700_Host_Parameters *)host->hostdata[0];
 	__u32 value = bEBus ? ioread32be(hostdata->base + reg) :
 		ioread32(hostdata->base + reg);
-#if 1
 	/* sanity check the register */
 	BUG_ON((reg & 0x3) != 0);
-#endif
 
 	return value;
 }
@@ -512,10 +510,8 @@ NCR_700_writel(__u32 value, struct Scsi_Host *host, __u32 reg)
 	const struct NCR_700_Host_Parameters *hostdata
 		= (struct NCR_700_Host_Parameters *)host->hostdata[0];
 
-#if 1
 	/* sanity check the register */
 	BUG_ON((reg & 0x3) != 0);
-#endif
 
 	bEBus ? iowrite32be(value, hostdata->base + reg): 
 		iowrite32(value, hostdata->base + reg);

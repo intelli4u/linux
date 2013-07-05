@@ -1605,7 +1605,6 @@ void spufs_mfc_callback(struct spu *spu)
 static int spufs_read_mfc_tagstatus(struct spu_context *ctx, u32 *status)
 {
 	/* See if there is one tag group is complete */
-	/* FIXME we need locking around tagwait */
 	*status = ctx->ops->read_mfc_tagstatus(ctx) & ctx->tagwait;
 	ctx->tagwait &= ~*status;
 	if (*status)
@@ -1637,7 +1636,6 @@ static ssize_t spufs_mfc_read(struct file *file, char __user *buffer,
 		if (!(status & ctx->tagwait))
 			ret = -EAGAIN;
 		else
-			/* XXX(hch): shouldn't we clear ret here? */
 			ctx->tagwait &= ~status;
 	} else {
 		ret = spufs_wait(ctx->mfc_wq,
@@ -1831,19 +1829,7 @@ static int spufs_mfc_flush(struct file *file, fl_owner_t id)
 	ret = spu_acquire(ctx);
 	if (ret)
 		goto out;
-#if 0
-/* this currently hangs */
-	ret = spufs_wait(ctx->mfc_wq,
-			 ctx->ops->set_mfc_query(ctx, ctx->tagwait, 2));
-	if (ret)
-		goto out;
-	ret = spufs_wait(ctx->mfc_wq,
-			 ctx->ops->read_mfc_tagstatus(ctx) == ctx->tagwait);
-	if (ret)
-		goto out;
-#else
 	ret = 0;
-#endif
 	spu_release(ctx);
 out:
 	return ret;
@@ -2021,7 +2007,6 @@ DEFINE_SPUFS_ATTRIBUTE(spufs_id_ops, spufs_id_get, NULL, "0x%llx\n",
 
 static u64 spufs_object_id_get(struct spu_context *ctx)
 {
-	/* FIXME: Should there really be no locking here? */
 	return ctx->object_id;
 }
 

@@ -65,11 +65,7 @@
 
 #include <asm/unwind.h>
 
-#if 0
-#define DEBUGP printk
-#else
 #define DEBUGP(fmt...)
-#endif
 
 #define RELOC_REACHABLE(val, bits) \
 	(( ( !((val) & (1<<((bits)-1))) && ((val)>>(bits)) != 0 )  ||	\
@@ -346,9 +342,6 @@ int module_frob_arch_sections(CONST Elf_Ehdr *hdr,
 		gots += count_gots(rels, nrels);
 		fdescs += count_fdescs(rels, nrels);
 
-		/* XXX: By sorting the relocs and finding duplicate entries
-		 *  we could reduce the number of necessary stubs and save
-		 *  some memory. */
 		count = count_stubs(rels, nrels);
 		if (!count)
 			continue;
@@ -460,14 +453,10 @@ static Elf_Addr get_stub(struct module *me, unsigned long value, long addend,
 
 
 #ifndef CONFIG_64BIT
-/* for 32-bit the stub looks like this:
- * 	ldil L'XXX,%r1
- * 	be,n R'XXX(%sr4,%r1)
- */
 	//value = *(unsigned long *)((value + addend) & ~3); /* why? */
 
-	stub->insns[0] = 0x20200000;	/* ldil L'XXX,%r1	*/
-	stub->insns[1] = 0xe0202002;	/* be,n R'XXX(%sr4,%r1)	*/
+	stub->insns[0] = 0x20200000;
+	stub->insns[1] = 0xe0202002;
 
 	stub->insns[0] |= reassemble_21(lrsel(value, addend));
 	stub->insns[1] |= reassemble_17(rrsel(value, addend) / 4);
@@ -585,23 +574,6 @@ int apply_relocate_add(Elf_Shdr *sechdrs,
 		val = sym->st_value;
 		addend = rel[i].r_addend;
 
-#if 0
-#define r(t) ELF32_R_TYPE(rel[i].r_info)==t ? #t :
-		DEBUGP("Symbol %s loc 0x%x val 0x%x addend 0x%x: %s\n",
-			strtab + sym->st_name,
-			(uint32_t)loc, val, addend,
-			r(R_PARISC_PLABEL32)
-			r(R_PARISC_DIR32)
-			r(R_PARISC_DIR21L)
-			r(R_PARISC_DIR14R)
-			r(R_PARISC_SEGREL32)
-			r(R_PARISC_DPREL21L)
-			r(R_PARISC_DPREL14R)
-			r(R_PARISC_PCREL17F)
-			r(R_PARISC_PCREL22F)
-			"UNKNOWN");
-#undef r
-#endif
 
 		switch (ELF32_R_TYPE(rel[i].r_info)) {
 		case R_PARISC_PLABEL32:
@@ -722,20 +694,6 @@ int apply_relocate_add(Elf_Shdr *sechdrs,
 		val = sym->st_value;
 		addend = rel[i].r_addend;
 
-#if 0
-#define r(t) ELF64_R_TYPE(rel[i].r_info)==t ? #t :
-		printk("Symbol %s loc %p val 0x%Lx addend 0x%Lx: %s\n",
-			strtab + sym->st_name,
-			loc, val, addend,
-			r(R_PARISC_LTOFF14R)
-			r(R_PARISC_LTOFF21L)
-			r(R_PARISC_PCREL22F)
-			r(R_PARISC_DIR64)
-			r(R_PARISC_SEGREL32)
-			r(R_PARISC_FPTR64)
-			"UNKNOWN");
-#undef r
-#endif
 
 		switch (ELF64_R_TYPE(rel[i].r_info)) {
 		case R_PARISC_LTOFF21L:
@@ -896,9 +854,6 @@ int module_finalize(const Elf_Ehdr *hdr,
 		if(sechdrs[i].sh_type == SHT_SYMTAB
 		   && (sechdrs[i].sh_flags & SHF_ALLOC)) {
 			int strindex = sechdrs[i].sh_link;
-			/* FIXME: AWFUL HACK
-			 * The cast is to drop the const from
-			 * the sechdrs pointer */
 			symhdr = (Elf_Shdr *)&sechdrs[i];
 			strtab = (char *)sechdrs[strindex].sh_addr;
 			break;

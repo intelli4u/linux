@@ -53,12 +53,6 @@
 
 #include "core.h"
 
-/*
- * All IO addresses are mapped onto VA 0xFFFx.xxxx, where x.xxxx
- * is the (PA >> 12).
- *
- * Setup a VA for the Versatile Vectored Interrupt Controller.
- */
 #define VA_VIC_BASE		__io_address(VERSATILE_VIC_BASE)
 #define VA_SIC_BASE		__io_address(VERSATILE_SIC_BASE)
 
@@ -101,17 +95,10 @@ sic_handle_irq(unsigned int irq, struct irq_desc *desc)
 	} while (status);
 }
 
-#if 1
 #define IRQ_MMCI0A	IRQ_VICSOURCE22
 #define IRQ_AACI	IRQ_VICSOURCE24
 #define IRQ_ETH		IRQ_VICSOURCE25
 #define PIC_MASK	0xFFD00000
-#else
-#define IRQ_MMCI0A	IRQ_SIC_MMCI0A
-#define IRQ_AACI	IRQ_SIC_AACI
-#define IRQ_ETH		IRQ_SIC_ETH
-#define PIC_MASK	0
-#endif
 
 void __init versatile_init_irq(void)
 {
@@ -202,24 +189,6 @@ static struct map_desc versatile_io_desc[] __initdata = {
 		.length		= VERSATILE_PCI_CFG_BASE_SIZE,
 		.type		= MT_DEVICE
 	},
-#if 0
- 	{
-		.virtual	=  VERSATILE_PCI_VIRT_MEM_BASE0,
-		.pfn		= __phys_to_pfn(VERSATILE_PCI_MEM_BASE0),
-		.length		= SZ_16M,
-		.type		= MT_DEVICE
-	}, {
-		.virtual	=  VERSATILE_PCI_VIRT_MEM_BASE1,
-		.pfn		= __phys_to_pfn(VERSATILE_PCI_MEM_BASE1),
-		.length		= SZ_16M,
-		.type		= MT_DEVICE
-	}, {
-		.virtual	=  VERSATILE_PCI_VIRT_MEM_BASE2,
-		.pfn		= __phys_to_pfn(VERSATILE_PCI_MEM_BASE2),
-		.length		= SZ_16M,
-		.type		= MT_DEVICE
-	},
-#endif
 #endif
 };
 
@@ -927,4 +896,3 @@ static void __init versatile_timer_init(void)
 struct sys_timer versatile_timer = {
 	.init		= versatile_timer_init,
 };
-

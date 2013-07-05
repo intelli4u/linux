@@ -171,7 +171,7 @@ struct b43_phy_g {
 	 * register ID is: 0x1 PHY, 0x2 Radio, 0x3 ILT
 	 */
 #define B43_INTERFSTACK_SIZE	26
-	u32 interfstack[B43_INTERFSTACK_SIZE];	//FIXME: use a data structure
+	u32 interfstack[B43_INTERFSTACK_SIZE];
 
 	/* Saved values from the NRSSI Slope calculation */
 	s16 nrssi[2];
@@ -181,7 +181,7 @@ struct b43_phy_g {
 
 	u16 lofcal;
 
-	u16 initval;		//FIXME rename?
+	u16 initval;
 
 	/* The device does address auto increment for the OFDM tables.
 	 * We cache the previously used address here and omit the address

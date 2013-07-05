@@ -1677,4 +1677,3 @@ MODULE_AUTHOR("David Choi <david.choi@micrel.com>");
 MODULE_LICENSE("GPL");
 module_param_named(message, msg_enable, int, 0);
 MODULE_PARM_DESC(message, "Message verbosity level (0=none, 31=all)");
-

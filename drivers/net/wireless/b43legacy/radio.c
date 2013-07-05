@@ -220,7 +220,6 @@ static void b43legacy_set_original_gains(struct b43legacy_wldev *dev)
 	b43legacy_dummy_transmission(dev);
 }
 
-/* Synthetic PU workaround */
 static void b43legacy_synth_pu_workaround(struct b43legacy_wldev *dev,
 					  u8 channel)
 {
@@ -229,7 +228,6 @@ static void b43legacy_synth_pu_workaround(struct b43legacy_wldev *dev,
 	might_sleep();
 
 	if (phy->radio_ver != 0x2050 || phy->radio_rev >= 6)
-		/* We do not need the workaround. */
 		return;
 
 	if (channel <= 10)
@@ -1810,8 +1808,6 @@ int b43legacy_radio_selectchannel(struct b43legacy_wldev *dev,
 				  B43legacy_MMIO_CHANNEL_EXT) & 0xF7BF);
 
 	phy->channel = channel;
-	/*XXX: Using the longer of 2 timeouts (8000 vs 2000 usecs). Specs states
-	 *     that 2000 usecs might suffice. */
 	msleep(8);
 
 	return 0;
@@ -1962,7 +1958,6 @@ void b43legacy_radio_set_txpower_bg(struct b43legacy_wldev *dev,
 		b43legacy_radio_write16(dev, 0x0052,
 					(b43legacy_radio_read16(dev, 0x0052)
 					& ~0x0070) | ((txpower << 4) & 0x0070));
-	/* FIXME: The spec is very weird and unclear here. */
 	if (phy->type == B43legacy_PHYTYPE_G)
 		b43legacy_phy_lo_adjust(dev, 0);
 }

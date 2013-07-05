@@ -40,6 +40,9 @@
 #include <asm/mach/irq.h>
 #include <asm/mach/time.h>
 
+#include <typedefs.h>
+#include <bcmdefs.h>
+
 /*
  * No architecture-specific irq_finish function defined in arm/arch/irqs.h.
  */
@@ -105,7 +108,7 @@ unlock:
  * come via this function.  Instead, they should provide their
  * own 'handler'
  */
-asmlinkage void __exception asm_do_IRQ(unsigned int irq, struct pt_regs *regs)
+asmlinkage void BCMFASTPATH asm_do_IRQ(unsigned int irq, struct pt_regs *regs)
 {
 	struct pt_regs *old_regs = set_irq_regs(regs);
 
@@ -123,7 +126,6 @@ asmlinkage void __exception asm_do_IRQ(unsigned int irq, struct pt_regs *regs)
 		generic_handle_irq(irq);
 	}
 
-	/* AT91 specific workaround */
 	irq_finish(irq);
 
 	irq_exit();

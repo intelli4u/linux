@@ -502,7 +502,6 @@ static struct regulator_init_data rx51_vio = {
 
 static int rx51_twlgpio_setup(struct device *dev, unsigned gpio, unsigned n)
 {
-	/* FIXME this gpio setup is just a placeholder for now */
 	gpio_request(gpio + 6, "backlight_pwm");
 	gpio_direction_output(gpio + 6, 0);
 	gpio_request(gpio + 7, "speaker_en");
@@ -764,8 +763,7 @@ static int __init rx51_i2c_init(void)
 	return 0;
 }
 
-#if defined(CONFIG_MTD_ONENAND_OMAP2) || \
-	defined(CONFIG_MTD_ONENAND_OMAP2_MODULE)
+#if defined(CONFIG_MTD_ONENAND_OMAP2) || defined(CONFIG_MTD_ONENAND_OMAP2_MODULE)
 
 static struct mtd_partition onenand_partitions[] = {
 	{
@@ -910,4 +908,3 @@ void __init rx51_peripherals_init(void)
 				ARRAY_SIZE(rx51_peripherals_spi_board_info));
 	omap2_hsmmc_init(mmc);
 }
-

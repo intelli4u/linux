@@ -652,62 +652,6 @@ static void amiga_serial_console_write(struct console *co, const char *s,
 	}
 }
 
-#if 0
-void amiga_serial_puts(const char *s)
-{
-	amiga_serial_console_write(NULL, s, strlen(s));
-}
-
-int amiga_serial_console_wait_key(struct console *co)
-{
-	int ch;
-
-	while (!(amiga_custom.intreqr & IF_RBF))
-		barrier();
-	ch = amiga_custom.serdatr & 0xff;
-	/* clear the interrupt, so that another character can be read */
-	amiga_custom.intreq = IF_RBF;
-	return ch;
-}
-
-void amiga_serial_gets(struct console *co, char *s, int len)
-{
-	int ch, cnt = 0;
-
-	while (1) {
-		ch = amiga_serial_console_wait_key(co);
-
-		/* Check for backspace. */
-		if (ch == 8 || ch == 127) {
-			if (cnt == 0) {
-				amiga_serial_putc('\007');
-				continue;
-			}
-			cnt--;
-			amiga_serial_puts("\010 \010");
-			continue;
-		}
-
-		/* Check for enter. */
-		if (ch == 10 || ch == 13)
-			break;
-
-		/* See if line is too long. */
-		if (cnt >= len + 1) {
-			amiga_serial_putc(7);
-			cnt--;
-			continue;
-		}
-
-		/* Store and echo character. */
-		s[cnt++] = ch;
-		amiga_serial_putc(ch);
-	}
-	/* Print enter. */
-	amiga_serial_puts("\r\n");
-	s[cnt] = 0;
-}
-#endif
 
 static int __init amiga_debug_setup(char *arg)
 {

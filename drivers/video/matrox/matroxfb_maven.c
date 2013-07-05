@@ -890,7 +890,7 @@ static inline int maven_compute_timming(struct maven_data* md,
 			if (vdec > 0x8000)
 				vdec = 0x8000;
 			vlen = (vslen + umargin + mt->VDisplay) * vdec;
-			vlen = (vlen >> 16) - 146; /* FIXME: 146?! */
+			vlen = (vlen >> 16) - 146;
 			if (vlen < 0)
 				vlen = 0;
 			if (vlen > 0xFF)

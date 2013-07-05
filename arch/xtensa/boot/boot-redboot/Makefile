@@ -32,4 +32,3 @@ zImage: vmlinux $(OBJS) $(LIBS)
 	$(LD) $(LD_ARGS) -o $@.elf $@.tmp $(LIBS) -L/xtensa-elf/lib $(LIBGCC)
 	$(OBJCOPY) -S -O binary $@.elf arch/$(ARCH)/boot/$@.redboot
 	rm -f $@.tmp $@.elf vmlinux.tmp.gz
-

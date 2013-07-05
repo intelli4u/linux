@@ -546,13 +546,11 @@ static int proc_fasttimer_read(char *buf, char **start, off_t offset, int len
     {
       int cur = (fast_timers_started - i - 1) % NUM_TIMER_STATS;
 
-#if 1 //ndef FAST_TIMER_LOG
       used += sprintf(bigbuf + used, "div: %i delay: %i"
                       "\n",
                       timer_div_settings[cur],
                       timer_delay_settings[cur]
                       );
-#endif
 #ifdef FAST_TIMER_LOG
       t = &timer_started_log[cur];
       used += sprintf(bigbuf + used, "%-14s s: %6lu.%06lu e: %6lu.%06lu "

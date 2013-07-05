@@ -543,17 +543,6 @@ static inline void s6gmac_init_device(struct net_device *dev)
 	struct s6gmac *pd = netdev_priv(dev);
 	int is_rgmii = !!(pd->phydev->supported
 		& (SUPPORTED_1000baseT_Full | SUPPORTED_1000baseT_Half));
-#if 0
-	writel(1 << S6_GMAC_MACCONF1_SYNCTX |
-		1 << S6_GMAC_MACCONF1_SYNCRX |
-		1 << S6_GMAC_MACCONF1_TXFLOWCTRL |
-		1 << S6_GMAC_MACCONF1_RXFLOWCTRL |
-		1 << S6_GMAC_MACCONF1_RESTXFUNC |
-		1 << S6_GMAC_MACCONF1_RESRXFUNC |
-		1 << S6_GMAC_MACCONF1_RESTXMACCTRL |
-		1 << S6_GMAC_MACCONF1_RESRXMACCTRL,
-		pd->reg + S6_GMAC_MACCONF1);
-#endif
 	writel(1 << S6_GMAC_MACCONF1_SOFTRES, pd->reg + S6_GMAC_MACCONF1);
 	udelay(1000);
 	writel(1 << S6_GMAC_MACCONF1_TXENA | 1 << S6_GMAC_MACCONF1_RXENA,

@@ -165,10 +165,7 @@ static int a3000_bus_reset(struct scsi_cmnd *cmd)
 {
 	struct Scsi_Host *instance = cmd->device->host;
 
-	/* FIXME perform bus-specific reset */
 
-	/* FIXME 2: kill this entire function, which should
-	   cause mid-layer to call wd33c93_host_reset anyway? */
 
 	spin_lock_irq(instance->host_lock);
 	wd33c93_host_reset(cmd);

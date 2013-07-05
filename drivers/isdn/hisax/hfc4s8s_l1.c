@@ -1,5 +1,5 @@
 /*************************************************************************/
-/* $Id: hfc4s8s_l1.c,v 1.10 2005/02/09 16:31:09 martinb1 Exp $           */
+/* $Id: hfc4s8s_l1.c,v 1.10 2005/02/09 16:31:09 Exp $           */
 /* HFC-4S/8S low layer interface for Cologne Chip HFC-4S/8S isdn chips   */
 /* The low layer (L1) is implemented as a loadable module for usage with */
 /* the HiSax isdn driver for passive cards.                              */
@@ -200,7 +200,7 @@ typedef struct _hfc4s8s_hw {
 /***************************/
 /* inline function defines */
 /***************************/
-#ifdef HISAX_HFC4S8S_PCIMEM	/* inline functions memory mapped */
+#ifdef HISAX_HFC4S8S_PCIMEM	    /* inline functions memory mapped */
 
 /* memory write and dummy IO read to avoid PCI byte merge problems */
 #define Write_hfc8(a,b,c) {(*((volatile u_char *)(a->membase+b)) = c); inb(a->iobase+4);}

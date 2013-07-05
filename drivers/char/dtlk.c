@@ -396,10 +396,6 @@ static int __init dtlk_dev_probe(void)
 		return -EBUSY;
 
 	for (i = 0; dtlk_portlist[i]; i++) {
-#if 0
-		printk("DoubleTalk PC - Port %03x = %04x\n",
-		       dtlk_portlist[i], (testval = inw_p(dtlk_portlist[i])));
-#endif
 
 		if (!request_region(dtlk_portlist[i], DTLK_IO_EXTENT, 
 			       "dtlk"))

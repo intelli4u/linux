@@ -218,7 +218,6 @@ void ftrace_likely_update(struct ftrace_branch_data *f, int val, int expect)
 	 */
 	trace_likely_condition(f, val, expect);
 
-	/* FIXME: Make this atomic! */
 	if (val == expect)
 		f->correct++;
 	else

@@ -801,11 +801,7 @@ static int tm6000_set_tv(struct tm6000_core *dev, int pos)
 {
 	int rc;
 
-	/* FIXME: This code is for tm6010 - not tested yet - doesn't work with
-	   tm5600
-	 */
 
-	/* FIXME: This is tuner-dependent */
 	int nosif = 0;
 
 	if (nosif) {

@@ -806,7 +806,7 @@ __be16 xfrm_flowi_sport(struct flowi *fl)
 		port = htons(fl->fl_mh_type);
 		break;
 	default:
-		port = 0;	/*XXX*/
+		port = 0;
 	}
 	return port;
 }
@@ -827,7 +827,7 @@ __be16 xfrm_flowi_dport(struct flowi *fl)
 		port = htons(fl->fl_icmp_code);
 		break;
 	default:
-		port = 0;	/*XXX*/
+		port = 0;
 	}
 	return port;
 }

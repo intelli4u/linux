@@ -323,4 +323,3 @@ void ipv6_misc_proc_exit(void)
 {
 	unregister_pernet_subsys(&ipv6_proc_ops);
 }
-

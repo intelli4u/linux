@@ -78,31 +78,6 @@ static inline bool libipw_ratelimit_debug(u32 level)
 }
 #endif				/* CONFIG_LIBIPW_DEBUG */
 
-/*
- * To use the debug system:
- *
- * If you are defining a new debug classification, simply add it to the #define
- * list here in the form of:
- *
- * #define LIBIPW_DL_xxxx VALUE
- *
- * shifting value to the left one bit from the previous entry.  xxxx should be
- * the name of the classification (for example, WEP)
- *
- * You then need to either add a LIBIPW_xxxx_DEBUG() macro definition for your
- * classification, or use LIBIPW_DEBUG(LIBIPW_DL_xxxx, ...) whenever you want
- * to send output to that classification.
- *
- * To add your debug level to the list of levels seen when you perform
- *
- * % cat /proc/net/ieee80211/debug_level
- *
- * you simply need to add your entry to the libipw_debug_level array.
- *
- * If you do not see debug_level in /proc/net/ieee80211 then you do not have
- * CONFIG_LIBIPW_DEBUG defined in your kernel configuration
- *
- */
 
 #define LIBIPW_DL_INFO          (1<<0)
 #define LIBIPW_DL_WX            (1<<1)

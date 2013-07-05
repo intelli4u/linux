@@ -45,12 +45,6 @@ static struct map_info l440gx_map = {
 	.size = WINDOW_SIZE,
 	.bankwidth = BUSWIDTH,
 	.phys = WINDOW_ADDR,
-#if 0
-	/* FIXME verify that this is the
-	 * appripriate code for vpp enable/disable
-	 */
-	.set_vpp = l440gx_set_vpp
-#endif
 };
 
 static int __init init_l440gx(void)

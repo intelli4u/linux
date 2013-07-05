@@ -463,7 +463,7 @@ minstrel_calc_retransmit(struct minstrel_priv *mp, struct minstrel_ht_sta *mi,
 	const struct mcs_group *group;
 	unsigned int tx_time, tx_time_rtscts, tx_time_data;
 	unsigned int cw = mp->cw_min;
-	unsigned int t_slot = 9; /* FIXME */
+	unsigned int t_slot = 9;
 	unsigned int ampdu_len = MINSTREL_TRUNC(mi->avg_ampdu_len);
 
 	mr = minstrel_get_ratestats(mi, index);

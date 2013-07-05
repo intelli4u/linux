@@ -135,11 +135,6 @@ struct lasat_eeprom_struct_pre7 {
 #define LASAT_BMID_SAFEPIPE5000		5
 #define LASAT_BMID_SAFEPIPE7000		6
 #define LASAT_BMID_SAFEPIPE1000		7
-#if 0
-#define LASAT_BMID_SAFEPIPE30		7
-#define LASAT_BMID_SAFEPIPE5100		8
-#define LASAT_BMID_SAFEPIPE7100		9
-#endif
 #define LASAT_BMID_UNKNOWN		0xf
 #define LASAT_MAX_BMID_NAMES		9   /* no larger than 15! */
 

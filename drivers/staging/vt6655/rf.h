@@ -101,6 +101,3 @@ bool RFbAL7230SelectChannelPostProcess(unsigned long dwIoBase, unsigned char byO
 //}} RobertYu
 
 #endif // __RF_H__
-
-
-

@@ -8,7 +8,7 @@
  * (C) Copyright: put under GNU GPL in 10/96				*
  *				(see Documentation/scsi/tmscsim.txt)	*
  ************************************************************************
- * $Id: tmscsim.c,v 2.60.2.30 2000/12/20 01:07:12 garloff Exp $		*
+ * $Id: tmscsim.c,v 2.60.2.30 2000/12/20 01:07:12 Exp $		*
  *	Enhancements and bugfixes by					*
  *	Kurt Garloff <kurt@garloff.de>	<garloff@suse.de>		*
  ************************************************************************
@@ -2358,10 +2358,6 @@ static void __devinit dc390_check_eeprom(struct pci_dev *pdev, u8 index)
 
 		printk(KERN_INFO "DC390_init: No EEPROM found! Trying default settings ...\n");
 
-		/*
-		 * XXX(hch): bogus, because we might have tekram and
-		 *           non-tekram hbas in a single machine.
-		 */
 		dc390_fill_with_defaults();
 
 		speed = dc390_clock_speed[tmscsim[1]];

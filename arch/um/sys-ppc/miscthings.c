@@ -4,11 +4,6 @@
 
 /* The following function nicked from arch/ppc/kernel/process.c and
  * adapted slightly */
-/*
- * XXX ld.so expects the auxiliary table to start on
- * a 16-byte boundary, so we have to find it and
- * move it up. :-(
- */
 void shove_aux_table(unsigned long sp)
 {
 	int argc;
@@ -39,4 +34,3 @@ void shove_aux_table(unsigned long sp)
 	}
 }
 /* END stuff taken from arch/ppc/kernel/process.c */
-

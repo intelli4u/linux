@@ -218,12 +218,6 @@ int ocfs2_dentry_attach_lock(struct dentry *dentry,
 	     dentry->d_name.len, dentry->d_name.name,
 	     (unsigned long long)parent_blkno, dl);
 
-	/*
-	 * Negative dentry. We ignore these for now.
-	 *
-	 * XXX: Could we can improve ocfs2_dentry_revalidate() by
-	 * tracking these?
-	 */
 	if (!inode)
 		return 0;
 
@@ -480,12 +474,6 @@ void ocfs2_dentry_move(struct dentry *dentry, struct dentry *target,
 	struct ocfs2_super *osb = OCFS2_SB(old_dir->i_sb);
 	struct inode *inode = dentry->d_inode;
 
-	/*
-	 * Move within the same directory, so the actual lock info won't
-	 * change.
-	 *
-	 * XXX: Is there any advantage to dropping the lock here?
-	 */
 	if (old_dir == new_dir)
 		goto out_move;
 

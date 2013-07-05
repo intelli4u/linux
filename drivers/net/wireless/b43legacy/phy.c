@@ -196,7 +196,7 @@ static void b43legacy_phy_init_pctl(struct b43legacy_wldev *dev)
 		saved_ratt = phy->rfatt;
 		saved_txctl1 = phy->txctl1;
 		if ((phy->radio_rev >= 6) && (phy->radio_rev <= 8)
-		    && /*FIXME: incomplete specs for 5 < revision < 9 */ 0)
+		    && 0)
 			b43legacy_radio_set_txpower_bg(dev, 0xB, 0x1F, 0);
 		else
 			b43legacy_radio_set_txpower_bg(dev, 0xB, 9, 0);
@@ -1503,7 +1503,6 @@ void b43legacy_phy_lo_g_measure(struct b43legacy_wldev *dev)
 	u16 regstack[16] = { 0 };
 	u8 oldchannel;
 
-	/* XXX: What are these? */
 	u8 r27 = 0;
 	u16 r31;
 
@@ -1628,8 +1627,6 @@ void b43legacy_phy_lo_g_measure(struct b43legacy_wldev *dev)
 				tmp_control = b43legacy_get_lopair(phy, i - 9,
 								 j * 2);
 				memcpy(&control, tmp_control, sizeof(control));
-				/* FIXME: The next line is wrong, as the
-				 * following if statement can never trigger. */
 				tmp = (i - 9) * 2 + j - 5;
 				r27 = 0;
 				r31 = 0;
@@ -1650,8 +1647,6 @@ void b43legacy_phy_lo_g_measure(struct b43legacy_wldev *dev)
 				r31 = 0;
 			}
 			b43legacy_radio_write16(dev, 0x43, i - 9);
-			/* FIXME: shouldn't txctl1 be zero in the next line
-			 * and 3 in the loop above? */
 			b43legacy_radio_write16(dev, 0x52,
 					      phy->txctl2
 					      | (3/*txctl1*/ << 4));
@@ -2222,20 +2217,12 @@ void b43legacy_power_saving_ctl_bits(struct b43legacy_wldev *dev,
 	int i;
 	u32 status;
 
-/* FIXME: Force 25 to off and 26 to on for now: */
 bit25 = 0;
 bit26 = 1;
 
 	if (bit25 == -1) {
-		/* TODO: If powersave is not off and FIXME is not set and we
-		 *	are not in adhoc and thus is not an AP and we arei
-		 *	associated, set bit 25 */
 	}
 	if (bit26 == -1) {
-		/* TODO: If the device is awake or this is an AP, or we are
-		 *	scanning, or FIXME, or we are associated, or FIXME,
-		 *	or the latest PS-Poll packet sent was successful,
-		 *	set bit26  */
 	}
 	status = b43legacy_read32(dev, B43legacy_MMIO_MACCTL);
 	if (bit25)

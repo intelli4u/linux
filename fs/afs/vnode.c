@@ -16,42 +16,6 @@
 #include <linux/sched.h>
 #include "internal.h"
 
-#if 0
-static noinline bool dump_tree_aux(struct rb_node *node, struct rb_node *parent,
-				   int depth, char lr)
-{
-	struct afs_vnode *vnode;
-	bool bad = false;
-
-	if (!node)
-		return false;
-
-	if (node->rb_left)
-		bad = dump_tree_aux(node->rb_left, node, depth + 2, '/');
-
-	vnode = rb_entry(node, struct afs_vnode, cb_promise);
-	_debug("%c %*.*s%c%p {%d}",
-	       rb_is_red(node) ? 'R' : 'B',
-	       depth, depth, "", lr,
-	       vnode, vnode->cb_expires_at);
-	if (rb_parent(node) != parent) {
-		printk("BAD: %p != %p\n", rb_parent(node), parent);
-		bad = true;
-	}
-
-	if (node->rb_right)
-		bad |= dump_tree_aux(node->rb_right, node, depth + 2, '\\');
-
-	return bad;
-}
-
-static noinline void dump_tree(const char *name, struct afs_server *server)
-{
-	_enter("%s", name);
-	if (dump_tree_aux(server->cb_promises.rb_node, NULL, 0, '-'))
-		BUG();
-}
-#endif
 
 /*
  * insert a vnode into the backing server's vnode tree

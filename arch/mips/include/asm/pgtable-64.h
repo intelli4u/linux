@@ -131,8 +131,7 @@
 	 min(PTRS_PER_PGD * PTRS_PER_PMD * PTRS_PER_PTE * PAGE_SIZE, \
 	     (1UL << cpu_vmbits)) - (1UL << 32))
 
-#if defined(CONFIG_MODULES) && defined(KBUILD_64BIT_SYM32) && \
-	VMALLOC_START != CKSSEG
+#if defined(CONFIG_MODULES) && defined(KBUILD_64BIT_SYM32) && VMALLOC_START != CKSSEG
 /* Load modules into 32bit-compatible segment. */
 #define MODULE_START	CKSSEG
 #define MODULE_END	(FIXADDR_START-2*PAGE_SIZE)

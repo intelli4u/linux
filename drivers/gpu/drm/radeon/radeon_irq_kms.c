@@ -174,4 +174,3 @@ void radeon_irq_kms_sw_irq_put(struct radeon_device *rdev)
 	}
 	spin_unlock_irqrestore(&rdev->irq.sw_lock, irqflags);
 }
-

@@ -37,7 +37,6 @@ int ieee80211_channel_to_frequency(int chan)
 	if (chan == 14)
 		return 2484;
 
-	/* FIXME: 802.11j 17.3.8.3.2 */
 	return (chan + 1000) * 5;
 }
 EXPORT_SYMBOL(ieee80211_channel_to_frequency);
@@ -50,7 +49,6 @@ int ieee80211_frequency_to_channel(int freq)
 	if (freq < 2484)
 		return (freq - 2407) / 5;
 
-	/* FIXME: 802.11j 17.3.8.3.2 */
 	return freq/5 - 1000;
 }
 EXPORT_SYMBOL(ieee80211_frequency_to_channel);

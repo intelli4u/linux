@@ -130,20 +130,6 @@ struct n_hdlc_buf_list {
 	spinlock_t	  spinlock;
 };
 
-/**
- * struct n_hdlc - per device instance data structure
- * @magic - magic value for structure
- * @flags - miscellaneous control flags
- * @tty - ptr to TTY structure
- * @backup_tty - TTY to use if tty gets closed
- * @tbusy - reentrancy flag for tx wakeup code
- * @woke_up - FIXME: describe this field
- * @tbuf - currently transmitting tx buffer
- * @tx_buf_list - list of pending transmit frame buffers
- * @rx_buf_list - list of received frame buffers
- * @tx_free_buf_list - list unused transmit frame buffers
- * @rx_free_buf_list - list unused received frame buffers
- */
 struct n_hdlc {
 	int			magic;
 	__u32			flags;

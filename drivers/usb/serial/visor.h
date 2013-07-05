@@ -158,4 +158,3 @@ struct palm_ext_connection_info {
 };
 
 #endif
-

@@ -1235,7 +1235,6 @@ static void calc_vrfb_rotation_offset(u8 rotation, bool mirror,
 {
 	u8 ps;
 
-	/* FIXME CLUT formats */
 	switch (color_mode) {
 	case OMAP_DSS_COLOR_CLUT1:
 	case OMAP_DSS_COLOR_CLUT2:
@@ -1320,7 +1319,6 @@ static void calc_dma_rotation_offset(u8 rotation, bool mirror,
 	u8 ps;
 	u16 fbw, fbh;
 
-	/* FIXME CLUT formats */
 	switch (color_mode) {
 	case OMAP_DSS_COLOR_CLUT1:
 	case OMAP_DSS_COLOR_CLUT2:
@@ -1453,11 +1451,9 @@ static unsigned long calc_fclk_five_taps(u16 width, u16 height,
 		u16 out_width, u16 out_height, enum omap_color_mode color_mode)
 {
 	u32 fclk = 0;
-	/* FIXME venc pclk? */
 	u64 tmp, pclk = dispc_pclk_rate();
 
 	if (height > out_height) {
-		/* FIXME get real display PPL */
 		unsigned int ppl = 800;
 
 		tmp = pclk * height * out_width;
@@ -1491,10 +1487,6 @@ static unsigned long calc_fclk(u16 width, u16 height,
 {
 	unsigned int hf, vf;
 
-	/*
-	 * FIXME how to determine the 'A' factor
-	 * for the no downscaling case ?
-	 */
 
 	if (width > 3 * out_width)
 		hf = 4;
@@ -1510,7 +1502,6 @@ static unsigned long calc_fclk(u16 width, u16 height,
 	else
 		vf = 1;
 
-	/* FIXME venc pclk? */
 	return dispc_pclk_rate() * vf * hf;
 }
 
@@ -1817,9 +1808,6 @@ static void dispc_enable_digit_out(bool enable)
 
 	_enable_digit_out(enable);
 
-	/* XXX I understand from TRM that we should only wait for the
-	 * current field to complete. But it seems we have to wait
-	 * for both fields */
 	if (!wait_for_completion_timeout(&frame_done_completion,
 				msecs_to_jiffies(100)))
 		DSSERR("timeout waiting for EVSYNC\n");
@@ -3088,7 +3076,6 @@ static void _omap_dispc_initial_config(void)
 	REG_FLD_MOD(DISPC_CONFIG, 1, 9, 9);
 
 	/* L3 firewall setting: enable access to OCM RAM */
-	/* XXX this should be somewhere in plat-omap */
 	if (cpu_is_omap24xx())
 		__raw_writel(0x402000b0, OMAP2_L3_IO_ADDRESS(0x680050a0));
 

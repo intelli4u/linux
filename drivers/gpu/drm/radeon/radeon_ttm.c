@@ -276,7 +276,6 @@ static int radeon_move_blit(struct ttm_buffer_object *bo,
 		return -EINVAL;
 	}
 	r = radeon_copy(rdev, old_start, new_start, new_mem->num_pages, fence);
-	/* FIXME: handle copy error */
 	r = ttm_bo_move_accel_cleanup(bo, (void *)fence, NULL,
 				      evict, no_wait_reserve, no_wait_gpu, new_mem);
 	radeon_fence_unref(&fence);

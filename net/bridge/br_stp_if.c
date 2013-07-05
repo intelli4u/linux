@@ -216,8 +216,12 @@ void br_stp_recalculate_bridge_id(struct net_bridge *br)
 		return;
 
 	list_for_each_entry(p, &br->port_list, list) {
+		/*  Bob removed start, always use first added if's mac as bridge mac address */
+		#if 0
 		if (addr == br_mac_zero ||
 		    memcmp(p->dev->dev_addr, addr, ETH_ALEN) < 0)
+		#endif
+		/*  Bob removed end */
 			addr = p->dev->dev_addr;
 
 	}

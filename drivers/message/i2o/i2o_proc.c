@@ -32,7 +32,6 @@
 #define OSM_DESCRIPTION	"I2O ProcFS OSM"
 
 #define I2O_MAX_MODULES 4
-// FIXME!
 #define FMT_U64_HEX "0x%08x%08x"
 #define U64_VAL(pu64) *((u32*)(pu64)+1), *((u32*)(pu64))
 
@@ -116,13 +115,11 @@ static int print_serial_number(struct seq_file *seq, u8 * serialno, int max_len)
 		break;
 
 	case I2O_SNFORMAT_WAN:	/* WAN MAC Address */
-		/* FIXME: Figure out what a WAN access address looks like?? */
 		seq_printf(seq, "WAN Access Address");
 		break;
 
 /* plus new in v2.0 */
 	case I2O_SNFORMAT_LAN64_MAC:	/* LAN-64 MAC Address */
-		/* FIXME: Figure out what a LAN-64 address really looks like?? */
 		seq_printf(seq,
 			   "LAN-64 MAC address @ [?:%02X:%02X:?] %pM",
 			   serialno[8], serialno[9], &serialno[2]);
@@ -137,7 +134,6 @@ static int print_serial_number(struct seq_file *seq, u8 * serialno, int max_len)
 
 	case I2O_SNFORMAT_IEEE_REG64:	/* IEEE Registered (64-bit) */
 	case I2O_SNFORMAT_IEEE_REG128:	/* IEEE Registered (128-bit) */
-		/* FIXME: Figure if this is even close?? */
 		seq_printf(seq,
 			   "IEEE NodeName(hi,lo)=(%08Xh:%08Xh), PortName(hi,lo)=(%08Xh:%08Xh)\n",
 			   *(u32 *) & serialno[2],
@@ -534,35 +530,6 @@ static int i2o_seq_show_status(struct seq_file *seq, void *v)
 
 	version = sb->i2o_version;
 
-/* FIXME for Spec 2.0
-	if (version == 0x02) {
-		seq_printf(seq, "Lowest I2O version supported: ");
-		switch(workspace[2]) {
-			case 0x00:
-				seq_printf(seq, "1.0\n");
-				break;
-			case 0x01:
-				seq_printf(seq, "1.5\n");
-				break;
-			case 0x02:
-				seq_printf(seq, "2.0\n");
-				break;
-		}
-
-		seq_printf(seq, "Highest I2O version supported: ");
-		switch(workspace[3]) {
-			case 0x00:
-				seq_printf(seq, "1.0\n");
-				break;
-			case 0x01:
-				seq_printf(seq, "1.5\n");
-				break;
-			case 0x02:
-				seq_printf(seq, "2.0\n");
-				break;
-		}
-	}
-*/
 	seq_printf(seq, "IOP ID                 : %0#5x\n", sb->iop_id);
 	seq_printf(seq, "Host Unit ID           : %0#6x\n", sb->host_unit_id);
 	seq_printf(seq, "Segment Number         : %0#5x\n", sb->segment_number);
@@ -1394,10 +1361,6 @@ static int i2o_seq_show_sgl_limits(struct seq_file *seq, void *v)
 	seq_printf(seq, "Max SGL frag count    : %d\n", work16[7]);
 	seq_printf(seq, "SGL frag count target : %d\n", work16[8]);
 
-/* FIXME
-	if (d->i2oversion == 0x02)
-	{
-*/
 	seq_printf(seq, "SGL data alignment    : %d\n", work16[8]);
 	seq_printf(seq, "SGL addr limit        : %d\n", work8[20]);
 	seq_printf(seq, "SGL addr sizes supported : ");

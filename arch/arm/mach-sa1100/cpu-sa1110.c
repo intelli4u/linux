@@ -197,14 +197,6 @@ static inline void sdram_set_refresh(u_int dri)
 	(void) MDREFR;
 }
 
-/*
- * Update the refresh period.  We do this such that we always refresh
- * the SDRAMs within their permissible period.  The refresh period is
- * always a multiple of the memory clock (fixed at cpu_clock / 2).
- *
- * FIXME: we don't currently take account of burst accesses here,
- * but neither do Intels DM nor Angel.
- */
 static void
 sdram_update_refresh(u_int cpu_khz, struct sdram_params *sdram)
 {
@@ -254,22 +246,6 @@ static int sa1110_target(struct cpufreq_policy *policy,
 
 	sdram_calculate_timing(&sd, freqs.new, sdram);
 
-#if 0
-	/*
-	 * These values are wrong according to the SA1110 documentation
-	 * and errata, but they seem to work.  Need to get a storage
-	 * scope on to the SDRAM signals to work out why.
-	 */
-	if (policy->max < 147500) {
-		sd.mdrefr |= MDREFR_K1DB2;
-		sd.mdcas[0] = 0xaaaaaa7f;
-	} else {
-		sd.mdrefr &= ~MDREFR_K1DB2;
-		sd.mdcas[0] = 0xaaaaaa9f;
-	}
-	sd.mdcas[1] = 0xaaaaaaaa;
-	sd.mdcas[2] = 0xaaaaaaaa;
-#endif
 
 	cpufreq_notify_transition(&freqs, CPUFREQ_PRECHANGE);
 

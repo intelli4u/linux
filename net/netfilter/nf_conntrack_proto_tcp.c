@@ -29,6 +29,11 @@
 #include <net/netfilter/ipv4/nf_conntrack_ipv4.h>
 #include <net/netfilter/ipv6/nf_conntrack_ipv6.h>
 
+#ifdef HNDCTF
+#include <ctf/hndctf.h>
+extern int ip_conntrack_ipct_delete(struct nf_conn *ct, int ct_timeout);
+#endif /* HNDCTF */
+
 /* "Be conservative in what you do,
     be liberal in what you accept from others."
     If it's non-zero, we mark only out of window RST segments as INVALID. */
@@ -43,8 +48,6 @@ static int nf_ct_tcp_loose __read_mostly = 1;
    will be started. */
 static int nf_ct_tcp_max_retrans __read_mostly = 3;
 
-  /* FIXME: Examine ipfilter's timeouts and conntrack transitions more
-     closely.  They're more complex. --RR */
 
 static const char *const tcp_conntrack_names[] = {
 	"NONE",
@@ -360,13 +363,10 @@ static inline __u32 segment_seq_plus_len(__u32 seq,
 					 unsigned int dataoff,
 					 const struct tcphdr *tcph)
 {
-	/* XXX Should I use payload length field in IP/IPv6 header ?
-	 * - YK */
 	return (seq + len - dataoff - tcph->doff*4
 		+ (tcph->syn ? 1 : 0) + (tcph->fin ? 1 : 0));
 }
 
-/* Fixme: what about big packets? */
 #define MAXACKWINCONST			66000
 #define MAXACKWINDOW(sender)						\
 	((sender)->td_maxwin > MAXACKWINCONST ? (sender)->td_maxwin	\
@@ -793,7 +793,6 @@ static int tcp_error(struct net *net, struct nf_conn *tmpl,
 	 * We skip checking packets on the outgoing path
 	 * because the checksum is assumed to be correct.
 	 */
-	/* FIXME: Source route IP option packets --RR */
 	if (net->ct.sysctl_checksum && hooknum == NF_INET_PRE_ROUTING &&
 	    nf_checksum(skb, hooknum, dataoff, IPPROTO_TCP, pf)) {
 		if (LOG_INVALID(net, IPPROTO_TCP))
@@ -991,6 +990,18 @@ static int tcp_packet(struct nf_conn *ct,
 		/* Keep compilers happy. */
 		break;
 	}
+
+#ifdef HNDCTF
+	/* Remove the ipc entries on receipt of FIN or RST */
+	if (CTF_ENAB(kcih)) {
+		if (ct->ctf_flags & CTF_FLAGS_CACHED) {
+			if (th->fin || th->rst) {
+				ip_conntrack_ipct_delete(ct, 0);
+			}
+			goto in_window;
+		}
+	}
+#endif /* HNDCTF */
 
 	if (!tcp_in_window(ct, &ct->proto.tcp, dir, index,
 			   skb, dataoff, th, pf)) {

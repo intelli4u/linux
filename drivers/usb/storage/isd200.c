@@ -953,8 +953,6 @@ static int isd200_try_enum(struct us_data *us, unsigned char master_slave,
 			}
 		}
 		/* check for ATA_BUSY and */
-		/* ATA_DF (workaround ATA Zip drive) and */
-		/* ATA_ERR (workaround for Archos CD-ROM) */
 		else if (regs[ATA_REG_STATUS_OFFSET] &
 			 (ATA_BUSY | ATA_DF | ATA_ERR)) {
 			US_DEBUGP("   Status indicates it is not ready, try again...\n");

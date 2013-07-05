@@ -467,7 +467,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_1T_SEGMENT)
 	 */
 
 	slbie	r6
-	slbie	r6		/* Workaround POWER5 < DD2.1 issue */
+	slbie	r6
 	slbmte	r7,r0
 	isync
 2:
@@ -743,9 +743,6 @@ _GLOBAL(enter_rtas)
 	mfdsisr	r8
 	std	r8,_DSISR(r1)
 
-	/* Temporary workaround to clear CR until RTAS can be modified to
-	 * ignore all bits.
-	 */
 	li	r0,0
 	mtcr	r0
 

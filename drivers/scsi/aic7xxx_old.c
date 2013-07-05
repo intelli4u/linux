@@ -73,7 +73,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *      $Id: aic7xxx.c,v 1.119 1997/06/27 19:39:18 gibbs Exp $
+ *      $Id: aic7xxx.c,v 1.119 1997/06/27 19:39:18 Exp $
  *---------------------------------------------------------------------------
  *
  *  Thanks also go to (in alphabetical order) the following:
@@ -93,7 +93,7 @@
  *
  *  Daniel M. Eischen, deischen@iworks.InterWorks.org, 1/23/97
  *
- *  $Id: aic7xxx.c,v 4.1 1997/06/12 08:23:42 deang Exp $
+ *  $Id: aic7xxx.c,v 4.1 1997/06/12 08:23:42 Exp $
  *-M*************************************************************************/
 
 /*+M**************************************************************************
@@ -1045,11 +1045,6 @@ static struct aic7xxx_syncrate {
 #define WARN_LEAD KERN_WARNING "(scsi%d:%d:%d:%d) "
 #define INFO_LEAD KERN_INFO "(scsi%d:%d:%d:%d) "
 
-/*
- * XXX - these options apply unilaterally to _all_ 274x/284x/294x
- *       cards in the system.  This should be fixed.  Exceptions to this
- *       rule are noted in the comments.
- */
 
 /*
  * Use this as the default queue depth when setting tagged queueing on.
@@ -1745,9 +1740,6 @@ aic7xxx_loadseq(struct aic7xxx_host *p)
   {
     printk(KERN_INFO "(scsi%d) Downloading sequencer code...", p->host_no);
   }
-#if 0
-  download_consts[TMODE_NUMCMDS] = p->num_targetcmds;
-#endif
   download_consts[TMODE_NUMCMDS] = 0;
   cur_patch = &sequencer_patches[0];
   downloaded = 0;
@@ -4259,10 +4251,6 @@ aic7xxx_handle_seqint(struct aic7xxx_host *p, unsigned char intstat)
             case CHECK_CONDITION:
               if ( !(scb->flags & SCB_SENSE) )
               {
-                /*
-                 * Send a sense command to the requesting target.
-                 * XXX - revisit this and get rid of the memcopys.
-                 */
                 memcpy(scb->sense_cmd, &generic_sense[0],
                        sizeof(generic_sense));
 
@@ -4276,10 +4264,6 @@ aic7xxx_handle_seqint(struct aic7xxx_host *p, unsigned char intstat)
                                                    SCSI_SENSE_BUFFERSIZE,
                                                    PCI_DMA_FROMDEVICE));
 
-                /*
-                 * XXX - We should allow disconnection, but can't as it
-                 * might allow overlapped tagged commands.
-                 */
                 /* hscb->control &= DISCENB; */
                 hscb->control = 0;
                 hscb->target_status = 0;
@@ -4613,16 +4597,6 @@ aic7xxx_handle_seqint(struct aic7xxx_host *p, unsigned char intstat)
         unsigned int i;
 
         scb = (p->scb_data->scb_array[scb_index]);
-        /*
-         * XXX - What do we really want to do on an overrun?  The
-         *       mid-level SCSI code should handle this, but for now,
-         *       we'll just indicate that the command should retried.
-         *    If we retrieved sense info on this target, then the 
-         *    base SENSE info should have been saved prior to the
-         *    overrun error.  In that case, we return DID_OK and let
-         *    the mid level code pick up on the sense info.  Otherwise
-         *    we return DID_ERROR so the command will get retried.
-         */
         if ( !(scb->flags & SCB_SENSE) )
         {
           printk(WARN_LEAD "Data overrun detected in %s phase, tag %d;\n",
@@ -4667,9 +4641,6 @@ aic7xxx_handle_seqint(struct aic7xxx_host *p, unsigned char intstat)
         {
           printk(WARN_LEAD "invalid scb_index during WIDE_RESIDUE.\n",
             p->host_no, -1, -1, -1);
-          /*
-           * XXX: Add error handling here
-           */
           break;
         }
         scb = p->scb_data->scb_array[scb_index];
@@ -4811,9 +4782,6 @@ aic7xxx_handle_seqint(struct aic7xxx_host *p, unsigned char intstat)
            p->host_no, -1, -1, -1, aic_inb(p, SG_CACHEPTR),
            aic_inb(p, SSTAT2), aic_inb(p, STCNT + 2) << 16 |
            aic_inb(p, STCNT + 1) << 8 | aic_inb(p, STCNT));
-        /*
-         * XXX: Add error handling here
-         */
         break;
       }
       scb = p->scb_data->scb_array[scb_index];
@@ -4874,7 +4842,6 @@ aic7xxx_handle_seqint(struct aic7xxx_host *p, unsigned char intstat)
       }
       break;
 
-    /* XXX Fill these in later */
     case MSG_BUFFER_BUSY:
       printk("aic7xxx: Message buffer busy.\n");
       break;
@@ -6434,9 +6401,6 @@ aic7xxx_isr(void *dev_id)
 
   if (intstat & SEQINT)
   {
-    /*
-     * Read the CCSCBCTL register to work around a bug in the Ultra2 cards
-     */
     if(p->features & AHC_ULTRA2)
     {
       aic_inb(p, CCSCBCTL);
@@ -6983,19 +6947,6 @@ read_284x_seeprom(struct aic7xxx_host *p, struct seeprom_config *sc)
     CLOCK_PULSE(p);
   }
 
-#if 0
-  printk("Computed checksum 0x%x, checksum read 0x%x\n", checksum, sc->checksum);
-  printk("Serial EEPROM:");
-  for (k = 0; k < (sizeof(*sc) / 2); k++)
-  {
-    if (((k % 8) == 0) && (k != 0))
-    {
-      printk("\n              ");
-    }
-    printk(" 0x%x", seeprom[k]);
-  }
-  printk("\n");
-#endif
 
   if (checksum != sc->checksum)
   {
@@ -7225,20 +7176,6 @@ read_seeprom(struct aic7xxx_host *p, int offset,
    */
   release_seeprom(p);
 
-#if 0
-  printk("Computed checksum 0x%x, checksum read 0x%x\n",
-         checksum, scarray[len - 1]);
-  printk("Serial EEPROM:");
-  for (k = 0; k < len; k++)
-  {
-    if (((k % 8) == 0) && (k != 0))
-    {
-      printk("\n              ");
-    }
-    printk(" 0x%x", scarray[k]);
-  }
-  printk("\n");
-#endif
   if ( (checksum != scarray[len - 1]) || (checksum == 0) )
   {
     return (0);
@@ -8963,18 +8900,6 @@ aic7xxx_configure_bugs(struct aic7xxx_host *p)
 }
 
 
-/*+F*************************************************************************
- * Function:
- *   aic7xxx_detect
- *
- * Description:
- *   Try to detect and register an Adaptec 7770 or 7870 SCSI controller.
- *
- * XXX - This should really be called aic7xxx_probe().  A sequence of
- *       probe(), attach()/detach(), and init() makes more sense than
- *       one do-it-all function.  This may be useful when (and if) the
- *       mid-level SCSI code is overhauled.
- *-F*************************************************************************/
 static int
 aic7xxx_detect(struct scsi_host_template *template)
 {
@@ -10191,10 +10116,6 @@ static void aic7xxx_buildscb(struct aic7xxx_host *p, struct scsi_cmnd *cmd,
    * scatter-gather array.
    */
 
-  /*
-   * XXX - this relies on the host data being stored in a
-   *       little-endian format.
-   */
   hscb->SCSI_cmd_length = cmd->cmd_len;
   memcpy(scb->cmnd, cmd->cmnd, cmd->cmd_len);
   hscb->SCSI_cmd_pointer = cpu_to_le32(SCB_DMA_ADDR(scb, scb->cmnd));

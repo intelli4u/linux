@@ -212,9 +212,6 @@ static int dbg_show(struct seq_file *s, void *_)
 
 	mutex_lock(&tps->lock);
 
-	/* FIXME how can we tell whether a battery is present?
-	 * likely involves a charge gauging chip (like BQ26501).
-	 */
 
 	seq_printf(s, "%scharging\n\n", tps->charging ? "" : "(not) ");
 
@@ -341,14 +338,6 @@ static void tps65010_interrupt(struct tps65010 *tps)
 		/* "off" usually means deep sleep */
 		if (tmp & TPS_REG_ONOFF) {
 			pr_info("%s: power off button\n", DRIVER_NAME);
-#if 0
-			/* REVISIT:  this might need its own workqueue
-			 * plus tweaks including deadlock avoidance ...
-			 * also needs to get error handling and probably
-			 * an #ifdef CONFIG_HIBERNATION
-			 */
-			hibernate();
-#endif
 			poll = 1;
 		}
 	}
@@ -571,10 +560,6 @@ static int tps65010_probe(struct i2c_client *client,
 					client->irq, status);
 			goto fail1;
 		}
-		/* annoying race here, ideally we'd have an option
-		 * to claim the irq now and enable it later.
-		 * FIXME genirq IRQF_NOAUTOEN now solves that ...
-		 */
 		disable_irq(client->irq);
 		set_bit(FLAG_IRQ_ENABLE, &tps->flags);
 	} else
@@ -996,8 +981,6 @@ EXPORT_SYMBOL(tps65010_config_vdcdc2);
  * mode: ON or OFF
  */
 
-/* FIXME: Assumes AC or USB power is present. Setting AUA bit is not
-	required if power supply is through a battery */
 
 int tps65013_set_low_pwr(unsigned mode)
 {
@@ -1096,4 +1079,3 @@ static void __exit tps_exit(void)
 	i2c_del_driver(&tps65010_driver);
 }
 module_exit(tps_exit);
-

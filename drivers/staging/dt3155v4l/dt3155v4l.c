@@ -268,7 +268,7 @@ dt3155_buf_prepare(struct videobuf_queue *q, struct videobuf_buffer *vb,
 	if (ret) {
 		vb->state = VIDEOBUF_ERROR;
 		printk(KERN_ERR "ERROR: videobuf_iolock() failed\n");
-		videobuf_dma_contig_free(q, vb); /* FIXME: needed? */
+		videobuf_dma_contig_free(q, vb);
 	} else
 		vb->state = VIDEOBUF_PREPARED;
 	return ret;
@@ -293,7 +293,7 @@ static void
 dt3155_buf_release(struct videobuf_queue *q, struct videobuf_buffer *vb)
 {
 	if (vb->state == VIDEOBUF_ACTIVE)
-		videobuf_waiton(vb, 0, 0); /* FIXME: cannot be interrupted */
+		videobuf_waiton(vb, 0, 0);
 	videobuf_dma_contig_free(q, vb);
 	vb->state = VIDEOBUF_NEEDS_INIT;
 }
@@ -679,12 +679,6 @@ dt3155_ioc_s_fmt_vid_cap(struct file *filp, void *p, struct v4l2_format *f)
 		ret = -EBUSY;
 		goto done;
 	}
-/*	FIXME: we don't change the format for now
-	if (pd->vidq->streaming || pd->vidq->reading || pd->curr_buff) {
-		ret = -EBUSY;
-		goto done;
-	}
-*/
 	ret = dt3155_ioc_g_fmt_vid_cap(filp, p, f);
 done:
 	mutex_unlock(&pd->mux);
@@ -716,7 +710,7 @@ done:
 		return ret;
 	if (b->count)
 		ret = videobuf_reqbufs(q, b);
-	else { /* FIXME: is it necessary? */
+	else {
 		printk(KERN_DEBUG "dt3155: request to free buffers\n");
 		/* ret = videobuf_mmap_free(q); */
 		ret = dt3155_ioc_streamoff(filp, p,
@@ -785,13 +779,8 @@ dt3155_ioc_enum_input(struct file *filp, void *p, struct v4l2_input *input)
 		return -EINVAL;
 	strcpy(input->name, "Coax in");
 	input->type = V4L2_INPUT_TYPE_CAMERA;
-	/*
-	 * FIXME: input->std = 0 according to v4l2 API
-	 * VIDIOC_G_STD, VIDIOC_S_STD, VIDIOC_QUERYSTD and VIDIOC_ENUMSTD
-	 * should return -EINVAL
-	 */
 	input->std = DT3155_CURRENT_NORM;
-	input->status = 0;/* FIXME: add sync detection & V4L2_IN_ST_NO_H_LOCK */
+	input->status = 0;
 	return 0;
 }
 
@@ -820,7 +809,7 @@ dt3155_ioc_g_parm(struct file *filp, void *p, struct v4l2_streamparm *parms)
 	parms->parm.capture.timeperframe.numerator = 1001;
 	parms->parm.capture.timeperframe.denominator = frames_per_sec * 1000;
 	parms->parm.capture.extendedmode = 0;
-	parms->parm.capture.readbuffers = 1; /* FIXME: 2 buffers? */
+	parms->parm.capture.readbuffers = 1;
 	return 0;
 }
 
@@ -834,7 +823,7 @@ dt3155_ioc_s_parm(struct file *filp, void *p, struct v4l2_streamparm *parms)
 	parms->parm.capture.timeperframe.numerator = 1001;
 	parms->parm.capture.timeperframe.denominator = frames_per_sec * 1000;
 	parms->parm.capture.extendedmode = 0;
-	parms->parm.capture.readbuffers = 1; /* FIXME: 2 buffers? */
+	parms->parm.capture.readbuffers = 1;
 	return 0;
 }
 
@@ -926,7 +915,6 @@ dt3155_init_board(struct pci_dev *dev)
 		write_i2c_reg(pd->regs, AD_LUT, i);
 
 	/* initialize ADC references */
-	/* FIXME: pos_ref & neg_ref depend on VT_50HZ */
 	write_i2c_reg(pd->regs, AD_ADDR, AD_CMD_REG);
 	write_i2c_reg(pd->regs, AD_CMD, VIDEO_CNL_1 | SYNC_CNL_1 | SYNC_LVL_3);
 	write_i2c_reg(pd->regs, AD_ADDR, AD_POS_REF);

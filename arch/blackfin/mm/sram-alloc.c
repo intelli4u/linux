@@ -97,7 +97,7 @@ static void __init l1sram_init(void)
 
 static void __init l1_data_sram_init(void)
 {
-#if L1_DATA_A_LENGTH != 0 || L1_DATA_B_LENGTH != 0
+#if L1_DATA_A_LENGTH != L1_DATA_B_LENGTH != 0
 	unsigned int cpu;
 #endif
 #if L1_DATA_A_LENGTH != 0
@@ -148,7 +148,7 @@ static void __init l1_data_sram_init(void)
 	}
 #endif
 
-#if L1_DATA_A_LENGTH != 0 || L1_DATA_B_LENGTH != 0
+#if L1_DATA_A_LENGTH != L1_DATA_B_LENGTH != 0
 	for (cpu = 0; cpu < num_possible_cpus(); ++cpu)
 		spin_lock_init(&per_cpu(l1_data_sram_lock, cpu));
 #endif

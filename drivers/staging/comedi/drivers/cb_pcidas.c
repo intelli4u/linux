@@ -916,7 +916,6 @@ static int cb_pcidas_ao_fifo_winsn(struct comedi_device *dev,
 }
 
 /* analog output readback insn */
-/* XXX loses track of analog output value back after an analog ouput command is executed */
 static int cb_pcidas_ao_readback_insn(struct comedi_device *dev,
 				      struct comedi_subdevice *s,
 				      struct comedi_insn *insn,

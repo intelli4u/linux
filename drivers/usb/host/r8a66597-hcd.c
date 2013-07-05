@@ -2566,4 +2566,3 @@ static void __exit r8a66597_cleanup(void)
 	platform_driver_unregister(&r8a66597_driver);
 }
 module_exit(r8a66597_cleanup);
-

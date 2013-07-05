@@ -145,7 +145,6 @@ inline void start_timer1(unsigned long delay_us)
   /* t = 1/freq = 1/19200 = 53us
    * T=div*t,  div = T/t = delay_us*freq/1000000
    */
-#if 1 /* Adaptive timer settings */
   while (delay_us < upper_limit && freq_index < MAX_USABLE_TIMER_FREQ)
   {
     freq_index++;
@@ -155,9 +154,6 @@ inline void start_timer1(unsigned long delay_us)
   {
     freq_index--;
   }
-#else
-  freq_index = 6;
-#endif
   div = delay_us * timer_freq_100[freq_index]/10000;
   if (div < 2)
   {
@@ -574,14 +570,12 @@ static int proc_fasttimer_read(char *buf, char **start, off_t offset, int len
     {
       int cur = (fast_timers_started - i - 1) % NUM_TIMER_STATS;
 
-#if 1 //ndef FAST_TIMER_LOG
       used += sprintf(bigbuf + used, "div: %i freq: %i delay: %i"
                       "\n",
                       timer_div_settings[cur],
                       timer_freq_settings[cur],
                       timer_delay_settings[cur]
                       );
-#endif
 #ifdef FAST_TIMER_LOG
       t = &timer_started_log[cur];
       used += sprintf(bigbuf + used, "%-14s s: %6lu.%06lu e: %6lu.%06lu "
@@ -845,19 +839,9 @@ int fast_timer_init(void)
   /* For some reason, request_irq() hangs when called froom time_init() */
   if (!fast_timer_is_init)
   {
-#if 0 && defined(FAST_TIMER_TEST)
-    int i;
-#endif
 
     printk(KERN_INFO "fast_timer_init()\n");
 
-#if 0 && defined(FAST_TIMER_TEST)
-    for (i = 0; i <= TIMER0_DIV; i++)
-    {
-      /* We must be careful not to get overflow... */
-      printk("%3i %6u\n", i, timer0_value_us[i]);
-    }
-#endif
 #ifdef CONFIG_PROC_FS
    if ((fasttimer_proc_entry = create_proc_entry( "fasttimer", 0, 0 )))
      fasttimer_proc_entry->read_proc = proc_fasttimer_read;

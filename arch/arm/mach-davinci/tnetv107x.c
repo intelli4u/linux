@@ -571,7 +571,6 @@ static const struct mux_config pins[] = {
 static u8 irq_prios[TNETV107X_N_CP_INTC_IRQ] = {
 	/* fill in default priority 7 */
 	[0 ... (TNETV107X_N_CP_INTC_IRQ - 1)]	= 7,
-	/* now override as needed, e.g. [xxx] = 5 */
 };
 
 /* Contents of JTAG ID register used to identify exact cpu type */

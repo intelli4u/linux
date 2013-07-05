@@ -168,9 +168,6 @@ static void snd_interwave_i2c_setlines(struct snd_i2c_bus *bus, int ctrl, int da
 {
 	unsigned long port = bus->private_value;
 
-#if 0
-	printk(KERN_DEBUG "i2c_setlines - 0x%lx <- %i,%i\n", port, ctrl, data);
-#endif
 	outb((data << 1) | ctrl, port);
 	udelay(10);
 }
@@ -181,9 +178,6 @@ static int snd_interwave_i2c_getclockline(struct snd_i2c_bus *bus)
 	unsigned char res;
 
 	res = inb(port) & 1;
-#if 0
-	printk(KERN_DEBUG "i2c_getclockline - 0x%lx -> %i\n", port, res);
-#endif
 	return res;
 }
 
@@ -195,9 +189,6 @@ static int snd_interwave_i2c_getdataline(struct snd_i2c_bus *bus, int ack)
 	if (ack)
 		udelay(10);
 	res = (inb(port) & 2) >> 1;
-#if 0
-	printk(KERN_DEBUG "i2c_getdataline - 0x%lx -> %i\n", port, res);
-#endif
 	return res;
 }
 
@@ -340,14 +331,6 @@ static void __devinit snd_interwave_bank_sizes(struct snd_gus_card * gus, int *s
 		     local += 0x40000, d++) {
 			snd_gf1_poke(gus, local, d);
 			snd_gf1_poke(gus, local + 1, d + 1);
-#if 0
-			printk(KERN_DEBUG "d = 0x%x, local = 0x%x, "
-			       "local + 1 = 0x%x, idx << 22 = 0x%x\n",
-			       d,
-			       snd_gf1_peek(gus, local),
-			       snd_gf1_peek(gus, local + 1),
-			       snd_gf1_peek(gus, idx << 22));
-#endif
 			if (snd_gf1_peek(gus, local) != d ||
 			    snd_gf1_peek(gus, local + 1) != d + 1 ||
 			    snd_gf1_peek(gus, idx << 22) != 0x55)
@@ -355,10 +338,6 @@ static void __devinit snd_interwave_bank_sizes(struct snd_gus_card * gus, int *s
 			sizes[idx]++;
 		}
 	}
-#if 0
-	printk(KERN_DEBUG "sizes: %i %i %i %i\n",
-	       sizes[0], sizes[1], sizes[2], sizes[3]);
-#endif
 }
 
 struct rom_hdr {
@@ -401,23 +380,13 @@ static void __devinit snd_interwave_detect_memory(struct snd_gus_card * gus)
 	pages = 0;
 	snd_gf1_poke(gus, 0, 0x55);
 	snd_gf1_poke(gus, 1, 0xaa);
-#if 1
 	if (snd_gf1_peek(gus, 0) == 0x55 && snd_gf1_peek(gus, 1) == 0xaa)
-#else
-	if (0)			/* ok.. for testing of 0k RAM */
-#endif
 	{
 		snd_interwave_bank_sizes(gus, psizes);
 		lmct = (psizes[3] << 24) | (psizes[2] << 16) |
 		    (psizes[1] << 8) | psizes[0];
-#if 0
-		printk(KERN_DEBUG "lmct = 0x%08x\n", lmct);
-#endif
 		for (i = 0; i < ARRAY_SIZE(lmc); i++)
 			if (lmct == lmc[i]) {
-#if 0
-				printk(KERN_DEBUG "found !!! %i\n", i);
-#endif
 				snd_gf1_write16(gus, SNDRV_GF1_GW_MEMORY_CONFIG, (snd_gf1_look16(gus, SNDRV_GF1_GW_MEMORY_CONFIG) & 0xfff0) | i);
 				snd_interwave_bank_sizes(gus, psizes);
 				break;
@@ -464,12 +433,6 @@ static void __devinit snd_interwave_detect_memory(struct snd_gus_card * gus)
 				     (snd_gf1_peek(gus, bank_pos + 42) << 16) |
 				     (snd_gf1_peek(gus, bank_pos + 43) << 24);
 	}
-#if 0
-	if (gus->gf1.rom_memory > 0) {
-		if (gus->gf1.rom_banks == 1 && gus->gf1.rom_present == 8)
-			gus->card->type = SNDRV_CARD_TYPE_IW_DYNASONIC;
-	}
-#endif
 	snd_gf1_write8(gus, SNDRV_GF1_GB_MEMORY_CONTROL, 0x00);	/* select RAM */
 
 	if (!gus->gf1.enh_mode)
@@ -519,15 +482,6 @@ static int __devinit snd_interwave_mixer(struct snd_wss *chip)
 	memset(&id1, 0, sizeof(id1));
 	memset(&id2, 0, sizeof(id2));
 	id1.iface = id2.iface = SNDRV_CTL_ELEM_IFACE_MIXER;
-#if 0
-	/* remove mono microphone controls */
-	strcpy(id1.name, "Mic Playback Switch");
-	if ((err = snd_ctl_remove_id(card, &id1)) < 0)
-		return err;
-	strcpy(id1.name, "Mic Playback Volume");
-	if ((err = snd_ctl_remove_id(card, &id1)) < 0)
-		return err;
-#endif
 	/* add new master and mic controls */
 	for (idx = 0; idx < ARRAY_SIZE(snd_interwave_controls); idx++)
 		if ((err = snd_ctl_add(card, snd_ctl_new1(&snd_interwave_controls[idx], chip))) < 0)
@@ -858,7 +812,6 @@ static struct isa_driver snd_interwave_driver = {
 	.match		= snd_interwave_isa_match,
 	.probe		= snd_interwave_isa_probe,
 	.remove		= __devexit_p(snd_interwave_isa_remove),
-	/* FIXME: suspend,resume */
 	.driver		= {
 		.name	= INTERWAVE_DRIVER
 	},
@@ -909,7 +862,6 @@ static struct pnp_card_driver interwave_pnpc_driver = {
 	.id_table = snd_interwave_pnpids,
 	.probe = snd_interwave_pnp_detect,
 	.remove = __devexit_p(snd_interwave_pnp_remove),
-	/* FIXME: suspend,resume */
 };
 
 #endif /* CONFIG_PNP */

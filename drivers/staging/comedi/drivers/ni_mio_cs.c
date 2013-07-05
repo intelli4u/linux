@@ -152,17 +152,6 @@ static const struct ni_board_struct ni_boards[] = {
 	 .has_8255 = 0,
 	 .caldac = {ad8804_debug},
 	 },
-#if 0
-	{.device_id = 0x0000,	/* unknown */
-	 .name = "DAQCard-6715",
-	 .n_adchan = 0,
-	 .n_aochan = 8,
-	 .aobits = 12,
-	 .ao_671x = 8192,
-	 .num_p0_dio_channels = 8,
-	 .caldac = {mb88341, mb88341},
-	 },
-#endif
 	/* N.B. Update ni_mio_cs_ids[] when entries added above. */
 };
 
@@ -348,7 +337,7 @@ static int mio_cs_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 
 	DPRINTK("mio_cs_attach(dev=%p,it=%p)\n", dev, it);
 
-	link = cur_dev;		/* XXX hack */
+	link = cur_dev;
 	if (!link)
 		return -EIO;
 
@@ -360,22 +349,6 @@ static int mio_cs_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	printk("comedi%d: %s: DAQCard: io 0x%04lx, irq %u, ",
 	       dev->minor, dev->driver->driver_name, dev->iobase, irq);
 
-#if 0
-	{
-		int i;
-
-		printk(" board fingerprint:");
-		for (i = 0; i < 32; i += 2) {
-			printk(" %04x %02x", inw(dev->iobase + i),
-			       inb(dev->iobase + i + 1));
-		}
-		printk("\n");
-		printk(" board fingerprint (windowed):");
-		for (i = 0; i < 10; i++)
-			printk(" 0x%04x", win_in(i));
-		printk("\n");
-	}
-#endif
 
 	dev->board_ptr = ni_boards + ni_getboardtype(dev, link);
 
@@ -461,10 +434,6 @@ int init_module(void)
 void cleanup_module(void)
 {
 	pcmcia_unregister_driver(&ni_mio_cs_driver);
-#if 0
-	while (cur_dev != NULL)
-		cs_detach(cur_dev->handle);
-#endif
 	comedi_driver_unregister(&driver_ni_mio_cs);
 }
 #endif

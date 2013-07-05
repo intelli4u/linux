@@ -1726,4 +1726,3 @@ static u8 find_sec_number (u8 primary_busno, u8 slotno)
 		return busno;
 	return 0xff;
 }
-

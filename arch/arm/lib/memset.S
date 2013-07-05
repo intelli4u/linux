@@ -13,6 +13,7 @@
 #include <asm/assembler.h>
 
 	.text
+	.section .text.fastpath, "a"
 	.align	5
 	.word	0
 

@@ -465,13 +465,6 @@ struct scsi_host_template {
 	 */
 	unsigned int max_host_blocked;
 
-	/*
-	 * Default value for the blocking.  If the queue is empty,
-	 * host_blocked counts down in the request_fn until it restarts
-	 * host operations as zero is reached.  
-	 *
-	 * FIXME: This should probably be a value in the template
-	 */
 #define SCSI_DEFAULT_HOST_BLOCKED	7
 
 	/*

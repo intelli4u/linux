@@ -456,7 +456,6 @@ static int write_regs(struct hpsb_host *host, int nodeid, int destid,
 
         switch (csraddr) {
         case CSR_STATE_CLEAR:
-                /* FIXME FIXME FIXME */
                 printk("doh, someone wants to mess with state clear\n");
                 out;
         case CSR_STATE_SET:
@@ -471,7 +470,6 @@ static int write_regs(struct hpsb_host *host, int nodeid, int destid,
                 out;
 
         case CSR_RESET_START:
-                /* FIXME - perform command reset */
                 out;
 
                 /* address gap */

@@ -53,6 +53,11 @@
 #include <net/net_namespace.h>
 #include <net/netns/generic.h>
 
+#ifdef HNDCTF
+#define TYPEDEF_INT32
+#include <ctf/hndctf.h>
+#endif
+
 #define PPP_VERSION	"2.4.2"
 
 /*
@@ -269,6 +274,193 @@ static int unit_get(struct idr *p, void *ptr);
 static int unit_set(struct idr *p, void *ptr, int n);
 static void unit_put(struct idr *p, int n);
 static void *unit_find(struct idr *p, int n);
+
+/*  added start pling 03/28/2006 */
+/**********************************************************************
+* FUNCTION: computeTCPChecksum
+* ARGUMENTS:
+*   ipHdr -- pointer to IP header
+*   tcpHdr -- pointer to TCP header
+* RETURNS:
+*   The computed TCP checksum
+***********************************************************************/
+#define UINT16  unsigned short
+#define UINT32  unsigned long
+static UINT16 computeTCPChecksum(unsigned char *ipHdr, unsigned char *tcpHdr)
+{
+    UINT32 sum = 0;
+    UINT16 count = ipHdr[2] * 256 + ipHdr[3];
+    unsigned char *addr = tcpHdr;
+    unsigned char pseudoHeader[12];
+
+    /* Count number of bytes in TCP header and data */
+    count -= (ipHdr[0] & 0x0F) * 4;
+
+    memcpy(pseudoHeader, ipHdr+12, 8);
+    pseudoHeader[8] = 0;
+    pseudoHeader[9] = ipHdr[9];
+    pseudoHeader[10] = (count >> 8) & 0xFF;
+    pseudoHeader[11] = (count & 0xFF);
+
+    /* Checksum the pseudo-header */
+    sum += * (UINT16 *) pseudoHeader;
+    sum += * ((UINT16 *) (pseudoHeader+2));
+    sum += * ((UINT16 *) (pseudoHeader+4));
+    sum += * ((UINT16 *) (pseudoHeader+6));
+    sum += * ((UINT16 *) (pseudoHeader+8));
+    sum += * ((UINT16 *) (pseudoHeader+10));
+
+    /* Checksum the TCP header and data */
+    while (count > 1) {
+	    sum += * (UINT16 *) addr;
+	    addr += 2;
+	    count -= 2;
+    }
+
+    if (count > 0) {
+	    sum += *addr;
+    }
+
+    while(sum >> 16) {
+	    sum = (sum & 0xffff) + (sum >> 16);
+    }
+
+    return (UINT16) (~sum & 0xFFFF);
+}
+
+/**********************************************************************
+* FUNCTION: ppp_modify_tcp_mss
+* ARGUMENTS:
+*   payload -- IP packet
+*   payload_len -- either "incoming" or "outgoing"
+*   clampMss -- clamp value
+* RETURNS:
+*   Nothing
+* DESCRIPTION:
+*   Clamps MSS option if TCP SYN flag is set.
+***********************************************************************/
+void ppp_modify_tcp_mss(unsigned char *payload, int clampMss)
+{
+    unsigned char *tcpHdr;
+    unsigned char *ipHdr;
+    unsigned char *opt;
+    unsigned char *endHdr;
+    unsigned char *mssopt = NULL;
+    UINT16 csum;
+
+    /* Make sure this is IP packet */
+    if (payload[0] != 0x00 || payload[1] != 0x21) {
+        return;
+    }
+
+    ipHdr = &payload[2];
+    
+    /* Verify once more that it's IPv4 */
+    if ((ipHdr[0] & 0xF0) != 0x40) {
+        return;
+    }
+
+    /* Is it a fragment that's not at the beginning of the packet? */
+    if ((ipHdr[6] & 0x1F) || ipHdr[7]) {
+        /* Yup, don't touch! */
+        return;
+    }
+
+    /* Is it TCP? */
+    if (ipHdr[9] != 0x06) {
+        return;
+    }
+
+    /* Get start of TCP header */
+    tcpHdr = ipHdr + (ipHdr[0] & 0x0F) * 4;
+
+    /* Is SYN set? */
+    if (!(tcpHdr[13] & 0x02)) {
+        return;
+    }
+
+    /* Compute and verify TCP checksum -- do not touch a packet with a bad
+       checksum */
+    csum = computeTCPChecksum(ipHdr, tcpHdr);
+    if (csum) {
+        /* printk("Bad TCP checksum %x", (unsigned int) csum);*/ 
+
+        /* Upper layers will drop it */
+        return;
+    }
+
+    /* Look for existing MSS option */
+    endHdr = tcpHdr + ((tcpHdr[12] & 0xF0) >> 2);
+    opt = tcpHdr + 20;
+    while (opt < endHdr) {
+        if (!*opt)
+            break;   /* End of options */
+
+        switch(*opt) {
+            case 1:
+                opt++;
+                break;
+
+            case 2:
+                if (opt[1] != 4) {
+                   /* Something fishy about MSS option length. */
+                   printk("Bogus length for MSS option (%u) from %u.%u.%u.%u",
+                                    (unsigned int) opt[1],
+                                    (unsigned int) ipHdr[12],
+                                    (unsigned int) ipHdr[13],
+                                    (unsigned int) ipHdr[14],
+                                    (unsigned int) ipHdr[15]);
+                   return;
+                }
+                mssopt = opt;
+                break;
+
+            default:
+                if (opt[1] < 2) {
+                    /* Someone's trying to attack us? */
+                    printk("Bogus TCP option length (%u) from %u.%u.%u.%u",
+                                    (unsigned int) opt[1],
+                                    (unsigned int) ipHdr[12],
+                                    (unsigned int) ipHdr[13],
+                                    (unsigned int) ipHdr[14],
+                                    (unsigned int) ipHdr[15]);
+                    return;
+                }
+                opt += (opt[1]);
+                break;
+        }
+
+        /* Found existing MSS option? */
+        if (mssopt) {
+            break;
+        }
+    }
+
+    /* If MSS exists and it's low enough, do nothing */
+    if (mssopt) {
+        unsigned mss = mssopt[2] * 256 + mssopt[3];
+        if (mss <= clampMss) {
+            return;
+        }
+
+        mssopt[2] = (((unsigned) clampMss) >> 8) & 0xFF;
+        mssopt[3] = ((unsigned) clampMss) & 0xFF;
+
+        /*printk("%s: Modified MSS value to %d\n", __FUNCTION__, clampMss);*/
+    } else {
+        /* No MSS option.  Don't add one; we'll have to use 536. */
+        return;
+    }
+
+    /* Recompute TCP checksum */
+    tcpHdr[16] = 0;
+    tcpHdr[17] = 0;
+    csum = computeTCPChecksum(ipHdr, tcpHdr);
+    (* (UINT16 *) (tcpHdr+16)) = csum;
+}
+#undef UINT16
+#undef UINT32
+/*  added end pling 03/28/2006 */
 
 static struct class *ppp_class;
 
@@ -686,8 +878,17 @@ static long ppp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		break;
 
 	case PPPIOCGIDLE:
+		/* modified start, water, 11/27/09, @pppoe/pptp idle time not correct issue*/
+		if (jiffies >= ppp->last_xmit) /* wklin modified from > to >=*/
+			idle.xmit_idle = (jiffies - ppp->last_xmit) / HZ;
+		else
+			idle.xmit_idle = (0xFFFFFFFF - ppp->last_xmit + jiffies) / HZ;
+		idle.recv_idle = idle.xmit_idle;
+		/*
 		idle.xmit_idle = (jiffies - ppp->last_xmit) / HZ;
 		idle.recv_idle = (jiffies - ppp->last_recv) / HZ;
+		*/
+		/* modified end, water, 11/27/09*/
 		if (copy_to_user(argp, &idle, sizeof(idle)))
 			break;
 		err = 0;
@@ -977,6 +1178,12 @@ ppp_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	return NETDEV_TX_OK;
 }
 
+static struct net_device_stats * ppp_dev_collect_stats(struct net_device *dev_p)
+{
+	struct ppp *ppp = netdev_priv(dev_p);
+
+	return &ppp->dev->stats;
+}
 static int
 ppp_net_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 {
@@ -1023,6 +1230,7 @@ ppp_net_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 static const struct net_device_ops ppp_netdev_ops = {
 	.ndo_start_xmit = ppp_start_xmit,
 	.ndo_do_ioctl   = ppp_net_ioctl,
+	.ndo_get_stats  = ppp_dev_collect_stats,
 };
 
 static void ppp_setup(struct net_device *dev)
@@ -1150,7 +1358,11 @@ ppp_send_frame(struct ppp *ppp, struct sk_buff *skb)
 		skb_pull(skb, 2);
 #else
 		/* for data packets, record the time */
-		ppp->last_xmit = jiffies;
+		//ppp->last_xmit = jiffies;
+        /*  wklin modified start, 01/18/2007 */
+		if (!skb->sk) /* record the time if not from IP stack */
+		    ppp->last_xmit = jiffies;
+        /*  wklin modified end, 01/02/2007 */
 #endif /* CONFIG_PPP_FILTER */
 	}
 
@@ -1218,6 +1430,24 @@ ppp_send_frame(struct ppp *ppp, struct sk_buff *skb)
 	if (ppp->flags & SC_LOOP_TRAFFIC) {
 		if (ppp->file.rq.qlen > PPP_MAX_RQLEN)
 			goto drop;
+        /*  added start, Winster Chan, 01/02/2007 */
+		if (skb->sk) {
+				if (skb->data[0]==0x00 && skb->data[1]==0x21 &&
+					skb->data[11]==0x01 && skb->data[18]==0xFF)
+				{
+					printk("PPP: Received triggerring packet.\n");
+					/* added start, water, 04/16/10*/
+					/*add michael's patch, @3500L BTS-A201001425: 
+					Internet PPPoE/PPTP idle time is not precise 
+					at the first time.*/
+					ppp->last_xmit = jiffies;
+					/* added end, water, 04/16/10*/
+            	}
+		    	else
+        	    	goto drop;
+        }
+        printk("PPP: DoD triggered.\n");
+        /*  added end, Winster Chan, 01/02/2007 */
 		skb_queue_tail(&ppp->file.rq, skb);
 		wake_up_interruptible(&ppp->file.rwait);
 		return;
@@ -1255,10 +1485,27 @@ ppp_push(struct ppp *ppp)
 	}
 
 	if ((ppp->flags & SC_MULTILINK) == 0) {
+        /*  wklin added start, 12/09/2010 */
+#define PPP_SHORTCUT
+#ifdef PPP_SHORTCUT
+        extern struct ppp_channel_ops async_ops;
+#endif
+        /*  wklin added end, 12/09/2010 */
 		/* not doing multilink: send it down the first channel */
 		list = list->next;
 		pch = list_entry(list, struct channel, clist);
 
+        /*  wklin added start, 12/09/2010 */
+#ifdef PPP_SHORTCUT
+        /* we bound two channels to ppp interface, make sure the we send to the
+         * short-cut chanel (!&async_ops).
+         */
+        if (pch->chan->ops == &async_ops && ppp->n_channels == 2) {
+            list = list->next;
+            pch = list_entry(list, struct channel, clist);
+        }
+#endif
+        /*  wklin added end, 12/09/2010 */
 		spin_lock_bh(&pch->downl);
 		if (pch->chan) {
 			if (pch->chan->ops->start_xmit(pch->chan, skb))
@@ -1346,7 +1593,6 @@ static int ppp_mp_explode(struct ppp *ppp, struct sk_buff *skb)
 	if (nfree == 0 || nfree < navail / 2)
 		return 0; /* can't take now, leave it in xmit_pending */
 
-	/* Do protocol field compression (XXX this should be optional) */
 	p = skb->data;
 	len = skb->len;
 	if (*p == 0) {
@@ -1632,7 +1878,6 @@ ppp_receive_frame(struct ppp *ppp, struct sk_buff *skb, struct channel *pch)
 	/* note: a 0-length skb is used as an error indication */
 	if (skb->len > 0) {
 #ifdef CONFIG_PPP_MULTILINK
-		/* XXX do channel-level decompression here */
 		if (PPP_PROTO(skb) == PPP_MP)
 			ppp_receive_mp_frame(ppp, skb, pch);
 		else
@@ -1681,7 +1926,7 @@ ppp_receive_nonmp_frame(struct ppp *ppp, struct sk_buff *skb)
 			/* copy to a new sk_buff with more tailroom */
 			ns = dev_alloc_skb(skb->len + 128);
 			if (!ns) {
-				printk(KERN_ERR"PPP: no memory (VJ decomp)\n");
+				printk(KERN_ERR "PPP: no memory (VJ decomp)\n");
 				goto err;
 			}
 			skb_reserve(ns, 2);
@@ -1770,7 +2015,10 @@ ppp_receive_nonmp_frame(struct ppp *ppp, struct sk_buff *skb)
 			__skb_pull(skb, 2);
 		} else
 #endif /* CONFIG_PPP_FILTER */
-			ppp->last_recv = jiffies;
+		//ppp->last_recv = jiffies;
+        /*  removed start, Winster Chan, 01/12/2007 */
+		; /* ppp->last_recv = jiffies; */
+        /*  removed end, Winster Chan, 01/12/2007 */
 
 		if ((ppp->dev->flags & IFF_UP) == 0 ||
 		    ppp->npmode[npi] != NPMODE_PASS) {
@@ -2543,6 +2791,10 @@ ppp_get_stats(struct ppp *ppp, struct ppp_stats *st)
  * or if there is already a unit with the requested number.
  * unit == -1 means allocate a new number.
  */
+/* modify start by Hank 08/10/2012 */
+/*change function definition*/
+extern char *nvram_get(const char *name); 
+/* modify end by Hank 08/10/2012 */
 static struct ppp *
 ppp_create_interface(struct net *net, int unit, int *retp)
 {
@@ -2578,7 +2830,15 @@ ppp_create_interface(struct net *net, int unit, int *retp)
 	 * the net device is belong to
 	 */
 	dev_net_set(dev, net);
-
+    /*  wklin added start, 11/06/2008 */
+    {
+#define nvram_safe_get(name) (nvram_get(name) ? : "")
+	char *value = nvram_safe_get("wan_proto");
+	if(!strcmp(value, "pppoe"))
+        dev->acos_flags |= NETIF_ACOSFLAGS_PPPOE;
+	if(!strcmp(value, "pptp"))
+        dev->acos_flags |= NETIF_ACOSFLAGS_PPTP;
+    }
 	ret = -EEXIST;
 	mutex_lock(&pn->all_ppp_mutex);
 
@@ -2618,6 +2878,12 @@ ppp_create_interface(struct net *net, int unit, int *retp)
 	}
 
 	ppp->ppp_net = net;
+
+#ifdef HNDCTF
+	if ((ctf_dev_register(kcih, dev, FALSE) != BCME_OK) ||
+	    (ctf_enable(kcih, dev, TRUE, NULL) != BCME_OK))
+		ctf_dev_unregister(kcih, dev);
+#endif
 
 	atomic_inc(&ppp_unit_count);
 	mutex_unlock(&pn->all_ppp_mutex);
@@ -2662,6 +2928,9 @@ static void ppp_shutdown_interface(struct ppp *ppp)
 	if (!ppp->closing) {
 		ppp->closing = 1;
 		ppp_unlock(ppp);
+#ifdef HNDCTF
+		ctf_dev_unregister(kcih, ppp->dev);
+#endif
 		unregister_netdev(ppp->dev);
 	} else
 		ppp_unlock(ppp);
@@ -2906,6 +3175,29 @@ static void *unit_find(struct idr *p, int n)
 {
 	return idr_find(p, n);
 }
+
+#ifdef CTF_PPPOE
+void
+ppp_rxstats_upd(void *pppif, struct sk_buff *skb)
+{
+	struct ppp *ppp = netdev_priv((const struct net_device *)pppif);
+	++ppp->dev->stats.rx_packets;
+	ppp->dev->stats.rx_bytes += skb->len;
+	ppp->last_recv = jiffies;
+}
+
+void
+ppp_txstats_upd(void *pppif, struct sk_buff *skb)
+{
+	struct ppp *ppp = netdev_priv((const struct net_device *)pppif);
+	++ppp->dev->stats.tx_packets;
+	ppp->dev->stats.tx_bytes += skb->len;
+	ppp->last_xmit = jiffies;
+}
+
+EXPORT_SYMBOL(ppp_rxstats_upd);
+EXPORT_SYMBOL(ppp_txstats_upd);
+#endif /* CTF_PPPOE */
 
 /* Module/initialization stuff */
 

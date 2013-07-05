@@ -299,13 +299,11 @@ ieee80211_rx_frame_decrypt(struct ieee80211_device* ieee, struct sk_buff *skb,
 
 	if (crypt == NULL || crypt->ops->decrypt_mpdu == NULL)
 		return 0;
-#if 1
 	if (ieee->hwsec_active)
 	{
 		cb_desc *tcb_desc = (cb_desc *)(skb->cb+ MAX_DEV_ADDR_SIZE);
 		tcb_desc->bHwSec = 1;
 	}
-#endif
 	hdr = (struct ieee80211_hdr_4addr *) skb->data;
 	hdrlen = ieee80211_get_hdrlen(le16_to_cpu(hdr->frame_ctl));
 
@@ -482,7 +480,6 @@ AddReorderEntry(
 	)
 {
 	struct list_head *pList = &pTS->RxPendingPktList;
-#if  1
 	while(pList->next != &pTS->RxPendingPktList)
 	{
 		if( SN_LESS(pReorderEntry->SeqNum, ((PRX_REORDER_ENTRY)list_entry(pList->next,RX_REORDER_ENTRY,List))->SeqNum) )
@@ -498,7 +495,6 @@ AddReorderEntry(
 			break;
 		}
 	}
-#endif
 	pReorderEntry->List.next = pList->next;
 	pReorderEntry->List.next->prev = &pReorderEntry->List;
 	pReorderEntry->List.prev = pList;
@@ -640,7 +636,6 @@ void RxReorderIndicatePacket( struct ieee80211_device *ieee,
 			pReorderEntry->prxb = prxb;
 	//		IEEE80211_DEBUG(IEEE80211_DL_REORDER,"%s(): pREorderEntry->SeqNum is %d\n",__FUNCTION__,pReorderEntry->SeqNum);
 
-#if 1
 			if(!AddReorderEntry(pTS, pReorderEntry)) {
 				IEEE80211_DEBUG(IEEE80211_DL_REORDER, "%s(): Duplicate packet is dropped!! IndicateSeq: %d, NewSeq: %d\n",
 					__FUNCTION__, pTS->RxIndicateSeq, SeqNum);
@@ -657,7 +652,6 @@ void RxReorderIndicatePacket( struct ieee80211_device *ieee,
 				IEEE80211_DEBUG(IEEE80211_DL_REORDER,
 					 "Pkt insert into buffer!! IndicateSeq: %d, NewSeq: %d\n",pTS->RxIndicateSeq, SeqNum);
 			}
-#endif
 		}
 		else {
 			/*
@@ -680,7 +674,6 @@ void RxReorderIndicatePacket( struct ieee80211_device *ieee,
 	/* Check if there is any packet need indicate.*/
 	while(!list_empty(&pTS->RxPendingPktList)) {
 		IEEE80211_DEBUG(IEEE80211_DL_REORDER,"%s(): start RREORDER indicate\n",__FUNCTION__);
-#if 1
 		pReorderEntry = (PRX_REORDER_ENTRY)list_entry(pTS->RxPendingPktList.prev,RX_REORDER_ENTRY,List);
 		if( SN_LESS(pReorderEntry->SeqNum, pTS->RxIndicateSeq) ||
 				SN_EQUAL(pReorderEntry->SeqNum, pTS->RxIndicateSeq))
@@ -707,7 +700,6 @@ void RxReorderIndicatePacket( struct ieee80211_device *ieee,
 			bPktInBuf = true;
 			break;
 		}
-#endif
 	}
 
 	/* Handling pending timer. Set this timer to prevent from long time Rx buffering.*/
@@ -729,14 +721,12 @@ void RxReorderIndicatePacket( struct ieee80211_device *ieee,
 		bPktInBuf = false;
 	}
 
-#if 1
 	if(bPktInBuf && pTS->RxTimeoutIndicateSeq==0xffff) {
 		// Set new pending timer.
 		IEEE80211_DEBUG(IEEE80211_DL_REORDER,"%s(): SET rx timeout timer\n", __FUNCTION__);
 		pTS->RxTimeoutIndicateSeq = pTS->RxIndicateSeq;
 		mod_timer(&pTS->RxPktPendingTimer,  jiffies + MSECS(pHTInfo->RxReorderPendingTime));
 	}
-#endif
 }
 
 u8 parse_subframe(struct sk_buff *skb,
@@ -959,7 +949,6 @@ int ieee80211_rtl_rx(struct ieee80211_device *ieee, struct sk_buff *skb,
 	{
 		PRX_TS_RECORD pRxTS = NULL;
 			//IEEE80211_DEBUG(IEEE80211_DL_REORDER,"%s(): QOS ENABLE AND RECEIVE QOS DATA , we will get Ts, tid:%d\n",__FUNCTION__, tid);
-#if 1
 		if(GetTs(
 				ieee,
 				(PTS_COMMON_INFO*) &pRxTS,
@@ -988,7 +977,6 @@ int ieee80211_rtl_rx(struct ieee80211_device *ieee, struct sk_buff *skb,
 			goto rx_dropped;
 		}
 	}
-#endif
 	if (type == IEEE80211_FTYPE_MGMT) {
 
 	//IEEE80211_DEBUG_DATA(IEEE80211_DL_DATA, skb->data, skb->len);
@@ -1060,7 +1048,6 @@ int ieee80211_rtl_rx(struct ieee80211_device *ieee, struct sk_buff *skb,
 	hdr = (struct ieee80211_hdr_4addr *) skb->data;
 
 	/* skb: hdr + (possibly fragmented) plaintext payload */
-	// PR: FIXME: hostap has additional conditions in the "if" below:
 	// ieee->host_decrypt && (fc & IEEE80211_FCTL_WEP) &&
 	if ((frag != 0 || (fc & IEEE80211_FCTL_MOREFRAGS))) {
 		int flen;
@@ -1174,7 +1161,6 @@ int ieee80211_rtl_rx(struct ieee80211_device *ieee, struct sk_buff *skb,
 	}
 */
 //added by amy for reorder
-#if 1
 	if(ieee->current_network.qos_data.active && IsQoSDataFrame(skb->data)
 		&& !is_multicast_ether_addr(hdr->addr1) && !is_broadcast_ether_addr(hdr->addr1))
 	{
@@ -1186,7 +1172,6 @@ int ieee80211_rtl_rx(struct ieee80211_device *ieee, struct sk_buff *skb,
 			ieee->bis_any_nonbepkts = true;
 		}
 	}
-#endif
 //added by amy for reorder
 	/* skb: hdr + (possible reassembled) full plaintext payload */
 	payload = skb->data + hdrlen;
@@ -2176,11 +2161,9 @@ static inline int ieee80211_network_init(
 	if (ieee80211_is_empty_essid(network->ssid, network->ssid_len))
 		network->flags |= NETWORK_EMPTY_ESSID;
 
-#if 1
 	stats->signal = 30 + (stats->SignalStrength * 70) / 100;
 	//stats->signal = ieee80211_SignalStrengthTranslate(stats->signal);
 	stats->noise = ieee80211_translate_todbm((u8)(100-stats->signal)) -25;
-#endif
 
 	memcpy(&network->stats, stats, sizeof(network->stats));
 
@@ -2293,7 +2276,6 @@ static inline void update_network(struct ieee80211_network *dst,
 	dst->qos_data.old_param_count = old_param;
 
 	/* dst->last_associate is not overwritten */
-#if 1
 	dst->wmm_info = src->wmm_info; //sure to exist in beacon or probe response frame.
 	if(src->wmm_param[0].ac_aci_acm_aifsn|| \
 	   src->wmm_param[1].ac_aci_acm_aifsn|| \
@@ -2302,9 +2284,6 @@ static inline void update_network(struct ieee80211_network *dst,
 	  memcpy(dst->wmm_param, src->wmm_param, WME_AC_PRAM_LEN);
 	}
 	//dst->QoS_Enable = src->QoS_Enable;
-#else
-	dst->QoS_Enable = 1;//for Rtl8187 simulation
-#endif
 	dst->Turbo_Enable = src->Turbo_Enable;
 
 	dst->CountryIeLen = src->CountryIeLen;

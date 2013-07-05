@@ -288,7 +288,7 @@ typedef struct {
 	DMA_Device_t lastDevType;	/* Device type that used this previously */
 	char name[20];		/* Name passed onto request_irq */
 
-#if (DMA_DEBUG_TRACK_RESERVATION)
+#if DMA_DEBUG_TRACK_RESERVATION
 	const char *fileName;	/* Place where channel reservation took place */
 	int lineNum;		/* Place where channel reservation took place */
 #endif
@@ -350,7 +350,7 @@ extern DMA_DeviceAttribute_t DMA_gDeviceAttribute[DMA_NUM_DEVICE_ENTRIES];
 
 int dma_init(void);
 
-#if (DMA_DEBUG_TRACK_RESERVATION)
+#if DMA_DEBUG_TRACK_RESERVATION
 DMA_Handle_t dma_request_channel_dbg(DMA_Device_t dev, const char *fileName,
 				     int lineNum);
 #define dma_request_channel(dev)  dma_request_channel_dbg(dev, __FILE__, __LINE__)

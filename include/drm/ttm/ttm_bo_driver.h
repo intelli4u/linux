@@ -179,29 +179,6 @@ struct ttm_tt {
 #define TTM_MEMTYPE_FLAG_MAPPABLE      (1 << 1)	/* Memory mappable */
 #define TTM_MEMTYPE_FLAG_CMA           (1 << 3)	/* Can't map aperture */
 
-/**
- * struct ttm_mem_type_manager
- *
- * @has_type: The memory type has been initialized.
- * @use_type: The memory type is enabled.
- * @flags: TTM_MEMTYPE_XX flags identifying the traits of the memory
- * managed by this memory type.
- * @gpu_offset: If used, the GPU offset of the first managed page of
- * fixed memory or the first managed location in an aperture.
- * @size: Size of the managed region.
- * @available_caching: A mask of available caching types, TTM_PL_FLAG_XX,
- * as defined in ttm_placement_common.h
- * @default_caching: The default caching policy used for a buffer object
- * placed in this memory type if the user doesn't provide one.
- * @manager: The range manager used for this memory type. FIXME: If the aperture
- * has a page size different from the underlying system, the granularity
- * of this manager should take care of this. But the range allocating code
- * in ttm_bo.c needs to be modified for this.
- * @lru: The lru list for this memory type.
- *
- * This structure is used to identify and manage memory types for a device.
- * It's set up by the ttm_bo_driver::init_mem_type method.
- */
 
 struct ttm_mem_type_manager {
 

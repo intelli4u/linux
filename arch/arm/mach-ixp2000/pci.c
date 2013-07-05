@@ -243,4 +243,3 @@ int ixp2000_pci_setup(int nr, struct pci_sys_data *sys)
 
 	return 1;
 }
-

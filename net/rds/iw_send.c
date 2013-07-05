@@ -524,7 +524,6 @@ int rds_iw_xmit(struct rds_connection *conn, struct rds_message *rm,
 		goto out;
 	}
 
-	/* FIXME we may overallocate here */
 	if (be32_to_cpu(rm->m_inc.i_hdr.h_len) == 0)
 		i = 1;
 	else
@@ -570,7 +569,7 @@ int rds_iw_xmit(struct rds_connection *conn, struct rds_message *rm,
 			if (rm->m_count == 0) {
 				rds_iw_stats_inc(s_iw_tx_sg_mapping_failure);
 				rds_iw_ring_unalloc(&ic->i_send_ring, work_alloc);
-				ret = -ENOMEM; /* XXX ? */
+				ret = -ENOMEM;
 				goto out;
 			}
 		} else {
@@ -741,7 +740,6 @@ add_header:
 	if (ic->i_flowctl && i < credit_alloc)
 		rds_iw_send_add_credits(conn, credit_alloc - i);
 
-	/* XXX need to worry about failed_wr and partial sends. */
 	failed_wr = &first->s_wr;
 	ret = ib_post_send(ic->i_cm_id->qp, &first->s_wr, &failed_wr);
 	rdsdebug("ic %p first %p (wr %p) ret %d wr %p\n", ic,
@@ -813,7 +811,7 @@ int rds_iw_xmit_rdma(struct rds_connection *conn, struct rds_rdma_op *op)
 		rdsdebug("ic %p mapping op %p: %d\n", ic, op, op->r_count);
 		if (op->r_count == 0) {
 			rds_iw_stats_inc(s_iw_tx_sg_mapping_failure);
-			ret = -ENOMEM; /* XXX ? */
+			ret = -ENOMEM;
 			goto out;
 		}
 

@@ -34,14 +34,12 @@
 #include "vmbus.h"
 
 
-/* FIXME! We need to do this dynamically for PIC and APIC system */
 #define VMBUS_IRQ		0x5
 #define VMBUS_IRQ_VECTOR	IRQ5_VECTOR
 
 /* Main vmbus driver data structure */
 struct vmbus_driver_context {
 	/* !! These must be the first 2 fields !! */
-	/* FIXME, this is a bug */
 	/* The driver field is not used in here. Instead, the bus field is */
 	/* used to represent the driver */
 	struct driver_context drv_ctx;
@@ -827,7 +825,6 @@ static void vmbus_shutdown(struct device *child_device)
  */
 static void vmbus_bus_release(struct device *device)
 {
-	/* FIXME */
 	/* Empty release functions are a bug, or a major sign
 	 * of a problem design, this MUST BE FIXED! */
 	dev_err(device, "%s needs to be fixed!\n", __func__);

@@ -524,7 +524,6 @@ static loff_t uhci_debug_lseek(struct file *file, loff_t off, int whence)
 
 	up = file->private_data;
 
-	/* XXX: atomic 64bit seek access, but that needs to be fixed in the VFS */
 	switch (whence) {
 	case 0:
 		new = off;

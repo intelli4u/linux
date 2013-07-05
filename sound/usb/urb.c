@@ -705,8 +705,6 @@ static int prepare_playback_urb(struct snd_usb_substream *subs,
 			period_elapsed = 1;
 			if (subs->fmt_type == UAC_FORMAT_TYPE_II) {
 				if (subs->transfer_done > 0) {
-					/* FIXME: fill-max mode is not
-					 * supported yet */
 					frames -= subs->transfer_done;
 					counts -= subs->transfer_done;
 					urb->iso_frame_desc[i].length =
@@ -992,4 +990,3 @@ int snd_usb_substream_prepare(struct snd_usb_substream *subs,
 
 	return 0;
 }
-

@@ -9,11 +9,6 @@
  * enable HAC output pins!
  */
 
-/* BIG FAT FIXME: although the SH7760 has 2 independent AC97 units, only
- * the FIRST can be used since ASoC does not pass any information to the
- * ac97_read/write() functions regarding WHICH unit to use.  You'll have
- * to edit the code a bit to use the other AC97 unit.		--mlau
- */
 
 #include <linux/init.h>
 #include <linux/module.h>

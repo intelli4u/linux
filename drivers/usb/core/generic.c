@@ -77,12 +77,6 @@ int usb_choose_configuration(struct usb_device *udev)
 		 * be reinstated when device firmwares become more reliable.
 		 * Don't hold your breath.
 		 */
-#if 0
-		/* Rule out self-powered configs for a bus-powered device */
-		if (bus_powered && (c->desc.bmAttributes &
-					USB_CONFIG_ATT_SELFPOWER))
-			continue;
-#endif
 
 		/*
 		 * The next test may not be as effective as it should be.

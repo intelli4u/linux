@@ -2657,7 +2657,6 @@ struct iwl_ct_kill_throttling_config {
  *     active_dwell < max_out_time
  */
 
-/* FIXME: rename to AP1, remove tpc */
 struct iwl3945_scan_channel {
 	/*
 	 * type is defined as:

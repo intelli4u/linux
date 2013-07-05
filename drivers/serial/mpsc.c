@@ -15,40 +15,6 @@
  * is licensed "as is" without any warranty of any kind, whether express
  * or implied.
  */
-/*
- * The MPSC interface is much like a typical network controller's interface.
- * That is, you set up separate rings of descriptors for transmitting and
- * receiving data.  There is also a pool of buffers with (one buffer per
- * descriptor) that incoming data are dma'd into or outgoing data are dma'd
- * out of.
- *
- * The MPSC requires two other controllers to be able to work.  The Baud Rate
- * Generator (BRG) provides a clock at programmable frequencies which determines
- * the baud rate.  The Serial DMA Controller (SDMA) takes incoming data from the
- * MPSC and DMA's it into memory or DMA's outgoing data and passes it to the
- * MPSC.  It is actually the SDMA interrupt that the driver uses to keep the
- * transmit and receive "engines" going (i.e., indicate data has been
- * transmitted or received).
- *
- * NOTES:
- *
- * 1) Some chips have an erratum where several regs cannot be
- * read.  To work around that, we keep a local copy of those regs in
- * 'mpsc_port_info'.
- *
- * 2) Some chips have an erratum where the ctlr will hang when the SDMA ctlr
- * accesses system mem with coherency enabled.  For that reason, the driver
- * assumes that coherency for that ctlr has been disabled.  This means
- * that when in a cache coherent system, the driver has to manually manage
- * the data cache on the areas that it touches because the dma_* macro are
- * basically no-ops.
- *
- * 3) There is an erratum (on PPC) where you can't use the instruction to do
- * a DMA_TO_DEVICE/cache clean so DMA_BIDIRECTIONAL/flushes are used in places
- * where a DMA_TO_DEVICE/clean would have [otherwise] sufficed.
- *
- * 4) AFAICT, hardware flow control isn't supported by the controller --MAG.
- */
 
 
 #if defined(CONFIG_SERIAL_MPSC_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)

@@ -105,4 +105,3 @@ static struct snd_pcm_hardware pcm_hardware_skel = {
 #include "indigoio_dsp.c"
 #include "echoaudio_dsp.c"
 #include "echoaudio.c"
-

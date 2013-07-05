@@ -345,4 +345,3 @@ void tegra_drive_pinmux_config_table(struct tegra_drive_pingroup_config *config,
 	int len);
 
 #endif
-

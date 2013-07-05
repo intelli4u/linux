@@ -883,4 +883,3 @@ module_exit(nand_davinci_exit);
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Texas Instruments");
 MODULE_DESCRIPTION("Davinci NAND flash driver");
-

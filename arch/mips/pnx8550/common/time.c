@@ -123,7 +123,6 @@ __init void plat_time_init(void)
 
 
         /* PLL0 sets MIPS clock (PLL1 <=> TM1, PLL6 <=> TM2, PLL5 <=> mem) */
-        /* (but only if CLK_MIPS_CTL select value [bits 3:1] is 1:  FIXME) */
 
         n = (PNX8550_CM_PLL0_CTL & PNX8550_CM_PLL_N_MASK) >> 16;
         m = (PNX8550_CM_PLL0_CTL & PNX8550_CM_PLL_M_MASK) >> 8;

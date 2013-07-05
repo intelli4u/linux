@@ -718,7 +718,6 @@ static int snd_ps3_spdif_mask_info(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
-/* FIXME: ps3av_set_audio_mode() assumes only consumer mode */
 static int snd_ps3_spdif_cmask_get(struct snd_kcontrol *kcontrol,
 				   struct snd_ctl_elem_value *ucontrol)
 {
@@ -813,7 +812,6 @@ static int __devinit snd_ps3_allocate_irq(void)
 	u64 lpar_addr, lpar_size;
 	u64 __iomem *mapped;
 
-	/* FIXME: move this to device_init (H/W probe) */
 
 	/* get irq outlet */
 	ret = lv1_gpu_device_map(1, &lpar_addr, &lpar_size);

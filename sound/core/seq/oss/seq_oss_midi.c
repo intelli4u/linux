@@ -663,8 +663,8 @@ snd_seq_oss_midi_make_info(struct seq_oss_devinfo *dp, int dev, struct midi_info
 	if ((mdev = get_mididev(dp, dev)) == NULL)
 		return -ENXIO;
 	inf->device = dev;
-	inf->dev_type = 0; /* FIXME: ?? */
-	inf->capabilities = 0; /* FIXME: ?? */
+	inf->dev_type = 0;
+	inf->capabilities = 0;
 	strlcpy(inf->name, mdev->name, sizeof(inf->name));
 	snd_use_lock_free(&mdev->use_lock);
 	return 0;

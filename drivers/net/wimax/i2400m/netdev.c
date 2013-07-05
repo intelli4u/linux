@@ -1,77 +1,4 @@
-/*
- * Intel Wireless WiMAX Connection 2400m
- * Glue with the networking stack
- *
- *
- * Copyright (C) 2007 Intel Corporation <linux-wimax@intel.com>
- * Yanir Lubetkin <yanirx.lubetkin@intel.com>
- * Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
- *
- *
- * This implements an ethernet device for the i2400m.
- *
- * We fake being an ethernet device to simplify the support from user
- * space and from the other side. The world is (sadly) configured to
- * take in only Ethernet devices...
- *
- * Because of this, when using firmwares <= v1.3, there is an
- * copy-each-rxed-packet overhead on the RX path. Each IP packet has
- * to be reallocated to add an ethernet header (as there is no space
- * in what we get from the device). This is a known drawback and
- * firmwares >= 1.4 add header space that can be used to insert the
- * ethernet header without having to reallocate and copy.
- *
- * TX error handling is tricky; because we have to FIFO/queue the
- * buffers for transmission (as the hardware likes it aggregated), we
- * just give the skb to the TX subsystem and by the time it is
- * transmitted, we have long forgotten about it. So we just don't care
- * too much about it.
- *
- * Note that when the device is in idle mode with the basestation, we
- * need to negotiate coming back up online. That involves negotiation
- * and possible user space interaction. Thus, we defer to a workqueue
- * to do all that. By default, we only queue a single packet and drop
- * the rest, as potentially the time to go back from idle to normal is
- * long.
- *
- * ROADMAP
- *
- * i2400m_open         Called on ifconfig up
- * i2400m_stop         Called on ifconfig down
- *
- * i2400m_hard_start_xmit Called by the network stack to send a packet
- *   i2400m_net_wake_tx	  Wake up device from basestation-IDLE & TX
- *     i2400m_wake_tx_work
- *       i2400m_cmd_exit_idle
- *       i2400m_tx
- *   i2400m_net_tx        TX a data frame
- *     i2400m_tx
- *
- * i2400m_change_mtu      Called on ifconfig mtu XXX
- *
- * i2400m_tx_timeout      Called when the device times out
- *
- * i2400m_net_rx          Called by the RX code when a data frame is
- *                        available (firmware <= 1.3)
- * i2400m_net_erx         Called by the RX code when a data frame is
- *                        available (firmware >= 1.4).
- * i2400m_netdev_setup    Called to setup all the netdev stuff from
- *                        alloc_netdev.
- */
+
 #include <linux/if_arp.h>
 #include <linux/slab.h>
 #include <linux/netdevice.h>
@@ -329,7 +256,6 @@ int i2400m_net_tx(struct i2400m *i2400m, struct net_device *net_dev,
 
 	d_fnstart(3, dev, "(i2400m %p net_dev %p skb %p)\n",
 		  i2400m, net_dev, skb);
-	/* FIXME: check eth hdr, only IPv4 is routed by the device as of now */
 	net_dev->trans_start = jiffies;
 	i2400m_tx_prep_header(skb);
 	d_printf(3, dev, "NETTX: skb %p sending %d bytes to radio\n",
@@ -455,42 +381,6 @@ void i2400m_rx_fake_eth_header(struct net_device *net_dev,
 }
 
 
-/*
- * i2400m_net_rx - pass a network packet to the stack
- *
- * @i2400m: device instance
- * @skb_rx: the skb where the buffer pointed to by @buf is
- * @i: 1 if payload is the only one
- * @buf: pointer to the buffer containing the data
- * @len: buffer's length
- *
- * This is only used now for the v1.3 firmware. It will be deprecated
- * in >= 2.6.31.
- *
- * Note that due to firmware limitations, we don't have space to add
- * an ethernet header, so we need to copy each packet. Firmware
- * versions >= v1.4 fix this [see i2400m_net_erx()].
- *
- * We just clone the skb and set it up so that it's skb->data pointer
- * points to "buf" and it's length.
- *
- * Note that if the payload is the last (or the only one) in a
- * multi-payload message, we don't clone the SKB but just reuse it.
- *
- * This function is normally run from a thread context. However, we
- * still use netif_rx() instead of netif_receive_skb() as was
- * recommended in the mailing list. Reason is in some stress tests
- * when sending/receiving a lot of data we seem to hit a softlock in
- * the kernel's TCP implementation [aroudn tcp_delay_timer()]. Using
- * netif_rx() took care of the issue.
- *
- * This is, of course, still open to do more research on why running
- * with netif_receive_skb() hits this softlock. FIXME.
- *
- * FIXME: currently we don't do any efforts at distinguishing if what
- * we got was an IPv4 or IPv6 header, to setup the protocol field
- * correctly.
- */
 void i2400m_net_rx(struct i2400m *i2400m, struct sk_buff *skb_rx,
 		   unsigned i, const void *buf, int buf_len)
 {
@@ -534,28 +424,6 @@ error_skb_realloc:
 }
 
 
-/*
- * i2400m_net_erx - pass a network packet to the stack (extended version)
- *
- * @i2400m: device descriptor
- * @skb: the skb where the packet is - the skb should be set to point
- *     at the IP packet; this function will add ethernet headers if
- *     needed.
- * @cs: packet type
- *
- * This is only used now for firmware >= v1.4. Note it is quite
- * similar to i2400m_net_rx() (used only for v1.3 firmware).
- *
- * This function is normally run from a thread context. However, we
- * still use netif_rx() instead of netif_receive_skb() as was
- * recommended in the mailing list. Reason is in some stress tests
- * when sending/receiving a lot of data we seem to hit a softlock in
- * the kernel's TCP implementation [aroudn tcp_delay_timer()]. Using
- * netif_rx() took care of the issue.
- *
- * This is, of course, still open to do more research on why running
- * with netif_receive_skb() hits this softlock. FIXME.
- */
 void i2400m_net_erx(struct i2400m *i2400m, struct sk_buff *skb,
 		    enum i2400m_cs cs)
 {
@@ -641,4 +509,3 @@ void i2400m_netdev_setup(struct net_device *net_dev)
 	d_fnend(3, NULL, "(net_dev %p) = void\n", net_dev);
 }
 EXPORT_SYMBOL_GPL(i2400m_netdev_setup);
-

@@ -212,23 +212,6 @@
 	nop;						\
 	nop;
 
-/* Before touching these macros, you owe it to yourself to go and
- * see how arch/sparc64/kernel/winfixup.S works... -DaveM
- *
- * For the user cases we used to use the %asi register, but
- * it turns out that the "wr xxx, %asi" costs ~5 cycles, so
- * now we use immediate ASI loads and stores instead.  Kudos
- * to Greg Onufer for pointing out this performance anomaly.
- *
- * Further note that we cannot use the g2, g4, g5, and g7 alternate
- * globals in the spill routines, check out the save instruction in
- * arch/sparc64/kernel/etrap.S to see what I mean about g2, and
- * g4/g5 are the globals which are preserved by etrap processing
- * for the caller of it.  The g7 register is the return pc for
- * etrap.  Finally, g6 is the current thread register so we cannot
- * us it in the spill handlers either.  Most of these rules do not
- * apply to fill processing, only g6 is not usable.
- */
 
 /* Normal kernel spill */
 #define SPILL_0_NORMAL					\

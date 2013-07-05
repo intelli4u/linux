@@ -1,4 +1,4 @@
-/* $Id: isdn_ttyfax.c,v 1.1.2.2 2004/01/12 22:37:19 keil Exp $
+/* $Id: isdn_ttyfax.c,v 1.1.2.2 2004/01/12 22:37:19 Exp $
  *
  * Linux ISDN subsystem, tty_fax AT-command emulator (linklevel).
  *

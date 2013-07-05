@@ -20,12 +20,6 @@
 #define RDS_PROTOCOL_MINOR(v)	((v) & 255)
 #define RDS_PROTOCOL(maj, min)	(((maj) << 8) | min)
 
-/*
- * XXX randomly chosen, but at least seems to be unused:
- * #               18464-18768 Unassigned
- * We should do better.  We want a reserved port to discourage unpriv'ed
- * userspace from listening.
- */
 #define RDS_PORT	18634
 
 #ifdef ATOMIC64_INIT
@@ -42,7 +36,6 @@ rdsdebug(char *fmt, ...)
 }
 #endif
 
-/* XXX is there one of these somewhere? */
 #define ceil(x, y) \
 	({ unsigned long __x = (x), __y = (y); (__x + __y - 1) / __y; })
 
@@ -280,36 +273,6 @@ struct rds_notifier {
 	int			n_status;
 };
 
-/**
- * struct rds_transport -  transport specific behavioural hooks
- *
- * @xmit: .xmit is called by rds_send_xmit() to tell the transport to send
- *        part of a message.  The caller serializes on the send_sem so this
- *        doesn't need to be reentrant for a given conn.  The header must be
- *        sent before the data payload.  .xmit must be prepared to send a
- *        message with no data payload.  .xmit should return the number of
- *        bytes that were sent down the connection, including header bytes.
- *        Returning 0 tells the caller that it doesn't need to perform any
- *        additional work now.  This is usually the case when the transport has
- *        filled the sending queue for its connection and will handle
- *        triggering the rds thread to continue the send when space becomes
- *        available.  Returning -EAGAIN tells the caller to retry the send
- *        immediately.  Returning -ENOMEM tells the caller to retry the send at
- *        some point in the future.
- *
- * @conn_shutdown: conn_shutdown stops traffic on the given connection.  Once
- *                 it returns the connection can not call rds_recv_incoming().
- *                 This will only be called once after conn_connect returns
- *                 non-zero success and will The caller serializes this with
- *                 the send and connecting paths (xmit_* and conn_*).  The
- *                 transport is responsible for other serialization, including
- *                 rds_recv_incoming().  This is called in process context but
- *                 should try hard not to block.
- *
- * @xmit_cong_map: This asks the transport to send the local bitmap down the
- * 		   given connection.  XXX get a better story about the bitmap
- * 		   flag and header.
- */
 
 #define RDS_TRANS_IB	0
 #define RDS_TRANS_IWARP	1

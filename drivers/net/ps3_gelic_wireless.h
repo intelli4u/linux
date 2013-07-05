@@ -58,7 +58,7 @@ enum gelic_eurus_bss_type {
 };
 
 enum gelic_eurus_auth_method {
-	GELIC_EURUS_AUTH_OPEN = 0, /* FIXME: WLAN_AUTH_OPEN */
+	GELIC_EURUS_AUTH_OPEN = 0,
 	GELIC_EURUS_AUTH_SHARED = 1, /* not supported */
 };
 
@@ -159,7 +159,7 @@ struct gelic_eurus_scan_info {
 	__be16 size;
 	__be16 rssi; /* percentage */
 	__be16 channel; /* channel number */
-	__be16 beacon_period; /* FIXME: in msec unit */
+	__be16 beacon_period;
 	__be16 capability;
 	__be16 security;
 	u8  bssid[8]; /* last ETH_ALEN are valid. bssid[0],[1] are unused */

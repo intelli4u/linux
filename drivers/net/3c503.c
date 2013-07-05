@@ -116,7 +116,7 @@ static int __init do_el2_probe(struct net_device *dev)
 	    return 0;
 	dev->irq = irq;
     }
-#if ! defined(no_probe_nonshared_memory)
+#if !defined(no_probe_nonshared_memory)
     return el2_pio_probe(dev);
 #else
     return -ENODEV;

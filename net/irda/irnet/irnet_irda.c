@@ -1366,28 +1366,6 @@ irnet_connect_indication(void *		instance,
 
   /* The following code is a bit tricky, so need comments ;-)
    */
-  /* If ttp_connect is set, the socket is trying to connect to the other
-   * end and may have sent a IrTTP connection request and is waiting for
-   * a connection response (that may never come).
-   * Now, the pain is that the socket may have opened a tsap and is
-   * waiting on it, while the other end is trying to connect to it on
-   * another tsap.
-   * Because IrNET can be peer to peer, we need to workaround this.
-   * Furthermore, the way the irnetd script is implemented, the
-   * target will create a second IrNET connection back to the
-   * originator and expect the originator to bind this new connection
-   * to the original PPPD instance.
-   * And of course, if we don't use irnetd, we can have a race when
-   * both side try to connect simultaneously, which could leave both
-   * connections half closed (yuck).
-   * Conclusions :
-   *	1) The "originator" must accept the new connection and get rid
-   *	   of the old one so that irnetd works
-   *	2) One side must deny the new connection to avoid races,
-   *	   but both side must agree on which side it is...
-   * Most often, the originator is primary at the LAP layer.
-   * Jean II
-   */
   /* Now, let's look at the way I wrote the test...
    * We need to clear up the ttp_connect flag atomically to prevent
    * irnet_disconnect_indication() to mess up the tsap we are going to close.

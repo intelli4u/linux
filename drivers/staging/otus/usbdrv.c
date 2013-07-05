@@ -380,21 +380,6 @@ int usbdrv_open(struct net_device *dev)
     cbFuncTbl.zfcbHwWatchDogNotify = zfLnxWatchDogNotify;
     zfiWlanOpen(dev, &cbFuncTbl);
 
-#if 0
-    {
-        //u16_t mac[3] = {0x1300, 0xb6d4, 0x5aaf};
-        u16_t mac[3] = {0x8000, 0x00ab, 0x0000};
-        //zfiWlanSetMacAddress(dev, mac);
-    }
-    /* MAC address */
-    zfiWlanQueryMacAddress(dev, addr);
-    dev->dev_addr[0] = addr[0];
-    dev->dev_addr[1] = addr[1];
-    dev->dev_addr[2] = addr[2];
-    dev->dev_addr[3] = addr[3];
-    dev->dev_addr[4] = addr[4];
-    dev->dev_addr[5] = addr[5];
-#endif
     /* zfwMacAddressNotify() will be called to setup dev->dev_addr[] */
 
     zfLnxCreateThread(dev);
@@ -617,22 +602,6 @@ int usbdrv_xmit_frame(struct sk_buff *skb, struct net_device *dev)
     int notify_stop = FALSE;
     struct usbdrv_private *macp = dev->ml_priv;
 
-#if 0
-    /* Test code */
-    {
-        struct sk_buff* s;
-
-        s = skb_copy_expand(skb, 8, 0, GFP_ATOMIC);
-        skb_push(s, 8);
-        s->data[0] = 'z';
-        s->data[1] = 'y';
-        s->data[2] = 'd';
-        s->data[3] = 'a';
-        s->data[4] = 's';
-        printk("len1=%d, len2=%d", skb->len, s->len);
-        netlink_broadcast(rtnl, s, 0, RTMGRP_LINK, GFP_ATOMIC);
-    }
-#endif
 
 #if ZM_DISABLE_XMIT
     dev_kfree_skb_irq(skb);
@@ -789,13 +758,11 @@ int zfLnxVapXmitFrame(struct sk_buff *skb, struct net_device *dev)
         dev_kfree_skb_irq(skb);
         return NETDEV_TX_OK;
     }
-#if 1
     if (vap[vapId].openFlag == 0)
     {
         dev_kfree_skb_irq(skb);
         return NETDEV_TX_OK;
     }
-#endif
 
 
     zfiTxSendEth(dev, skb, 0x1);
@@ -1087,16 +1054,6 @@ u8_t zfLnxInitSetup(struct net_device *dev, struct usbdrv_private *macp)
     //init_MUTEX(&macp->config_sem);
 
     spin_lock_init(&(macp->cs_lock));
-#if 0
-    /* MAC address */
-    zfiWlanQueryMacAddress(dev, addr);
-    dev->dev_addr[0] = addr[0];
-    dev->dev_addr[1] = addr[1];
-    dev->dev_addr[2] = addr[2];
-    dev->dev_addr[3] = addr[3];
-    dev->dev_addr[4] = addr[4];
-    dev->dev_addr[5] = addr[5];
-#endif
     dev->wireless_handlers = (struct iw_handler_def *)&p80211wext_handler_def;
 
     dev->netdev_ops = &otus_netdev_ops;

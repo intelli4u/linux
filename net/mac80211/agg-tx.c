@@ -192,10 +192,6 @@ int ___ieee80211_stop_tx_ba_session(struct sta_info *sta, u16 tid,
 
 	/* HW shall not deny going back to legacy */
 	if (WARN_ON(ret)) {
-		/*
-		 * We may have pending packets get stuck in this case...
-		 * Not bothering with a workaround for now.
-		 */
 	}
 
 	return ret;

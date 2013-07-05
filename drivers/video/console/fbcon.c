@@ -995,7 +995,7 @@ static const char *fbcon_startup(void)
 		vc->vc_font.width = font->width;
 		vc->vc_font.height = font->height;
 		vc->vc_font.data = (void *)(p->fontdata = font->data);
-		vc->vc_font.charcount = 256; /* FIXME  Need to support more fonts */
+		vc->vc_font.charcount = 256;
 	}
 
 	cols = FBCON_SWAP(ops->rotate, info->var.xres, info->var.yres);
@@ -1066,8 +1066,7 @@ static void fbcon_init(struct vc_data *vc, int init)
 			vc->vc_font.width = font->width;
 			vc->vc_font.height = font->height;
 			vc->vc_font.data = (void *)(p->fontdata = font->data);
-			vc->vc_font.charcount = 256; /* FIXME  Need to
-							support more fonts */
+			vc->vc_font.charcount = 256;
 		}
 	}
 
@@ -2169,14 +2168,6 @@ static int fbcon_switch(struct vc_data *vc)
 	prev_console = ops->currcon;
 	if (prev_console != -1)
 		old_info = registered_fb[con2fb_map[prev_console]];
-	/*
-	 * FIXME: If we have multiple fbdev's loaded, we need to
-	 * update all info->currcon.  Perhaps, we can place this
-	 * in a centralized structure, but this might break some
-	 * drivers.
-	 *
-	 * info->currcon = vc->vc_num;
-	 */
 	for (i = 0; i < FB_MAX; i++) {
 		if (registered_fb[i] != NULL && registered_fb[i]->fbcon_par) {
 			struct fbcon_ops *o = registered_fb[i]->fbcon_par;

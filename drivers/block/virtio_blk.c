@@ -357,7 +357,6 @@ static int __devinit virtblk_probe(struct virtio_device *vdev)
 		goto out_free_vq;
 	}
 
-	/* FIXME: How many partitions?  How long is a piece of string? */
 	vblk->disk = alloc_disk(1 << PART_BITS);
 	if (!vblk->disk) {
 		err = -ENOMEM;

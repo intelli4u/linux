@@ -350,5 +350,3 @@ typedef struct _MSG_DIAG_RELEASE_REPLY
 
 
 #endif
-
-

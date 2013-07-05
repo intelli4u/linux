@@ -1,30 +1,4 @@
-/*
- * OMAP2/3 clockdomains
- *
- * Copyright (C) 2008-2009 Texas Instruments, Inc.
- * Copyright (C) 2008-2010 Nokia Corporation
- *
- * Written by Paul Walmsley and Jouni Högander
- *
- * This file contains clockdomains and clockdomain wakeup/sleep
- * dependencies for the OMAP2/3 chips.  Some notes:
- *
- * A useful validation rule for struct clockdomain: Any clockdomain
- * referenced by a wkdep_srcs or sleepdep_srcs array must have a
- * dep_bit assigned.  So wkdep_srcs/sleepdep_srcs are really just
- * software-controllable dependencies.  Non-software-controllable
- * dependencies do exist, but they are not encoded below (yet).
- *
- * 24xx does not support programmable sleep dependencies (SLEEPDEP)
- *
- * The overly-specific dep_bit names are due to a bit name collision
- * with CM_FCLKEN_{DSP,IVA2}.  The DSP/IVA2 PM_WKDEP and CM_SLEEPDEP shift
- * value are the same for all powerdomains: 2
- *
- * XXX should dep_bit be a mask, so we can test to see if it is 0 as a
- * sanity check?
- * XXX encode hardware fixed wakeup dependencies -- esp. for 3430 CORE
- */
+
 
 /*
  * To-Do List
@@ -39,12 +13,6 @@
 #include "cm.h"
 #include "prm.h"
 
-/*
- * Clockdomain dependencies for wkdeps/sleepdeps
- *
- * XXX Hardware dependencies (e.g., dependencies that cannot be
- * changed in software) are not included here yet, but should be.
- */
 
 /* OMAP2/3-common wakeup dependencies */
 
@@ -581,11 +549,6 @@ static struct clockdomain gfx_2430_clkdm = {
 	.omap_chip	= OMAP_CHIP_INIT(CHIP_IS_OMAP2430),
 };
 
-/*
- * XXX add usecounting for clkdm dependencies, otherwise the presence
- * of a single dep bit for core_l3_24xx_clkdm and core_l4_24xx_clkdm
- * could cause trouble
- */
 static struct clockdomain core_l3_2430_clkdm = {
 	.name		= "core_l3_clkdm",
 	.pwrdm		= { .name = "core_pwrdm" },
@@ -597,11 +560,6 @@ static struct clockdomain core_l3_2430_clkdm = {
 	.omap_chip	= OMAP_CHIP_INIT(CHIP_IS_OMAP2430),
 };
 
-/*
- * XXX add usecounting for clkdm dependencies, otherwise the presence
- * of a single dep bit for core_l3_24xx_clkdm and core_l4_24xx_clkdm
- * could cause trouble
- */
 static struct clockdomain core_l4_2430_clkdm = {
 	.name		= "core_l4_clkdm",
 	.pwrdm		= { .name = "core_pwrdm" },
@@ -704,11 +662,6 @@ static struct clockdomain d2d_clkdm = {
 	.omap_chip	= OMAP_CHIP_INIT(CHIP_IS_OMAP3430),
 };
 
-/*
- * XXX add usecounting for clkdm dependencies, otherwise the presence
- * of a single dep bit for core_l3_3xxx_clkdm and core_l4_3xxx_clkdm
- * could cause trouble
- */
 static struct clockdomain core_l3_3xxx_clkdm = {
 	.name		= "core_l3_clkdm",
 	.pwrdm		= { .name = "core_pwrdm" },
@@ -719,11 +672,6 @@ static struct clockdomain core_l3_3xxx_clkdm = {
 	.omap_chip	= OMAP_CHIP_INIT(CHIP_IS_OMAP3430),
 };
 
-/*
- * XXX add usecounting for clkdm dependencies, otherwise the presence
- * of a single dep bit for core_l3_3xxx_clkdm and core_l4_3xxx_clkdm
- * could cause trouble
- */
 static struct clockdomain core_l4_3xxx_clkdm = {
 	.name		= "core_l4_clkdm",
 	.pwrdm		= { .name = "core_pwrdm" },

@@ -243,18 +243,6 @@ struct baycom_state {
 
 /*---------------------------------------------------------------------------*/
 
-#if 0
-static inline void append_crc_ccitt(unsigned char *buffer, int len)
-{
- 	unsigned int crc = 0xffff;
-
-	for (;len>0;len--)
-		crc = (crc >> 8) ^ crc_ccitt_table[(crc ^ *buffer++) & 0xff];
-	crc ^= 0xffff;
-	*buffer++ = crc;
-	*buffer++ = crc >> 8;
-}
-#endif
 
 /*---------------------------------------------------------------------------*/
 
@@ -836,13 +824,6 @@ static int epp_open(struct net_device *dev)
                 printk(KERN_ERR "%s: parport at 0x%lx unknown\n", bc_drvname, dev->base_addr);
                 return -ENXIO;
         }
-#if 0
-        if (pp->irq < 0) {
-                printk(KERN_ERR "%s: parport at 0x%lx has no irq\n", bc_drvname, pp->base);
-		parport_put_port(pp);
-                return -ENXIO;
-        }
-#endif
 	if ((~pp->modes) & (PARPORT_MODE_TRISTATE | PARPORT_MODE_PCSPP | PARPORT_MODE_SAFEININT)) {
                 printk(KERN_ERR "%s: parport at 0x%lx cannot be used\n",
 		       bc_drvname, pp->base);

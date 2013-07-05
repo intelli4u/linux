@@ -105,4 +105,3 @@ BOOL ETHbIsBufferCrc32Ok(PBYTE pbyBuffer, unsigned int cbFrameLength)
 		return FALSE;
 	return TRUE;
 }
-

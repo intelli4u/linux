@@ -275,11 +275,6 @@ static void iommu_get_scsi_sgl_pflush(struct device *dev, struct scatterlist *sg
 
 		n = (sg->length + sg->offset + PAGE_SIZE-1) >> PAGE_SHIFT;
 
-		/*
-		 * We expect unmapped highmem pages to be not in the cache.
-		 * XXX Is this a good assumption?
-		 * XXX What if someone else unmaps it here and races us?
-		 */
 		if ((page = (unsigned long) page_address(sg_page(sg))) != 0) {
 			for (i = 0; i < n; i++) {
 				if (page != oldpage) {	/* Already flushed? */

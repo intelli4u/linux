@@ -235,4 +235,3 @@ define_machine(efika)
 	.phys_mem_access_prot	= pci_phys_mem_access_prot,
 #endif
 };
-

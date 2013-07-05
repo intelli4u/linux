@@ -43,45 +43,6 @@
    3. sends the DV data to user-space via read() or mmap()
 */
 
-/*
-  TODO:
-
-  - tunable frame-drop behavior: either loop last frame, or halt transmission
-
-  - use a scatter/gather buffer for DMA programs (f->descriptor_pool)
-    so that we don't rely on allocating 64KB of contiguous kernel memory
-    via pci_alloc_consistent()
-
-  DONE:
-  - during reception, better handling of dropped frames and continuity errors
-  - during reception, prevent DMA from bypassing the irq tasklets
-  - reduce irq rate during reception (1/250 packets).
-  - add many more internal buffers during reception with scatter/gather dma.
-  - add dbc (continuity) checking on receive, increment status.dropped_frames
-    if not continuous.
-  - restart IT DMA after a bus reset
-  - safely obtain and release ISO Tx channels in cooperation with OHCI driver
-  - map received DIF blocks to their proper location in DV frame (ensure
-    recovery if dropped packet)
-  - handle bus resets gracefully (OHCI card seems to take care of this itself(!))
-  - do not allow resizing the user_buf once allocated; eliminate nuke_buffer_mappings
-  - eliminated #ifdef DV1394_DEBUG_LEVEL by inventing macros debug_printk and irq_printk
-  - added wmb() and mb() to places where PCI read/write ordering needs to be enforced
-  - set video->id correctly
-  - store video_cards in an array indexed by OHCI card ID, rather than a list
-  - implement DMA context allocation to cooperate with other users of the OHCI
-  - fix all XXX showstoppers
-  - disable IR/IT DMA interrupts on shutdown
-  - flush pci writes to the card by issuing a read
-  - character device dispatching
-  - switch over to the new kernel DMA API (pci_map_*()) (* needs testing on platforms with IOMMU!)
-  - keep all video_cards in a list (for open() via chardev), set file->private_data = video
-  - dv1394_poll should indicate POLLIN when receiving buffers are available
-  - add proc fs interface to set cip_n, cip_d, syt_offset, and video signal
-  - expose xmit and recv as separate devices (not exclusive)
-  - expose NTSC and PAL as separate devices (can be overridden)
-
-*/
 
 #include <linux/kernel.h>
 #include <linux/list.h>
@@ -670,13 +631,6 @@ static void frame_prepare(struct video_card *video, unsigned int this_frame)
 		     so the first frame having an incorrect timestamp is inconsequential.
 		*/
 
-#if 0
-		reg_write(video->ohci, video->ohci_IsoXmitContextControlSet,
-			  (1 << 31) /* enable start-on-cycle */
-			  | ( (transmit_sec & 0x3) << 29)
-			  | (transmit_cyc << 16));
-		wmb();
-#endif
 
 		video->dma_running = 1;
 
@@ -2393,7 +2347,6 @@ static void dv1394_host_reset(struct hpsb_host *host)
 			video->dropped_frames++;
 
 			/* for some reason you must clear, then re-set the RUN bit to restart DMA */
-			/* XXX this doesn't work for me, I can't get IR DMA to restart :[ */
 
 			/* clear RUN */
 			reg_write(video->ohci, video->ohci_IsoRcvContextControlClear, (1 << 15));

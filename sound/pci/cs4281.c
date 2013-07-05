@@ -573,7 +573,6 @@ static unsigned short snd_cs4281_ac97_read(struct snd_ac97 *ac97,
 	struct cs4281 *chip = ac97->private_data;
 	int count;
 	unsigned short result;
-	// FIXME: volatile is necessary in the following due to a bug of
 	// some gcc versions
 	volatile int ac97_num = ((volatile struct snd_ac97 *)ac97)->num;
 
@@ -749,7 +748,7 @@ static void snd_cs4281_mode(struct cs4281 *chip, struct cs4281_dma *dma,
 		break;
 	case 32: dma->valDMR |= BA0_DMR_SIZE20; break;
 	}
-	dma->frag = 0;	/* for workaround */
+	dma->frag = 0;
 	dma->valDCR = BA0_DCR_TCIE | BA0_DCR_MSK;
 	if (runtime->buffer_size != runtime->period_size)
 		dma->valDCR |= BA0_DCR_HTCIE;
@@ -1825,7 +1824,6 @@ static irqreturn_t snd_cs4281_interrupt(int irq, void *dev_id)
 				spin_lock(&chip->reg_lock);
 				/* ack DMA IRQ */
 				val = snd_cs4281_peekBA0(chip, cdma->regHDSR);
-				/* workaround, sometimes CS4281 acknowledges */
 				/* end or middle transfer position twice */
 				cdma->frag++;
 				if ((val & BA0_HDSR_DHTC) && !(cdma->frag & 1)) {

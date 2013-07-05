@@ -158,7 +158,7 @@ struct piix_map_db {
 struct piix_host_priv {
 	const int *map;
 	u32 saved_iocfg;
-	spinlock_t sidpr_lock;	/* FIXME: remove once locking in EH is fixed */
+	spinlock_t sidpr_lock;
 	void __iomem *sidpr;
 };
 
@@ -1552,7 +1552,6 @@ static int __devinit piix_init_one(struct pci_dev *pdev,
 		dev_printk(KERN_DEBUG, &pdev->dev,
 			   "version " DRV_VERSION "\n");
 
-	/* no hotplugging support for later devices (FIXME) */
 	if (!in_module_init && ent->driver_data >= ich5_sata)
 		return -ENODEV;
 

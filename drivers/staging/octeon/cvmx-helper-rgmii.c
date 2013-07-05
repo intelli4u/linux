@@ -125,16 +125,6 @@ void cvmx_helper_rgmii_internal_loopback(int port)
 	cvmx_write_csr(CVMX_GMXX_PRTX_CFG(index, interface), gmx_cfg.u64);
 }
 
-/**
- * Workaround ASX setup errata with CN38XX pass1
- *
- * @interface: Interface to setup
- * @port:      Port to setup (0..3)
- * @cpu_clock_hz:
- *                  Chip frequency in Hertz
- *
- * Returns Zero on success, negative on failure
- */
 static int __cvmx_helper_errata_asx_pass1(int interface, int port,
 					  int cpu_clock_hz)
 {

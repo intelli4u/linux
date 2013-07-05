@@ -142,7 +142,6 @@ struct ath9k_htc_target_vif {
 #define ATH_HTC_STA_ERP   0x0004
 #define ATH_HTC_STA_HT    0x0008
 
-/* FIXME: UAPSD variables */
 struct ath9k_htc_target_sta {
 	u16 associd;
 	u16 txpower;
@@ -234,7 +233,7 @@ struct ath9k_htc_rxbuf {
 };
 
 struct ath9k_htc_rx {
-	int last_rssi; /* FIXME: per-STA */
+	int last_rssi;
 	struct list_head rxbuf;
 	spinlock_t rxbuflock;
 };

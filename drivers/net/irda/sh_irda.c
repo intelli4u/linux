@@ -661,12 +661,6 @@ static int sh_irda_hard_xmit(struct sk_buff *skb, struct net_device *ndev)
 
 static int sh_irda_ioctl(struct net_device *ndev, struct ifreq *ifreq, int cmd)
 {
-	/*
-	 * FIXME
-	 *
-	 * This function is needed for irda framework.
-	 * But nothing to do now
-	 */
 	return 0;
 }
 
@@ -786,7 +780,7 @@ static int __devinit sh_irda_probe(struct platform_device *pdev)
 	ndev->irq		= irq;
 
 	self->ndev			= ndev;
-	self->qos.baud_rate.bits	&= IR_9600; /* FIXME */
+	self->qos.baud_rate.bits	&= IR_9600;
 	self->qos.min_turn_time.bits	= 1; /* 10 ms or more */
 	spin_lock_init(&self->lock);
 

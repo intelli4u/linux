@@ -2612,7 +2612,6 @@ int dasd_generic_notify(struct ccw_device *cdev, int event)
 		ret = 1;
 		break;
 	case CIO_OPER:
-		/* FIXME: add a sanity check. */
 		dasd_device_remove_stop_bits(device, DASD_STOPPED_DC_WAIT);
 		if (device->stopped & DASD_UNRESUMED_PM) {
 			dasd_device_remove_stop_bits(device, DASD_UNRESUMED_PM);

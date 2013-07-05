@@ -293,7 +293,6 @@ static void imxmci_setup_data(struct imxmci_host *host, struct mmc_data *data)
 		CCR(host->dma) = CCR_SMOD_LINEAR | CCR_SSIZ_32 | CCR_DMOD_FIFO | CCR_DSIZ_16 | CCR_REN;
 	}
 
-#if 1	/* This code is there only for consistency checking and can be disabled in future */
 	host->dma_size = 0;
 	for (i = 0; i < host->dma_nents; i++)
 		host->dma_size += data->sg[i].length;
@@ -302,7 +301,6 @@ static void imxmci_setup_data(struct imxmci_host *host, struct mmc_data *data)
 		dev_err(mmc_dev(host->mmc), "imxmci_setup_data datasz 0x%x > 0x%x dm_size\n",
 			datasz, host->dma_size);
 	}
-#endif
 
 	host->dma_size = datasz;
 

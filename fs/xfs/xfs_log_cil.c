@@ -687,19 +687,6 @@ xfs_log_commit_cil(
 	return 0;
 }
 
-/*
- * Conditionally push the CIL based on the sequence passed in.
- *
- * We only need to push if we haven't already pushed the sequence
- * number given. Hence the only time we will trigger a push here is
- * if the push sequence is the same as the current context.
- *
- * We return the current commit lsn to allow the callers to determine if a
- * iclog flush is necessary following this call.
- *
- * XXX: Initially, just push the CIL unconditionally and return whatever
- * commit lsn is there. It'll be empty, so this is broken for now.
- */
 xfs_lsn_t
 xlog_cil_force_lsn(
 	struct log	*log,

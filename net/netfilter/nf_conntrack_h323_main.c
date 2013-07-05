@@ -742,8 +742,7 @@ static int callforward_do_filter(const union nf_inet_addr *src,
 		}
 		break;
 	}
-#if defined(CONFIG_NF_CONNTRACK_IPV6) || \
-    defined(CONFIG_NF_CONNTRACK_IPV6_MODULE)
+#if defined(CONFIG_NF_CONNTRACK_IPV6) || defined(CONFIG_NF_CONNTRACK_IPV6_MODULE)
 	case AF_INET6: {
 		struct rt6_info *rt1, *rt2;
 

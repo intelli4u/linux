@@ -22,10 +22,7 @@ static struct usb_device_id whitelist_table [] = {
 { USB_DEVICE_INFO(USB_CLASS_HUB, 0, 0), },
 { USB_DEVICE_INFO(USB_CLASS_HUB, 0, 1), },
 
-#ifdef	CONFIG_USB_PRINTER		/* ignoring nonstatic linkage! */
-/* FIXME actually, printers are NOT supposed to use device classes;
- * they're supposed to use interface classes...
- */
+#ifdef	CONFIG_USB_PRINTER		    /* ignoring nonstatic linkage! */
 { USB_DEVICE_INFO(7, 1, 1) },
 { USB_DEVICE_INFO(7, 1, 2) },
 { USB_DEVICE_INFO(7, 1, 3) },
@@ -109,4 +106,3 @@ static int is_targeted(struct usb_device *dev)
 	return 1;
 #endif
 }
-

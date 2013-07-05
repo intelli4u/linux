@@ -606,7 +606,6 @@ void i915_save_display(struct drm_device *dev)
 		dev_priv->savePIPEA_DP_LINK_N = I915_READ(PIPEA_DP_LINK_N);
 		dev_priv->savePIPEB_DP_LINK_N = I915_READ(PIPEB_DP_LINK_N);
 	}
-	/* FIXME: save TV & SDVO state */
 
 	/* Only save FBC state on the platform that supports FBC */
 	if (I915_HAS_FBC(dev)) {
@@ -712,7 +711,6 @@ void i915_restore_display(struct drm_device *dev)
 		I915_WRITE(DP_C, dev_priv->saveDP_C);
 		I915_WRITE(DP_D, dev_priv->saveDP_D);
 	}
-	/* FIXME: restore TV & SDVO state */
 
 	/* only restore FBC info on the platform that supports FBC*/
 	if (I915_HAS_FBC(dev)) {
@@ -885,4 +883,3 @@ int i915_restore_state(struct drm_device *dev)
 
 	return 0;
 }
-

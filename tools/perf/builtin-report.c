@@ -139,11 +139,6 @@ static int add_event_total(struct perf_session *session,
 		return -ENOMEM;
 
 	hists->stats.total_period += data->period;
-	/*
-	 * FIXME: add_event_total should be moved from here to
-	 * perf_session__process_event so that the proper hist is passed to
-	 * the event_op methods.
-	 */
 	hists__inc_nr_events(hists, PERF_RECORD_SAMPLE);
 	session->hists.stats.total_period += data->period;
 	return 0;
@@ -348,18 +343,6 @@ static int __cmd_report(void)
 		hists__tty_browse_tree(&session->hists_tree, help);
 
 out_delete:
-	/*
-	 * Speed up the exit process, for large files this can
-	 * take quite a while.
-	 *
-	 * XXX Enable this when using valgrind or if we ever
-	 * librarize this command.
-	 *
-	 * Also experiment with obstacks to see how much speed
-	 * up we'll get here.
-	 *
- 	 * perf_session__delete(session);
- 	 */
 	return ret;
 }
 
@@ -497,12 +480,6 @@ int cmd_report(int argc, const char **argv, const char *prefix __used)
  		 * much struct symbol.
  		 */
 		if (verbose) {
-			/*
-			 * XXX: Need to provide a less kludgy way to ask for
-			 * more space per symbol, the u32 is for the index on
-			 * the ui browser.
-			 * See symbol__browser_index.
-			 */
 			symbol_conf.priv_size += sizeof(u32);
 			symbol_conf.sort_by_name = true;
 		}

@@ -1222,13 +1222,6 @@ static int megasas_slave_configure(struct scsi_device *sdev)
 
 	instance = megasas_lookup_instance(sdev->host->host_no);
 
-	/*
-	* Don't export physical disk devices to the disk driver.
-	*
-	* FIXME: Currently we don't export them to the midlayer at all.
-	*        That will be fixed once LSI engineers have audited the
-	*        firmware for possible issues.
-	*/
 	if (sdev->channel < MEGASAS_MAX_PD_CHANNELS &&
 				sdev->type == TYPE_DISK) {
 		pd_index = (sdev->channel * MEGASAS_MAX_DEV_PER_CHANNEL) +

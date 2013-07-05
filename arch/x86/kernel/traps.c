@@ -71,10 +71,6 @@ asmlinkage int system_call(void);
 /* Do we ignore FPU interrupts ? */
 char ignore_fpu_irq;
 
-/*
- * The IDT has to be page-aligned to simplify the Pentium
- * F0 0F bug workaround.
- */
 gate_desc idt_table[NR_VECTORS] __page_aligned_data = { { { { 0, 0 } } }, };
 #endif
 
@@ -417,7 +413,6 @@ static notrace __kprobes void default_do_nmi(struct pt_regs *regs)
 	if (notify_die(DIE_NMI, "nmi", regs, reason, 2, SIGINT) == NOTIFY_STOP)
 		return;
 
-	/* AK: following checks seem to be broken on modern chipsets. FIXME */
 	if (reason & 0x80)
 		mem_parity_error(reason, regs);
 	if (reason & 0x40)
@@ -705,10 +700,6 @@ dotraplinkage void
 do_spurious_interrupt_bug(struct pt_regs *regs, long error_code)
 {
 	conditional_sti(regs);
-#if 0
-	/* No need to warn about this any longer. */
-	printk(KERN_INFO "Ignoring P6 Local APIC Spurious Interrupt Bug...\n");
-#endif
 }
 
 asmlinkage void __attribute__((weak)) smp_thermal_interrupt(void)

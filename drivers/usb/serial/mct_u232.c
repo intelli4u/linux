@@ -207,9 +207,6 @@ static int mct_u232_calculate_baud_rate(struct usb_serial *serial,
 			return 0x08;
 		}
 	} else {
-		/* FIXME: Can we use any divider - should we do
-		   divider = 115200/value;
-		   real baud = 115200/divider */
 		switch (value) {
 		case 300: break;
 		case 600: break;
@@ -249,7 +246,7 @@ static int mct_u232_set_baud_rate(struct tty_struct *tty,
 				MCT_U232_SET_REQUEST_TYPE,
 				0, 0, buf, MCT_U232_SET_BAUD_RATE_SIZE,
 				WDR_TIMEOUT);
-	if (rc < 0)	/*FIXME: What value speed results */
+	if (rc < 0)
 		dev_err(&port->dev, "Set BAUD RATE %d failed (error = %d)\n",
 			value, rc);
 	else
@@ -621,32 +618,6 @@ static void mct_u232_read_int_callback(struct urb *urb)
 	/* Record Control Line states */
 	mct_u232_msr_to_state(&priv->control_state, priv->last_msr);
 
-#if 0
-	/* Not yet handled. See belkin_sa.c for further information */
-	/* Now to report any errors */
-	priv->last_lsr = data[MCT_U232_LSR_INDEX];
-	/*
-	 * fill in the flip buffer here, but I do not know the relation
-	 * to the current/next receive buffer or characters.  I need
-	 * to look in to this before committing any code.
-	 */
-	if (priv->last_lsr & MCT_U232_LSR_ERR) {
-		tty = tty_port_tty_get(&port->port);
-		/* Overrun Error */
-		if (priv->last_lsr & MCT_U232_LSR_OE) {
-		}
-		/* Parity Error */
-		if (priv->last_lsr & MCT_U232_LSR_PE) {
-		}
-		/* Framing Error */
-		if (priv->last_lsr & MCT_U232_LSR_FE) {
-		}
-		/* Break Indicator */
-		if (priv->last_lsr & MCT_U232_LSR_BI) {
-		}
-		tty_kref_put(tty);
-	}
-#endif
 	spin_unlock_irqrestore(&priv->lock, flags);
 exit:
 	retval = usb_submit_urb(urb, GFP_ATOMIC);

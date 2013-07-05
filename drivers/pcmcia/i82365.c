@@ -1107,47 +1107,6 @@ static int i365_set_mem_map(u_short sock, struct pccard_mem_map *mem)
     return 0;
 } /* i365_set_mem_map */
 
-#if 0 /* driver model ordering issue */
-/*======================================================================
-
-    Routines for accessing socket information and register dumps via
-    /sys/class/pcmcia_socket/...
-    
-======================================================================*/
-
-static ssize_t show_info(struct class_device *class_dev, char *buf)
-{
-	struct i82365_socket *s = container_of(class_dev, struct i82365_socket, socket.dev);
-	return sprintf(buf, "type:     %s\npsock:    %d\n",
-		       pcic[s->type].name, s->psock);
-}
-
-static ssize_t show_exca(struct class_device *class_dev, char *buf)
-{
-	struct i82365_socket *s = container_of(class_dev, struct i82365_socket, socket.dev);
-	unsigned short sock;
-	int i;
-	ssize_t ret = 0;
-	unsigned long flags = 0;
-
-	sock = s->number;
-
-	ISA_LOCK(sock, flags);
-	for (i = 0; i < 0x40; i += 4) {
-		ret += sprintf(buf, "%02x %02x %02x %02x%s",
-			       i365_get(sock,i), i365_get(sock,i+1),
-			       i365_get(sock,i+2), i365_get(sock,i+3),
-			       ((i % 16) == 12) ? "\n" : " ");
-		buf += ret;
-	}
-	ISA_UNLOCK(sock, flags);
-
-	return ret;
-}
-
-static CLASS_DEVICE_ATTR(exca, S_IRUGO, show_exca, NULL);
-static CLASS_DEVICE_ATTR(info, S_IRUGO, show_info, NULL);
-#endif
 
 /*====================================================================*/
 
@@ -1289,12 +1248,6 @@ static int __init init_i82365(void)
 	    if (!ret)
 		    socket[i].flags |= IS_REGISTERED;
 
-#if 0 /* driver model ordering issue */
-	   class_device_create_file(&socket[i].socket.dev,
-			   	    &class_device_attr_info);
-	   class_device_create_file(&socket[i].socket.dev,
-			   	    &class_device_attr_exca);
-#endif
     }
 
     /* Finally, schedule a polling interrupt */

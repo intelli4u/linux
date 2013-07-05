@@ -33,11 +33,7 @@
 #include <linux/moduleloader.h>
 #include <linux/bug.h>
 
-#if 0
-#define DEBUGP printk
-#else
 #define DEBUGP(fmt , ...)
-#endif
 
 #ifndef CONFIG_64BIT
 #define PLT_ENTRY_SIZE 12

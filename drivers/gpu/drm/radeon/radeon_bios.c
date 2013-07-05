@@ -79,7 +79,6 @@ static bool radeon_read_bios(struct radeon_device *rdev)
 	size_t size;
 
 	rdev->bios = NULL;
-	/* XXX: some cards may return 0 for rom size? ddx has a workaround */
 	bios = pci_map_rom(rdev->pdev, &size);
 	if (!bios) {
 		return false;

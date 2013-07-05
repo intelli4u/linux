@@ -46,7 +46,7 @@
 /* select machine configuration */
 #if defined(CONFIG_ATARI)
 #  define MACH ATARI
-#elif defined(__i386__) || defined(__x86_64__) || defined(__arm__)  /* and ?? */
+#elif defined(__i386__) || defined(__x86_64__) || defined(__arm__)    /* and ?? */
 #  define MACH PC
 #else
 #  error Cannot build nvram driver for this machine configuration.
@@ -196,16 +196,6 @@ static void __nvram_set_checksum(void)
 	mach_set_checksum();
 }
 
-#if 0
-void nvram_set_checksum(void)
-{
-	unsigned long flags;
-
-	spin_lock_irqsave(&rtc_lock, flags);
-	__nvram_set_checksum();
-	spin_unlock_irqrestore(&rtc_lock, flags);
-}
-#endif  /*  0  */
 
 /*
  * The are the file operation function for user access to /dev/nvram

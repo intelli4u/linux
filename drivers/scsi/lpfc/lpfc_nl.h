@@ -176,4 +176,3 @@ struct temp_event {
 	uint32_t event_code;
 	uint32_t data;
 };
-

@@ -58,7 +58,6 @@ static void default_idle(void)
 	local_irq_disable();
 	if (!need_resched()) {
 		local_irq_enable();
-		/* XXX: race here! What if need_resched() gets set now? */
 		__asm__("sleep");
 	} else
 		local_irq_enable();

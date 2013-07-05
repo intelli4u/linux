@@ -31,13 +31,8 @@
 #include <asm/io.h>
 #include <asm/uaccess.h>
 
-#if 0
-#define CARM_DEBUG
-#define CARM_VERBOSE_DEBUG
-#else
 #undef CARM_DEBUG
 #undef CARM_VERBOSE_DEBUG
-#endif
 #undef CARM_NDEBUG
 
 #define DRV_NAME "sx8"
@@ -489,12 +484,6 @@ static int carm_send_msg(struct carm_host *host,
 
 	tmp = readl(mmio + CARM_HMUC);
 	if (tmp & CARM_Q_FULL) {
-#if 0
-		tmp = readl(mmio + CARM_INT_MASK);
-		tmp |= INT_Q_AVAILABLE;
-		writel(tmp, mmio + CARM_INT_MASK);
-		readl(mmio + CARM_INT_MASK);	/* flush */
-#endif
 		DPRINTK("host msg queue full\n");
 		rc = -EBUSY;
 	} else {
@@ -1347,7 +1336,6 @@ static void carm_fsm_task (struct work_struct *work)
 		break;
 
 	case HST_ERROR:
-		/* FIXME: TODO */
 		break;
 
 	default:
@@ -1579,7 +1567,7 @@ static int carm_init_one (struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (rc)
 		goto err_out;
 
-#ifdef IF_64BIT_DMA_IS_POSSIBLE /* grrrr... */
+#ifdef IF_64BIT_DMA_IS_POSSIBLE     /* grrrr... */
 	rc = pci_set_dma_mask(pdev, DMA_BIT_MASK(64));
 	if (!rc) {
 		rc = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
@@ -1598,7 +1586,7 @@ static int carm_init_one (struct pci_dev *pdev, const struct pci_device_id *ent)
 			goto err_out_regions;
 		}
 		pci_dac = 0;
-#ifdef IF_64BIT_DMA_IS_POSSIBLE /* grrrr... */
+#ifdef IF_64BIT_DMA_IS_POSSIBLE     /* grrrr... */
 	}
 #endif
 
@@ -1755,5 +1743,3 @@ static void __exit carm_exit(void)
 
 module_init(carm_init);
 module_exit(carm_exit);
-
-

@@ -288,7 +288,6 @@ int kvmppc_handle_exit(struct kvm_run *run, struct kvm_vcpu *vcpu,
 			r = RESUME_HOST;
 			break;
 		case EMULATE_FAIL:
-			/* XXX Deliver Program interrupt to guest. */
 			printk(KERN_CRIT "%s: emulation at %lx failed (%08x)\n",
 			       __func__, vcpu->arch.pc, vcpu->arch.last_inst);
 			/* For debugging, encode the failing instruction and
@@ -583,7 +582,6 @@ int __init kvmppc_booke_init(void)
 	if (!kvmppc_booke_handlers)
 		return -ENOMEM;
 
-	/* XXX make sure our handlers are smaller than Linux's */
 
 	/* Copy our interrupt handlers to match host IVORs. That way we don't
 	 * have to swap the IVORs on every guest/host transition. */

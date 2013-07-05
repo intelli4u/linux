@@ -113,4 +113,3 @@ void coda_flag_inode_children(struct inode *inode, int flag)
 	shrink_dcache_parent(alias_de);
 	dput(alias_de);
 }
-

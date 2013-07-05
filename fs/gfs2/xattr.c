@@ -1567,4 +1567,3 @@ const struct xattr_handler *gfs2_xattr_handlers[] = {
 	&gfs2_xattr_system_handler,
 	NULL,
 };
-

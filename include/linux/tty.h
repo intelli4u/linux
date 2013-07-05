@@ -210,8 +210,6 @@ struct tty_port_operations {
 	void (*drop)(struct tty_port *port);
 	/* Called under the port mutex from tty_port_open, serialized using
 	   the port mutex */
-        /* FIXME: long term getting the tty argument *out* of this would be
-           good for consoles */
 	int (*activate)(struct tty_port *port, struct tty_struct *tty);
 	/* Called on the final put of a port */
 	void (*destruct)(struct tty_port *port);

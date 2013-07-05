@@ -104,10 +104,8 @@
 #define OMAP7XX_IDLECT3		0xfffece24
 #define OMAP7XX_IDLE_LOOP_REQUEST	0x0C00
 
-#if     !defined(CONFIG_ARCH_OMAP730) && \
-	!defined(CONFIG_ARCH_OMAP850) && \
-	!defined(CONFIG_ARCH_OMAP15XX) && \
-	!defined(CONFIG_ARCH_OMAP16XX)
+#if     !defined(CONFIG_ARCH_OMAP730) && !defined(CONFIG_ARCH_OMAP850) && \
+	!defined(CONFIG_ARCH_OMAP15XX) && !defined(CONFIG_ARCH_OMAP16XX)
 #warning "Power management for this processor not implemented yet"
 #endif
 

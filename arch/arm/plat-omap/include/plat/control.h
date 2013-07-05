@@ -378,4 +378,3 @@ extern void omap3_control_restore_context(void);
 #endif	/* __ASSEMBLY__ */
 
 #endif /* __ASM_ARCH_CONTROL_H */
-

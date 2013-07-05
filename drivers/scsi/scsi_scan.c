@@ -611,11 +611,6 @@ static int scsi_probe_lun(struct scsi_device *sdev, unsigned char *inq_result,
 					continue;
 			}
 		} else {
-			/*
-			 * if nothing was transferred, we try
-			 * again. It's a workaround for some USB
-			 * devices.
-			 */
 			if (resid == try_inquiry_len)
 				continue;
 		}
@@ -631,13 +626,6 @@ static int scsi_probe_lun(struct scsi_device *sdev, unsigned char *inq_result,
 		if (response_len > 255)
 			response_len = first_inquiry_len;	/* sanity */
 
-		/*
-		 * Get any flags for this device.
-		 *
-		 * XXX add a bflags to scsi_device, and replace the
-		 * corresponding bit fields in scsi_device, so bflags
-		 * need not be passed as an argument.
-		 */
 		*bflags = scsi_get_device_flags(sdev, &inq_result[8],
 				&inq_result[16]);
 
@@ -681,39 +669,12 @@ static int scsi_probe_lun(struct scsi_device *sdev, unsigned char *inq_result,
 	/* Don't report any more data than the device says is valid */
 	sdev->inquiry_len = min(try_inquiry_len, response_len);
 
-	/*
-	 * XXX Abort if the response length is less than 36? If less than
-	 * 32, the lookup of the device flags (above) could be invalid,
-	 * and it would be possible to take an incorrect action - we do
-	 * not want to hang because of a short INQUIRY. On the flip side,
-	 * if the device is spun down or becoming ready (and so it gives a
-	 * short INQUIRY), an abort here prevents any further use of the
-	 * device, including spin up.
-	 *
-	 * On the whole, the best approach seems to be to assume the first
-	 * 36 bytes are valid no matter what the device says.  That's
-	 * better than copying < 36 bytes to the inquiry-result buffer
-	 * and displaying garbage for the Vendor, Product, or Revision
-	 * strings.
-	 */
 	if (sdev->inquiry_len < 36) {
 		printk(KERN_INFO "scsi scan: INQUIRY result too short (%d),"
 				" using 36\n", sdev->inquiry_len);
 		sdev->inquiry_len = 36;
 	}
 
-	/*
-	 * Related to the above issue:
-	 *
-	 * XXX Devices (disk or all?) should be sent a TEST UNIT READY,
-	 * and if not ready, sent a START_STOP to start (maybe spin up) and
-	 * then send the INQUIRY again, since the INQUIRY can change after
-	 * a device is initialized.
-	 *
-	 * Ideally, start a device if explicitly asked to do so.  This
-	 * assumes that a device is spun up on power on, spun down on
-	 * request, and then spun up on request.
-	 */
 
 	/*
 	 * The scanning code needs to know the scsi_level, even if no
@@ -749,16 +710,6 @@ static int scsi_add_lun(struct scsi_device *sdev, unsigned char *inq_result,
 {
 	int ret;
 
-	/*
-	 * XXX do not save the inquiry, since it can change underneath us,
-	 * save just vendor/model/rev.
-	 *
-	 * Rather than save it and have an ioctl that retrieves the saved
-	 * value, have an ioctl that executes the same INQUIRY code used
-	 * in scsi_probe_lun, let user level programs doing INQUIRY
-	 * scanning run at their own risk, or supply a user level program
-	 * that can correctly scan.
-	 */
 
 	/*
 	 * Copy at least 36 bytes of INQUIRY data, so that we don't
@@ -1654,15 +1605,6 @@ static void scsi_scan_channel(struct Scsi_Host *shost, unsigned int channel,
 
 	if (id == SCAN_WILD_CARD)
 		for (id = 0; id < shost->max_id; ++id) {
-			/*
-			 * XXX adapter drivers when possible (FCP, iSCSI)
-			 * could modify max_id to match the current max,
-			 * not the absolute max.
-			 *
-			 * XXX add a shost id iterator, so for example,
-			 * the FC ID can be the same as a target id
-			 * without a huge overhead of sparse id's.
-			 */
 			if (shost->reverse_ordering)
 				/*
 				 * Scan from high to low id.
@@ -1949,4 +1891,3 @@ void scsi_free_host_dev(struct scsi_device *sdev)
 	__scsi_remove_device(sdev);
 }
 EXPORT_SYMBOL(scsi_free_host_dev);
-

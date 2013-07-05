@@ -1138,7 +1138,7 @@ static int ov7670_s_hflip(struct v4l2_subdev *sd, int value)
 		v |= MVFP_MIRROR;
 	else
 		v &= ~MVFP_MIRROR;
-	msleep(10);  /* FIXME */
+	msleep(10);
 	ret += ov7670_write(sd, REG_MVFP, v);
 	return ret;
 }
@@ -1166,7 +1166,7 @@ static int ov7670_s_vflip(struct v4l2_subdev *sd, int value)
 		v |= MVFP_FLIP;
 	else
 		v &= ~MVFP_FLIP;
-	msleep(10);  /* FIXME */
+	msleep(10);
 	ret += ov7670_write(sd, REG_MVFP, v);
 	return ret;
 }

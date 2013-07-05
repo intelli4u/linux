@@ -194,7 +194,6 @@ static void __schizo_check_stc_error_pbm(struct pci_pbm_info *pbm,
 			       ((tagval & SCHIZO_STCTAG_VALID) ? 1 : 0),
 			       ((tagval & SCHIZO_STCTAG_READ) ? 1 : 0));
 
-			/* XXX Should spit out per-bank error information... -DaveM */
 			printk("%s: STC_LINE(%d)[LIDX(%lx)SP(%lx)LADDR(%lx)EP(%lx)"
 			       "V(%d)FOFN(%d)]\n",
 			       pbm->name,
@@ -493,9 +492,6 @@ static irqreturn_t schizo_ce_intr(int irq, void *dev_id)
 		  ((error_bits & SCHIZO_CEAFSR_PDWR) ?
 		   "DMA Write" : "???")))));
 
-	/* XXX Use syndrome and afar to print out module string just like
-	 * XXX UDB CE trap handler does... -DaveM
-	 */
 	printk("%s: bytemask[%04lx] qword_offset[%lx] SAFARI_AID[%02lx]\n",
 	       pbm->name,
 	       (afsr & SCHIZO_UEAFSR_BMSK) >> 32UL,
@@ -1030,17 +1026,8 @@ static void schizo_register_error_handlers(struct pci_pbm_info *pbm)
 		    BUS_ERROR_UFPQTO | BUS_ERROR_APERR |
 		    BUS_ERROR_BUSERR | BUS_ERROR_TIMEOUT |
 		    BUS_ERROR_ILL);
-#if 1
-	/* XXX Something wrong with some Excalibur systems
-	 * XXX Sun is shipping.  The behavior on a 2-cpu
-	 * XXX machine is that both CPU1 parity error bits
-	 * XXX are set and are immediately set again when
-	 * XXX their error status bits are cleared.  Just
-	 * XXX ignore them for now.  -DaveM
-	 */
 	err_mask &= ~(BUS_ERROR_CPU1PS | BUS_ERROR_CPU1PB |
 		      BUS_ERROR_CPU0PS | BUS_ERROR_CPU0PB);
-#endif
 
 	upa_writeq((SCHIZO_SAFERRCTRL_EN | err_mask),
 		   pbm->controller_regs + SCHIZO_SAFARI_ERRCTRL);
@@ -1293,9 +1280,6 @@ static void schizo_pbm_hw_init(struct pci_pbm_info *pbm)
 	upa_writeq(tmp, pbm->pbm_regs + SCHIZO_PCI_DIAG);
 
 	if (pbm->chip_type == PBM_CHIP_TYPE_TOMATILLO) {
-		/* Clear prefetch lengths to workaround a bug in
-		 * Jalapeno...
-		 */
 		tmp = (TOMATILLO_IOC_PART_WPENAB |
 		       (1 << TOMATILLO_IOC_PREF_OFF_SHIFT) |
 		       TOMATILLO_IOC_RDMULT_CPENAB |

@@ -325,4 +325,3 @@ void __init udbg_init_usbgecko(void)
 }
 
 #endif /* CONFIG_PPC_EARLY_DEBUG_USBGECKO */
-

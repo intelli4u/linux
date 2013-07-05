@@ -119,8 +119,6 @@ static inline unsigned int ocfs2_dir_trailer_blk_off(struct super_block *sb)
 
 #define ocfs2_trailer_from_bh(_bh, _sb) ((struct ocfs2_dir_block_trailer *) ((_bh)->b_data + ocfs2_dir_trailer_blk_off((_sb))))
 
-/* XXX ocfs2_block_dqtrailer() is similar but not quite - can we make
- * them more consistent? */
 struct ocfs2_dir_block_trailer *ocfs2_dir_trailer_from_size(int blocksize,
 							    void *data)
 {
@@ -130,10 +128,6 @@ struct ocfs2_dir_block_trailer *ocfs2_dir_trailer_from_size(int blocksize,
 	return (struct ocfs2_dir_block_trailer *)p;
 }
 
-/*
- * XXX: This is executed once on every dirent. We should consider optimizing
- * it.
- */
 static int ocfs2_skip_dir_trailer(struct inode *dir,
 				  struct ocfs2_dir_entry *de,
 				  unsigned long offset,
@@ -275,10 +269,6 @@ static void ocfs2_dx_dir_name_hash(struct inode *dir, const char *name, int len,
 	const char	*p;
 	__u32		in[8], buf[4];
 
-	/*
-	 * XXX: Is this really necessary, if the index is never looked
-	 * at by readdir? Is a hash value of '0' a bad idea?
-	 */
 	if ((len == 1 && !strncmp(".", name, 1)) ||
 	    (len == 2 && !strncmp("..", name, 2))) {
 		buf[0] = buf[1] = 0;
@@ -994,10 +984,6 @@ search:
 			goto out;
 		}
 
-		/*
-		 * XXX: We should check the unindexed block here,
-		 * before using it.
-		 */
 
 		found = ocfs2_search_dirblock(dir_ent_bh, dir, name, namelen,
 					      0, dir_ent_bh->b_data,
@@ -1640,14 +1626,6 @@ int __ocfs2_add_entry(handle_t *handle,
 	if (ocfs2_dir_indexed(dir)) {
 		struct buffer_head *bh;
 
-		/*
-		 * An indexed dir may require that we update the free space
-		 * list. Reserve a write to the previous node in the list so
-		 * that we don't fail later.
-		 *
-		 * XXX: This can be either a dx_root_block, or an unindexed
-		 * directory tree leaf block.
-		 */
 		if (ocfs2_free_list_at_root(lookup)) {
 			bh = lookup->dl_dx_root_bh;
 			retval = ocfs2_journal_access_dr(handle,
@@ -2204,13 +2182,6 @@ out:
 	return ret;
 }
 
-/*
- * routine to check that the specified directory is empty (for rmdir)
- *
- * Returns 1 if dir is empty, zero otherwise.
- *
- * XXX: This is a performance problem for unindexed directories.
- */
 int ocfs2_empty_dir(struct inode *inode)
 {
 	int ret;
@@ -2236,9 +2207,6 @@ int ocfs2_empty_dir(struct inode *inode)
 	if (!priv.seen_dot || !priv.seen_dot_dot) {
 		mlog(ML_ERROR, "bad directory (dir #%llu) - no `.' or `..'\n",
 		     (unsigned long long)OCFS2_I(inode)->ip_blkno);
-		/*
-		 * XXX: Is it really safe to allow an unlink to continue?
-		 */
 		return 1;
 	}
 
@@ -2539,12 +2507,6 @@ static int __ocfs2_dx_dir_new_cluster(struct inode *dir,
 	u64 phys_blkno;
 	struct ocfs2_super *osb = OCFS2_SB(dir->i_sb);
 
-	/*
-	 * XXX: For create, this should claim cluster for the index
-	 * *before* the unindexed insert so that we have a better
-	 * chance of contiguousness as the directory grows in number
-	 * of entries.
-	 */
 	ret = __ocfs2_claim_clusters(handle, data_ac, 1, 1, &phys, &num);
 	if (ret) {
 		mlog_errno(ret);
@@ -2731,9 +2693,6 @@ out:
 	return ret;
 }
 
-/*
- * XXX: This expects dx_root_bh to already be part of the transaction.
- */
 static void ocfs2_dx_dir_index_root_block(struct inode *dir,
 					 struct buffer_head *dx_root_bh,
 					 struct buffer_head *dirent_bh)
@@ -3820,10 +3779,6 @@ static int ocfs2_dx_dir_rebalance(struct ocfs2_super *osb, struct inode *dir,
 	ocfs2_init_dx_root_extent_tree(&et, INODE_CACHE(dir), dx_root_bh);
 
 	dx_root = (struct ocfs2_dx_root_block *)dx_root_bh->b_data;
-	/*
-	 * XXX: This is a rather large limit. We should use a more
-	 * realistic value.
-	 */
 	if (le32_to_cpu(dx_root->dr_clusters) == UINT_MAX)
 		return -ENOSPC;
 
@@ -4023,13 +3978,6 @@ restart_search:
 	if (le16_to_cpu(dx_leaf->dl_list.de_num_used) >=
 	    le16_to_cpu(dx_leaf->dl_list.de_count)) {
 		if (rebalanced) {
-			/*
-			 * Rebalancing should have provided us with
-			 * space in an appropriate leaf.
-			 *
-			 * XXX: Is this an abnormal condition then?
-			 * Should we print a message here?
-			 */
 			ret = -ENOSPC;
 			goto out;
 		}
@@ -4527,7 +4475,6 @@ int ocfs2_dx_dir_truncate(struct inode *dir, struct buffer_head *di_bh)
 
 	ocfs2_init_dx_root_extent_tree(&et, INODE_CACHE(dir), dx_root_bh);
 
-	/* XXX: What if dr_clusters is too large? */
 	while (le32_to_cpu(dx_root->dr_clusters)) {
 		ret = ocfs2_dx_dir_lookup_rec(dir, &dx_root->dr_list,
 					      major_hash, &cpos, &blkno, &clen);

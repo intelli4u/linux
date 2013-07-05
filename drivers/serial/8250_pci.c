@@ -424,7 +424,6 @@ static void __devexit sbs_exit(struct pci_dev *dev)
 	u8 __iomem *p;
 
 	p = pci_ioremap_bar(dev, 0);
-	/* FIXME: What if resource_len < OCT_REG_CR_OFF */
 	if (p != NULL)
 		writeb(0, p + OCT_REG_CR_OFF);
 	iounmap(p);
@@ -2611,7 +2610,6 @@ static int pciserial_resume_one(struct pci_dev *dev)
 		 * The device may have been disabled.  Re-enable it.
 		 */
 		err = pci_enable_device(dev);
-		/* FIXME: We cannot simply error out here */
 		if (err)
 			printk(KERN_ERR "pciserial: Unable to re-enable ports, trying to continue.\n");
 		pciserial_resume_ports(priv);

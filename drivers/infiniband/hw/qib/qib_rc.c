@@ -883,7 +883,7 @@ static void qib_restart_rc(struct qib_qp *qp, u32 psn, int wait)
 			qib_send_complete(qp, wqe, IB_WC_RETRY_EXC_ERR);
 			qib_error_qp(qp, IB_WC_WR_FLUSH_ERR);
 			return;
-		} else /* XXX need to handle delayed completion */
+		} else
 			return;
 	} else
 		qp->s_retry--;
@@ -1764,11 +1764,6 @@ static int qib_rc_rcv_error(struct qib_other_headers *ohdr,
 			qp->r_ack_psn = qp->r_psn - 1;
 			goto send_ack;
 		}
-		/*
-		 * Try to send a simple ACK to work around a Mellanox bug
-		 * which doesn't accept a RDMA read response or atomic
-		 * response as an ACK for earlier SENDs or RDMA writes.
-		 */
 		if (!(qp->s_flags & QIB_S_RESP_PENDING)) {
 			spin_unlock_irqrestore(&qp->s_lock, flags);
 			qp->r_nak_state = 0;
@@ -1996,7 +1991,6 @@ send_last:
 		/* Get the number of bytes the message was padded by. */
 		pad = (be32_to_cpu(ohdr->bth[0]) >> 20) & 3;
 		/* Check for invalid length. */
-		/* XXX LAST len should be >= 1 */
 		if (unlikely(tlen < (hdrsize + pad + 4)))
 			goto nack_inv;
 		/* Don't count the CRC. */

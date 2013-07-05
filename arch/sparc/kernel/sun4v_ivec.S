@@ -81,12 +81,6 @@ sun4v_dev_mondo:
 	ldxa	[%g5 + %g2] ASI_PHYS_USE_EC, %g3
 	add	%g2, 0x40, %g2
 
-	/* XXX There can be a full 64-byte block of data here.
-	 * XXX This is how we can get at MSI vector data.
-	 * XXX Current we do not capture this, but when we do we'll
-	 * XXX need to add a 64-byte storage area in the struct ino_bucket
-	 * XXX or the struct irq_desc.
-	 */
 
 	/* Update queue head pointer, this frees up some registers.  */
 	lduw	[%g4 + TRAP_PER_CPU_DEV_MONDO_QMASK], %g4

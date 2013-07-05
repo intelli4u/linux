@@ -47,6 +47,10 @@
 
 #include "workqueue_sched.h"
 
+#if defined(CONFIG_BUZZZ)
+#include <asm/buzzz.h>
+#endif	/*  CONFIG_BUZZZ */
+
 enum {
 	/* global_cwq flags */
 	GCWQ_MANAGE_WORKERS	= 1 << 0,	/* need to manage workers */
@@ -1819,7 +1823,17 @@ __acquires(&gcwq->lock)
 	lock_map_acquire(&cwq->wq->lockdep_map);
 	lock_map_acquire(&lockdep_map);
 	trace_workqueue_execute_start(work);
+
+#if defined(BUZZZ_KEVT_LVL) && (BUZZZ_KEVT_LVL >= 1)
+	buzzz_kevt_log1(BUZZZ_KEVT_ID_WORKQ_ENTRY, (int)f);
+#endif	/* BUZZZ_KEVT_LVL */
+
 	f(work);
+
+#if defined(BUZZZ_KEVT_LVL) && (BUZZZ_KEVT_LVL >= 1)
+	buzzz_kevt_log1(BUZZZ_KEVT_ID_WORKQ_EXIT, (int)f);
+#endif	/* BUZZZ_KEVT_LVL */
+
 	/*
 	 * While we must be careful to not use "work" after this, the trace
 	 * point will only record its address.

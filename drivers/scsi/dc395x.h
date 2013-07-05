@@ -30,9 +30,6 @@
 #define DC395x_SEL_TIMEOUT		153	/* 250 ms selection timeout (@ 40 MHz)	*/
 #define DC395x_MAX_RETRIES		3
 
-#if 0
-#define SYNC_FIRST
-#endif
 
 #define NORM_REC_LVL			0
 
@@ -242,10 +239,10 @@ struct ScsiInqData
 						/* Peripheral Device Type definitions	*/
 						/* See include/scsi/scsi.h		*/
 #define TYPE_NODEV		SCSI_DEVTYPE	/* Unknown or no device type		*/
-#ifndef TYPE_PRINTER				/*					*/
+#ifndef TYPE_PRINTER				    /*					*/
 # define TYPE_PRINTER			0x02	/* Printer device			*/
 #endif						/*					*/
-#ifndef TYPE_COMM				/*					*/
+#ifndef TYPE_COMM				    /*					*/
 # define TYPE_COMM			0x09	/* Communications device		*/
 #endif
 
@@ -625,14 +622,6 @@ struct ScsiInqData
 /*	Nvram Initiater bits definition					*/
 /*									*/
 /************************************************************************/
-#if 0
-#define MORE2_DRV			BIT0
-#define GREATER_1G			BIT1
-#define RST_SCSI_BUS			BIT2
-#define ACTIVE_NEGATION			BIT3
-#define NO_SEEK				BIT4
-#define LUN_CHECK			BIT5
-#endif
 
 /************************************************************************/
 /*									*/

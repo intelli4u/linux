@@ -22,8 +22,7 @@
  * `next' and `prev' should be struct task_struct, but it isn't always defined
  */
 
-#if defined(CONFIG_FRAME_POINTER) || \
-	!defined(CONFIG_SCHED_OMIT_FRAME_POINTER)
+#if defined(CONFIG_FRAME_POINTER) || !defined(CONFIG_SCHED_OMIT_FRAME_POINTER)
 #define M32R_PUSH_FP "	push fp\n"
 #define M32R_POP_FP  "	pop  fp\n"
 #else
@@ -139,9 +138,6 @@ extern void  __xchg_called_with_bad_pointer(void);
 	"add3	"reg0", "addr", #0x2000;		\n\t"	\
 	"ld	"reg0", @"reg0";			\n\t"	\
 	"unlock	"reg0", @"reg1";			\n\t"
-	/* FIXME: This workaround code cannot handle kernel modules
-	 * correctly under SMP environment.
-	 */
 #else	/* CONFIG_CHIP_M32700_TS1 */
 #define DCACHE_CLEAR(reg0, reg1, addr)
 #endif	/* CONFIG_CHIP_M32700_TS1 */
@@ -306,10 +302,6 @@ __cmpxchg(volatile void *ptr, unsigned long old, unsigned long new, int size)
 	switch (size) {
 	case 4:
 		return __cmpxchg_u32(ptr, old, new);
-#if 0	/* we don't have __cmpxchg_u64 */
-	case 8:
-		return __cmpxchg_u64(ptr, old, new);
-#endif /* 0 */
 	}
 	__cmpxchg_called_with_bad_pointer();
 	return old;

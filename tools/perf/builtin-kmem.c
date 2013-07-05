@@ -781,4 +781,3 @@ int cmd_kmem(int argc, const char **argv, const char *prefix __used)
 
 	return 0;
 }
-

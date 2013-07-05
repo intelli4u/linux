@@ -93,19 +93,6 @@ enum ib_sa_selector {
 	IB_SA_BEST = 3
 };
 
-/*
- * Structures for SA records are named "struct ib_sa_xxx_rec."  No
- * attempt is made to pack structures to match the physical layout of
- * SA records in SA MADs; all packing and unpacking is handled by the
- * SA query code.
- *
- * For a record with structure ib_sa_xxx_rec, the naming convention
- * for the component mask value for field yyy is IB_SA_XXX_REC_YYY (we
- * never use different abbreviations or otherwise change the spelling
- * of xxx/yyy between ib_sa_xxx_rec.yyy and IB_SA_XXX_REC_YYY).
- *
- * Reserved rows are indicated with comments to help maintainability.
- */
 
 #define IB_SA_PATH_REC_SERVICE_ID		       (IB_SA_COMP_MASK( 0) |\
 							IB_SA_COMP_MASK( 1))

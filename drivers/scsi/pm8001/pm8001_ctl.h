@@ -54,4 +54,3 @@
 #define FLASH_IN_PROGRESS               0x001000
 
 #endif /* PM8001_CTL_H_INCLUDED */
-

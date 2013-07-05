@@ -85,6 +85,10 @@
 
 #include <asm/uaccess.h>
 
+#ifdef HNDCTF
+#include <ctf/hndctf.h>
+#endif /* HNDCTF */
+
 #define PPPOE_HASH_BITS 4
 #define PPPOE_HASH_SIZE (1 << PPPOE_HASH_BITS)
 #define PPPOE_HASH_MASK	(PPPOE_HASH_SIZE - 1)
@@ -452,6 +456,17 @@ static int pppoe_rcv(struct sk_buff *skb, struct net_device *dev,
 	if (!po)
 		goto drop;
 
+#if defined(HNDCTF) && defined(CTF_PPPOE)
+	/* Populate our cb array with values stating skb is pppoe rx
+	 * skb and has pppoe sid.
+	 */
+	if (CTF_ENAB(kcih)) {
+		skb->pktc_cb[0] = 1;
+		skb->pktc_cb[1] = 0;
+		*(__be16 *)&skb->pktc_cb[2] = ph->sid;
+	}
+#endif
+
 	return sk_receive_skb(sk_pppox(po), skb, 0);
 
 drop:
@@ -515,12 +530,18 @@ out:
 }
 
 static struct packet_type pppoes_ptype __read_mostly = {
-	.type	= cpu_to_be16(ETH_P_PPP_SES),
+    /*  modified start, Winster Chan, 12/21/2006 */
+	//.type	= cpu_to_be16(ETH_P_PPP_SES),
+	.type	= cpu_to_be16(ETH_P_PPPOE_SESS),
+    /*  modified end, Winster Chan, 12/21/2006 */
 	.func	= pppoe_rcv,
 };
 
 static struct packet_type pppoed_ptype __read_mostly = {
-	.type	= cpu_to_be16(ETH_P_PPP_DISC),
+    /*  modified start, Winster Chan, 12/21/2006 */
+	//.type	= cpu_to_be16(ETH_P_PPP_DISC),
+	.type	= cpu_to_be16(ETH_P_PPPOE_DISC),
+    /*  modified end, Winster Chan, 12/21/2006 */
 	.func	= pppoe_disc_rcv,
 };
 
@@ -939,6 +960,20 @@ static int __pppoe_xmit(struct sock *sk, struct sk_buff *skb)
 
 	skb->protocol = cpu_to_be16(ETH_P_PPP_SES);
 	skb->dev = dev;
+
+#if defined(HNDCTF) && defined(CTF_PPPOE)
+	/* Need to populate the ipct members with pppoe sid and real tx interface */
+	if (CTF_ENAB(kcih) && (skb->pktc_cb[0] == 2)) {
+		ctf_ipc_t *ipc;
+		ipc = (ctf_ipc_t *)(*(uint32 *)&skb->pktc_cb[4]);
+		if (ipc != NULL) {
+			ipc->txif = dev;
+			ipc->pppoe_sid = ph->sid;
+			memcpy(ipc->dhost.octet, po->pppoe_pa.remote, ETH_ALEN);
+			memcpy(ipc->shost.octet, dev->dev_addr, ETH_ALEN);
+		}
+	}
+#endif /* HNDCTF && CTF_PPPOE */
 
 	dev_hard_header(skb, dev, ETH_P_PPP_SES,
 			po->pppoe_pa.remote, NULL, data_len);

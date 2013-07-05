@@ -301,4 +301,3 @@ ENTRY(__canonicalize_funcptr_for_compare)
 #endif
 	copy %r26,%r28
 ENDPROC(__canonicalize_funcptr_for_compare)
-

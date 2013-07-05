@@ -145,6 +145,10 @@
 #include <linux/mroute.h>
 #include <linux/netlink.h>
 
+/* Fxcn port-S Wins, 0714-09 */
+extern int (*ip_pre_insert_hook)(struct sk_buff *skb);
+/* Fxcn port-E Wins, 0714-09 */
+
 /*
  *	Process Router Attention IP option (RFC 2113)
  */
@@ -369,6 +373,9 @@ drop:
 	return NET_RX_DROP;
 }
 
+/* Fxcn port-S Wins, 0714-09 */
+int (*br_pre_insert_hook)(struct sk_buff *skb);
+/* Fxcn port-E Wins, 0714-09 */
 /*
  * 	Main IP Receive routine.
  */
@@ -412,6 +419,26 @@ int ip_rcv(struct sk_buff *skb, struct net_device *dev, struct packet_type *pt, 
 
 	if (!pskb_may_pull(skb, iph->ihl*4))
 		goto inhdr_error;
+		
+	if(NULL!=br_pre_insert_hook)
+	{
+		int ret;
+        
+		ret=br_pre_insert_hook(skb);
+
+		if((ret==NF_DROP)||(ret==NF_STOLEN))
+			return 0;
+	}
+		
+	if(NULL!=ip_pre_insert_hook)
+	{
+		int ret;
+        
+		ret=ip_pre_insert_hook(skb);
+
+		if((ret==NF_DROP)||(ret==NF_STOLEN))
+			return 0;
+	}
 
 	iph = ip_hdr(skb);
 
@@ -450,3 +477,16 @@ drop:
 out:
 	return NET_RX_DROP;
 }
+
+
+void insert_func_to_BR_PRE_ROUTE(void *FUNC)
+{
+   br_pre_insert_hook= FUNC;
+}
+
+
+void remove_func_from_BR_PRE_ROUTE(void)
+{
+   br_pre_insert_hook= NULL;
+}
+

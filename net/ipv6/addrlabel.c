@@ -19,11 +19,7 @@
 #include <linux/netlink.h>
 #include <linux/rtnetlink.h>
 
-#if 0
-#define ADDRLABEL(x...) printk(x)
-#else
 #define ADDRLABEL(x...) do { ; } while(0)
-#endif
 
 /*
  * Policy Table
@@ -358,7 +354,6 @@ static int __net_init ip6addrlbl_net_init(struct net *net)
 					 ip6addrlbl_init_table[i].prefixlen,
 					 0,
 					 ip6addrlbl_init_table[i].label, 0);
-		/* XXX: should we free all rules when we catch an error? */
 		if (ret && (!err || err != -ENOMEM))
 			err = ret;
 	}
@@ -597,4 +592,3 @@ void __init ipv6_addr_label_rtnl_register(void)
 	__rtnl_register(PF_INET6, RTM_DELADDRLABEL, ip6addrlbl_newdel, NULL);
 	__rtnl_register(PF_INET6, RTM_GETADDRLABEL, ip6addrlbl_get, ip6addrlbl_dump);
 }
-

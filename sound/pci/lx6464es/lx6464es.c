@@ -222,15 +222,6 @@ static int lx_pcm_open(struct snd_pcm_substream *substream)
 	/* copy the struct snd_pcm_hardware struct */
 	runtime->hw = lx_caps;
 
-#if 0
-	/* buffer-size should better be multiple of period-size */
-	err = snd_pcm_hw_constraint_integer(runtime,
-					    SNDRV_PCM_HW_PARAM_PERIODS);
-	if (err < 0) {
-		snd_printk(KERN_WARNING LXP "could not constrain periods\n");
-		goto exit;
-	}
-#endif
 
 	/* the clock rate cannot be changed */
 	board_rate = chip->board_sample_rate;

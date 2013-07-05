@@ -135,7 +135,7 @@ static void nvidiafb_load_cursor_image(struct nvidia_par *par, u8 * data8,
 
 		for (j = 0; j < w / 2; j++) {
 			tmp = 0;
-#if defined (__BIG_ENDIAN)
+#if defined(__BIG_ENDIAN)
 			tmp = (b & (1 << 31)) ? fg << 16 : bg << 16;
 			b <<= 1;
 			tmp |= (b & (1 << 31)) ? fg : bg;
@@ -187,7 +187,6 @@ static int nvidia_panel_tweak(struct nvidia_par *par,
 	      we can do is experiment and apply hacks. */
 
 	   if(((par->Chipset & 0xffff) == 0x0328) && (state->bpp == 32)) {
-		   /* At least one NV34 laptop needs this workaround. */
 		   tweak = -1;
 	   }
 
@@ -654,7 +653,7 @@ static int nvidiafb_set_par(struct fb_info *info)
 	nvidia_write_regs(par, &par->ModeReg);
 	NVSetStartAddress(par, 0);
 
-#if defined (__BIG_ENDIAN)
+#if defined(__BIG_ENDIAN)
 	/* turn on LFB swapping */
 	{
 		unsigned char tmp;

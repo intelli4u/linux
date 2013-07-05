@@ -600,4 +600,3 @@ module_init(mda_console_init);
 module_exit(mda_console_exit);
 
 MODULE_LICENSE("GPL");
-

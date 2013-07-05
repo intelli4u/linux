@@ -1808,7 +1808,7 @@ PHY_GetTxPowerLevel8192S(
 	// 1. 802.11h power contraint
 	//
 	//
-#ifdef TODO //WB, 11h has not implemented now.
+#ifdef TODO     //WB, 11h has not implemented now.
 	if(	priv->ieee80211->iw_mode != IW_MODE_INFRA && priv->bWithCcxCellPwr &&
 		channel == priv->ieee80211->current_network.channel)// & priv->ieee80211->mAssoc )
 	{
@@ -3167,7 +3167,6 @@ void SetBWModeCallback8192SUsb(struct net_device *dev)
 	}
 	//Skip over setting of J-mode in BB register here. Default value is "None J mode". Emily 20070315
 
-#if 1
 	//3<3>Set RF related register
 	switch( priv->rf_chip )
 	{
@@ -3196,7 +3195,6 @@ void SetBWModeCallback8192SUsb(struct net_device *dev)
 		default:
 			break;
 	}
-#endif
 	priv->SetBWModeInProgress= FALSE;
 
 	RT_TRACE(COMP_SCAN, "<==SetBWMode8190Pci()" );
@@ -3419,7 +3417,6 @@ bool HalSetFwCmd8192S(struct net_device* dev, FW_CMD_IO_TYPE	FwCmdIO)
 		return false;
 	}
 
-#if 1
 	while(priv->SetFwCmdInProgress && FwCmdWaitCounter<FwCmdWaitLimit)
 	{
 
@@ -3434,7 +3431,6 @@ bool HalSetFwCmd8192S(struct net_device* dev, FW_CMD_IO_TYPE	FwCmdIO)
 	{
 		RT_TRACE(COMP_CMD, "HalSetFwCmd8192S(): Wait too logn to set FW CMD\n");
 	}
-#endif
 	if (priv->SetFwCmdInProgress)
 	{
 		RT_TRACE(COMP_ERR, "<--HalSetFwCmd8192S(): Set FW Cmd(%#x)\n", FwCmdIO);
@@ -3631,4 +3627,3 @@ void phy_SetFwCmdIOCallback(struct net_device* dev)
 	RT_TRACE(COMP_CMD, "<---SetFwCmdIOWorkItemCallback()\n");
 
 }
-

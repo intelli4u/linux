@@ -200,13 +200,6 @@ error_bad_size:
 }
 
 
-/*
- * Process an interrupt from the SDIO card
- *
- * FIXME: need to process other events that are not just ready-to-read
- *
- * Checks there is data ready and then proceeds to read it.
- */
 static
 void i2400ms_irq(struct sdio_func *func)
 {

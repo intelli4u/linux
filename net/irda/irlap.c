@@ -132,7 +132,6 @@ struct irlap_cb *irlap_open(struct net_device *dev, struct qos_info *qos,
 		self->hw_name[0] = '\0';
 	}
 
-	/* FIXME: should we get our own field? */
 	dev->atalk_ptr = self;
 
 	self->state = LAP_OFFLINE;
@@ -365,10 +364,6 @@ void irlap_data_request(struct irlap_cb *self, struct sk_buff *skb,
 	/* Add at the end of the queue (keep ordering) - Jean II */
 	skb_queue_tail(&self->txq, skb);
 
-	/*
-	 *  Send event if this frame only if we are in the right state
-	 *  FIXME: udata should be sent first! (skb_queue_head?)
-	 */
 	if ((self->state == LAP_XMIT_P) || (self->state == LAP_XMIT_S)) {
 		/* If we are not already processing the Tx queue, trigger
 		 * transmission immediately - Jean II */

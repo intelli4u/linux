@@ -178,4 +178,3 @@ ENTRY(resume)
 	movel	%a0,%usp
 	movew	%a1@(TASK_THREAD+THREAD_SR),%sr	/* restore thread status reg */
 	rts
-

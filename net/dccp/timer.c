@@ -67,9 +67,6 @@ static int dccp_write_timeout(struct sock *sk)
 		}
 
 		retry_until = sysctl_dccp_retries2;
-		/*
-		 * FIXME: see tcp_write_timout and tcp_out_of_resources
-		 */
 	}
 
 	if (icsk->icsk_retransmits >= retry_until) {

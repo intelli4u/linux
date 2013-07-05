@@ -155,4 +155,3 @@ struct board_info
 	void ( * assertmemoff )	(struct channel *) ;
 	unsigned char poller_inhibited ;
 };
-

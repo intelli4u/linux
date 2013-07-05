@@ -515,7 +515,6 @@ static int fb_prepare_extra_logos(struct fb_info *info, unsigned int height,
 {
 	unsigned int i;
 
-	/* FIXME: logo_ex supports only truecolor fb. */
 	if (info->fix.visual != FB_VISUAL_TRUECOLOR)
 		fb_logo_ex_num = 0;
 

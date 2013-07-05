@@ -239,4 +239,3 @@ out:
 	mlx4_free_cmd_mailbox(mdev->dev, mailbox);
 	return err;
 }
-

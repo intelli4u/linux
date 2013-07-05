@@ -128,30 +128,6 @@ static void atari_par_console_write(struct console *co, const char *str,
 	}
 }
 
-#if 0
-int atari_mfp_console_wait_key(struct console *co)
-{
-	while (!(st_mfp.rcv_stat & 0x80))	/* wait for rx buf filled */
-		barrier();
-	return st_mfp.usart_dta;
-}
-
-int atari_scc_console_wait_key(struct console *co)
-{
-	do {
-		MFPDELAY();
-	} while (!(scc.cha_b_ctrl & 0x01)); /* wait for rx buf filled */
-	MFPDELAY();
-	return scc.cha_b_data;
-}
-
-int atari_midi_console_wait_key(struct console *co)
-{
-	while (!(acia.mid_ctrl & ACIA_RDRF)) /* wait for rx buf filled */
-		barrier();
-	return acia.mid_data;
-}
-#endif
 
 /*
  * The following two functions do a quick'n'dirty initialization of the MFP or

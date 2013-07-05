@@ -284,10 +284,6 @@ void i8259_init(struct device_node *node, unsigned long intack_addr)
 	}
 
 	/* reserve our resources */
-	/* XXX should we continue doing that ? it seems to cause problems
-	 * with further requesting of PCI IO resources for that range...
-	 * need to look into it.
-	 */
 	request_resource(&ioport_resource, &pic1_iores);
 	request_resource(&ioport_resource, &pic2_iores);
 	request_resource(&ioport_resource, &pic_edgectrl_iores);

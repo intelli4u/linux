@@ -670,4 +670,3 @@ nv40_grctx_init(struct nouveau_grctx *ctx)
 	cp_set (ctx, USER_LOAD, NOT_PENDING);
 	cp_out (ctx, CP_END);
 }
-

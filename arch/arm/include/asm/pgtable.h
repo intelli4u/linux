@@ -441,7 +441,6 @@ extern pgd_t swapper_pg_dir[PTRS_PER_PGD];
 #define PTE_FILE_MAX_BITS	29
 
 /* Needs to be defined here and not in linux/mm.h, as it is arch dependent */
-/* FIXME: this is not correct */
 #define kern_addr_valid(addr)	(1)
 
 #include <asm-generic/pgtable.h>

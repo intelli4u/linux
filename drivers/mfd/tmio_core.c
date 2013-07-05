@@ -17,7 +17,6 @@ int tmio_core_mmc_enable(void __iomem *cnf, int shift, unsigned long base)
 	/* Disable SD power during suspend */
 	sd_config_write8(cnf, shift, CNF_PWR_CTL_3, 0x01);
 
-	/* The below is required but why? FIXME */
 	sd_config_write8(cnf, shift, CNF_STOP_CLK_CTL, 0x1f);
 
 	/* Power down SD bus */
@@ -49,4 +48,3 @@ void tmio_core_mmc_clk_div(void __iomem *cnf, int shift, int state)
 	sd_config_write8(cnf, shift, CNF_SD_CLK_MODE, state ? 1 : 0);
 }
 EXPORT_SYMBOL(tmio_core_mmc_clk_div);
-

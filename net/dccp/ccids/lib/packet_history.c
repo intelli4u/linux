@@ -453,12 +453,7 @@ u32 tfrc_rx_hist_sample_rtt(struct tfrc_rx_hist *h, const struct sk_buff *skb)
 				sample = 4 / sample *
 				         ktime_us_delta(tfrc_rx_hist_rtt_prev_s(h)->tfrchrx_tstamp,
 							tfrc_rx_hist_rtt_last_s(h)->tfrchrx_tstamp);
-			else    /*
-				 * FIXME: This condition is in principle not
-				 * possible but occurs when CCID is used for
-				 * two-way data traffic. I have tried to trace
-				 * it, but the cause does not seem to be here.
-				 */
+			else
 				DCCP_BUG("please report to dccp@vger.kernel.org"
 					 " => prev = %u, last = %u",
 					 tfrc_rx_hist_rtt_prev_s(h)->tfrchrx_ccval,

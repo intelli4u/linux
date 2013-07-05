@@ -2096,12 +2096,6 @@ __enqueue_tpd(struct he_dev *he_dev, struct he_tpd *tpd, unsigned cid)
 			int slot;
 
 			hprintk("tpdrq full (cid 0x%x)\n", cid);
-			/*
-			 * FIXME
-			 * push tpd onto a transmit backlog queue
-			 * after service_tbrq, service the backlog
-			 * for now, we just drop the pdu
-			 */
 			for (slot = 0; slot < TPD_MAXIOV; ++slot) {
 				if (tpd->iovec[slot].addr)
 					pci_unmap_single(he_dev->pci_dev,

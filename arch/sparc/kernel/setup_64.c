@@ -139,10 +139,6 @@ static void __init boot_flags_init(char *commands)
 			continue;
 		}
 		if (!strncmp(commands, "mem=", 4)) {
-			/*
-			 * "mem=XXX[kKmM]" overrides the PROM-reported
-			 * memory size.
-			 */
 			cmdline_memory_size = simple_strtoul(commands + 4,
 							     &commands, 0);
 			if (*commands == 'K' || *commands == 'k') {

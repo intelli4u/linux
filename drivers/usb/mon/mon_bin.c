@@ -61,19 +61,6 @@
 #define CHUNK_SIZE   PAGE_SIZE
 #define CHUNK_ALIGN(x)   (((x)+CHUNK_SIZE-1) & ~(CHUNK_SIZE-1))
 
-/*
- * The magic limit was calculated so that it allows the monitoring
- * application to pick data once in two ticks. This way, another application,
- * which presumably drives the bus, gets to hog CPU, yet we collect our data.
- * If HZ is 100, a 480 mbit/s bus drives 614 KB every jiffy. USB has an
- * enormous overhead built into the bus protocol, so we need about 1000 KB.
- *
- * This is still too much for most cases, where we just snoop a few
- * descriptor fetches for enumeration. So, the default is a "reasonable"
- * amount for systems with HZ=250 and incomplete bus saturation.
- *
- * XXX What about multi-megabyte URBs which take minutes to transfer?
- */
 #define BUFF_MAX  CHUNK_ALIGN(1200*1024)
 #define BUFF_DFL   CHUNK_ALIGN(300*1024)
 #define BUFF_MIN     CHUNK_ALIGN(8*1024)
@@ -171,7 +158,7 @@ struct mon_bin_mfetch32 {
  */
 struct mon_pgmap {
 	struct page *pg;
-	unsigned char *ptr;	/* XXX just use page_to_virt everywhere? */
+	unsigned char *ptr;
 };
 
 /*

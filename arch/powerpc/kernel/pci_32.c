@@ -268,10 +268,6 @@ pci_busdev_to_OF_node(struct pci_bus *bus, int devfn)
 	of_node_put(parent);
 	pr_debug(" result is %s\n", np ? np->full_name : "<NULL>");
 
-	/* XXX most callers don't release the returned node
-	 * mostly because ppc64 doesn't increase the refcount,
-	 * we need to fix that.
-	 */
 	return np;
 }
 EXPORT_SYMBOL(pci_busdev_to_OF_node);
@@ -448,5 +444,3 @@ long sys_pciconfig_iobase(long which, unsigned long bus, unsigned long devfn)
 
 	return result;
 }
-
-

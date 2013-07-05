@@ -609,14 +609,6 @@ static int init_volumes(struct ubi_device *ubi, const struct ubi_scan_info *si,
 		/* Static volumes only */
 		sv = ubi_scan_find_sv(si, i);
 		if (!sv) {
-			/*
-			 * No eraseblocks belonging to this volume found. We
-			 * don't actually know whether this static volume is
-			 * completely corrupted or just contains no data. And
-			 * we cannot know this as long as data size is not
-			 * stored on flash. So we just assume the volume is
-			 * empty. FIXME: this should be handled.
-			 */
 			continue;
 		}
 

@@ -307,7 +307,6 @@ static void kvmppc_mmu_book3s_32_mtsrin(struct kvm_vcpu *vcpu, u32 srnum,
 
 	/* Flush any left-over shadows from the previous SR */
 
-	/* XXX Not necessary? */
 	/* kvmppc_mmu_pte_flush(vcpu, ((u64)sre->vsid) << 28, 0xf0000000ULL); */
 
 	/* And then put in the new SR */

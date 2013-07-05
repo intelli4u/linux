@@ -144,4 +144,3 @@ void *ug_probe(void)
 		ug_io_base = NULL;
 	return ug_io_base;
 }
-

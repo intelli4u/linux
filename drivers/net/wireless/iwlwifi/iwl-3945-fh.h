@@ -185,4 +185,3 @@ struct iwl3945_tfd {
 
 
 #endif /* __iwl_3945_fh_h__ */
-

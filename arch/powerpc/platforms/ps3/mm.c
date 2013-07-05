@@ -593,7 +593,6 @@ static int dma_ioc0_map_pages(struct ps3_dma_region *r, unsigned long phys_addr,
 		    last->bus_addr, last->len);
 	}
 
-	/* FIXME: check whether length exceeds region size */
 
 	/* build ioptes for the area */
 	pages = len >> r->page_size;
@@ -857,7 +856,6 @@ static int dma_ioc0_map_area(struct ps3_dma_region *r, unsigned long virt_addr,
 	c = dma_find_chunk_lpar(r, ps3_mm_phys_to_lpar(phys_addr), len);
 
 	if (c) {
-		/* FIXME */
 		BUG();
 		*bus_addr = c->bus_addr + phys_addr - aligned_phys;
 		c->usage_count++;
@@ -982,7 +980,7 @@ static int dma_sb_region_create_linear(struct ps3_dma_region *r)
 	unsigned long virt_addr, len;
 	dma_addr_t tmp;
 
-	if (r->len > 16*1024*1024) {	/* FIXME: need proper fix */
+	if (r->len > 16*1024*1024) {
 		/* force 16M dma pages for linear mapping */
 		if (r->page_size != PS3_DMA_16M) {
 			pr_info("%s:%d: forcing 16M pages for linear map\n",

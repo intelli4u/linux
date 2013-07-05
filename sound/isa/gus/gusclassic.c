@@ -222,10 +222,6 @@ static struct isa_driver snd_gusclassic_driver = {
 	.match		= snd_gusclassic_match,
 	.probe		= snd_gusclassic_probe,
 	.remove		= __devexit_p(snd_gusclassic_remove),
-#if 0	/* FIXME */
-	.suspend	= snd_gusclassic_suspend,
-	.remove		= snd_gusclassic_remove,
-#endif
 	.driver		= {
 		.name	= DEV_NAME
 	}

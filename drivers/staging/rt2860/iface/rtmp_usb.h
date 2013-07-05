@@ -30,9 +30,7 @@
 
 #include "../rtusb_io.h"
 
-#ifdef LINUX
 #include <linux/usb.h>
-#endif // LINUX //
 
 extern u8 EpToQueue[6];
 
@@ -76,7 +74,6 @@ extern u8 EpToQueue[6];
 
 ******************************************************************************/
 
-#ifdef LINUX
 #define BULKAGGRE_ZISE          100
 #define RT28XX_PUT_DEVICE							usb_put_dev
 #define RTUSB_ALLOC_URB(iso)							usb_alloc_urb(iso, GFP_ATOMIC)
@@ -96,8 +93,6 @@ extern void dump_urb(struct urb *purb);
 #define InterlockedDecrement		atomic_dec
 #define NdisInterlockedDecrement	atomic_dec
 #define InterlockedExchange		atomic_set
-
-#endif // LINUX //
 
 #define NT_SUCCESS(status)			(((status) >=0) ? (TRUE):(FALSE))
 

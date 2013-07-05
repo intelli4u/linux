@@ -73,10 +73,6 @@ static const struct ieee80211_channel ath9k_2ghz_chantable[] = {
 	CHAN2G(2484, 13), /* Channel 14 */
 };
 
-/* Some 5 GHz radios are actually tunable on XXXX-YYYY
- * on 5 MHz steps, we support the channels which we know
- * we have calibration data for all cards though to make
- * this static */
 static const struct ieee80211_channel ath9k_5ghz_chantable[] = {
 	/* _We_ call this UNII 1 */
 	CHAN5G(5180, 14), /* Channel 36 */
@@ -316,7 +312,7 @@ int ath_descdma_setup(struct ath_softc *sc, struct ath_descdma *dd,
 	ds = (u8 *) dd->dd_desc;
 	ath_print(common, ATH_DBG_CONFIG, "%s DMA map: %p (%u) -> %llx (%u)\n",
 		  name, ds, (u32) dd->dd_desc_len,
-		  ito64(dd->dd_desc_paddr), /*XXX*/(u32) dd->dd_desc_len);
+		  ito64(dd->dd_desc_paddr),(u32) dd->dd_desc_len);
 
 	/* allocate buffers */
 	bsize = sizeof(struct ath_buf) * nbuf;

@@ -328,7 +328,6 @@ static void lpphy_baseband_rev0_1_init(struct b43_wldev *dev)
 		b43_phy_set(dev, B43_LPPHY_CRSGAIN_CTL, 0x0006);
 		b43_phy_write(dev, B43_LPPHY_GPIO_SELECT, 0x0005);
 		b43_phy_write(dev, B43_LPPHY_GPIO_OUTEN, 0xFFFF);
-		//FIXME the Broadcom driver caches & delays this HF write!
 		b43_hf_write(dev, b43_hf_read(dev) | B43_HF_PR45960W);
 	}
 	if (b43_current_band(dev->wl) == IEEE80211_BAND_2GHZ) {
@@ -595,7 +594,7 @@ static void lpphy_2062_init(struct b43_wldev *dev)
 	if (!fd)
 		fd = &freqdata_tab[ARRAY_SIZE(freqdata_tab) - 1];
 	b43dbg(dev->wl, "b2062: Using crystal tab entry %u kHz.\n",
-	       fd->freq); /* FIXME: Keep this printk until the code is fully debugged. */
+	       fd->freq);
 
 	b43_radio_write(dev, B2062_S_RFPLL_CTL8,
 			((u16)(fd->data[1]) << 4) | fd->data[0]);
@@ -711,7 +710,7 @@ static void lpphy_set_rc_cap(struct b43_wldev *dev)
 
 	u8 rc_cap = (lpphy->rc_cap & 0x1F) >> 1;
 
-	if (dev->phy.rev == 1) //FIXME check channel 14!
+	if (dev->phy.rev == 1)
 		rc_cap = min_t(u8, rc_cap + 5, 15);
 
 	b43_radio_write(dev, B2062_N_RXBB_CALIB2,
@@ -913,10 +912,6 @@ static void lpphy_set_tx_gains(struct b43_wldev *dev,
 		pa_gain = lpphy_get_pa_gain(dev);
 		b43_phy_write(dev, B43_LPPHY_TX_GAIN_CTL_OVERRIDE_VAL,
 			      (gains.pga << 8) | gains.gm);
-		/*
-		 * SPEC FIXME The spec calls for (pa_gain << 8) here, but that
-		 * conflicts with the spec for set_pa_gain! Vendor driver bug?
-		 */
 		b43_phy_maskset(dev, B43_PHY_OFDM(0xFB),
 				0x8000, gains.pad | (pa_gain << 6));
 		b43_phy_write(dev, B43_PHY_OFDM(0xFC),
@@ -1273,13 +1268,6 @@ finish:
 
 	lpphy_set_bb_mult(dev, old_bbmult);
 	if (old_txg_ovr) {
-		/*
-		 * SPEC FIXME: The specs say "get_tx_gains" here, which is
-		 * illogical. According to lwfinger, vendor driver v4.150.10.5
-		 * has a Set here, while v4.174.64.19 has a Get - regression in
-		 * the vendor driver? This should be tested this once the code
-		 * is testable.
-		 */
 		lpphy_set_tx_gains(dev, tx_gains);
 	}
 	lpphy_set_tx_power_control(dev, old_txpctl);
@@ -1421,7 +1409,7 @@ static void lpphy_set_tx_power_by_index(struct b43_wldev *dev, u8 index)
 	if (dev->phy.rev >= 2) {
 		rf_power = b43_lptab_read(dev, B43_LPTAB32(7, index + 576));
 		b43_phy_maskset(dev, B43_LPPHY_RF_PWR_OVERRIDE, 0xFF00,
-				rf_power & 0xFFFF);//SPEC FIXME mask & set != 0
+				rf_power & 0xFFFF);
 	}
 	lpphy_enable_tx_gain_override(dev);
 }
@@ -1462,9 +1450,9 @@ static void b43_lpphy_op_software_rfkill(struct b43_wldev *dev,
 static void lpphy_set_analog_filter(struct b43_wldev *dev, int channel)
 {
 	struct b43_phy_lp *lpphy = dev->phy.lp;
-	u16 tmp = (channel == 14); //SPEC FIXME check japanwidefilter!
+	u16 tmp = (channel == 14);
 
-	if (dev->phy.rev < 2) { //SPEC FIXME Isn't this rev0/1-specific?
+	if (dev->phy.rev < 2) {
 		b43_phy_maskset(dev, B43_LPPHY_LP_PHY_CTL, 0xFCFF, tmp << 9);
 		if ((dev->phy.rev == 1) && (lpphy->rc_cap))
 			lpphy_set_rc_cap(dev);
@@ -1547,7 +1535,6 @@ static void lpphy_tx_pctl_init_hw(struct b43_wldev *dev)
 	b43_phy_mask(dev, B43_LPPHY_RF_OVERRIDE_0, 0xEFFF);
 
 	// (SPEC?) TODO Set "Target TX frequency" variable to 0
-	// SPEC FIXME "Set BB Multiplier to 0xE000" impossible - bb_mult is u8!
 }
 
 static void lpphy_tx_pctl_init_sw(struct b43_wldev *dev)
@@ -1572,7 +1559,7 @@ static void lpphy_tx_pctl_init_sw(struct b43_wldev *dev)
 /* Initialize TX power control */
 static void lpphy_tx_pctl_init(struct b43_wldev *dev)
 {
-	if (0/*FIXME HWPCTL capable */) {
+	if (0) {
 		lpphy_tx_pctl_init_hw(dev);
 	} else { /* This device is only software TX power control capable. */
 		lpphy_tx_pctl_init_sw(dev);
@@ -1607,8 +1594,7 @@ static void lpphy_pr41573_workaround(struct b43_wldev *dev)
 		b43_lptab_read_bulk(dev, B43_LPTAB32(7, 0x140),
 				    saved_tab_size, saved_tab);
 	}
-	//FIXME PHY reset
-	lpphy_table_init(dev); //FIXME is table init needed?
+	lpphy_table_init(dev);
 	lpphy_baseband_init(dev);
 	lpphy_tx_pctl_init(dev);
 	b43_lpphy_op_software_rfkill(dev, false);
@@ -1781,7 +1767,6 @@ static void lpphy_run_samples(struct b43_wldev *dev, u16 samples, u16 loops,
 	b43_phy_set(dev, B43_LPPHY_A_PHY_CTL_ADDR, 0x1);
 }
 
-//SPEC FIXME what does a negative freq mean?
 static void lpphy_start_tx_tone(struct b43_wldev *dev, s32 freq, u16 max)
 {
 	struct b43_phy_lp *lpphy = dev->phy.lp;
@@ -2670,7 +2655,7 @@ static int b43_lpphy_op_init(struct b43_wldev *dev)
 {
 	int err;
 
-	lpphy_read_band_sprom(dev); //FIXME should this be in prepare_structs?
+	lpphy_read_band_sprom(dev);
 	lpphy_baseband_init(dev);
 	lpphy_radio_init(dev);
 	lpphy_calibrate_rc(dev);

@@ -73,7 +73,6 @@ static int raid_match(struct attribute_container *cont, struct device *dev)
 		return i->f->is_raid(dev);
 	}
 #endif
-	/* FIXME: look at other subsystems too */
 	return 0;
 }
 
@@ -314,4 +313,3 @@ MODULE_LICENSE("GPL");
 
 module_init(raid_init);
 module_exit(raid_exit);
-

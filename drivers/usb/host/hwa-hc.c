@@ -68,12 +68,6 @@ struct hwahc {
 	struct wahc wa;
 };
 
-/*
- * FIXME should be wusbhc
- *
- * NOTE: we need to cache the Cluster ID because later...there is no
- *       way to get it :)
- */
 static int __hwahc_set_cluster_id(struct hwahc *hwahc, u8 cluster_id)
 {
 	int result;
@@ -86,7 +80,7 @@ static int __hwahc_set_cluster_id(struct hwahc *hwahc, u8 cluster_id)
 			USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE,
 			cluster_id,
 			wa->usb_iface->cur_altsetting->desc.bInterfaceNumber,
-			NULL, 0, 1000 /* FIXME: arbitrary */);
+			NULL, 0, 1000);
 	if (result < 0)
 		dev_err(dev, "Cannot set WUSB Cluster ID to 0x%02x: %d\n",
 			cluster_id, result);
@@ -106,7 +100,7 @@ static int __hwahc_op_set_num_dnts(struct wusbhc *wusbhc, u8 interval, u8 slots)
 			USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE,
 			interval << 8 | slots,
 			wa->usb_iface->cur_altsetting->desc.bInterfaceNumber,
-			NULL, 0, 1000 /* FIXME: arbitrary */);
+			NULL, 0, 1000);
 }
 
 /*
@@ -139,9 +133,6 @@ error_unlock:
 	return result;
 }
 
-/*
- * FIXME: break this function up
- */
 static int hwahc_op_start(struct usb_hcd *usb_hcd)
 {
 	u8 addr;
@@ -270,7 +261,7 @@ static void __hwahc_op_wusbhc_stop(struct wusbhc *wusbhc, int delay)
 			      USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE,
 			      delay * 1000,
 			      iface_no,
-			      NULL, 0, 1000 /* FIXME: arbitrary */);
+			      NULL, 0, 1000);
 	if (ret == 0)
 		msleep(delay);
 
@@ -299,7 +290,7 @@ static int __hwahc_op_bwa_set(struct wusbhc *wusbhc, s8 stream_index,
 			USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE,
 			stream_index,
 			wa->usb_iface->cur_altsetting->desc.bInterfaceNumber,
-			NULL, 0, 1000 /* FIXME: arbitrary */);
+			NULL, 0, 1000);
 	if (result < 0) {
 		dev_err(dev, "Cannot set WUSB stream index: %d\n", result);
 		goto out;
@@ -310,7 +301,7 @@ static int __hwahc_op_bwa_set(struct wusbhc *wusbhc, s8 stream_index,
 			WUSB_REQ_SET_WUSB_MAS,
 			USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE,
 			0, wa->usb_iface->cur_altsetting->desc.bInterfaceNumber,
-			mas_le, 32, 1000 /* FIXME: arbitrary */);
+			mas_le, 32, 1000);
 	if (result < 0)
 		dev_err(dev, "Cannot set WUSB MAS allocation: %d\n", result);
 out:
@@ -344,7 +335,7 @@ static int __hwahc_op_mmcie_add(struct wusbhc *wusbhc, u8 interval,
 			USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE,
 			interval << 8 | repeat_cnt,
 			handle << 8 | iface_no,
-			wuie, wuie->bLength, 1000 /* FIXME: arbitrary */);
+			wuie, wuie->bLength, 1000);
 }
 
 /*
@@ -361,7 +352,7 @@ static int __hwahc_op_mmcie_rm(struct wusbhc *wusbhc, u8 handle)
 			WUSB_REQ_REMOVE_MMC_IE,
 			USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE,
 			0, handle << 8 | iface_no,
-			NULL, 0, 1000 /* FIXME: arbitrary */);
+			NULL, 0, 1000);
 }
 
 /*
@@ -404,7 +395,7 @@ static int __hwahc_op_dev_info_set(struct wusbhc *wusbhc,
 			USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE,
 			0, wusb_dev->port_idx << 8 | iface_no,
 			dev_info, sizeof(struct hwa_dev_info),
-			1000 /* FIXME: arbitrary */);
+			1000);
 	kfree(dev_info);
 	return ret;
 }
@@ -444,7 +435,7 @@ static int __hwahc_dev_set_key(struct wusbhc *wusbhc, u8 port_idx, u32 tkid,
 			USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE,
 			USB_DT_KEY << 8 | key_idx,
 			port_idx << 8 | iface_no,
-			keyd, keyd_len, 1000 /* FIXME: arbitrary */);
+			keyd, keyd_len, 1000);
 
 	kzfree(keyd); /* clear keys etc. */
 	return result;
@@ -477,7 +468,6 @@ static int __hwahc_op_set_ptk(struct wusbhc *wusbhc, u8 port_idx, u32 tkid,
 			goto error_set_key;
 		encryption_value = wusbhc->ccm1_etd->bEncryptionValue;
 	} else {
-		/* FIXME: this should come from wusbhc->etd[UNSECURE].value */
 		encryption_value = 0;
 	}
 
@@ -486,7 +476,7 @@ static int __hwahc_op_set_ptk(struct wusbhc *wusbhc, u8 port_idx, u32 tkid,
 			USB_REQ_SET_ENCRYPTION,
 			USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE,
 			encryption_value, port_idx << 8 | iface_no,
-			NULL, 0, 1000 /* FIXME: arbitrary */);
+			NULL, 0, 1000);
 	if (result < 0)
 		dev_err(wusbhc->dev, "Can't set host's WUSB encryption for "
 			"port index %u to %s (value %d): %d\n", port_idx,
@@ -576,8 +566,8 @@ static struct hc_driver hwahc_hc_driver = {
 	.description = "hwa-hcd",
 	.product_desc = "Wireless USB HWA host controller",
 	.hcd_priv_size = sizeof(struct hwahc) - sizeof(struct usb_hcd),
-	.irq = NULL,			/* FIXME */
-	.flags = HCD_USB2,		/* FIXME */
+	.irq = NULL,
+	.flags = HCD_USB2,
 	.reset = hwahc_op_reset,
 	.start = hwahc_op_start,
 	.stop = hwahc_op_stop,
@@ -716,7 +706,7 @@ static int hwahc_create(struct hwahc *hwahc, struct usb_interface *iface)
 		dev_err(dev, "Can't initialize security: %d\n", result);
 		goto error_security_create;
 	}
-	wa->wusb = wusbhc;	/* FIXME: ugly, need to fix */
+	wa->wusb = wusbhc;
 	result = wusbhc_create(&hwahc->wusbhc);
 	if (result < 0) {
 		dev_err(dev, "Can't create WUSB HC structures: %d\n", result);
@@ -824,7 +814,6 @@ static void hwahc_disconnect(struct usb_interface *usb_iface)
 }
 
 static struct usb_device_id hwahc_id_table[] = {
-	/* FIXME: use class labels for this */
 	{ USB_INTERFACE_INFO(0xe0, 0x02, 0x01), },
 	{},
 };

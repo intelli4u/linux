@@ -327,7 +327,6 @@ int __init ibmphp_access_ebda (void)
 			debug ("offset of hpc data structure enteries: %x\n ", sub_addr);
 
 			sub_addr = base + re;	/* re sub blk */
-			/* FIXME: rc is never used/checked */
 			rc = readw (io_mem + sub_addr);	/* next sub blk */
 
 			sub_addr += 2;
@@ -1202,4 +1201,3 @@ static int ibmphp_probe (struct pci_dev * dev, const struct pci_device_id *ids)
 	}
 	return -ENODEV;
 }
-

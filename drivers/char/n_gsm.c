@@ -529,19 +529,6 @@ static void hex_packet(const unsigned char *p, int len)
 	printk("\n");
 }
 
-/**
- *	gsm_send	-	send a control frame
- *	@gsm: our GSM mux
- *	@addr: address for control frame
- *	@cr: command/response bit
- *	@control:  control byte including PF bit
- *
- *	Format up and transmit a control frame. These do not go via the
- *	queueing logic as they should be transmitted ahead of data when
- *	they are needed.
- *
- *	FIXME: Lock versus data TX path
- */
 
 static void gsm_send(struct gsm_mux *gsm, int addr, int cr, int control)
 {
@@ -570,7 +557,6 @@ static void gsm_send(struct gsm_mux *gsm, int addr, int cr, int control)
 		/* Now add the SOF markers */
 		cbuf[0] = GSM1_SOF;
 		cbuf[len + 1] = GSM1_SOF;
-		/* FIXME: we can omit the lead one in many cases */
 		len += 2;
 		break;
 	default:
@@ -640,15 +626,6 @@ static struct gsm_msg *gsm_data_alloc(struct gsm_mux *gsm, u8 addr, int len,
 	return m;
 }
 
-/**
- *	gsm_data_kick		-	poke the queue
- *	@gsm: GSM Mux
- *
- *	The tty device has called us to indicate that room has appeared in
- *	the transmit queue. Ram more data into the pipe if we have any
- *
- *	FIXME: lock against link layer control transmissions
- */
 
 static void gsm_data_kick(struct gsm_mux *gsm)
 {
@@ -656,7 +633,6 @@ static void gsm_data_kick(struct gsm_mux *gsm)
 	int len;
 	int skip_sof = 0;
 
-	/* FIXME: We need to apply this solely to data messages */
 	if (gsm->constipated)
 		return;
 
@@ -683,7 +659,6 @@ static void gsm_data_kick(struct gsm_mux *gsm)
 		if (gsm->output(gsm, gsm->txframe + skip_sof,
 						len - skip_sof) < 0)
 			break;
-		/* FIXME: Can eliminate one SOF in many more cases */
 		gsm->tx_head = msg->next;
 		if (gsm->tx_head == NULL)
 			gsm->tx_tail = NULL;
@@ -798,8 +773,6 @@ static int gsm_dlci_data_output(struct gsm_mux *gsm, struct gsm_dlci *dlci)
 	size = len + h;
 
 	msg = gsm_data_alloc(gsm, dlci->addr, size, gsm->ftype);
-	/* FIXME: need a timer or something to kick this so it can't
-	   get stuck with no work outstanding and no buffer free */
 	if (msg == NULL)
 		return -ENOMEM;
 	dp = msg->data;
@@ -867,8 +840,6 @@ static int gsm_dlci_data_output_framed(struct gsm_mux *gsm,
 	size = len + overhead;
 	msg = gsm_data_alloc(gsm, dlci->addr, size, gsm->ftype);
 
-	/* FIXME: need a timer or something to kick this so it can't
-	   get stuck with no work outstanding and no buffer free */
 	if (msg == NULL)
 		return -ENOMEM;
 	dp = msg->data;
@@ -885,18 +856,6 @@ static int gsm_dlci_data_output_framed(struct gsm_mux *gsm,
 	return size;
 }
 
-/**
- *	gsm_dlci_data_sweep		-	look for data to send
- *	@gsm: the GSM mux
- *
- *	Sweep the GSM mux channels in priority order looking for ones with
- *	data to send. We could do with optimising this scan a bit. We aim
- *	to fill the queue totally or up to TX_THRESH_HI bytes. Once we hit
- *	TX_THRESH_LO we get called again
- *
- *	FIXME: We should round robin between groups and in theory you can
- *	renegotiate DLCI priorities with optional stuff. Needs optimising.
- */
 
 static void gsm_dlci_data_sweep(struct gsm_mux *gsm)
 {
@@ -1542,7 +1501,6 @@ static void gsm_dlci_command(struct gsm_dlci *dlci, u8 *data, int len)
 		if (gsm_read_ea(&command, *data++) == 1) {
 			int clen = *data++;
 			len--;
-			/* FIXME: this is properly an EA */
 			clen >>= 1;
 			/* Malformed command ? */
 			if (clen > len)
@@ -1562,15 +1520,6 @@ static void gsm_dlci_command(struct gsm_dlci *dlci, u8 *data, int len)
  *	Allocate/Free DLCI channels
  */
 
-/**
- *	gsm_dlci_alloc		-	allocate a DLCI
- *	@gsm: GSM mux
- *	@addr: address of the DLCI
- *
- *	Allocate and install a new DLCI object into the GSM mux.
- *
- *	FIXME: review locking races
- */
 
 static struct gsm_dlci *gsm_dlci_alloc(struct gsm_mux *gsm, int addr)
 {
@@ -1718,10 +1667,6 @@ static void gsm_queue(struct gsm_mux *gsm)
 	case UI|PF:
 	case UIH:
 	case UIH|PF:
-#if 0
-		if (cr)
-			goto invalid;
-#endif
 		if (dlci == NULL || dlci->state != DLCI_OPEN) {
 			gsm_command(gsm, address, DM|PF);
 			return;
@@ -1867,17 +1812,6 @@ static void gsm1_receive(struct gsm_mux *gsm, unsigned char c)
 	}
 }
 
-/**
- *	gsm_error		-	handle tty error
- *	@gsm: ldisc data
- *	@data: byte received (may be invalid)
- *	@flag: error received
- *
- *	Handle an error in the receipt of data for a frame. Currently we just
- *	go back to hunting for a SOF.
- *
- *	FIXME: better diagnostics ?
- */
 
 static void gsm_error(struct gsm_mux *gsm,
 				unsigned char data, unsigned char flag)
@@ -2388,8 +2322,6 @@ static int gsmld_config(struct tty_struct *tty, struct gsm_mux *gsm,
 	if (c->t2)
 		gsm->t2 = c->t2;
 
-	/* FIXME: We need to separate activation/deactivation from adding
-	   and removing from the mux array */
 	if (need_restart)
 		gsm_activate_mux(gsm);
 	if (gsm->initiator && need_close)
@@ -2520,7 +2452,6 @@ static int gsmtty_open(struct tty_struct *tty, struct file *filp)
 
 	if (mux >= MAX_MUX)
 		return -ENXIO;
-	/* FIXME: we need to lock gsm_mux for lifetimes of ttys eventually */
 	if (gsm_mux[mux] == NULL)
 		return -EUNATCH;
 	if (line == 0 || line > 61)	/* 62/63 reserved */
@@ -2731,7 +2662,6 @@ static int __init gsm_init(void)
 	gsm_tty_driver->flags	= TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV
 							| TTY_DRIVER_HARDWARE_BREAK;
 	gsm_tty_driver->init_termios	= tty_std_termios;
-	/* Fixme */
 	gsm_tty_driver->init_termios.c_lflag &= ~ECHO;
 	tty_set_operations(gsm_tty_driver, &gsmtty_ops);
 

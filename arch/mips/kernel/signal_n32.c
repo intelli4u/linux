@@ -83,7 +83,6 @@ asmlinkage int sysn32_rt_sigsuspend(nabi_no_regargs struct pt_regs regs)
 	size_t sigsetsize;
 	sigset_t newset;
 
-	/* XXX Don't preclude handling different sized sigset_t's.  */
 	sigsetsize = regs.regs[5];
 	if (sigsetsize != sizeof(sigset_t))
 		return -EINVAL;

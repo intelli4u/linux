@@ -749,18 +749,6 @@ static irqreturn_t snd_es18xx_interrupt(int irq, void *dev_id)
 		/* Read Interrupt status */
 		status = snd_es18xx_mixer_read(chip, 0x7f) >> 4;
 	}
-#if 0
-	else {
-		status = 0;
-		if (inb(chip->port + 0x0C) & 0x01)
-			status |= AUDIO1_IRQ;
-		if (snd_es18xx_mixer_read(chip, 0x7A) & 0x80)
-			status |= AUDIO2_IRQ;
-		if ((chip->caps & ES18XX_HWV) &&
-		    snd_es18xx_mixer_read(chip, 0x64) & 0x10)
-			status |= HWV_IRQ;
-	}
-#endif
 
 	/* Audio 1 & Audio 2 */
         if (status & AUDIO2_IRQ) {

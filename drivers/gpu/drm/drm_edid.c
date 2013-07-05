@@ -43,12 +43,6 @@
 #define EDID_STD_TIMINGS 8
 #define EDID_DETAILED_TIMINGS 4
 
-/*
- * EDID blocks out in the wild have a variety of bugs, try to collect
- * them here (note that userspace may work around broken monitors first,
- * but fixes should make their way here so that the kernel "just works"
- * on as many displays as possible).
- */
 
 /* First detailed mode wrong, use largest 60Hz mode */
 #define EDID_QUIRK_PREFER_LARGE_60		(1 << 0)
@@ -955,10 +949,6 @@ mode_in_range(struct drm_display_mode *mode, struct edid *edid,
 	return true;
 }
 
-/*
- * XXX If drm_dmt_modes ever regrows the CVT-R modes (and it will) this will
- * need to account for them.
- */
 static int
 drm_gtf_modes_for_range(struct drm_connector *connector, struct edid *edid,
 			struct detailed_timing *timing)
@@ -1139,7 +1129,6 @@ add_standard_modes(struct drm_connector *connector, struct edid *edid)
 		drm_for_each_detailed_block((u8 *)edid, do_standard_modes,
 					    &closure);
 
-	/* XXX should also look for standard codes in VTB blocks */
 
 	return modes + closure.modes;
 }
@@ -1213,7 +1202,6 @@ add_cvt_modes(struct drm_connector *connector, struct edid *edid)
 	if (version_greater(edid, 1, 2))
 		drm_for_each_detailed_block((u8 *)edid, do_cvt_mode, &closure);
 
-	/* XXX should also look for CVT codes in VTB blocks */
 
 	return closure.modes;
 }
@@ -1350,20 +1338,6 @@ int drm_add_edid_modes(struct drm_connector *connector, struct edid *edid)
 
 	quirks = edid_get_quirks(edid);
 
-	/*
-	 * EDID spec says modes should be preferred in this order:
-	 * - preferred detailed mode
-	 * - other detailed modes from base block
-	 * - detailed modes from extension blocks
-	 * - CVT 3-byte code modes
-	 * - standard timing codes
-	 * - established timing codes
-	 * - modes inferred from GTF or CVT range information
-	 *
-	 * We get this pretty much right.
-	 *
-	 * XXX order for additional mode types in extension blocks?
-	 */
 	num_modes += add_detailed_modes(connector, edid, quirks);
 	num_modes += add_cvt_modes(connector, edid);
 	num_modes += add_standard_modes(connector, edid);

@@ -152,7 +152,6 @@ dasd_3990_erp_alternate_path(struct dasd_ccw_req * erp)
 	spin_lock_irqsave(get_ccwdev_lock(device->cdev), flags);
 	opm = ccw_device_get_path_mask(device->cdev);
 	spin_unlock_irqrestore(get_ccwdev_lock(device->cdev), flags);
-	//FIXME: start with get_opm ?
 	if (erp->lpm == 0)
 		erp->lpm = LPM_ANYPATH & ~(erp->irb.esw.esw0.sublog.lpum);
 	else

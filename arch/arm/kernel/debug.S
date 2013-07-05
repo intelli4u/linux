@@ -10,6 +10,7 @@
  *  32-bit debugging code
  */
 #include <linux/linkage.h>
+#include <asm/memory.h>
 
 		.text
 
@@ -145,7 +146,11 @@ ENDPROC(printhex4)
 
 ENTRY(printhex2)
 		mov	r1, #2
-printhex:	adr	r2, hexbuf
+printhex:	
+		mrc	p15, 0, r2, c1, c0	@ read SysCtrl
+		tst	r2, #1			@ MMU enabled?
+		ldrne	r2, =hexbuf		@ =1 virtual
+		ldreq	r2, =__virt_to_phys(hexbuf) @ =0 physical
 		add	r3, r2, r1
 		mov	r1, #0
 		strb	r1, [r3]
@@ -186,4 +191,5 @@ ENTRY(printch)
 		b	1b
 ENDPROC(printch)
 
+		.bss
 hexbuf:		.space 16

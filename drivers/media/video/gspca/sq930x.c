@@ -861,10 +861,6 @@ static int sd_init(struct gspca_dev *gspca_dev)
 
 	sd->gpio[0] = sd->gpio[1] = 0xff;	/* force gpio rewrite */
 
-/*fixme: is this needed for icx098bp and mi0360?
-	if (sd->sensor != SENSOR_LZ24BP)
-		reg_w(gspca_dev, SQ930_CTRL_RESET, 0x0000);
- */
 
 	reg_r(gspca_dev, SQ930_CTRL_GET_DEV_INFO, 8);
 /* it returns:

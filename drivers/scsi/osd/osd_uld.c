@@ -128,7 +128,6 @@ static int osd_uld_release(struct inode *inode, struct file *file)
 	return 0;
 }
 
-/* FIXME: Only one vector for now */
 unsigned g_test_ioctl;
 do_test_fn *g_do_test;
 
@@ -425,7 +424,6 @@ static int osd_probe(struct device *dev)
 	oud->minor = minor;
 
 	/* allocate a disk and set it up */
-	/* FIXME: do we need this since sg has already done that */
 	disk = alloc_disk(1);
 	if (!disk) {
 		OSD_ERR("alloc_disk failed\n");

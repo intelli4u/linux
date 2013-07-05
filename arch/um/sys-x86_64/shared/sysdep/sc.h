@@ -36,10 +36,5 @@
 #define SC_EFLAGS(sc) SC_OFFSET(sc, SC_EFLAGS)
 #define SC_SIGMASK(sc) SC_OFFSET(sc, SC_SIGMASK)
 #define SC_SS(sc) SC_OFFSET(sc, SC_SS)
-#if 0
-#define SC_ORIG_RAX(sc) SC_OFFSET(sc, SC_ORIG_RAX)
-#define SC_DS(sc) SC_OFFSET(sc, SC_DS)
-#define SC_ES(sc) SC_OFFSET(sc, SC_ES)
-#endif
 
 #endif

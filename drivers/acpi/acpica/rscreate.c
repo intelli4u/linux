@@ -261,12 +261,6 @@ acpi_rs_create_pci_routing_table(union acpi_operand_object *package_object,
 
 		user_prt->pin = (u32) obj_desc->integer.value;
 
-		/*
-		 * If the BIOS has erroneously reversed the _PRT source_name (index 2)
-		 * and the source_index (index 3), fix it. _PRT is important enough to
-		 * workaround this BIOS error. This also provides compatibility with
-		 * other ACPI implementations.
-		 */
 		obj_desc = sub_object_list[3];
 		if (!obj_desc || (obj_desc->common.type != ACPI_TYPE_INTEGER)) {
 			sub_object_list[3] = sub_object_list[2];

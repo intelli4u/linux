@@ -135,4 +135,3 @@ MACHINE_START(IXDPG425, "Intel IXDPG425")
 	.init_machine	= coyote_init,
 MACHINE_END
 #endif
-

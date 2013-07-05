@@ -101,10 +101,6 @@ static void qset_fill_qh(struct whc *whc, struct whc_qset *qset, struct urb *urb
 		| QH_INFO2_MAX_RETRY(3)
 		| QH_INFO2_MAX_SEQ(qset->max_seq - 1)
 		);
-	/* FIXME: where can we obtain these Tx parameters from?  Why
-	 * doesn't the chip know what Tx power to use? It knows the Rx
-	 * strength and can presumably guess the Tx power required
-	 * from that? */
 	qset->qh.info3 = cpu_to_le32(
 		QH_INFO3_TX_RATE(phy_rate)
 		| QH_INFO3_TX_PWR(0) /* 0 == max power */
@@ -783,18 +779,6 @@ void process_inactive_qtd(struct whc *whc, struct whc_qset *qset,
 	}
 }
 
-/**
- * process_halted_qtd - process a qset with a halted qtd
- *
- * Remove all the qTDs for the failed URB and return the failed URB to
- * the USB subsystem.  Then remove all other qTDs so the qset can be
- * removed.
- *
- * FIXME: this is the point where rate adaptation can be done.  If a
- * transfer failed because it exceeded the maximum number of retries
- * then it could be reactivated with a slower rate without having to
- * remove the qset.
- */
 void process_halted_qtd(struct whc *whc, struct whc_qset *qset,
 			       struct whc_qtd *qtd)
 {

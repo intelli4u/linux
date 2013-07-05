@@ -863,10 +863,6 @@ void debug_kusage(void)
 {
 	struct debug_alloc_header *h_free, *h_used;
 #ifdef	CONFIG_IA64
-	/* FIXME: using dah for ia64 unwind always results in a memory leak.
-	 * Fix that memory leak first, then set debug_kusage_one_time = 1 for
-	 * all architectures.
-	 */
 	static int debug_kusage_one_time;
 #else
 	static int debug_kusage_one_time = 1;

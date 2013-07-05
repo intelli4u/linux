@@ -55,7 +55,6 @@ static struct pll_data pll2_data = {
 
 static struct clk ref_clk = {
 	.name = "ref_clk",
-	/* FIXME -- crystal rate is board-specific */
 	.rate = DM355_REF_FREQ,
 };
 

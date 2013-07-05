@@ -115,7 +115,6 @@ int cvm_oct_sgmii_init(struct net_device *dev)
 	if (!octeon_is_simulation() && priv->phydev == NULL)
 		priv->poll = cvm_oct_sgmii_poll;
 
-	/* FIXME: Need autoneg logic */
 	return 0;
 }
 

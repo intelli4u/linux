@@ -96,7 +96,7 @@ void crash_ipi_callback(struct pt_regs *regs)
 #ifdef CONFIG_PPC64
 	kexec_smp_wait();
 #else
-	for (;;);	/* FIXME */
+	for (;;);
 #endif
 
 	/* NOTREACHED */
@@ -124,12 +124,6 @@ static void crash_kexec_prepare_cpus(int cpu)
 	crash_send_ipi(crash_ipi_callback);
 	smp_wmb();
 
-	/*
-	 * FIXME: Until we will have the way to stop other CPUSs reliabally,
-	 * the crash CPU will send an IPI and wait for other CPUs to
-	 * respond.
-	 * Delay of at least 10 seconds.
-	 */
 	printk(KERN_EMERG "Sending IPI to other cpus...\n");
 	msecs = 10000;
 	while ((cpus_weight(cpus_in_crash) < ncpus) && (--msecs > 0)) {
@@ -139,11 +133,6 @@ static void crash_kexec_prepare_cpus(int cpu)
 
 	/* Would it be better to replace the trap vector here? */
 
-	/*
-	 * FIXME: In case if we do not get all CPUs, one possibility: ask the
-	 * user to do soft reset such that we get all.
-	 * Soft-reset will be used until better mechanism is implemented.
-	 */
 	if (cpus_weight(cpus_in_crash) < ncpus) {
 		printk(KERN_EMERG "done waiting: %d cpu(s) not responding\n",
 			ncpus - cpus_weight(cpus_in_crash));
@@ -245,7 +234,6 @@ static void crash_kexec_prepare_cpus(int cpu)
 #ifdef CONFIG_PPC64
 	smp_release_cpus();
 #else
-	/* FIXME */
 #endif
 }
 

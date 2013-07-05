@@ -282,7 +282,6 @@ struct st_reject_data {
 };
 
 static struct st_reject_data reject_list[] = {
-	/* {"XXX", "Yy-", "", NULL},  example */
 	SIGS_FROM_OSST,
 	{NULL, }};
 
@@ -4574,9 +4573,6 @@ static int sgl_map_user_pages(struct st_buffer *STbp,
 		goto out_unmap;
 
         for (i=0; i < nr_pages; i++) {
-                /* FIXME: flush superflous for rw==READ,
-                 * probably wrong function for rw==WRITE
-                 */
 		flush_dcache_page(pages[i]);
         }
 
@@ -4606,9 +4602,6 @@ static int sgl_unmap_user_pages(struct st_buffer *STbp,
 
 		if (dirtied)
 			SetPageDirty(page);
-		/* FIXME: cache flush missing for rw==READ
-		 * FIXME: call the correct reference counting function
-		 */
 		page_cache_release(page);
 	}
 	kfree(STbp->mapped_pages);

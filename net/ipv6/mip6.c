@@ -276,11 +276,6 @@ static int mip6_destopt_offset(struct xfrm_state *x, struct sk_buff *skb,
 			found_rhdr = 1;
 			break;
 		case NEXTHDR_DEST:
-			/*
-			 * HAO MUST NOT appear more than once.
-			 * XXX: It is better to try to find by the end of
-			 * XXX: packet if HAO exists.
-			 */
 			if (ipv6_find_tlv(skb, offset, IPV6_TLV_HAO) >= 0) {
 				LIMIT_NETDEBUG(KERN_WARNING "mip6: hao exists already, override\n");
 				return offset;

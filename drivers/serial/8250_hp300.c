@@ -256,7 +256,6 @@ static int __init hp300_8250_init(void)
 		uport.iotype = UPIO_MEM;
 		uport.flags = UPF_SKIP_TEST | UPF_SHARE_IRQ \
 			      | UPF_BOOT_AUTOCONF;
-		/* XXX - no interrupt support yet */
 		uport.irq = 0;
 		uport.uartclk = HPAPCI_BAUD_BASE * 16;
 		uport.mapbase = base;

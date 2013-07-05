@@ -1,45 +1,4 @@
-/*
- * WiMedia Logical Link Control Protocol (WLP)
- *
- * Copyright (C) 2005-2006 Intel Corporation
- * Reinette Chatre <reinette.chatre@intel.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
- *
- *
- * FIXME: docs
- *
- * - Does not (yet) include support for WLP control frames
- *   WLP Draft 0.99 [6.5].
- *
- *   A visual representation of the data structures.
- *
- *                              wssidB      wssidB
- *                               ^           ^
- *                               |           |
- *                              wssidA      wssidA
- *   wlp interface {             ^           ^
- *       ...                     |           |
- *       ...               ...  wssid      wssid ...
- *       wlp --- ...             |           |
- *   };          neighbors --> neighbA --> neighbB
- *               ...
- *               wss
- *               ...
- *               eda cache  --> neighborA --> neighborB --> neighborC ...
- */
+
 
 #ifndef __LINUX__WLP_H_
 #define __LINUX__WLP_H_
@@ -409,13 +368,6 @@ struct wlp_attr_##name {						\
 	type name[];							\
 } __packed;
 
-/**
- * WLP association attribute fields
- * WLP Draft 0.99 [6.6.1 Table 6]
- *
- * Attributes appear in same order as the Table in the spec
- * FIXME Does not define all attributes yet
- */
 
 /* Device name: Friendly name of sending device */
 wlp_attr_array(u8, dev_name)

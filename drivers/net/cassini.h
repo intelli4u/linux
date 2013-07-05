@@ -1,4 +1,4 @@
-/* $Id: cassini.h,v 1.16 2004/08/17 21:15:16 zaumen Exp $
+/* $Id: cassini.h,v 1.16 2004/08/17 21:15:16 Exp $
  * cassini.h: Definitions for Sun Microsystems Cassini(+) ethernet driver.
  *
  * Copyright (C) 2004 Sun Microsystems Inc.
@@ -898,11 +898,6 @@
 #define  REG_RX_WORK_DMA_PTR_HI            0x405C  /* RX working DMA ptr
 						      high */
 
-/* BIST testing ro RX FIFO, RX control FIFO, and RX IPP FIFO. only RX BIST
- * START/COMPLETE is writeable. START will clear when the BIST has completed
- * checking all 17 RAMS.
- * DEFAULT: 0bxxxx xxxxx xxxx xxxx xxxx x000 0000 0000 00x0
- */
 #define  REG_RX_BIST                       0x4060  /* (ro) RX BIST */
 #define    RX_BIST_32A_PASS                0x80000000 /* RX FIFO 32A passed */
 #define    RX_BIST_33A_PASS                0x40000000 /* RX FIFO 33A passed */
@@ -2373,10 +2368,6 @@ static cas_hp_inst_t cas_prog_ip46tcp4batchtab[] = {
 #endif
 #endif
 
-/* Workaround for Cassini rev2 descriptor corruption problem.
- * Does batching without reassembly, and sets the SAP to a known
- * data pattern for all packets.
- */
 #ifdef USE_HP_WORKAROUND
 static cas_hp_inst_t  cas_prog_workaroundtab[] = {
 	{ "packet arrival?", 0xffff, 0x0000, OP_NP,  6, S1_VLAN,  0,
@@ -2433,11 +2424,6 @@ static cas_hp_inst_t  cas_prog_encryptiontab[] = {
 	  S1_PCKT,  CL_REG, 0x3ff,  1, 0x0, 0x0000},
 	{ "VLAN?", 0xffff, 0x8100, OP_EQ,  1, S1_CFI,   0, S1_8023,
 	  IM_CTL, 0x00a,  3, 0x0, 0xffff},
-#if 0
-//"CFI?", /* 02 FIND CFI and If FIND go to S1_DROP */
-//0x1000, 0x1000, OP_EQ,  0, S1_DROP,  1, S1_8023,  CL_REG, 0x000,  0, 0x0, 0x00
-	00,
-#endif
 	{ "CFI?", /* FIND CFI and If FIND go to CleanUP1 (ignore and send to host) */
 	  0x1000, 0x1000, OP_EQ,  0, S1_CLNP,  1, S1_8023,
 	  CL_REG, 0x000,  0, 0x0, 0x0000},
@@ -2462,9 +2448,6 @@ static cas_hp_inst_t  cas_prog_encryptiontab[] = {
 	{ "IPV6 cont?", 0x0000, 0x0000, OP_EQ,  3, S1_TCP64, 0, S1_CLNP,
 	  LD_FID, 0x484,  1, 0x0, 0xffff}, /*  FID IP6&TCP src+dst */
 	{ "TCP64?",
-#if 0
-//@@@0xff00, 0x0600, OP_EQ, 18, S1_TCPSQ, 0, S1_ESP6,  LD_LEN, 0x03f,  1, 0x0, 0xffff,
-#endif
 	  0xff00, 0x0600, OP_EQ, 12, S1_TCPSQ, 0, S1_ESP6,  LD_LEN,
 	  0x03f,  1, 0x0, 0xffff},
 	{ "TCP seq", /* 14:DADDR should point to dest port */
@@ -2491,15 +2474,9 @@ static cas_hp_inst_t  cas_prog_encryptiontab[] = {
 	  0x00ff, 0x0033, OP_EQ,  0, S1_CLNP2, 0, S1_CLNP, IM_CTL,
 	  0x021, 1,  0x0, 0xffff},
 	{ "IPV6 ESP encrypted?",  /* S1_ESP6 */
-#if 0
-//@@@0x00ff, 0x0032, OP_EQ,  0, S1_CLNP2, 0, S1_AH6, IM_CTL, 0x021, 1,  0x0, 0xffff,
-#endif
 	  0xff00, 0x3200, OP_EQ,  0, S1_CLNP2, 0, S1_AH6, IM_CTL,
 	  0x021, 1,  0x0, 0xffff},
 	{ "IPV6 AH encrypted?",   /* S1_AH6 */
-#if 0
-//@@@0x00ff, 0x0033, OP_EQ,  0, S1_CLNP2, 0, S1_CLNP, IM_CTL, 0x021, 1,  0x0, 0xffff,
-#endif
 	  0xff00, 0x3300, OP_EQ,  0, S1_CLNP2, 0, S1_CLNP, IM_CTL,
 	  0x021, 1,  0x0, 0xffff},
 	{ NULL },
@@ -2819,7 +2796,7 @@ struct cas {
 	int                     crc_size;      /* 4 if half-duplex */
 
 	int                     pci_irq_INTC;
-	int                     min_frame_size; /* for tx fifo workaround */
+	int                     min_frame_size;
 
 	/* page size allocation */
 	int                     page_size;
@@ -2835,16 +2812,11 @@ struct cas {
 	struct timer_list	link_timer;
 	int			timer_ticks;
 	struct work_struct	reset_task;
-#if 0
-	atomic_t		reset_task_pending;
-#else
 	atomic_t		reset_task_pending;
 	atomic_t		reset_task_pending_mtu;
 	atomic_t		reset_task_pending_spare;
 	atomic_t		reset_task_pending_all;
-#endif
 
-	/* Link-down problem workaround */
 #define LINK_TRANSITION_UNKNOWN 	0
 #define LINK_TRANSITION_ON_FAILURE 	1
 #define LINK_TRANSITION_STILL_FAILED 	2

@@ -161,7 +161,6 @@ static inline void cvmx_fpa_enable(void)
 		cvmx_wait(10);
 	}
 
-	/* FIXME: CVMX_FPA_CTL_STATUS read is unmodelled */
 	status.u64 = 0;
 	status.s.enb = 1;
 	cvmx_write_csr(CVMX_FPA_CTL_STATUS, status.u64);

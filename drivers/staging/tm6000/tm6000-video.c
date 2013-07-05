@@ -705,7 +705,6 @@ buffer_prepare(struct videobuf_queue *vq, struct videobuf_buffer *vb,
 	BUG_ON(NULL == fh->fmt);
 
 
-	/* FIXME: It assumes depth=2 */
 	/* The only currently supported format is 16 bits/pixel */
 	buf->vb.size = fh->fmt->depth*fh->width*fh->height >> 3;
 	if (0 != buf->vb.baddr  &&  buf->vb.bsize < buf->vb.size)
@@ -907,7 +906,6 @@ static int vidioc_try_fmt_vid_cap (struct file *file, void *priv,
 	return 0;
 }
 
-/*FIXME: This seems to be generic enough to be at videodev2 */
 static int vidioc_s_fmt_vid_cap (struct file *file, void *priv,
 					struct v4l2_format *f)
 {
@@ -1107,7 +1105,6 @@ static int vidioc_g_ctrl (struct file *file, void *priv,
 	struct tm6000_core *dev    = fh->dev;
 	int  val;
 
-	/* FIXME: Probably, those won't work! Maybe we need shadow regs */
 	switch (ctrl->id) {
 	case V4L2_CID_CONTRAST:
 		val = tm6000_get_reg(dev, TM6010_REQ07_R08_LUMA_CONTRAST_ADJ, 0);
@@ -1473,4 +1470,3 @@ MODULE_PARM_DESC(debug,"activates debug info");
 
 module_param(vid_limit,int,0644);
 MODULE_PARM_DESC(vid_limit,"capture memory limit in megabytes");
-

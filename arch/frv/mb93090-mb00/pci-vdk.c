@@ -323,9 +323,6 @@ DECLARE_PCI_FIXUP_HEADER(PCI_ANY_ID, PCI_ANY_ID, pci_fixup_ide_bases);
 
 void __init pcibios_fixup_bus(struct pci_bus *bus)
 {
-#if 0
-	printk("### PCIBIOS_FIXUP_BUS(%d)\n",bus->number);
-#endif
 
 	if (bus->number == 0) {
 		bus->resource[0] = &pci_ioport_resource;

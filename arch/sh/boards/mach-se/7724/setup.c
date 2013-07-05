@@ -33,17 +33,6 @@
 #include <cpu/sh7724.h>
 #include <mach-se/mach/se7724.h>
 
-/*
- * SWx    1234 5678
- * ------------------------------------
- * SW31 : 1001 1100    : default
- * SW32 : 0111 1111    : use on board flash
- *
- * SW41 : abxx xxxx  -> a = 0 : Analog  monitor
- *                          1 : Digital monitor
- *                      b = 0 : VGA
- *                          1 : 720p
- */
 
 /*
  * about 720p

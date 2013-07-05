@@ -232,16 +232,6 @@ alloc_reserved_region(resource_size_t *start, resource_size_t size,
 resource_size_t __initdata fbmem_start;
 resource_size_t __initdata fbmem_size;
 
-/*
- * "fbmem=xxx[kKmM]" allocates the specified amount of boot memory for
- * use as framebuffer.
- *
- * "fbmem=xxx[kKmM]@yyy[kKmM]" defines a memory region of size xxx and
- * starting at yyy to be reserved for use as framebuffer.
- *
- * The kernel won't verify that the memory region starting at yyy
- * actually contains usable RAM.
- */
 static int __init early_parse_fbmem(char *p)
 {
 	int ret;

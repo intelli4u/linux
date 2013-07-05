@@ -695,7 +695,7 @@ void ps3av_cmd_set_audio_mode(struct ps3av_pkt_audio_mode *audio, u32 avport,
 	ps3av_set_hdr(PS3AV_CID_AUDIO_MODE, sizeof(*audio), &audio->send_hdr);
 
 	audio->avport = (u8) avport;
-	audio->mask = 0x0FFF;	/* XXX set all */
+	audio->mask = 0x0FFF;
 	audio->audio_num_of_ch = ch;
 	audio->audio_fs = fs;
 	audio->audio_word_bits = word_bits;
@@ -933,4 +933,3 @@ int ps3av_cmd_video_get_monitor_info(struct ps3av_pkt_av_get_monitor_info *info,
 		| PS3AV_CMD_AV_LAYOUT_96 \
 		| PS3AV_CMD_AV_LAYOUT_176 \
 		| PS3AV_CMD_AV_LAYOUT_192)
-

@@ -84,9 +84,6 @@ static const struct seq_operations cachefiles_histogram_ops = {
 	.show		= cachefiles_histogram_show,
 };
 
-/*
- * open "/proc/fs/cachefiles/XXX" which provide statistics summaries
- */
 static int cachefiles_histogram_open(struct inode *inode, struct file *file)
 {
 	return seq_open(file, &cachefiles_histogram_ops);

@@ -724,8 +724,6 @@ static int onyx_prepare(struct codec_info_item *cii,
 	case 44100:
 	case 48000:
 		/* these rates are ok for all outputs */
-		/* FIXME: program spdif channel control bits here so that
-		 *	  userspace doesn't have to if it only plays pcm! */
 		err = 0;
 		goto out_unlock;
 	default:
@@ -835,7 +833,6 @@ static int onyx_resume(struct codec_info_item *cii)
 	if (onyx_read_register(onyx, ONYX_REG_CONTROL, &v))
 		goto out_unlock;
 	onyx_write_register(onyx, ONYX_REG_CONTROL, v & ~(ONYX_ADPSV | ONYX_DAPSV));
-	/* FIXME: should divide by sample rate, but 8k is the lowest we go */
 	msleep(2205000/8000);
 	/* reset all values */
 	onyx_register_init(onyx);

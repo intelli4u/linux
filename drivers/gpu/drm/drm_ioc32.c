@@ -904,7 +904,6 @@ static int compat_drm_sg_alloc(struct file *file, unsigned int cmd,
 	if (err)
 		return err;
 
-	/* XXX not sure about the handle conversion here... */
 	if (__get_user(x, &request->handle)
 	    || __put_user(x >> PAGE_SHIFT, &argp->handle))
 		return -EFAULT;

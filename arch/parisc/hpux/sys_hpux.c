@@ -287,10 +287,6 @@ static int hpux_uname(struct hpux_utsname __user *name)
 	/*  HP-UX  utsname has no domainname field.  */
 
 	/*  TODO:  Implement idnumber!!!  */
-#if 0
-	error |= __put_user(0,name->idnumber);
-	error |= __put_user(0,name->idnumber+HPUX_SNLEN-1);
-#endif
 
 	error = error ? -EFAULT : 0;
 

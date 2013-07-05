@@ -84,4 +84,3 @@ static inline int cpu_last_thread_in_core(int cpu)
 
 
 #endif /* _ASM_POWERPC_CPUTHREADS_H */
-

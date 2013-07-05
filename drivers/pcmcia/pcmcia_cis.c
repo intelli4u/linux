@@ -352,4 +352,3 @@ int pcmcia_get_mac_from_cis(struct pcmcia_device *p_dev, struct net_device *dev)
 	return pcmcia_loop_tuple(p_dev, CISTPL_FUNCE, pcmcia_do_get_mac, dev);
 }
 EXPORT_SYMBOL(pcmcia_get_mac_from_cis);
-

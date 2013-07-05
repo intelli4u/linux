@@ -288,7 +288,6 @@ static int __init at91_ide_probe(struct platform_device *pdev)
 	memset(&hw, 0, sizeof(hw));
 
 	if (board->flags & AT91_IDE_SWAP_A0_A2) {
-		/* workaround for stupid hardware bug */
 		hw.io_ports.data_addr	= tf_base + 0;
 		hw.io_ports.error_addr	= tf_base + 4;
 		hw.io_ports.nsect_addr	= tf_base + 2;
@@ -363,4 +362,3 @@ module_exit(at91_ide_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Stanislaw Gruszka <stf_xl@wp.pl>");
-

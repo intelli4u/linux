@@ -38,31 +38,19 @@
  * mpc.c: Implementation of MPOA client kernel part
  */
 
-#if 0
-#define dprintk(format, args...) \
-	printk(KERN_DEBUG "mpoa:%s: " format, __func__, ##args)
-#define dprintk_cont(format, args...) printk(KERN_CONT format, ##args)
-#else
 #define dprintk(format, args...)					\
 	do { if (0)							\
 		printk(KERN_DEBUG "mpoa:%s: " format, __func__, ##args);\
 	} while (0)
 #define dprintk_cont(format, args...)			\
 	do { if (0) printk(KERN_CONT format, ##args); } while (0)
-#endif
 
-#if 0
-#define ddprintk(format, args...) \
-	printk(KERN_DEBUG "mpoa:%s: " format, __func__, ##args)
-#define ddprintk_cont(format, args...) printk(KERN_CONT format, ##args)
-#else
 #define ddprintk(format, args...)					\
 	do { if (0)							\
 		printk(KERN_DEBUG "mpoa:%s: " format, __func__, ##args);\
 	} while (0)
 #define ddprintk_cont(format, args...)			\
 	do { if (0) printk(KERN_CONT format, ##args); } while (0)
-#endif
 
 #define MPOA_TAG_LEN 4
 
@@ -121,7 +109,7 @@ static struct notifier_block mpoa_notifier = {
 	0
 };
 
-struct mpoa_client *mpcs = NULL; /* FIXME */
+struct mpoa_client *mpcs = NULL;
 static struct atm_mpoa_qos *qos_head = NULL;
 static DEFINE_TIMER(mpc_timer, NULL, 0, 0);
 
@@ -339,7 +327,6 @@ static void stop_mpc(struct mpoa_client *mpc)
 	dev->netdev_ops = mpc->old_ops;
 	mpc->old_ops = NULL;
 
-	/* close_shortcuts(mpc);    ??? FIXME */
 }
 
 static const char *mpoa_device_type_string(char type) __attribute__ ((unused));
@@ -1297,7 +1284,6 @@ static void mps_death(struct k_message *msg, struct mpoa_client *mpc)
 		return;
 	}
 
-	/* FIXME: This knows too much of the cache structure */
 	read_lock_irq(&mpc->egress_lock);
 	entry = mpc->eg_cache;
 	while (entry != NULL) {
@@ -1398,7 +1384,6 @@ static void clean_up(struct k_message *msg, struct mpoa_client *mpc, int action)
 	msg->type = SND_EGRESS_PURGE;
 
 
-	/* FIXME: This knows too much of the cache structure */
 	read_lock_irq(&mpc->egress_lock);
 	entry = mpc->eg_cache;
 	while (entry != NULL) {

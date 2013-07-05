@@ -39,7 +39,6 @@
 #include "netlabel_addrlist.h"
 
 /* Domain hash table size */
-/* XXX - currently this number is an uneducated guess */
 #define NETLBL_DOMHSH_BITSIZE       7
 
 /* Domain mapping definition structures */

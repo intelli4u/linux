@@ -1,14 +1,4 @@
-/*
- * Count register synchronisation.
- *
- * All CPUs will have their count registers synchronised to the CPU0 next time
- * value. This can cause a small timewarp for CPU0. All other CPU's should
- * not have done anything significant (but they may have had interrupts
- * enabled briefly - prom_smp_finish() should not be responsible for enabling
- * interrupts...)
- *
- * FIXME: broken for SMTC
- */
+
 
 #include <linux/kernel.h>
 #include <linux/init.h>

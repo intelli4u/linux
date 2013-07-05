@@ -131,10 +131,6 @@ netdev_probe(char *name, unsigned char *ether)
 static inline int
 netdev_connect(int irq)
 {
-	/* XXX Fix me
-	 * this does not support multiple cards
-	 * also no return value
-	 */
 	ia64_ssc_connect_irq(NETWORK_INTR, irq);
 	return 0;
 }
@@ -195,10 +191,6 @@ simeth_probe1(void)
 	struct net_device *dev;
 	int fd, i, err, rc;
 
-	/*
-	 * XXX Fix me
-	 * let's support just one card for now
-	 */
 	if (test_and_set_bit(0, &card_count))
 		return -ENODEV;
 
@@ -304,12 +296,6 @@ simeth_device_event(struct notifier_block *this,unsigned long event, void *ptr)
 
 	if ( event != NETDEV_UP && event != NETDEV_DOWN ) return NOTIFY_DONE;
 
-	/*
-	 * Check whether or not it's for an ethernet device
-	 *
-	 * XXX Fixme: This works only as long as we support one
-	 * type of ethernet device.
-	 */
 	if ( !dev_is_ethdev(dev) ) return NOTIFY_DONE;
 
 	if ((in_dev=dev->ip_ptr) != NULL) {
@@ -324,11 +310,6 @@ simeth_device_event(struct notifier_block *this,unsigned long event, void *ptr)
 	printk(KERN_INFO "simeth_device_event: %s ipaddr=0x%x\n",
 	       dev->name, ntohl(ifa->ifa_local));
 
-	/*
-	 * XXX Fix me
-	 * if the device was up, and we're simply reconfiguring it, not sure
-	 * we get DOWN then UP.
-	 */
 
 	local = netdev_priv(dev);
 	/* now do it for real */
@@ -387,16 +368,10 @@ simeth_tx(struct sk_buff *skb, struct net_device *dev)
 {
 	struct simeth_local *local = netdev_priv(dev);
 
-#if 0
-	/* ensure we have at least ETH_ZLEN bytes (min frame size) */
-	unsigned int length = ETH_ZLEN < skb->len ? skb->len : ETH_ZLEN;
-	/* Where do the extra padding bytes comes from inthe skbuff ? */
-#else
 	/* the real driver in the host system is going to take care of that
 	 * or maybe it's the NIC itself.
 	 */
 	unsigned int length = skb->len;
-#endif
 
 	local->stats.tx_bytes += skb->len;
 	local->stats.tx_packets++;
@@ -470,13 +445,6 @@ simeth_rx(struct net_device *dev)
 						       dev->name, SIMETH_RECV_MAX-rcv_count);
 			break;
 		}
-#if 0
-		/*
-		 * XXX Fix me
-		 * Should really do a csum+copy here
-		 */
-		skb_copy_to_linear_data(skb, frame, len);
-#endif
 		skb->protocol = eth_type_trans(skb, dev);
 
 		if ( simeth_debug > 6 ) frame_print("simeth_rx", skb->data, len);

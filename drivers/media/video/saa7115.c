@@ -815,7 +815,6 @@ static int saa711x_set_size(struct v4l2_subdev *sd, int width, int height)
 
 	v4l2_dbg(1, debug, sd, "decoder set size to %ix%i\n", width, height);
 
-	/* FIXME need better bounds checking here */
 	if ((width < 1) || (width > 1440))
 		return -EINVAL;
 	if ((height < 1) || (height > Vsrc))
@@ -863,8 +862,6 @@ static int saa711x_set_size(struct v4l2_subdev *sd, int width, int height)
 	/* 0 is not allowed (div. by zero) */
 	HPSC = HPSC ? HPSC : 1;
 	HFSC = (int)((1024 * 720) / (HPSC * width));
-	/* FIXME hardcodes to "Task B"
-	 * write H prescaler integer */
 	saa711x_write(sd, R_D0_B_HORIZ_PRESCALING,
 				(u8) (HPSC & 0x3f));
 
@@ -982,16 +979,9 @@ static void saa711x_set_lcr(struct v4l2_subdev *sd, struct v4l2_sliced_vbi_forma
 	u8 lcr[24];
 	int i, x;
 
-#if 1
 	/* saa7113/7114/7118 VBI support are experimental */
 	if (!saa711x_has_reg(state->ident, R_41_LCR_BASE))
 		return;
-
-#else
-	/* SAA7113 and SAA7118 also should support VBI - Need testing */
-	if (state->ident != V4L2_IDENT_SAA7115)
-		return;
-#endif
 
 	for (i = 0; i <= 23; i++)
 		lcr[i] = 0xff;

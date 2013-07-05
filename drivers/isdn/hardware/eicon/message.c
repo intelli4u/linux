@@ -2148,7 +2148,7 @@ static byte facility_req(dword Id, word Number, DIVA_CAPI_ADAPTER *a,
                 break;
               }
             }
-            else if(parms->length==8) /* workaround for the T-View-S */
+            else if(parms->length==8)
             {
               if(api_parse(&parms->info[1],(word)parms->length,"wbdb",ss_parms))
               {

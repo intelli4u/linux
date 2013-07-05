@@ -60,9 +60,6 @@ static void __init set_tcr2ns_scale(unsigned long tcr_rate)
 		tcr2ns_scale++;
 }
 
-/*
- * FIXME: the timer needs some delay to stablize the counter capture
- */
 static inline uint32_t timer_read(void)
 {
 	int delay = 100;

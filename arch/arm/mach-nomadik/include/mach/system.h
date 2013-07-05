@@ -36,7 +36,6 @@ static inline void arch_reset(char mode, const char *cmd)
 {
 	void __iomem *src_rstsr = io_p2v(NOMADIK_SRC_BASE + 0x18);
 
-	/* FIXME: use egpio when implemented */
 
 	/* Write anything to Reset status register */
 	writel(1, src_rstsr);

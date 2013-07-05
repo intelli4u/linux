@@ -19,7 +19,6 @@
 
 /* include firmware (variables)*/
 
-/* FIXME: This is quick and dirty solution! */
 #define SPDIF	/* if you want SPDIF comment next line */
 //#undef SPDIF	/* if you want MIDI uncomment this line */ 
 

@@ -361,65 +361,6 @@ struct usb_bus {
 
 struct usb_tt;
 
-/**
- * struct usb_device - kernel's representation of a USB device
- * @devnum: device number; address on a USB bus
- * @devpath: device ID string for use in messages (e.g., /port/...)
- * @route: tree topology hex string for use with xHCI
- * @state: device state: configured, not attached, etc.
- * @speed: device speed: high/full/low (or error)
- * @tt: Transaction Translator info; used with low/full speed dev, highspeed hub
- * @ttport: device port on that tt hub
- * @toggle: one bit for each endpoint, with ([0] = IN, [1] = OUT) endpoints
- * @parent: our hub, unless we're the root
- * @bus: bus we're part of
- * @ep0: endpoint 0 data (default control pipe)
- * @dev: generic device interface
- * @descriptor: USB device descriptor
- * @config: all of the device's configs
- * @actconfig: the active configuration
- * @ep_in: array of IN endpoints
- * @ep_out: array of OUT endpoints
- * @rawdescriptors: raw descriptors for each config
- * @bus_mA: Current available from the bus
- * @portnum: parent port number (origin 1)
- * @level: number of USB hub ancestors
- * @can_submit: URBs may be submitted
- * @persist_enabled:  USB_PERSIST enabled for this device
- * @have_langid: whether string_langid is valid
- * @authorized: policy has said we can use it;
- *	(user space) policy determines if we authorize this device to be
- *	used or not. By default, wired USB devices are authorized.
- *	WUSB devices are not, until we authorize them from user space.
- *	FIXME -- complete doc
- * @authenticated: Crypto authentication passed
- * @wusb: device is Wireless USB
- * @string_langid: language ID for strings
- * @product: iProduct string, if present (static)
- * @manufacturer: iManufacturer string, if present (static)
- * @serial: iSerialNumber string, if present (static)
- * @filelist: usbfs files that are open to this device
- * @usb_classdev: USB class device that was created for usbfs device
- *	access from userspace
- * @usbfs_dentry: usbfs dentry entry for the device
- * @maxchild: number of ports if hub
- * @children: child devices - USB devices that are attached to this hub
- * @quirks: quirks of the whole device
- * @urbnum: number of URBs submitted for the whole device
- * @active_duration: total time device is not suspended
- * @last_busy: time of last use
- * @autosuspend_delay: in jiffies
- * @connect_time: time device was first connected
- * @do_remote_wakeup:  remote wakeup should be enabled
- * @reset_resume: needs reset instead of resume
- * @wusb_dev: if this is a Wireless USB device, link to the WUSB
- *	specific data for the device.
- * @slot_id: Slot ID assigned by xHCI
- *
- * Notes:
- * Usbcore drivers should not set usbdev->state directly.  Instead use
- * usb_set_device_state().
- */
 struct usb_device {
 	int		devnum;
 	char		devpath[16];
@@ -1375,19 +1316,10 @@ void *usb_alloc_coherent(struct usb_device *dev, size_t size,
 void usb_free_coherent(struct usb_device *dev, size_t size,
 	void *addr, dma_addr_t dma);
 
-#if 0
-struct urb *usb_buffer_map(struct urb *urb);
-void usb_buffer_dmasync(struct urb *urb);
-void usb_buffer_unmap(struct urb *urb);
-#endif
 
 struct scatterlist;
 int usb_buffer_map_sg(const struct usb_device *dev, int is_in,
 		      struct scatterlist *sg, int nents);
-#if 0
-void usb_buffer_dmasync_sg(const struct usb_device *dev, int is_in,
-			   struct scatterlist *sg, int n_hw_ents);
-#endif
 void usb_buffer_unmap_sg(const struct usb_device *dev, int is_in,
 			 struct scatterlist *sg, int n_hw_ents);
 

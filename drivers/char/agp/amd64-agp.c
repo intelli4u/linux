@@ -59,7 +59,6 @@ static int amd64_insert_memory(struct agp_memory *mem, off_t pg_start, int type)
 
 
 	/* Make sure we can fit the range in the gatt table. */
-	/* FIXME: could wrap */
 	if (((unsigned long)pg_start + mem->page_count) > num_entries)
 		return -EINVAL;
 
@@ -358,10 +357,6 @@ static void __devinit amd8151_init(struct pci_dev *pdev, struct agp_bridge_data 
 
 	dev_info(&pdev->dev, "AMD 8151 AGP Bridge rev %s\n", revstring);
 
-	/*
-	 * Work around errata.
-	 * Chips before B2 stepping incorrectly reporting v3.5
-	 */
 	if (pdev->revision < 0x13) {
 		dev_info(&pdev->dev, "correcting AGP revision (reports 3.5, is really 3.0)\n");
 		bridge->major_version = 3;

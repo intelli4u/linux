@@ -150,25 +150,12 @@ enum {
  * commands.  So we can't use strict timeouts described in PRM -- we
  * just arbitrarily select 60 seconds for now.
  */
-#if 0
-/*
- * Round up and add 1 to make sure we get the full wait time (since we
- * will be starting in the middle of a jiffy)
- */
-enum {
-	CMD_TIME_CLASS_A = (HZ + 999) / 1000 + 1,
-	CMD_TIME_CLASS_B = (HZ +  99) /  100 + 1,
-	CMD_TIME_CLASS_C = (HZ +   9) /   10 + 1,
-	CMD_TIME_CLASS_D = 60 * HZ
-};
-#else
 enum {
 	CMD_TIME_CLASS_A = 60 * HZ,
 	CMD_TIME_CLASS_B = 60 * HZ,
 	CMD_TIME_CLASS_C = 60 * HZ,
 	CMD_TIME_CLASS_D = 60 * HZ
 };
-#endif
 
 enum {
 	GO_BIT_TIMEOUT = HZ * 10

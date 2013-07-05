@@ -115,7 +115,6 @@ module_load_notify(struct notifier_block *self, unsigned long val, void *data)
 	if (val != MODULE_STATE_COMING)
 		return 0;
 
-	/* FIXME: should we process all CPU buffers ? */
 	mutex_lock(&buffer_mutex);
 	add_event_entry(ESCAPE_CODE);
 	add_event_entry(MODULE_LOADED_CODE);
@@ -479,10 +478,6 @@ static void mark_done(int cpu)
 }
 
 
-/* FIXME: this is not sufficient if we implement syscall barrier backtrace
- * traversal, the code switch to sb_sample_start at first kernel enter/exit
- * switch so we need a fifth state and some special handling in sync_buffer()
- */
 typedef enum {
 	sb_bt_ignore = -2,
 	sb_buffer_start,
@@ -594,4 +589,3 @@ void oprofile_put_buff(unsigned long *buf, unsigned int start,
 
 	mutex_unlock(&buffer_mutex);
 }
-

@@ -757,4 +757,3 @@ extern int ibmphp_unconfigure_card (struct slot **, int);
 extern struct hotplug_slot_ops ibmphp_hotplug_slot_ops;
 
 #endif				//__IBMPHP_H
-

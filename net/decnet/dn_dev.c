@@ -103,28 +103,6 @@ static struct dn_dev_parms dn_dev_list[] =  {
 	.name =		"ipgre",
 	.timer3 =	dn_send_brd_hello,
 },
-#if 0
-{
-	.type =		ARPHRD_X25, /* Bog standard X.25 */
-	.mode =		DN_DEV_UCAST,
-	.state =	DN_DEV_S_DS,
-	.t2 =		1,
-	.t3 =		120,
-	.name =		"x25",
-	.timer3 =	dn_send_ptp_hello,
-},
-#endif
-#if 0
-{
-	.type =		ARPHRD_PPP, /* DECnet over PPP */
-	.mode =		DN_DEV_BCAST,
-	.state =	DN_DEV_S_RU,
-	.t2 =		1,
-	.t3 =		10,
-	.name =		"ppp",
-	.timer3 =	dn_send_brd_hello,
-},
-#endif
 {
 	.type =		ARPHRD_DDCMP, /* DECnet over DDCMP */
 	.mode =		DN_DEV_UCAST,
@@ -1109,16 +1087,6 @@ static struct dn_dev *dn_dev_create(struct net_device *dev, int *err)
 }
 
 
-/*
- * This processes a device up event. We only start up
- * the loopback device & ethernet devices with correct
- * MAC addreses automatically. Others must be started
- * specifically.
- *
- * FIXME: How should we configure the loopback address ? If we could dispense
- * with using decnet_address here and for autobind, it will be one less thing
- * for users to worry about setting up.
- */
 
 void dn_dev_up(struct net_device *dev)
 {

@@ -152,11 +152,7 @@ asmlinkage void sparc64_get_context(struct pt_regs *regs)
 	if (get_thread_wsaved() || clear_user(ucp, sizeof(*ucp)))
 		goto do_sigsegv;
 
-#if 1
 	fenab = 0; /* IMO get_context is like any other system call, thus modifies FPU state -jj */
-#else
-	fenab = (current_thread_info()->fpsaved[0] & FPRS_FEF);
-#endif
 		
 	mcp = &ucp->uc_mcontext;
 	grp = &mcp->mc_gregs;
@@ -630,4 +626,3 @@ void do_notify_resume(struct pt_regs *regs, unsigned long orig_i0, unsigned long
 			key_replace_session_keyring();
 	}
 }
-

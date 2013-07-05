@@ -247,5 +247,3 @@ void __exit dn_fib_rules_cleanup(void)
 	fib_rules_unregister(dn_fib_rules_ops);
 	rcu_barrier();
 }
-
-

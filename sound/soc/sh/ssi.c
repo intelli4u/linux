@@ -85,10 +85,6 @@ struct ssi_priv {
 #endif
 };
 
-/*
- * track usage of the SSI; it is simplex-only so prevent attempts of
- * concurrent playback + capture. FIXME: any locking required?
- */
 static int ssi_startup(struct snd_pcm_substream *substream,
 		       struct snd_soc_dai *dai)
 {

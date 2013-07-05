@@ -185,15 +185,6 @@ static inline void __init omap_uart_reset(struct omap_uart_state *uart)
 
 #if defined(CONFIG_PM) && defined(CONFIG_ARCH_OMAP3)
 
-/*
- * Work Around for Errata i202 (3430 - 1.12, 3630 - 1.6)
- * The access to uart register after MDR1 Access
- * causes UART to corrupt data.
- *
- * Need a delay =
- * 5 L4 clock cycles + 5 UART functional clock cycle (@48MHz = ~0.2uS)
- * give 10 times as much
- */
 static void omap_uart_mdr1_errataset(struct omap_uart_state *uart, u8 mdr1_val,
 		u8 fcr_val)
 {
@@ -734,7 +725,6 @@ void __init omap_serial_early_init(void)
 			uart->fck = NULL;
 		}
 
-		/* FIXME: Remove this once the clkdev is ready */
 		if (!cpu_is_omap44xx()) {
 			if (!uart->ick || !uart->fck)
 				continue;

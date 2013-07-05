@@ -322,10 +322,6 @@ acpi_status asmlinkage acpi_enter_sleep_state(u8 sleep_state)
 	pm1b_control |=
 	    (acpi_gbl_sleep_type_b << sleep_type_reg_info->bit_position);
 
-	/*
-	 * We split the writes of SLP_TYP and SLP_EN to workaround
-	 * poorly implemented hardware.
-	 */
 
 	/* Write #1: write the SLP_TYP data to the PM1 Control registers */
 

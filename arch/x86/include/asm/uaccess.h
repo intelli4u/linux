@@ -428,7 +428,6 @@ do {									\
 	__gu_err;							\
 })
 
-/* FIXME: this hack is definitely wrong -AK */
 struct __large_struct { unsigned long buf[100]; };
 #define __m(x) (*(struct __large_struct __user *)(x))
 
@@ -574,4 +573,3 @@ extern struct movsl_mask {
 #endif
 
 #endif /* _ASM_X86_UACCESS_H */
-

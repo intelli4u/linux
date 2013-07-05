@@ -77,16 +77,6 @@ const char twirl[]="|/-\\|/-\\";
 
 void platform_heartbeat(void)
 {
-#if 0
-	static int i = 0, j = 0;
-
-	if (--i < 0) {
-		i = 99;
-		printk("\r%c\r", twirl[j++]);
-		if (j == 8)
-			j = 0;
-	}
-#endif
 }
 
 

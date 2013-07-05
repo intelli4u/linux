@@ -1007,7 +1007,7 @@ static void cp_init_hw (struct cp_private *cp)
 	cpw32_f (MAC0 + 4, le32_to_cpu (*(__le32 *) (dev->dev_addr + 4)));
 
 	cp_start_hw(cp);
-	cpw8(TxThresh, 0x06); /* XXX convert magic num to a constant */
+	cpw8(TxThresh, 0x06);
 
 	__cp_set_rx_mode(dev);
 	cpw32_f (TxConfig, IFG | (TX_DMA_BURST << TxDMAShift));
@@ -1966,9 +1966,6 @@ static int cp_init_one (struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (pci_using_dac)
 		dev->features |= NETIF_F_HIGHDMA;
 
-#if 0 /* disabled by default until verified */
-	dev->features |= NETIF_F_TSO;
-#endif
 
 	dev->irq = pdev->irq;
 
@@ -2061,7 +2058,6 @@ static int cp_resume (struct pci_dev *pdev)
 	pci_restore_state(pdev);
 	pci_enable_wake(pdev, PCI_D0, 0);
 
-	/* FIXME: sh*t may happen if the Rx ring buffer is depleted */
 	cp_init_rings_index (cp);
 	cp_init_hw (cp);
 	netif_start_queue (dev);

@@ -2705,4 +2705,3 @@ static __inline__ void bfin_write_VR_CTL(unsigned int val)
 }
 
 #endif /* _CDEF_BF54X_H */
-

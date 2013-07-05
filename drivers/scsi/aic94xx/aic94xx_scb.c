@@ -57,7 +57,6 @@ static void get_lrate_mode(struct asd_phy *phy, u8 oob_mode)
 
 	switch (oob_mode & 7) {
 	case PHY_SPEED_60:
-		/* FIXME: sas transport class doesn't have this */
 		phy->sas_phy.linkrate = SAS_LINK_RATE_6_0_GBPS;
 		phy->sas_phy.phy->negotiated_linkrate = SAS_LINK_RATE_6_0_GBPS;
 		break;
@@ -704,7 +703,6 @@ static void control_phy_tasklet_complete(struct asd_ascb *ascb,
 	case EXECUTE_HARD_RESET:
 		ASD_DPRINTK("%s: phy%d: sub_func:0x%x\n", __func__,
 			    phy_id, control_phy->sub_func);
-		/* XXX finish */
 		break;
 	default:
 		ASD_DPRINTK("%s: phy%d: sub_func:0x%x?\n", __func__,
@@ -820,41 +818,6 @@ void asd_build_control_phy(struct asd_ascb *ascb, int phy_id, u8 subfunc)
 
 /* ---------- INITIATE LINK ADM TASK ---------- */
 
-#if 0
-
-static void link_adm_tasklet_complete(struct asd_ascb *ascb,
-				      struct done_list_struct *dl)
-{
-	u8 opcode = dl->opcode;
-	struct initiate_link_adm *link_adm = &ascb->scb->link_adm;
-	u8 phy_id = link_adm->phy_id;
-
-	if (opcode != TC_NO_ERROR) {
-		asd_printk("phy%d: link adm task 0x%x completed with error "
-			   "0x%x\n", phy_id, link_adm->sub_func, opcode);
-	}
-	ASD_DPRINTK("phy%d: link adm task 0x%x: 0x%x\n",
-		    phy_id, link_adm->sub_func, opcode);
-
-	asd_ascb_free(ascb);
-}
-
-void asd_build_initiate_link_adm_task(struct asd_ascb *ascb, int phy_id,
-				      u8 subfunc)
-{
-	struct scb *scb = ascb->scb;
-	struct initiate_link_adm *link_adm = &scb->link_adm;
-
-	scb->header.opcode = INITIATE_LINK_ADM_TASK;
-
-	link_adm->phy_id = phy_id;
-	link_adm->sub_func = subfunc;
-	link_adm->conn_handle = cpu_to_le16(0xFFFF);
-
-	ascb->tasklet_complete = link_adm_tasklet_complete;
-}
-
-#endif  /*  0  */
 
 /* ---------- SCB timer ---------- */
 

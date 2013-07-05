@@ -224,7 +224,7 @@ static int x25_state3_machine(struct sock *sk, struct sk_buff *skb, int frametyp
 			}
 			break;
 
-		case X25_DATA:	/* XXX */
+		case X25_DATA:
 			x25->condition &= ~X25_COND_PEER_RX_BUSY;
 			if ((ns != x25->vr) || !x25_validate_nr(sk, nr)) {
 				x25_clear_queues(sk);

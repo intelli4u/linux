@@ -1091,7 +1091,7 @@ loop:
 		wl3501_auth_confirm_interrupt(this, addr);
 		break;
 	case WL3501_SIG_RESYNC_CONFIRM:
-		wl3501_mgmt_resync(this); /* FIXME: should be resync_confirm */
+		wl3501_mgmt_resync(this);
 		break;
 	}
 	wl3501_esbq_confirm_done(this);
@@ -1531,7 +1531,6 @@ static int wl3501_get_range(struct net_device *dev,
 	range->we_version_compiled	= WIRELESS_EXT;
 	range->we_version_source	= 1;
 	range->throughput		= 2 * 1000 * 1000;     /* ~2 Mb/s */
-	/* FIXME: study the code to fill in more fields... */
 	return 0;
 }
 
@@ -1542,14 +1541,11 @@ static int wl3501_set_wap(struct net_device *dev, struct iw_request_info *info,
 	static const u8 bcast[ETH_ALEN] = { 255, 255, 255, 255, 255, 255 };
 	int rc = -EINVAL;
 
-	/* FIXME: we support other ARPHRDs...*/
 	if (wrqu->ap_addr.sa_family != ARPHRD_ETHER)
 		goto out;
 	if (!memcmp(bcast, wrqu->ap_addr.sa_data, ETH_ALEN)) {
-		/* FIXME: rescan? */
 	} else
 		memcpy(this->bssid, wrqu->ap_addr.sa_data, ETH_ALEN);
-		/* FIXME: rescan? deassoc & scan? */
 	rc = 0;
 out:
 	return rc;
@@ -1568,9 +1564,6 @@ static int wl3501_get_wap(struct net_device *dev, struct iw_request_info *info,
 static int wl3501_set_scan(struct net_device *dev, struct iw_request_info *info,
 			   union iwreq_data *wrqu, char *extra)
 {
-	/*
-	 * FIXME: trigger scanning with a reset, yes, I'm lazy
-	 */
 	return wl3501_reset(dev);
 }
 
@@ -1619,7 +1612,7 @@ static int wl3501_get_scan(struct net_device *dev, struct iw_request_info *info,
 	}
 	/* Length of data */
 	wrqu->data.length = (current_ev - extra);
-	wrqu->data.flags = 0; /* FIXME: set properly these flags */
+	wrqu->data.flags = 0;
 	return 0;
 }
 
@@ -1679,11 +1672,6 @@ static int wl3501_get_nick(struct net_device *dev, struct iw_request_info *info,
 static int wl3501_get_rate(struct net_device *dev, struct iw_request_info *info,
 			   union iwreq_data *wrqu, char *extra)
 {
-	/*
-	 * FIXME: have to see from where to get this info, perhaps this card
-	 * works at 1 Mbit/s too... for now leave at 2 Mbit/s that is the most
-	 * common with the Planet Access Points. -acme
-	 */
 	wrqu->bitrate.value = 2000000;
 	wrqu->bitrate.fixed = 1;
 	return 0;

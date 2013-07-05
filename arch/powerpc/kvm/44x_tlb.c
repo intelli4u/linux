@@ -182,7 +182,6 @@ int kvmppc_44x_tlb_index(struct kvm_vcpu *vcpu, gva_t eaddr, unsigned int pid,
 	struct kvmppc_vcpu_44x *vcpu_44x = to_44x(vcpu);
 	int i;
 
-	/* XXX Replace loop with fancy data structures. */
 	for (i = 0; i < ARRAY_SIZE(vcpu_44x->guest_tlb); i++) {
 		struct kvmppc_44x_tlbe *tlbe = &vcpu_44x->guest_tlb[i];
 		unsigned int tid;
@@ -262,7 +261,6 @@ static void kvmppc_44x_shadow_release(struct kvmppc_vcpu_44x *vcpu_44x,
 
 	ref->page = NULL;
 
-	/* XXX set tlb_44x_index to stlb_index? */
 
 	trace_kvm_stlb_inval(stlb_index);
 }
@@ -326,11 +324,7 @@ void kvmppc_mmu_map(struct kvm_vcpu *vcpu, u64 gvaddr, gpa_t gpaddr,
 	/* Invalidate any previous shadow mappings. */
 	kvmppc_44x_shadow_release(vcpu_44x, victim);
 
-	/* XXX Make sure (va, size) doesn't overlap any other
-	 * entries. 440x6 user manual says the result would be
-	 * "undefined." */
 
-	/* XXX what about AS? */
 
 	/* Force TS=1 for all guest mappings. */
 	stlbe.word0 = PPC44x_TLB_VALID | PPC44x_TLB_TS;
@@ -422,7 +416,6 @@ static int tlbe_is_host_safe(const struct kvm_vcpu *vcpu,
 		return 0;
 
 	/* Does it match current guest AS? */
-	/* XXX what about IS != DS? */
 	if (get_tlb_ts(tlbe) != !!(vcpu->arch.msr & MSR_IS))
 		return 0;
 

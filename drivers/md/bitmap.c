@@ -1428,7 +1428,7 @@ static int __bitmap_start_sync(struct bitmap *bitmap, sector_t offset, int *bloc
 {
 	bitmap_counter_t *bmc;
 	int rv;
-	if (bitmap == NULL) {/* FIXME or bitmap set as 'failed' */
+	if (bitmap == NULL) {
 		*blocks = 1024;
 		return 1; /* always resync if no bitmap */
 	}
@@ -2107,4 +2107,3 @@ struct attribute_group md_bitmap_group = {
 	.name = "bitmap",
 	.attrs = md_bitmap_attrs,
 };
-

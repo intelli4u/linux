@@ -48,14 +48,6 @@ struct dio_bus dio_bus = {
 #define CONFIG_DIO_CONSTANTS
 
 #ifdef CONFIG_DIO_CONSTANTS
-/* We associate each numeric ID with an appropriate descriptive string
- * using a constant array of these structs.
- * FIXME: we should be able to arrange to throw away most of the strings
- * using the initdata stuff. Then we wouldn't need to worry about 
- * carrying them around...
- * I think we do this by copying them into newly kmalloc()ed memory and 
- * marking the names[] array as .initdata ?
- */
 struct dioname
 {
         int id;

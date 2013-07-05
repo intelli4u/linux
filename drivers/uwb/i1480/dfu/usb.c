@@ -122,7 +122,7 @@ int i1480_usb_write(struct i1480 *i1480, u32 memory_address,
 			i1480_usb->usb_dev, usb_sndctrlpipe(i1480_usb->usb_dev, 0),
 			0xf0, USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
 			memory_address,	(memory_address >> 16),
-			i1480->cmd_buf, buffer_size, 100 /* FIXME: arbitrary */);
+			i1480->cmd_buf, buffer_size, 100);
 		if (result < 0)
 			break;
 		itr += result;
@@ -168,7 +168,7 @@ int i1480_usb_read(struct i1480 *i1480, u32 addr, size_t size)
 			0xf0, USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
 			itr_addr, (itr_addr >> 16),
 			i1480->cmd_buf + itr, itr_size,
-			100 /* FIXME: arbitrary */);
+			100);
 		if (result < 0) {
 			dev_err(i1480->dev, "%s: USB read error: %zd\n",
 				__func__, result);
@@ -318,7 +318,7 @@ int i1480_usb_cmd(struct i1480 *i1480, const char *cmd_name, size_t cmd_size)
 		USB_DIR_OUT | USB_RECIP_INTERFACE | USB_TYPE_CLASS,
 		0, iface_no,
 		cmd, cmd_size,
-		100 /* FIXME: this is totally arbitrary */);
+		100);
 	if (result < 0) {
 		dev_err(dev, "%s: control request failed: %d\n",
 			cmd_name, result);

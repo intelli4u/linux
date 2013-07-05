@@ -664,4 +664,3 @@ int spu_sync_stop(void)
 	pr_debug("spu_sync_stop -- done.\n");
 	return ret;
 }
-

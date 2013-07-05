@@ -70,7 +70,7 @@ void __kunmap_atomic_notypecheck(void *kvaddr, enum km_type type)
 	unsigned long vaddr = (unsigned long) kvaddr & PAGE_MASK;
 	enum fixed_addresses idx = type + KM_TYPE_NR*smp_processor_id();
 
-	if (vaddr < FIXADDR_START) { // FIXME
+	if (vaddr < FIXADDR_START) {
 		pagefault_enable();
 		return;
 	}

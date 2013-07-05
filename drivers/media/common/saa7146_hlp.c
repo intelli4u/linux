@@ -530,7 +530,7 @@ static void saa7146_set_window(struct saa7146_dev *dev, int width, int height, e
 
 	/* set vertical scale */
 	hps_v_scale = 0; /* all bits get set by the function-call */
-	hps_v_gain  = 0; /* fixme: saa7146_read(dev, HPS_V_GAIN);*/
+	hps_v_gain  = 0;
 	calculate_v_scale_registers(dev, field, vv->standard->v_field*2, height, &hps_v_scale, &hps_v_gain);
 
 	/* set horizontal scale */
@@ -562,13 +562,6 @@ static void saa7146_set_position(struct saa7146_dev *dev, int w_x, int w_y, int 
 
 	int b_depth = vv->ov_fmt->depth;
 	int b_bpl = vv->ov_fb.fmt.bytesperline;
-	/* The unsigned long cast is to remove a 64-bit compile warning since
-	   it looks like a 64-bit address is cast to a 32-bit value, even
-	   though the base pointer is really a 32-bit physical address that
-	   goes into a 32-bit DMA register.
-	   FIXME: might not work on some 64-bit platforms, but see the FIXME
-	   in struct v4l2_framebuffer (videodev2.h) for that.
-	 */
 	u32 base = (u32)(unsigned long)vv->ov_fb.base;
 
 	struct	saa7146_video_dma vdma1;
@@ -588,7 +581,6 @@ static void saa7146_set_position(struct saa7146_dev *dev, int w_x, int w_y, int 
 
 	if (V4L2_FIELD_HAS_BOTH(field)) {
 	} else if (field == V4L2_FIELD_ALTERNATE) {
-		/* fixme */
 		vdma1.base_odd = vdma1.prot_addr;
 		vdma1.pitch /= 2;
 	} else if (field == V4L2_FIELD_TOP) {
@@ -734,7 +726,6 @@ static int calculate_video_dma_grab_packed(struct saa7146_dev* dev, struct saa71
 
 	if (V4L2_FIELD_HAS_BOTH(field)) {
 	} else if (field == V4L2_FIELD_ALTERNATE) {
-		/* fixme */
 		if ( vv->last_field == V4L2_FIELD_TOP ) {
 			vdma1.base_odd	= vdma1.prot_addr;
 			vdma1.pitch /= 2;
@@ -768,7 +759,6 @@ static int calc_planar_422(struct saa7146_vv *vv, struct saa7146_buf *buf, struc
 	vdma2->pitch	= width;
 	vdma3->pitch	= width;
 
-	/* fixme: look at bytesperline! */
 
 	if( 0 != vv->vflip ) {
 		vdma2->prot_addr	= buf->pt[1].offset;
@@ -840,11 +830,7 @@ static int calculate_video_dma_grab_planar(struct saa7146_dev* dev, struct saa71
 	DEB_CAP(("[size=%dx%d,fields=%s]\n",
 		width,height,v4l2_field_names[field]));
 
-	/* fixme: look at bytesperline! */
 
-	/* fixme: what happens for user space buffers here?. The offsets are
-	   most likely wrong, this version here only works for page-aligned
-	   buffers, modifications to the pagetable-functions are necessary...*/
 
 	vdma1.pitch		= width*2;
 	vdma1.num_line_byte	= ((vv->standard->v_field<<16) + vv->standard->h_pixels);
@@ -882,7 +868,6 @@ static int calculate_video_dma_grab_planar(struct saa7146_dev* dev, struct saa71
 
 	if (V4L2_FIELD_HAS_BOTH(field)) {
 	} else if (field == V4L2_FIELD_ALTERNATE) {
-		/* fixme */
 		vdma1.base_odd	= vdma1.prot_addr;
 		vdma1.pitch /= 2;
 		vdma2.base_odd	= vdma2.prot_addr;

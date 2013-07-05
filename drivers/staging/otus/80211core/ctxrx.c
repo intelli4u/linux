@@ -640,24 +640,6 @@ void zfProtRspSim(zdev_t* dev, zbuf_t* buf)
                 }
                 zmw_rx_buf_writeh(dev, buf, 26, 0xa8c0);
                 zmw_rx_buf_writeh(dev, buf, 28, 0x0f01);
-#if 0
-                /* Patch src port */
-                temp = zmw_rx_buf_readh(dev, buf, 34);
-                temp = zfSwap(zfSwap(temp) + 1);
-                zmw_rx_buf_writeh(dev, buf, 34, temp);
-                temp = zmw_rx_buf_readh(dev, buf, 38);
-                temp = zfSwap(zfSwap(temp) + 1);
-                zmw_rx_buf_writeh(dev, buf, 38, temp);
-
-                /* Patch checksum */
-                temp = zmw_rx_buf_readh(dev, buf, 50);
-                temp = zfSwap(temp);
-                temp = ~temp;
-                temp += 2;
-                temp = ~temp;
-                temp = zfSwap(temp);
-                zmw_rx_buf_writeh(dev, buf, 50, temp);
-#endif
             }
 
         }
@@ -809,7 +791,6 @@ u16_t zfiTxSendEth(zdev_t* dev, zbuf_t* buf, u16_t port)
         goto zlError;
     }
 
-#if 1
     if ((wd->wlanMode == ZM_MODE_AP) && (port < 0x20))
     {
         /* AP : Buffer frame for power saving STA */
@@ -820,7 +801,6 @@ u16_t zfiTxSendEth(zdev_t* dev, zbuf_t* buf, u16_t port)
         }
     }
     else
-#endif
     if (wd->wlanMode == ZM_MODE_INFRASTRUCTURE)
     {
         if ( zfPowerSavingMgrIsSleeping(dev) )
@@ -840,7 +820,6 @@ u16_t zfiTxSendEth(zdev_t* dev, zbuf_t* buf, u16_t port)
     }
 #endif
 
-#if 1
     //if ( wd->bQoSEnable )
     if (1)
     {
@@ -856,9 +835,6 @@ u16_t zfiTxSendEth(zdev_t* dev, zbuf_t* buf, u16_t port)
     }
 
     return ret;
-#else
-    return zfTxSendEth(dev, buf, port, ZM_EXTERNAL_ALLOC_BUF, 0);
-#endif
 
 zlError:
     zm_msg2_tx(ZM_LV_1, "Tx Comp err=", err);
@@ -2076,13 +2052,6 @@ void zfiRecv80211(zdev_t* dev, zbuf_t* buf, struct zsAdditionInfo* addInfo)
     frameType = frameCtrl & 0xf;
     frameSubtype = frameCtrl & 0xf0;
 
-#if 0   // Move to ProcessBeacon to judge if there's a new peer station
-    if ( (wd->wlanMode == ZM_MODE_IBSS)&&
-         (wd->sta.ibssPartnerStatus != ZM_IBSS_PARTNER_ALIVE) )
-    {
-        zfStaIbssMonitoring(dev, buf);
-    }
-#endif
 
     /* If data frame */
     if (frameType == ZM_WLAN_DATA_FRAME)
@@ -2719,7 +2688,7 @@ void zfiRecv80211(zdev_t* dev, zbuf_t* buf, struct zsAdditionInfo* addInfo)
                 }
             }
 
-#ifdef ZM_ENABLE_NATIVE_WIFI //Native Wifi : 1, Ethernet format : 0
+#ifdef ZM_ENABLE_NATIVE_WIFI     //Native Wifi : 1, Ethernet format : 0
             //To remove IV
             if (offset > 0)
             {
@@ -2816,7 +2785,7 @@ void zfiRecv80211(zdev_t* dev, zbuf_t* buf, struct zsAdditionInfo* addInfo)
             if (vap < ZM_MAX_AP_SUPPORT)
             /* AP mode */
             {
-#ifdef ZM_ENABLE_NATIVE_WIFI //Native Wifi : 1, Ethernet format : 0
+#ifdef ZM_ENABLE_NATIVE_WIFI     //Native Wifi : 1, Ethernet format : 0
                 //To remove IV
                 if (offset > 0)
                 {
@@ -2846,7 +2815,6 @@ void zfiRecv80211(zdev_t* dev, zbuf_t* buf, struct zsAdditionInfo* addInfo)
                         ZM_WLAN_HEADER_A3_OFFSET));
                 zfwBufRemoveHead(dev, buf, 18+offset);
 #endif  // ZM_ENABLE_NATIVE_WIFI
-                #if 1
                 ret = zfIntrabssForward(dev, buf, vap);
                 if (ret == 1)
                 {
@@ -2855,7 +2823,6 @@ void zfiRecv80211(zdev_t* dev, zbuf_t* buf, struct zsAdditionInfo* addInfo)
                     zfwBufFree(dev, buf, 0);
                     return;
                 }
-                #endif
             }
             else
             /* WDS mode */
@@ -3123,9 +3090,6 @@ u16_t zfWlanRxFilter(zdev_t* dev, zbuf_t* buf)
     {
         //zm_msg0_rx(ZM_LV_0, "Rx filter=>src is own MAC");
         wd->trafTally.rxSrcIsOwnMac++;
-#if 0
-        return ZM_ERR_RX_SRC_ADDR_IS_OWN_MAC;
-#endif
     }
 
     zm_msg2_rx(ZM_LV_2, "Rx seq=", seq);

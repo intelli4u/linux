@@ -160,10 +160,6 @@ static int __devinit s3d_pci_register(struct pci_dev *pdev,
 	if (err)
 		goto err_release_pci;
 
-	/* XXX 'linebytes' is often wrong, it is equal to the width
-	 * XXX with depth of 32 on my XVR-2500 which is clearly not
-	 * XXX right.  So we don't try to use it.
-	 */
 	switch (sp->depth) {
 	case 8:
 		info->fix.line_length = sp->width;

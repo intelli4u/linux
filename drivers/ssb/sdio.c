@@ -120,21 +120,6 @@ static int ssb_sdio_writeb(struct ssb_bus *bus, unsigned int addr, u8 val)
 	return error;
 }
 
-#if 0
-static u8 ssb_sdio_readb(struct ssb_bus *bus, unsigned int addr)
-{
-	u8 val;
-	int error = 0;
-
-	val = sdio_readb(bus->host_sdio, addr, &error);
-	if (unlikely(error)) {
-		dev_dbg(ssb_sdio_dev(bus), "%08X -> %02x, error %d\n",
-			addr, val, error);
-	}
-
-	return val;
-}
-#endif
 
 /* host claimed */
 static int ssb_sdio_set_sbaddr_window(struct ssb_bus *bus, u32 address)

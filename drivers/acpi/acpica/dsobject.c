@@ -274,11 +274,6 @@ acpi_ds_build_internal_buffer_obj(struct acpi_walk_state *walk_state,
 
 	ACPI_FUNCTION_TRACE(ds_build_internal_buffer_obj);
 
-	/*
-	 * If we are evaluating a Named buffer object "Name (xxxx, Buffer)".
-	 * The buffer object already exists (from the NS node), otherwise it must
-	 * be created.
-	 */
 	obj_desc = *obj_desc_ptr;
 	if (!obj_desc) {
 
@@ -402,10 +397,6 @@ acpi_ds_build_internal_package_obj(struct acpi_walk_state *walk_state,
 		parent = parent->common.parent;
 	}
 
-	/*
-	 * If we are evaluating a Named package object "Name (xxxx, Package)",
-	 * the package object already exists, otherwise it must be created.
-	 */
 	obj_desc = *obj_desc_ptr;
 	if (!obj_desc) {
 		obj_desc = acpi_ut_create_internal_object(ACPI_TYPE_PACKAGE);

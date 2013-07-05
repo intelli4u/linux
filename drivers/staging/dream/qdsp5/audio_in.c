@@ -280,7 +280,6 @@ static void audio_in_get_dsp_frames(struct audio_in *audio)
 
 	index = audio->in_head;
 
-	/* XXX check for bogus frame size? */
 
 	frame = (void *) (((char *)audio->in[index].data) - sizeof(*frame));
 
@@ -525,9 +524,6 @@ static int audio_in_encoder_config(struct audio_in *audio)
 	cmd.samp_rate_index = audio->samp_rate_index;
 	cmd.stereo_mode = audio->channel_mode; /* 0 for mono, 1 for stereo */
 
-	/* FIXME have no idea why cmd.rec_quality is fixed
-	 * as 0x1C00 from sample code
-	 */
 	cmd.rec_quality = 0x1C00;
 
 	/* prepare buffer pointers:

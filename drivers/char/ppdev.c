@@ -393,7 +393,6 @@ static int pp_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		int mode;
 		if (copy_from_user (&mode, argp, sizeof (mode)))
 			return -EFAULT;
-		/* FIXME: validate mode */
 		pp->state.mode = mode;
 		pp->state.phase = init_phase (mode);
 
@@ -424,7 +423,6 @@ static int pp_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		if (copy_from_user (&phase, argp, sizeof (phase))) {
 			return -EFAULT;
 		}
-		/* FIXME: validate phase */
 		pp->state.phase = phase;
 
 		if (pp->flags & PP_CLAIMED) {

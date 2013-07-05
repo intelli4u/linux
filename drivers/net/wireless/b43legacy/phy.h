@@ -121,15 +121,15 @@ void b43legacy_put_attenuation_into_ranges(int *_bbatt, int *_rfatt);
 #define B43legacy_PHY_PWRDOWN		B43legacy_PHY_OFDM(0x03)	/* Powerdown */
 #define B43legacy_PHY_CRSTHRES1		B43legacy_PHY_OFDM(0x06)	/* CRS Threshold 1 */
 #define B43legacy_PHY_LNAHPFCTL		B43legacy_PHY_OFDM(0x1C)	/* LNA/HPF control */
-#define B43legacy_PHY_ADIVRELATED	B43legacy_PHY_OFDM(0x27)	/* FIXME rename */
+#define B43legacy_PHY_ADIVRELATED	B43legacy_PHY_OFDM(0x27)
 #define B43legacy_PHY_CRS0		B43legacy_PHY_OFDM(0x29)
 #define B43legacy_PHY_ANTDWELL		B43legacy_PHY_OFDM(0x2B)	/* Antenna dwell */
 #define  B43legacy_PHY_ANTDWELL_AUTODIV1	0x0100			/* Automatic RX diversity start antenna */
 #define B43legacy_PHY_ENCORE		B43legacy_PHY_OFDM(0x49)	/* "Encore" (RangeMax / BroadRange) */
 #define  B43legacy_PHY_ENCORE_EN	0x0200				/* Encore enable */
 #define B43legacy_PHY_LMS		B43legacy_PHY_OFDM(0x55)
-#define B43legacy_PHY_OFDM61		B43legacy_PHY_OFDM(0x61)	/* FIXME rename */
-#define  B43legacy_PHY_OFDM61_10	0x0010				/* FIXME rename */
+#define B43legacy_PHY_OFDM61		B43legacy_PHY_OFDM(0x61)
+#define  B43legacy_PHY_OFDM61_10	0x0010
 #define B43legacy_PHY_IQBAL		B43legacy_PHY_OFDM(0x69)	/* I/Q balance */
 #define B43legacy_PHY_OTABLECTL		B43legacy_PHY_OFDM(0x72)	/* OFDM table control (see below) */
 #define  B43legacy_PHY_OTABLEOFF	0x03FF				/* OFDM table offset (see below) */
@@ -142,7 +142,7 @@ void b43legacy_put_attenuation_into_ranges(int *_bbatt, int *_rfatt);
 #define B43legacy_PHY_ANTWRSETT		B43legacy_PHY_OFDM(0x8C)	/* Antenna WR settle */
 #define  B43legacy_PHY_ANTWRSETT_ARXDIV	0x2000				/* Automatic RX diversity enabled */
 #define B43legacy_PHY_CLIPPWRDOWNT	B43legacy_PHY_OFDM(0x93)	/* Clip powerdown threshold */
-#define B43legacy_PHY_OFDM9B		B43legacy_PHY_OFDM(0x9B)	/* FIXME rename */
+#define B43legacy_PHY_OFDM9B		B43legacy_PHY_OFDM(0x9B)
 #define B43legacy_PHY_N1P1GAIN		B43legacy_PHY_OFDM(0xA0)
 #define B43legacy_PHY_P1P2GAIN		B43legacy_PHY_OFDM(0xA1)
 #define B43legacy_PHY_N1N2GAIN		B43legacy_PHY_OFDM(0xA2)

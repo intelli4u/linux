@@ -123,8 +123,6 @@ mpc52xx_pci_read_config(struct pci_bus *bus, unsigned int devfn,
 
 #if defined(CONFIG_PPC_MPC5200_BUGFIX)
 	if (bus->number) {
-		/* workaround for the bug 435 of the MPC5200 (L25R);
-		 * Don't do 32 bits config access during type-1 cycles */
 		switch (len) {
 		      case 1:
 			value = in_8(((u8 __iomem *)hose->cfg_data) +
@@ -180,8 +178,6 @@ mpc52xx_pci_write_config(struct pci_bus *bus, unsigned int devfn,
 
 #if defined(CONFIG_PPC_MPC5200_BUGFIX)
 	if (bus->number) {
-		/* workaround for the bug 435 of the MPC5200 (L25R);
-		 * Don't do 32 bits config access during type-1 cycles */
 		switch (len) {
 		      case 1:
 			out_8(((u8 __iomem *)hose->cfg_data) +
@@ -318,14 +314,6 @@ mpc52xx_pci_setup(struct pci_controller *hose,
 	out_be32(&pci_regs->tcr, MPC52xx_PCI_TCR_LD | MPC52xx_PCI_TCR_WCT8);
 
 	tmp = in_be32(&pci_regs->gscr);
-#if 0
-	/* Reset the exteral bus ( internal PCI controller is NOT resetted ) */
-	/* Not necessary and can be a bad thing if for example the bootloader
-	   is displaying a splash screen or ... Just left here for
-	   documentation purpose if anyone need it */
-	out_be32(&pci_regs->gscr, tmp | MPC52xx_PCI_GSCR_PR);
-	udelay(50);
-#endif
 
 	/* Make sure the PCI bridge is out of reset */
 	out_be32(&pci_regs->gscr, tmp & ~MPC52xx_PCI_GSCR_PR);

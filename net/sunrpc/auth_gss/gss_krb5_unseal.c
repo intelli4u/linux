@@ -96,7 +96,6 @@ gss_verify_mic_v1(struct krb5_ctx *ctx,
 	    (ptr[1] !=  (KG_TOK_MIC_MSG & 0xff)))
 		return GSS_S_DEFECTIVE_TOKEN;
 
-	/* XXX sanity-check bodysize?? */
 
 	signalg = ptr[2] + (ptr[3] << 8);
 	if (signalg != ctx->gk5e->signalg)
@@ -223,4 +222,3 @@ gss_verify_mic_kerberos(struct gss_ctx *gss_ctx,
 		return gss_verify_mic_v2(ctx, message_buffer, read_token);
 	}
 }
-

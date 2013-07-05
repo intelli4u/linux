@@ -174,4 +174,3 @@ void __init msm_init_sirc(void)
 	}
 	return;
 }
-

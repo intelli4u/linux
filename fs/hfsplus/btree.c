@@ -204,6 +204,12 @@ struct hfs_bnode *hfs_bmap_alloc(struct hfs_btree *tree)
 		HFSPLUS_I(inode).fs_blocks = HFSPLUS_I(inode).alloc_blocks <<
 					     HFSPLUS_SB(tree->sb).fs_shift;
 		inode_set_bytes(inode, inode->i_size);
+        /*  added start pling 05/31/2010 */
+        /* Set the i_blocks field properly */
+        inode->i_blocks = inode->i_size/512;
+        if (inode->i_size % 512)
+            inode->i_blocks++;
+        /*  added end pling 05/31/2010 */
 		count = inode->i_size >> tree->node_size_shift;
 		tree->free_nodes = count - tree->node_count;
 		tree->node_count = count;

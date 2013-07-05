@@ -193,4 +193,3 @@ MODULE_DESCRIPTION("SCSI low-level driver for Marvell ATA in legacy mode");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, marvell_pci_tbl);
 MODULE_VERSION(DRV_VERSION);
-

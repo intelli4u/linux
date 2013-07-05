@@ -31,7 +31,7 @@ struct mc44s803_config {
 };
 
 #if defined(CONFIG_MEDIA_TUNER_MC44S803) || \
-    (defined(CONFIG_MEDIA_TUNER_MC44S803_MODULE) && defined(MODULE))
+	(defined(CONFIG_MEDIA_TUNER_MC44S803_MODULE) && defined(MODULE))
 extern struct dvb_frontend *mc44s803_attach(struct dvb_frontend *fe,
 	 struct i2c_adapter *i2c, struct mc44s803_config *cfg);
 #else

@@ -2793,7 +2793,6 @@ rb_update_read_stamp(struct ring_buffer_per_cpu *cpu_buffer,
 		return;
 
 	case RINGBUF_TYPE_TIME_STAMP:
-		/* FIXME: not implemented */
 		return;
 
 	case RINGBUF_TYPE_DATA:
@@ -2824,7 +2823,6 @@ rb_update_iter_read_stamp(struct ring_buffer_iter *iter,
 		return;
 
 	case RINGBUF_TYPE_TIME_STAMP:
-		/* FIXME: not implemented */
 		return;
 
 	case RINGBUF_TYPE_DATA:
@@ -3074,7 +3072,6 @@ rb_buffer_peek(struct ring_buffer_per_cpu *cpu_buffer, u64 *ts,
 		goto again;
 
 	case RINGBUF_TYPE_TIME_STAMP:
-		/* FIXME: not implemented */
 		rb_advance_reader(cpu_buffer);
 		goto again;
 
@@ -3156,7 +3153,6 @@ rb_iter_peek(struct ring_buffer_iter *iter, u64 *ts)
 		goto again;
 
 	case RINGBUF_TYPE_TIME_STAMP:
-		/* FIXME: not implemented */
 		rb_advance_iter(iter);
 		goto again;
 

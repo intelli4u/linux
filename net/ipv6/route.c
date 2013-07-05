@@ -986,13 +986,6 @@ struct dst_entry *icmp6_dst_alloc(struct net_device *dev,
 	rt->dst.metrics[RTAX_ADVMSS-1] = ipv6_advmss(net, dst_mtu(&rt->dst));
 	rt->dst.output  = ip6_output;
 
-#if 0	/* there's no chance to use these for ndisc */
-	rt->dst.flags   = ipv6_addr_type(addr) & IPV6_ADDR_UNICAST
-				? DST_HOST
-				: 0;
-	ipv6_addr_copy(&rt->rt6i_dst.addr, addr);
-	rt->rt6i_dst.plen = 128;
-#endif
 
 	spin_lock_bh(&icmp6_dst_lock);
 	rt->dst.next = icmp6_dst_gc_list;

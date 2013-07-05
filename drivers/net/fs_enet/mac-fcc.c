@@ -503,17 +503,6 @@ static int get_regs_len(struct net_device *dev)
 	return sizeof(fcc_t) + sizeof(fcc_enet_t) + 1;
 }
 
-/* Some transmit errors cause the transmitter to shut
- * down.  We now issue a restart transmit.
- * Also, to workaround 8260 device erratum CPM37, we must
- * disable and then re-enable the transmitterfollowing a
- * Late Collision, Underrun, or Retry Limit error.
- * In addition, tbptr may point beyond BDs beyond still marked
- * as ready due to internal pipelining, so we need to look back
- * through the BDs and adjust tbptr to point to the last BD
- * marked as ready.  This may result in some buffers being
- * retransmitted.
- */
 static void tx_restart(struct net_device *dev)
 {
 	struct fs_enet_private *fep = netdev_priv(dev);

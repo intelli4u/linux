@@ -489,16 +489,6 @@ static void relocate_ess1688(sb_devc * devc)
 	if (sb_dsp_reset(devc))	/* Bingo */
 		return;
 
-#if 0				/* This causes system lockups (Nokia 386/25 at least) */
-	/*
-	 * The last resort is the system control register method.
-	 */
-
-	outb((0x00), 0xfb);	/* 0xFB is the unlock register */
-	outb((0x00), 0xe0);	/* Select index 0 */
-	outb((bits), 0xe1);	/* Write the config bits */
-	outb((0x00), 0xf9);	/* 0xFB is the lock register */
-#endif
 }
 
 int sb_dsp_detect(struct address_info *hw_config, int pci, int pciio, struct sb_module_options *sbmo)
@@ -1079,14 +1069,6 @@ static int smw_midi_init(sb_devc * devc, struct address_info *hw_config)
 	}
 	control = 0;
 #ifdef SMW_SCSI_IRQ
-	/*
-	 * Set the SCSI interrupt (IRQ2/9, IRQ3 or IRQ10). The SCSI interrupt
-	 * is disabled by default.
-	 *
-	 * FIXME - make this a module option
-	 *
-	 * BTW the Zilog 5380 SCSI controller is located at MPU base + 0x10.
-	 */
 	{
 		static unsigned char scsi_irq_bits[] = {
 			0, 0, 3, 1, 0, 0, 0, 0, 0, 3, 2, 0, 0, 0, 0, 0

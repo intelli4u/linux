@@ -1410,12 +1410,6 @@ YAMAHA_DEVICE(0x7010, "UB99"),
 },
 {
 	/* Edirol M-16DX */
-	/* FIXME: This quirk gives a good-working capture stream but the
-	 *        playback seems problematic because of lacking of sync
-	 *        with capture stream.  It needs to sync with the capture
-	 *        clock.  As now, you'll get frequent sound distortions
-	 *        via the playback.
-	 */
 	USB_DEVICE(0x0582, 0x00c4),
 	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
 		.ifnum = QUIRK_ANY_INTERFACE,

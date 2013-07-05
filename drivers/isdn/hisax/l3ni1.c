@@ -1,4 +1,4 @@
-/* $Id: l3ni1.c,v 2.8.2.3 2004/01/13 14:31:25 keil Exp $
+/* $Id: l3ni1.c,v 2.8.2.3 2004/01/13 14:31:25 Exp $
  *
  * NI1 D-channel protocol
  *

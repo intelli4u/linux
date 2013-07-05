@@ -82,8 +82,7 @@ void __init msp_cic_irq_init(void)
 	*CIC_STS_REG      = 0xFFFFFFFF;
 	*PER_INT_STS_REG  = 0xFFFFFFFF;
 
-#if defined(CONFIG_PMC_MSP7120_GW) || \
-    defined(CONFIG_PMC_MSP7120_EVAL)
+#if defined(CONFIG_PMC_MSP7120_GW) || defined(CONFIG_PMC_MSP7120_EVAL)
 	/*
 	 * The MSP7120 RG and EVBD boards use IRQ[6:4] for PCI.
 	 * These inputs map to EXT_INT_POL[6:4] inside the CIC.

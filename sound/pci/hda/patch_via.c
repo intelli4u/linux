@@ -35,7 +35,6 @@
 /* 2008-04-09  Lydia Wang  Add mute front speaker when HP plugin	     */
 /* 2008-04-09  Lydia Wang  Add Independent HP feature			     */
 /* 2008-05-28  Lydia Wang  Add second S/PDIF Out support for VT1702	     */
-/* 2008-09-15  Logan Li	   Add VT1708S Mic Boost workaround/backdoor	     */
 /* 2009-02-16  Logan Li	   Add support for VT1718S			     */
 /* 2009-03-13  Logan Li	   Add support for VT1716S			     */
 /* 2009-04-14  Lydai Wang  Add support for VT1828S and VT2020		     */
@@ -1849,10 +1848,6 @@ static struct hda_pcm_stream vt1708_pcm_analog_s16_playback = {
 	.channels_min = 2,
 	.channels_max = 8,
 	.nid = 0x10, /* NID to query formats and rates */
-	/* We got noisy outputs on the right channel on VT1708 when
-	 * 24bit samples are used.  Until any workaround is found,
-	 * disable the 24bit format, so far.
-	 */
 	.formats = SNDRV_PCM_FMTBIT_S16_LE,
 	.ops = {
 		.open = via_playback_pcm_open,

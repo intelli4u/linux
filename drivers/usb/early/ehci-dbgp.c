@@ -882,10 +882,6 @@ int __init early_dbgp_init(char *s)
 		dbgp_printk("mmio for ehci enabled\n");
 	}
 
-	/*
-	 * FIXME I don't have the bar size so just guess PAGE_SIZE is more
-	 * than enough.  1K is the biggest I have seen.
-	 */
 	set_fixmap_nocache(FIX_DBGP_BASE, bar_val & PAGE_MASK);
 	ehci_bar = (void __iomem *)__fix_to_virt(FIX_DBGP_BASE);
 	ehci_bar += bar_val & ~PAGE_MASK;

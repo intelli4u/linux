@@ -151,15 +151,7 @@ u16_t zfFindElement(zdev_t* dev, zbuf_t* buf, u8_t eid)
             }
         }
         /* Advance to next element */
-        #if 1
         elen = zmw_rx_buf_readb(dev, buf, offset+1);
-        #else
-        elen = zmw_rx_buf_readb(dev, buf, offset+1);
-        if (elen == 0)
-        {
-            return 0xffff;
-        }
-        #endif
 
         offset += (elen+2);
     }
@@ -398,15 +390,7 @@ u16_t zfFindSuperGElement(zdev_t* dev, zbuf_t* buf, u8_t type)
             }
         }
         /* Advance to next element */
-        #if 1
         elen = zmw_rx_buf_readb(dev, buf, offset+1);
-        #else
-        elen = zmw_rx_buf_readb(dev, buf, offset+1);
-        if (elen == 0)
-        {
-            return 0xffff;
-        }
-        #endif
 
         offset += (elen+2);
     }
@@ -460,15 +444,7 @@ u16_t zfFindXRElement(zdev_t* dev, zbuf_t* buf, u8_t type)
             }
         }
         /* Advance to next element */
-        #if 1
         elen = zmw_rx_buf_readb(dev, buf, offset+1);
-        #else
-        elen = zmw_rx_buf_readb(dev, buf, offset+1);
-        if (elen == 0)
-        {
-            return 0xffff;
-        }
-        #endif
 
         offset += (elen+2);
     }
@@ -1321,25 +1297,10 @@ void zfSendMmFrame(zdev_t* dev, u8_t frameType, u16_t* dst,
     //zm_msg2_mm(ZM_LV_2, "addrTbl.physAddrl[0]=", addrTbl.physAddrl[0]);
     //zm_msg2_mm(ZM_LV_2, "buf->data=", buf->data);
 
-    #if 0
-    err = zfHpSend(dev, NULL, 0, NULL, 0, NULL, 0, buf, 0,
-		   ZM_INTERNAL_ALLOC_BUF, 0, 0xff);
-    if (err != ZM_SUCCESS)
-    {
-        goto zlError;
-    }
-    #else
     zfPutVmmq(dev, buf);
     zfPushVtxq(dev);
-    #endif
 
     return;
-#if 0
-zlError:
-
-    zfwBufFree(dev, buf, 0);
-    return;
-#endif
 }
 
 
@@ -1381,7 +1342,6 @@ void zfProcessManagement(zdev_t* dev, zbuf_t* buf, struct zsAdditionInfo* AddInf
 
     if (wd->wlanMode == ZM_MODE_AP)
     {
-#if 1
         vap = 0;
         if ((ra[0] & 0x1) != 1)
         {
@@ -1393,7 +1353,6 @@ void zfProcessManagement(zdev_t* dev, zbuf_t* buf, struct zsAdditionInfo* AddInf
             }
         }
         zm_msg2_mm(ZM_LV_2, "vap=", vap);
-#endif
 
         /* Dispatch by frame type */
         switch (frameType)

@@ -691,7 +691,6 @@ static void isicom_config_port(struct tty_struct *tty)
 		shift_count = card->shift_count;
 	unsigned char flow_ctrl;
 
-	/* FIXME: Switch to new tty baud API */
 	baud = C_BAUD(tty);
 	if (baud & CBAUDEX) {
 		baud &= ~CBAUDEX;
@@ -1462,8 +1461,6 @@ static int __devinit load_firmware(struct pci_dev *pdev,
 		}
 	}
 
-/* XXX: should we test it by reading it back and comparing with original like
- * in load firmware package? */
 	for (frame = (struct stframe *)fw->data;
 			frame < (struct stframe *)(fw->data + fw->size);
 			frame = (struct stframe *)((u8 *)(frame + 1) +

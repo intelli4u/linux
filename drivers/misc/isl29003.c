@@ -472,4 +472,3 @@ MODULE_VERSION(DRIVER_VERSION);
 
 module_init(isl29003_init);
 module_exit(isl29003_exit);
-

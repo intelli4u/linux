@@ -339,7 +339,7 @@ typedef unsigned long			hcf_32;
 
 //HWi for migration purposes I defined a define which will be TRUE for ALL drivers
 //Meaning that _CCX defined code which we think will get a all driver OK flag can be defined from _CCX to _CCX_OK
-#if defined WVLAN_48 // && !defined _WIN32_WCE
+#if defined WVLAN_48     // && !defined _WIN32_WCE
 #if _VARIANT == 4 || _VARIANT == 6
 #define _CCX_OK		1
 #endif // _VARIANT == 4 || _VARIANT == 6
@@ -606,7 +606,6 @@ extern void   CE_OUT_PORT_STRING(hcf_32 port, void *addr, hcf_16 len);
 #ifndef H_2_INC
 #include <stdio.h>
 #include <conio.h>
-#if 1 //temorary use functions defined in hcf.c
 #ifndef _DEBUG
 #pragma intrinsic( _inp, _inpw, _outp, _outpw )
 #endif // _DEBUG
@@ -614,45 +613,12 @@ extern void   CE_OUT_PORT_STRING(hcf_32 port, void *addr, hcf_16 len);
 #define IN_PORT_WORD(port)			((hcf_16)_inpw( (hcf_io)(port) ))
 #define OUT_PORT_WORD(port, value)	((void)_outpw( (hcf_io)(port), value ))
 
-#if 1		// C implementation which let the processor handle the word-at-byte-boundary problem
 #define IN_PORT_STRING_8_16( port, addr, n)		while (n--) \
 	{ *(hcf_16 FAR*)addr = IN_PORT_WORD( port ); ((hcf_8 FAR*)addr)+=2; }
 #define OUT_PORT_STRING_8_16( port, addr, n)	while (n--) \
 	{ OUT_PORT_WORD( port, *(hcf_16 FAR*)addr ) ; ((hcf_8 FAR*)addr)+=2; }
-#elif 0		// C implementation which handles the word-at-byte-boundary problem
-#define IN_PORT_STRING_8_16( port, addr, n)		while ( n-- ) \
-	{ hcf_16 i = IN_PORT_WORD(port); *((hcf_8 FAR*)addr)++ = (hcf_8)i; *((hcf_8 FAR*)addr)++ = (hcf_8)(i>>8);}
-#define OUT_PORT_STRING_8_16( port, addr, n)	while ( n-- ) \
-	{ OUT_PORT_WORD( port, *((hcf_8 FAR*)addr) | *(((hcf_8 FAR*)addr)+1)<<8  ); (hcf_8 FAR*)addr+=2; }
-#else												// Assembler implementation
-#define IN_PORT_STRING_8_16( port, addr, n) __asm	\
-{													\
-	__asm push di									\
-	__asm push es									\
-	__asm mov cx,n									\
-	__asm les di,addr								\
-	__asm mov dx,port								\
-	__asm rep insw									\
-	__asm pop es									\
-	__asm pop di									\
-}
-
-#define OUT_PORT_STRING_8_16( port, addr, n) __asm	\
-{													\
-	__asm push si									\
-	__asm push ds									\
-	__asm mov cx,n									\
-	__asm lds si,addr								\
-	__asm mov dx,port								\
-	__asm rep outsw									\
-	__asm pop ds									\
-	__asm pop si									\
-}
-
-#endif // Asm or C implementation
 #define IN_PORT_STRING_32( port, addr, n)	{ int n2 = 2*n; IN_PORT_STRING_8_16(port, addr, n2) }
 #define OUT_PORT_STRING_32( port, addr, n)	{ int n2 = 2*n; OUT_PORT_STRING_8_16(port, addr, n2) }
-#endif // 0 //temorary use functions defined in hcf.c
 #endif // H_2_INC
 
 #endif	// WVLAN_42 / WVLAN_43
@@ -665,12 +631,12 @@ extern void   CE_OUT_PORT_STRING(hcf_32 port, void *addr, hcf_16 len);
 
 #if defined H0_LDR || defined H1_LDR || defined H2_LDR || defined H5_LDR
 
-#if defined H0_LDR				//implies H-I
+#if defined H0_LDR				    //implies H-I
 #define HCF_DLV		0			//H-I legacy, meaningless under H-II
 #define HCF_DLNV	1			//H-I legacy, meaningless under H-II
 #endif // H0_LDR
 
-#if defined H1_LDR 				//implies H-I
+#if defined H1_LDR 				    //implies H-I
 #define HCF_DLV		1			//H-I legacy, meaningless under H-II
 #define HCF_DLNV	0			//H-I legacy, meaningless under H-II
 #endif // H1_LDR / H2_LDR
@@ -698,14 +664,6 @@ extern void   CE_OUT_PORT_STRING(hcf_32 port, void *addr, hcf_16 len);
 #pragma intrinsic( _inp, _inpw, _outp, _outpw )
 #endif // NDEBUG
 
-#if 0						//use 0 to replace I/O Macros with logging facility
-#define IN_PORT_WORD(port)			((hcf_16)_inpw( (hcf_io)(port) ))
-#define OUT_PORT_WORD(port, value)	((void)_outpw( (hcf_io)(port), value ))
-#define IN_PORT_STRING_16( port, addr, n)	\
-		while ( n-- ) { *(hcf_16 FAR*)addr = IN_PORT_WORD( port ); (cast)addr += 2; }
-#define OUT_PORT_STRING_16( port, addr, n)	\
-		while ( n-- ) { OUT_PORT_WORD( port, *(hcf_16 FAR*)addr ) ; (cast)addr  += 2; }
-#endif						//use 0 to replace I/O Macros with logging facility
 
 #endif	// H0_LDR / H1_LDR / H2_LDR
 
@@ -734,14 +692,6 @@ extern void   CE_OUT_PORT_STRING(hcf_32 port, void *addr, hcf_16 len);
 #pragma intrinsic( _inp, _inpw, _outp, _outpw )
 #endif // NDEBUG
 
-#if 0						//use 0 to replace I/O Macros with logging facility
-#define IN_PORT_WORD(port)			((hcf_16)_inpw( (hcf_io)(port) ))
-#define OUT_PORT_WORD(port, value)	((void)_outpw( (hcf_io)(port), value ))
-#define IN_PORT_STRING_16( port, addr, n)	\
-		while ( n-- ) { *(hcf_16 FAR*)addr = IN_PORT_WORD( port ); (cast)addr += 2; }
-#define OUT_PORT_STRING_16( port, addr, n)	\
-		while ( n-- ) { OUT_PORT_WORD( port, *(hcf_16 FAR*)addr ) ; (cast)addr  += 2; }
-#endif						//use 0 to replace I/O Macros with logging facility
 
 #endif	// HCF_DEMO
 
@@ -871,19 +821,6 @@ extern void   OUT_PORT_STRING_16(hcf_16 port, void *addr, hcf_16 len);
 
 
 
-#if 0  //;? #ifdef get this going LATER HERMES25
-#define HCF_IO              HCF_IO_32BITS
-#define HCF_DMA             1
-#define HCF_DESC_STRCT_EXT  4
-
-/* Switch for BusMaster DMA support. Note that the above define includes the DMA-specific HCF
-   code in the build. This define sets the MSF to use DMA; if ENABLE_DMA is not defined, then
-   port I/O will be used in the build */
-#ifndef BUS_PCMCIA
-#define ENABLE_DMA
-#endif  // USE_PCMCIA
-
-#endif  // HERMES25
 
 
 /* Overrule standard WaveLAN Packet Size when in DMA mode */
@@ -1070,7 +1007,7 @@ void write_io_16 (int, uint16);
 /*********************************  W A V E P O I N T  ******************************************/
 /************************************************************************************************/
 
-#if defined WVLAN_81	/* BORLANDC */
+#if defined WVLAN_81	    /* BORLANDC */
 
 #define EXTERN_C  extern	// needed because DHF uses this instead of 'extern'
 
@@ -1184,7 +1121,6 @@ void	opb( hcf_16 port, hcf_8 value );
 #define OUT_PORT_WORD(port, value)	((void)_outpw( (hcf_io)(port), value ))
 #endif // LOG
 
-#if 1 //ASM example
 #define IN_PORT_STRING_16( port, addr, len) __asm		\
 {														\
 	__asm push di										\
@@ -1208,8 +1144,6 @@ void	opb( hcf_16 port, hcf_8 value );
 	__asm pop ds										\
 	__asm pop si										\
 }
-
-#endif	// asm example
 
 #endif // __GCC__
 
@@ -1449,35 +1383,6 @@ static hcf_16 IN_PORT_WORD(int port) {
 /****************************  Microtec Research 80X86 Compiler *********************************/
 /************************************************************************************************/
 
-#if 0
-
-//#undef HCF_TYPE									// Hermes-I Station F/W without SSN support
-
-#define MSF_COMPONENT_VAR       0
-#define MSF_COMPONENT_ID        0
-#define MSF_COMPONENT_MAJOR_VER 1
-#define MSF_COMPONENT_MINOR_VER 0
-
-extern int far inp( int );
-extern void far outp( int, int );
-extern int far inpw( int );
-extern void far outpw( int, int );
-
-#define IN_PORT_WORD(port)		((hcf_16)inpw( (hcf_io)(port) ))
-#define OUT_PORT_WORD(port, value)	((void)outpw( (hcf_io)(port), value ))
-
-#define IN_PORT_STRING_16( port, addr, len)        {                       \
-                        unsigned l = (len);                             \
-                        hcf_16 *d = (hcf_16 *)(addr);                   \
-                        while (l--) *d++ =  IN_PORT_WORD(port);         \
-                                                }
-
-#define OUT_PORT_STRING_16( port, addr, len)        {                       \
-                        unsigned l = (len);                             \
-                        hcf_16 *s = (hcf_16 *)(addr);                    \
-                        while (l--) OUT_PORT_WORD(port, *s++);          \
-                                                }
-#endif	/* Microtec 80X86 C Compiler */
 
 
 
@@ -1505,17 +1410,9 @@ extern void far outpw( int, int );
 #define PCMCIA_ADDRESS 0xc80000UL
 
 #define IN_PORT_2BYTES(port)			 (*(hcf_16 *)(port))
-#if 0
-static hcf_16 IN_PORT_WORD(hcf_32 port) // should be hcf_io, not hcf_32
-{
-  hcf_16 word = IN_PORT_2BYTES(port);
-  return SwapBytes(word);
-}
-#else
 static hcf_16 swap_var;
 #define IN_PORT_WORD(port) \
   (((swap_var = IN_PORT_2BYTES(port)) >> 8) + (((swap_var) & 0xff) << 8))
-#endif
 #define OUT_PORT_2BYTES(port, value)	 (*(hcf_16 *)(port) = (hcf_16)(value))
 #define OUT_PORT_WORD(port, value)		 OUT_PORT_2BYTES(port, SwapBytes(value))
 
@@ -1534,7 +1431,7 @@ static hcf_16 swap_var;
 /*********************************  NGAP   ***************************************/
 /************************************************************************************************/
 
-#if defined __VX_WORKS__	/* VxWorks */
+#if defined __VX_WORKS__	    /* VxWorks */
 
 #if defined WLC_STATION
 //#undef HCF_TYPE 				/* Hermes-I Station F/W without SSN support */
@@ -1602,7 +1499,7 @@ void sysWrite16( unsigned short *port, unsigned short value );
 		} \
 	} while ( 0 )
 
-#elif defined FADS860BSP /* elif defined AS2000BSP */
+#elif defined FADS860BSP   /* elif defined AS2000BSP */
 
 #define HCF_BIG_ENDIAN 1
 
@@ -1817,7 +1714,7 @@ err: /* commented here */ /*	"BSP is not defined..." */
 /************************************************************************************************/
 /*************************************  VXWORKS. ARM T8300 IPPhone  *****************************/
 /************************************************************************************************/
-#if defined( IPT_T8300 ) || defined( IPT_T8307 )
+#if defined(IPT_T8300) || defined(IPT_T8307)
 
 #include <vxWorks.h>
 #include <sysLib.h>
@@ -2147,11 +2044,11 @@ typedef hcf_16 hcf_io;
 #define			DUI_COMPAT_VAR		MSF_COMPONENT_ID
 #endif //		DUI_COMPAT_VAR
 
-#if ! defined	DUI_COMPAT_BOT		//;?this way utilities can lower as well raise the bottom
+#if ! defined	DUI_COMPAT_BOT		    //;?this way utilities can lower as well raise the bottom
 #define			DUI_COMPAT_BOT		8
 #endif //		DUI_COMPAT_BOT
 
-#if ! defined	DUI_COMPAT_TOP		//;?this way utilities can lower as well raise the top
+#if ! defined	DUI_COMPAT_TOP		    //;?this way utilities can lower as well raise the top
 #define			DUI_COMPAT_TOP       8
 #endif //		DUI_COMPAT_TOP
 
@@ -2215,14 +2112,6 @@ err: primary variants 1 and 2 correspond with H-I only;
 /************************************************************************************************************/
 
 
-/* The BASED customization macro is used to resolves the SS!=DS conflict for the Interrupt Service logic in
- * DOS Drivers. Due to the cumbersomeness of mixing C and assembler local BASED variables still end up in the
- * wrong segment. The workaround is that the HCF uses only global BASED variables or IFB-based variables.
- * The "BASED" construction (supposedly) only amounts to something in the small memory model.
- *
- * Note that the whole BASED rigmarole is needlessly complicated because both the Microsoft Compiler and
- * Linker are unnecessary restrictive in what far pointer manipulation they allow
- */
 
 #if ! defined	BASED
 #define 		BASED
@@ -2259,28 +2148,28 @@ err: HCF_LITTLE_ENDIAN is obsolete;
 err: HCF_INT_OFF is obsolete;
 #endif //HCF_INT_OFF
 
-#if HCF_ALIGN != 1 && HCF_ALIGN != 2 && HCF_ALIGN != 4 && HCF_ALIGN != 8
+#if HCF_ALIGN != HCF_ALIGN != 2 && HCF_ALIGN != 4 && HCF_ALIGN != 8
 err: invalid value for HCF_ALIGN;
 #endif // HCF_ALIGN
 
-#if (HCF_ASSERT) & ~( HCF_ASSERT_PRINTF | HCF_ASSERT_SW_SUP | HCF_ASSERT_MB | HCF_ASSERT_RT_MSF_RTN | \
-					  HCF_ASSERT_LNK_MSF_RTN )
+#if (HCF_ASSERT) & ~( HCF_ASSERT_PRINTF | HCF_ASSERT_SW_SUP | HCF_ASSERT_MB | \
+	HCF_ASSERT_RT_MSF_RTN | HCF_ASSERT_LNK_MSF_RTN )
 err: invalid value for HCF_ASSERT;
 #endif // HCF_ASSERT
 
-#if (HCF_ASSERT) & HCF_ASSERT_MB && ! ( (HCF_EXT) & HCF_EXT_MB )		//detect potential conflict
+#if (HCF_ASSERT) & HCF_ASSERT_MB && ! ( (HCF_EXT) & HCF_EXT_MB )		    //detect potential conflict
 err: these macros are not used consistently;
 #endif // HCF_ASSERT_MB / HCF_EXT_MB
 
-#if HCF_BIG_ENDIAN != 0 && HCF_BIG_ENDIAN != 1
+#if HCF_BIG_ENDIAN != 1
 err: invalid value for HCF_BIG_ENDIAN;
 #endif // HCF_BIG_ENDIAN
 
-#if HCF_DL_ONLY != 0 && HCF_DL_ONLY != 1
+#if HCF_DL_ONLY != 1
 err: invalid value for HCF_DL_ONLY;
 #endif // HCF_DL_ONLY
 
-#if HCF_DMA != 0 && HCF_DMA != 1
+#if HCF_DMA != 1
 err: invalid value for HCF_DMA;
 #endif // HCF_DMA
 
@@ -2288,13 +2177,13 @@ err: invalid value for HCF_DMA;
 err: invalid value for HCF_ENCAP;
 #endif // HCF_ENCAP
 
-#if (HCF_EXT) & ~( HCF_EXT_INFO_LOG | HCF_EXT_INT_TX_EX | HCF_EXT_TALLIES_FW | HCF_EXT_TALLIES_HCF	| \
-				   HCF_EXT_NIC_ACCESS | HCF_EXT_MB | HCF_EXT_INT_TICK | \
-				   HCF_EXT_IFB_STRCT | HCF_EXT_DESC_STRCT | HCF_EXT_TX_CONT )
+#if (HCF_EXT) & ~( HCF_EXT_INFO_LOG | HCF_EXT_INT_TX_EX | HCF_EXT_TALLIES_FW | \
+	HCF_EXT_TALLIES_HCF	| HCF_EXT_NIC_ACCESS | HCF_EXT_MB | HCF_EXT_INT_TICK | \
+	HCF_EXT_IFB_STRCT | HCF_EXT_DESC_STRCT | HCF_EXT_TX_CONT )
 err: invalid value for HCF_EXT;
 #endif // HCF_EXT
 
-#if HCF_INT_ON != 0 && HCF_INT_ON != 1
+#if HCF_INT_ON != 1
 err: invalid value for HCF_INT_ON;
 #endif // HCF_INT_ON
 
@@ -2302,7 +2191,7 @@ err: invalid value for HCF_INT_ON;
 err: invalid value for HCF_IO;
 #endif // HCF_IO
 
-#if HCF_LEGACY != 0 && HCF_LEGACY != 1
+#if HCF_LEGACY != 1
 err: invalid value for HCF_LEGACY;
 #endif // HCF_LEGACY
 
@@ -2318,7 +2207,7 @@ err: below minimum .08 second required by Hermes or possibly above hcf_32 capaci
 err: invalid value for HCF_SLEEP;
 #endif // HCF_SLEEP
 
-#if (HCF_SLEEP) && ! (HCF_INT_ON)
+#if HCF_SLEEP && ! HCF_INT_ON
 err: these macros are not used consistently;
 #endif // HCF_SLEEP / HCF_INT_ON
 
@@ -2331,8 +2220,8 @@ err: these macros are not used consistently;
 err: invalid value for HCF_TALLIES;
 #endif // HCF_TALLIES
 
-#if (HCF_TYPE) & ~(HCF_TYPE_WPA | HCF_TYPE_USB | HCF_TYPE_PRELOADED | HCF_TYPE_HII5 | HCF_TYPE_WARP | \
-		HCF_TYPE_CCX /* | HCF_TYPE_TX_DELAY */ )
+#if (HCF_TYPE) & ~(HCF_TYPE_WPA | HCF_TYPE_USB | HCF_TYPE_PRELOADED | HCF_TYPE_HII5 | \
+	HCF_TYPE_WARP | HCF_TYPE_CCX /* | HCF_TYPE_TX_DELAY */ )
 err: invalid value for HCF_TYPE;
 #endif //HCF_TYPE
 
@@ -2341,4 +2230,3 @@ err: at most 1 of these macros should be defined;
 #endif //HCF_TYPE_WARP / HCF_TYPE_WPA
 
 #endif //HCFCFG_H
-

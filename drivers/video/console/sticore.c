@@ -403,7 +403,7 @@ sti_init_glob_cfg(struct sti_struct *sti,
 	struct sti_glob_cfg_ext *glob_cfg_ext;
 	void *save_addr;
 	void *sti_mem_addr;
-	const int save_addr_size = 1024;	/* XXX */
+	const int save_addr_size = 1024;
 	int i;
 
 	if (!sti->sti_mem_request)
@@ -1083,4 +1083,3 @@ EXPORT_SYMBOL(sti_get_rom);
 MODULE_AUTHOR("Philipp Rumpf, Helge Deller, Thomas Bogendoerfer");
 MODULE_DESCRIPTION("Core STI driver for HP's NGLE series graphics cards in HP PARISC machines");
 MODULE_LICENSE("GPL v2");
-

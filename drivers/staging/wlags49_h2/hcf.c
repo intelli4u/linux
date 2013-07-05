@@ -137,7 +137,7 @@ HCF_STATIC int			download( IFBP ifbp, CFG_PROG_STRCT FAR *ltvp );
 HCF_STATIC hcf_8		hcf_encap( wci_bufp type );
 #endif // HCF_ENCAP
 HCF_STATIC hcf_8		null_addr[4] = { 0, 0, 0, 0 };
-#if ! defined IN_PORT_WORD			//replace I/O Macros with logging facility
+#if ! defined IN_PORT_WORD			    //replace I/O Macros with logging facility
 extern FILE *log_file;
 
 #define IN_PORT_WORD(port)			in_port_word( (hcf_io)(port) )
@@ -344,7 +344,7 @@ struct CFG_RANGE6_STRCT BASED cfg_drv_act_ranges_hsi = {
 	COMP_ROLE_ACT,
 	COMP_ID_HSI,
 	{
-#if defined HCF_HSI_VAR_0					// Controlled deployment
+#if defined HCF_HSI_VAR_0					    // Controlled deployment
 	 {	0,									// var_rec[1] - Variant number
 		CFG_DRV_ACT_RANGES_HSI_0_BOTTOM,		//           - Bottom Compatibility
 		CFG_DRV_ACT_RANGES_HSI_0_TOP			//           - Top Compatibility
@@ -355,7 +355,7 @@ struct CFG_RANGE6_STRCT BASED cfg_drv_act_ranges_hsi = {
 	 { 0, 0, 0 }, 							// HCF_HSI_VAR_1 not supported by HCF 7
 	 { 0, 0, 0 }, 							// HCF_HSI_VAR_2 not supported by HCF 7
 	 { 0, 0, 0 }, 							// HCF_HSI_VAR_3 not supported by HCF 7
-#if defined HCF_HSI_VAR_4					// Hermes-II all types
+#if defined HCF_HSI_VAR_4					    // Hermes-II all types
 	 {	4,									// var_rec[1] - Variant number
 		CFG_DRV_ACT_RANGES_HSI_4_BOTTOM,		//           - Bottom Compatibility
 		CFG_DRV_ACT_RANGES_HSI_4_TOP			//           - Top Compatibility
@@ -363,7 +363,7 @@ struct CFG_RANGE6_STRCT BASED cfg_drv_act_ranges_hsi = {
 #else
 	 { 0, 0, 0 },
 #endif // HCF_HSI_VAR_4
-#if defined HCF_HSI_VAR_5					// WARP Hermes-2.5
+#if defined HCF_HSI_VAR_5					    // WARP Hermes-2.5
 	 {	5,									// var_rec[1] - Variant number
 		CFG_DRV_ACT_RANGES_HSI_5_BOTTOM,		//           - Bottom Compatibility
 		CFG_DRV_ACT_RANGES_HSI_5_TOP			//           - Top Compatibility
@@ -382,7 +382,7 @@ CFG_RANGE4_STRCT BASED cfg_drv_act_ranges_apf = {
 	COMP_ROLE_ACT,
 	COMP_ID_APF,
 	{
-#if defined HCF_APF_VAR_1				//(Fake) Hermes-I
+#if defined HCF_APF_VAR_1				    //(Fake) Hermes-I
 	 {	1,									//var_rec[1] - Variant number
 		CFG_DRV_ACT_RANGES_APF_1_BOTTOM,		//           - Bottom Compatibility
 		CFG_DRV_ACT_RANGES_APF_1_TOP			//           - Top Compatibility
@@ -390,7 +390,7 @@ CFG_RANGE4_STRCT BASED cfg_drv_act_ranges_apf = {
 #else
 	 { 0, 0, 0 },
 #endif // HCF_APF_VAR_1
-#if defined HCF_APF_VAR_2				//Hermes-II
+#if defined HCF_APF_VAR_2				    //Hermes-II
 	 {	2,									// var_rec[1] - Variant number
 		CFG_DRV_ACT_RANGES_APF_2_BOTTOM,		//           - Bottom Compatibility
 		CFG_DRV_ACT_RANGES_APF_2_TOP			//           - Top Compatibility
@@ -398,7 +398,7 @@ CFG_RANGE4_STRCT BASED cfg_drv_act_ranges_apf = {
 #else
 	 { 0, 0, 0 },
 #endif // HCF_APF_VAR_2
-#if defined HCF_APF_VAR_3						// Native_USB
+#if defined HCF_APF_VAR_3						    // Native_USB
 	 {	3,										// var_rec[1] - Variant number
 		CFG_DRV_ACT_RANGES_APF_3_BOTTOM,		//           - Bottom Compatibility	!!!!!see note below!!!!!!!
 		CFG_DRV_ACT_RANGES_APF_3_TOP			//           - Top Compatibility
@@ -406,7 +406,7 @@ CFG_RANGE4_STRCT BASED cfg_drv_act_ranges_apf = {
 #else
 	 { 0, 0, 0 },
 #endif // HCF_APF_VAR_3
-#if defined HCF_APF_VAR_4						// WARP Hermes 2.5
+#if defined HCF_APF_VAR_4						    // WARP Hermes 2.5
 	 {	4,										// var_rec[1] - Variant number
 		CFG_DRV_ACT_RANGES_APF_4_BOTTOM,		//           - Bottom Compatibility	!!!!!see note below!!!!!!!
 		CFG_DRV_ACT_RANGES_APF_4_TOP			//           - Top Compatibility
@@ -511,7 +511,7 @@ HCF_STATIC hcf_16* BASED xxxx[ ] = {
 ************************** T O P   L E V E L   H C F   R O U T I N E S **************************************
 ************************************************************************************************************/
 
-#if (HCF_DL_ONLY) == 0
+#if HCF_DL_ONLY == 0
 /************************************************************************************************************
 *
 *.MODULE		int hcf_action( IFBP ifbp, hcf_16 action )
@@ -705,7 +705,7 @@ int	rc = HCF_SUCCESS;
 	HCFASSERT( ifbp->IFB_Magic == HCF_MAGIC, ifbp->IFB_Magic )
 #if HCF_INT_ON
 	HCFLOGENTRY( action == HCF_ACT_INT_FORCE_ON ? HCF_TRACE_ACTION_KLUDGE : HCF_TRACE_ACTION, action )														/* 0 */
-#if (HCF_SLEEP)
+#if HCF_SLEEP
 	HCFASSERT( ifbp->IFB_IntOffCnt != 0xFFFE || action == HCF_ACT_INT_OFF,
 			   MERGE_2( action, ifbp->IFB_IntOffCnt ) )
 #else
@@ -1164,21 +1164,13 @@ LTV_STRCT	x;
 
 	if ( io_base == HCF_DISCONNECT ) {					//disconnect
 		io_addr = ifbp->IFB_IOBase;
-		OPW( HREG_INT_EN, 0 );		//;?workaround against dying F/W on subsequent hcf_connect calls
+		OPW( HREG_INT_EN, 0 );
 	} else {											//connect								/* 0 */
 		io_addr = io_base;
 	}
 
-#if 0 //;? if a subsequent hcf_connect is preceeded by an hcf_disconnect the wakeup is not needed !!
-#if HCF_SLEEP
-    OUT_PORT_WORD( .....+HREG_IO, HREG_IO_WAKEUP_ASYNC ); 	    //OPW not yet useable
-	MSF_WAIT(800);								// MSF-defined function to wait n microseconds.
-	note that MSF_WAIT uses not yet defined!!!! IFB_IOBase and IFB_TickIni (via PROT_CNT_INI)
-	so be carefull if this code is restored
-#endif // HCF_SLEEP
-#endif // 0
 
-#if ( (HCF_TYPE) & HCF_TYPE_PRELOADED ) == 0	//switch clock back for SEEPROM access  !!!
+#if ( (HCF_TYPE) & HCF_TYPE_PRELOADED ) == 0	    //switch clock back for SEEPROM access  !!!
 	OUT_PORT_WORD( io_addr + HREG_CMD, HCMD_INI );  	    //OPW not yet useable
 	prot_cnt = INI_TICK_INI;
 	HCF_WAIT_WHILE( (IN_PORT_WORD( io_addr +  HREG_EV_STAT) & HREG_EV_CMD) == 0 );
@@ -1187,7 +1179,7 @@ LTV_STRCT	x;
 	for ( q = (hcf_8*)(&ifbp->IFB_Magic); q > (hcf_8*)ifbp; *--q = 0 ) /*NOP*/;						/* 4 */
 	ifbp->IFB_Magic		= HCF_MAGIC;
 	ifbp->IFB_Version	= IFB_VERSION;
-#if defined MSF_COMPONENT_ID //a new IFB demonstrates how dirty the solution is
+#if defined MSF_COMPONENT_ID     //a new IFB demonstrates how dirty the solution is
 	xxxx[xxxx_PRI_IDENTITY_OFFSET] = NULL;		//IFB_PRIIdentity placeholder	0xFD02
 	xxxx[xxxx_PRI_IDENTITY_OFFSET+1] = NULL;	//IFB_PRISup placeholder		0xFD03
 #endif // MSF_COMPONENT_ID
@@ -1206,7 +1198,7 @@ LTV_STRCT	x;
 		ifbp->IFB_AssertRtn = (MSF_ASSERT_RTNP)msf_assert;											/* 6 */
 	}
 #endif // HCF_ASSERT_LNK_MSF_RTN
-#if (HCF_ASSERT) & HCF_ASSERT_MB				//build the structure to pass the assert info to hcf_put_info
+#if (HCF_ASSERT) & HCF_ASSERT_MB				    //build the structure to pass the assert info to hcf_put_info
 	ifbp->IFB_AssertStrct.len = sizeof(ifbp->IFB_AssertStrct)/sizeof(hcf_16) - 1;
 	ifbp->IFB_AssertStrct.typ = CFG_MB_INFO;
 	ifbp->IFB_AssertStrct.base_typ = CFG_MB_ASSERT;
@@ -1239,7 +1231,7 @@ LTV_STRCT	x;
 		IF_PROT_TIME( HCFASSERT( prot_cnt, IPW( HREG_EV_STAT) ) ) /* if prot_cnt == 0, cmd_exe will fail, causing DEFUNCT */
 	}
 	OPW( HREG_EV_ACK, ~HREG_EV_SLEEP_REQ );
-#if ( (HCF_TYPE) & HCF_TYPE_PRELOADED ) == 0														/*12*/
+#if ( (HCF_TYPE) & HCF_TYPE_PRELOADED ) == 0														    /*12*/
 	(void)cmd_exe( ifbp, HCMD_INI, 0 );
 #endif // HCF_TYPE_PRELOADED
 if ( io_base != HCF_DISCONNECT ) {
@@ -1514,7 +1506,7 @@ DESC_STRCT *descp;	// pointer to start of FrameList
 	if ( descp && descp->buf_addr )  //!be aware of the missing curly bracket
 
 											//skip decapsulation at confined descriptor
-#if (HCF_ENCAP) == HCF_ENC
+#if HCF_ENCAP == HCF_ENC
 #if (HCF_TYPE) & HCF_TYPE_CCX
 	if ( ifbp->IFB_CKIPStat == HCF_ACT_CCX_OFF )
 #endif // HCF_TYPE_CCX
@@ -1600,7 +1592,7 @@ hcf_dma_rx_put( IFBP ifbp, DESC_STRCT *descp )
 	HCFASSERT_INT
 
 	put_frame_lst( ifbp, descp, DMA_RX );
-#if HCF_ASSERT && (HCF_ENCAP) == HCF_ENC
+#if HCF_ASSERT && HCF_ENCAP == HCF_ENC
 	if ( descp->buf_addr ) {
 		HCFASSERT( descp->BUF_SIZE == HCF_DMA_RX_BUF1_SIZE, descp->BUF_SIZE )
 		HCFASSERT( descp->next_desc_addr, 0 ) // first descriptor should be followed by another descriptor
@@ -1646,7 +1638,7 @@ DESC_STRCT *descp;	// pointer to start of FrameList
 	descp = get_frame_lst( ifbp, DMA_TX );
 	if ( descp && descp->buf_addr )  //!be aware of the missing curly bracket
 											//skip decapsulation at confined descriptor
-#if (HCF_ENCAP) == HCF_ENC
+#if HCF_ENCAP == HCF_ENC
 		if ( ( descp->BUF_CNT == HFS_TYPE )
 #if (HCF_TYPE) & HCF_TYPE_CCX
 			 || ( descp->BUF_CNT == HFS_DAT )
@@ -1796,7 +1788,7 @@ int			i;
 
 	if ( descp->buf_addr ) {
 		*(hcf_16*)(descp->buf_addr + HFS_TX_CNTL) = tx_cntl;											/*1*/
-#if (HCF_ENCAP) == HCF_ENC
+#if HCF_ENCAP == HCF_ENC
 		HCFASSERT( descp->next_desc_addr, 0 )									//at least 2 descripors
 		HCFASSERT( descp->BUF_CNT == HFS_ADDR_DEST, descp->BUF_CNT )	//exact length required for 1st buffer
 		HCFASSERT( descp->BUF_SIZE >= HCF_DMA_TX_BUF1_SIZE, descp->BUF_SIZE )	//minimal storage for encapsulation
@@ -1854,7 +1846,7 @@ int			i;
 
 #endif // HCF_DMA
 
-#if (HCF_DL_ONLY) == 0
+#if HCF_DL_ONLY == 0
 /************************************************************************************************************
 *
 *.MODULE		hcf_8 hcf_encap( wci_bufp type )
@@ -1893,7 +1885,7 @@ int			i;
 *.ENDDOC				END DOCUMENTATION
 *
 ************************************************************************************************************/
-#if HCF_ENCAP	//i.e HCF_ENC or HCF_ENC_SUP
+#if HCF_ENCAP	    //i.e HCF_ENC or HCF_ENC_SUP
 #if ! ( (HCF_ENCAP) & HCF_ENC_SUP )
 HCF_STATIC
 #endif // HCF_ENCAP
@@ -2041,7 +2033,7 @@ int			i;
 	HCFASSERT( 1 < ltvp->len && ltvp->len <= HCF_MAX_LTV + 1, MERGE_2( ltvp->typ, ltvp->len ) )
 
 	ltvp->len = 0;								//default to: No Info Available
-#if defined MSF_COMPONENT_ID || (HCF_EXT) & HCF_EXT_MB //filter out all specials
+#if defined MSF_COMPONENT_ID || (HCF_EXT) & HCF_EXT_MB     //filter out all specials
 	for ( i = 0; ( q = xxxx[i] ) != NULL && q[1] != type; i++ ) /*NOP*/;
 #endif // MSF_COMPONENT_ID / HCF_EXT_MB
 #if HCF_TALLIES
@@ -2329,7 +2321,7 @@ int rc = HCF_SUCCESS;
 } // hcf_put_info
 
 
-#if (HCF_DL_ONLY) == 0
+#if HCF_DL_ONLY == 0
 /************************************************************************************************************
 *
 *.MODULE		int hcf_rcv_msg( IFBP ifbp, DESC_STRCT *descp, unsigned int offset )
@@ -2492,7 +2484,7 @@ hcf_16		j;
 #endif // HCF_DL_ONLY
 
 
-#if (HCF_DL_ONLY) == 0
+#if HCF_DL_ONLY == 0
 /************************************************************************************************************
 *
 *.MODULE		int hcf_send_msg( IFBP ifbp, DESC_STRCT *descp, hcf_16 tx_cntl )
@@ -2674,7 +2666,7 @@ hcf_16		fid = 0;
 
 	if ( descp ) ifbp->IFB_TxFID = 0;				//cancel a pre-put message
 
-#if (HCF_EXT) & HCF_EXT_TX_CONT				// Continuous transmit test
+#if (HCF_EXT) & HCF_EXT_TX_CONT				    // Continuous transmit test
 	if ( tx_cntl == HFS_TX_CNTL_TX_CONT ) {
 	 	fid = get_fid(ifbp);
 	 	if (fid != 0 ) {
@@ -2757,7 +2749,7 @@ hcf_16		fid = 0;
 #endif // HCF_TYPE_CCX
 		{
 											//if encapsulation needed
-#if (HCF_ENCAP) == HCF_ENC
+#if HCF_ENCAP == HCF_ENC
 											//write length (with SNAP-header,Type, without //DA,SA,Length ) no MIC calc.
 			if ( ( snap_header[sizeof(snap_header)-1] = hcf_encap( &p->buf_addr[HCF_DASA_SIZE] ) ) != ENC_NONE ) {
 				OPW( HREG_DATA_1, CNV_END_SHORT( len + (sizeof(snap_header) + 2) - ( 2*6 + 2 ) ) );
@@ -2806,7 +2798,7 @@ hcf_16		fid = 0;
 #endif // HCF_DL_ONLY
 
 
-#if (HCF_DL_ONLY) == 0
+#if HCF_DL_ONLY == 0
 /************************************************************************************************************
 *
 *.MODULE		int hcf_service_nic( IFBP ifbp, wci_bufp bufp, unsigned int len )
@@ -3088,23 +3080,6 @@ hcf_16 		i;
 		if ( stat & HREG_EV_TICK ) {
 			ifbp->IFB_TickCnt++;
 		}
-#if 0 // (HCF_SLEEP) & HCF_DDS
-		if ( ifbp->IFB_TickCnt == 3 && ( ifbp->IFB_DSLinkStat & CFG_LINK_STAT_CONNECTED ) == 0 ) {
-CFG_DDS_TICK_TIME_STRCT ltv;
-			// 2 second period (with 1 tick uncertanty) in not-connected mode -->go into DS_OOR
-			hcf_action( ifbp, HCF_ACT_SLEEP );
-			ifbp->IFB_DSLinkStat |= CFG_LINK_STAT_DS_OOR; //set OutOfRange
-			ltv.len = 2;
-			ltv.typ = CFG_DDS_TICK_TIME;
-			ltv.tick_time = ( ( ifbp->IFB_DSLinkStat & CFG_LINK_STAT_TIMER ) + 0x10 ) *64; //78 is more right
-			hcf_put_info( ifbp, (LTVP)&ltv );
-			printk( "<5>Preparing for sleep, link_status: %04X, timer : %d\n",
-					ifbp->IFB_DSLinkStat, ltv.tick_time );//;?remove me 1 day
-			ifbp->IFB_TickCnt++; //;?just to make sure we do not keep on printing above message
-			if ( ltv.tick_time < 300 * 125 ) ifbp->IFB_DSLinkStat += 0x0010;
-
-		}
-#endif // HCF_DDS
 #endif // HCF_EXT_INT_TICK
 		if ( stat & HREG_EV_INFO ) {
 			isr_info( ifbp );
@@ -3142,7 +3117,7 @@ CFG_DDS_TICK_TIME_STRCT ltv;
 				if( ifbp->IFB_CKIPStat != HCF_ACT_CCX_ON  )
 #endif // HCF_TYPE_CCX
 				{
-#if (HCF_ENCAP) == HCF_ENC
+#if HCF_ENCAP == HCF_ENC
 					HCFASSERT( len >= HFS_DAT + 2 + sizeof(snap_header), len )
 /*34*/ 				i = *(wci_recordp)&bufp[HFS_STAT] & ( HFS_STAT_MSG_TYPE | HFS_STAT_ERR );
 					if ( i == HFS_STAT_TUNNEL ||
@@ -3516,7 +3491,7 @@ hcf_32	prot_cnt;
 #endif // HCF_PROT_TIME
 
 
-#if (HCF_DL_ONLY) == 0
+#if HCF_DL_ONLY == 0
 #if (HCF_TYPE) & HCF_TYPE_WPA
 /************************************************************************************************************
 *
@@ -3787,35 +3762,6 @@ hcf_io				io_port = ifbp->IFB_IOBase + HREG_AUX_DATA;
 													//else (non-final)
 	} else {
 													//.  if mode == Readback SEEPROM
-#if 0	//;? as long as the next if contains a hard coded 0, might as well leave it out even more obvious
-		if ( 0 /*len is definitely not want we want;?*/ && ltvp->mode == CFG_PROG_SEEPROM_READBACK ) {
-			OPW( HREG_PARAM_1, (hcf_16)(ltvp->nic_addr >> 16) );
-			OPW( HREG_PARAM_2, MUL_BY_2(ltvp->len - 4));
-													//.  .  perform Hermes prog cmd with appropriate mode bits
-			rc = cmd_exe( ifbp, HCMD_PROGRAM | ltvp->mode, (hcf_16)ltvp->nic_addr );
-													//.  .  set up NIC RAM addressability according Resp0-1
-			OPW( HREG_AUX_PAGE,   IPW( HREG_RESP_1) );
-			OPW( HREG_AUX_OFFSET, IPW( HREG_RESP_0) );
-													//.  .  set up L-field of LTV according Resp2
-			i = ( IPW( HREG_RESP_2 ) + 1 ) / 2;  // i contains max buffer size in words, a probably not very useful piece of information ;?
-/*Nico's code based on i is the "real amount of data available"
-			if ( ltvp->len - 4 < i ) rc = HCF_ERR_LEN;
-			else ltvp->len = i + 4;
-*/
-/* Rolands code based on the idea that a MSF should not ask for more than is available
-			// check if number of bytes requested exceeds max buffer size
-			if ( ltvp->len - 4 > i ) {
-				rc = HCF_ERR_LEN;
-				ltvp->len = i + 4;
-			}
-*/
-													//.  .  copy data from NIC via AUX port to LTV
-			cp = (wci_bufp)ltvp->host_addr;						/*IN_PORT_STRING_8_16 macro may modify its parameters*/
-			i = ltvp->len - 4;
-			IN_PORT_STRING_8_16( io_port, cp, i );		//!!!WORD length, cp MUST be a char pointer	// $$ char
-													//.  else (non-final programming)
-		} else
-#endif //;? as long as the above if contains a hard coded 0, might as well leave it out even more obvious
 		{											//.  .  get number of words to program
 			HCFASSERT( ltvp->segment_size, *ltvp->host_addr )
 			i = ltvp->segment_size/2;
@@ -3878,7 +3824,7 @@ fw_printf(IFBP ifbp, CFG_FW_PRINTF_STRCT FAR *ltvp)
 #endif // HCF_ASSERT_PRINTF
 
 
-#if (HCF_DL_ONLY) == 0
+#if HCF_DL_ONLY == 0
 /************************************************************************************************************
 *
 *.SUBMODULE		hcf_16 get_fid( IFBP ifbp )
@@ -4063,94 +4009,6 @@ hcf_8 c;
 #endif // HCF_BIG_ENDIAN
 } // get_frag
 
-/************************************************************************************************************
-*
-*.SUBMODULE		int init( IFBP ifbp )
-*.PURPOSE		Handles common initialization aspects (H-I init, calibration, config.mngmt, allocation).
-*
-*.ARGUMENTS
-*	ifbp		address of the Interface Block
-*
-*.RETURNS
-*	HCF_ERR_INCOMP_PRI
-*	HCF_ERR_INCOMP_FW
-*	HCF_ERR_TIME_OUT
-*	>>hcf_get_info
-*		HCF_ERR_NO_NIC
-*		HCF_ERR_LEN
-*
-*.DESCRIPTION
-* init will successively:
-* - in case of a (non-preloaded) H-I, initialize the NIC
-* - calibrate the S/W protection timer against the Hermes Timer
-* - collect HSI, "active" F/W Configuration Management Information
-* - in case active F/W is Primary F/W: collect Primary F/W Configuration Management Information
-* - check HSI and Primary F/W compatibility with the HCF
-* - in case active F/W is Station or AP F/W: check Station or AP F/W compatibility with the HCF
-* - in case active F/W is not Primary F/W: allocate FIDs to be used in transmit/notify process
-*
-*
-*.DIAGRAM
-*2:	drop all error status bits in IFB_CardStat since they are expected to be re-evaluated.
-*4:	Ack everything except HREG_EV_SLEEP_REQ. It is very likely that an Alloc event is pending and
-*	very well possible that a Send Cmd event is pending. Acking HREG_EV_SLEEP_REQ is handled by hcf_action(
-*	HCF_ACT_INT_ON ) !!!
-*10: Calibrate the S/W time-out protection mechanism by calling calibrate(). Note that possible errors
-*	in the calibration process are nor reported by init but will show up via the defunct mechanism in
-*	subsequent hcf-calls.
-*14: usb_check_comp() is called to have the minimal visual clutter for the legacy H-I USB dongle
-*	compatibility check.
-*16: The following configuration management related information is retrieved from the NIC:
-*	 - HSI supplier
-*	 - F/W Identity
-*	 - F/W supplier
-*	 if appropriate:
-*	 - PRI Identity
-*	 - PRI supplier
-*	 appropriate means on H-I: always
-*	 and on H-II if F/W supplier reflects a primary (i.e. only after an Hermes Reset or Init
-*	 command).
-*	 QUESTION ;? !!!!!! should, For each of the above RIDs the Endianess is converted to native Endianess.
-*	 Only the return code of the first hcf_get_info is used. All hcf_get_info calls are made, regardless of
-*	 the success or failure of the 1st hcf_get_info. The assumptions are:
-*	  - if any call fails, they all fail, so remembering the result of the 1st call is adequate
-*	  - a failing call will overwrite the L-field with a 0x0000 value, which services both as an
-*		error indication for the values cached in the IFB as making mmd_check_comp fail.
-*	 In case of H-I, when getting the F/W identity fails, the F/W is assumed to be H-I AP F/W pre-dating
-*	 version 9.0 and the F/W Identity and Supplier are faked accordingly.
-*	 In case of H-II, the Primary, Station and AP Identity are merged into a single F/W Identity.
-*	 The same applies to the Supplier information. As a consequence the PRI information can no longer be
-*	 retrieved when a Tertiary runs. To accommodate MSFs and Utilities who depend on PRI information being
-*	 available at any time, this information is cached in the IFB. In this cache the generic "F/W" value of
-*	 the typ-fields is overwritten with the specific (legacy) "PRI" values. To actually re-route the (legacy)
-*	 PRI request via hcf_get_info, the xxxx-table must be set.  In case of H-I, this caching, modifying and
-*	 re-routing is not needed because PRI information is always available directly from the NIC. For
-*	 consistency the caching fields in the IFB are filled with the PRI information anyway.
-*18: mdd_check_comp() is called to check the Supplier Variant and Range of the Host-S/W I/F (HSI) and the
-*	Primary Firmware Variant and Range against the Top and Bottom level supported by this HCF.  If either of
-*	these tests fails, the CARD_STAT_INCOMP_PRI bit of IFB_CardStat is set
-*	Note: There should always be a primary except during production, so this makes the HCF in its current form
-*	unsuitable for manufacturing test systems like the FTS. This can be remedied by an adding a test like
-*	ifbp->IFB_PRISup.id == COMP_ID_PRI
-*20: In case there is Tertiary F/W and this F/W is Station F/W, the Supplier Variant and Range of the Station
-*	Firmware function as retrieved from the Hermes is checked against the Top and Bottom level supported by
-*	this HCF.
-*	Note: ;? the tertiary F/W compatibility checks could be moved to the DHF, which already has checked the
-*	CFI and MFI compatibility of the image with the NIC before the image was downloaded.
-*28: In case of non-Primary F/W: allocates and acknowledge a (TX or Notify) FID and allocates without
-*	acknowledge another (TX or Notify) FID (the so-called 1.5 alloc scheme) with the following steps:
-*	- execute the allocate command by calling cmd_exe
-*	- wait till either the alloc event or a time-out occurs
-*	- regardless whether the alloc event occurs, call get_fid to
-*	  - read the FID and save it in IFB_RscInd to be used as "spare FID"
-*	  - acknowledge the alloc event
-*	  - do another "half" allocate to complete the "1.5 Alloc scheme"
-*	  Note that above 3 steps do not harm and thus give the "cheapest" acceptable strategy.
-*	  If a time-out occurred, then report time out status (after all)
-*
-*.ENDDOC				END DOCUMENTATION
-*
-************************************************************************************************************/
 HCF_STATIC int
 init( IFBP ifbp )
 {
@@ -4162,12 +4020,6 @@ int	rc = HCF_SUCCESS;
 	ifbp->IFB_CardStat = 0;																			/* 2*/
 	OPW( HREG_EV_ACK, ~HREG_EV_SLEEP_REQ ); 											/* 4*/
 	IF_PROT_TIME( calibrate( ifbp ); ) 													/*10*/
-#if 0 // OOR
-	ifbp->IFB_FWIdentity.len = 2;							//misuse the IFB space for a put
-	ifbp->IFB_FWIdentity.typ = CFG_TICK_TIME;
-	ifbp->IFB_FWIdentity.comp_id = (1000*1000)/1024 + 1;	//roughly 1 second
-	hcf_put_info( ifbp, (LTVP)&ifbp->IFB_FWIdentity.len );
-#endif // OOR
 	ifbp->IFB_FWIdentity.len = sizeof(CFG_FW_IDENTITY_STRCT)/sizeof(hcf_16) - 1;
 	ifbp->IFB_FWIdentity.typ = CFG_FW_IDENTITY;
 	rc = hcf_get_info( ifbp, (LTVP)&ifbp->IFB_FWIdentity.len );
@@ -4178,7 +4030,7 @@ int	rc = HCF_SUCCESS;
 	ifbp->IFB_FWIdentity.version_major = CNV_LITTLE_TO_SHORT( ifbp->IFB_FWIdentity.version_major );
 	ifbp->IFB_FWIdentity.version_minor = CNV_LITTLE_TO_SHORT( ifbp->IFB_FWIdentity.version_minor );
 #endif // HCF_BIG_ENDIAN
-#if defined MSF_COMPONENT_ID																		/*14*/
+#if defined MSF_COMPONENT_ID																		    /*14*/
 	if ( rc == HCF_SUCCESS ) {																		/*16*/
 		ifbp->IFB_HSISup.len = sizeof(CFG_SUP_RANGE_STRCT)/sizeof(hcf_16) - 1;
 		ifbp->IFB_HSISup.typ = CFG_NIC_HSI_SUP_RANGE;
@@ -4231,7 +4083,7 @@ int i = sizeof( CFG_FW_IDENTITY_STRCT) + sizeof(CFG_SUP_RANGE_STRCT );
 		}
 	}
 #endif // MSF_COMPONENT_ID
-#if (HCF_DL_ONLY) == 0																			/* 28 */
+#if HCF_DL_ONLY == 0																			    /* 28 */
 	if ( rc == HCF_SUCCESS && ifbp->IFB_FWIdentity.comp_id >= COMP_ID_FW_STA ) {
 PROT_CNT_INI
 		/**************************************************************************************
@@ -4263,7 +4115,7 @@ PROT_CNT_INI
 	return rc;
 } // init
 
-#if (HCF_DL_ONLY) == 0
+#if HCF_DL_ONLY == 0
 /************************************************************************************************************
 *
 *.SUBMODULE		void isr_info( IFBP ifbp )
@@ -4311,7 +4163,7 @@ RID_LOGP	ridp = ifbp->IFB_RIDLogp;	//NULL or pointer to array of RID_LOG structu
 		(void)setup_bap( ifbp, fid, 0, IO_IN );
 		get_frag( ifbp, (wci_bufp)info, 4 BE_PAR(2) );
 		HCFASSERT( info[0] <= HCF_MAX_LTV + 1, MERGE_2( info[1], info[0] ) )  //;? a smaller value makes more sense
-#if (HCF_TALLIES) & HCF_TALLIES_NIC		//Hermes tally support
+#if (HCF_TALLIES) & HCF_TALLIES_NIC		    //Hermes tally support
 		if ( info[1] == CFG_TALLIES ) {
 hcf_32	*p;
 /*2*/		if ( info[0] > HCF_NIC_TAL_CNT ) {
@@ -4640,7 +4492,7 @@ int rc = HCF_SUCCESS;
 	if ( ifbp->IFB_CardStat == 0 &&																/* 20*/
 		 ( ( CFG_RID_CFG_MIN <= ltvp->typ    && ltvp->typ <= CFG_RID_CFG_MAX ) ||
 		   ( CFG_RID_ENG_MIN <= ltvp->typ /* && ltvp->typ <= 0xFFFF */       )     ) ) {
-#if HCF_ASSERT //FCC8, FCB0, FCB4, FCB6, FCB7, FCB8, FCC0, FCC4, FCBC, FCBD, FCBE, FCBF
+#if HCF_ASSERT     //FCC8, FCB0, FCB4, FCB6, FCB7, FCB8, FCC0, FCC4, FCBC, FCBD, FCBE, FCBF
  {
  hcf_16		t = ltvp->typ;
  LTV_STRCT 	x = { 2, t, {0} };															/*24*/
@@ -4668,7 +4520,7 @@ int rc = HCF_SUCCESS;
 } // put_info
 
 
-#if (HCF_DL_ONLY) == 0
+#if HCF_DL_ONLY == 0
 /************************************************************************************************************
 *
 *.SUBMODULE		int put_info_mb( IFBP ifbp, CFG_MB_INFO_STRCT FAR * ltvp )
@@ -4785,78 +4637,6 @@ hcf_16		tlen;					//free length/working length/offset in WMP frame
 #endif // HCF_DL_ONLY
 
 
-/************************************************************************************************************
-*
-*.SUBMODULE		int setup_bap( IFBP ifbp, hcf_16 fid, int offset, int type )
-*.PURPOSE		set up data access to NIC RAM via BAP_1.
-*
-*.ARGUMENTS
-*	ifbp			address of I/F Block
-*	fid				FID/RID
-*	offset			!!even!! offset in FID/RID
-*	type			IO_IN, IO_OUT
-*
-*.RETURNS
-*	HCF_SUCCESS					O.K
-*	HCF_ERR_NO_NIC				card is removed
-*	HCF_ERR_DEFUNCT_TIME_OUT	Fatal malfunction detected
-*	HCF_ERR_DEFUNCT_.....		if and only if IFB_DefunctStat <> 0
-*
-*.DESCRIPTION
-*
-* A non-zero return status indicates:
-* - the NIC is considered nonoperational, e.g. due to a time-out of some Hermes activity in the past
-* - BAP_1 could not properly be initialized
-* - the card is removed before completion of the data transfer
-* In all other cases, a zero is returned.
-* BAP Initialization failure indicates an H/W error which is very likely to signal complete H/W failure.
-* Once a BAP Initialization failure has occurred all subsequent interactions with the Hermes will return a
-* "defunct" status till the Hermes is re-initialized by means of an hcf_connect.
-*
-* A BAP is a set of registers (Offset, Select and Data) offering read/write access to a particular FID or
-* RID. This access is based on a auto-increment feature.
-* There are two BAPs but these days the HCF uses only BAP_1 and leaves BAP_0 to the PCI Busmastering H/W.
-*
-* The BAP-mechanism is based on the Busy bit in the Offset register (see the Hermes definition). The waiting
-* for Busy must occur between writing the Offset register and accessing the Data register. The
-* implementation to wait for the Busy bit drop after each write to the Offset register, implies that the
-* requirement that the Busy bit is low  before the Select register is written, is automatically met.
-* BAP-setup may be time consuming (e.g. 380 usec for large offsets occurs frequently). The wait for Busy bit
-* drop is protected by a loop counter, which is initialized with IFB_TickIni, which is calibrated in init.
-*
-* The NIC I/F is optimized for word transfer and can only handle word transfer at a word boundary in NIC
-* RAM. The intended solution for transfer of a single byte has multiple H/W flaws. There have been different
-* S/W Workaround strategies. RID access is hcf_16 based by "nature", so no byte access problems.  For Tx/Rx
-* FID access,  the byte logic became obsolete by absorbing it in the double word oriented nature of the MIC
-* feature.
-*
-*
-*.DIAGRAM
-*
-*2:	the test on rc checks whether the HCF went into "defunct" mode ( e.g. BAP initialization or a call to
-*	cmd_wait did ever fail).
-*4:	the select register and offset register are set
-*	the offset register is monitored till a successful condition (no busy bit) is detected or till the
-*	(calibrated) protection counter expires
-*	If the counter expires, this is reflected in IFB_DefunctStat, so all subsequent calls to setup_bap fail
-*	immediately ( see 2)
-*6:	initialization of the carry as used by pet/get_frag
-*8:	HREG_OFFSET_ERR is ignored as error because:
-*	 a: the Hermes is robust against it
-*	 b: it is not known what causes it (probably a bug), hence no strategy can be specified which level is
-*		to handle this error in which way. In the past, it could be induced by the MSF level, e.g. by calling
-*		hcf_rcv_msg while there was no Rx-FID available. Since this is an MSF-error which is caught by ASSERT,
-*		there is no run-time action required by the HCF.
-*	Lumping the Offset error in with the Busy bit error, as has been done in the past turns out to be a
-*	disaster or a life saver, just depending on what the cause of the error is. Since no prediction can be
-*	done about the future, it is "felt" to be the best strategy to ignore this error. One day the code was
-*	accompanied by the following comment:
-*	//	ignore HREG_OFFSET_ERR, someone, supposedly the MSF programmer ;) made a bug. Since we don't know
-*	//	what is going on, we might as well go on - under management pressure - by ignoring it
-*
-*.ENDDOC                          END DOCUMENTATION
-*
-************************************************************************************************************/
 HCF_STATIC int
 setup_bap( IFBP ifbp, hcf_16 fid, int offset, int type )
 {
@@ -4883,4 +4663,3 @@ int	rc;
 	HCFTRACE( ifbp, HCF_TRACE_STRIO | HCF_TRACE_EXIT );
 	return rc;
 } // setup_bap
-

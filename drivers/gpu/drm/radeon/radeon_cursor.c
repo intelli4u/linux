@@ -178,7 +178,6 @@ int radeon_crtc_cursor_set(struct drm_crtc *crtc,
 		goto fail;
 
 	radeon_lock_cursor(crtc, true);
-	/* XXX only 27 bit offset for legacy cursor */
 	radeon_set_cursor(crtc, obj, gpu_addr);
 	radeon_show_cursor(crtc);
 	radeon_lock_cursor(crtc, false);

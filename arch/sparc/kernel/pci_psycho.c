@@ -237,9 +237,6 @@ static irqreturn_t psycho_ce_intr(int irq, void *dev_id)
 		  ((error_bits & PSYCHO_CEAFSR_PDWR) ?
 		   "DMA Write" : "???")))));
 
-	/* XXX Use syndrome and afar to print out module string just like
-	 * XXX UDB CE trap handler does... -DaveM
-	 */
 	printk("%s: syndrome[%02lx] bytemask[%04lx] dword_offset[%lx] "
 	       "UPA_MID[%02lx] was_block(%d)\n",
 	       pbm->name,
@@ -278,7 +275,6 @@ static irqreturn_t psycho_ce_intr(int irq, void *dev_id)
 #define PSYCHO_PCI_AFAR_A	0x2018UL
 #define PSYCHO_PCI_AFAR_B	0x4018UL
 
-/* XXX What about PowerFail/PowerManagement??? -DaveM */
 #define PSYCHO_ECC_CTRL		0x0020
 #define  PSYCHO_ECCCTRL_EE	 0x8000000000000000UL /* Enable ECC Checking */
 #define  PSYCHO_ECCCTRL_UE	 0x4000000000000000UL /* Enable UE Interrupts */

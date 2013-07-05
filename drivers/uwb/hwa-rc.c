@@ -604,7 +604,7 @@ int hwarc_cmd(struct uwb_rc *uwb_rc, const struct uwb_rccb *cmd, size_t cmd_size
 		hwarc->usb_dev, usb_sndctrlpipe(hwarc->usb_dev, 0),
 		WA_EXEC_RC_CMD, USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE,
 		0, hwarc->usb_iface->cur_altsetting->desc.bInterfaceNumber,
-		(void *) cmd, cmd_size, 100 /* FIXME: this is totally arbitrary */);
+		(void *) cmd, cmd_size, 100);
 }
 
 static

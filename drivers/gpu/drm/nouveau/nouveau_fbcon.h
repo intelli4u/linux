@@ -60,4 +60,3 @@ void nouveau_fbcon_restore_accel(struct drm_device *dev);
 
 void nouveau_fbcon_output_poll_changed(struct drm_device *dev);
 #endif /* __NV50_FBCON_H__ */
-

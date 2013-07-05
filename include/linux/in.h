@@ -244,6 +244,13 @@ struct sockaddr_in {
 #define INADDR_ALLRTRS_GROUP    0xe0000002U	/* 224.0.0.2 */
 #define INADDR_MAX_LOCAL_GROUP  0xe00000ffU	/* 224.0.0.255 */
 
+/*  modified start, 06/20/2009, @make 224.0.0.x passthrough*/
+#ifdef IGMP_PROXY
+#define LOCAL_MCAST(x)	(((x) & htonl(0xFFFFFFFE)) == htonl(0xE0000000))
+#else
+#define LOCAL_MCAST(x)	(((x) & htonl(0xFFFFFF00)) == htonl(0xE0000000))
+#endif
+/*  modified end, 06/20/2009, @make 224.0.0.x passthrough*/
 
 /* <asm/byteorder.h> contains the htonl type stuff.. */
 #include <asm/byteorder.h> 

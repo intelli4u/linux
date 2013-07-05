@@ -528,9 +528,6 @@ struct _SND_IW_LFO_PROGRAM {
 	unsigned short depth;
 };
 
-#if 0
-extern irqreturn_t snd_gf1_lfo_effect_interrupt(struct snd_gus_card * gus, snd_gf1_voice_t * voice);
-#endif
 extern void snd_gf1_lfo_init(struct snd_gus_card * gus);
 extern void snd_gf1_lfo_done(struct snd_gus_card * gus);
 extern void snd_gf1_lfo_program(struct snd_gus_card * gus, int voice, int lfo_type, struct _SND_IW_LFO_PROGRAM *program);
@@ -540,9 +537,6 @@ extern void snd_gf1_lfo_change_freq(struct snd_gus_card * gus, int voice, int lf
 extern void snd_gf1_lfo_change_depth(struct snd_gus_card * gus, int voice, int lfo_type, int depth);
 extern void snd_gf1_lfo_setup(struct snd_gus_card * gus, int voice, int lfo_type, int freq, int current_depth, int depth, int sweep, int shape);
 extern void snd_gf1_lfo_shutdown(struct snd_gus_card * gus, int voice, int lfo_type);
-#if 0
-extern void snd_gf1_lfo_command(struct snd_gus_card * gus, int voice, unsigned char *command);
-#endif
 
 /* gus_mem.c */
 

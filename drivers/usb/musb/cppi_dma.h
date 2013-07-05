@@ -12,9 +12,6 @@
 #include "musb_core.h"
 
 
-/* FIXME fully isolate CPPI from DaVinci ... the "CPPI generic" registers
- * would seem to be shared with the TUSB6020 (over VLYNQ).
- */
 
 #include "davinci.h"
 

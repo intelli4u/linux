@@ -29,12 +29,23 @@
 #define smp_mb__before_clear_bit()	mb()
 #define smp_mb__after_clear_bit()	mb()
 
+#if defined(CONFIG_BUZZZ_FUNC)
+#ifndef __always_inline__
+#define __always_inline__ inline __attribute__((always_inline)) __attribute__((no_instrument_function))
+#endif
+#else   /* !CONFIG_BUZZZ_FUNC */
+#ifndef __always_inline__
+#define __always_inline__ inline
+#endif
+#endif  /* !CONFIG_BUZZZ_FUNC */
+
 /*
  * These functions are the basis of our bit ops.
  *
  * First, the atomic bitops. These use native endian.
  */
-static inline void ____atomic_set_bit(unsigned int bit, volatile unsigned long *p)
+static __always_inline__ void
+____atomic_set_bit(unsigned int bit, volatile unsigned long *p)
 {
 	unsigned long flags;
 	unsigned long mask = 1UL << (bit & 31);
@@ -46,7 +57,8 @@ static inline void ____atomic_set_bit(unsigned int bit, volatile unsigned long *
 	raw_local_irq_restore(flags);
 }
 
-static inline void ____atomic_clear_bit(unsigned int bit, volatile unsigned long *p)
+static __always_inline__ void
+____atomic_clear_bit(unsigned int bit, volatile unsigned long *p)
 {
 	unsigned long flags;
 	unsigned long mask = 1UL << (bit & 31);
@@ -58,7 +70,8 @@ static inline void ____atomic_clear_bit(unsigned int bit, volatile unsigned long
 	raw_local_irq_restore(flags);
 }
 
-static inline void ____atomic_change_bit(unsigned int bit, volatile unsigned long *p)
+static __always_inline__ void
+____atomic_change_bit(unsigned int bit, volatile unsigned long *p)
 {
 	unsigned long flags;
 	unsigned long mask = 1UL << (bit & 31);
@@ -70,7 +83,7 @@ static inline void ____atomic_change_bit(unsigned int bit, volatile unsigned lon
 	raw_local_irq_restore(flags);
 }
 
-static inline int
+static __always_inline__ int
 ____atomic_test_and_set_bit(unsigned int bit, volatile unsigned long *p)
 {
 	unsigned long flags;
@@ -87,7 +100,7 @@ ____atomic_test_and_set_bit(unsigned int bit, volatile unsigned long *p)
 	return (res & mask) != 0;
 }
 
-static inline int
+static __always_inline__ int
 ____atomic_test_and_clear_bit(unsigned int bit, volatile unsigned long *p)
 {
 	unsigned long flags;
@@ -104,7 +117,7 @@ ____atomic_test_and_clear_bit(unsigned int bit, volatile unsigned long *p)
 	return (res & mask) != 0;
 }
 
-static inline int
+static __always_inline__ int
 ____atomic_test_and_change_bit(unsigned int bit, volatile unsigned long *p)
 {
 	unsigned long flags;

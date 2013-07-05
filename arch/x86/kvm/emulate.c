@@ -2003,9 +2003,6 @@ emulate_sysenter(struct x86_emulate_ctxt *ctxt, struct x86_emulate_ops *ops)
 		return X86EMUL_PROPAGATE_FAULT;
 	}
 
-	/* XXX sysenter/sysexit have not been tested in 64bit mode.
-	* Therefore, we inject an #UD.
-	*/
 	if (ctxt->mode == X86EMUL_MODE_PROT64) {
 		emulate_ud(ctxt);
 		return X86EMUL_PROPAGATE_FAULT;
@@ -2253,7 +2250,6 @@ static int task_switch_16(struct x86_emulate_ctxt *ctxt,
 	ret = ops->read_std(old_tss_base, &tss_seg, sizeof tss_seg, ctxt->vcpu,
 			    &err);
 	if (ret == X86EMUL_PROPAGATE_FAULT) {
-		/* FIXME: need to provide precise fault address */
 		emulate_pf(ctxt, old_tss_base, err);
 		return ret;
 	}
@@ -2263,7 +2259,6 @@ static int task_switch_16(struct x86_emulate_ctxt *ctxt,
 	ret = ops->write_std(old_tss_base, &tss_seg, sizeof tss_seg, ctxt->vcpu,
 			     &err);
 	if (ret == X86EMUL_PROPAGATE_FAULT) {
-		/* FIXME: need to provide precise fault address */
 		emulate_pf(ctxt, old_tss_base, err);
 		return ret;
 	}
@@ -2271,7 +2266,6 @@ static int task_switch_16(struct x86_emulate_ctxt *ctxt,
 	ret = ops->read_std(new_tss_base, &tss_seg, sizeof tss_seg, ctxt->vcpu,
 			    &err);
 	if (ret == X86EMUL_PROPAGATE_FAULT) {
-		/* FIXME: need to provide precise fault address */
 		emulate_pf(ctxt, new_tss_base, err);
 		return ret;
 	}
@@ -2284,7 +2278,6 @@ static int task_switch_16(struct x86_emulate_ctxt *ctxt,
 				     sizeof tss_seg.prev_task_link,
 				     ctxt->vcpu, &err);
 		if (ret == X86EMUL_PROPAGATE_FAULT) {
-			/* FIXME: need to provide precise fault address */
 			emulate_pf(ctxt, new_tss_base, err);
 			return ret;
 		}
@@ -2395,7 +2388,6 @@ static int task_switch_32(struct x86_emulate_ctxt *ctxt,
 	ret = ops->read_std(old_tss_base, &tss_seg, sizeof tss_seg, ctxt->vcpu,
 			    &err);
 	if (ret == X86EMUL_PROPAGATE_FAULT) {
-		/* FIXME: need to provide precise fault address */
 		emulate_pf(ctxt, old_tss_base, err);
 		return ret;
 	}
@@ -2405,7 +2397,6 @@ static int task_switch_32(struct x86_emulate_ctxt *ctxt,
 	ret = ops->write_std(old_tss_base, &tss_seg, sizeof tss_seg, ctxt->vcpu,
 			     &err);
 	if (ret == X86EMUL_PROPAGATE_FAULT) {
-		/* FIXME: need to provide precise fault address */
 		emulate_pf(ctxt, old_tss_base, err);
 		return ret;
 	}
@@ -2413,7 +2404,6 @@ static int task_switch_32(struct x86_emulate_ctxt *ctxt,
 	ret = ops->read_std(new_tss_base, &tss_seg, sizeof tss_seg, ctxt->vcpu,
 			    &err);
 	if (ret == X86EMUL_PROPAGATE_FAULT) {
-		/* FIXME: need to provide precise fault address */
 		emulate_pf(ctxt, new_tss_base, err);
 		return ret;
 	}
@@ -2426,7 +2416,6 @@ static int task_switch_32(struct x86_emulate_ctxt *ctxt,
 				     sizeof tss_seg.prev_task_link,
 				     ctxt->vcpu, &err);
 		if (ret == X86EMUL_PROPAGATE_FAULT) {
-			/* FIXME: need to provide precise fault address */
 			emulate_pf(ctxt, new_tss_base, err);
 			return ret;
 		}
@@ -2447,7 +2436,6 @@ static int emulator_do_task_switch(struct x86_emulate_ctxt *ctxt,
 		ops->get_cached_segment_base(VCPU_SREG_TR, ctxt->vcpu);
 	u32 desc_limit;
 
-	/* FIXME: old_tss_base == ~0 ? */
 
 	ret = read_segment_descriptor(ctxt, ops, tss_selector, &next_tss_desc);
 	if (ret != X86EMUL_CONTINUE)
@@ -2456,7 +2444,6 @@ static int emulator_do_task_switch(struct x86_emulate_ctxt *ctxt,
 	if (ret != X86EMUL_CONTINUE)
 		return ret;
 
-	/* FIXME: check that next_tss_desc is tss */
 
 	if (reason != TASK_SWITCH_IRET) {
 		if ((tss_selector & 3) > next_tss_desc.dpl ||

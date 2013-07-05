@@ -121,9 +121,6 @@ static void lh7a40xuart_start_tx (struct uart_port* port)
 {
 	BIT_SET (port, UART_R_INTEN, TxInt);
 
-	/* *** FIXME: do I need to check for startup of the
-		      transmitter?  The old driver did, but AMBA
-		      doesn't . */
 }
 
 static void lh7a40xuart_stop_rx (struct uart_port* port)
@@ -293,18 +290,6 @@ static void lh7a40xuart_set_mctrl (struct uart_port* port, unsigned int mctrl)
 	/* None of the ports supports DTR. UART1 supports RTS through GPIO. */
 	/* Note, kernel appears to be setting DTR and RTS on console. */
 
-	/* *** FIXME: this deserves more work.  There's some work in
-	       tracing all of the IO pins. */
-#if 0
-	if( port->mapbase == UART1_PHYS) {
-		gpioRegs_t *gpio = (gpioRegs_t *)IO_ADDRESS(GPIO_PHYS);
-
-		if (mctrl & TIOCM_RTS)
-			gpio->pbdr &= ~GPIOB_UART1_RTS;
-		else
-			gpio->pbdr |= GPIOB_UART1_RTS;
-	}
-#endif
 }
 
 static void lh7a40xuart_break_ctl (struct uart_port* port, int break_state)
@@ -404,7 +389,6 @@ static void lh7a40xuart_set_termios (struct uart_port* port,
 	if (termios->c_iflag & IGNBRK) {
 		port->ignore_status_mask |= RxBreak;
 		/* Ignore overrun when ignorning parity */
-		/* *** FIXME: is this in the right place? */
 		if (termios->c_iflag & IGNPAR)
 			port->ignore_status_mask |= RxOverrunError;
 	}
@@ -463,7 +447,7 @@ static int lh7a40xuart_verify_port (struct uart_port* port,
 		ret = -EINVAL;
 	if (ser->irq < 0 || ser->irq >= nr_irqs)
 		ret = -EINVAL;
-	if (ser->baud_base < 9600) /* *** FIXME: is this true? */
+	if (ser->baud_base < 9600)
 		ret = -EINVAL;
 	return ret;
 }

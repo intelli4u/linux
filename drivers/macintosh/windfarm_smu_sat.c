@@ -373,7 +373,6 @@ static int wf_sat_remove(struct i2c_client *client)
 {
 	struct wf_sat *sat = i2c_get_clientdata(client);
 
-	/* XXX TODO */
 
 	sat->i2c = NULL;
 	return 0;
@@ -399,12 +398,6 @@ static int __init sat_sensors_init(void)
 	return i2c_add_driver(&wf_sat_driver);
 }
 
-#if 0	/* uncomment when module_exit() below is uncommented */
-static void __exit sat_sensors_exit(void)
-{
-	i2c_del_driver(&wf_sat_driver);
-}
-#endif
 
 module_init(sat_sensors_init);
 /*module_exit(sat_sensors_exit); Uncomment when cleanup is implemented */

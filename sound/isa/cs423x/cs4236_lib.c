@@ -298,17 +298,6 @@ int snd_cs4236_create(struct snd_card *card,
 		*rchip = chip;
 		return 0;
 	}
-#if 0
-	{
-		int idx;
-		for (idx = 0; idx < 8; idx++)
-			snd_printk(KERN_DEBUG "CD%i = 0x%x\n",
-				   idx, inb(chip->cport + idx));
-		for (idx = 0; idx < 9; idx++)
-			snd_printk(KERN_DEBUG "C%i = 0x%x\n",
-				   idx, snd_cs4236_ctrl_in(chip, idx));
-	}
-#endif
 	if (cport < 0x100 || cport == SNDRV_AUTO_PORT) {
 		snd_printk(KERN_ERR "please, specify control port "
 			   "for CS4236+ chips\n");
@@ -952,16 +941,6 @@ static int snd_cs4236_get_iec958_switch(struct snd_kcontrol *kcontrol, struct sn
 	
 	spin_lock_irqsave(&chip->reg_lock, flags);
 	ucontrol->value.integer.value[0] = chip->image[CS4231_ALT_FEATURE_1] & 0x02 ? 1 : 0;
-#if 0
-	printk(KERN_DEBUG "get valid: ALT = 0x%x, C3 = 0x%x, C4 = 0x%x, "
-	       "C5 = 0x%x, C6 = 0x%x, C8 = 0x%x\n",
-			snd_wss_in(chip, CS4231_ALT_FEATURE_1),
-			snd_cs4236_ctrl_in(chip, 3),
-			snd_cs4236_ctrl_in(chip, 4),
-			snd_cs4236_ctrl_in(chip, 5),
-			snd_cs4236_ctrl_in(chip, 6),
-			snd_cs4236_ctrl_in(chip, 8));
-#endif
 	spin_unlock_irqrestore(&chip->reg_lock, flags);
 	return 0;
 }
@@ -990,16 +969,6 @@ static int snd_cs4236_put_iec958_switch(struct snd_kcontrol *kcontrol, struct sn
 	snd_wss_mce_down(chip);
 	mutex_unlock(&chip->mce_mutex);
 
-#if 0
-	printk(KERN_DEBUG "set valid: ALT = 0x%x, C3 = 0x%x, C4 = 0x%x, "
-	       "C5 = 0x%x, C6 = 0x%x, C8 = 0x%x\n",
-			snd_wss_in(chip, CS4231_ALT_FEATURE_1),
-			snd_cs4236_ctrl_in(chip, 3),
-			snd_cs4236_ctrl_in(chip, 4),
-			snd_cs4236_ctrl_in(chip, 5),
-			snd_cs4236_ctrl_in(chip, 6),
-			snd_cs4236_ctrl_in(chip, 8));
-#endif
 	return change;
 }
 

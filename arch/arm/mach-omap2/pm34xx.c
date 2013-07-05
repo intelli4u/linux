@@ -160,12 +160,6 @@ static void omap3_core_restore_context(void)
 	omap_dma_global_context_restore();
 }
 
-/*
- * FIXME: This function should be called before entering off-mode after
- * OMAP3 secure services have been accessed. Currently it is only called
- * once during boot sequence, but this works as we are not using secure
- * services.
- */
 static void omap3_save_secure_ram_context(u32 target_mpu_state)
 {
 	u32 ret;
@@ -291,7 +285,6 @@ static irqreturn_t prcm_interrupt_handler (int irq, void *dev_id)
 			WARN(c == 0, "prcm: WARNING: PRCM indicated MPU wakeup "
 			     "but no wakeup sources are marked\n");
 		} else {
-			/* XXX we need to expand our PRCM interrupt handler */
 			WARN(1, "prcm: WARNING: PRCM interrupt received, but "
 			     "no code to handle it (%08x)\n", irqstatus_mpu);
 		}
@@ -756,8 +749,6 @@ static void __init omap3_d2d_idle(void)
 
 static void __init prcm_setup_regs(void)
 {
-	/* XXX Reset all wkdeps. This should be done when initializing
-	 * powerdomains */
 	prm_write_mod_reg(0, OMAP3430_IVA2_MOD, PM_WKDEP);
 	prm_write_mod_reg(0, MPU_MOD, PM_WKDEP);
 	prm_write_mod_reg(0, OMAP3430_DSS_MOD, PM_WKDEP);
@@ -1060,8 +1051,6 @@ static int __init omap3_pm_init(void)
 
 	printk(KERN_ERR "Power Management for TI OMAP3.\n");
 
-	/* XXX prcm_setup_regs needs to be before enabling hw
-	 * supervised mode for powerdomains */
 	prcm_setup_regs();
 
 	ret = request_irq(INT_34XX_PRCM_MPU_IRQ,

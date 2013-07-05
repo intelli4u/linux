@@ -177,4 +177,3 @@ struct s1d13xxxfb_pdata {
 };
 
 #endif
-

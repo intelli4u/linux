@@ -238,7 +238,6 @@ static int cppi_controller_stop(struct dma_controller *c)
 
 	DBG(1, "Tearing down RX and TX Channels\n");
 	for (i = 0; i < ARRAY_SIZE(controller->tx); i++) {
-		/* FIXME restructure of txdma to use bds like rxdma */
 		controller->tx[i].last_processed = NULL;
 		cppi_pool_free(controller->tx + i);
 	}
@@ -474,14 +473,8 @@ static inline int cppi_autoreq_update(struct cppi_channel *rx,
 	 * for all but the last one, maybe in two segments.
 	 */
 	if (!onepacket) {
-#if 0
-		/* use two segments, autoreq "all" then the last "never" */
-		val |= ((0x3) << (rx->index * 2));
-		n_bds--;
-#else
 		/* one segment, autoreq "all-but-last" */
 		val |= ((0x1) << (rx->index * 2));
-#endif
 	}
 
 	if (val != tmp) {
@@ -616,9 +609,6 @@ cppi_next_tx_segment(struct musb *musb, struct cppi_channel *tx)
 	tx->head = bd;
 	tx->last_processed = NULL;
 
-	/* FIXME use BD pool like RX side does, and just queue
-	 * the minimum number for this request.
-	 */
 
 	/* Prepare queue of BDs first, then hand it to hardware.
 	 * All BDs except maybe the last should be of full packet
@@ -632,9 +622,6 @@ cppi_next_tx_segment(struct musb *musb, struct cppi_channel *tx)
 
 		bd->hw_bufp = tx->buf_dma + tx->offset;
 
-		/* FIXME set EOP only on the last packet,
-		 * SOP only on the first ... avoid IRQs
-		 */
 		if ((tx->offset + maxpacket) <= tx->buf_len) {
 			tx->offset += maxpacket;
 			bd->hw_off_len = maxpacket;
@@ -1185,9 +1172,6 @@ irqreturn_t cppi_interrupt(int irq, void *dev_id)
 		tx_ch = cppi->tx + index;
 		tx_ram = tx_ch->state_ram;
 
-		/* FIXME  need a cppi_tx_scan() routine, which
-		 * can also be called from abort code
-		 */
 
 		cppi_dump_tx(5, tx_ch, "/E");
 
@@ -1434,10 +1418,6 @@ static int cppi_channel_abort(struct dma_channel *channel)
 			value = musb_readl(&tx_ram->tx_complete, 0);
 		} while (0xFFFFFFFC != value);
 
-		/* FIXME clean up the transfer state ... here?
-		 * the completion routine should get called with
-		 * an appropriate status code.
-		 */
 
 		value = musb_readw(regs, MUSB_TXCSR);
 		value &= ~MUSB_TXCSR_DMAENAB;

@@ -32,18 +32,10 @@
 
 #define D(x)
 
-#if 0
-static int dp_cnt;
-#define DP(x) do { dp_cnt++; if (dp_cnt % 1000 == 0) x; }while(0)
-#else
 #define DP(x)
-#endif
 
 static char gpio_name[] = "etrax gpio";
 
-#if 0
-static wait_queue_head_t *gpio_wq;
-#endif
 
 static long gpio_ioctl(struct file *file, unsigned int cmd, unsigned long arg);
 static ssize_t gpio_write(struct file *file, const char __user *buf,
@@ -618,7 +610,7 @@ static long gpio_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		break;
 	case IO_GET_PWR_BT:
 		spin_lock_irqsave(&gpio_lock, flags);
-#if defined (CONFIG_ETRAX_SOFT_SHUTDOWN)
+#if defined(CONFIG_ETRAX_SOFT_SHUTDOWN)
 		ret = (*R_PORT_G_DATA & ( 1 << CONFIG_ETRAX_POWERBUTTON_BIT));
 #else
 		ret = 0;
@@ -800,7 +792,7 @@ static void ioif_watcher(const unsigned int gpio_in_available,
 static int __init gpio_init(void)
 {
 	int res;
-#if defined (CONFIG_ETRAX_CSP0_LEDS)
+#if defined(CONFIG_ETRAX_CSP0_LEDS)
 	int i;
 #endif
 
@@ -811,13 +803,14 @@ static int __init gpio_init(void)
 	}
 
 	/* Clear all leds */
-#if defined (CONFIG_ETRAX_CSP0_LEDS) ||  defined (CONFIG_ETRAX_PA_LEDS) || defined (CONFIG_ETRAX_PB_LEDS)
+#if defined(CONFIG_ETRAX_CSP0_LEDS) ||  defined(CONFIG_ETRAX_PA_LEDS) || \
+	defined(CONFIG_ETRAX_PB_LEDS)
 	CRIS_LED_NETWORK_SET(0);
 	CRIS_LED_ACTIVE_SET(0);
 	CRIS_LED_DISK_READ(0);
 	CRIS_LED_DISK_WRITE(0);
 
-#if defined (CONFIG_ETRAX_CSP0_LEDS)
+#if defined(CONFIG_ETRAX_CSP0_LEDS)
 	for (i = 0; i < 32; i++)
 		CRIS_LED_BIT_SET(i);
 #endif
@@ -853,4 +846,3 @@ static int __init gpio_init(void)
 
 /* this makes sure that gpio_init is called during kernel boot */
 module_init(gpio_init);
-

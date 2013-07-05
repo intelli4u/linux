@@ -165,7 +165,7 @@ static struct au1200fb_device _au1200fb_devices[CONFIG_FB_AU1200_DEVS];
 #define AU1200_LCD_MAX_XRES	1280
 #define AU1200_LCD_MAX_YRES	1024
 #define AU1200_LCD_MAX_BPP	32
-#define AU1200_LCD_MAX_CLK	96000000 /* fixme: this needs to go away ? */
+#define AU1200_LCD_MAX_CLK	96000000
 #define AU1200_LCD_NBR_PALETTE_ENTRIES 256
 
 /* Default number of visible screen buffer to allocate */
@@ -352,7 +352,6 @@ struct panel_settings
 };
 
 /********************************************************************/
-/* fixme: Maybe a modedb for the CRT ? otherwise panels should be as-is */
 
 /* List of panels known to work with the AU1200 LCD controller.
  * To add a new panel, enter the same specifications as the
@@ -759,7 +758,6 @@ static int au1200_setlocation (struct au1200fb_device *fbdev, int plane,
 	if (ypos < 0) {
 		/* Off-screen to the top */
 		ysz = win->w[plane].yres + ypos;
-		/* fixme: fb_offset += ((0-ypos)*fb_pars[plane].line_length); */
 		ypos = 0;
 		/*printk("off screen top\n");*/
 	}
@@ -861,14 +859,6 @@ static void au1200_setpanel (struct panel_settings *newpanel)
 	lcd->fifoctrl = panel->mode_fifoctrl;
 	au_sync();
 
-	/* fixme: Check window settings to make sure still valid
-	 * for new geometry */
-#if 0
-	au1200_setlocation(fbdev, 0, win->w[0].xpos, win->w[0].ypos);
-	au1200_setlocation(fbdev, 1, win->w[1].xpos, win->w[1].ypos);
-	au1200_setlocation(fbdev, 2, win->w[2].xpos, win->w[2].ypos);
-	au1200_setlocation(fbdev, 3, win->w[3].xpos, win->w[3].ypos);
-#endif
 	lcd->winenable = winenable;
 
 	/*
@@ -898,54 +888,6 @@ static void au1200_setpanel (struct panel_settings *newpanel)
 	lcd->hwc.cursorcolor3 = 0;
 
 
-#if 0
-#define D(X) printk("%25s: %08X\n", #X, X)
-	D(lcd->screen);
-	D(lcd->horztiming);
-	D(lcd->verttiming);
-	D(lcd->clkcontrol);
-	D(lcd->pwmdiv);
-	D(lcd->pwmhi);
-	D(lcd->outmask);
-	D(lcd->fifoctrl);
-	D(lcd->window[0].winctrl0);
-	D(lcd->window[0].winctrl1);
-	D(lcd->window[0].winctrl2);
-	D(lcd->window[0].winbuf0);
-	D(lcd->window[0].winbuf1);
-	D(lcd->window[0].winbufctrl);
-	D(lcd->window[1].winctrl0);
-	D(lcd->window[1].winctrl1);
-	D(lcd->window[1].winctrl2);
-	D(lcd->window[1].winbuf0);
-	D(lcd->window[1].winbuf1);
-	D(lcd->window[1].winbufctrl);
-	D(lcd->window[2].winctrl0);
-	D(lcd->window[2].winctrl1);
-	D(lcd->window[2].winctrl2);
-	D(lcd->window[2].winbuf0);
-	D(lcd->window[2].winbuf1);
-	D(lcd->window[2].winbufctrl);
-	D(lcd->window[3].winctrl0);
-	D(lcd->window[3].winctrl1);
-	D(lcd->window[3].winctrl2);
-	D(lcd->window[3].winbuf0);
-	D(lcd->window[3].winbuf1);
-	D(lcd->window[3].winbufctrl);
-	D(lcd->winenable);
-	D(lcd->intenable);
-	D(lcd->intstatus);
-	D(lcd->backcolor);
-	D(lcd->winenable);
-	D(lcd->colorkey);
-    D(lcd->colorkeymsk);
-	D(lcd->hwc.cursorctrl);
-	D(lcd->hwc.cursorpos);
-	D(lcd->hwc.cursorcolor0);
-	D(lcd->hwc.cursorcolor1);
-	D(lcd->hwc.cursorcolor2);
-	D(lcd->hwc.cursorcolor3);
-#endif
 }
 
 static void au1200_setmode(struct au1200fb_device *fbdev)
@@ -1087,20 +1029,6 @@ static int au1200fb_fb_check_var(struct fb_var_screeninfo *var,
 	}
 
 	var->pixclock = KHZ2PICOS(pixclock/1000);
-#if 0
-	if (!panel_is_active(panel)) {
-		int pcd = AU1200_LCD_MAX_CLK / (pixclock * 2) - 1;
-
-		if (!panel_is_color(panel)
-			&& (panel->control_base & LCD_CONTROL_MPI) && (pcd < 3)) {
-			/* STN 8bit mono panel support is up to 6MHz pixclock */
-			var->pixclock = KHZ2PICOS(6000);
-		} else if (!pcd) {
-			/* Other STN panel support is up to 12MHz  */
-			var->pixclock = KHZ2PICOS(12000);
-		}
-	}
-#endif
 	/* Set bitfield accordingly */
 	switch (var->bits_per_pixel) {
 		case 16:
@@ -1570,9 +1498,6 @@ static int au1200fb_init_fbinfo(struct au1200fb_device *fbdev)
 	bpp = winbpp(win->w[fbdev->plane].mode_winctrl1);
 
 	/* Copy monitor specs from panel data */
-	/* fixme: we're setting up LCD controller windows, so these dont give a
-	damn as to what the monitor specs are (the panel itself does, but that
-	isnt done here...so maybe need a generic catchall monitor setting??? */
 	memcpy(&fbi->monspecs, &panel->monspecs, sizeof(struct fb_monspecs));
 
 	/* We first try the user mode passed in argument. If that failed,

@@ -15,8 +15,7 @@
  * 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#if defined(CONFIG_USB_STORAGE_KARMA) || \
-		defined(CONFIG_USB_STORAGE_KARMA_MODULE)
+#if defined(CONFIG_USB_STORAGE_KARMA) || defined(CONFIG_USB_STORAGE_KARMA_MODULE)
 
 UNUSUAL_DEV(  0x045a, 0x5210, 0x0101, 0x0101,
 		"Rio",

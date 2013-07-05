@@ -1358,10 +1358,8 @@ static int cx2341x_s_ctrl(struct v4l2_ctrl *ctrl)
 
 		if (hdl->audio_encoding->val == V4L2_MPEG_AUDIO_ENCODING_AC3) {
 			props |=
-#if 1
 				/* Not sure if this MPEG Layer II setting is required */
 				((3 - V4L2_MPEG_AUDIO_ENCODING_LAYER_2) << 2) |
-#endif
 				(hdl->audio_ac3_bitrate->val << 4) |
 				(CX2341X_AUDIO_ENCODING_METHOD_AC3 << 28);
 		} else {

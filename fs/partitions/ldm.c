@@ -359,7 +359,7 @@ static bool ldm_validate_privheads(struct parsed_partitions *state,
 			if (i < 2)
 				goto out;	/* Already logged */
 			else
-				break;	/* FIXME ignore for now, 3rd PH can fail on odd-sized disks */
+				break;
 		}
 	}
 
@@ -382,11 +382,6 @@ static bool ldm_validate_privheads(struct parsed_partitions *state,
 		ldm_crit ("Primary and backup PRIVHEADs don't match.");
 		goto out;
 	}
-	/* FIXME ignore this for now
-	if (!ldm_compare_privheads (ph[0], ph[2])) {
-		ldm_crit ("Primary and backup PRIVHEADs don't match.");
-		goto out;
-	}*/
 	ldm_debug ("Validated PRIVHEADs successfully.");
 	result = true;
 out:

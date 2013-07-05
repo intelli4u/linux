@@ -958,7 +958,6 @@ int cx88_set_tvnorm(struct cx88_core *core, v4l2_std_id norm)
 	cx_andor(MO_INPUT_FORMAT, 0x40f,
 		 norm & V4L2_STD_SECAM ? cxiformat : cxiformat | 0x400);
 
-	// FIXME: as-is from DScaler
 	dprintk(1,"set_tvnorm: MO_OUTPUT_FORMAT 0x%08x [old=0x%08x]\n",
 		cxoformat, cx_read(MO_OUTPUT_FORMAT));
 	cx_write(MO_OUTPUT_FORMAT, cxoformat);

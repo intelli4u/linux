@@ -558,4 +558,3 @@ ssize_t sysdev_show_int(struct sys_device *sysdev,
 	return snprintf(buf, PAGE_SIZE, "%d\n", *(int *)(ea->var));
 }
 EXPORT_SYMBOL_GPL(sysdev_show_int);
-

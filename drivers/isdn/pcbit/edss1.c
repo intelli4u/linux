@@ -311,7 +311,3 @@ void pcbit_fsm_event(struct pcbit_dev *dev, struct pcbit_chan *chan,
 		action->callb(dev, chan, data);
 
 }
-
-
-
-

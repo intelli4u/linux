@@ -235,9 +235,6 @@ void omap1_pm_suspend(void)
 	if (!cpu_is_omap15xx())
 		omap_writew(0xffff, ULPD_SOFT_DISABLE_REQ_REG);
 
-	/*
-	 * Step 1: turn off interrupts (FIXME: NOTE: already disabled)
-	 */
 
 	local_irq_disable();
 	local_fiq_disable();

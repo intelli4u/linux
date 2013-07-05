@@ -565,11 +565,6 @@ static void tc_handle_link_change(struct net_device *dev)
 		 * TX4939 PCFG.SPEEDn bit will be changed on
 		 * NETDEV_CHANGE event.
 		 */
-		/*
-		 * WORKAROUND: enable LostCrS only if half duplex
-		 * operation.
-		 * (TX4939 does not have EnLCarr)
-		 */
 		if (phydev->duplex == DUPLEX_HALF &&
 		    lp->chiptype != TC35815_TX4939)
 			tc_writel(tc_readl(&tr->Tx_Ctl) | Tx_EnLCarr,
@@ -1555,7 +1550,6 @@ tc35815_rx(struct net_device *dev, int limit)
 			if (netif_msg_rx_err(lp))
 				dev_info(&dev->dev, "Rx error (status %x)\n",
 					 status & Rx_Stat_Mask);
-			/* WORKAROUND: LongErr and CRCErr means Overflow. */
 			if ((status & Rx_LongErr) && (status & Rx_CRCErr)) {
 				status &= ~(Rx_LongErr|Rx_CRCErr);
 				status |= Rx_Over;
@@ -1701,7 +1695,6 @@ tc35815_check_tx_stat(struct net_device *dev, int status)
 	/* TX4939 does not have NCarr */
 	if (lp->chiptype == TC35815_TX4939)
 		status &= ~Tx_NCarr;
-	/* WORKAROUND: ignore LostCrS in full duplex operation */
 	if (!lp->link || lp->duplex == DUPLEX_FULL)
 		status &= ~Tx_NCarr;
 
@@ -2150,7 +2143,6 @@ static void tc35815_chip_init(struct net_device *dev)
 	/* TX4939 does not have EnLCarr */
 	if (lp->chiptype == TC35815_TX4939)
 		txctl &= ~Tx_EnLCarr;
-	/* WORKAROUND: ignore LostCrS in full duplex operation */
 	if (!lp->phy_dev || !lp->link || lp->duplex == DUPLEX_FULL)
 		txctl &= ~Tx_EnLCarr;
 	tc_writel(txctl, &tr->Tx_Ctl);

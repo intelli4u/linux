@@ -35,7 +35,6 @@ static void add_ordered_member(struct dlm_ls *ls, struct dlm_member *new)
 	if (!memb)
 		list_add_tail(newlist, head);
 	else {
-		/* FIXME: can use list macro here */
 		newlist->prev = tmp->prev;
 		newlist->next = tmp;
 		tmp->prev->next = newlist;
@@ -387,4 +386,3 @@ int dlm_ls_start(struct dlm_ls *ls)
 	kfree(new);
 	return error;
 }
-

@@ -1417,10 +1417,6 @@ xfs_qm_dqpurge(
 	list_del_init(&dqp->q_mplist);
 	mp->m_quotainfo->qi_dqreclaims++;
 	mp->m_quotainfo->qi_dquots--;
-	/*
-	 * XXX Move this to the front of the freelist, if we can get the
-	 * freelist lock.
-	 */
 	ASSERT(!list_empty(&dqp->q_freelist));
 
 	dqp->q_mount = NULL;

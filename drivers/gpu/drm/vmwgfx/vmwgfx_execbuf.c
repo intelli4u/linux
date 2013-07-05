@@ -324,10 +324,6 @@ static int vmw_cmd_dma(struct vmw_private *dev_priv,
 
 	cmd->dma.host.sid = srf->res.id;
 	vmw_kms_cursor_snoop(srf, sw_context->tfile, bo, header);
-	/**
-	 * FIXME: May deadlock here when called from the
-	 * command parsing code.
-	 */
 	vmw_surface_unreference(&srf);
 
 out_no_reloc:

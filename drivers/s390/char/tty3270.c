@@ -52,13 +52,6 @@ struct tty3270_line {
 
 #define ESCAPE_NPAR 8
 
-/*
- * The main tty view data structure.
- * FIXME:
- * 1) describe line orientation & lines list concept against screen
- * 2) describe conversion of screen to lines
- * 3) describe line format.
- */
 struct tty3270 {
 	struct raw3270_view view;
 	struct tty_struct *tty;		/* Pointer to tty structure */
@@ -1343,26 +1336,6 @@ tty3270_goto_xy(struct tty3270 *tp, int cx, int cy)
 	}
 }
 
-/*
- * Process escape sequences. Known sequences:
- *  Esc 7			Save Cursor Position
- *  Esc 8			Restore Cursor Position
- *  Esc [ Pn ; Pn ; .. m	Set attributes
- *  Esc [ Pn ; Pn H		Cursor Position
- *  Esc [ Pn ; Pn f		Cursor Position
- *  Esc [ Pn A			Cursor Up
- *  Esc [ Pn B			Cursor Down
- *  Esc [ Pn C			Cursor Forward
- *  Esc [ Pn D			Cursor Backward
- *  Esc [ Pn G			Cursor Horizontal Absolute
- *  Esc [ Pn X			Erase Characters
- *  Esc [ Ps J			Erase in Display
- *  Esc [ Ps K			Erase in Line
- * // FIXME: add all the new ones.
- *
- *  Pn is a numeric parameter, a string of zero or more decimal digits.
- *  Ps is a selective parameter.
- */
 static void
 tty3270_escape_sequence(struct tty3270 *tp, char ch)
 {
@@ -1710,7 +1683,6 @@ tty3270_unthrottle(struct tty_struct * tty)
 static void
 tty3270_hangup(struct tty_struct *tty)
 {
-	// FIXME: implement
 }
 
 static void

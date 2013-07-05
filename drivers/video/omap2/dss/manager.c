@@ -1322,19 +1322,6 @@ static int omap_dss_mgr_apply(struct omap_overlay_manager *mgr)
 				OMAP_DSS_UPDATE_AUTO;
 	}
 
-	/* XXX TODO: Try to get fifomerge working. The problem is that it
-	 * affects both managers, not individually but at the same time. This
-	 * means the change has to be well synchronized. I guess the proper way
-	 * is to have a two step process for fifo merge:
-	 *        fifomerge enable:
-	 *             1. disable other planes, leaving one plane enabled
-	 *             2. wait until the planes are disabled on HW
-	 *             3. config merged fifo thresholds, enable fifomerge
-	 *        fifomerge disable:
-	 *             1. config unmerged fifo thresholds, disable fifomerge
-	 *             2. wait until fifo changes are in HW
-	 *             3. enable planes
-	 */
 	use_fifomerge = false;
 
 	/* Configure overlay fifos */
@@ -1582,4 +1569,3 @@ struct omap_overlay_manager *omap_dss_get_overlay_manager(int num)
 	return NULL;
 }
 EXPORT_SYMBOL(omap_dss_get_overlay_manager);
-

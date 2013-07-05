@@ -406,4 +406,3 @@ DST(	s8i	a8, a3, 1	)
 	retw
 
 .previous
-

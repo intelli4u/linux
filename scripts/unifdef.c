@@ -857,13 +857,6 @@ ifeval(const char **cpp)
 	return (constexpr ? LT_IF : ret == LT_ERROR ? LT_IF : ret);
 }
 
-/*
- * Skip over comments, strings, and character literals and stop at the
- * next character position that is not whitespace. Between calls we keep
- * the comment state in the global variable incomment, and we also adjust
- * the global variable linestate when we see a newline.
- * XXX: doesn't cope with the buffer splitting inside a state transition.
- */
 static const char *
 skipcomment(const char *cp)
 {

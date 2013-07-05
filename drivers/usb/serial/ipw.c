@@ -121,11 +121,6 @@ enum {
 					0, 0, 0, 0, 0, 0, 0, 0 }
 
 /* Interpretation of modem status lines */
-/* These need sorting out by individually connecting pins and checking
- * results. FIXME!
- * When data is being sent we see 0x30 in the lower byte; this must
- * contain DSR and CTS ...
- */
 #define IPW_DSR			((1<<4) | (1<<5))
 #define IPW_CTS			((1<<5) | (1<<4))
 

@@ -142,7 +142,7 @@ void        VMETRO_TRACE (void *);       /* put data into 8 LEDs */
 void        VMETRO_TRIGGER (ci_t *, int);       /* Note: int = 0(default)
                                                  * thru 15 */
 
-#if defined (SBE_ISR_TASKLET)
+#if defined(SBE_ISR_TASKLET)
 void        musycc_intr_bh_tasklet (ci_t *);
 
 #endif

@@ -375,7 +375,7 @@ int libipw_rx(struct libipw_device *ieee, struct sk_buff *skb,
 	/* Put this code here so that we avoid duplicating it in all
 	 * Rx paths. - Jean II */
 #ifdef CONFIG_WIRELESS_EXT
-#ifdef IW_WIRELESS_SPY		/* defined in iw_handler.h */
+#ifdef IW_WIRELESS_SPY		    /* defined in iw_handler.h */
 	/* If spy monitoring on */
 	if (ieee->spy_data.spy_number > 0) {
 		struct iw_quality wstats;
@@ -577,7 +577,6 @@ int libipw_rx(struct libipw_device *ieee, struct sk_buff *skb,
 	hdr = (struct libipw_hdr_4addr *)skb->data;
 
 	/* skb: hdr + (possibly fragmented) plaintext payload */
-	// PR: FIXME: hostap has additional conditions in the "if" below:
 	// ieee->host_decrypt && (fc & IEEE80211_FCTL_PROTECTED) &&
 	if ((frag != 0) || (fc & IEEE80211_FCTL_MOREFRAGS)) {
 		int flen;

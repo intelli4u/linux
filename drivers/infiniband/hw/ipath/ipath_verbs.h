@@ -221,11 +221,6 @@ struct ipath_cq {
 	struct ipath_mmap_info *ip;
 };
 
-/*
- * A segment is a linear region of low physical memory.
- * XXX Maybe we should use phys addr here and kmap()/kunmap().
- * Used by the verbs layer.
- */
 struct ipath_seg {
 	void *vaddr;
 	size_t length;

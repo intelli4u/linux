@@ -115,7 +115,7 @@ static int protected_save_fp_context32(struct sigcontext32 __user *sc)
 
 static int protected_restore_fp_context32(struct sigcontext32 __user *sc)
 {
-	int err, tmp;
+	int err, tmp __maybe_unused;
 	while (1) {
 		lock_fpu_owner();
 		own_fpu_inatomic(0);
@@ -308,7 +308,6 @@ asmlinkage int sys32_rt_sigsuspend(nabi_no_regargs struct pt_regs regs)
 	sigset_t newset;
 	size_t sigsetsize;
 
-	/* XXX Don't preclude handling different sized sigset_t's.  */
 	sigsetsize = regs.regs[5];
 	if (sigsetsize != sizeof(compat_sigset_t))
 		return -EINVAL;
@@ -693,7 +692,6 @@ SYSCALL_DEFINE4(32_rt_sigaction, int, sig,
 	struct k_sigaction new_sa, old_sa;
 	int ret = -EINVAL;
 
-	/* XXX: Don't preclude handling different sized sigset_t's.  */
 	if (sigsetsize != sizeof(sigset_t))
 		goto out;
 

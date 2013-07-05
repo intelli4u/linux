@@ -629,14 +629,6 @@ static int __cvmx_pcie_rc_initialize_link(int pcie_port)
 	cvmx_dprintf("PCIe: Port %d link active, %d lanes\n", pcie_port,
 		     pciercx_cfg032.s.nlw);
 
-	/*
-	 * Update the Replay Time Limit. Empirically, some PCIe
-	 * devices take a little longer to respond than expected under
-	 * load. As a workaround for this we configure the Replay Time
-	 * Limit to the value expected for a 512 byte MPS instead of
-	 * our actual 256 byte MPS. The numbers below are directly
-	 * from the PCIe spec table 3-4.
-	 */
 	pciercx_cfg448.u32 =
 	    cvmx_pcie_cfgx_read(pcie_port, CVMX_PCIERCX_CFG448(pcie_port));
 	switch (pciercx_cfg032.s.nlw) {
@@ -726,13 +718,6 @@ static int cvmx_pcie_rc_initialize(int pcie_port)
 
 	/* Bring the PCIe out of reset */
 	if (cvmx_sysinfo_get()->board_type == CVMX_BOARD_TYPE_EBH5200) {
-		/*
-		 * The EBH5200 board swapped the PCIe reset lines on
-		 * the board. As a workaround for this bug, we bring
-		 * both PCIe ports out of reset at the same time
-		 * instead of on separate calls. So for port 0, we
-		 * bring both out of reset and do nothing on port 1.
-		 */
 		if (pcie_port == 0) {
 			ciu_soft_prst.u64 = cvmx_read_csr(CVMX_CIU_SOFT_PRST);
 			/*
@@ -1090,12 +1075,6 @@ static inline int octeon_pcie_read_config(int pcie_port, struct pci_bus *bus,
 	if ((bus->parent == NULL) && (devfn >> 3 != 0))
 		return PCIBIOS_FUNC_NOT_SUPPORTED;
 
-	/*
-	 * The following is a workaround for the CN57XX, CN56XX,
-	 * CN55XX, and CN54XX errata with PCIe config reads from non
-	 * existent devices.  These chips will hang the PCIe link if a
-	 * config read is performed that causes a UR response.
-	 */
 	if (OCTEON_IS_MODEL(OCTEON_CN56XX_PASS1) ||
 	    OCTEON_IS_MODEL(OCTEON_CN56XX_PASS1_1)) {
 		/*
@@ -1112,30 +1091,9 @@ static inline int octeon_pcie_read_config(int pcie_port, struct pci_bus *bus,
 		 * the below "if" blocks based on what is plugged into
 		 * the board.
 		 */
-#if 1
 		/* Use this option if you aren't using either slot */
 		if (bus_number == 1)
 			return PCIBIOS_FUNC_NOT_SUPPORTED;
-#elif 0
-		/*
-		 * Use this option if you are using the first slot but
-		 * not the second.
-		 */
-		if ((bus_number == 1) && (devfn >> 3 != 2))
-			return PCIBIOS_FUNC_NOT_SUPPORTED;
-#elif 0
-		/*
-		 * Use this option if you are using the second slot
-		 * but not the first.
-		 */
-		if ((bus_number == 1) && (devfn >> 3 != 3))
-			return PCIBIOS_FUNC_NOT_SUPPORTED;
-#elif 0
-		/* Use this opion if you are using both slots */
-		if ((bus_number == 1) &&
-		    !((devfn == (2 << 3)) || (devfn == (3 << 3))))
-			return PCIBIOS_FUNC_NOT_SUPPORTED;
-#endif
 
 		/*
 		 * Shorten the DID timeout so bus errors for PCIe

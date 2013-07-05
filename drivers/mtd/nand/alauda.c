@@ -701,7 +701,6 @@ static void alauda_disconnect(struct usb_interface *interface)
 	al = usb_get_intfdata(interface);
 	usb_set_intfdata(interface, NULL);
 
-	/* FIXME: prevent more I/O from starting */
 
 	/* decrement our usage count */
 	if (al)

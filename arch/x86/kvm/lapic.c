@@ -371,7 +371,6 @@ static int __apic_accept_irq(struct kvm_lapic *apic, int delivery_mode,
 	case APIC_DM_LOWEST:
 		vcpu->arch.apic_arb_prio++;
 	case APIC_DM_FIXED:
-		/* FIXME add logic for vcpu on reset */
 		if (unlikely(!apic_enabled(apic)))
 			break;
 

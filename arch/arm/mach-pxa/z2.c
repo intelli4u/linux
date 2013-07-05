@@ -613,8 +613,7 @@ static inline void z2_spi_init(void) {}
 /******************************************************************************
  * Core power regulator
  ******************************************************************************/
-#if defined(CONFIG_REGULATOR_TPS65023) || \
-	defined(CONFIG_REGULATOR_TPS65023_MODULE)
+#if defined(CONFIG_REGULATOR_TPS65023) || defined(CONFIG_REGULATOR_TPS65023_MODULE)
 static struct regulator_consumer_supply z2_tps65021_consumers[] = {
 	{
 		.supply	= "vcc_core",

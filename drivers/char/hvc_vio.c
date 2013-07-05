@@ -62,10 +62,6 @@ static int filtered_get_chars(uint32_t vtermno, char *buf, int count)
 
 	got = hvc_get_chars(vtermno, buf, count);
 
-	/*
-	 * Work around a HV bug where it gives us a null
-	 * after every \r.  -- paulus
-	 */
 	for (i = 1; i < got; ++i) {
 		if (buf[i] == 0 && buf[i-1] == '\r') {
 			--got;

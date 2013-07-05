@@ -989,43 +989,6 @@ __entry_return_direct:
 //	movsg		pcsr,gr31
 //	LEDS32
 
-#if 0
-	# store the current frame in the workram on the FR451
-	movgs		gr28,scr2
-	sethi.p		%hi(0xfe800000),gr28
-	setlo		%lo(0xfe800000),gr28
-
-	stdi		gr2,@(gr28,#REG_GR(2))
-	stdi		gr4,@(gr28,#REG_GR(4))
-	stdi		gr6,@(gr28,#REG_GR(6))
-	stdi		gr8,@(gr28,#REG_GR(8))
-	stdi		gr10,@(gr28,#REG_GR(10))
-	stdi		gr12,@(gr28,#REG_GR(12))
-	stdi		gr14,@(gr28,#REG_GR(14))
-	stdi		gr16,@(gr28,#REG_GR(16))
-	stdi		gr18,@(gr28,#REG_GR(18))
-	stdi		gr24,@(gr28,#REG_GR(24))
-	stdi		gr26,@(gr28,#REG_GR(26))
-	sti		gr29,@(gr28,#REG_GR(29))
-	stdi		gr30,@(gr28,#REG_GR(30))
-
-	movsg		tbr ,gr30
-	sti		gr30,@(gr28,#REG_TBR)
-	movsg		pcsr,gr30
-	sti		gr30,@(gr28,#REG_PC)
-	movsg		psr ,gr30
-	sti		gr30,@(gr28,#REG_PSR)
-	movsg		isr ,gr30
-	sti		gr30,@(gr28,#REG_ISR)
-	movsg		ccr ,gr30
-	movsg		cccr,gr31
-	stdi		gr30,@(gr28,#REG_CCR)
-	movsg		lr  ,gr30
-	movsg		lcr ,gr31
-	stdi		gr30,@(gr28,#REG_LR)
-	sti		gr0 ,@(gr28,#REG_SYSCALLNO)
-	movsg		scr2,gr28
-#endif
 
 	rett		#0
 

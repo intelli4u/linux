@@ -45,9 +45,6 @@
 
 /****************************************************************************/
 
-#if 0
-#define DEBUG 1
-#endif
 
 #ifdef DEBUG
 #define	DBG_FLT(a...)	printk(a)

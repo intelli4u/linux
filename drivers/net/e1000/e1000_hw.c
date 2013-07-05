@@ -451,8 +451,6 @@ s32 e1000_reset_hw(struct e1000_hw *hw)
 	case e1000_82546:
 	case e1000_82541:
 	case e1000_82541_rev_2:
-		/* These controllers can't ack the 64-bit write when issuing the
-		 * reset, so use IO-mapping as a workaround to issue the reset */
 		E1000_WRITE_REG_IO(hw, CTRL, (ctrl | E1000_CTRL_RST));
 		break;
 	case e1000_82545_rev_3:
@@ -615,7 +613,6 @@ s32 e1000_init_hw(struct e1000_hw *hw)
 	case e1000_82546_rev_3:
 		break;
 	default:
-		/* Workaround for PCI-X problem when BIOS sets MMRBC incorrectly. */
 		if (hw->bus_type == e1000_bus_type_pcix
 		    && e1000_pcix_get_mmrbc(hw) > 2048)
 			e1000_pcix_set_mmrbc(hw, 2048);
@@ -2358,13 +2355,6 @@ s32 e1000_check_for_link(struct e1000_hw *hw)
 			 * link-up */
 			e1000_check_downshift(hw);
 
-			/* If we are on 82544 or 82543 silicon and speed/duplex
-			 * are forced to 10H or 10F, then we will implement the polarity
-			 * reversal workaround.  We disable interrupts first, and upon
-			 * returning, place the devices interrupt state to its previous
-			 * value except for the link status change interrupt which will
-			 * happen due to the execution of this workaround.
-			 */
 
 			if ((hw->mac_type == e1000_82544
 			     || hw->mac_type == e1000_82543) && (!hw->autoneg)
@@ -4205,24 +4195,6 @@ void e1000_rar_set(struct e1000_hw *hw, u8 *addr, u32 index)
 		   ((u32) addr[2] << 16) | ((u32) addr[3] << 24));
 	rar_high = ((u32) addr[4] | ((u32) addr[5] << 8));
 
-	/* Disable Rx and flush all Rx frames before enabling RSS to avoid Rx
-	 * unit hang.
-	 *
-	 * Description:
-	 * If there are any Rx frames queued up or otherwise present in the HW
-	 * before RSS is enabled, and then we enable RSS, the HW Rx unit will
-	 * hang.  To work around this issue, we have to disable receives and
-	 * flush out all Rx frames before we enable RSS. To do so, we modify we
-	 * redirect all Rx traffic to manageability and then reset the HW.
-	 * This flushes away Rx frames, and (since the redirections to
-	 * manageability persists across resets) keeps new ones from coming in
-	 * while we work.  Then, we clear the Address Valid AV bit for all MAC
-	 * addresses and undo the re-direction to manageability.
-	 * Now, frames are coming in again, but the MAC won't accept them, so
-	 * far so good.  We now proceed to initialize RSS (if necessary) and
-	 * configure the Rx unit.  Last, we re-enable the AV bits and continue
-	 * on our merry way.
-	 */
 	switch (hw->mac_type) {
 	default:
 		/* Indicate to hardware the Address is Valid. */
@@ -5521,7 +5493,6 @@ static s32 e1000_polarity_reversal_workaround(struct e1000_hw *hw)
 	u16 mii_status_reg;
 	u16 i;
 
-	/* Polarity reversal workaround for forced 10F/10H links. */
 
 	/* Disable the transmitter on the PHY */
 

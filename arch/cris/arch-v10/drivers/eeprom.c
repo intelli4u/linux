@@ -193,16 +193,6 @@ int __init eeprom_init(void)
         {
           D(printk("0 loc1: (%i) '%4.4s' loc2 (%i) '%4.4s'\n", 
                    LOC1, loc1, LOC2, loc2));
-#if 0
-          if (memcmp(loc1, loc2, 4) != 0 )
-          {
-            /* It's 16k */
-            printk(KERN_INFO "%s: 16k detected in step 1\n", eeprom_name);
-            eeprom.size = EEPROM_16KB;     
-            success = 1;
-          }
-          else
-#endif
           {
             /* Do step 2 check */
             /* Invert value */

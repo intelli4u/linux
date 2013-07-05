@@ -143,9 +143,6 @@ void machine_power_off(void)
 
 void flush_thread(void)
 {
-#if 0 //ndef NO_FPU
-	unsigned long zero = 0;
-#endif
 	set_fs(USER_DS);
 }
 
@@ -285,7 +282,6 @@ unsigned long get_wchan(struct task_struct *p)
 
 		pc = ((unsigned long *) fp)[2];
 
-		/* FIXME: This depends on the order of these functions. */
 		if (!in_sched_functions(pc))
 			return pc;
 

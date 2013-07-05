@@ -673,16 +673,6 @@ void r600_kms_blit_copy(struct radeon_device *rdev,
 			if ((rdev->r600_blit.vb_used + 48) > rdev->r600_blit.vb_total) {
 				WARN_ON(1);
 
-#if 0
-				r600_vb_ib_put(rdev);
-
-				r600_nomm_put_vb(dev);
-				r600_nomm_get_vb(dev);
-				if (!dev_priv->blit_vb)
-					return;
-				set_shaders(dev);
-				vb = r600_nomm_get_vb_ptr(dev);
-#endif
 			}
 
 			vb[0] = i2f(dst_x);
@@ -767,17 +757,6 @@ void r600_kms_blit_copy(struct radeon_device *rdev,
 			if ((rdev->r600_blit.vb_used + 48) > rdev->r600_blit.vb_total) {
 				WARN_ON(1);
 			}
-#if 0
-			if ((rdev->blit_vb->used + 48) > rdev->blit_vb->total) {
-				r600_nomm_put_vb(dev);
-				r600_nomm_get_vb(dev);
-				if (!rdev->blit_vb)
-					return;
-
-				set_shaders(dev);
-				vb = r600_nomm_get_vb_ptr(dev);
-			}
-#endif
 
 			vb[0] = i2f(dst_x / 4);
 			vb[1] = 0;
@@ -833,4 +812,3 @@ void r600_kms_blit_copy(struct radeon_device *rdev,
 		}
 	}
 }
-

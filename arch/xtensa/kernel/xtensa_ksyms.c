@@ -86,7 +86,6 @@ EXPORT_SYMBOL(__xtensa_copy_user);
  */
 
 #if defined(CONFIG_VGA_CONSOLE) || defined(CONFIG_DUMMY_CONSOLE)
-// FIXME EXPORT_SYMBOL(screen_info);
 #endif
 
 EXPORT_SYMBOL(outsb);

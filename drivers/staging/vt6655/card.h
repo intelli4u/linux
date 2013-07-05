@@ -104,7 +104,6 @@ unsigned char CARDbyGetPktType(void *pDeviceHandler);
 void CARDvSafeResetTx(void *pDeviceHandler);
 void CARDvSafeResetRx(void *pDeviceHandler);
 
-//xxx
 bool CARDbRadioPowerOff(void *pDeviceHandler);
 bool CARDbRadioPowerOn(void *pDeviceHandler);
 //bool CARDbSendPacket(void *pDeviceHandler, void *pPacket, CARD_PKT_TYPE ePktType, unsigned int uLength);
@@ -193,6 +192,3 @@ CARDbyGetTransmitPower (
     );
 
 #endif // __CARD_H__
-
-
-

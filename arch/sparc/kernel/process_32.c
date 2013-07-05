@@ -96,9 +96,6 @@ void cpu_idle(void)
 				faults = sun4c_kernel_faults;
 				fps = (fps + (faults - last_faults)) >> 1;
 				last_faults = faults;
-#if 0
-				printk("kernel faults / second = %ld\n", fps);
-#endif
 				if (fps >= SUN4C_FAULT_HIGH) {
 					sun4c_grow_kernel_ring();
 				}
@@ -139,7 +136,6 @@ void cpu_idle(void)
 
 #endif
 
-/* XXX cli/sti -> local_irq_xxx here, check this works once SMP is fixed. */
 void machine_halt(void)
 {
 	local_irq_enable();
@@ -175,87 +171,6 @@ void machine_power_off(void)
 	machine_halt();
 }
 
-#if 0
-
-static DEFINE_SPINLOCK(sparc_backtrace_lock);
-
-void __show_backtrace(unsigned long fp)
-{
-	struct reg_window32 *rw;
-	unsigned long flags;
-	int cpu = smp_processor_id();
-
-	spin_lock_irqsave(&sparc_backtrace_lock, flags);
-
-	rw = (struct reg_window32 *)fp;
-        while(rw && (((unsigned long) rw) >= PAGE_OFFSET) &&
-            !(((unsigned long) rw) & 0x7)) {
-		printk("CPU[%d]: ARGS[%08lx,%08lx,%08lx,%08lx,%08lx,%08lx] "
-		       "FP[%08lx] CALLER[%08lx]: ", cpu,
-		       rw->ins[0], rw->ins[1], rw->ins[2], rw->ins[3],
-		       rw->ins[4], rw->ins[5],
-		       rw->ins[6],
-		       rw->ins[7]);
-		printk("%pS\n", (void *) rw->ins[7]);
-		rw = (struct reg_window32 *) rw->ins[6];
-	}
-	spin_unlock_irqrestore(&sparc_backtrace_lock, flags);
-}
-
-#define __SAVE __asm__ __volatile__("save %sp, -0x40, %sp\n\t")
-#define __RESTORE __asm__ __volatile__("restore %g0, %g0, %g0\n\t")
-#define __GET_FP(fp) __asm__ __volatile__("mov %%i6, %0" : "=r" (fp))
-
-void show_backtrace(void)
-{
-	unsigned long fp;
-
-	__SAVE; __SAVE; __SAVE; __SAVE;
-	__SAVE; __SAVE; __SAVE; __SAVE;
-	__RESTORE; __RESTORE; __RESTORE; __RESTORE;
-	__RESTORE; __RESTORE; __RESTORE; __RESTORE;
-
-	__GET_FP(fp);
-
-	__show_backtrace(fp);
-}
-
-#ifdef CONFIG_SMP
-void smp_show_backtrace_all_cpus(void)
-{
-	xc0((smpfunc_t) show_backtrace);
-	show_backtrace();
-}
-#endif
-
-void show_stackframe(struct sparc_stackf *sf)
-{
-	unsigned long size;
-	unsigned long *stk;
-	int i;
-
-	printk("l0: %08lx l1: %08lx l2: %08lx l3: %08lx "
-	       "l4: %08lx l5: %08lx l6: %08lx l7: %08lx\n",
-	       sf->locals[0], sf->locals[1], sf->locals[2], sf->locals[3],
-	       sf->locals[4], sf->locals[5], sf->locals[6], sf->locals[7]);
-	printk("i0: %08lx i1: %08lx i2: %08lx i3: %08lx "
-	       "i4: %08lx i5: %08lx fp: %08lx i7: %08lx\n",
-	       sf->ins[0], sf->ins[1], sf->ins[2], sf->ins[3],
-	       sf->ins[4], sf->ins[5], (unsigned long)sf->fp, sf->callers_pc);
-	printk("sp: %08lx x0: %08lx x1: %08lx x2: %08lx "
-	       "x3: %08lx x4: %08lx x5: %08lx xx: %08lx\n",
-	       (unsigned long)sf->structptr, sf->xargs[0], sf->xargs[1],
-	       sf->xargs[2], sf->xargs[3], sf->xargs[4], sf->xargs[5],
-	       sf->xxargs[0]);
-	size = ((unsigned long)sf->fp) - ((unsigned long)sf);
-	size -= STACKFRAME_SZ;
-	stk = (unsigned long *)((unsigned long)sf + STACKFRAME_SZ);
-	i = 0;
-	do {
-		printk("s%d: %08lx\n", i++, *stk++);
-	} while ((size -= sizeof(unsigned long)));
-}
-#endif
 
 void show_regs(struct pt_regs *r)
 {
@@ -378,7 +293,6 @@ void flush_thread(void)
 		current->thread.flags &= ~SPARC_FLAG_KTHREAD;
 
 		/* We must fixup kregs as well. */
-		/* XXX This was not fixed for ti for a while, worked. Unused? */
 		current->thread.kregs = (struct pt_regs *)
 		    (task_stack_page(current) + (THREAD_SIZE - TRACEREG_SZ));
 	}
@@ -440,19 +354,6 @@ asmlinkage int sparc_do_fork(unsigned long clone_flags,
 	return ret;
 }
 
-/* Copy a Sparc thread.  The fork() return value conventions
- * under SunOS are nothing short of bletcherous:
- * Parent -->  %o0 == childs  pid, %o1 == 0
- * Child  -->  %o0 == parents pid, %o1 == 1
- *
- * NOTE: We have a separate fork kpsr/kwim because
- *       the parent could change these values between
- *       sys_fork invocation and when we reach here
- *       if the parent should sleep while trying to
- *       allocate the task_struct and kernel stack in
- *       do_fork().
- * XXX See comment above sys_vfork in sparc64. todo.
- */
 extern void ret_from_fork(void);
 
 int copy_thread(unsigned long clone_flags, unsigned long sp,
@@ -530,19 +431,11 @@ int copy_thread(unsigned long clone_flags, unsigned long sp,
 			parentstack = (struct sparc_stackf __user *)
 				regs->u_regs[UREG_FP];
 
-#if 0
-			printk("clone: parent stack:\n");
-			show_stackframe(parentstack);
-#endif
 
 			childstack = clone_stackframe(childstack, parentstack);
 			if (!childstack)
 				return -EFAULT;
 
-#if 0
-			printk("clone: child stack:\n");
-			show_stackframe(childstack);
-#endif
 
 			childregs->u_regs[UREG_FP] = (unsigned long)childstack;
 		}
@@ -708,4 +601,3 @@ unsigned long get_wchan(struct task_struct *task)
 out:
 	return ret;
 }
-

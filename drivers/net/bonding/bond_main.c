@@ -935,7 +935,6 @@ static void bond_mc_swap(struct bonding *bond, struct slave *new_active,
 	}
 
 	if (new_active) {
-		/* FIXME: Signal errors upstream. */
 		if (bond->dev->flags & IFF_PROMISC)
 			dev_set_promiscuity(new_active->dev, 1);
 
@@ -1805,10 +1804,6 @@ err_unset_master:
 
 err_restore_mac:
 	if (!bond->params.fail_over_mac) {
-		/* XXX TODO - fom follow mode needs to change master's
-		 * MAC if this slave's MAC is in use by the bond, or at
-		 * least print a warning.
-		 */
 		memcpy(addr.sa_data, new_slave->perm_hwaddr, ETH_ALEN);
 		addr.sa_family = slave_dev->type;
 		dev_set_mac_address(slave_dev, &addr);
@@ -4022,10 +4017,6 @@ static void bond_set_multicast_list(struct net_device *bond_dev)
 	 * Do promisc before checking multicast_mode
 	 */
 	if ((bond_dev->flags & IFF_PROMISC) && !(bond->flags & IFF_PROMISC))
-		/*
-		 * FIXME: Need to handle the error when one of the multi-slaves
-		 * encounters error.
-		 */
 		bond_set_promiscuity(bond, 1);
 
 
@@ -4035,10 +4026,6 @@ static void bond_set_multicast_list(struct net_device *bond_dev)
 
 	/* set allmulti flag to slaves */
 	if ((bond_dev->flags & IFF_ALLMULTI) && !(bond->flags & IFF_ALLMULTI))
-		/*
-		 * FIXME: Need to handle the error when one of the multi-slaves
-		 * encounters error.
-		 */
 		bond_set_allmulti(bond, 1);
 
 

@@ -315,8 +315,8 @@ static int nfs4_stat_to_errno(int);
 #define decode_sequence_maxsz	0
 #endif /* CONFIG_NFS_V4_1 */
 
-#define NFS4_enc_compound_sz	(1024)  /* XXX: large enough? */
-#define NFS4_dec_compound_sz	(1024)  /* XXX: large enough? */
+#define NFS4_enc_compound_sz	(1024)
+#define NFS4_dec_compound_sz	(1024)
 #define NFS4_enc_read_sz	(compound_encode_hdr_maxsz + \
 				encode_sequence_maxsz + \
 				encode_putfh_maxsz + \
@@ -820,7 +820,6 @@ static void encode_attrs(struct xdr_stream *xdr, const struct iattr *iap, const 
 		if (owner_namelen < 0) {
 			dprintk("nfs: couldn't resolve uid %d to string\n",
 					iap->ia_uid);
-			/* XXX */
 			strcpy(owner_name, "nobody");
 			owner_namelen = sizeof("nobody") - 1;
 			/* goto out; */
@@ -5851,10 +5850,7 @@ static struct {
 	{ NFS4ERR_SYMLINK,	-ELOOP		},
 	{ NFS4ERR_OP_ILLEGAL,	-EOPNOTSUPP	},
 	{ NFS4ERR_DEADLOCK,	-EDEADLK	},
-	{ NFS4ERR_WRONGSEC,	-EPERM		}, /* FIXME: this needs
-						    * to be handled by a
-						    * middle-layer.
-						    */
+	{ NFS4ERR_WRONGSEC,	-EPERM		},
 	{ -1,			-EIO		}
 };
 

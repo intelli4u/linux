@@ -486,27 +486,11 @@ int scsi_get_device_flags_keyed(struct scsi_device *sdev,
 			 * Behave like the older version of get_device_flags.
 			 */
 			size_t max;
-			/*
-			 * XXX why skip leading spaces? If an odd INQUIRY
-			 * value, that should have been part of the
-			 * scsi_static_device_list[] entry, such as "  FOO"
-			 * rather than "FOO". Since this code is already
-			 * here, and we don't know what device it is
-			 * trying to work with, leave it as-is.
-			 */
 			max = 8;	/* max length of vendor */
 			while ((max > 0) && *vendor == ' ') {
 				max--;
 				vendor++;
 			}
-			/*
-			 * XXX removing the following strlen() would be
-			 * good, using it means that for a an entry not in
-			 * the list, we scan every byte of every vendor
-			 * listed in scsi_static_device_list[], and never match
-			 * a single one (and still have to compare at
-			 * least the first byte of each vendor).
-			 */
 			if (memcmp(devinfo->vendor, vendor,
 				    min(max, strlen(devinfo->vendor))))
 				continue;

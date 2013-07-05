@@ -60,7 +60,6 @@ static struct au1xpsc_audio_data *au1xpsc_ac97_workdata;
 static unsigned short au1xpsc_ac97_read(struct snd_ac97 *ac97,
 					unsigned short reg)
 {
-	/* FIXME */
 	struct au1xpsc_audio_data *pscdata = au1xpsc_ac97_workdata;
 	unsigned short retry, tmo;
 	unsigned long data;
@@ -102,7 +101,6 @@ static unsigned short au1xpsc_ac97_read(struct snd_ac97 *ac97,
 static void au1xpsc_ac97_write(struct snd_ac97 *ac97, unsigned short reg,
 				unsigned short val)
 {
-	/* FIXME */
 	struct au1xpsc_audio_data *pscdata = au1xpsc_ac97_workdata;
 	unsigned int tmo, retry;
 
@@ -134,7 +132,6 @@ static void au1xpsc_ac97_write(struct snd_ac97 *ac97, unsigned short reg,
 /* AC97 controller asserts a warm reset */
 static void au1xpsc_ac97_warm_reset(struct snd_ac97 *ac97)
 {
-	/* FIXME */
 	struct au1xpsc_audio_data *pscdata = au1xpsc_ac97_workdata;
 
 	au_writel(PSC_AC97RST_SNC, AC97_RST(pscdata));
@@ -146,7 +143,6 @@ static void au1xpsc_ac97_warm_reset(struct snd_ac97 *ac97)
 
 static void au1xpsc_ac97_cold_reset(struct snd_ac97 *ac97)
 {
-	/* FIXME */
 	struct au1xpsc_audio_data *pscdata = au1xpsc_ac97_workdata;
 	int i;
 
@@ -202,7 +198,6 @@ static int au1xpsc_ac97_hw_params(struct snd_pcm_substream *substream,
 				  struct snd_pcm_hw_params *params,
 				  struct snd_soc_dai *dai)
 {
-	/* FIXME */
 	struct au1xpsc_audio_data *pscdata = au1xpsc_ac97_workdata;
 	unsigned long r, ro, stat;
 	int chans, t, stype = SUBSTREAM_TYPE(substream);
@@ -283,7 +278,6 @@ out:
 static int au1xpsc_ac97_trigger(struct snd_pcm_substream *substream,
 				int cmd, struct snd_soc_dai *dai)
 {
-	/* FIXME */
 	struct au1xpsc_audio_data *pscdata = au1xpsc_ac97_workdata;
 	int ret, stype = SUBSTREAM_TYPE(substream);
 
@@ -510,4 +504,3 @@ module_exit(au1xpsc_ac97_unload);
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Au12x0/Au1550 PSC AC97 ALSA ASoC audio driver");
 MODULE_AUTHOR("Manuel Lauss");
-

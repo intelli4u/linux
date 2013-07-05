@@ -154,4 +154,3 @@ EXPORT_SYMBOL_GPL(bcom_ata_release);
 MODULE_DESCRIPTION("BestComm ATA task driver");
 MODULE_AUTHOR("John Rigby");
 MODULE_LICENSE("GPL v2");
-

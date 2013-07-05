@@ -156,7 +156,6 @@ static ssize_t hypfs_aio_read(struct kiocb *iocb, const struct iovec *iov,
 	char *data;
 	ssize_t ret;
 	struct file *filp = iocb->ki_filp;
-	/* XXX: temporary */
 	char __user *buf = iov[0].iov_base;
 	size_t count = iov[0].iov_len;
 

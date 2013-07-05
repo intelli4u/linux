@@ -397,4 +397,3 @@ EXPORT_SYMBOL_GPL(pxa2xx_ac97_hw_remove);
 MODULE_AUTHOR("Nicolas Pitre");
 MODULE_DESCRIPTION("Intel/Marvell PXA sound library");
 MODULE_LICENSE("GPL");
-

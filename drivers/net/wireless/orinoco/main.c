@@ -1821,7 +1821,6 @@ static int __orinoco_commit(struct orinoco_private *priv)
 
 	err = orinoco_hw_program_rids(priv);
 
-	/* FIXME: what about netif_tx_lock */
 	(void) __orinoco_set_multicast_list(dev);
 
 	return err;

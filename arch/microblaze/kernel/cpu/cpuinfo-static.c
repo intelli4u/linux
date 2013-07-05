@@ -137,7 +137,6 @@ void __init set_cpuinfo_static(struct cpuinfo *ci, struct device_node *cpu)
 			ci->fpga_family_code = family_string_lookup[i].k;
 	}
 
-	/* FIXME - mb3 and spartan2 do not exist in PVR */
 	/* This is mb3 and on a non Spartan2 */
 	if (ci->ver_code == 0x20 && ci->fpga_family_code != 0xf0)
 		/* Hardware Multiplier in use */

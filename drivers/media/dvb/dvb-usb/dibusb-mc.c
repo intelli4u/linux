@@ -84,7 +84,7 @@ static struct dvb_usb_device_properties dibusb_mc_properties = {
 	.rc.legacy = {
 		.rc_interval      = DEFAULT_RC_INTERVAL,
 		.rc_key_map       = ir_codes_dibusb_table,
-		.rc_key_map_size  = 111, /* FIXME */
+		.rc_key_map_size  = 111,
 		.rc_query         = dibusb_rc_query,
 	},
 

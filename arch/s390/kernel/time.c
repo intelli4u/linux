@@ -624,7 +624,6 @@ static int etr_port_valid(struct etr_aib *aib, int port)
  */
 static int etr_compare_network(struct etr_aib *aib1, struct etr_aib *aib2)
 {
-	// FIXME: any other fields we have to compare?
 	return aib1->edf1.net_id == aib2->edf1.net_id;
 }
 
@@ -1026,7 +1025,6 @@ static void etr_work_fn(struct work_struct *work)
 			eacr.es = 0;
 		if (!eacr.es || !eacr.p1 || aib.esw.psc1 != etr_lpsc_pps_mode)
 			eacr.e1 = 0;
-		// FIXME: uptodate checks ?
 		else if (etr_port0_uptodate && etr_port1_uptodate)
 			eacr.e1 = 1;
 		sync_port = (etr_port0_uptodate &&

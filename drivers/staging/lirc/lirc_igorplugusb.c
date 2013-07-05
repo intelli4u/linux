@@ -552,4 +552,3 @@ MODULE_DEVICE_TABLE(usb, usb_remote_id_table);
 
 module_param(sample_rate, int, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(sample_rate, "Sampling rate in Hz (default: 100)");
-

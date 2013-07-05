@@ -89,12 +89,6 @@ static const struct hc_driver ehci_au1xxx_hc_driver = {
 	.irq			= ehci_irq,
 	.flags			= HCD_MEMORY | HCD_USB2,
 
-	/*
-	 * basic lifecycle operations
-	 *
-	 * FIXME -- ehci_init() doesn't do enough here.
-	 * See ehci-ppc-soc for a complete implementation.
-	 */
 	.reset			= au1xxx_ehci_setup,
 	.start			= ehci_run,
 	.stop			= ehci_stop,

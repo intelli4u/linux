@@ -604,7 +604,6 @@ static void snd_usbmidi_standard_output(struct snd_usb_midi_out_endpoint* ep,
 {
 	int p;
 
-	/* FIXME: lower-numbered ports can starve higher-numbered ports */
 	for (p = 0; p < 0x10; ++p) {
 		struct usbmidi_out_port* port = &ep->ports[p];
 		if (!port->active)

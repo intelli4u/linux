@@ -111,11 +111,6 @@ static u32 tsi148_LM_irqhandler(struct tsi148_driver *bridge, u32 stat)
 	return serviced;
 }
 
-/*
- * Wake up mail box queue.
- *
- * XXX This functionality is not exposed up though API.
- */
 static u32 tsi148_MB_irqhandler(struct vme_bridge *tsi148_bridge, u32 stat)
 {
 	int i;
@@ -466,7 +461,6 @@ int tsi148_irq_generate(struct vme_bridge *tsi148_bridge, int level, int statid)
 	tmp = tmp | TSI148_LCSR_VICR_IRQL[level];
 	iowrite32be(tmp, bridge->base + TSI148_LCSR_VICR);
 
-	/* XXX Consider implementing a timeout? */
 	wait_event_interruptible(bridge->iack_queue,
 		tsi148_iack_received(bridge));
 
@@ -487,13 +481,6 @@ static struct vme_bus_error *tsi148_find_error(struct vme_bridge *tsi148_bridge,
 
 	bound = address + count;
 
-	/*
-	 * XXX We are currently not looking at the address space when parsing
-	 *     for errors. This is because parsing the Address Modifier Codes
-	 *     is going to be quite resource intensive to do properly. We
-	 *     should be OK just looking at the addresses and this is certainly
-	 *     much better than what we had before.
-	 */
 	err_pos = NULL;
 	/* Iterate through errors */
 	list_for_each(err_pos, &(tsi148_bridge->vme_errors)) {
@@ -521,13 +508,6 @@ static void tsi148_clear_errors(struct vme_bridge *tsi148_bridge,
 
 	bound = address + count;
 
-	/*
-	 * XXX We are currently not looking at the address space when parsing
-	 *     for errors. This is because parsing the Address Modifier Codes
-	 *     is going to be quite resource intensive to do properly. We
-	 *     should be OK just looking at the addresses and this is certainly
-	 *     much better than what we had before.
-	 */
 	err_pos = NULL;
 	/* Iterate through errors */
 	list_for_each_safe(err_pos, temp, &(tsi148_bridge->vme_errors)) {
@@ -1122,11 +1102,6 @@ err_window:
 
 }
 
-/*
- * Set the attributes of an outbound window.
- *
- * XXX Not parsing prefetch information.
- */
 int __tsi148_master_get(struct vme_master_resource *image, int *enabled,
 	unsigned long long *vme_base, unsigned long long *size,
 	vme_address_t *aspace, vme_cycle_t *cycle, vme_width_t *dwidth)
@@ -1777,11 +1752,6 @@ static int tsi148_dma_busy(struct vme_bridge *tsi148_bridge, int channel)
 
 }
 
-/*
- * Execute a previously generated link list
- *
- * XXX Need to provide control register configuration.
- */
 int tsi148_dma_list_exec(struct vme_dma_list *list)
 {
 	struct vme_dma_resource *ctrlr;
@@ -1804,11 +1774,6 @@ int tsi148_dma_list_exec(struct vme_dma_list *list)
 	channel = ctrlr->number;
 
 	if (!list_empty(&(ctrlr->running))) {
-		/*
-		 * XXX We have an active DMA transfer and currently haven't
-		 *     sorted out the mechanism for "pending" DMA transfers.
-		 *     Return busy.
-		 */
 		/* Need to add to pending here */
 		mutex_unlock(&(ctrlr->mtx));
 		return -EBUSY;

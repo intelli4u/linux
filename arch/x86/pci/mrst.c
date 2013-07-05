@@ -139,13 +139,6 @@ static int pci_device_update_fixed(struct pci_bus *bus, unsigned int devfn,
  */
 static bool type1_access_ok(unsigned int bus, unsigned int devfn, int reg)
 {
-	/* This is a workaround for A0 LNC bug where PCI status register does
-	 * not have new CAP bit set. can not be written by SW either.
-	 *
-	 * PCI header type in real LNC indicates a single function device, this
-	 * will prevent probing other devices under the same function in PCI
-	 * shim. Therefore, use the header type in shim instead.
-	 */
 	if (reg >= 0x100 || reg == PCI_STATUS || reg == PCI_HEADER_TYPE)
 		return 0;
 	if (bus == 0 && (devfn == PCI_DEVFN(2, 0) || devfn == PCI_DEVFN(0, 0)))

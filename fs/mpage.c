@@ -424,22 +424,6 @@ int mpage_readpage(struct page *page, get_block_t get_block)
 }
 EXPORT_SYMBOL(mpage_readpage);
 
-/*
- * Writing is not so simple.
- *
- * If the page has buffers then they will be used for obtaining the disk
- * mapping.  We only support pages which are fully mapped-and-dirty, with a
- * special case for pages which are unmapped at the end: end-of-file.
- *
- * If the page has no buffers (preferred) then the page is mapped here.
- *
- * If all blocks are found to be contiguous then the page can go into the
- * BIO.  Otherwise fall back to the mapping's writepage().
- * 
- * FIXME: This code wants an estimate of how many pages are still to be
- * written, so it can intelligently allocate a suitably-sized BIO.  For now,
- * just allocate full-size (16-page) BIOs.
- */
 
 struct mpage_data {
 	struct bio *bio;

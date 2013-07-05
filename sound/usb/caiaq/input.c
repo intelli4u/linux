@@ -492,4 +492,3 @@ void snd_usb_caiaq_input_free(struct snd_usb_caiaqdev *dev)
 	input_unregister_device(dev->input_dev);
 	dev->input_dev = NULL;
 }
-

@@ -386,7 +386,7 @@ static inline u32 pcl_bus(const struct ti_lynx *lynx, pcl_t pclid)
 }
 
 
-#if defined (__BIG_ENDIAN)
+#if defined(__BIG_ENDIAN)
 typedef struct ti_pcl pcltmp_t;
 
 static inline struct ti_pcl *edit_pcl(const struct ti_lynx *lynx, pcl_t pclid,

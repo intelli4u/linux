@@ -792,10 +792,6 @@ static int acquire_dma_channel(struct mx3_camera_dev *mx3_cam)
 	return 0;
 }
 
-/*
- * FIXME: learn to use stride != width, then we can keep stride properly aligned
- * and support arbitrary (even) widths.
- */
 static inline void stride_align(__u32 *width)
 {
 	if (((*width + 7) &  ~7) < 4096)

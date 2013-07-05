@@ -281,7 +281,7 @@ struct acpi_device {
 	struct acpi_driver *driver;
 	void *driver_data;
 	struct device dev;
-	struct acpi_bus_ops bus_ops;	/* workaround for different code path for hotplug */
+	struct acpi_bus_ops bus_ops;
 	enum acpi_bus_removal_type removal_type;	/* indicate for different removal type */
 };
 

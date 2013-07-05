@@ -15,7 +15,6 @@
 
 #define SRMMU_NOCACHE_VADDR	(KERNBASE + SRMMU_MAXMEM)
 				/* = 0x0fc000000 */
-/* XXX Empiricals - this needs to go away - KMW */
 #define SRMMU_MIN_NOCACHE_PAGES (550)
 #define SRMMU_MAX_NOCACHE_PAGES	(1280)
 

@@ -422,12 +422,6 @@ static void tcp_timeout_change(struct ip_vs_protocol *pp, int flags)
 {
 	int on = (flags & 1);		/* secure_tcp */
 
-	/*
-	** FIXME: change secure_tcp to independent sysctl var
-	** or make it per-service or per-app because it is valid
-	** for most if not for all of the applications. Something
-	** like "capabilities" (flags) for each object.
-	*/
 	tcp_state_table = (on? tcp_states_dos : tcp_states);
 }
 

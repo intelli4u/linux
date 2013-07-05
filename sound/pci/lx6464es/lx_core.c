@@ -594,16 +594,6 @@ int lx_buffer_ask(struct lx6464es *chip, u32 pipe, int is_capture,
 				*r_needed += 1;
 		}
 
-#if 0
-		snd_printdd(LXP "CMD_08_ASK_BUFFERS: needed %d, freed %d\n",
-			    *r_needed, *r_freed);
-		for (i = 0; i < MAX_STREAM_BUFFER; ++i) {
-			for (i = 0; i != chip->rmh.stat_len; ++i)
-				snd_printdd("  stat[%d]: %x, %x\n", i,
-					    chip->rmh.stat[i],
-					    chip->rmh.stat[i] & MASK_DATA_SIZE);
-		}
-#endif
 	}
 
 	spin_unlock_irqrestore(&chip->msg_lock, flags);
@@ -1114,10 +1104,6 @@ static int lx_interrupt_handle_async_events(struct lx6464es *chip, u32 irqsrc,
 
 	u64 orun_mask;
 	u64 urun_mask;
-#if 0
-	int has_underrun   = (irqsrc & MASK_SYS_STATUS_URUN) ? 1 : 0;
-	int has_overrun    = (irqsrc & MASK_SYS_STATUS_ORUN) ? 1 : 0;
-#endif
 	int eb_pending_out = (irqsrc & MASK_SYS_STATUS_EOBO) ? 1 : 0;
 	int eb_pending_in  = (irqsrc & MASK_SYS_STATUS_EOBI) ? 1 : 0;
 
@@ -1263,19 +1249,6 @@ irqreturn_t lx_interrupt(int irq, void *dev_id)
 	if (irqsrc & MASK_SYS_STATUS_CMD_DONE)
 		goto exit;
 
-#if 0
-	if (irqsrc & MASK_SYS_STATUS_EOBI)
-		snd_printdd(LXP "interrupt: EOBI\n");
-
-	if (irqsrc & MASK_SYS_STATUS_EOBO)
-		snd_printdd(LXP "interrupt: EOBO\n");
-
-	if (irqsrc & MASK_SYS_STATUS_URUN)
-		snd_printdd(LXP "interrupt: URUN\n");
-
-	if (irqsrc & MASK_SYS_STATUS_ORUN)
-		snd_printdd(LXP "interrupt: ORUN\n");
-#endif
 
 	if (async_pending) {
 		u64 notified_in_pipe_mask = 0;
@@ -1302,15 +1275,6 @@ irqreturn_t lx_interrupt(int irq, void *dev_id)
 	}
 
 	if (async_escmd) {
-#if 0
-		/* backdoor for ethersound commands
-		 *
-		 * for now, we do not need this
-		 *
-		 * */
-
-		snd_printdd("lx6464es: interrupt requests escmd handling\n");
-#endif
 	}
 
 exit:

@@ -313,7 +313,6 @@ static int snd_vortex_pcm_prepare(struct snd_pcm_substream *substream)
 #ifndef CHIP_AU8810
 	else {
 		vortex_wtdma_setmode(chip, dma, 1, fmt, 0, 0);
-		// FIXME: Set rate (i guess using vortex_wt_writereg() somehow).
 		vortex_wtdma_setstartbuffer(chip, dma, 0);
 	}
 #endif

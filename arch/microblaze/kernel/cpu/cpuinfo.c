@@ -33,9 +33,6 @@ const struct cpu_ver_key cpu_ver_lookup[] = {
 	{NULL, 0},
 };
 
-/*
- * FIXME Not sure if the actual key is defined by Xilinx in the PVR
- */
 const struct family_string_key family_string_lookup[] = {
 	{"virtex2", 0x4},
 	{"virtex2pro", 0x5},
@@ -48,7 +45,6 @@ const struct family_string_key family_string_lookup[] = {
 	{"spartan3adsp", 0xc},
 	{"spartan6", 0xd},
 	{"virtex6", 0xe},
-	/* FIXME There is no key code defined for spartan2 */
 	{"spartan2", 0xf0},
 	{NULL, 0},
 };
@@ -72,8 +68,6 @@ void __init setup_cpuinfo(void)
 			__func__);
 		set_cpuinfo_static(&cpuinfo, cpu);
 		break;
-/* FIXME I found weird behavior with MB 7.00.a/b 7.10.a
- * please do not use FULL PVR with MMU */
 	case 1:
 		printk(KERN_INFO "%s: Using full CPU PVR support\n",
 			__func__);

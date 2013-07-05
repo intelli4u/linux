@@ -509,8 +509,7 @@ struct cx8802_dev {
 
 	/* for blackbird only */
 	struct list_head           devlist;
-#if defined(CONFIG_VIDEO_CX88_BLACKBIRD) || \
-    defined(CONFIG_VIDEO_CX88_BLACKBIRD_MODULE)
+#if defined(CONFIG_VIDEO_CX88_BLACKBIRD) || defined(CONFIG_VIDEO_CX88_BLACKBIRD_MODULE)
 	struct video_device        *mpeg_dev;
 	u32                        mailbox;
 	int                        width;
@@ -526,8 +525,7 @@ struct cx8802_dev {
 	struct videobuf_dvb_frontends frontends;
 #endif
 
-#if defined(CONFIG_VIDEO_CX88_VP3054) || \
-    defined(CONFIG_VIDEO_CX88_VP3054_MODULE)
+#if defined(CONFIG_VIDEO_CX88_VP3054) || defined(CONFIG_VIDEO_CX88_VP3054_MODULE)
 	/* For VP3045 secondary I2C bus support */
 	struct vp3054_i2c_state	   *vp3054;
 #endif

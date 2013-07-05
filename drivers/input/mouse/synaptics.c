@@ -816,4 +816,3 @@ bool synaptics_supported(void)
 }
 
 #endif /* CONFIG_MOUSE_PS2_SYNAPTICS */
-

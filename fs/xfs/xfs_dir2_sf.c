@@ -734,12 +734,6 @@ xfs_dir2_sf_getdents(
 	if (xfs_dir2_dataptr_to_db(mp, *offset) > mp->m_dirdatablk)
 		return 0;
 
-	/*
-	 * Precalculate offsets for . and .. as we will always need them.
-	 *
-	 * XXX(hch): the second argument is sometimes 0 and sometimes
-	 * mp->m_dirdatablk.
-	 */
 	dot_offset = xfs_dir2_db_off_to_dataptr(mp, mp->m_dirdatablk,
 					     XFS_DIR2_DATA_DOT_OFFSET);
 	dotdot_offset = xfs_dir2_db_off_to_dataptr(mp, mp->m_dirdatablk,

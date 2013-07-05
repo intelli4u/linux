@@ -31,41 +31,6 @@ inline u32 stb0899_do_div(u64 n, u32 d)
 	return n;
 }
 
-#if 0
-/* These functions are currently unused */
-/*
- * stb0899_calc_srate
- * Compute symbol rate
- */
-static u32 stb0899_calc_srate(u32 master_clk, u8 *sfr)
-{
-	u64 tmp;
-
-	/* srate = (SFR * master_clk) >> 20 */
-
-	/* sfr is of size 20 bit, stored with an offset of 4 bit */
-	tmp = (((u32)sfr[0]) << 16) | (((u32)sfr[1]) << 8) | sfr[2];
-	tmp &= ~0xf;
-	tmp *= master_clk;
-	tmp >>= 24;
-
-	return tmp;
-}
-
-/*
- * stb0899_get_srate
- * Get the current symbol rate
- */
-static u32 stb0899_get_srate(struct stb0899_state *state)
-{
-	struct stb0899_internal *internal = &state->internal;
-	u8 sfr[3];
-
-	stb0899_read_regs(state, STB0899_SFRH, sfr, 3);
-
-	return stb0899_calc_srate(internal->master_clk, sfr);
-}
-#endif
 
 /*
  * stb0899_set_srate

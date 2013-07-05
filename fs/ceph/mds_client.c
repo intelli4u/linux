@@ -2194,7 +2194,6 @@ static void handle_session(struct ceph_mds_session *session,
 	mutex_lock(&mdsc->mutex);
 	if (op == CEPH_SESSION_CLOSE)
 		__unregister_session(mdsc, session);
-	/* FIXME: this ttl calculation is generous */
 	session->s_ttl = jiffies + HZ*mdsc->mdsmap->m_session_autoclose;
 	mutex_unlock(&mdsc->mutex);
 

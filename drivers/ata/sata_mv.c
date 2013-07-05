@@ -955,15 +955,6 @@ static inline void mv_write_cached_reg(void __iomem *addr, u32 *old, u32 new)
 	if (new != *old) {
 		unsigned long laddr;
 		*old = new;
-		/*
-		 * Workaround for 88SX60x1-B2 FEr SATA#13:
-		 * Read-after-write is needed to prevent generating 64-bit
-		 * write cycles on the PCI bus for SATA interface registers
-		 * at offsets ending in 0x4 or 0xc.
-		 *
-		 * Looks like a lot of fuss, but it avoids an unnecessary
-		 * +1 usec read-after-write delay for unaffected registers.
-		 */
 		laddr = (long)addr & 0xffff;
 		if (laddr >= 0x300 && laddr <= 0x33c) {
 			laddr &= 0x000f;
@@ -1350,19 +1341,6 @@ static int mv_scr_write(struct ata_link *link, unsigned int sc_reg_in, u32 val)
 	if (ofs != 0xffffffffU) {
 		void __iomem *addr = mv_ap_base(link->ap) + ofs;
 		if (sc_reg_in == SCR_CONTROL) {
-			/*
-			 * Workaround for 88SX60x1 FEr SATA#26:
-			 *
-			 * COMRESETs have to take care not to accidently
-			 * put the drive to sleep when writing SCR_CONTROL.
-			 * Setting bits 12..15 prevents this problem.
-			 *
-			 * So if we see an outbound COMMRESET, set those bits.
-			 * Ditto for the followup write that clears the reset.
-			 *
-			 * The proprietary driver does this for
-			 * all chip versions, and so do we.
-			 */
 			if ((val & 0xf) == 1 || (readl(addr) & 0xf) == 1)
 				val |= 0xf000;
 		}
@@ -1479,7 +1457,6 @@ static void mv_60x1_errata_sata25(struct ata_port *ap, int want_ncq)
 	struct mv_host_priv *hpriv = ap->host->private_data;
 	u32 old, new;
 
-	/* workaround for 88SX60x1 FEr SATA#25 (part 1) */
 	old = readl(hpriv->base + GPIO_PORT_CTL);
 	if (want_ncq)
 		new = old | (1 << 22);
@@ -1961,19 +1938,6 @@ static u8 mv_bmdma_status(struct ata_port *ap)
 static void mv_rw_multi_errata_sata24(struct ata_queued_cmd *qc)
 {
 	struct ata_taskfile *tf = &qc->tf;
-	/*
-	 * Workaround for 88SX60x1 FEr SATA#24.
-	 *
-	 * Chip may corrupt WRITEs if multi_count >= 4kB.
-	 * Note that READs are unaffected.
-	 *
-	 * It's not clear if this errata really means "4K bytes",
-	 * or if it always happens for multi_count > 7
-	 * regardless of device sector_size.
-	 *
-	 * So, for safety, any write with multi_count > 7
-	 * gets converted here into a regular PIO write instead:
-	 */
 	if ((tf->flags & ATA_TFLAG_WRITE) && is_multi_taskfile(tf)) {
 		if (qc->dev->multi_count > 7) {
 			switch (tf->command) {
@@ -2066,14 +2030,6 @@ static void mv_qc_prep(struct ata_queued_cmd *qc)
 		mv_crqb_pack_cmd(cw++, tf->feature, ATA_REG_FEATURE, 0);
 		break;
 	default:
-		/* The only other commands EDMA supports in non-queued and
-		 * non-NCQ mode are: [RW] STREAM DMA and W DMA FUA EXT, none
-		 * of which are defined/used by Linux.  If we get here, this
-		 * driver needs work.
-		 *
-		 * FIXME: modify libata to give qc_prep a return value and
-		 * return error here.
-		 */
 		BUG_ON(tf->command);
 		break;
 	}
@@ -2372,17 +2328,6 @@ static unsigned int mv_qc_issue(struct ata_queued_cmd *qc)
 
 	if (qc->tf.command == ATA_CMD_READ_LOG_EXT) {
 		struct mv_host_priv *hpriv = ap->host->private_data;
-		/*
-		 * Workaround for 88SX60x1 FEr SATA#25 (part 2).
-		 *
-		 * After any NCQ error, the READ_LOG_EXT command
-		 * from libata-eh *must* use mv_qc_issue_fis().
-		 * Otherwise it might fail, due to chip errata.
-		 *
-		 * Rather than special-case it, we'll just *always*
-		 * use this method here for READ_LOG_EXT, making for
-		 * easier testing.
-		 */
 		if (IS_GEN_II(hpriv))
 			return mv_qc_issue_fis(qc);
 	}
@@ -3096,7 +3041,6 @@ static void mv5_enable_leds(struct mv_host_priv *hpriv, void __iomem *mmio)
 
 	writel(0, mmio + GPIO_PORT_CTL);
 
-	/* FIXME: handle MV_HP_ERRATA_50XXB2 errata */
 
 	tmp = readl(mmio + MV_PCI_EXP_ROM_BAR_CTL);
 	tmp |= ~(1 << 0);
@@ -3355,23 +3299,12 @@ static void mv6_phy_errata(struct mv_host_priv *hpriv, void __iomem *mmio,
 
 	if (fix_phy_mode4) {
 		u32 m4 = readl(port_mmio + PHY_MODE4);
-		/*
-		 * Enforce reserved-bit restrictions on GenIIe devices only.
-		 * For earlier chipsets, force only the internal config field
-		 *  (workaround for errata FEr SATA#10 part 1).
-		 */
 		if (IS_GEN_IIE(hpriv))
 			m4 = (m4 & ~PHY_MODE4_RSVD_ZEROS) | PHY_MODE4_RSVD_ONES;
 		else
 			m4 = (m4 & ~PHY_MODE4_CFG_MASK) | PHY_MODE4_CFG_VALUE;
 		writel(m4, port_mmio + PHY_MODE4);
 	}
-	/*
-	 * Workaround for 60x1-B2 errata SATA#13:
-	 * Any write to PHY_MODE4 (above) may corrupt PHY_MODE3,
-	 * so we must always rewrite PHY_MODE3 after PHY_MODE4.
-	 * Or ensure we use writelfl() when writing PHY_MODE4.
-	 */
 	writel(m3, port_mmio + PHY_MODE3);
 
 	/* Revert values of pre-emphasis and signal amps to the saved ones */
@@ -3609,7 +3542,6 @@ static int mv_hardreset(struct ata_link *link, unsigned int *class,
 	pp->pp_flags &=
 	  ~(MV_PP_FLAG_FBS_EN | MV_PP_FLAG_NCQ_EN | MV_PP_FLAG_FAKE_ATA_BUSY);
 
-	/* Workaround for errata FEr SATA#10 (part 2) */
 	do {
 		const unsigned long *timing =
 				sata_ehc_deb_timing(&link->eh_context);
@@ -3736,7 +3668,6 @@ static void mv_60x1b2_errata_pci7(struct ata_host *host)
 	struct mv_host_priv *hpriv = host->private_data;
 	void __iomem *mmio = hpriv->base;
 
-	/* workaround for 60x1-B2 errata PCI#7 */
 	if (mv_in_pcix_mode(host)) {
 		u32 reg = readl(mmio + MV_PCI_COMMAND);
 		writelfl(reg & ~MV_PCI_COMMAND_MWRCOM, mmio + MV_PCI_COMMAND);
@@ -4242,15 +4173,6 @@ static int pci_go_64(struct pci_dev *pdev)
 	return rc;
 }
 
-/**
- *      mv_print_info - Dump key info to kernel log for perusal.
- *      @host: ATA host to print info about
- *
- *      FIXME: complete this.
- *
- *      LOCKING:
- *      Inherited from caller.
- */
 static void mv_print_info(struct ata_host *host)
 {
 	struct pci_dev *pdev = to_pci_dev(host->dev);
@@ -4258,9 +4180,6 @@ static void mv_print_info(struct ata_host *host)
 	u8 scc;
 	const char *scc_s, *gen;
 
-	/* Use this to determine the HW stepping of the chip so we know
-	 * what errata to workaround
-	 */
 	pci_read_config_byte(pdev, PCI_CLASS_DEVICE, &scc);
 	if (scc == 0)
 		scc_s = "SCSI";

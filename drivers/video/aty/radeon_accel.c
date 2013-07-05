@@ -9,21 +9,6 @@ static void radeon_fixup_offset(struct radeonfb_info *rinfo)
 {
 	u32 local_base;
 
-	/* *** Ugly workaround *** */
-	/*
-	 * On some platforms, the video memory is mapped at 0 in radeon chip space
-	 * (like PPCs) by the firmware. X will always move it up so that it's seen
-	 * by the chip to be at the same address as the PCI BAR.
-	 * That means that when switching back from X, there is a mismatch between
-	 * the offsets programmed into the engine. This means that potentially,
-	 * accel operations done before radeonfb has a chance to re-init the engine
-	 * will have incorrect offsets, and potentially trash system memory !
-	 *
-	 * The correct fix is for fbcon to never call any accel op before the engine
-	 * has properly been re-initialized (by a call to set_var), but this is a
-	 * complex fix. This workaround in the meantime, called before every accel
-	 * operation, makes sure the offsets are in sync.
-	 */
 
 	radeon_fifo_wait (1);
 	local_base = INREG(MC_FB_LOCATION) << 16;
@@ -221,7 +206,7 @@ void radeonfb_engine_reset(struct radeonfb_info *rinfo)
 		INREG(RBBM_SOFT_RESET);
 		OUTREG(RBBM_SOFT_RESET, 0);
 		tmp = INREG(RB2D_DSTCACHE_MODE);
-		OUTREG(RB2D_DSTCACHE_MODE, tmp | (1 << 17)); /* FIXME */
+		OUTREG(RB2D_DSTCACHE_MODE, tmp | (1 << 17));
 	} else {
 		OUTREG(RBBM_SOFT_RESET, rbbm_soft_reset |
 					SOFT_RESET_CP |

@@ -896,8 +896,7 @@ static void init_registers(struct net_device *dev)
 		8000	16 longwords		0200 2 longwords	2000 32 longwords
 		C000	32  longwords		0400 4 longwords */
 
-#if defined (__i386__) && !defined(MODULE)
-	/* When not a module we can work around broken '486 PCI boards. */
+#if defined(__i386__) && !defined(MODULE)
 	if (boot_cpu_data.x86 <= 4) {
 		i |= 0x4800;
 		dev_info(&dev->dev,
@@ -905,9 +904,10 @@ static void init_registers(struct net_device *dev)
 	} else {
 		i |= 0xE000;
 	}
-#elif defined(__powerpc__) || defined(__i386__) || defined(__alpha__) || defined(__ia64__) || defined(__x86_64__)
+#elif defined(__powerpc__) || defined(__i386__) || defined(__alpha__) || \
+	defined(__ia64__) || defined(__x86_64__)
 	i |= 0xE000;
-#elif defined(CONFIG_SPARC) || defined (CONFIG_PARISC)
+#elif defined(CONFIG_SPARC) || defined(CONFIG_PARISC)
 	i |= 0x4800;
 #else
 #warning Processor architecture undefined
@@ -1043,8 +1043,6 @@ static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev)
 	wmb(); /* flush status and kick the hardware */
 	iowrite32(0, np->base_addr + TxStartDemand);
 	np->tx_q_bytes += skb->len;
-	/* Work around horrible bug in the chip by marking the queue as full
-	   when we do not have FIFO room for a maximum sized packet. */
 	if (np->cur_tx - np->dirty_tx > TX_QUEUE_LEN ||
 		((np->drv_flags & HasBrokenTx) && np->tx_q_bytes > TX_BUG_FIFO_LIMIT)) {
 		netif_stop_queue(dev);
@@ -1248,7 +1246,7 @@ static int netdev_rx(struct net_device *dev)
 				skb_put(skb = np->rx_skbuff[entry], pkt_len);
 				np->rx_skbuff[entry] = NULL;
 			}
-#ifndef final_version				/* Remove after testing. */
+#ifndef final_version				    /* Remove after testing. */
 			/* You will want this info for the initial debug. */
 			if (debug > 5)
 				printk(KERN_DEBUG "  Rx data %pM %pM %02x%02x %pI4\n",
@@ -1300,19 +1298,12 @@ static void netdev_error(struct net_device *dev, int intr_status)
 	if (intr_status & TxFIFOUnderflow) {
 		int new;
 		/* Bump up the Tx threshold */
-#if 0
-		/* This causes lots of dropped packets,
-		 * and under high load even tx_timeouts
-		 */
-		new = np->csr6 + 0x4000;
-#else
 		new = (np->csr6 >> 14)&0x7f;
 		if (new < 64)
 			new *= 2;
 		 else
 		 	new = 127; /* load full packet before starting */
 		new = (np->csr6 & ~(0x7F << 14)) | (new<<14);
-#endif
 		printk(KERN_DEBUG "%s: Tx underflow, new csr6 %08x\n",
 		       dev->name, new);
 		update_csr6(dev, new);

@@ -370,12 +370,6 @@ static int userspace_flush(struct dm_dirty_log *log)
 	if (list_empty(&flush_list))
 		return 0;
 
-	/*
-	 * FIXME: Count up requests, group request types,
-	 * allocate memory to stick all requests in and
-	 * send to server in one go.  Failing the allocation,
-	 * do it one by one.
-	 */
 
 	list_for_each_entry(fe, &flush_list, list) {
 		r = userspace_do_request(lc, lc->uuid, fe->type,

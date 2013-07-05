@@ -12,3 +12,7 @@ header-y += ipt_ah.h
 header-y += ipt_ecn.h
 header-y += ipt_realm.h
 header-y += ipt_ttl.h
+header-y += ipt_mac.h
+header-y += ipt_state.h
+header-y += ipt_time.h
+header-y += ipt_TCPMSS.h

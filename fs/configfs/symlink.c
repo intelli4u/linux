@@ -317,4 +317,3 @@ const struct inode_operations configfs_symlink_inode_operations = {
 	.put_link = configfs_put_link,
 	.setattr = configfs_setattr,
 };
-

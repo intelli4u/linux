@@ -217,25 +217,7 @@ cumanascsi_2_dma_pseudo(struct Scsi_Host *host, struct scsi_pointer *SCp,
 	addr = SCp->ptr;
 
 	if (direction == DMA_OUT)
-#if 0
-		while (length > 1) {
-			unsigned long word;
-			unsigned int status = readb(info->base + CUMANASCSI2_STATUS);
-
-			if (status & STATUS_INT)
-				goto end;
-
-			if (!(status & STATUS_DRQ))
-				continue;
-
-			word = *addr | *(addr + 1) << 8;
-			writew(word, info->base + CUMANASCSI2_PSEUDODMA);
-			addr += 2;
-			length -= 2;
-		}
-#else
 		printk ("PSEUDO_OUT???\n");
-#endif
 	else {
 		if (transfer && (transfer & 255)) {
 			while (length >= 256) {

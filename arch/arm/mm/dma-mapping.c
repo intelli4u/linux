@@ -224,6 +224,7 @@ __dma_alloc_remap(struct page *page, size_t size, gfp_t gfp, pgprot_t prot)
 			pte++;
 			off++;
 			if (off >= PTRS_PER_PTE) {
+				BUG_ON(idx >= (NUM_CONSISTENT_PTES-1));
 				off = 0;
 				pte = consistent_pte[++idx];
 			}
@@ -270,6 +271,7 @@ static void __dma_free_remap(void *cpu_addr, size_t size)
 		addr += PAGE_SIZE;
 		off++;
 		if (off >= PTRS_PER_PTE) {
+			BUG_ON(idx >= (NUM_CONSISTENT_PTES-1));
 			off = 0;
 			ptep = consistent_pte[++idx];
 		}
@@ -431,7 +433,6 @@ void ___dma_single_cpu_to_dev(const void *kaddr, size_t size,
 	} else {
 		outer_clean_range(paddr, paddr + size);
 	}
-	/* FIXME: non-speculating: flush on bidirectional mappings? */
 }
 EXPORT_SYMBOL(___dma_single_cpu_to_dev);
 
@@ -440,7 +441,6 @@ void ___dma_single_dev_to_cpu(const void *kaddr, size_t size,
 {
 	BUG_ON(!virt_addr_valid(kaddr) || !virt_addr_valid(kaddr + size - 1));
 
-	/* FIXME: non-speculating: not required */
 	/* don't bother invalidating if DMA to device */
 	if (dir != DMA_TO_DEVICE) {
 		unsigned long paddr = __pa(kaddr);
@@ -508,7 +508,6 @@ void ___dma_page_cpu_to_dev(struct page *page, unsigned long off,
 	} else {
 		outer_clean_range(paddr, paddr + size);
 	}
-	/* FIXME: non-speculating: flush on bidirectional mappings? */
 }
 EXPORT_SYMBOL(___dma_page_cpu_to_dev);
 
@@ -517,7 +516,6 @@ void ___dma_page_dev_to_cpu(struct page *page, unsigned long off,
 {
 	unsigned long paddr = page_to_phys(page) + off;
 
-	/* FIXME: non-speculating: not required */
 	/* don't bother invalidating if DMA to device */
 	if (dir != DMA_TO_DEVICE)
 		outer_inv_range(paddr, paddr + size);

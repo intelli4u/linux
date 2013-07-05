@@ -1118,7 +1118,6 @@ static int dvbdmx_close(struct dmx_demux *demux)
 		return -ENODEV;
 
 	dvbdemux->users--;
-	//FIXME: release any unneeded resources if users==0
 	return 0;
 }
 

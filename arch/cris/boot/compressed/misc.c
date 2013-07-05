@@ -282,9 +282,8 @@ void decompress_kernel(void)
 #ifdef CONFIG_ETRAX_ARCH_V32
 	/* Need at least a CRISv32 to run. */
 	compile_rev = 32;
-#if defined(CONFIG_ETRAX_DEBUG_PORT1) || \
-    defined(CONFIG_ETRAX_DEBUG_PORT2) || \
-    defined(CONFIG_ETRAX_DEBUG_PORT3)
+#if defined(CONFIG_ETRAX_DEBUG_PORT1) || defined(CONFIG_ETRAX_DEBUG_PORT2) || \
+	defined(CONFIG_ETRAX_DEBUG_PORT3)
 	reg_pinmux_rw_hwprot hwprot;
 
 #ifdef CONFIG_CRIS_MACH_ARTPEC3
@@ -317,9 +316,8 @@ void decompress_kernel(void)
 	hwprot.ser3 = regk_pinmux_yes;
 	serial_setup(regi_ser3);
 #endif
-#if defined(CONFIG_ETRAX_DEBUG_PORT1) || \
-    defined(CONFIG_ETRAX_DEBUG_PORT2) || \
-    defined(CONFIG_ETRAX_DEBUG_PORT3)
+#if defined(CONFIG_ETRAX_DEBUG_PORT1) || defined(CONFIG_ETRAX_DEBUG_PORT2) || \
+	defined(CONFIG_ETRAX_DEBUG_PORT3)
 	REG_WR(pinmux, regi_pinmux, rw_hwprot, hwprot);
 #endif
 

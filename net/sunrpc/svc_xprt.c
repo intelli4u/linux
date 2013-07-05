@@ -984,14 +984,13 @@ static struct cache_deferred_req *svc_defer(struct cache_req *req)
 	struct svc_deferred_req *dr;
 
 	if (rqstp->rq_arg.page_len || !rqstp->rq_usedeferral)
-		return NULL; /* if more than a page, give up FIXME */
+		return NULL;
 	if (rqstp->rq_deferred) {
 		dr = rqstp->rq_deferred;
 		rqstp->rq_deferred = NULL;
 	} else {
 		size_t skip;
 		size_t size;
-		/* FIXME maybe discard if size too large */
 		size = sizeof(struct svc_deferred_req) + rqstp->rq_arg.len;
 		dr = kmalloc(size, GFP_KERNEL);
 		if (dr == NULL)

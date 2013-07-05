@@ -190,22 +190,12 @@ cifs_reconnect_tcon(struct cifsTconInfo *tcon, int smb_command)
 	if (rc)
 		goto out;
 
-	/*
-	 * FIXME: check if wsize needs updated due to negotiated smb buffer
-	 * 	  size shrinking
-	 */
 	atomic_inc(&tconInfoReconnectCount);
 
 	/* tell server Unix caps we support */
 	if (ses->capabilities & CAP_UNIX)
 		reset_cifs_unix_caps(0, tcon, NULL, NULL);
 
-	/*
-	 * Removed call to reopen open files here. It is safer (and faster) to
-	 * reopen files one at a time as needed in read and write.
-	 *
-	 * FIXME: what about file locks? don't we need to reclaim them ASAP?
-	 */
 
 out:
 	/*
@@ -387,7 +377,7 @@ CIFSSMBNegotiate(unsigned int xid, struct cifsSesInfo *ses)
 
 	/* if any of auth flags (ie not sign or seal) are overriden use them */
 	if (ses->overrideSecFlg & (~(CIFSSEC_MUST_SIGN | CIFSSEC_MUST_SEAL)))
-		secFlags = ses->overrideSecFlg;  /* BB FIXME fix sign flags? */
+		secFlags = ses->overrideSecFlg;
 	else /* if override flags set only sign/seal OR them with global auth */
 		secFlags = global_secflags | ses->overrideSecFlg;
 
@@ -1175,16 +1165,14 @@ OldOpenRetry:
 
 	if (create_options & CREATE_OPTION_SPECIAL)
 		pSMB->FileAttributes = cpu_to_le16(ATTR_SYSTEM);
-	else /* BB FIXME BB */
+	else
 		pSMB->FileAttributes = cpu_to_le16(0/*ATTR_NORMAL*/);
 
 	if (create_options & CREATE_OPTION_READONLY)
 		pSMB->FileAttributes |= cpu_to_le16(ATTR_READONLY);
 
-	/* BB FIXME BB */
 /*	pSMB->CreateOptions = cpu_to_le32(create_options &
 						 CREATE_OPTIONS_MASK); */
-	/* BB FIXME END BB */
 
 	pSMB->Sattr = cpu_to_le16(ATTR_HIDDEN | ATTR_SYSTEM | ATTR_DIRECTORY);
 	pSMB->OpenFunction = cpu_to_le16(convert_disposition(openDisposition));
@@ -1206,16 +1194,14 @@ OldOpenRetry:
 		*netfid = pSMBr->Fid;   /* cifs fid stays in le */
 		/* Let caller know file was created so we can set the mode. */
 		/* Do we care about the CreateAction in any other cases? */
-	/* BB FIXME BB */
 /*		if (cpu_to_le32(FILE_CREATE) == pSMBr->CreateAction)
 			*pOplock |= CIFS_CREATE_ACTION; */
-	/* BB FIXME END */
 
 		if (pfile_info) {
 			pfile_info->CreationTime = 0; /* BB convert CreateTime*/
-			pfile_info->LastAccessTime = 0; /* BB fixme */
-			pfile_info->LastWriteTime = 0; /* BB fixme */
-			pfile_info->ChangeTime = 0;  /* BB fixme */
+			pfile_info->LastAccessTime = 0;
+			pfile_info->LastWriteTime = 0;
+			pfile_info->ChangeTime = 0;
 			pfile_info->Attributes =
 				cpu_to_le32(le16_to_cpu(pSMBr->FileAttributes));
 			/* the file_info buf is endian converted by caller */
@@ -2462,7 +2448,6 @@ querySymLinkRetry:
 			else
 				is_unicode = false;
 
-			/* BB FIXME investigate remapping reserved chars here */
 			*symlinkinfo = cifs_strndup_from_ucs(data_start, count,
 						    is_unicode, nls_codepage);
 			if (!*symlinkinfo)
@@ -2970,7 +2955,6 @@ setACLerrorExit:
 	return rc;
 }
 
-/* BB fix tabs in this function FIXME BB */
 int
 CIFSGetExtAttr(const int xid, struct cifsTconInfo *tcon,
 	       const int netfid, __u64 *pExtAttrBits, __u64 *pMask)
@@ -3259,7 +3243,6 @@ QInfRetry:
 		__u32 time = le32_to_cpu(pSMBr->last_write_time);
 
 		/* decode response */
-		/* BB FIXME - add time zone adjustment BB */
 		memset(pFinfo, 0, sizeof(FILE_ALL_INFO));
 		ts.tv_nsec = 0;
 		ts.tv_sec = time;
@@ -3837,7 +3820,6 @@ int CIFSFindNext(const int xid, struct cifsTconInfo *tcon,
 		if (rc == 0) {
 			unsigned int lnoff;
 
-			/* BB fixme add lock for file (srch_info) struct here */
 			if (pSMBr->hdr.Flags2 & SMBFLG2_UNICODE)
 				psrch_inf->unicode = true;
 			else
@@ -3876,7 +3858,6 @@ int CIFSFindNext(const int xid, struct cifsTconInfo *tcon,
 /*  cFYI(1, "fnxt2 entries in buf %d index_of_last %d",
 	    psrch_inf->entries_in_buffer, psrch_inf->index_of_last_entry); */
 
-			/* BB fixme add unlock here */
 		}
 
 	}
@@ -4769,11 +4750,6 @@ QFSPosixRetry:
 }
 
 
-/* We can not use write of zero bytes trick to
-   set file size due to need for large file support.  Also note that
-   this SetPathInfo is preferred to SetFileInfo based method in next
-   routine which is only needed to work around a sharing violation bug
-   in Samba which this routine can run into */
 
 int
 CIFSSMBSetEOF(const int xid, struct cifsTconInfo *tcon, const char *fileName,

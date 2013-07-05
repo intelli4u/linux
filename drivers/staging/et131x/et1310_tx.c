@@ -794,4 +794,3 @@ void et131x_handle_send_interrupt(struct et131x_adapter *etdev)
 
 	spin_unlock_irqrestore(&etdev->TCBSendQLock, flags);
 }
-

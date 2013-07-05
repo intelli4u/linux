@@ -167,10 +167,6 @@ static void __cpuinit set_prefetch_parameters(void)
 	 * performance data to back this up.
 	 */
 	if (cpu_has_prefetch) {
-		/*
-		 * XXX: Most prefetch bias values in here are based on
-		 * guesswork.
-		 */
 		cache_line_size = cpu_dcache_line_size();
 		switch (current_cpu_type()) {
 		case CPU_R5500:
@@ -180,13 +176,6 @@ static void __cpuinit set_prefetch_parameters(void)
 			break;
 
 		case CPU_RM9000:
-			/*
-			 * As a workaround for erratum G105 which make the
-			 * PrepareForStore hint unusable we fall back to
-			 * StoreRetained on the RM9000.  Once it is known which
-			 * versions of the RM9000 we'll be able to condition-
-			 * alize this.
-			 */
 
 		case CPU_R10000:
 		case CPU_R12000:

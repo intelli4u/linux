@@ -123,10 +123,6 @@ ia64_tlb_flush_mmu (struct mmu_gather *tlb, unsigned long start, unsigned long e
 		 */
 		flush_tlb_all();
 	} else {
-		/*
-		 * XXX fix me: flush_tlb_range() should take an mm pointer instead of a
-		 * vma pointer.
-		 */
 		struct vm_area_struct vma;
 
 		vma.vm_mm = tlb->mm;

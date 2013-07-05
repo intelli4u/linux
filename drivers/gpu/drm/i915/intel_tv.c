@@ -969,7 +969,6 @@ intel_tv_mode_fixup(struct drm_encoder *encoder, struct drm_display_mode *mode,
 	if (!tv_mode)
 		return false;
 
-	/* FIXME: lock encoder list */
 	list_for_each_entry(other_encoder, &drm_config->encoder_list, head) {
 		if (other_encoder != encoder &&
 		    other_encoder->crtc == encoder->crtc)

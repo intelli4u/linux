@@ -25,7 +25,7 @@
 
 */
 
-#ifndef	_sxwindow_h				/* If SXWINDOW.H not already defined */
+#ifndef	_sxwindow_h				    /* If SXWINDOW.H not already defined */
 #define	_sxwindow_h    1
 
 /*****************************************************************************
@@ -390,4 +390,3 @@ typedef	struct	_SXCHANNEL
 #endif						/* _sxwindow_h */
 
 /* End of SXWINDOW.H */
-

@@ -67,7 +67,6 @@ static int mpc8568_fixup_125_clock(struct phy_device *phydev)
 	int scr;
 	int err;
 
-	/* Workaround for the 125 CLK Toggle */
 	scr = phy_read(phydev, MV88E1111_SCR);
 
 	if (scr < 0)
@@ -416,7 +415,6 @@ static int __init board_fixups(void)
 		phy_register_fixup_for_id(phy_id, mpc8568_fixup_125_clock);
 		phy_register_fixup_for_id(phy_id, mpc8568_mds_phy_fixups);
 
-		/* Register a workaround for errata */
 		snprintf(phy_id, sizeof(phy_id), "%llx:%02x",
 			(unsigned long long)res.start, 7);
 		phy_register_fixup_for_id(phy_id, mpc8568_mds_phy_fixups);
@@ -567,4 +565,3 @@ define_machine(p1021_mds) {
 	.pcibios_fixup_bus	= fsl_pcibios_fixup_bus,
 #endif
 };
-

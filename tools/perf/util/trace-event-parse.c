@@ -99,7 +99,7 @@ void parse_cmdlines(char *file, int size __unused)
 	while (line) {
 		item = malloc_or_die(sizeof(*item));
 		sscanf(line, "%d %as", &item->pid,
-		       (float *)(void *)&item->comm); /* workaround gcc warning */
+		       (float *)(void *)&item->comm);
 		item->next = list;
 		list = item;
 		line = strtok_r(NULL, "\n", &next);
@@ -161,7 +161,7 @@ void parse_proc_kallsyms(char *file, unsigned int size __unused)
 		item = malloc_or_die(sizeof(*item));
 		item->mod = NULL;
 		ret = sscanf(line, "%as %c %as\t[%as",
-			     (float *)(void *)&addr_str, /* workaround gcc warning */
+			     (float *)(void *)&addr_str,
 			     &ch,
 			     (float *)(void *)&item->func,
 			     (float *)(void *)&item->mod);

@@ -634,7 +634,6 @@ static unsigned long __init lance_probe1( struct net_device *dev,
 
 	dev->netdev_ops = &lance_netdev_ops;
 
-	/* XXX MSch */
 	dev->watchdog_timeo = TX_TIMEOUT;
 
 	return( 1 );
@@ -763,7 +762,6 @@ static void lance_tx_timeout (struct net_device *dev)
 							  MEM->tx_head[i].misc ));
 		}
 #endif
-	/* XXX MSch: maybe purge/reinit ring here */
 	/* lance_restart, essentially */
 	lance_init_ring(dev);
 	REGA( CSR0 ) = CSR0_INEA | CSR0_INIT | CSR0_STRT;
@@ -915,7 +913,6 @@ static irqreturn_t lance_interrupt( int irq, void *dev_id )
 					dev->stats.tx_packets++;
 				}
 
-				/* XXX MSch: free skb?? */
 				dirty_tx++;
 			}
 

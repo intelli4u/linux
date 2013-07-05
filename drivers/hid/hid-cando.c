@@ -271,4 +271,3 @@ static void __exit cando_exit(void)
 
 module_init(cando_init);
 module_exit(cando_exit);
-

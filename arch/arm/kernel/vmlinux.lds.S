@@ -102,6 +102,11 @@ SECTIONS
 		*(.got)			/* Global offset table		*/
 	}
 
+	. = ALIGN(32);
+	__fastpath_begin = .;
+	.text.fastpath : { *(.text.fastpath) }
+	__fastpath_end = .;
+
 	RO_DATA(PAGE_SIZE)
 
 	_etext = .;			/* End of text and rodata section */

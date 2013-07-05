@@ -1209,7 +1209,6 @@ static struct isa_driver snd_sscape_driver = {
 	.match		= snd_sscape_match,
 	.probe		= snd_sscape_probe,
 	.remove		= __devexit_p(snd_sscape_remove),
-	/* FIXME: suspend/resume */
 	.driver		= {
 		.name	= DEV_NAME
 	},

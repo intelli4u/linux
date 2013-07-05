@@ -1,4 +1,4 @@
-/* $Id: isdn_net.h,v 1.1.2.2 2004/01/12 22:37:19 keil Exp $
+/* $Id: isdn_net.h,v 1.1.2.2 2004/01/12 22:37:19 Exp $
  *
  * header for Linux ISDN subsystem, network related functions (linklevel).
  *
@@ -149,4 +149,3 @@ static __inline__ void isdn_net_rm_from_bundle(isdn_net_local *lp)
 //		__func__, master_lp->netdev->queue);
 	spin_unlock_irqrestore(&master_lp->netdev->queue_lock, flags);
 }
-

@@ -62,11 +62,7 @@ ieee80211_tx_h_michael_mic_add(struct ieee80211_tx_data *tx)
 		    skb_headroom(skb) < TKIP_IV_LEN))
 		return TX_DROP;
 
-#if 0
-	authenticator = fc & IEEE80211_FCTL_FROMDS; /* FIX */
-#else
 	authenticator = 1;
-#endif
 	key_offset = authenticator ?
 		NL80211_TKIP_DATA_OFFSET_TX_MIC_KEY :
 		NL80211_TKIP_DATA_OFFSET_RX_MIC_KEY;
@@ -106,11 +102,7 @@ ieee80211_rx_h_michael_mic_verify(struct ieee80211_rx_data *rx)
 	data = skb->data + hdrlen;
 	data_len = skb->len - hdrlen - MICHAEL_MIC_LEN;
 
-#if 0
-	authenticator = fc & IEEE80211_FCTL_TODS; /* FIX */
-#else
 	authenticator = 1;
-#endif
 	key_offset = authenticator ?
 		NL80211_TKIP_DATA_OFFSET_RX_MIC_KEY :
 		NL80211_TKIP_DATA_OFFSET_TX_MIC_KEY;

@@ -36,11 +36,7 @@
 #define MSM_V4L2_WIDTH              480
 #define MSM_V4L2_HEIGHT             320
 
-#if 1
 #define D(fmt, args...) printk(KERN_INFO "msm_v4l2: " fmt, ##args)
-#else
-#define D(fmt, args...) do {} while (0)
-#endif
 
 #define PREVIEW_FRAMES_NUM 4
 
@@ -242,22 +238,6 @@ static int msm_v4l2_reqbufs(struct file *f,
 static int msm_v4l2_querybuf(struct file *f, void *pctx, struct v4l2_buffer *pb)
 {
 	struct msm_pmem_info pmem_buf;
-#if 0
-	__u32 width = 0;
-	__u32 height = 0;
-	__u32 y_size = 0;
-	__u32 y_pad = 0;
-
-	/* FIXME: g_pmsm_v4l2_dev->current_pix_format.fmt.pix.width; */
-	width = 640;
-	/* FIXME: g_pmsm_v4l2_dev->current_pix_format.fmt.pix.height; */
-	height = 480;
-
-	D("%s: width = %d, height = %d\n", __func__, width, height);
-
-	y_size = width * height;
-	y_pad = y_size % 4;
-#endif
 
     __u32 y_pad = pb->bytesused % 4;
 
@@ -293,15 +273,6 @@ static int msm_v4l2_qbuf(struct file *f, void *pctx, struct v4l2_buffer *pb)
 
 	if ((pb->flags >> 16) & 0x0001) {
 		/* this is for previwe */
-#if 0
-		width = 640;
-		height = 480;
-
-		/* V4L2 videodev will do the copy_from_user. */
-		D("%s: width = %d, height = %d\n", __func__, width, height);
-		y_size = width * height;
-		y_pad = y_size % 4;
-#endif
 
 		y_pad = pb->bytesused % 4;
 
@@ -387,7 +358,7 @@ static int msm_v4l2_dqbuf(struct file *f, void *pctx, struct v4l2_buffer *pb)
 			&frame);
 
 		pb->type       = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-		pb->m.userptr  = (unsigned long)frame.buffer;  /* FIXME */
+		pb->m.userptr  = (unsigned long)frame.buffer;
 		pb->reserved   = (int)frame.fd;
 		/* pb->length     = (int)frame.cbcr_off; */
 
@@ -527,20 +498,9 @@ static int msm_v4l2_s_fmt_cap(struct file *f,
 		return -1;
 	}
 
-#if 0
-	/* FIXEME */
-	if (pfmt->fmt.pix.pixelformat != V4L2_PIX_FMT_YVU420) {
-		kfree(ctrlcmd);
-		return -EINVAL;
-	}
-#endif
 
 	/* Ok, but check other params, too. */
 
-#if 0
-	memcpy(&g_pmsm_v4l2_dev->current_pix_format.fmt.pix, pfmt,
-	       sizeof(struct v4l2_format));
-#endif
 
 	g_pmsm_v4l2_dev->drv->ctrl(g_pmsm_v4l2_dev->drv->sync, ctrlcmd);
 
@@ -657,14 +617,12 @@ static void msm_v4l2_dev_init(struct msm_v4l2_device *pmsm_v4l2_dev)
 static int msm_v4l2_try_fmt_cap(struct file *file,
 				 void *fh, struct v4l2_format *f)
 {
-	/* FIXME */
 	return 0;
 }
 
 static int mm_v4l2_try_fmt_type_private(struct file *file,
 					 void *fh, struct v4l2_format *f)
 {
-	/* FIXME */
 	return 0;
 }
 

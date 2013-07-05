@@ -218,7 +218,6 @@ struct kcopyd_job {
 	sector_t progress;
 };
 
-/* FIXME: this should scale with the number of pages */
 #define MIN_JOBS 512
 
 static struct kmem_cache *_job_cache;
@@ -461,7 +460,6 @@ static void dispatch_job(struct kcopyd_job *job)
 static void segment_complete(int read_err, unsigned long write_err,
 			     void *context)
 {
-	/* FIXME: tidy this function */
 	sector_t progress = 0;
 	sector_t count = 0;
 	struct kcopyd_job *job = (struct kcopyd_job *) context;
@@ -592,13 +590,6 @@ EXPORT_SYMBOL(dm_kcopyd_copy);
  * Cancels a kcopyd job, eg. someone might be deactivating a
  * mirror.
  */
-#if 0
-int kcopyd_cancel(struct kcopyd_job *job, int block)
-{
-	/* FIXME: finish */
-	return -1;
-}
-#endif  /*  0  */
 
 /*-----------------------------------------------------------------
  * Client setup

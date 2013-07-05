@@ -616,9 +616,6 @@ static void dma_irq_handle_channel(int chno)
 			tmp = imx_dmav1_readl(DMA_CCR(chno));
 
 			if (imx_dma_hw_chain(imxdma)) {
-				/* FIXME: The timeout should probably be
-				 * configurable
-				 */
 				mod_timer(&imxdma->watchdog,
 					jiffies + msecs_to_jiffies(500));
 

@@ -47,12 +47,6 @@
  *                       Paris Lodron University of Salzburg.
  */
 
-/*
- * FIXME / TODO (dvb_net.c):
- *
- * Unloading does not work for 2.6.9 kernels: a refcount doesn't go to zero.
- *
- */
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -825,13 +819,8 @@ static void dvb_net_sec(struct net_device *dev,
 	}
 /* it seems some ISPs manage to screw up here, so we have to
  * relax the error checks... */
-#if 0
-	if ((pkt[5] & 0xfd) != 0xc1) {
-		/* drop scrambled or broken packets */
-#else
 	if ((pkt[5] & 0x3c) != 0x00) {
 		/* drop scrambled */
-#endif
 		stats->rx_errors++;
 		stats->rx_crc_errors++;
 		return;
@@ -845,7 +834,6 @@ static void dvb_net_sec(struct net_device *dev,
 		snap = 8;
 	}
 	if (pkt[7]) {
-		/* FIXME: assemble datagram from multiple sections */
 		stats->rx_errors++;
 		stats->rx_frame_errors++;
 		return;

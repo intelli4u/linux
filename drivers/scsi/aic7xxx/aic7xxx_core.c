@@ -303,14 +303,6 @@ ahc_release_untagged_queues(struct ahc_softc *ahc)
 }
 
 /************************* Sequencer Execution Control ************************/
-/*
- * Work around any chip bugs related to halting sequencer execution.
- * On Ultra2 controllers, we must clear the CIOBUS stretch signal by
- * reading a register that will set this signal and deassert it.
- * Without this workaround, if the chip is paused, by an interrupt or
- * manual pause while accessing scb ram, accesses to certain registers
- * will hang the system (infinite pci retries).
- */
 static void
 ahc_pause_bug_fix(struct ahc_softc *ahc)
 {
@@ -2096,40 +2088,6 @@ ahc_clear_intstat(struct ahc_softc *ahc)
 uint32_t ahc_debug = AHC_DEBUG_OPTS;
 #endif
 
-#if 0 /* unused */
-static void
-ahc_print_scb(struct scb *scb)
-{
-	int i;
-
-	struct hardware_scb *hscb = scb->hscb;
-
-	printk("scb:%p control:0x%x scsiid:0x%x lun:%d cdb_len:%d\n",
-	       (void *)scb,
-	       hscb->control,
-	       hscb->scsiid,
-	       hscb->lun,
-	       hscb->cdb_len);
-	printk("Shared Data: ");
-	for (i = 0; i < sizeof(hscb->shared_data.cdb); i++)
-		printk("%#02x", hscb->shared_data.cdb[i]);
-	printk("        dataptr:%#x datacnt:%#x sgptr:%#x tag:%#x\n",
-		ahc_le32toh(hscb->dataptr),
-		ahc_le32toh(hscb->datacnt),
-		ahc_le32toh(hscb->sgptr),
-		hscb->tag);
-	if (scb->sg_count > 0) {
-		for (i = 0; i < scb->sg_count; i++) {
-			printk("sg[%d] - Addr 0x%x%x : Length %d\n",
-			       i,
-			       (ahc_le32toh(scb->sg_list[i].len) >> 24
-			        & SG_HIGH_ADDR_BITS),
-			       ahc_le32toh(scb->sg_list[i].addr),
-			       ahc_le32toh(scb->sg_list[i].len));
-		}
-	}
-}
-#endif
 
 /************************* Transfer Negotiation *******************************/
 /*
@@ -3485,10 +3443,6 @@ reswitch:
 		
 		ahc->msgin_index++;
 
-		/*
-		 * XXX Read spec about initiator dropping ATN too soon
-		 *     and use msgdone to detect it.
-		 */
 		if (msgdone == MSGLOOP_MSGCOMPLETE) {
 			ahc->msgin_index = 0;
 
@@ -4161,10 +4115,6 @@ ahc_handle_ign_wide_residue(struct ahc_softc *ahc, struct ahc_devinfo *devinfo)
 
 	scb_index = ahc_inb(ahc, SCB_TAG);
 	scb = ahc_lookup_scb(ahc, scb_index);
-	/*
-	 * XXX Actually check data direction in the sequencer?
-	 * Perhaps add datadir to some spare bits in the hscb?
-	 */
 	if ((ahc_inb(ahc, SEQ_FLAGS) & DPHASE) == 0
 	 || ahc_get_transfer_dir(scb) != CAM_DIR_IN) {
 		/*
@@ -4462,7 +4412,6 @@ ahc_softc_init(struct ahc_softc *ahc)
 	else
 		ahc->unpause = 0;
 	ahc->pause = ahc->unpause | PAUSE; 
-	/* XXX The shared scb data stuff should be deprecated */
 	if (ahc->scb_data == NULL) {
 		ahc->scb_data = kmalloc(sizeof(*ahc->scb_data), GFP_ATOMIC);
 		if (ahc->scb_data == NULL)
@@ -5665,11 +5614,6 @@ ahc_suspend(struct ahc_softc *ahc)
 	}
 
 #ifdef AHC_TARGET_MODE
-	/*
-	 * XXX What about ATIOs that have not yet been serviced?
-	 * Perhaps we should just refuse to be suspended if we
-	 * are acting in a target role.
-	 */
 	if (ahc->pending_device != NULL) {
 		ahc_unpause(ahc);
 		return (EBUSY);
@@ -6511,16 +6455,6 @@ ahc_reset_channel(struct ahc_softc *ahc, char channel, int initiate_reset)
 	 */
 	ahc_run_qoutfifo(ahc);
 #ifdef AHC_TARGET_MODE
-	/*
-	 * XXX - In Twin mode, the tqinfifo may have commands
-	 *	 for an unaffected channel in it.  However, if
-	 *	 we have run out of ATIO resources to drain that
-	 *	 queue, we may not get them all out here.  Further,
-	 *	 the blocked transactions for the reset channel
-	 *	 should just be killed off, irrespecitve of whether
-	 *	 we are blocked on ATIO resources.  Write a routine
-	 *	 to compact the tqinfifo appropriately.
-	 */
 	if ((ahc->flags & AHC_TARGETROLE) != 0) {
 		ahc_run_tqinfifo(ahc, /*paused*/TRUE);
 	}
@@ -7895,11 +7829,6 @@ ahc_handle_target_cmd(struct ahc_softc *ahc, struct target_cmd *cmd)
 		return (1);
 	} else
 		ahc->flags &= ~AHC_TQINFIFO_BLOCKED;
-#if 0
-	printk("Incoming command from %d for %d:%d%s\n",
-	       initiator, target, lun,
-	       lstate == ahc->black_hole ? "(Black Holed)" : "");
-#endif
 	SLIST_REMOVE_HEAD(&lstate->accept_tios, sim_links.sle);
 
 	if (lstate == ahc->black_hole) {
@@ -7958,10 +7887,6 @@ ahc_handle_target_cmd(struct ahc_softc *ahc, struct target_cmd *cmd)
 		 * continue target I/O comes in response
 		 * to this accept tio.
 		 */
-#if 0
-		printk("Received Immediate Command %d:%d:%d - %p\n",
-		       initiator, target, lun, ahc->pending_device);
-#endif
 		ahc->pending_device = lstate;
 		ahc_freeze_ccb((union ccb *)atio);
 		atio->ccb_h.flags |= CAM_DIS_DISCONNECT;

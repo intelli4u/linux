@@ -238,7 +238,7 @@ struct omap_hwmod_ocp_if {
 #define SYSC_HAS_SIDLEMODE	(1 << 5)
 #define SYSC_HAS_MIDLEMODE	(1 << 6)
 #define SYSS_MISSING		(1 << 7)
-#define SYSC_NO_CACHE		(1 << 8)  /* XXX SW flag, belongs elsewhere */
+#define SYSC_NO_CACHE		(1 << 8)
 
 /* omap_hwmod_sysconfig.clockact flags */
 #define CLOCKACT_TEST_BOTH	0x0
@@ -527,10 +527,6 @@ int omap_hwmod_for_each_by_class(const char *classname,
 					   void *user),
 				 void *user);
 
-/*
- * Chip variant-specific hwmod init routines - XXX should be converted
- * to use initcalls once the initial boot ordering is straightened out
- */
 extern int omap2420_hwmod_init(void);
 extern int omap2430_hwmod_init(void);
 extern int omap3xxx_hwmod_init(void);

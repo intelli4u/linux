@@ -302,4 +302,3 @@ void imx_ssi_fiq_exit(struct platform_device *pdev,
 	mxc_set_irq_fiq(ssi->irq, 0);
 	release_fiq(&fh);
 }
-

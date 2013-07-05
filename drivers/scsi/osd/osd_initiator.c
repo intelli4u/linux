@@ -163,7 +163,6 @@ static int _osd_get_print_system_info(struct osd_dev *od,
 	if (a >= nelem)
 		goto out;
 
-	/* FIXME: Where are the time utilities */
 	pFirst = get_attrs[a++].val_ptr;
 	OSD_INFO("CLOCK                  [0x%02x%02x%02x%02x%02x%02x]\n",
 		((char *)pFirst)[0], ((char *)pFirst)[1],
@@ -829,7 +828,7 @@ int osd_req_write_kern(struct osd_request *or,
 	if (IS_ERR(bio))
 		return PTR_ERR(bio);
 
-	bio->bi_rw |= REQ_WRITE; /* FIXME: bio_set_dir() */
+	bio->bi_rw |= REQ_WRITE;
 	osd_req_write(or, obj, offset, bio, len);
 	return 0;
 }
@@ -1580,7 +1579,7 @@ int osd_req_decode_sense_full(struct osd_request *or,
 			break;
 		}
 		case osd_sense_object_identification:
-		{ /*FIXME: Keep first not last, Store in array*/
+		{
 			struct osd_sense_identification_data_descriptor
 				*osidd = cur_descriptor;
 
@@ -1773,9 +1772,6 @@ void osd_sec_init_nosec_doall_caps(void *caps,
 }
 EXPORT_SYMBOL(osd_sec_init_nosec_doall_caps);
 
-/* FIXME: Extract version from caps pointer.
- *        Also Pete's target only supports caps from OSDv1 for now
- */
 void osd_set_caps(struct osd_cdb *cdb, const void *caps)
 {
 	bool is_ver1 = true;

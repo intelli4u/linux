@@ -1,30 +1,4 @@
-/*
- * drivers/sbus/char/jsflash.c
- *
- *  Copyright (C) 1991, 1992  Linus Torvalds	(drivers/char/mem.c)
- *  Copyright (C) 1997  Eddie C. Dost		(drivers/sbus/char/flash.c)
- *  Copyright (C) 1997-2000 Pavel Machek <pavel@ucw.cz>   (drivers/block/nbd.c)
- *  Copyright (C) 1999-2000 Pete Zaitcev
- *
- * This driver is used to program OS into a Flash SIMM on
- * Krups and Espresso platforms.
- *
- * TODO: do not allow erase/programming if file systems are mounted.
- * TODO: Erase/program both banks of a 8MB SIMM.
- *
- * It is anticipated that programming an OS Flash will be a routine
- * procedure. In the same time it is exeedingly dangerous because
- * a user can program its OBP flash with OS image and effectively
- * kill the machine.
- *
- * This driver uses an interface different from Eddie's flash.c
- * as a silly safeguard.
- *
- * XXX The flash.c manipulates page caching characteristics in a certain
- * dubious way; also it assumes that remap_pfn_range() can remap
- * PCI bus locations, which may be false. ioremap() must be used
- * instead. We should discuss this.
- */
+
 
 #include <linux/module.h>
 #include <linux/smp_lock.h>
@@ -126,13 +100,6 @@ static struct gendisk *jsfd_disk[JSF_MAX];
  */
 static struct jsflash jsf0;
 
-/*
- * Wait for AMD to finish its embedded algorithm.
- * We use the Toggle bit DQ6 (0x40) because it does not
- * depend on the data value as /DATA bit DQ7 does.
- *
- * XXX Do we need any timeout here? So far it never hanged, beware broken hw.
- */
 static void jsf_wait(unsigned long p) {
 	unsigned int x1, x2;
 
@@ -266,21 +233,12 @@ static ssize_t jsf_read(struct file * file, char __user * buf,
 	}
 
 	if (p < JSF_BASE_ALL && togo != 0) {
-#if 0 /* __bzero XXX */
-		size_t x = JSF_BASE_ALL - p;
-		if (x > togo) x = togo;
-		clear_user(tmp, x);
-		tmp += x;
-		p += x;
-		togo -= x;
-#else
 		/*
 		 * Implementation of clear_user() calls __bzero
 		 * without regard to modversions,
 		 * so we cannot build a module.
 		 */
 		return 0;
-#endif
 	}
 
 	while (togo >= 4) {
@@ -292,10 +250,6 @@ static ssize_t jsf_read(struct file * file, char __user * buf,
 		p += 4;
 	}
 
-	/*
-	 * XXX Small togo may remain if 1 byte is ordered.
-	 * It would be nice if we did a word size read and unpacked it.
-	 */
 
 	*ppos = p;
 	return tmp-buf;
@@ -323,27 +277,7 @@ static int jsf_ioctl_erase(unsigned long arg)
 	jsf_outl(p, 0x55555555);		/* Unlock 2 Write 2 */
 	jsf_outl(p, 0x10101010);		/* Chip erase */
 
-#if 0
-	/*
-	 * This code is ok, except that counter based timeout
-	 * has no place in this world. Let's just drop timeouts...
-	 */
-	{
-		int i;
-		__u32 x;
-		for (i = 0; i < 1000000; i++) {
-			x = jsf_inl(p);
-			if ((x & 0x80808080) == 0x80808080) break;
-		}
-		if ((x & 0x80808080) != 0x80808080) {
-			printk("jsf0: erase timeout with 0x%08x\n", x);
-		} else {
-			printk("jsf0: erase done with 0x%08x\n", x);
-		}
-	}
-#else
 	jsf_wait(p);
-#endif
 
 	return 0;
 }
@@ -429,7 +363,7 @@ static int jsf_open(struct inode * inode, struct file * filp)
 	}
 
 	unlock_kernel();
-	return 0;	/* XXX What security? */
+	return 0;
 }
 
 static int jsf_release(struct inode *inode, struct file *file)
@@ -480,19 +414,11 @@ static int jsflash_init(void)
 		 * Flash may be somewhere else, for instance on Ebus.
 		 * So, don't do the following check for IIep flash space.
 		 */
-#if 0
-		if ((reg0.phys_addr >> 24) != 0x20) {
-			printk("jsflash: suspicious address: 0x%x:%x\n",
-			    reg0.which_io, reg0.phys_addr);
-			return -ENXIO;
-		}
-#endif
 		if ((int)reg0.reg_size <= 0) {
 			printk("jsflash: bad size 0x%x\n", (int)reg0.reg_size);
 			return -ENXIO;
 		}
 	} else {
-		/* XXX Remove this code once PROLL ID12 got widespread */
 		printk("jsflash: no /flash-memory node, use PROLL >= 12\n");
 		prom_getproperty(prom_root_node, "banner-name", banner, 128);
 		if (strcmp (banner, "JavaStation-NC") != 0 &&
@@ -517,7 +443,6 @@ static int jsflash_init(void)
 		jsf->base = reg0.phys_addr;
 		jsf->size = reg0.reg_size;
 
-		/* XXX Redo the userland interface. */
 		jsf->id.off = JSF_BASE_ALL;
 		jsf->id.size = 0x01000000;	/* 16M - all segments */
 		strcpy(jsf->id.name, "Krups_all");

@@ -18,7 +18,7 @@
 		.endm
 
 		.macro  get_irqnr_and_base, irqnr, irqstat, base, tmp
-#if defined (CONFIG_CPU_H7201) || defined (CONFIG_CPU_H7202)
+#if defined(CONFIG_CPU_H7201) || defined(CONFIG_CPU_H7202)
 		@ we could use the id register on H7202, but this is not
 		@ properly updated when we come back from asm_do_irq
 		@ without a previous return from interrupt
@@ -29,7 +29,7 @@
 		mov     \base, #0xf0000000	       @ base register
 		orr     \base, \base, #0x24000	       @ irqbase
 		ldr     \irqstat, [\base, #0x04]        @ get interrupt status
-#if defined (CONFIG_CPU_H7201)
+#if defined(CONFIG_CPU_H7201)
 		ldr	\tmp, =0x001fffff
 #else
 		mvn     \tmp, #0xc0000000
@@ -63,4 +63,3 @@
 #else
 #error hynix processor selection missmatch
 #endif
-

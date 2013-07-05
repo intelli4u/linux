@@ -726,7 +726,6 @@ static void s3c_unlock_all(struct mtd_info *mtd)
 		/* No need to check return value */
 		this->wait(mtd, FL_LOCKING);
 
-		/* Workaround for all block unlock in DDP */
 		if (!ONENAND_IS_DDP(this)) {
 			s3c_onenand_check_lock_status(mtd);
 			return;

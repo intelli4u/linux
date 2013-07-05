@@ -19,7 +19,6 @@ void bonito_irqdispatch(void)
 	u32 int_status;
 	int i;
 
-	/* workaround the IO dma problem: let cpu looping to allow DMA finish */
 	int_status = LOONGSON_INTISR;
 	while (int_status & (1 << 10)) {
 		udelay(1);

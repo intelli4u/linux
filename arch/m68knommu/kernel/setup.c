@@ -230,13 +230,13 @@ void __init setup_arch(char **cmdline_p)
 #endif
 	printk(KERN_INFO "Flat model support (C) 1998,1999 Kenneth Albanowski, D. Jeff Dionne\n");
 
-#if defined( CONFIG_PILOT ) && defined( CONFIG_M68328 )
+#if defined(CONFIG_PILOT) && defined(CONFIG_M68328)
 	printk(KERN_INFO "TRG SuperPilot FLASH card support <info@trgnet.com>\n");
 #endif
-#if defined( CONFIG_PILOT ) && defined( CONFIG_M68EZ328 )
+#if defined(CONFIG_PILOT) && defined(CONFIG_M68EZ328)
 	printk(KERN_INFO "PalmV support by Lineo Inc. <jeff@uclinux.com>\n");
 #endif
-#if defined (CONFIG_M68360)
+#if defined(CONFIG_M68360)
 	printk(KERN_INFO "QUICC port done by SED Systems <hamilton@sedsystems.ca>,\n");
 	printk(KERN_INFO "based on 2.0.38 port by Lineo Inc. <mleslie@lineo.com>.\n");
 #endif
@@ -353,4 +353,3 @@ const struct seq_operations cpuinfo_op = {
 	.stop	= c_stop,
 	.show	= show_cpuinfo,
 };
-

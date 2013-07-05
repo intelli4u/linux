@@ -36,105 +36,6 @@
  */
 
 
-/*
- * The File-backed Storage Gadget acts as a USB Mass Storage device,
- * appearing to the host as a disk drive or as a CD-ROM drive.  In addition
- * to providing an example of a genuinely useful gadget driver for a USB
- * device, it also illustrates a technique of double-buffering for increased
- * throughput.  Last but not least, it gives an easy way to probe the
- * behavior of the Mass Storage drivers in a USB host.
- *
- * Backing storage is provided by a regular file or a block device, specified
- * by the "file" module parameter.  Access can be limited to read-only by
- * setting the optional "ro" module parameter.  (For CD-ROM emulation,
- * access is always read-only.)  The gadget will indicate that it has
- * removable media if the optional "removable" module parameter is set.
- *
- * The gadget supports the Control-Bulk (CB), Control-Bulk-Interrupt (CBI),
- * and Bulk-Only (also known as Bulk-Bulk-Bulk or BBB) transports, selected
- * by the optional "transport" module parameter.  It also supports the
- * following protocols: RBC (0x01), ATAPI or SFF-8020i (0x02), QIC-157 (0c03),
- * UFI (0x04), SFF-8070i (0x05), and transparent SCSI (0x06), selected by
- * the optional "protocol" module parameter.  In addition, the default
- * Vendor ID, Product ID, release number and serial number can be overridden.
- *
- * There is support for multiple logical units (LUNs), each of which has
- * its own backing file.  The number of LUNs can be set using the optional
- * "luns" module parameter (anywhere from 1 to 8), and the corresponding
- * files are specified using comma-separated lists for "file" and "ro".
- * The default number of LUNs is taken from the number of "file" elements;
- * it is 1 if "file" is not given.  If "removable" is not set then a backing
- * file must be specified for each LUN.  If it is set, then an unspecified
- * or empty backing filename means the LUN's medium is not loaded.  Ideally
- * each LUN would be settable independently as a disk drive or a CD-ROM
- * drive, but currently all LUNs have to be the same type.  The CD-ROM
- * emulation includes a single data track and no audio tracks; hence there
- * need be only one backing file per LUN.  Note also that the CD-ROM block
- * length is set to 512 rather than the more common value 2048.
- *
- * Requirements are modest; only a bulk-in and a bulk-out endpoint are
- * needed (an interrupt-out endpoint is also needed for CBI).  The memory
- * requirement amounts to two 16K buffers, size configurable by a parameter.
- * Support is included for both full-speed and high-speed operation.
- *
- * Note that the driver is slightly non-portable in that it assumes a
- * single memory/DMA buffer will be useable for bulk-in, bulk-out, and
- * interrupt-in endpoints.  With most device controllers this isn't an
- * issue, but there may be some with hardware restrictions that prevent
- * a buffer from being used by more than one endpoint.
- *
- * Module options:
- *
- *	file=filename[,filename...]
- *				Required if "removable" is not set, names of
- *					the files or block devices used for
- *					backing storage
- *	ro=b[,b...]		Default false, booleans for read-only access
- *	removable		Default false, boolean for removable media
- *	luns=N			Default N = number of filenames, number of
- *					LUNs to support
- *	nofua=b[,b...]		Default false, booleans for ignore FUA flag
- *					in SCSI WRITE(10,12) commands
- *	stall			Default determined according to the type of
- *					USB device controller (usually true),
- *					boolean to permit the driver to halt
- *					bulk endpoints
- *	cdrom			Default false, boolean for whether to emulate
- *					a CD-ROM drive
- *	transport=XXX		Default BBB, transport name (CB, CBI, or BBB)
- *	protocol=YYY		Default SCSI, protocol name (RBC, 8020 or
- *					ATAPI, QIC, UFI, 8070, or SCSI;
- *					also 1 - 6)
- *	vendor=0xVVVV		Default 0x0525 (NetChip), USB Vendor ID
- *	product=0xPPPP		Default 0xa4a5 (FSG), USB Product ID
- *	release=0xRRRR		Override the USB release number (bcdDevice)
- *	serial=HHHH...		Override serial number (string of hex chars)
- *	buflen=N		Default N=16384, buffer size used (will be
- *					rounded down to a multiple of
- *					PAGE_CACHE_SIZE)
- *
- * If CONFIG_USB_FILE_STORAGE_TEST is not set, only the "file", "ro",
- * "removable", "luns", "nofua", "stall", and "cdrom" options are available;
- * default values are used for everything else.
- *
- * The pathnames of the backing files and the ro settings are available in
- * the attribute files "file", "nofua", and "ro" in the lun<n> subdirectory of
- * the gadget's sysfs directory.  If the "removable" option is set, writing to
- * these files will simulate ejecting/loading the medium (writing an empty
- * line means eject) and adjusting a write-enable tab.  Changes to the ro
- * setting are not allowed when the medium is loaded or if CD-ROM emulation
- * is being used.
- *
- * This gadget driver is heavily based on "Gadget Zero" by David Brownell.
- * The driver's SCSI command interface was based on the "Information
- * technology - Small Computer System Interface - 2" document from
- * X3T9.2 Project 375D, Revision 10L, 7-SEP-93, available at
- * <http://www.t10.org/ftp/t10/drafts/s2/s2-r10l.pdf>.  The single exception
- * is opcode 0x23 (READ FORMAT CAPACITIES), which was based on the
- * "Universal Serial Bus Mass Storage Class UFI Command Specification"
- * document, Revision 1.0, December 14, 1998, available at
- * <http://www.usb.org/developers/devclass_docs/usbmass-ufi10.pdf>.
- */
 
 
 /*
@@ -1618,12 +1519,6 @@ static int do_request_sense(struct fsg_dev *fsg, struct fsg_buffhd *bh)
 	 *
 	 * FSG normally uses option a); enable this code to use option b).
 	 */
-#if 0
-	if (curlun && curlun->unit_attention_data != SS_NO_SENSE) {
-		curlun->sense_data = curlun->unit_attention_data;
-		curlun->unit_attention_data = SS_NO_SENSE;
-	}
-#endif
 
 	if (!curlun) {		// Unsupported LUNs are okay
 		fsg->bad_lun_okay = 1;
@@ -2118,13 +2013,6 @@ static int finish_reply(struct fsg_dev *fsg)
 		 * bulk-out packets, in which case the host wouldn't see a
 		 * STALL.  Not realizing the endpoint was halted, it wouldn't
 		 * clear the halt -- leading to problems later on. */
-#if 0
-		else if (mod_data.can_stall) {
-			fsg_set_halt(fsg, fsg->bulk_out);
-			raise_exception(fsg, FSG_STATE_ABORT_BULK_OUT);
-			rc = -EINTR;
-		}
-#endif
 
 		/* We can't stall.  Read in the excess data and throw it
 		 * all away. */
@@ -2284,18 +2172,6 @@ static int check_command(struct fsg_dev *fsg, int cmnd_size,
 	/* Verify the length of the command itself */
 	if (cmnd_size != fsg->cmnd_size) {
 
-		/* Special case workaround: There are plenty of buggy SCSI
-		 * implementations. Many have issues with cbw->Length
-		 * field passing a wrong command size. For those cases we
-		 * always try to work around the problem by using the length
-		 * sent by the host side provided it is at least as large
-		 * as the correct command length.
-		 * Examples of such cases would be MS-Windows, which issues
-		 * REQUEST SENSE with cbw->Length == 12 where it should
-		 * be 6, and xbox360 issuing INQUIRY, TEST UNIT READY and
-		 * REQUEST SENSE with cbw->Length == 10 where it should
-		 * be 6 as well.
-		 */
 		if (cmnd_size <= fsg->cmnd_size) {
 			DBG(fsg, "%s is buggy! Expected length %d "
 					"but we got %d\n", name,

@@ -66,7 +66,7 @@ ENDPROC(_ret_from_fork)
 
 ENTRY(_sys_fork)
 	r0 = -EINVAL;
-#if (ANOMALY_05000371)
+#if ANOMALY_05000371
 	nop;
 	nop;
 	nop;

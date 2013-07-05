@@ -104,11 +104,9 @@ enum vnic_devcmd_cmd {
 					_CMD_VTYPE_ENET | _CMD_VTYPE_FC, 9),
 
 	/* disable/enable promisc mode: (u8)a0=0/1 */
-/***** XXX DEPRECATED *****/
 	CMD_PROMISC_MODE        = _CMDCNW(_CMD_DIR_WRITE, _CMD_VTYPE_ENET, 10),
 
 	/* disable/enable all-multi mode: (u8)a0=0/1 */
-/***** XXX DEPRECATED *****/
 	CMD_ALLMULTI_MODE       = _CMDCNW(_CMD_DIR_WRITE, _CMD_VTYPE_ENET, 11),
 
 	/* add addr from (u48)a0 */

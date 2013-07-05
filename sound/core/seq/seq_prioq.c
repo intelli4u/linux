@@ -181,7 +181,7 @@ int snd_seq_prioq_cell_in(struct snd_seq_prioq * f,
 	prev = NULL;		/* previous cell */
 	cur = f->head;		/* cursor */
 
-	count = 10000; /* FIXME: enough big, isn't it? */
+	count = 10000;
 	while (cur != NULL) {
 		/* compare timestamps */
 		int rel = compare_timestamp_rel(&cell->event, &cur->event);
@@ -320,14 +320,6 @@ void snd_seq_prioq_leave(struct snd_seq_prioq * f, int client, int timestamp)
 			}
 			freeprev = cell;
 		} else {
-#if 0
-			printk(KERN_DEBUG "type = %i, source = %i, dest = %i, "
-			       "client = %i\n",
-				cell->event.type,
-				cell->event.source.client,
-				cell->event.dest.client,
-				client);
-#endif
 			prev = cell;
 		}
 		cell = next;		
@@ -449,5 +441,3 @@ void snd_seq_prioq_remove_events(struct snd_seq_prioq * f, int client,
 		freefirst = freenext;
 	}
 }
-
-

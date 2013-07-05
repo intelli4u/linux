@@ -2581,7 +2581,6 @@ try_mount_again:
 		cFYI(1, "null user");
 		volume_info->username = "";
 	} else if (volume_info->username) {
-		/* BB fixme parse for domain name here */
 		cFYI(1, "Username: %s", volume_info->username);
 	} else {
 		cifserror("No username specified");
@@ -2627,7 +2626,6 @@ try_mount_again:
 	else
 		sb->s_maxbytes = MAX_NON_LFS;
 
-	/* BB FIXME fix time_gran to be larger for LANMAN sessions */
 	sb->s_time_gran = 100;
 
 	/* search for existing tcon to this server share */
@@ -2816,12 +2814,6 @@ CIFSTCon(unsigned int xid, struct cifsSesInfo *ses,
 		/* already aligned so no need to do it below */
 	} else {
 		pSMB->PasswordLength = cpu_to_le16(CIFS_SESS_KEY_SIZE);
-		/* BB FIXME add code to fail this if NTLMv2 or Kerberos
-		   specified as required (when that support is added to
-		   the vfs in the future) as only NTLM or the much
-		   weaker LANMAN (which we do not send by default) is accepted
-		   by Samba (not sure whether other servers allow
-		   NTLMv2 password here) */
 #ifdef CONFIG_CIFS_WEAK_PW_HASH
 		if ((global_secflags & CIFSSEC_MAY_LANMAN) &&
 		    (ses->server->secType == LANMAN))
@@ -3006,4 +2998,3 @@ int cifs_setup_session(unsigned int xid, struct cifsSesInfo *ses,
 
 	return rc;
 }
-

@@ -476,4 +476,3 @@ MODULE_AUTHOR("Texas Instruments");
 MODULE_DESCRIPTION("TWL4030 Keypad Driver");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:twl4030_keypad");
-

@@ -667,14 +667,6 @@ static int uli526x_stop(struct net_device *dev)
 	/* free allocated rx buffer */
 	uli526x_free_rxbuffer(db);
 
-#if 0
-	/* show statistic counter */
-	printk(DRV_NAME ": FU:%lx EC:%lx LC:%lx NC:%lx LOC:%lx TXJT:%lx RESET:%lx RCR8:%lx FAL:%lx TT:%lx\n",
-		db->tx_fifo_underrun, db->tx_excessive_collision,
-		db->tx_late_collision, db->tx_no_carrier, db->tx_loss_carrier,
-		db->tx_jabber_timeout, db->reset_count, db->reset_cr8,
-		db->reset_fatal, db->reset_TXtimeout);
-#endif
 
 	return 0;
 }
@@ -1462,7 +1454,7 @@ static void allocate_rx_buffer(struct uli526x_board_info *db)
 	while(db->rx_avail_cnt < RX_DESC_CNT) {
 		if ( ( skb = dev_alloc_skb(RX_ALLOC_SIZE) ) == NULL )
 			break;
-		rxptr->rx_skb_ptr = skb; /* FIXME (?) */
+		rxptr->rx_skb_ptr = skb;
 		rxptr->rdes2 = cpu_to_le32(pci_map_single(db->pdev,
 							  skb_tail_pointer(skb),
 							  RX_ALLOC_SIZE,

@@ -112,7 +112,6 @@ int snd_pcm_info(struct snd_pcm_substream *substream, struct snd_pcm_info *info)
 	info->subdevices_avail = pstr->substream_count - pstr->substream_opened;
 	strlcpy(info->subname, substream->name, sizeof(info->subname));
 	runtime = substream->runtime;
-	/* AB: FIXME!!! This is definitely nonsense */
 	if (runtime) {
 		info->sync = runtime->sync;
 		substream->ops->ioctl(substream, SNDRV_PCM_IOCTL1_INFO, info);
@@ -1117,7 +1116,6 @@ int snd_pcm_suspend_all(struct snd_pcm *pcm)
 	for (stream = 0; stream < 2; stream++) {
 		for (substream = pcm->streams[stream].substream;
 		     substream; substream = substream->next) {
-			/* FIXME: the open/close code should lock this as well */
 			if (substream->runtime == NULL)
 				continue;
 			err = snd_pcm_suspend(substream);
@@ -1953,7 +1951,6 @@ int snd_pcm_hw_constraints_complete(struct snd_pcm_substream *substream)
 	if (err < 0)
 		return err;
 
-	/* FIXME: remove */
 	if (runtime->dma_bytes) {
 		err = snd_pcm_hw_constraint_minmax(runtime, SNDRV_PCM_HW_PARAM_BUFFER_BYTES, 0, runtime->dma_bytes);
 		if (err < 0)
@@ -1968,7 +1965,6 @@ int snd_pcm_hw_constraints_complete(struct snd_pcm_substream *substream)
 			return err;
 	}
 
-	/* FIXME: this belong to lowlevel */
 	snd_pcm_hw_constraint_integer(runtime, SNDRV_PCM_HW_PARAM_PERIOD_SIZE);
 
 	return 0;

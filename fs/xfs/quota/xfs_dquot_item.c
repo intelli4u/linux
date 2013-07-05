@@ -459,20 +459,6 @@ xfs_qm_qoffend_logitem_committed(
 	return (xfs_lsn_t)-1;
 }
 
-/*
- * XXX rcc - don't know quite what to do with this.  I think we can
- * just ignore it.  The only time that isn't the case is if we allow
- * the client to somehow see that quotas have been turned off in which
- * we can't allow that to get back until the quotaoff hits the disk.
- * So how would that happen?  Also, do we need different routines for
- * quotaoff start and quotaoff end?  I suspect the answer is yes but
- * to be sure, I need to look at the recovery code and see how quota off
- * recovery is handled (do we roll forward or back or do something else).
- * If we roll forwards or backwards, then we need two separate routines,
- * one that does nothing and one that stamps in the lsn that matters
- * (truly makes the quotaoff irrevocable).  If we do something else,
- * then maybe we don't need two.
- */
 STATIC void
 xfs_qm_qoff_logitem_committing(
 	struct xfs_log_item	*lip,

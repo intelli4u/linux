@@ -835,7 +835,6 @@ static int subn_set_portinfo(struct ib_smp *smp, struct ib_device *ibdev,
 		qib_set_linkstate(ppd, QIB_IB_LINKACTIVE);
 		break;
 	default:
-		/* XXX We have already partially updated our state! */
 		goto err;
 	}
 

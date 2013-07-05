@@ -5679,18 +5679,9 @@ static int ipr_queuecommand(struct scsi_cmnd *scsi_cmd,
 	res = scsi_cmd->device->hostdata;
 	scsi_cmd->result = (DID_OK << 16);
 
-	/*
-	 * We are currently blocking all devices due to a host reset
-	 * We have told the host to stop giving us new requests, but
-	 * ERP ops don't count. FIXME
-	 */
 	if (unlikely(!ioa_cfg->allow_cmds && !ioa_cfg->ioa_is_dead))
 		return SCSI_MLQUEUE_HOST_BUSY;
 
-	/*
-	 * FIXME - Create scsi_set_host_offline interface
-	 *  and the ioa_is_dead check can be removed
-	 */
 	if (unlikely(ioa_cfg->ioa_is_dead || !res)) {
 		memset(scsi_cmd->sense_buffer, 0, SCSI_SENSE_BUFFERSIZE);
 		scsi_cmd->result = (DID_NO_CONNECT << 16);

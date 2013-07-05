@@ -609,7 +609,7 @@ void b43legacy_handle_txstatus(struct b43legacy_wldev *dev,
 	if (!status->acked)
 		dev->wl->ieee_stats.dot11ACKFailureCount++;
 	if (status->rts_count) {
-		if (status->rts_count == 0xF) /* FIXME */
+		if (status->rts_count == 0xF)
 			dev->wl->ieee_stats.dot11RTSFailureCount++;
 		else
 			dev->wl->ieee_stats.dot11RTSSuccessCount++;
@@ -665,12 +665,9 @@ void b43legacy_tx_resume(struct b43legacy_wldev *dev)
 /* Initialize the QoS parameters */
 void b43legacy_qos_init(struct b43legacy_wldev *dev)
 {
-	/* FIXME: This function must probably be called from the mac80211
-	 * config callback. */
 return;
 
 	b43legacy_hf_write(dev, b43legacy_hf_read(dev) | B43legacy_HF_EDCF);
-	/* FIXME kill magic */
 	b43legacy_write16(dev, 0x688,
 			  b43legacy_read16(dev, 0x688) | 0x4);
 
