@@ -48,12 +48,12 @@ extern void __aeabi_uidivmod(void);
 extern void __aeabi_ulcmp(void);
 
 extern void fpundefinstr(void);
-/*  add start by Kathy, 02/19/2013 */
+/* Foxconn add start by Kathy, 02/19/2013 */
 extern void insert_func_to_BR_PRE_ROUTE(void *FUNC);
 extern void insert_func_to_BR_POST_ROUTE(void *FUNC);
 extern void remove_func_from_BR_POST_ROUTE(void);
 extern void remove_func_from_BR_PRE_ROUTE(void);
-/*  add end by Kathy, 02/19/2013 */
+/* Foxconn add end by Kathy, 02/19/2013 */
 
 EXPORT_SYMBOL(__backtrace);
 
@@ -174,9 +174,9 @@ EXPORT_SYMBOL(mcount);
 EXPORT_SYMBOL(__gnu_mcount_nc);
 #endif
 
-/*  add start by Kathy, 02/19/2013 */
+/* Foxconn add start by Kathy, 02/19/2013 */
 EXPORT_SYMBOL(insert_func_to_BR_PRE_ROUTE);
 EXPORT_SYMBOL(insert_func_to_BR_POST_ROUTE);
 EXPORT_SYMBOL(remove_func_from_BR_POST_ROUTE);
 EXPORT_SYMBOL(remove_func_from_BR_PRE_ROUTE);
-/*  add end by Kathy, 02/19/2013 */
+/* Foxconn add end by Kathy, 02/19/2013 */

@@ -1,7 +1,7 @@
 #ifndef __LINUX_ACOSNATFW_H
 #define __LINUX_ACOSNATFW_H
 
-/******  Add, Tim Liu, 10/24/2005 *******/
+/****** Foxconn Add, Tim Liu, 10/24/2005 *******/
 #ifdef __KERNEL__
 #include <linux/init.h>
 #include <linux/types.h>
@@ -52,11 +52,11 @@ int acosNat_IpFragOutput(struct sk_buff *skb);
  : acosNat_hook_slow((pf), (hook), (skb), (indev), (outdev), (okfn)))
 
 //#ifdef CONFIG_L7FILTER
-/* add start, Max Ding, 10/18/2007 */
+/*Foxconn add start, Max Ding, 10/18/2007 */
 typedef unsigned int acosL7Filter_hookfn(struct sk_buff *skb, int iDirection);
 extern acosL7Filter_hookfn *acosL7Filter_hook_printf;
 int acosNat_hook(acosL7Filter_hookfn *pHook);
-/* add end, Max Ding, 10/18/2007 */
+/*Foxconn add end, Max Ding, 10/18/2007 */
 //#endif
 
 #else /* !CONFIG_ACOSNAT */

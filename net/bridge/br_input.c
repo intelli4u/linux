@@ -21,7 +21,7 @@
 /* Bridge group multicast address 802.1d (pg 51). */
 const u8 br_group_address[ETH_ALEN] = { 0x01, 0x80, 0xc2, 0x00, 0x00, 0x00 };
 
-int qos_enable = 0;		/*  added pling 03/13/2007 */
+int qos_enable = 0;		/* Foxconn added pling 03/13/2007 */
 static int br_pass_frame_up(struct sk_buff *skb)
 {
 	struct net_device *indev, *brdev = BR_INPUT_SKB_CB(skb)->brdev;
@@ -34,7 +34,7 @@ static int br_pass_frame_up(struct sk_buff *skb)
 	u64_stats_update_end(&brstats->syncp);
 
 	indev = skb->dev;
-	/*  wklin added, 2010/06/15 @attach_dev */
+	/* foxconn wklin added, 2010/06/15 @attach_dev */
 	if (htons(ETH_P_ARP) == eth_hdr(skb)->h_proto)
 	    *(pp_bridge_indev(skb)) = indev;/*backup incoming port to be used in arp.c */
 	skb->dev = brdev;

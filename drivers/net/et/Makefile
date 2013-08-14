@@ -62,4 +62,4 @@ clean:
 	$(MAKE) -C $(KERNELDIR) M=`pwd` clean
 endif
 
-#clean-files += $(ETSRCDIR)/sys/*.o $(ETSRCDIR)/sys/.*.o.cmd
+clean-files += $(ETSRCDIR)/sys/*.o $(ETSRCDIR)/sys/.*.o.cmd

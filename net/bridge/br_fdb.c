@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  *	Forwarding database
  *	Linux ethernet bridge
@@ -24,10 +25,10 @@
 #include <asm/atomic.h>
 #include <asm/unaligned.h>
 #include "br_private.h"
-/*  added start pling 07/02/2007 */
+/* Foxconn added start pling 07/02/2007 */
 #define MAX_MAC_CNT     1024
 static int mac_cnt = 0; 
-/*  added end pling 07/02/2007 */
+/* Foxconn added end pling 07/02/2007 */
 #ifdef HNDCTF
 #include <linux/if.h>
 #include <linux/if_vlan.h>
@@ -335,7 +336,7 @@ void br_fdb_delete_by_port(struct net_bridge *br,
 }
 
 /* No locking or refcounting, assumes caller has rcu_read_lock */
-struct net_bridge_fdb_entry *__br_fdb_get(struct net_bridge *br,
+struct net_bridge_fdb_entry * BCMFASTPATH_HOST __br_fdb_get(struct net_bridge *br,
 					  const unsigned char *addr)
 {
 	struct hlist_node *h;
@@ -442,13 +443,13 @@ static struct net_bridge_fdb_entry *fdb_create(struct hlist_head *head,
 {
 	struct net_bridge_fdb_entry *fdb;
 
-    /*  wklin added start, 06/18/2008 */
+    /* foxconn wklin added start, 06/18/2008 */
     if (mac_cnt > MAX_MAC_CNT)
         return 0;
-    /*  wklin added end, 06/18/2008 */
+    /* foxconn wklin added end, 06/18/2008 */
 	fdb = kmem_cache_alloc(br_fdb_cache, GFP_ATOMIC);
 	if (fdb) {
-        mac_cnt++; /*  wklin added , 06/18/2008 */
+        mac_cnt++; /* foxconn wklin added , 06/18/2008 */
 		memcpy(fdb->addr.addr, addr, ETH_ALEN);
 		hlist_add_head_rcu(&fdb->hlist, head);
 
@@ -505,7 +506,7 @@ int br_fdb_insert(struct net_bridge *br, struct net_bridge_port *source,
 	return ret;
 }
 
-void br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
+void BCMFASTPATH_HOST br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
 		   const unsigned char *addr)
 {
 	struct hlist_head *head = &br->hash[br_mac_hash(addr)];

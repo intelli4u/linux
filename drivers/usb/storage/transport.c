@@ -62,17 +62,19 @@
 #include <linux/blkdev.h>
 #include "../../scsi/sd.h"
 
-/*  added pling start 02/26/2010, for USB LED */
+/* Foxconn added pling start 02/26/2010, for USB LED */
 #if (defined INCLUDE_USB_LED)   
-/*  modified start, Wins, 04/11/2011 */
-#if defined(R6300v2)
+/* Foxconn modified start, Wins, 04/11/2011 */
+#if defined(R6300v2) || defined(R7000)
 extern int usb1_pkt_cnt;
 extern int usb2_pkt_cnt;
+extern int usb1_pkt_cnt_smp;
+extern int usb2_pkt_cnt_smp;
 #elif defined(R6250) || defined(R6200v2)
 extern int usb1_pkt_cnt;
 #endif /* R6300v2 */
 #endif
-/*  added end pling 02/26/2010 */ 
+/* Foxconn added end pling 02/26/2010 */ 
 
 /***********************************************************************
  * Data transfer routines
@@ -435,23 +437,37 @@ static int usb_stor_bulk_transfer_sglist(struct us_data *us, unsigned int pipe,
 	if (test_bit(US_FLIDX_ABORTING, &us->dflags))
 		return USB_STOR_XFER_ERROR;
 
-	/*  added pling start 02/26/2010, for USB LED */
-#if 0
+	/* Foxconn added pling start 02/26/2010, for USB LED */
+#if 1
 #if (defined INCLUDE_USB_LED)    
-    /*  modified start, Wins, 04/11/2011 */
-#if defined(R6300v2)
+    /* Foxconn modified start, Wins, 04/11/2011 */
+#if defined(R6300v2) || defined(R7000)
     char devpath[4];
     memcpy(devpath, us->pusb_dev->devpath, 3);
     devpath[3] = '\0';
+#if defined(R7000)
+    if (!strcmp(devpath, "1"))
+    {
+        usb1_pkt_cnt++;
+        usb1_pkt_cnt_smp++;
+    }
+    else if (!strcmp(devpath, "2"))
+    {
+        usb2_pkt_cnt++;
+        usb2_pkt_cnt_smp++;
+    }
+#endif        
+#if defined(R6300v2)
     if (!strcmp(devpath, "1.1"))
         usb1_pkt_cnt++;
     else if (!strcmp(devpath, "1.2"))
         usb2_pkt_cnt++;
+#endif        
 #endif /* R6300v2 */
-    /*  modified end, Wins, 04/11/2011 */
+    /* Foxconn modified end, Wins, 04/11/2011 */
 #endif
 #endif
-    /*  added end pling 02/26/2010 */ 
+    /* Foxconn added end pling 02/26/2010 */ 
 
 	/* initialize the scatter-gather request block */
 	US_DEBUGP("%s: xfer %u bytes, %d entries\n", __func__,

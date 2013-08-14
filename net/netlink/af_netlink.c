@@ -2058,7 +2058,7 @@ int netlink_unregister_notifier(struct notifier_block *nb)
 	return atomic_notifier_chain_unregister(&netlink_chain, nb);
 }
 EXPORT_SYMBOL(netlink_unregister_notifier);
-/*  added start pling 02/24/2011 */
+/* Foxconn added start pling 02/24/2011 */
 int netlink_ioctl(struct sock *sk, int cmd, unsigned long arg)
 {
 	/* there are no netlink specific IOCTLs but if we have
@@ -2067,7 +2067,7 @@ int netlink_ioctl(struct sock *sk, int cmd, unsigned long arg)
 	 */
 	return -ENOIOCTLCMD;
 }
-/*  added end pling 02/24/2011 */
+/* Foxconn added end pling 02/24/2011 */
 
 static const struct proto_ops netlink_ops = {
 	.family =	PF_NETLINK,
@@ -2079,11 +2079,11 @@ static const struct proto_ops netlink_ops = {
 	.accept =	sock_no_accept,
 	.getname =	netlink_getname,
 	.poll =		datagram_poll,
-    /*  modified start pling 02/24/2011 */
+    /* Foxconn modified start pling 02/24/2011 */
     /* For zeroconf (auto ip) */
 	/*.ioctl =	sock_no_ioctl,*/
 	.ioctl =	netlink_ioctl,
-    /*  modified end pling 02/24/2011 */
+    /* Foxconn modified end pling 02/24/2011 */
 	.listen =	sock_no_listen,
 	.shutdown =	sock_no_shutdown,
 	.setsockopt =	netlink_setsockopt,

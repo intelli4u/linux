@@ -156,7 +156,9 @@ __cacheline_aligned_in_smp DEFINE_SEQLOCK(xtime_lock);
 struct timespec xtime __attribute__ ((aligned (16)));
 static struct timespec wall_to_monotonic __attribute__ ((aligned (16)));
 static struct timespec total_sleep_time;
+/*Foxconn modify start by Hank 08/10/2012 */
 EXPORT_SYMBOL(xtime);
+/*Foxconn modify end by Hank 08/10/2012 */
 
 /*
  * The raw monotonic time for the CLOCK_MONOTONIC_RAW posix clock.

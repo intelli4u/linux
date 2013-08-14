@@ -50,7 +50,7 @@ struct pppoe_addr{
 * PPTP addressing definition
 */
 struct pptp_addr {
-#if 0 
+#if 0 /* foxconn */
 	unsigned short  call_id;
 	struct in_addr  sin_addr;
 #else
@@ -68,6 +68,7 @@ struct pptp_addr {
 /************************************************************************
  * Protocols supported by AF_PPPOX
  */
+/* foxconn, sync with pptp users pace pppox.h */
 #define PX_PROTO_OE    0 /* Currently just PPPoE */
 #define PX_PROTO_TP    1 /* Add PPTP */
 #define PX_PROTO_PPTP  (PX_PROTO_TP)
@@ -79,13 +80,13 @@ struct sockaddr_pppox {
 	unsigned int    sa_protocol;          /* protocol identifier */
 	union {
 		struct pppoe_addr  pppoe;
-#if 0 
+#if 0 /* foxconn */
 		struct pptp_addr   pptp;
 #endif
 	} sa_addr;
 } __attribute__((packed));
 
-
+/* Foxconn added start, pptp, Winster Chan, 06/26/2006 */
 struct sockaddr_pptpox {
     sa_family_t     sa_family;            /* address family, AF_PPPOX */
     unsigned int    sa_protocol;          /* protocol identifier */
@@ -93,6 +94,7 @@ struct sockaddr_pptpox {
         struct pptp_addr    pptp;
     }sa_addr;
 }__attribute__ ((packed));
+/* Foxconn added end, pptp, Winster Chan, 06/26/2006 */
 
 /* The use of the above union isn't viable because the size of this
  * struct must stay fixed over time -- applications use sizeof(struct
@@ -123,14 +125,15 @@ struct sockaddr_pppol2tpv3 {
 #define PPPOEIOCSFWD	_IOW(0xB1 ,0, size_t)
 #define PPPOEIOCDFWD	_IO(0xB1 ,1)
 /*#define PPPOEIOCGFWD	_IOWR(0xB1,2, size_t)*/
-/*  added start, pptp, Winster Chan, 06/26/2006 */
+/* Foxconn added start, pptp, Winster Chan, 06/26/2006 */
 #define PPTPIOCSFWD     _IOW(0xB1 ,0, size_t)
 #define PPTPIOCDFWD     _IO(0xB1 ,1)
-/*  added end, pptp, Winster Chan, 06/26/2006 */
+/*#define PPPOEIOCGFWD	_IOWR(0xB1,2, size_t)*/
+/* Foxconn added end, pptp, Winster Chan, 06/26/2006 */
 
-/*  wklin added start, 12/09/2010 */
+/* foxconn wklin added start, 12/09/2010 */
 #define PPTPIOCGGRESEQ  _IOR('t', 54, unsigned long)	/* get GRE sequence number */
-/*  wklin added end, 12/09/2010 */
+/* foxconn wklin added end, 12/09/2010 */
 
 /* Codes to identify message types */
 #define PADI_CODE	0x09
@@ -178,7 +181,7 @@ struct pppoe_hdr {
 #define PPTP_SO_TIMEOUT 1
 #define PPTP_SO_WINDOW  2     
 
-/*  added start, pptp, Winster Chan, 06/26/2006 */
+/* Foxconn added start, pptp, Winster Chan, 06/26/2006 */
 /* IP PROTOCOL HEADER */
 
 /* GRE Protocol field */
@@ -247,7 +250,7 @@ struct pptp_hdr {
     struct pptp_ip_hdr      iphdr;      /* IP header */
     struct pptp_gre_hdr     grehdr;     /* GRE header */
 } __attribute__ ((packed));
-/*  added end, pptp, Winster Chan, 06/26/2006 */
+/* Foxconn added end, pptp, Winster Chan, 06/26/2006 */
 
 #ifdef __KERNEL__
 #include <linux/skbuff.h>
@@ -266,7 +269,7 @@ struct pppoe_opt {
 };
 
 struct pptp_opt {
-#if 0 
+#if 0 /* foxconn */
 	struct pptp_addr src_addr;
 	struct pptp_addr dst_addr;
 	u32 ack_sent, ack_recv;

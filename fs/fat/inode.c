@@ -1388,7 +1388,7 @@ int fat_fill_super(struct super_block *sb, void *data, int silent,
 			       le32_to_cpu(fsinfo->signature2),
 			       sbi->fsinfo_sector);
 		} else {
-			/*  removed by Max Ding, 12/06/2010 for WNR3500L-TD186, port from Linux 2.6.21 */
+			/* Foxconn removed by Max Ding, 12/06/2010 for WNR3500L-TD186, port from Linux 2.6.21 */
 			/* Linux 2.6.21 have not the option, Linux 2.6.22 add the option and the default value is 0,
 			 * we didn't set the option in Linux 2.6.22, then cause the bug, so remove the option to fix it.
 			 */

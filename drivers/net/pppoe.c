@@ -530,18 +530,18 @@ out:
 }
 
 static struct packet_type pppoes_ptype __read_mostly = {
-    /*  modified start, Winster Chan, 12/21/2006 */
+    /* Foxconn modified start, Winster Chan, 12/21/2006 */
 	//.type	= cpu_to_be16(ETH_P_PPP_SES),
 	.type	= cpu_to_be16(ETH_P_PPPOE_SESS),
-    /*  modified end, Winster Chan, 12/21/2006 */
+    /* Foxconn modified end, Winster Chan, 12/21/2006 */
 	.func	= pppoe_rcv,
 };
 
 static struct packet_type pppoed_ptype __read_mostly = {
-    /*  modified start, Winster Chan, 12/21/2006 */
+    /* Foxconn modified start, Winster Chan, 12/21/2006 */
 	//.type	= cpu_to_be16(ETH_P_PPP_DISC),
 	.type	= cpu_to_be16(ETH_P_PPPOE_DISC),
-    /*  modified end, Winster Chan, 12/21/2006 */
+    /* Foxconn modified end, Winster Chan, 12/21/2006 */
 	.func	= pppoe_disc_rcv,
 };
 

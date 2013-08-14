@@ -104,18 +104,18 @@ static int aix_magic_present(struct parsed_partitions *state, unsigned char *p)
  * We do not create a Linux partition for the partition tables, but
  * only for the actual data partitions.
  */
-/*  modified start pling 04/30/2011 */
+/* Foxconn modified start pling 04/30/2011 */
 /* Fix 3TB partition can't be detected issue */
 static void
 #if 0
 parse_extended(struct parsed_partitions *state, struct block_device *bdev,
 			u32 first_sector, u32 first_size)
 #endif
-/* modify start by Hank 08/10/2012 */
+/*Foxconn modify start by Hank 08/10/2012 */
 parse_extended(struct parsed_partitions *state,
 			sector_t first_sector, sector_t first_size)
-/* modify end by Hank 08/10/2012 */
-/*  modified end pling 04/30/2011 */
+/*Foxconn modify end by Hank 08/10/2012 */
+/* Foxconn modified end pling 04/30/2011 */
 {
 	struct partition *p;
 	Sector sect;
@@ -162,11 +162,11 @@ parse_extended(struct parsed_partitions *state,
 
 			/* Check the 3rd and 4th entries -
 			   these sometimes contain random garbage */
-			/*  modified start pling 04/30/2011 */
+			/* Foxconn modified start pling 04/30/2011 */
 			/* Fix 3TB partition can't be detected issue */
 			offs = (sector_t)(start_sect(p))*sector_size;
 			size = (sector_t)(nr_sects(p))*sector_size;
-			/*  modified end pling 04/30/2011 */
+			/* Foxconn modified end pling 04/30/2011 */
 			next = this_sector + offs;
 			if (i >= 2) {
 				if (offs + size > this_size)
@@ -511,11 +511,11 @@ int msdos_partition(struct parsed_partitions *state)
 
 	state->next = 5;
 	for (slot = 1 ; slot <= 4 ; slot++, p++) {
-		/*  modified start pling 04/30/2011 */
+		/* Foxconn modified start pling 04/30/2011 */
 		/* Fix 3TB partition can't be detected issue */
 		sector_t start = (sector_t)(start_sect(p))*sector_size;
 		sector_t size = (sector_t)(nr_sects(p))*sector_size;
-		/*  modified end pling 04/30/2011 */
+		/* Foxconn modified end pling 04/30/2011 */
 		if (!size)
 			continue;
 		if (is_extended_partition(p)) {

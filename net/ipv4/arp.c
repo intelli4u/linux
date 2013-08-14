@@ -132,13 +132,14 @@ static int arp_constructor(struct neighbour *neigh);
 static void arp_solicit(struct neighbour *neigh, struct sk_buff *skb);
 static void arp_error_report(struct neighbour *neigh, struct sk_buff *skb);
 static void parp_redo(struct sk_buff *skb);
-/*  wklin modified start, 2010/06/15 @attach_dev */
+/* foxconn wklin modified start, 2010/06/15 @attach_dev */
 static int attadev_update(u32 sip, char *sha, struct net_device *dev);
-/*  wklin modified end, 2010/06/15 */
-/* add start by Hank 08/25/2012*/
+/* foxconn wklin modified end, 2010/06/15 */
+/*Foxconn add start by Hank 08/25/2012*/
 static int attadev_init(struct net *net);
-/* add end by Hank 08/25/2012*/
-
+/*Foxconn add end by Hank 08/25/2012*/
+int g_pid=0; /* Foxconn tab tseng added, 2013/05/27, for xbox qos */
+int g_updated=0; /* Foxconn tab tseng added, 2013/05/27, for xbox qos */
 static const struct neigh_ops arp_generic_ops = {
 	.family =		AF_INET,
 	.solicit =		arp_solicit,
@@ -736,14 +737,14 @@ void arp_send(int type, int ptype, __be32 dest_ip,
 
 	if (dev->flags&IFF_NOARP)
 		return;
-    	/*  added start pling 03/25/2011 */
+    	/* Foxconn added start pling 03/25/2011 */
 	/* If we are using auto IP, the ARP reply should be in Broadcast */
 	if (type == ARPOP_REPLY &&
 		((htonl(src_ip) & 0xFFFF0000) == 0xa9fe0000))
 		skb = arp_create(type, ptype, dest_ip, dev, src_ip,
 			 NULL, src_hw, target_hw);
 	else
-	/*  added end pling 03/25/2011 */
+	/* Foxconn added end pling 03/25/2011 */
 
 	skb = arp_create(type, ptype, dest_ip, dev, src_ip,
 			 dest_hw, src_hw, target_hw);
@@ -762,7 +763,7 @@ EXPORT_SYMBOL(arp_send);
 static int arp_process(struct sk_buff *skb)
 {
 	struct net_device *dev = skb->dev;
-    /*  wklin added, 2010/06/15 @attach_dev */
+    /* foxconn wklin added, 2010/06/15 @attach_dev */
 	struct net_device *bridge_indev = NULL;
 	struct in_device *in_dev = __in_dev_get_rcu(dev);
 	struct arphdr *arp;
@@ -782,7 +783,7 @@ static int arp_process(struct sk_buff *skb)
 	if (in_dev == NULL)
 		goto out;
 
-    /*  wklin added, 2010/06/15 @attach_dev */
+    /* foxconn wklin added, 2010/06/15 @attach_dev */
     bridge_indev = *(pp_bridge_indev(skb));
 	arp = arp_hdr(skb);
 
@@ -878,21 +879,23 @@ static int arp_process(struct sk_buff *skb)
 		goto out;
 	}
 
-    /*  wklin modified sart, 02/02/2007 */
+    /* foxconn wklin modified sart, 02/02/2007 */
 #define ATTADEV
 #ifdef ATTADEV
-		/* modify start by Hank 08/10/2012 */
+		/*Foxconn modify start by Hank 08/10/2012 */
 		/*kernel function be modified*/
     if ((arp->ar_op == htons(ARPOP_REQUEST) || arp->ar_op == htons(ARPOP_REPLY))
        && inet_addr_type(net,sip)==RTN_UNICAST && memcmp(dev->name,"br0", 3) == 0) {
-	   /* modify end by Hank 08/10/2012 */
-        /*  wklin modified start, 2010/06/15 @attach_dev */
+	   /*Foxconn modify end by Hank 08/10/2012 */
+        /* foxconn wklin modified start, 2010/06/15 @attach_dev */
         //static int attadev_update(u32 sip, char *sha, struct net_device *indev);
         attadev_update(sip, sha, bridge_indev);
-        /*  wklin modified end, 2010/06/15 */
+	/* Foxconn tab tseng added, 2013/05/27, for xbox qos */
+	g_updated = 1;
+        /* foxconn wklin modified end, 2010/06/15 */
     }
 #endif
-    /*  wklin modified end, 02/02/2007 */
+    /* foxconn wklin modified end, 02/02/2007 */
 
 	if (arp->ar_op == htons(ARPOP_REQUEST) &&
 	    ip_route_input_noref(skb, tip, sip, 0, dev) == 0) {
@@ -1213,7 +1216,7 @@ static int arp_req_delete(struct net *net, struct arpreq *r,
 
 int arp_ioctl(struct net *net, unsigned int cmd, void __user *arg)
 {
-	int err;
+	int err,b_updated;
 	struct arpreq r;
 	struct net_device *dev = NULL;
 
@@ -1227,6 +1230,16 @@ int arp_ioctl(struct net *net, unsigned int cmd, void __user *arg)
 			if (err)
 				return -EFAULT;
 			break;
+		/* Foxconn tab tseng added, 2013/05/27, for xbox qos */
+		case SIOCPIDARP:
+			err = copy_from_user(&g_pid, arg, sizeof(int));
+			if (err)
+                            return -EFAULT;
+                        b_updated=g_updated;
+                        g_updated=0;
+                        return b_updated; 
+			break;
+	        /* Foxconn tab tseng added end, 2013/05/27, for xbox qos */
 		default:
 			return -EINVAL;
 	}
@@ -1467,12 +1480,12 @@ static int __net_init arp_net_init(struct net *net)
 	if (!proc_net_fops_create(net, "arp", S_IRUGO, &arp_seq_fops))
 		return -ENOMEM;
 		
-        /* add start by Hank 08/25/2012*/
+        /*Foxconn add start by Hank 08/25/2012*/
 		/*for attadev init*/
 #ifdef ATTADEV
     attadev_init(net);
 #endif
-        /* add end by Hank 08/25/2012*/
+        /*Foxconn add end by Hank 08/25/2012*/
 	return 0;
 }
 
@@ -1499,7 +1512,7 @@ static int __init arp_proc_init(void)
 }
 
 #endif /* CONFIG_PROC_FS */
-/*  wklin added start, 02/06/2007 */
+/* foxconn wklin added start, 02/06/2007 */
 
 #ifdef ATTADEV
 #define FLAG_VALID 1
@@ -1511,13 +1524,13 @@ typedef struct {
     u32 sip;
     unsigned char sha[6];
     unsigned short flag;
-    /*  added, 2010/06/15 @attach_dev */
+    /* foxconn added, 2010/06/15 @attach_dev */
     char ifname[IFNAMSIZ];
 } attadev_t;
 
 static rwlock_t attadev_lock = RW_LOCK_UNLOCKED;
 static attadev_t attadevs[MAX_ATTADEV_ENTRY];
-/* modify start by Hank 08/25/2012*/
+/*Foxconn modify start by Hank 08/25/2012*/
 /*change init, create, and get information function of attadev, delatta
   Because the kernel function is changed in 2.6.36*/		
 static int attadev_get_info(struct seq_file *seq, void *v)
@@ -1532,7 +1545,7 @@ static int attadev_get_info(struct seq_file *seq, void *v)
                     ntohl((p+i)->sip),
                     ((p+i)->sha)[0], ((p+i)->sha)[1], ((p+i)->sha)[2],
                     ((p+i)->sha)[3], ((p+i)->sha)[4], ((p+i)->sha)[5], 
-                    (p+i)->ifname);/* add by Mos: 05/30/2011 : for attached devices read wifi/wireless device*/
+                    (p+i)->ifname);/*Foxconn add by Mos: 05/30/2011 : for attached devices read wifi/wireless device*/
         }
     }
     read_unlock_bh(&attadev_lock);
@@ -1596,7 +1609,7 @@ static int attadev_init(struct net *net) {
 	
     return 0;
 }
-/* modify end by Hank 08/25/2012*/
+/*Foxconn modify end by Hank 08/25/2012*/
 
 static u32 attadev_hash(u32 *pkey)
 {
@@ -1611,7 +1624,7 @@ static u32 attadev_hash(u32 *pkey)
 	return hash_val;
 }
 
-/*  wklin modified ,2010/06/15 @attach_dev */
+/* foxconn wklin modified ,2010/06/15 @attach_dev */
 static int attadev_update(u32 sip, char *sha, struct net_device *dev) {
     int hash_id = attadev_hash(&sip);
     int i;
@@ -1625,15 +1638,15 @@ static int attadev_update(u32 sip, char *sha, struct net_device *dev) {
             (p+i)->sip = sip;
             (p+i)->flag = FLAG_VALID;
             memcpy((p+i)->sha, sha, 6);
-            /*  wklin modified start, 2010/06/15 @attach_dev */
+            /* foxconn wklin modified start, 2010/06/15 @attach_dev */
             if (dev && dev->name) {
                 strcpy((p+i)->ifname, dev->name);
             }
-            /*  wklin modified end, 2010/06/15 */
+            /* foxconn wklin modified end, 2010/06/15 */
             break;
         } 
         i++;
-        if (i >= MAX_ATTADEV_ENTRY) /*  wklin modified, 08/01/2007 */
+        if (i >= MAX_ATTADEV_ENTRY) /* foxconn wklin modified, 08/01/2007 */
             i = 0;
         if (i == hash_id) {
             /* printk("attadev table is full\n"); */
@@ -1644,4 +1657,4 @@ static int attadev_update(u32 sip, char *sha, struct net_device *dev) {
     return 0;
 }
 #endif
-/*  wklin added end, 02/06/2007 */
+/* foxconn wklin added end, 02/06/2007 */

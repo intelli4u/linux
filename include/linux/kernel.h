@@ -781,7 +781,7 @@ struct sysinfo {
 #ifdef CONFIG_FTRACE_MCOUNT_RECORD
 # define REBUILD_DUE_TO_FTRACE_MCOUNT_RECORD
 #endif
-/* modify start by Hank 08/10/2012 */
+/*Foxconn modify start by Hank 08/10/2012 */
 /*add function for ipv6 addr translation*/
 #define NIP6(addr) \
 	ntohs((addr).s6_addr16[0]), \
@@ -794,5 +794,5 @@ struct sysinfo {
 	ntohs((addr).s6_addr16[7])
 
 #define NIP6_SEQFMT "%04x%04x%04x%04x%04x%04x%04x%04x"
-/* modify end by Hank 08/10/2012 */
+/*Foxconn modify end by Hank 08/10/2012 */
 #endif

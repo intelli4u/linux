@@ -81,6 +81,9 @@
 #include <linux/netlink.h>
 #include <linux/tcp.h>
 
+#include <typedefs.h>
+#include <bcmdefs.h>
+
 int sysctl_ip_default_ttl __read_mostly = IPDEFTTL;
 
 /* Generate a checksum for an outgoing IP datagram. */
@@ -97,6 +100,11 @@ int __ip_local_out(struct sk_buff *skb)
 
 	iph->tot_len = htons(skb->len);
 	ip_send_check(iph);
+
+	/* Mark skb to identify SMB data packet */
+	if (ip_hdr(skb)->protocol == IPPROTO_TCP)
+		skb->tcpf_smb = (tcp_hdr(skb)->source == htons(0x01bd));
+
 	return nf_hook(NFPROTO_IPV4, NF_INET_LOCAL_OUT, skb, NULL,
 		       skb_dst(skb)->dev, dst_output);
 }
@@ -222,7 +230,7 @@ static inline int ip_skb_dst_mtu(struct sk_buff *skb)
 }
 
 /* Fxcn port-S Wins, 0714-09 */
-int (*br_post_insert_hook)(struct sk_buff *skb);// add , Lewis Min, for OpenDNS, 03/12/2009
+int (*br_post_insert_hook)(struct sk_buff *skb);//Foxconn add , Lewis Min, for OpenDNS, 03/12/2009
 /* Fxcn port-E Wins, 0714-09 */
 static int ip_finish_output(struct sk_buff *skb)
 {
@@ -235,7 +243,7 @@ static int ip_finish_output(struct sk_buff *skb)
 #endif
     
 /* Fxcn port-S Wins, 0714-09 */
-    // add start, Lewis Min, for OpenDNS, 03/12/2009
+    //Foxconn add start, Lewis Min, for OpenDNS, 03/12/2009
 	if(NULL!=br_post_insert_hook)
 	{
         int ret;
@@ -248,7 +256,7 @@ static int ip_finish_output(struct sk_buff *skb)
 			return;
 		}
 	}
-    // add end, Lewis Min, for OpenDNS, 03/12/2009
+    //Foxconn add end, Lewis Min, for OpenDNS, 03/12/2009
 /* Fxcn port-E Wins, 0714-09 */
 
 	if (skb->len > ip_skb_dst_mtu(skb) && !skb_is_gso(skb))
@@ -332,7 +340,7 @@ int ip_output(struct sk_buff *skb)
 			    !(IPCB(skb)->flags & IPSKB_REROUTED));
 }
 
-int ip_queue_xmit(struct sk_buff *skb)
+int BCMFASTPATH_HOST ip_queue_xmit(struct sk_buff *skb)
 {
 	struct sock *sk = skb->sk;
 	struct inet_sock *inet = inet_sk(sk);
@@ -472,7 +480,7 @@ int ip_fragment(struct sk_buff *skb, int (*output)(struct sk_buff *))
 	__be16 not_last_frag;
 	struct rtable *rt = skb_rtable(skb);
 	int err = 0;
-    int first_frag = 1;     //  added pling 04/29/2010 
+    int first_frag = 1;     // Foxconn added pling 04/29/2010 
 
 	dev = rt->dst.dev;
 
@@ -684,7 +692,7 @@ slow_path:
 		iph = ip_hdr(skb2);
 		iph->frag_off = htons((offset >> 3));
 
-        /*  added start pling 04/29/2010 */
+        /* Foxconn added start pling 04/29/2010 */
         /* If the packet is not from IP stack, i.e. from other i/f,
          * then copy the Ethernet header and cb to the
          * first fragment, for later use by NAT/QoS.
@@ -696,7 +704,7 @@ slow_path:
             memcpy(skb2->mac_header, skb->mac_header, sizeof(struct ethhdr));
             memcpy(skb2->cb, skb->cb, sizeof(skb->cb));
         }
-        /*  added end pling 04/29/2010 */
+        /* Foxconn added end pling 04/29/2010 */
 
 		/* ANK: dirty, but effective trick. Upgrade options only if
 		 * the segment to be fragmented was THE FIRST (otherwise,
@@ -1490,7 +1498,7 @@ void __init ip_init(void)
 #endif
 }
 /* Fxcn port-S Wins, 0714-09 */
-// add start, Lewis Min, for OpenDNS, 12/12/2008
+//Foxconn add start, Lewis Min, for OpenDNS, 12/12/2008
 void insert_func_to_BR_POST_ROUTE(void *FUNC)
 {
    br_post_insert_hook= FUNC;
@@ -1501,5 +1509,5 @@ void remove_func_from_BR_POST_ROUTE(void)
 {
    br_post_insert_hook= NULL;
 }
-// add end, Lewis Min, for OpenDNS, 12/12/2008
+//Foxconn add end, Lewis Min, for OpenDNS, 12/12/2008
 /* Fxcn port-E Wins, 0714-09 */

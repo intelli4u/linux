@@ -2015,10 +2015,10 @@ extern int kill_pid_info_as_uid(int, struct siginfo *, struct pid *, uid_t, uid_
 extern int kill_pgrp(struct pid *pid, int sig, int priv);
 extern int kill_pid(struct pid *pid, int sig, int priv);
 extern int kill_proc_info(int, struct siginfo *, pid_t);
-/* modify start by Hank 08/10/2012 */
+/*Foxconn modify start by Hank 08/10/2012 */
 /*add kill_proc function, let user space can call it*/
 extern int kill_proc(pid_t pid, int sig, int priv);
-/* modify end by Hank 08/10/2012 */
+/*Foxconn modify end by Hank 08/10/2012 */
 extern int do_notify_parent(struct task_struct *, int);
 extern void __wake_up_parent(struct task_struct *p, struct task_struct *parent);
 extern void force_sig(int, struct task_struct *);

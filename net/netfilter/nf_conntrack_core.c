@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /* Connection state tracking for netfilter.  This is separated from,
    but required by, the NAT layer; it can also be used by an iptables
    extension. */
@@ -301,6 +302,11 @@ ip_conntrack_ipct_add(struct sk_buff *skb, u_int32_t hooknum,
 	}
 #endif
 
+	if (kcih->ipc_suspend) {
+		/* The default action is suspend */
+		ipc_entry.action |= CTF_ACTION_SUSPEND;
+	}
+
 	/* Copy the DSCP value. ECN bits must be cleared. */
 	if (IPVERSION_IS_4(ipver))
 		ipc_entry.tos = IPV4_TOS(iph);
@@ -489,7 +495,7 @@ ip_conntrack_ipct_delete(struct nf_conn *ct, int ct_timeout)
 static int nf_conntrack_hash_rnd_initted;
 static unsigned int nf_conntrack_hash_rnd;
 
-static u_int32_t __hash_conntrack(const struct nf_conntrack_tuple *tuple,
+static u_int32_t BCMFASTPATH_HOST __hash_conntrack(const struct nf_conntrack_tuple *tuple,
 				  u16 zone, unsigned int size, unsigned int rnd)
 {
 	unsigned int n;
@@ -723,7 +729,7 @@ static void death_by_timeout(unsigned long ul_conntrack)
  * OR
  * - Caller must lock nf_conntrack_lock before calling this function
  */
-struct nf_conntrack_tuple_hash *
+struct nf_conntrack_tuple_hash * BCMFASTPATH_HOST
 __nf_conntrack_find(struct net *net, u16 zone,
 		    const struct nf_conntrack_tuple *tuple)
 {
@@ -761,7 +767,7 @@ begin:
 EXPORT_SYMBOL_GPL(__nf_conntrack_find);
 
 /* Find a connection corresponding to a tuple. */
-struct nf_conntrack_tuple_hash *
+struct nf_conntrack_tuple_hash * BCMFASTPATH_HOST
 nf_conntrack_find_get(struct net *net, u16 zone,
 		      const struct nf_conntrack_tuple *tuple)
 {
@@ -1235,7 +1241,7 @@ resolve_normal_ct(struct net *net, struct nf_conn *tmpl,
 	return ct;
 }
 
-unsigned int
+unsigned int BCMFASTPATH_HOST
 nf_conntrack_in(struct net *net, u_int8_t pf, unsigned int hooknum,
 		struct sk_buff *skb)
 {

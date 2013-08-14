@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  *  linux/arch/arm/mm/dma-mapping.c
  *
@@ -23,6 +24,9 @@
 #include <asm/cacheflush.h>
 #include <asm/tlbflush.h>
 #include <asm/sizes.h>
+
+#include <typedefs.h>
+#include <bcmdefs.h>
 
 static u64 get_coherent_dma_mask(struct device *dev)
 {
@@ -418,10 +422,21 @@ EXPORT_SYMBOL(dma_free_coherent);
  * platforms with CONFIG_DMABOUNCE.
  * Use the driver DMA support - see dma-mapping.h (dma_sync_*)
  */
+#if 1 /*Ares Test*/
+void dump_stack(void);
+#endif
+
 void ___dma_single_cpu_to_dev(const void *kaddr, size_t size,
 	enum dma_data_direction dir)
 {
 	unsigned long paddr;
+#if 1 /*Ares Test*/
+	if (!virt_addr_valid(kaddr) || !virt_addr_valid(kaddr + size - 1))  {
+		printk("\n ___dma_single_cpu_to_dev  still hit BUG kaddr %p size %d\n", kaddr, size);
+		return;
+	}
+		BUG_ON(!virt_addr_valid(kaddr) || !virt_addr_valid(kaddr + size - 1));
+#endif
 
 	BUG_ON(!virt_addr_valid(kaddr) || !virt_addr_valid(kaddr + size - 1));
 
@@ -495,7 +510,7 @@ static void dma_cache_maint_page(struct page *page, unsigned long offset,
 	} while (left);
 }
 
-void ___dma_page_cpu_to_dev(struct page *page, unsigned long off,
+void BCMFASTPATH_HOST ___dma_page_cpu_to_dev(struct page *page, unsigned long off,
 	size_t size, enum dma_data_direction dir)
 {
 	unsigned long paddr;
@@ -540,15 +555,14 @@ EXPORT_SYMBOL(___dma_page_dev_to_cpu);
  * Device ownership issues as mentioned for dma_map_single are the same
  * here.
  */
-int dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
+int BCMFASTPATH_HOST dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
 		enum dma_data_direction dir)
 {
 	struct scatterlist *s;
 	int i, j;
 
 	for_each_sg(sg, s, nents, i) {
-		s->dma_address = dma_map_page(dev, sg_page(s), s->offset,
-						s->length, dir);
+		s->dma_address = dma_map_page(dev, sg_page(s), s->offset, s->length, dir);
 		if (dma_mapping_error(dev, s->dma_address))
 			goto bad_mapping;
 	}

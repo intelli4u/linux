@@ -11,6 +11,7 @@
 ***
 ****************************************************************************/
 
+
 #include <linux/version.h>
 #include <linux/module.h>
 #include <linux/init.h>
@@ -35,7 +36,18 @@ devfs_handle_t wps_leddev_handle;
 
 extern int wps_led_pattern;
 extern int wps_led_state;
-extern int is_wl_secu_mode; 
+extern int is_wl_secu_mode; /* foxconn added, zacker, 09/17/2009, @wps_led */
+/*Foxconn add start by Hank 05/31/2013*/
+#if (defined CONFIG_SMP)
+extern int wps_led_state_smp;
+extern int is_wl_secu_mode_smp;
+#endif
+/*Foxconn add end by Hank 05/31/2013*/
+
+#ifdef WIFI_LED_BLINKING
+extern int wifi_2g_led_state_smp;
+extern int wifi_5g_led_state_smp;
+#endif
 
 static int
 wps_led_open(struct inode *inode, struct file * file)
@@ -65,15 +77,18 @@ unsigned int cmd,
 unsigned long arg)
 {
 	
+    /* Foxconn added start pling 02/26/2010 */
     /* Add USB LED support.
      * Note: need to add at the beginning the 'arg' check below.
      *       Otherwise, we might change the wireless LED
      *       by accident.
     */
+    
 #if (defined INCLUDE_USB_LED)
     if (cmd == USB_LED_STATE_ON || cmd == USB_LED_STATE_OFF)
     {
-#if defined(R6300v2) || defined(R6250)
+        /* Foxconn modified start, Wins, 04/11/2011 */
+#if defined(R6300v2) || defined(R6250) || defined(R6200v2)
         extern int usb1_led_state;
 
         if (cmd == USB_LED_STATE_ON)
@@ -81,60 +96,123 @@ unsigned long arg)
         else
             usb1_led_state = 0;
 
-#elif (defined WNDR4000AC) 
+		/* Foxconn added start pling 12/26/2011, for WNDR4000AC */
+#elif defined WNDR4000AC 
 		/* Do nothing here */
+		/* Foxconn added end pling 12/26/2011, for WNDR4000AC */
 
 #else /* R6300v2 */
-        extern int usb_led_state;
+        extern int usb1_led_state,usb1_led_state_smp;
         if (cmd == USB_LED_STATE_ON)
-            usb_led_state = 1;
+            usb1_led_state = 1;
         else
-            usb_led_state = 0;
+            usb1_led_state = 0;
+        usb1_led_state_smp=usb1_led_state;
 #endif /* R6300v2 */
+        /* Foxconn modified end, Wins, 04/11/2011 */
         return 0;
     }
 
-#if defined(R6300v2)
+    /* Foxconn added start, Wins, 04/11/2011 */
+#if defined(R6300v2) || defined(R7000)
     if (cmd == USB2_LED_STATE_ON || cmd == USB2_LED_STATE_OFF)
     {
-        extern int usb2_led_state;
+        extern int usb2_led_state,usb2_led_state_smp;
 
         if (cmd == USB2_LED_STATE_ON)
             usb2_led_state = 1;
         else
             usb2_led_state = 0;
+        usb2_led_state_smp = usb2_led_state;
         return 0;
     }
 #endif /* R6300v2 */
 #endif
+    /* Foxconn added end, Wins, 04/11/2011 */
+#ifdef WIFI_LED_BLINKING
+    if (cmd == WLAN_N_RADIO_ON)
+    {
+    	wifi_2g_led_state_smp=1;
+    	return 0;
+    }        
+    else if(cmd == WLAN_N_RADIO_OFF)
+    {
+    	wifi_2g_led_state_smp=0;
+    	return 0;
+    }
+    else if(cmd == WLAN_G_RADIO_ON)
+    {
+    	wifi_5g_led_state_smp=1;
+    	return 0;
+    }
+    else if(cmd == WLAN_G_RADIO_OFF)
+    {
+    	wifi_5g_led_state_smp=0;
+    	return 0;
+    }
 
-    if (arg)
+#endif
+    /* Foxconn added end pling 02/26/2010 */
+
+    /* foxconn added start, zacker, 09/17/2009, @wps_led */
+	/*Foxconn add start by Hank 05/31/2013*/
+	/*change led state value on open SMP*/
+    if (arg){
+#if (defined CONFIG_SMP)
+		is_wl_secu_mode_smp = 1;
         is_wl_secu_mode = 1;
-    else
+#else
+        is_wl_secu_mode = 1;
+#endif
+    }else{
+#if (defined CONFIG_SMP)
+		is_wl_secu_mode_smp = 0;
         is_wl_secu_mode = 0;
-
+#else
+        is_wl_secu_mode = 0;
+#endif
+	}
+	/*Foxconn add start by Hank 05/31/2013*/
+    /* foxconn added end, zacker, 09/17/2009, @wps_led */
+	/*Foxconn add start by Hank 05/31/2013*/
+	/*change led state value on open SMP*/
     switch (cmd)
     {
         case WPS_LED_BLINK_NORMAL:
+#if (defined CONFIG_SMP)
+			wps_led_state_smp = 1;
+#else
             wps_led_state = 1;
+#endif
 #ifdef _DEBUG
             printk("%s: blink normal\n", __FUNCTION__);
 #endif
             break;
 
         case WPS_LED_BLINK_QUICK:
-            wps_led_state = 2;
+#if (defined CONFIG_SMP)
+			wps_led_state_smp = 2;
+#else
+			wps_led_state = 2;
+#endif
 #ifdef _DEBUG
             printk("%s: blink WPS\n", __FUNCTION__);
 #endif
             break;
 
         case WPS_LED_BLINK_OFF:
+#if (defined CONFIG_SMP)
+			if(wps_led_state_smp !=2 )
+				wps_led_state_smp = 0;
+#else
+            /* foxconn added start, zacker, 09/17/2009, @wps_led */
             /* wps_led_state will change to 0 automatically after
              * blinking a few seconds if it's 2 currently
              */
             if (wps_led_state != 2)
+            /* foxconn added end, zacker, 09/17/2009, @wps_led */
                 wps_led_state = 0;
+#endif
 #ifdef _DEBUG
             printk("%s: blink OFF\n", __FUNCTION__);
 #endif
@@ -147,11 +225,20 @@ unsigned long arg)
             break;
 
         case WPS_LED_BLINK_QUICK2:
+#if (defined CONFIG_SMP)
+			wps_led_state_smp = 3;
+#else
             wps_led_state = 3;
+#endif
             break;
             
         case WPS_LED_BLINK_AP_LOCKDOWN:
+#if (defined CONFIG_SMP)
+			wps_led_state_smp = 4;
+#else
             wps_led_state = 4;
+#endif
+		/*Foxconn add end by Hank 05/31/2013*/
             break;
 
         default:

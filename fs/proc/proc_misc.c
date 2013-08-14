@@ -705,13 +705,13 @@ void __init proc_misc_init(void)
 		if (entry)
 			entry->proc_fops = &proc_kmsg_operations;
 /* Fxcn port-S Wins, 0713-09 */
-	/*  added start pling 03/03/2008 */
+	/* Foxconn added start pling 03/03/2008 */
         entry = create_proc_entry("wan_pkt", S_IRUSR, &proc_root);
         if (entry) {
 extern struct file_operations proc_kmsg2_operations;        
             entry->proc_fops = &proc_kmsg2_operations;
         }
-	/*  added end pling 03/03/2008 */
+	/* Foxconn added end pling 03/03/2008 */
 /* Fxcn port-E Wins, 0713-09 */
 	}
 #endif

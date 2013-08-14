@@ -449,14 +449,14 @@ static void pppol2tp_recv_dequeue_skb(struct pppol2tp_session *session, struct s
 		nf_reset(skb);
 
 		po = pppox_sk(session_sock);
-        /*  added start pling 09/15/2010 */
+        /* Foxconn added start pling 09/15/2010 */
         /* Since this module uses cb to store info. 
          * Before we send the skb to ppp, we clear 
          * the cb buffer first to avoid
          * un-wanted garbage in cb buffer.
          */
         memset(skb->cb, 0, sizeof(skb->cb));
-        /*  added end pling 09/15/2010 */
+        /* Foxconn added end pling 09/15/2010 */
 		ppp_input(&po->chan, skb);
 	} else {
 		PRINTK(session->debug, PPPOL2TP_MSG_DATA, KERN_INFO,
@@ -554,7 +554,7 @@ static int pppol2tp_recv_core(struct sock *sock, struct sk_buff *skb)
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,22))
 	struct udphdr *uh;
 #endif
-    u16 proto_ppphdr;   /* , add by MJ., protocol in PPP hdr.*/
+    u16 proto_ppphdr;   /* foxconn, add by MJ., protocol in PPP hdr.*/
 
 	ENTER_FUNCTION;
 
@@ -601,7 +601,7 @@ static int pppol2tp_recv_core(struct sock *sock, struct sk_buff *skb)
     proto_ppphdr = ntohs(*(u16*)(ptr+10));
 
 	/* If type is control packet, it is handled by userspace. */
-    /* , add by MJ. for changing the checking of control packets. 
+    /* Foxconn, add by MJ. for changing the checking of control packets. 
         Only forward IP-packets(0x0021) to PPP device. */
 	//if (hdrflags & L2TP_HDRFLAG_T) { //commented by MJ.
     if ((hdrflags & L2TP_HDRFLAG_T) || (proto_ppphdr != 0x0021))
@@ -955,12 +955,12 @@ static int pppol2tp_build_l2tp_header(struct pppol2tp_session *session,
 		       "%s: updated ns to %hu\n", session->name, session->ns);
 	}
 	/* This is the PPP header really */
-    /*  removed start pling 09/15/2010 */
+    /* Foxconn removed start pling 09/15/2010 */
     /* This is not necessary and may overwrite buffers outside 'buf'
      * since this is only 10 bytes long currently.
      */
 	//*bufp = htons(0xff03);
-    /*  removed end pling 09/15/2010 */
+    /* Foxconn removed end pling 09/15/2010 */
 
 	return ((void *) bufp) - buf;
 }
@@ -1118,7 +1118,7 @@ static void pppol2tp_wq_send(void *data)
 
 const char iphdr4l2tp[] = {0x45, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                            0xff, 0x11, 0x00, 0x00}; /* no sa & da */
-/*  wklin added start, 08/04/2010 @l2tp throughput */
+/* foxconn wklin added start, 08/04/2010 @l2tp throughput */
 static void pppol2tp_fill_ip_header(struct sock *sk,
                 struct sk_buff *skb,
                 struct iphdr *iphdr,
@@ -1135,7 +1135,7 @@ static void pppol2tp_fill_ip_header(struct sock *sk,
     /* Header checksum */
     iphdr->check = ip_fast_csum((unsigned char *) iphdr, iphdr->ihl);
 }
-/*  wklin added end, 08/04/2010 */
+/* foxconn wklin added end, 08/04/2010 */
 
 /* Transmit function called by generic PPP driver.  Sends PPP frame over
  * PPPoL2TP socket.
@@ -1145,7 +1145,7 @@ static void pppol2tp_fill_ip_header(struct sock *sk,
  * Since this function cannot block, we must queue up the actual socket send
  * on a work queue.
  */
-/*  wklin modified start, 04/14/2011 */
+/* foxconn wklin modified start, 04/14/2011 */
 static int pppol2tp_xmit(struct ppp_channel *chan, struct sk_buff *skb)
 {
 	struct sock *sk = (struct sock *) chan->private;
@@ -1156,14 +1156,14 @@ static int pppol2tp_xmit(struct ppp_channel *chan, struct sk_buff *skb)
 	struct pppol2tp_session *session;
 	struct pppol2tp_tunnel *tunnel;
 	struct pppol2tp_send *send = NULL;
-    /*  wklin added start, 08/04/2010 @l2tp throughput */
+    /* foxconn wklin added start, 08/04/2010 @l2tp throughput */
     struct inet_sock *inet = NULL;
     struct dst_entry *dst;
     char *p;
     struct udphdr *uh, tmp_uh;
     struct iphdr *iph, tmp_iph;
     int headroom;
-    /*  wklin added end, 08/04/2010 */
+    /* foxconn wklin added end, 08/04/2010 */
 
 	ENTER_FUNCTION;
 
@@ -1213,7 +1213,7 @@ keep_go_2:
 	}
 #endif
 
-    /*  wklin added start, 08/04/2010 @l2tp throughput */
+    /* foxconn wklin added start, 08/04/2010 @l2tp throughput */
 #define ETHADDR         12
 #define BCMTAG53115     4
 #define VLANID          4
@@ -1239,7 +1239,7 @@ keep_go_2:
 
     dst_release(skb->dst); /* release dst if any */
     skb->dst = dst;
-    /*  modified start pling 09/15/2010 */
+    /* Foxconn modified start pling 09/15/2010 */
     /* 1. no need to call 'dst_hold' again as 'sk_dst_check' already
      *    called 'dst_hold'.
      * 2. For skb from IP stack, don't replace the original sk,
@@ -1249,7 +1249,7 @@ keep_go_2:
     //dst_hold(dst);
     if (!skb->sk)
         skb->sk = session->tunnel_sock;
-    /*  modified end pling 09/15/2010 */
+    /* Foxconn modified end pling 09/15/2010 */
     
     /* ppph */
     p = skb_push(skb, sizeof(ppph));
@@ -1277,13 +1277,13 @@ keep_go_2:
 
     /* fill ip hdr */
     iph = (struct iphdr *)skb_push(skb, sizeof(struct iphdr));
-    /*  modified start pling 09/15/2010 */
+    /* Foxconn modified start pling 09/15/2010 */
     /* 'pppol2tp_fill_ip_header' need to use sk to fill in some info.
      * Use the tunnel sock info instead.
      */
     //pppol2tp_fill_ip_header(skb->sk, skb, &tmp_iph, skb->len);
     pppol2tp_fill_ip_header(session->tunnel_sock, skb, &tmp_iph, skb->len);
-    /*  modified end pling 09/15/2010 */
+    /* Foxconn modified end pling 09/15/2010 */
     memcpy((char *)iph, (char *)&tmp_iph, sizeof(tmp_iph));
     skb_reset_network_header(skb);
 
@@ -1294,7 +1294,7 @@ keep_go_2:
     dst_output(skb);
     return 1;
 slow_path:
-    /*  wklin added end, 08/04/2010, @l2tp throughput */
+    /* foxconn wklin added end, 08/04/2010, @l2tp throughput */
 	/* Unfortunately there doesn't appear to be a way for us to pass an skb
 	 * to the UDP layer, we have to pretend to be sending ordinary data
 	 * and use sendmsg
@@ -1324,14 +1324,14 @@ slow_path:
 	msg->msg_iovlen = 3;
 
 	/* If the user calls sendto() that's just too bad */
-    /*  wklin modified start, 08/04/2010, 
+    /* foxconn wklin modified start, 08/04/2010, 
      * remove this so we will have a cached dst in sk 
      * */
 	//msg->msg_name	 = &session->tunnel_addr.addr;
 	//msg->msg_namelen = sizeof(session->tunnel_addr.addr);
     msg->msg_name	 = NULL;
 	msg->msg_namelen = 0;
-    /*  wklin moified end, 08/04/2010 */
+    /* foxconn wklin moified end, 08/04/2010 */
 
 	msg->msg_control    = NULL;
 	msg->msg_controllen = 0;
@@ -1364,7 +1364,7 @@ end:
 	EXIT_FUNCTION;
 	return error;
 }
-/*  wklin modified end, 04/14/2011 */
+/* foxconn wklin modified end, 04/14/2011 */
 /*****************************************************************************
  * Session (and tunnel control) socket create/destroy.
  *****************************************************************************/

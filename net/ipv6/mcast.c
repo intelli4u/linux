@@ -72,12 +72,12 @@
 #define MDBG(x)
 #endif
 
-/*  added start pling 10/27/2009 */
+/* Foxconn added start pling 10/27/2009 */
 const char lan_if_name[] = "br0";
 const char wan_if_name[] = "eth0";
 int lan_dad_detected = 0;
 int wan_dad_detected = 0;
-/*  added end pling 10/27/2009 */
+/* Foxconn added end pling 10/27/2009 */
 /* Ensure that we have struct in6_addr aligned on 32bit word. */
 static void *__mld2_query_bugs[] __attribute__((__unused__)) = {
 	BUILD_BUG_ON_NULL(offsetof(struct mld2_query, mld2q_srcs) % 4),
@@ -2161,7 +2161,7 @@ static void mld_ifc_timer_expire(unsigned long data)
 {
 	struct inet6_dev *idev = (struct inet6_dev *)data;
 
-	/*  modified start pling 10/27/2009 */
+	/* Foxconn modified start pling 10/27/2009 */
     /* 1. Don't send MLD reports for LAN or WAN i/f if DAD detected.
      *    Also, ignore don't send reports on vlan i/f.
 	 */
@@ -2169,7 +2169,7 @@ static void mld_ifc_timer_expire(unsigned long data)
 		mld_send_cr(idev);
     else if (!strcmp(idev->dev->name, wan_if_name) && !wan_dad_detected)
 		mld_send_cr(idev);
-	/*  modified end pling 10/27/2009 */
+	/* Foxconn modified end pling 10/27/2009 */
 
 	if (idev->mc_ifc_count) {
 		idev->mc_ifc_count--;

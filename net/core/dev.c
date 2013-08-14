@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  * 	NET3	Protocol independent device support routines.
  *
@@ -133,10 +134,10 @@
 
 #include <typedefs.h>
 #include <bcmdefs.h>
-/*  added start, pptp, Winster Chan, 06/26/2006 */
+/* Foxconn added start, pptp, Winster Chan, 06/26/2006 */
 #include <linux/if_pppox.h>
 #include <linux/ppp_comm.h>
-/*  added end, pptp, Winster Chan, 06/26/2006 */
+/* Foxconn added end, pptp, Winster Chan, 06/26/2006 */
 
 /* Instead of increasing this, you should create a hash table. */
 #define MAX_GRO_SKBS 8
@@ -181,14 +182,14 @@ static DEFINE_SPINLOCK(ptype_lock);
 static struct list_head ptype_base[PTYPE_HASH_SIZE] __read_mostly;
 static struct list_head ptype_all __read_mostly;	/* Taps */
 
-/*  added start, pptp, Winster Chan, 06/26/2006 */
+/* Foxconn added start, pptp, Winster Chan, 06/26/2006 */
 static struct addr_info pptp_ip_addr;
 
 #define NTOHS_ETH_P_PPTP_GRE    ntohs(ETH_P_PPTP_GRE)
 #define NTOHS_ETH_P_IP          ntohs(ETH_P_IP)
 #define NTOHS_ETH_P_PPP_SES     ntohs(ETH_P_PPP_SES)
 #define NTOHS_ETH_P_PPPOE_SESS  ntohs(ETH_P_PPPOE_SESS)
-/*  added end, pptp, Winster Chan, 06/26/2006 */
+/* Foxconn added end, pptp, Winster Chan, 06/26/2006 */
 /*
  * The @dev_base_head list is protected by @dev_base_lock and the rtnl
  * semaphore.
@@ -1200,14 +1201,14 @@ static int __dev_open(struct net_device *dev)
 
 	return ret;
 }
-/*  added start pling 10/27/2009 */
+/* Foxconn added start pling 10/27/2009 */
 #ifdef CONFIG_IPV6
 extern const char lan_if_name[];
 extern const char wan_if_name[];
 extern int lan_dad_detected;
 extern int wan_dad_detected;
 #endif
-/*  added end pling 10/27/2009 */
+/* Foxconn added end pling 10/27/2009 */
 
 /**
  *	dev_open	- prepare an interface for use.
@@ -1293,6 +1294,22 @@ static int __dev_close(struct net_device *dev)
 	 *	Shutdown NET_DMA
 	 */
 	net_dmaengine_put();
+
+    /* Foxconn added start pling 10/29/2009 */
+    /* Clear the IPv6 DAD flags when interface is down */
+#ifdef CONFIG_IPV6
+    if (strcmp(dev->name, lan_if_name) == 0)
+        lan_dad_detected = 0;
+    else if (strcmp(dev->name, wan_if_name) == 0)
+        wan_dad_detected = 0;
+
+    /* Foxconn added start pling 09/01/2010 */
+    /* Restore IPv6 forwarding that might be disabled previously by DAD */
+    extern int restore_ipv6_forwarding(struct net_device *dev);
+    restore_ipv6_forwarding(dev);
+    /* Foxconn added end pling 09/01/2010 */
+#endif
+    /* Foxconn added end pling 10/29/2009 */
 
 	return 0;
 }
@@ -1959,7 +1976,7 @@ static inline int skb_needs_linearize(struct sk_buff *skb,
 					      illegal_highdma(dev, skb))));
 }
 
-int dev_hard_start_xmit(struct sk_buff *skb, struct net_device *dev,
+int BCMFASTPATH_HOST dev_hard_start_xmit(struct sk_buff *skb, struct net_device *dev,
 			struct netdev_queue *txq)
 {
 	const struct net_device_ops *ops = dev->netdev_ops;
@@ -1983,6 +2000,11 @@ int dev_hard_start_xmit(struct sk_buff *skb, struct net_device *dev,
 				goto out_kfree_skb;
 			if (skb->next)
 				goto gso;
+			else {
+				DEV_GSO_CB(skb)->destructor = skb->destructor;
+				skb->destructor = dev_gso_skb_destructor;
+				goto out_kfree_gso_skb;
+			}
 		} else {
 			if (skb_needs_linearize(skb, dev) &&
 			    __skb_linearize(skb))
@@ -2211,8 +2233,8 @@ int BCMFASTPATH_HOST dev_queue_xmit(struct sk_buff *skb)
 #ifdef CONFIG_NET_CLS_ACT
 	skb->tc_verd = SET_TC_AT(skb->tc_verd, AT_EGRESS);
 #endif
-	proto = *(unsigned short *)(skb->data + ETH_ALEN + ETH_ALEN);   
-	if ( (q->enqueue) && (htons(proto) != ETH_P_8021Q)) {     
+	proto = *(unsigned short *)(skb->data + ETH_ALEN + ETH_ALEN);   /* foxconn added Bob, 10/30/2008 */
+	if ( (q->enqueue) && (htons(proto) != ETH_P_8021Q)) {     /* foxconn added Bob, 10/30/2008, check 802.1q vlan type */
 		rc = __dev_xmit_skb(skb, q, dev, txq);
 		goto out;
 	}
@@ -2527,7 +2549,7 @@ enqueue:
  *
  */
 
-int netif_rx(struct sk_buff *skb)
+int BCMFASTPATH_HOST netif_rx(struct sk_buff *skb)
 {
 	int ret;
 
@@ -2840,6 +2862,7 @@ int __skb_bond_should_drop(struct sk_buff *skb, struct net_device *master)
 }
 EXPORT_SYMBOL(__skb_bond_should_drop);
 
+/* Foxconn added start pling 03/20/2012 */
 static unsigned long call_id = 0;
 static unsigned long peer_call_id = 0;
 
@@ -2848,6 +2871,7 @@ void dev_import_call_id(unsigned long pptp_call_id, unsigned long pptp_peer_call
     call_id = pptp_call_id;
     peer_call_id = pptp_peer_call_id;
 }
+/* Foxconn added end pling 03/20/2012 */
 
 static int __netif_receive_skb(struct sk_buff *skb)
 {
@@ -2935,6 +2959,7 @@ ncls:
 	if (unlikely(vlan_tx_tag_present(skb)))
 		goto bypass;
 
+	/* Foxconn added start pling 03/14/2011 */
 	/* For SamKnows briding: bridge "eth0" under "br0" with "vlan1" and "eth1".
 	 * If packet comes from eth0 with VID1, then bypass bridge handling.
      * ps. we only check the 4th byte of interface name:
@@ -2950,6 +2975,7 @@ ncls:
 		(skb->data[1] == 0x01)) {
 		goto bypass_handle_bridge;
 	}
+	/* Foxconn added end pling 03/14/2011 */
 
 	/* Handle special case of bridge or macvlan */
 	rx_handler = rcu_dereference(skb->dev->rx_handler);
@@ -2975,9 +3001,12 @@ ncls:
 		orig_or_bond = vlan_dev_real_dev(skb->dev);
 	}
 	
+	/* Foxconn added start pling 03/14/2011 */
 bypass_handle_bridge:
+	/* Foxconn added end pling 03/14/2011 */
 	
 	type = skb->protocol;
+    /* Foxconn added start, pptp, Winster Chan, 06/26/2006 */
     int rsttype = 0;
     /* Check dst_addr & src_addr, if PPTP was active */
     if (pptp_ip_addr.dst_addr && pptp_ip_addr.src_addr) {
@@ -2996,13 +3025,16 @@ bypass_handle_bridge:
                     if (GRE_IS_S(grehdr->flags)) grehdrlen += 4;
                     if (GRE_IS_A(grehdr->version)) grehdrlen += 4;
 
+                    /* Foxconn added start pling 03/20/2012 */
                     /* Handle PPTP passthrough packets */
                     //printk(KERN_EMERG "grehdr->call_id=%x, call_id=%x\n", htons(grehdr->call_id), call_id);
                     if (htons(grehdr->call_id) != call_id) {
                         //printk(KERN_EMERG "Not DUT PPTP call (our:%x, pkt:%x)\n", call_id, htons(grehdr->call_id));
                         goto reset_type; 
                     }
+                    /* Foxconn added end pling 03/20/2012 */
 
+                    /* Foxconn added start pling 04/28/2011 */
                     /* Russia MPD3 issue: sometimes server does not send 'ff03' */
                     /* Per Netgear spec, 
                      * -- only RU region, or 
@@ -3022,12 +3054,15 @@ bypass_handle_bridge:
                             goto check_header;
                         }
                     }
+                    /* Foxconn added end pling 04/28/2011 */
 
                     hdrlen = iphdrlen + grehdrlen + 2;
                     ppp_proto =
                         ntohs(*(unsigned short *)((unsigned char *)skb->data + hdrlen));
 
+                    /* Foxconn added start pling 04/28/2011, Russia MPD3 issue */
 check_header:
+                    /* Foxconn added end pling 04/28/2011 */
 
                     /* Check if PPP header presented */
                     if ((grehdr->protocol == GRE_PROTOCOL_PPTP) &&
@@ -3035,7 +3070,7 @@ check_header:
                         ((int)(ntohs(iphdr->tot_len)) > hdrlen) &&
                         (ppp_proto <= PPP_NETWORK_LAYER) && (ppp_proto > 0)) {
                         /* Set packet type == pptp */
-                        type = NTOHS_ETH_P_PPTP_GRE; 
+                        type = NTOHS_ETH_P_PPTP_GRE;  /* Foxconn defined (0x082F) */
                     }
                 } /* End if (IP_PROTOCOL_GRE) */
             } /* End if (src_addr, dst_addr) */
@@ -3053,6 +3088,7 @@ reset_type:
         type = NTOHS_ETH_P_IP;
         rsttype = 0;
     }
+    /* Foxconn added end, pptp, Winster Chan, 06/26/2006 */
 	list_for_each_entry_rcu(ptype,
 			&ptype_base[ntohs(type) & PTYPE_HASH_MASK], list) {
 		if (ptype->type == type && (ptype->dev == null_or_orig ||
@@ -3067,10 +3103,12 @@ reset_type:
 bypass:
 	if (pt_prev) {
 		ret = pt_prev->func(skb, skb->dev, pt_prev, orig_dev);
+		/* Foxconn added start, pptp, Winster Chan, 06/26/2006 */
 		if ((ret == NET_RX_BYPASS) && (pt_prev->type == NTOHS_ETH_P_PPTP_GRE)) {
 		    rsttype = 1;
 		    goto reset_type;
 		}
+        /* Foxconn added end, pptp, Winster Chan, 06/26/2006 */
 	} else {
 		kfree_skb(skb);
 		/* Jamal, now you will not able to escape explaining
@@ -3099,7 +3137,7 @@ out:
  *	NET_RX_SUCCESS: no congestion
  *	NET_RX_DROP: packet was dropped
  */
-int netif_receive_skb(struct sk_buff *skb)
+int BCMFASTPATH_HOST netif_receive_skb(struct sk_buff *skb)
 {
 	if (netdev_tstamp_prequeue)
 		net_timestamp_check(skb);
@@ -3646,7 +3684,7 @@ void netif_napi_del(struct napi_struct *napi)
 }
 EXPORT_SYMBOL(netif_napi_del);
 
-static void net_rx_action(struct softirq_action *h)
+static void BCMFASTPATH_HOST net_rx_action(struct softirq_action *h)
 {
 	struct softnet_data *sd = &__get_cpu_var(softnet_data);
 	unsigned long time_limit = jiffies + 2;
@@ -6234,17 +6272,21 @@ static int __init net_dev_init(void)
 	dst_init();
 	dev_mcast_init();
 	rc = 0;
+	/* Foxconn added start, pptp, Winster Chan, 06/26/2006 */
     memset(&pptp_ip_addr, 0, sizeof(struct addr_info));
+    /* Foxconn added end, pptp, Winster Chan, 06/26/2006 */
 out:
 	return rc;
 }
 
+/* Foxconn added start, pptp, Winster Chan, 06/26/2006 */
 void
 dev_import_addr_info(unsigned long *saddr, unsigned long *daddr)
 {
     pptp_ip_addr.src_addr = *saddr;
     pptp_ip_addr.dst_addr = *daddr;
 }
+/* Foxconn added end, pptp, Winster Chan, 06/26/2006 */
 
 subsys_initcall(net_dev_init);
 

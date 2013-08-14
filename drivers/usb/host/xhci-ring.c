@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  * xHCI host controller driver
  *
@@ -67,6 +68,9 @@
 #include <linux/scatterlist.h>
 #include <linux/slab.h>
 #include "xhci.h"
+
+#include <typedefs.h>
+#include <bcmdefs.h>
 
 /*
  * Returns zero if the TRB isn't in this segment, otherwise it returns the DMA
@@ -2004,7 +2008,7 @@ static void xhci_handle_event(struct xhci_hcd *xhci)
  * we might get bad data out of the event ring.  Section 4.10.2.7 has a list of
  * indicators of an event TRB error, but we check the status *first* to be safe.
  */
-irqreturn_t xhci_irq(struct usb_hcd *hcd)
+irqreturn_t BCMFASTPATH_HOST xhci_irq(struct usb_hcd *hcd)
 {
 	struct xhci_hcd *xhci = hcd_to_xhci(hcd);
 	u32 status;
@@ -2549,10 +2553,12 @@ static int queue_bulk_sg_tx(struct xhci_hcd *xhci, gfp_t mem_flags,
 		length_field = TRB_LEN(trb_buff_len) |
 			remainder |
 			TRB_INTR_TARGET(0);
-		if (num_trbs > 1)
+
+		if (num_trbs > 1) 
 			more_trbs_coming = true;
-		else
+		else  
 			more_trbs_coming = false;
+
 		queue_trb(xhci, ep_ring, false, more_trbs_coming,
 				lower_32_bits(addr),
 				upper_32_bits(addr),
@@ -2725,6 +2731,7 @@ int xhci_queue_bulk_tx(struct xhci_hcd *xhci, gfp_t mem_flags,
 			more_trbs_coming = true;
 		else
 			more_trbs_coming = false;
+
 		queue_trb(xhci, ep_ring, false, more_trbs_coming,
 				lower_32_bits(addr),
 				upper_32_bits(addr),

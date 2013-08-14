@@ -369,10 +369,29 @@ KBUILD_CFLAGS += -DBCMDRIVER -Dlinux
 
 #[MJ] add for debugging 5G crash.
 #CFLAGS += -DBCMDBG -DBCMDBG_ASSERT -DBCMDBG_ERR -DWLMSG_ASSOC -DWLTEST
+#[MJ] add-end for debugging 5G crash
 #Enable debug flag start
 #CFLAGS += -DBCMDBG -DWLTEST
 #Enable debug flag end
+ifeq ($(PROFILE),R7000)
+KBUILD_CFLAGS += -DMULTIPLE_SSID -DSAMBA_ENABLE -DX_ST_ML
 
+KBUILD_CFLAGS += -DU12H270 -DR7000
+KBUILD_CFLAGS += -DBCM53125
+
+KBUILD_CFLAGS += -DINCLUDE_USB_LED
+KBUILD_CFLAGS += -DWIFI_LED_BLINKING
+KBUILD_CFLAGS += -DIGMP_PROXY
+KBUILD_CFLAGS += -D__CONFIG_IGMP_SNOOPING__
+KBUILD_CFLAGS += -DINCLUDE_L2TP
+KBUILD_CFLAGS += -DAP_MODE
+KBUILD_CFLAGS += -DINCLUDE_DUAL_BAND
+KBUILD_CFLAGS += -DCONFIG_RUSSIA_IPTV
+KBUILD_CFLAGS += -DCONFIG_KERNEL_2_6_36
+KBUILD_CFLAGS += -DINCLUDE_ACCESSCONTROL
+endif
+
+ifeq ($(PROFILE),R6300v2)
 KBUILD_CFLAGS += -DMULTIPLE_SSID -DSAMBA_ENABLE -DX_ST_ML
 
 KBUILD_CFLAGS += -DU12H240 -DR6300v2
@@ -387,10 +406,46 @@ KBUILD_CFLAGS += -DINCLUDE_DUAL_BAND
 KBUILD_CFLAGS += -DCONFIG_RUSSIA_IPTV
 KBUILD_CFLAGS += -DCONFIG_KERNEL_2_6_36
 #KBUILD_CFLAGS += -DINCLUDE_ACCESSCONTROL
+endif
+
+ifeq ($(PROFILE),R6250)
+KBUILD_CFLAGS += -DMULTIPLE_SSID -DSAMBA_ENABLE -DX_ST_ML
+KBUILD_CFLAGS += -DU12H245 -DR6250
+KBUILD_CFLAGS += -DBCM53125
+KBUILD_CFLAGS += -DINCLUDE_USB_LED
+KBUILD_CFLAGS += -DIGMP_PROXY
+KBUILD_CFLAGS += -D__CONFIG_IGMP_SNOOPING__
+KBUILD_CFLAGS += -DINCLUDE_L2TP
+KBUILD_CFLAGS += -DAP_MODE
+KBUILD_CFLAGS += -DINCLUDE_DUAL_BAND
+KBUILD_CFLAGS += -DCONFIG_RUSSIA_IPTV
+KBUILD_CFLAGS += -DCONFIG_KERNEL_2_6_36
+#KBUILD_CFLAGS += -DINCLUDE_ACCESSCONTROL
+endif
+
+ifeq ($(PROFILE),R6200v2)
+KBUILD_CFLAGS += -DMULTIPLE_SSID -DSAMBA_ENABLE -DX_ST_ML
+KBUILD_CFLAGS += -DU12H264 -DR6200v2
+KBUILD_CFLAGS += -DBCM53125
+KBUILD_CFLAGS += -DINCLUDE_USB_LED
+KBUILD_CFLAGS += -DIGMP_PROXY
+KBUILD_CFLAGS += -D__CONFIG_IGMP_SNOOPING__
+KBUILD_CFLAGS += -DINCLUDE_L2TP
+KBUILD_CFLAGS += -DAP_MODE
+KBUILD_CFLAGS += -DINCLUDE_DUAL_BAND
+KBUILD_CFLAGS += -DCONFIG_RUSSIA_IPTV
+KBUILD_CFLAGS += -DCONFIG_KERNEL_2_6_36
+#KBUILD_CFLAGS += -DINCLUDE_ACCESSCONTROL
+endif
 
 
+# Foxconn added pling 12/26/2011, to define f/w region
+ifeq ($(FW_TYPE),WW)
 KBUILD_CFLAGS += -DWW_VERSION
-
+endif
+ifeq ($(FW_TYPE),RU)
+KBUILD_CFLAGS += -DRU_VERSION
+endif
 
 KBUILD_CFLAGS	+= -DBCMVISTAROUTER
 KBUILD_CFLAGS += -DINCLUDE_QOS
@@ -666,7 +721,9 @@ ifneq ($(KCFLAGS),)
         KBUILD_CFLAGS += $(KCFLAGS)
 endif
 
+# Bob added to build debug version wireless driver
 #KBUILD_CFLAGS += -DDHD_DEBUG -DWLTEST -DBCMDBG
+
 # Use --build-id when available.
 LDFLAGS_BUILD_ID = $(patsubst -Wl$(comma)%,%,\
 			      $(call cc-ldoption, -Wl$(comma)--build-id,))
@@ -695,7 +752,9 @@ export	INSTALL_PATH ?= /boot
 # makefile but the argument can be passed to make if needed.
 #
 
+# /* Fxcn port-S Wins, 0729-09 */
 INSTALL_MOD_PATH = $(TARGETDIR)
+# /* Fxcn port-E Wins, 0729-09 */
 MODLIB	= $(INSTALL_MOD_PATH)/lib/modules/$(KERNELRELEASE)
 export MODLIB
 
@@ -957,8 +1016,6 @@ $(vmlinux-dirs): prepare scripts
 
 # Store (new) KERNELRELASE string in include/config/kernel.release
 include/config/kernel.release: include/config/auto.conf FORCE
-	$(Q)rm -f $@
-	$(Q)echo "$(KERNELVERSION)$$($(CONFIG_SHELL) $(srctree)/scripts/setlocalversion $(srctree))" > $@
 
 
 # Things we need to do before we recursively start building the kernel
@@ -1136,7 +1193,9 @@ _modinst_:
 	@cp -f $(objtree)/modules.order $(MODLIB)/
 	@cp -f $(objtree)/modules.builtin $(MODLIB)/
 	$(Q)$(MAKE) -f $(srctree)/scripts/Makefile.modinst
+# Foxconn, add by MJ., for debugging. 
 	@echo "================================================"
+# Foxconn, end by MJ., for debugging.
 # This depmod is only for convenience to give the initial
 # boot a modules.dep even before / is mounted read-write.  However the
 # boot script depmod is the master version.

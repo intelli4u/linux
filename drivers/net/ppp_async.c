@@ -108,13 +108,13 @@ static void ppp_async_process(unsigned long arg);
 static void async_lcp_peek(struct asyncppp *ap, unsigned char *data,
 			   int len, int inbound);
 
-/*  modified start, wklin 12/09/2010 
+/* foxconn modified start, wklin 12/09/2010 
  * makw async_ops public so it can be referenced in ppp_push() */
 /*static*/ const struct ppp_channel_ops async_ops = {
 	.start_xmit = ppp_async_send,
 	.ioctl      = ppp_async_ioctl,
 };
-/*  modified end, wklin, 12/09/2010 */
+/* foxconn modified end, wklin, 12/09/2010 */
 
 /*
  * Routines implementing the PPP line discipline.
