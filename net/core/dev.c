@@ -1319,6 +1319,15 @@ int dev_close(struct net_device *dev)
 	rtmsg_ifinfo(RTM_NEWLINK, dev, IFF_UP|IFF_RUNNING);
 	call_netdevice_notifiers(NETDEV_DOWN, dev);
 
+#ifdef CONFIG_IPV6
+    if (strcmp(dev->name, lan_if_name) == 0)
+        lan_dad_detected = 0;
+    else if (strcmp(dev->name, wan_if_name) == 0)
+        wan_dad_detected = 0;
+
+    extern int restore_ipv6_forwarding(struct net_device *dev);
+    restore_ipv6_forwarding(dev);
+#endif
 	return 0;
 }
 EXPORT_SYMBOL(dev_close);
