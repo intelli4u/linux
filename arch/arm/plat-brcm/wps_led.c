@@ -46,6 +46,9 @@ extern int is_wl_secu_mode_smp;
 #ifdef WIFI_LED_BLINKING
 extern int wifi_2g_led_state_smp;
 extern int wifi_5g_led_state_smp;
+#if defined(R8000)
+extern int wifi_5g_2_led_state_smp;
+#endif
 #endif
 
 /* foxconn added start, ken chen, 12/13/2013, Support LED_CONTROL_SETTINGS */
@@ -116,7 +119,7 @@ unsigned long arg)
     }
 
     /* Foxconn added start, Wins, 04/11/2011 */
-#if defined(R6300v2) || defined(R7000)
+#if defined(R6300v2) || defined(R7000) || defined(R8000)
     if (cmd == USB2_LED_STATE_ON || cmd == USB2_LED_STATE_OFF)
     {
         extern int usb2_led_state,usb2_led_state_smp;
@@ -152,6 +155,18 @@ unsigned long arg)
     	wifi_5g_led_state_smp=0;
     	return 0;
     }
+#if defined(R8000)
+    else if(cmd == WLAN_G_2_RADIO_ON)
+    {
+    	wifi_5g_2_led_state_smp=1;
+    	return 0;
+    }
+    else if(cmd == WLAN_G_2_RADIO_OFF)
+    {
+    	wifi_5g_2_led_state_smp=0;
+    	return 0;
+    }
+#endif    
 
 #endif
     /* Foxconn added end pling 02/26/2010 */

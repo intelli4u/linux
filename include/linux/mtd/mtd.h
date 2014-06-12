@@ -207,6 +207,7 @@ struct mtd_info {
 			 struct mtd_oob_ops *ops);
 	int (*write_oob) (struct mtd_info *mtd, loff_t to,
 			 struct mtd_oob_ops *ops);
+    int (*write_page) (struct mtd_info *mtd, loff_t to, u_char *buf);    /*Foxconn Bob added on 03/18/2014, for page programming*/
 
 	/*
 	 * Methods to access the protection register area, present in some

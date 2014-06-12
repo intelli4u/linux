@@ -1309,6 +1309,9 @@ send_sig_info(int sig, struct siginfo *info, struct task_struct *p)
 	return do_send_sig_info(sig, info, p, false);
 }
 
+#define __si_special(priv) \
+	((priv) ? SEND_SIG_PRIV : SEND_SIG_NOINFO)
+
 int
 send_sig(int sig, struct task_struct *p, int priv)
 {

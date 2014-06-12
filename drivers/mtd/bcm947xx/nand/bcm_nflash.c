@@ -420,7 +420,7 @@ nflash_mtd_erase(struct mtd_info *mtd, struct erase_info *erase)
 		return -EINVAL;
 
 	NFLASH_LOCK(nflash);
-
+	
 	/* Find the effective start block address to erase */
 	part_start_blk = reciprocal_divide(part->offset & ~(blocksize-1),
 		reciprocal_blocksize);
@@ -445,7 +445,7 @@ nflash_mtd_erase(struct mtd_info *mtd, struct erase_info *erase)
 	/* Erase the blocks from the new block address */
 	erase_blknum = reciprocal_divide(len + (blocksize-1), reciprocal_blocksize);
 
-	if ((new_addr + (erase_blknum * blocksize)) > (part->offset + part->size)) {
+	if ((new_addr + (erase_blknum * blocksize)) > (part->offset + part->size)) {	
 		ret = -EINVAL;
 		goto done;
 	}
@@ -454,6 +454,14 @@ nflash_mtd_erase(struct mtd_info *mtd, struct erase_info *erase)
 		/* Skip bad block erase */
 		uint j = reciprocal_divide(i, reciprocal_blocksize);
 		if (nflash->map[j] != 0) {
+		    
+		    /*foxconn Bob modified start on 03/20/2014, to avoid erase to next partition block */
+		    if ((new_addr + (erase_blknum * blocksize)) >= (part->offset + part->size)) 
+		    {
+		        ret = -EINVAL;
+		        break;
+		    }
+		    /*foxconn Bob modified end on 03/20/2014, to avoid erase to next partition block */
 			continue;
 		}
 
@@ -485,6 +493,122 @@ done:
 #define nflash_mtd_init init_module
 #define nflash_mtd_exit cleanup_module
 #endif
+
+/* Foxconn Bob added start for nand page write, 03/19/2014 */
+static int
+nflash_mtd_isbad(struct mtd_info *mtd, loff_t ofs)
+{
+    int ret;
+    struct nflash_mtd *nflash = (struct nflash_mtd *) mtd->priv;
+    
+    NFLASH_LOCK(nflash);
+    ret = hndnand_checkbadb(nflash->nfl, ofs);
+    NFLASH_UNLOCK(nflash);
+    return ret;
+}
+
+static int
+nflash_mtd_markbad(struct mtd_info *mtd, loff_t ofs)
+{
+    struct nflash_mtd *nflash = (struct nflash_mtd *) mtd->priv;
+    
+    NFLASH_LOCK(nflash);
+    hndnand_mark_badb(nflash->nfl, ofs);
+    NFLASH_UNLOCK(nflash);
+    return 0;
+}
+
+static int nflash_mtd_write_page(struct mtd_info *mtd, loff_t to, u_char *buf)
+{
+    struct nflash_mtd *nflash = (struct nflash_mtd *) mtd->priv;
+    struct mtd_partition *part = NULL;
+    uint offset, blocksize, mask, blk_offset, off;
+	uint skip_bytes = 0, good_bytes = 0;
+    int blk_idx, i;
+    int ret = 0;
+    uint r_blocksize, part_blk_start, part_blk_end;
+    uint page_offset;
+    /* Locate the part */
+	for (i = 0; nflash_parts[i].name; i++) 
+	{
+		if (to >= nflash_parts[i].offset &&
+			((nflash_parts[i+1].name == NULL) ||
+			(to < (nflash_parts[i].offset + nflash_parts[i].size)))) 
+	        {
+			    part = &nflash_parts[i];
+			    break;
+            }
+	}
+	if (!part)
+		return -EINVAL;
+	/* Check address range */
+	if ((to) > (part->offset + part->size))
+		return -EINVAL;
+	offset = to;
+	blocksize = mtd->erasesize;
+	r_blocksize = reciprocal_value(blocksize);
+	
+	NFLASH_LOCK(nflash);
+
+	mask = blocksize - 1;
+	/* Check and skip bad blocks */
+	blk_offset = offset & ~mask;
+	page_offset = offset & mask;
+	good_bytes = part->offset & ~mask;
+	part_blk_start = reciprocal_divide(good_bytes, r_blocksize);
+	part_blk_end = reciprocal_divide(part->offset + part->size, r_blocksize);
+	
+	for (blk_idx = part_blk_start;  blk_idx < part_blk_end; blk_idx++) 
+	{
+		if (nflash->map[blk_idx] != 0) 
+		{
+			skip_bytes += blocksize;
+		} 
+		else 
+		{
+			if (good_bytes == blk_offset)
+			{
+				break;
+			}
+			good_bytes += blocksize;
+		}
+	}
+	if (blk_idx == part_blk_end) {
+		ret = -EINVAL;
+		goto done;
+	}
+	blk_offset = blocksize * blk_idx;
+	
+    hndnand_write_page(nflash->nfl, (loff_t)blk_offset+ page_offset, buf, NULL, 1);
+done:
+    NFLASH_UNLOCK(nflash);
+    return ret;
+}
+
+static int 
+nflash_mtd_write_oob(struct mtd_info *mtd, loff_t to,
+			 struct mtd_oob_ops *ops)
+{
+    /*it doesn't work, not sure if it related to HW ECC, Bob comments on 03/19/2014 */
+    struct nflash_mtd *nflash = (struct nflash_mtd *) mtd->priv;
+    NFLASH_LOCK(nflash);
+    hndnand_write_oob(nflash->nfl, to, ops->oobbuf);
+    NFLASH_UNLOCK(nflash);
+    return 0;
+}
+
+static int 
+nflash_mtd_read_oob(struct mtd_info *mtd, loff_t from,
+			 struct mtd_oob_ops *ops)
+{
+    struct nflash_mtd *nflash = (struct nflash_mtd *) mtd->priv;
+    NFLASH_LOCK(nflash);
+    ops->oobretlen = hndnand_read_oob(nflash->nfl, from, ops->oobbuf);
+    NFLASH_UNLOCK(nflash);
+    
+    return 0;
+}
+/* Foxconn Bob added end for nand page write, 03/19/2014 */
 
 static int __init
 nflash_mtd_init(void)
@@ -527,6 +651,16 @@ nflash_mtd_init(void)
 		memset(nflash.map, 0, info->numblocks);
 
 	/* Register with MTD */
+	
+    /* Foxconn Bob added start for nand page write, 03/19/2014 */
+    nflash.mtd.block_isbad = nflash_mtd_isbad;
+	nflash.mtd.block_markbad = nflash_mtd_markbad;
+	nflash.mtd.write_oob = nflash_mtd_write_oob;
+	nflash.mtd.read_oob = nflash_mtd_read_oob;
+	nflash.mtd.write_page = nflash_mtd_write_page;
+	
+	/* Foxconn Bob added end for nand page write, 03/19/2014 */
+	
 	nflash.mtd.name = "nflash";
 	nflash.mtd.type = MTD_NANDFLASH;
 	nflash.mtd.flags = MTD_CAP_NANDFLASH;
@@ -535,6 +669,7 @@ nflash_mtd_init(void)
 	nflash.mtd.read = nflash_mtd_read;
 	nflash.mtd.write = nflash_mtd_write;
 	nflash.mtd.writesize = info->pagesize;
+	nflash.mtd.oobsize = info->oobsize; /* Foxconn Bob added for nand page write, 03/19/2014 */	
 	nflash.mtd.priv = &nflash;
 	nflash.mtd.owner = THIS_MODULE;
 	nflash.controller = nand_hwcontrol_lock_init();

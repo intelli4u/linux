@@ -51,6 +51,9 @@
 #define BRCTL_SET_ACCESS_CONTROL 22   /* foxconn added, dennis, 03/24/2011 */
 #define BRCTL_SET_ACCESS_CONTROL_MODE 23   /* foxconn added, dennis, 03/24/2011 */
 #endif
+#ifdef MULTIPLE_SSID
+#define BRCTL_SET_5G_2_MSSIDPROFILE 24   /* Foxconn add pling, MutiSsidControl 10/06/2010 */
+#endif
 
 #define BR_STATE_DISABLED 0
 #define BR_STATE_LISTENING 1

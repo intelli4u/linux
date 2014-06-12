@@ -383,6 +383,42 @@ static int otp_select_filemode(struct mtd_file_info *mfi, int mode)
 # define otp_select_filemode(f,m)	-EOPNOTSUPP
 #endif
 
+/* Foxconn Bob added start for nand page write, 03/19/2014 */
+static int mtd_do_writepage(struct file *file, struct mtd_info *mtd,
+	uint64_t start, uint32_t length, void __user *ptr,
+	uint32_t __user *retp)
+{
+	char *page_buf;
+	uint32_t retlen;
+	int ret = 0;
+
+	if (!(file->f_mode & FMODE_WRITE))
+		return -EPERM;
+
+	if (length > mtd->writesize)
+		return -EINVAL;
+
+	if (!mtd->write_page)
+		ret = -EOPNOTSUPP;
+	else
+		ret = access_ok(VERIFY_READ, ptr, length) ? 0 : -EFAULT;
+
+	if (ret)
+		return ret;
+
+	page_buf = memdup_user(ptr, length);
+	if (IS_ERR(page_buf))
+	{
+		return PTR_ERR(page_buf);
+	}
+
+	ret = mtd->write_page(mtd, start, page_buf);
+	kfree(page_buf);
+
+	return ret;
+}
+/* Foxconn Bob added end for nand page write, 03/19/2014 */
+
 static int mtd_do_writeoob(struct file *file, struct mtd_info *mtd,
 	uint64_t start, uint32_t length, void __user *ptr,
 	uint32_t __user *retp)
@@ -604,6 +640,21 @@ static int mtd_ioctl(struct file *file, u_int cmd, u_long arg)
 				buf.ptr, &buf_user->length);
 		break;
 	}
+	/* Foxconn Bob added start for nand page write, 03/19/2014 */
+	case MEMWRITEPAGE:
+	{
+		struct mtd_oob_buf buf;
+		struct mtd_oob_buf __user *buf_user = argp;
+
+		/* NOTE: writes return length to buf_user->length */
+		if (copy_from_user(&buf, argp, sizeof(buf)))
+			ret = -EFAULT;
+		else
+			ret = mtd_do_writepage(file, mtd, buf.start, buf.length,
+				buf.ptr, &buf_user->length);
+		break;
+	}
+	/* Foxconn Bob added end for nand page write, 03/19/2014 */
 
 	case MEMREADOOB:
 	{
@@ -719,7 +770,10 @@ static int mtd_ioctl(struct file *file, u_int cmd, u_long arg)
 		if (!mtd->block_isbad)
 			ret = -EOPNOTSUPP;
 		else
-			return mtd->block_isbad(mtd, offs);
+		{
+		    ret = mtd->block_isbad(mtd, offs);
+			return ret;
+		}
 		break;
 	}
 

@@ -1376,7 +1376,7 @@ unsigned int __devinit pci_scan_child_bus(struct pci_bus *bus)
 	/* Reserve buses for SR-IOV capability. */
 	max += pci_iov_bus_range(bus);
 
-#ifdef CONFIG_BCM47XX
+#if 0 //#ifdef CONFIG_BCM47XX //Ares marked for R8000
 	if (pci_domain_nr(bus) && pci_is_root_bus(bus))
 		max += pci_domain_nr(bus) - 1;
 #endif

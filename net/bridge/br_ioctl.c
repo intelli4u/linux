@@ -39,10 +39,19 @@ T_MSsidCtlProfile *gProfile_5g = NULL;
 int gProfilenum_5g = 0;
 /* Foxconn added end pling 10/06/2010 */
 
+#if defined(R8000)
+T_MSsidCtlProfile *gProfile_5g_2 = NULL;
+int gProfilenum_5g_2 = 0;
+#endif
+
 EXPORT_SYMBOL(gProfilenum);
 EXPORT_SYMBOL(gProfilenum_5g);
 EXPORT_SYMBOL(gProfile);
 EXPORT_SYMBOL(gProfile_5g);
+#if defined(R8000)
+EXPORT_SYMBOL(gProfilenum_5g_2);
+EXPORT_SYMBOL(gProfile_5g_2);
+#endif
 
 /*Fxcn added start by dennis,02/16/2012,for access control*/
 #ifdef INCLUDE_ACCESSCONTROL
@@ -70,6 +79,12 @@ void profileprint(void)
     {
         printk("<0>Profile_5g[%d]:name:%s,enable:%d\n",i,gProfile_5g[i].IfName,gProfile_5g[i].enable);
     }
+#if defined(R8000)
+    for (i = 0;i < gProfilenum_5g_2;i++)
+    {
+        printk("<0>Profile_5g_2[%d]:name:%s,enable:%d\n",i,gProfile_5g_2[i].IfName,gProfile_5g_2[i].enable);
+    }
+#endif
 }
 #endif
 /* Foxconn add end, Zz Shan 03/13/2009*/
@@ -495,6 +510,44 @@ static int old_deviceless(struct net *net, void __user *uarg)
 		return 0;
 	}
     /* Foxconn added end pling 10/06/2010 */
+#if defined(R8000)
+	case BRCTL_SET_5G_2_MSSIDPROFILE:
+	{
+		unsigned long num = 0;
+
+		gProfilenum_5g_2 = 0;
+		if (gProfile_5g_2)
+		{
+			kfree(gProfile_5g_2);
+			gProfile_5g_2 = NULL;
+		}
+
+		if (copy_from_user(&num, (void __user *)args[1], sizeof(int)))
+			return -EFAULT;
+
+		if (num == 0)
+			return 0;
+
+		gProfilenum_5g_2 = num;
+		gProfile_5g_2 = (T_MSsidCtlProfile *)kmalloc(num*sizeof(T_MSsidCtlProfile),GFP_ATOMIC);
+		if (!gProfile_5g_2)
+		{
+			gProfilenum_5g_2 = 0;
+			return -EFAULT;
+		}
+		if (copy_from_user(gProfile_5g_2, (void __user *)args[2], num*sizeof(T_MSsidCtlProfile)))
+		{
+			gProfilenum_5g_2 = 0;
+			kfree(gProfile_5g_2);
+			gProfile_5g_2 = NULL;
+			return -EFAULT;
+		}
+
+		//profileprint();
+
+		return 0;
+	}
+#endif    
 #endif	
 	/* Foxconn add end, Zz Shan 03/13/2009*/
 	/* foxconn added start, zacker, 03/24/2011 */

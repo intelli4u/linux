@@ -287,12 +287,12 @@ obj-$(CONFIG_USB_IPHETH)        += usb/
 #
 obj-$(CONFIG_HND) += hnd/
 obj-$(CONFIG_BCM_CTF) += ctf/
+obj-$(CONFIG_DHDAP) += dhd/
 obj-$(CONFIG_DPSTA) += dpsta/
 obj-$(CONFIG_ET) += et/
 obj-$(CONFIG_BCM57XX) += bcm57xx/
 obj-$(CONFIG_WL) += wl/
 obj-$(CONFIG_EMF) += emf/ igs/
-obj-$(CONFIG_PROXYARP) += proxyarp/
 
 obj-$(CONFIG_WLAN) += wireless/
 obj-$(CONFIG_NET_TULIP) += tulip/

@@ -321,6 +321,9 @@ struct sk_buff {
 #ifdef PKTC
 	unsigned char           pktc_cb[8];
 #endif
+#ifdef CTF_PPPOE
+	unsigned char           ctf_pppoe_cb[8];
+#endif
 	ktime_t			tstamp;
 
 	struct sock		*sk;
@@ -356,6 +359,17 @@ struct sk_buff {
 #if defined(HNDCTF) || defined(CTFPOOL)
 	__u32			pktc_flags;
 #endif
+#ifdef HNDCTF
+
+ void                                       *ctf_ipc_txif;
+
+#endif
+#ifdef BCMFA
+#define BCM_FA_INVALID_IDX_VAL	0xFFF00000
+	__u32                   napt_idx;
+	__u32			napt_flags;
+#endif /* BCMFA */
+
 	__u8			tcpf_smb:1,
 				tcpf_hdrbuf:1,
 				tcpf_nf:1;

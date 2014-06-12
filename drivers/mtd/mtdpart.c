@@ -202,6 +202,21 @@ static int part_write_oob(struct mtd_info *mtd, loff_t to,
 	return part->master->write_oob(part->master, to + part->offset, ops);
 }
 
+/* Foxconn Bob added start for nand page write, 03/19/2014 */
+static int part_write_page(struct mtd_info *mtd, loff_t to, u_char *buf)
+{
+    struct mtd_part *part = PART(mtd);
+    
+    if (!(mtd->flags & MTD_WRITEABLE))
+		return -EROFS;
+
+	if (to >= mtd->size)
+		return -EINVAL;
+		
+	return part->master->write_page(part->master, to + part->offset, buf);
+}
+/* Foxconn Bob added end for nand page write, 03/19/2014 */
+
 static int part_write_user_prot_reg(struct mtd_info *mtd, loff_t from,
 		size_t len, size_t *retlen, u_char *buf)
 {
@@ -397,6 +412,11 @@ static struct mtd_part *add_one_partition(struct mtd_info *master,
 		slave->mtd.read_oob = part_read_oob;
 	if (master->write_oob)
 		slave->mtd.write_oob = part_write_oob;
+		
+    /* Foxconn Bob added start for nand page write, 03/19/2014 */
+	if (master->write_page)
+	    slave->mtd.write_page = part_write_page;
+    /* Foxconn Bob added end for nand page write, 03/19/2014 */
 	if (master->read_user_prot_reg)
 		slave->mtd.read_user_prot_reg = part_read_user_prot_reg;
 	if (master->read_fact_prot_reg)

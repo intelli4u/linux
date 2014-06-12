@@ -65,7 +65,7 @@
 /* Foxconn added pling start 02/26/2010, for USB LED */
 #if (defined INCLUDE_USB_LED)   
 /* Foxconn modified start, Wins, 04/11/2011 */
-#if defined(R6300v2) || defined(R7000)
+#if defined(R6300v2) || defined(R7000) || defined(R8000)
 extern int usb1_pkt_cnt;
 extern int usb2_pkt_cnt;
 extern int usb1_pkt_cnt_smp;
@@ -444,11 +444,11 @@ static int usb_stor_bulk_transfer_sglist(struct us_data *us, unsigned int pipe,
 #if 1
 #if (defined INCLUDE_USB_LED)    
     /* Foxconn modified start, Wins, 04/11/2011 */
-#if defined(R6300v2) || defined(R7000)
+#if defined(R6300v2) || defined(R7000) || defined(R8000)
     char devpath[4];
     memcpy(devpath, us->pusb_dev->devpath, 3);
     devpath[3] = '\0';
-#if defined(R7000)
+#if defined(R7000)|| defined(R8000)
     if (!strcmp(devpath, "1"))
     {
         usb1_pkt_cnt++;

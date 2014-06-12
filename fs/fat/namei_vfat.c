@@ -315,6 +315,9 @@ static int vfat_create_shortname(struct inode *dir, struct nls_table *nls,
 	int sz = 0, extlen, baselen, i, numtail_baselen, numtail2_baselen;
 	int is_shortname;
 	struct shortname_info base_info, ext_info;
+    
+    /*foxconn Han eidted 05/15/2014*/
+    unsigned int cmpFlag = 0x0;
 
 	is_shortname = 1;
 	INIT_SHORTNAME_INFO(&base_info);
@@ -379,6 +382,18 @@ static int vfat_create_shortname(struct inode *dir, struct nls_table *nls,
 				is_shortname = 0;
 			break;
 		}
+
+        /* foxconn Han edited start, 05/15/2014 
+         * mask the different of string*/
+        if(chl == 1)
+        {
+            if(*ip != charbuf[0])
+                cmpFlag = 0x1;
+        }
+        else /*if char len > 1 then also mark it as different*/
+            cmpFlag = 0x1;
+        /* foxconn Han edited end, 05/15/2014*/
+
 	}
 	if (baselen == 0) {
 		return -EINVAL;
@@ -405,11 +420,20 @@ static int vfat_create_shortname(struct inode *dir, struct nls_table *nls,
 					is_shortname = 0;
 				break;
 			}
+            /* foxconn Han edited start, 05/15/2014 
+             * mask the different of string*/
+            if(chl == 1)
+            {
+                if(*ip != charbuf[0])
+                    cmpFlag = 0x1;
+            }
+            else /*if char len > 1 then also mark it as different*/
+                cmpFlag = 0x1;
+            /* foxconn Han edited end, 05/15/2014*/
 		}
 	}
 	ext[extlen] = '\0';
 	base[baselen] = '\0';
-
 	/* Yes, it can happen. ".\xe5" would do it. */
 	if (base[0] == DELETED_FLAG)
 		base[0] = 0x05;
@@ -423,6 +447,24 @@ static int vfat_create_shortname(struct inode *dir, struct nls_table *nls,
 	memcpy(name_res, base, baselen);
 	memcpy(name_res + 8, ext, extlen);
 	*lcase = 0;
+
+    #if 0
+    printk("%s %s %d base=%s<(%d/%d)\n",__func__,__FILE__,__LINE__,base,base_info.upper,base_info.lower);
+    printk("%s %s %d ext=%s<(%d/%d)\n",__func__,__FILE__,__LINE__,ext,ext_info.upper,ext_info.lower);
+    printk("%s %s %d name_res=%s< cmpFlag=%d\n",__func__,__FILE__,__LINE__,name_res,cmpFlag);
+    #endif
+    /* foxconn Han edited start, 05/15/2014 
+     * when there are lower cases, force it go to long name*/
+    if(!(opts->shortname & VFAT_SFN_DISPLAY_LOWER))
+    {
+        /*upper == 0 means there are lower case*/
+        /*when there are all upper cases need to know if the string is same*/
+        //if (base_info.upper == 0 || ext_info.upper == 0 
+        //|| ( cmpFlag && (base_info.lower == 0 && ext_info.lower == 0))) 
+            is_shortname = 0; /*don't do shortname search*/
+    }
+    /* foxconn Han edited start, 05/15/2014 */
+
 	if (is_shortname && base_info.valid && ext_info.valid) {
 		if (vfat_find_form(dir, name_res) == 0)
 			return -EEXIST;

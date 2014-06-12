@@ -38,10 +38,11 @@ ifeq ($(ARCH), arm)
 endif
     include $(WLCFGDIR)/wl.mk
 
+    WLAN_ComponentsInUse := bcmwifi ppr olpc keymgmt iocv dump hal phymods
     ifeq ($(WLCLMAPI),1)
-        WLAN_ComponentsInUse := bcmwifi clm ppr olpc
-        include $(src)/$(SRCBASE_OFFSET)/makefiles/WLAN_Common.mk
+        WLAN_ComponentsInUse += clm
     endif
+    include $(src)/$(SRCBASE_OFFSET)/makefiles/WLAN_Common.mk
     
     ifeq ($(WLFILES_SRC),)
          $(error WLFILES_SRC is undefined in $(WLCFGDIR)/$(WLCONFFILE))
@@ -64,8 +65,10 @@ endif
     ifeq ($(CONFIG_CACHE_L310),y)
     EXTRA_CFLAGS    += -DWL_PL310_WAR
     endif
-    EXTRA_CFLAGS += -DDMA $(WLFLAGS) -I$(src) -I$(src)/.. -I$(src)/$(SRCBASE_OFFSET)/wl/linux \
-		    -I$(src)/$(SRCBASE_OFFSET)/wl/sys $(WLAN_ComponentIncPath) -Werror
+    EXTRA_CFLAGS += -DDMA $(WLFLAGS) -Werror
+    EXTRA_CFLAGS += -I$(src) -I$(src)/.. -I$(src)/$(SRCBASE_OFFSET)/wl/linux \
+		    -I$(src)/$(SRCBASE_OFFSET)/wl/sys
+    EXTRA_CFLAGS += $(WLAN_ComponentIncPathA) $(WLAN_IncPathA)
 
     ifneq ("$(CONFIG_CC_OPTIMIZE_FOR_SIZE)","y")
          EXTRA_CFLAGS += -finline-limit=2048

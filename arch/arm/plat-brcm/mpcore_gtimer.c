@@ -114,7 +114,7 @@ int gpio_led_on_off(int gpio, int value)
     
     /* foxconn added start, zacker, 09/17/2009, @wps_led */
     if (gpio == WPS_LED_GPIO)
-#if defined(R7000)
+#if defined(R7000) || defined(R8000)
         wps_led_is_on = value;
 #else
         wps_led_is_on = !value;
@@ -225,7 +225,7 @@ static int wps_ap_lockdown_blink(void)
 /* Foxconn modified start pling 12/26/2011, for WNDR4000AC */
 #if (defined WNDR4000AC)
 #define GPIO_USB1_LED       (GPIO_LED_USB)
-#elif (defined R7000)
+#elif (defined R7000) || (defined R8000)
 #define GPIO_USB1_LED       17   /* USB1 LED. */
 #define GPIO_USB2_LED       18   /* USB2 LED. */
 #else
@@ -260,7 +260,7 @@ static int usb1_normal_blink(void)
 {
 #if (defined WNDR4000AC)
         gpio_led_on_off(GPIO_USB1_LED, 1);
-#elif defined(R7000)
+#elif defined(R7000) || defined(R8000)
         gpio_on_off(GPIO_USB2_LED, 0);
 #elif defined(R6250) || defined(R6200v2)
         gpio_on_off(GPIO_USB1_LED, 0);
@@ -273,7 +273,7 @@ static int usb1_normal_blink(void)
 }
 /*Foxconn modify end by Hank 06/21/2012*/
 
-#if (!defined WNDR4000AC) && !defined(R6250) && !defined(R6200v2) && !defined(R7000)
+#if (!defined WNDR4000AC) && !defined(R6250) && !defined(R6200v2) && !defined(R7000) && !defined(R8000)
 /*Foxconn modify start by Hank 06/21/2012*/
 /*change LED behavior, avoid blink when have traffic, plug second USB must blink,  plug first USB not blink*/
 static int usb2_normal_blink(void)
@@ -368,7 +368,7 @@ static irqreturn_t gtimer_interrupt(int irq, void *dev_id)
     /* Blink LED depending of WPS status */
     if ( wps_led_state == 0 )
     {
-#if defined(R7000)
+#if defined(R7000) || defined(R8000)
         if (wps_led_state_old != 0)
             gpio_led_on_off(WPS_LED_GPIO, 0);
 
@@ -448,7 +448,7 @@ static irqreturn_t gtimer_interrupt(int irq, void *dev_id)
 	/*change LED behavior, avoid blink when have traffic,
 	 plug second USB must blink,  plug first USB not blink*/
 
-#if (!defined WNDR4000AC) && !defined(R6250) && !defined(R6200v2) && !defined(R7000)
+#if (!defined WNDR4000AC) && !defined(R6250) && !defined(R6200v2) && !defined(R7000) && !defined(R8000)
     if (usb2_led_state)
     {
         usb2_normal_blink();

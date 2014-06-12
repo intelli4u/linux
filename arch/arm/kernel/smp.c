@@ -193,15 +193,24 @@ int __cpuinit __cpu_up(unsigned int cpu)
 #if (defined WIFI_LED_BLINKING)
 #define GPIO_WIFI_2G_LED        13   
 #define GPIO_WIFI_5G_LED        12   
+#if defined(R8000)
+#define GPIO_WIFI_5G_2_LED      16
+#endif
 //static __u64 wifi_2g_tx_cnt_smp=0;
 //static __u64 wifi_2g_rx_cnt_smp=0;
 //static __u64 wifi_5g_tx_cnt_smp=0;
 //static __u64 wifi_5g_rx_cnt_smp=0;
 int wifi_2g_led_state_smp=-1;
 int wifi_5g_led_state_smp=-1;
+#if defined(R8000)
+int wifi_5g_2_led_state_smp=-1;
+#endif
 
 EXPORT_SYMBOL(wifi_2g_led_state_smp);
 EXPORT_SYMBOL(wifi_5g_led_state_smp);
+#if defined(R8000)
+EXPORT_SYMBOL(wifi_5g_2_led_state_smp);
+#endif
 
 #endif
 /* Foxconn modified end antony 07/22/2013*/
@@ -212,7 +221,7 @@ EXPORT_SYMBOL(wifi_5g_led_state_smp);
 /* Foxconn modified start pling 12/26/2011, for WNDR4000AC */
 #if (defined WNDR4000AC)
 #define GPIO_USB1_LED       (GPIO_LED_USB)
-#elif (defined R7000)
+#elif (defined R7000) || (defined R8000)
 #define GPIO_USB1_LED       17   /* USB1 LED. */
 #define GPIO_USB2_LED       18   /* USB2 LED. */
 #else
@@ -506,7 +515,7 @@ static int gpio_led_on_off(int gpio, int value)
     int pin = GPIO_PIN(gpio);
 
     if (gpio == WPS_LED_GPIO)
-#if defined(R7000)
+#if defined(R7000) || defined(R8000)
         wps_led_is_on_smp = value;
 #else
         wps_led_is_on_smp = !value;
@@ -582,9 +591,16 @@ static __u64 wifi_2g_tx_cnt_old_smp=0;
 static __u64 wifi_2g_rx_cnt_old_smp=0;
 static __u64 wifi_5g_tx_cnt_old_smp=0;
 static __u64 wifi_5g_rx_cnt_old_smp=0;
+#if defined(R8000)
+static __u64 wifi_5g_2_tx_cnt_old_smp=0;
+static __u64 wifi_5g_2_rx_cnt_old_smp=0;
+#endif
 	struct rtnl_link_stats64 temp;
 	const struct rtnl_link_stats64 *stats;
 	static int repeat_2g=4,repeat_5g=4;
+#if defined(R8000)
+	static int repeat_5g_2=4;
+#endif
     /* foxconn add start ken chen, 12/13/2013, to support LED control Settings */
 	int led_on;
 	int led_off;
@@ -609,8 +625,11 @@ static __u64 wifi_5g_rx_cnt_old_smp=0;
         {
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,36)
 	          net_dev = dev_get_by_name("eth1");
+
 #else
           	net_dev = dev_get_by_name(&init_net, "eth1");
+                  if(net_dev)
+                      dev_put(net_dev);
 #endif
               
             if(net_dev)
@@ -656,6 +675,8 @@ static __u64 wifi_5g_rx_cnt_old_smp=0;
 	          net_dev = dev_get_by_name("eth2");
 #else
           	net_dev = dev_get_by_name(&init_net, "eth2");
+                  if(net_dev)
+                      dev_put(net_dev);
 #endif
 
             if(net_dev)
@@ -683,6 +704,48 @@ static __u64 wifi_5g_rx_cnt_old_smp=0;
         }
     }else if(wifi_5g_led_state_smp==0)
         gpio_led_on_off(GPIO_WIFI_5G_LED, 1);    
+
+#if defined(R8000)
+    if(wifi_5g_2_led_state_smp==1)
+    {
+   	    if (interrupt_wifi_count == 0)
+   	    {
+            gpio_led_on_off(GPIO_WIFI_5G_2_LED, led_on);  /* foxconn add ken chen, 12/13/2013, to support LED control Settings */
+        }
+        else if(interrupt_wifi_count == LED_BLINK_RATE)
+        {
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,36)
+	          net_dev = dev_get_by_name("eth3");
+#else
+          	net_dev = dev_get_by_name(&init_net, "eth3");
+                  if(net_dev)
+                      dev_put(net_dev);
+#endif
+
+            if(net_dev)
+            {
+    	          stats = dev_get_stats(net_dev, &temp);
+                if((wifi_5g_2_tx_cnt_old_smp!=stats->tx_packets) || (wifi_5g_2_rx_cnt_old_smp!=stats->rx_packets))
+                {
+                    gpio_led_on_off(GPIO_WIFI_5G_2_LED, led_off);
+            				wifi_5g_2_tx_cnt_old_smp=stats->tx_packets;
+            				wifi_5g_2_rx_cnt_old_smp=stats->rx_packets;
+            				repeat_5g_2=0;
+                }
+                else if( repeat_5g_2 <4)
+                {
+                    repeat_5g_2++;
+                    gpio_led_on_off(GPIO_WIFI_5G_2_LED, led_off);  /* foxconn add ken chen, 12/13/2013, to support LED control Settings */            				
+            		}
+
+            }    
+            else
+            {
+            }
+        }
+    }else if(wifi_5g_2_led_state_smp==0)
+        gpio_led_on_off(GPIO_WIFI_5G_2_LED, 1);    
+#endif
 }
 #endif
 /* Added by Foxconn Antony end */
@@ -864,7 +927,7 @@ static void ipi_timer(void)
 	/*add feature for blinking or light up WPS LED or USB LED for SMP*/
 	if (cpu == 0){
 		if ( wps_led_state_smp == 0 ){
-#if defined(R7000)
+#if defined(R7000) || defined(R8000)
             /* foxconn add start ken chen, 12/13/2013, to support LED control Settings */
             int led_on;
             led_on = (led_control_settings_smp == 3) ? 0 : 1;

@@ -392,6 +392,28 @@ KBUILD_CFLAGS += -DCONFIG_KERNEL_2_6_36
 KBUILD_CFLAGS += -DINCLUDE_ACCESSCONTROL
 endif
 
+ifeq ($(PROFILE),R8000)
+KBUILD_CFLAGS += -DMULTIPLE_SSID -DSAMBA_ENABLE -DX_ST_ML
+#[Bob] add for writing kernel crash dump to mtd.
+#KBUILD_CFLAGS += -DKERNEL_CRASH_DUMP_TO_MTD
+KBUILD_CFLAGS += -DU12H315 -DR8000
+KBUILD_CFLAGS += -DBCM53125
+
+KBUILD_CFLAGS += -DINCLUDE_USB_LED
+KBUILD_CFLAGS += -DWIFI_LED_BLINKING
+KBUILD_CFLAGS += -DIGMP_PROXY
+KBUILD_CFLAGS += -D__CONFIG_IGMP_SNOOPING__
+KBUILD_CFLAGS += -DINCLUDE_L2TP
+KBUILD_CFLAGS += -DAP_MODE
+KBUILD_CFLAGS += -DINCLUDE_DUAL_BAND
+KBUILD_CFLAGS += -DCONFIG_RUSSIA_IPTV
+KBUILD_CFLAGS += -DCONFIG_KERNEL_2_6_36
+KBUILD_CFLAGS += -DINCLUDE_ACCESSCONTROL
+KBUILD_CFLAGS += -DINCLUDE_DETECT_AP_MODE
+KBUILD_CFLAGS += -DARP_PROTECTION
+endif
+
+
 ifeq ($(PROFILE),R6300v2)
 KBUILD_CFLAGS += -DMULTIPLE_SSID -DSAMBA_ENABLE -DX_ST_ML
 
@@ -439,6 +461,8 @@ KBUILD_CFLAGS += -DCONFIG_KERNEL_2_6_36
 #KBUILD_CFLAGS += -DINCLUDE_ACCESSCONTROL
 endif
 
+# Foxconn added pling 04/16/2014
+# This flag should be common for R6xxx projects now
 KBUILD_CFLAGS += -DCONFIG_NAT_65536_SESSION
 
 # Foxconn added pling 12/26/2011, to define f/w region
@@ -452,6 +476,8 @@ endif
 KBUILD_CFLAGS	+= -DBCMVISTAROUTER
 KBUILD_CFLAGS += -DINCLUDE_QOS
 KBUILD_CFLAGS += -DRESTART_ALL_PROCESSES
+
+KBUILD_CFLAGS += -DNETGEAR_PATCH
 
 # Read KERNELRELEASE from include/config/kernel.release (if it exists)
 KERNELRELEASE = $(shell cat include/config/kernel.release 2> /dev/null)
@@ -630,8 +656,7 @@ all: vmlinux
 
 # Broadcom features compile options
 ifneq ($(CONFIG_BCM_CTF),)
-#KBUILD_CFLAGS += -DHNDCTF -DCTFPOOL -DCTFMAP -DPKTC -DCTF_PPPOE
-KBUILD_CFLAGS += -DHNDCTF -DCTFPOOL -DCTFMAP -DPKTC
+KBUILD_CFLAGS += -DHNDCTF -DCTFPOOL -DCTFMAP -DPKTC -DCTF_PPPOE
 ifneq ($(CONFIG_WL_USBAP),)
 KBUILD_CFLAGS += -DCTFPOOL_SPINLOCK
 endif
@@ -640,8 +665,23 @@ KBUILD_CFLAGS += -DCTF_IPV6
 endif
 endif
 
-ifneq ($(CONFIG_PROXYARP),)
-KBUILD_CFLAGS += -DPROXYARP
+ifneq ($(CONFIG_BCM_GMAC3),)
+KBUILD_CFLAGS += -DBCM_GMAC3
+endif
+
+ifneq ($(CONFIG_BCM_FA),)
+KBUILD_CFLAGS += -DBCMFA
+endif
+
+ifneq ($(CONFIG_BCM47XX),)
+KBUILD_CFLAGS += -DBCM47XX
+KBUILD_AFLAGS += -DBCM47XX
+endif
+
+# To enable ACP on NS/Ax chips
+ifneq ($(CONFIG_BCM47XX_ACP_WAR),)
+KBUILD_CFLAGS += -DBCM47XX_ACP_WAR
+KBUILD_AFLAGS += -DBCM47XX_ACP_WAR
 endif
 
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
@@ -1018,6 +1058,8 @@ $(vmlinux-dirs): prepare scripts
 
 # Store (new) KERNELRELASE string in include/config/kernel.release
 include/config/kernel.release: include/config/auto.conf FORCE
+	$(Q)rm -f $@
+	$(Q)echo "$(KERNELVERSION)$$($(CONFIG_SHELL) $(srctree)/scripts/setlocalversion $(srctree))" > $@
 
 
 # Things we need to do before we recursively start building the kernel

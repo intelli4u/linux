@@ -253,7 +253,11 @@ static inline __deprecated void *bus_to_virt(unsigned long x)
  * Intel XSC3-based systems.
  */
 #ifndef arch_is_coherent
-#define arch_is_coherent()		0
+#if !defined(BCM47XX_ACP_WAR)
+#define arch_is_coherent()	((PHYS_OFFSET) == (DDR_PADDR_ACP))
+#else
+#define arch_is_coherent()	0
+#endif	/* BCM47XX */
 #endif
 
 #endif

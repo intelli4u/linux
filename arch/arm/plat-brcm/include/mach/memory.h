@@ -7,13 +7,31 @@
 #ifndef __ASM_ARCH_MEMORY_H
 #define __ASM_ARCH_MEMORY_H
 
+#ifdef BCM47XX_ACP_WAR
+#define DDR_PADDR_ACP			(0x80000000)
+#define ACP_WAR_EN()			(1)
+#else
+#define DDR_PADDR_ACP			(0x40000000)
+#define ACP_WAR_EN()			(0)
+#endif
+
 /*
  * Main memory base address and size
  * are defined from the board-level configuration file
  */
 
 #ifndef PHYS_OFFSET
+#if !defined(__ASSEMBLY__)
+extern unsigned int ddr_phys_offset_va;
+#define PHYS_OFFSET				((unsigned long)ddr_phys_offset_va)
+#ifdef BCM47XX_ACP_WAR
+extern unsigned int ns_acp_win_size;
+#define ACP_WIN_SIZE			(ns_acp_win_size)
+#define ACP_WIN_LIMIT			(PHYS_OFFSET + ACP_WIN_SIZE)
+#endif
+#else
 #define PHYS_OFFSET             UL(CONFIG_DRAM_BASE)
+#endif	/* !__ASSEMBLY__ */
 #endif
 
 
@@ -29,7 +47,7 @@
 #define CONSISTENT_DMA_SIZE     SZ_128M
 
 /* 2nd physical memory window */
-#define PHYS_OFFSET2		0x80000000
+#define PHYS_OFFSET2		0xa8000000
 
 #if !defined(__ASSEMBLY__) && defined(CONFIG_ZONE_DMA)
 extern void bcm47xx_adjust_zones(unsigned long *size, unsigned long *hole);
@@ -48,18 +66,18 @@ extern void bcm47xx_adjust_zones(unsigned long *size, unsigned long *hole);
 /* bank page offsets */
 #define PAGE_OFFSET1	(PAGE_OFFSET + SZ_128M)
 
-#define __phys_to_virt(phys)						\
-	((phys) >= PHYS_OFFSET2 ? (phys) - PHYS_OFFSET2 + PAGE_OFFSET1 :	\
-	 (phys) + PAGE_OFFSET)
+#define __phys_to_virt(phys)								\
+	(((PHYS_OFFSET) == DDR_PADDR_ACP) ? ((phys) - DDR_PADDR_ACP + PAGE_OFFSET) :	\
+	(((phys) >= PHYS_OFFSET2) ? ((phys) - PHYS_OFFSET2 + PAGE_OFFSET1) :		\
+	((phys) - CONFIG_DRAM_BASE + PAGE_OFFSET)))
 
-#define __virt_to_phys(virt)						\
-	 ((virt) >= PAGE_OFFSET1 ? (virt) - PAGE_OFFSET1 + PHYS_OFFSET2 :	\
-	  (virt) - PAGE_OFFSET)
-
-#else
+#define __virt_to_phys(virt)								\
+	(((PHYS_OFFSET) == DDR_PADDR_ACP) ? ((virt) - PAGE_OFFSET + DDR_PADDR_ACP) :	\
+	(((virt) >= PAGE_OFFSET1) ? ((virt) - PAGE_OFFSET1 + PHYS_OFFSET2) :		\
+	((virt) - PAGE_OFFSET + CONFIG_DRAM_BASE)))
+#else /* !CONFIG_SPARSEMEM */
 #define __virt_to_phys(x)	((x) - PAGE_OFFSET + PHYS_OFFSET)
 #define __phys_to_virt(x)	((x) - PHYS_OFFSET + PAGE_OFFSET)
-#endif
-
+#endif /* CONFIG_SPARSEMEM */
 
 #endif

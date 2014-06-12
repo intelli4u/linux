@@ -48,7 +48,7 @@ KERNELDIR := $(BASEDIR)/components/opensource/linux/linux-2.6.36
 all:
 	$(MAKE) -C $(KERNELDIR) M=`pwd`
 clean:
-	$(MAKE) -C $(KERNELDIR) M=`pwd` clean
+#	$(MAKE) -C $(KERNELDIR) M=`pwd` clean
 endif
 
 clean-files += $(IGSCSRCDIR)/*.o $(IGSSRCDIR)/*.o $(IGSCSRCDIR)/.*.o.cmd $(IGSSRCDIR)/.*.o.cmd
