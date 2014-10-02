@@ -178,6 +178,7 @@ static void fdb_rcu_free(struct rcu_head *head)
 	struct net_bridge_fdb_entry *ent
 		= container_of(head, struct net_bridge_fdb_entry, rcu);
 	kmem_cache_free(br_fdb_cache, ent);
+	mac_cnt--; /* foxconn wklin added , 06/18/2008 */
 }
 
 static inline void fdb_delete(struct net_bridge_fdb_entry *f)
@@ -563,10 +564,10 @@ void BCMFASTPATH_HOST br_fdb_update(struct net_bridge *br, struct net_bridge_por
 	if (likely(fdb)) {
 		/* attempt to update an entry for a local interface */
 		if (unlikely(fdb->is_local)) {
-			if (net_ratelimit())
-				br_warn(br, "received packet on %s with "
-					"own address as source address\n",
-					source->dev->name);
+//			if (net_ratelimit())
+//				br_warn(br, "received packet on %s with "
+//					"own address as source address\n",
+//					source->dev->name);
 		} else {
 			/* fastpath: update of existing entry */
 #ifdef HNDCTF
