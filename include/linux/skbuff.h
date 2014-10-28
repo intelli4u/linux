@@ -324,6 +324,9 @@ struct sk_buff {
 #ifdef CTF_PPPOE
 	unsigned char           ctf_pppoe_cb[8];
 #endif
+#ifdef CTFMAP
+	void			*ctfmap;
+#endif
 	ktime_t			tstamp;
 
 	struct sock		*sk;
@@ -342,7 +345,7 @@ struct sk_buff {
 #define pp_bridge_indev(skb) (struct net_device **)(&(skb->cb[44]))
 
 	unsigned long		_skb_refdst;
-#if defined(CONFIG_XFRM) || defined(CTFMAP)
+#ifdef CONFIG_XFRM
 	struct	sec_path	*sp;
 #endif
 #ifdef CTFPOOL

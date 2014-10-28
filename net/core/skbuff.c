@@ -563,6 +563,10 @@ static void BCMFASTPATH_HOST __copy_skb_header(struct sk_buff *new, const struct
 #ifdef CTF_PPPOE
 	memset(new->ctf_pppoe_cb, 0, sizeof(new->ctf_pppoe_cb));
 #endif
+#if defined(HNDCTF) && defined(CTFMAP)
+	if (PKTISCTF(NULL, old))
+		new->ctfmap		= NULL;
+#endif
 	memset(new->fpath_cb, 0, sizeof(new->fpath_cb));    /* foxconn Bob added 02/06/2013 to init fpath_cb */ 
 	
 	new->tstamp		= old->tstamp;
@@ -573,12 +577,7 @@ static void BCMFASTPATH_HOST __copy_skb_header(struct sk_buff *new, const struct
 	skb_dst_copy(new, old);
 	new->rxhash		= old->rxhash;
 #ifdef CONFIG_XFRM
-#if defined(HNDCTF) && defined(CTFMAP)
-	if (PKTISCTF(NULL, old))
-		new->sp		= NULL;
-	else
-#endif
-		new->sp		= secpath_get(old->sp);
+	new->sp		= secpath_get(old->sp);
 #endif
 	memcpy(new->cb, old->cb, sizeof(old->cb));
 	new->csum		= old->csum;

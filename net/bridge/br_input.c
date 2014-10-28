@@ -156,6 +156,13 @@ struct sk_buff *br_handle_frame(struct sk_buff *skb)
 	if (skb->pkt_type == PACKET_LOOPBACK)
 		return skb;
 
+#if 0 /* Ares ignore Brcm event on bridging*/
+#define ETHER_TYPE_BRCM (0x6c88) /* htons(0x886c) */
+	 if(skb->protocol ==  ETHER_TYPE_BRCM) {
+		 return skb;
+	 }
+#endif		
+
 	if (!is_valid_ether_addr(eth_hdr(skb)->h_source))
 		goto drop;
 
