@@ -193,7 +193,7 @@ int mmc_send_app_op_cond(struct mmc_host *host, u32 ocr, u32 *rocr)
 
 int mmc_send_if_cond(struct mmc_host *host, u32 ocr)
 {
-	struct mmc_command cmd = {0};
+	struct mmc_command cmd;
 	int err;
 	static const u8 test_pattern = 0xAA;
 	u8 result_pattern;
@@ -252,17 +252,10 @@ int mmc_app_send_scr(struct mmc_card *card, u32 *scr)
 	struct mmc_command cmd;
 	struct mmc_data data;
 	struct scatterlist sg;
-#ifdef CONFIG_BCM47XX
-	int retries = MMC_DATA_RETRIES;
-#endif /* CONFIG_BCM47XX */
 
 	BUG_ON(!card);
 	BUG_ON(!card->host);
 	BUG_ON(!scr);
-
-#ifdef CONFIG_BCM47XX
-retry:
-#endif /* CONFIG_BCM47XX */
 
 	/* NOTE: caller guarantees scr is heap-allocated */
 
@@ -293,13 +286,6 @@ retry:
 
 	mmc_wait_for_req(card->host, &mrq);
 
-#ifdef CONFIG_BCM47XX
-	if (data.error && retries--) {
-		mmc_delay(1);
-		goto retry;
-	}
-#endif /* CONFIG_BCM47XX */
-
 	if (cmd.error)
 		return cmd.error;
 	if (data.error)
@@ -318,16 +304,9 @@ int mmc_sd_switch(struct mmc_card *card, int mode, int group,
 	struct mmc_command cmd;
 	struct mmc_data data;
 	struct scatterlist sg;
-#ifdef CONFIG_BCM47XX
-	int retries = MMC_DATA_RETRIES;
-#endif /* CONFIG_BCM47XX */
 
 	BUG_ON(!card);
 	BUG_ON(!card->host);
-
-#ifdef CONFIG_BCM47XX
-retry:
-#endif /* CONFIG_BCM47XX */
 
 	/* NOTE: caller guarantees resp is heap-allocated */
 
@@ -359,13 +338,6 @@ retry:
 
 	mmc_wait_for_req(card->host, &mrq);
 
-#ifdef CONFIG_BCM47XX
-	if (data.error && retries--) {
-		mmc_delay(1);
-		goto retry;
-	}
-#endif /* CONFIG_BCM47XX */
-
 	if (cmd.error)
 		return cmd.error;
 	if (data.error)
@@ -381,17 +353,10 @@ int mmc_app_sd_status(struct mmc_card *card, void *ssr)
 	struct mmc_command cmd;
 	struct mmc_data data;
 	struct scatterlist sg;
-#ifdef CONFIG_BCM47XX
-	int retries = MMC_DATA_RETRIES;
-#endif /* CONFIG_BCM47XX */
 
 	BUG_ON(!card);
 	BUG_ON(!card->host);
 	BUG_ON(!ssr);
-
-#ifdef CONFIG_BCM47XX
-retry:
-#endif /* CONFIG_BCM47XX */
 
 	/* NOTE: caller guarantees ssr is heap-allocated */
 
@@ -421,13 +386,6 @@ retry:
 	mmc_set_data_timeout(&data, card);
 
 	mmc_wait_for_req(card->host, &mrq);
-
-#ifdef CONFIG_BCM47XX
-	if (data.error && retries--) {
-		mmc_delay(1);
-		goto retry;
-	}
-#endif /* CONFIG_BCM47XX */
 
 	if (cmd.error)
 		return cmd.error;

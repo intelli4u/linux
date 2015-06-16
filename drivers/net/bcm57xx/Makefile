@@ -43,6 +43,6 @@ clean:
 	$(MAKE) -C $(KERNELDIR) M=`pwd` clean
 endif
 
-clean-files += $(B57SRCDIR)/sys/.*.o.cmd \
-	        $(B57SRCDIR)/linux/.*.o.cmd \
+clean-files += $(B57SRCDIR)/sys/*.o $(B57SRCDIR)/sys/.*.o.cmd \
+	       $(B57SRCDIR)/linux/*.o $(B57SRCDIR)/linux/.*.o.cmd \
 	       $(SHAREDSRCDIR)/hndgige.o $(SHAREDSRCDIR)/.hndgige.o.cmd

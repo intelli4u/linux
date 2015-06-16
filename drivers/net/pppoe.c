@@ -86,8 +86,6 @@
 #include <asm/uaccess.h>
 
 #ifdef HNDCTF
-#include <linux/if.h>
-#include <linux/if_vlan.h>
 #include <ctf/hndctf.h>
 #endif /* HNDCTF */
 
@@ -463,9 +461,9 @@ static int pppoe_rcv(struct sk_buff *skb, struct net_device *dev,
 	 * skb and has pppoe sid.
 	 */
 	if (CTF_ENAB(kcih)) {
-		skb->ctf_pppoe_cb[0] = 1;
-		skb->ctf_pppoe_cb[1] = 0;
-		*(__be16 *)&skb->ctf_pppoe_cb[2] = ph->sid;
+		skb->pktc_cb[0] = 1;
+		skb->pktc_cb[1] = 0;
+		*(__be16 *)&skb->pktc_cb[2] = ph->sid;
 	}
 #endif
 
@@ -532,18 +530,18 @@ out:
 }
 
 static struct packet_type pppoes_ptype __read_mostly = {
-    /*  modified start, Winster Chan, 12/21/2006 */
+    /* Foxconn modified start, Winster Chan, 12/21/2006 */
 	//.type	= cpu_to_be16(ETH_P_PPP_SES),
 	.type	= cpu_to_be16(ETH_P_PPPOE_SESS),
-    /*  modified end, Winster Chan, 12/21/2006 */
+    /* Foxconn modified end, Winster Chan, 12/21/2006 */
 	.func	= pppoe_rcv,
 };
 
 static struct packet_type pppoed_ptype __read_mostly = {
-    /*  modified start, Winster Chan, 12/21/2006 */
+    /* Foxconn modified start, Winster Chan, 12/21/2006 */
 	//.type	= cpu_to_be16(ETH_P_PPP_DISC),
 	.type	= cpu_to_be16(ETH_P_PPPOE_DISC),
-    /*  modified end, Winster Chan, 12/21/2006 */
+    /* Foxconn modified end, Winster Chan, 12/21/2006 */
 	.func	= pppoe_disc_rcv,
 };
 
@@ -965,19 +963,11 @@ static int __pppoe_xmit(struct sock *sk, struct sk_buff *skb)
 
 #if defined(HNDCTF) && defined(CTF_PPPOE)
 	/* Need to populate the ipct members with pppoe sid and real tx interface */
-	if (CTF_ENAB(kcih) && (skb->ctf_pppoe_cb[0] == 2)) {
+	if (CTF_ENAB(kcih) && (skb->pktc_cb[0] == 2)) {
 		ctf_ipc_t *ipc;
-		ipc = (ctf_ipc_t *)(*(uint32 *)&skb->ctf_pppoe_cb[4]);
+		ipc = (ctf_ipc_t *)(*(uint32 *)&skb->pktc_cb[4]);
 		if (ipc != NULL) {
-			if (dev->priv_flags & IFF_802_1Q_VLAN) {
-				ipc->txif = (void *)vlan_dev_real_dev(dev);
-				ipc->vid = vlan_dev_vlan_id(dev);
-				ipc->action |= ((vlan_dev_vlan_flags(dev) & 1) ?
-						    CTF_ACTION_TAG : CTF_ACTION_UNTAG);
-			} else {
-				ipc->txif = dev;
-				ipc->action |= CTF_ACTION_UNTAG;
-			}
+			ipc->txif = dev;
 			ipc->pppoe_sid = ph->sid;
 			memcpy(ipc->dhost.octet, po->pppoe_pa.remote, ETH_ALEN);
 			memcpy(ipc->shost.octet, dev->dev_addr, ETH_ALEN);

@@ -119,7 +119,7 @@ static unsigned log_end;	/* Index into log_buf: most-recently-written-char + 1 *
 
 /* Fxcn port-S Wins, 0713-09 */
 #define LOG_BUF_LEN	__LOG_BUF_LEN
-/*  added start pling 03/03/2008 */
+/* Foxconn added start pling 03/03/2008 */
 /* Duplicate these buffers for wan debug mode */
 DECLARE_WAIT_QUEUE_HEAD(log_wait2);
 static spinlock_t logbuf_lock2 = SPIN_LOCK_UNLOCKED;
@@ -132,7 +132,7 @@ static unsigned long log_start2;		/* Index into log_buf2: next char to be read b
 static unsigned long con_start2;		/* Index into log_buf2: next char to be sent to consoles */
 static unsigned long log_end2;			/* Index into log_buf2: most-recently-written-char + 1 */
 static unsigned long logged_chars2;		/* Number of chars produced since last read+clear operation */
-/*  added end pling 03/03/2008 */
+/* Foxconn added end pling 03/03/2008 */
 /* Fxcn port-E Wins, 0713-09 */
 
 /*
@@ -430,7 +430,7 @@ out:
 }
 
 /* Fxcn port-S Wins, 0713-09 */
-/*  added start pling 03/03/2008 */
+/* Foxconn added start pling 03/03/2008 */
 int do_syslog2(int type, char __user *buf, int len)
 {
 	unsigned long i, j, limit, count;
@@ -565,7 +565,7 @@ int do_syslog2(int type, char __user *buf, int len)
 out:
 	return error;
 }
-/*  added end pling 03/03/2008 */
+/* Foxconn added end pling 03/03/2008 */
 /* Fxcn port-E Wins, 0713-09 */
 
 SYSCALL_DEFINE3(syslog, int, type, char __user *, buf, int, len)
@@ -696,7 +696,7 @@ static void emit_log_char(char c)
 }
 
 /* Fxcn port-S Wins, 0713-09 */
-/*  added start pling 03/03/2008 */
+/* Foxconn added start pling 03/03/2008 */
 static void emit_log_char2(char c)
 {
 	LOG_BUF2(log_end2) = c;
@@ -708,7 +708,7 @@ static void emit_log_char2(char c)
 	if (logged_chars2 < log_buf_len)
 		logged_chars2++;
 }
-/*  added end pling 03/03/2008 */
+/* Foxconn added end pling 03/03/2008 */
 /* Fxcn port-E Wins, 0713-09 */
 
 /*
@@ -870,7 +870,7 @@ asmlinkage int vprintk(const char *fmt, va_list args)
 	int this_cpu;
 	char *p;
 /* Fxcn port-S Wins, 0713-09 */
-	static int log_to_buf2 = 0;				/*  added pling 03/03/2008 */
+	static int log_to_buf2 = 0;				/* Foxconn added pling 03/03/2008 */
 /* Fxcn port-E Wins, 0713-09 */
 
 	boot_delay_msec();
@@ -911,7 +911,6 @@ asmlinkage int vprintk(const char *fmt, va_list args)
 	/* Emit the output into the temporary buffer */
 	printed_len += vscnprintf(printk_buf + printed_len,
 				  sizeof(printk_buf) - printed_len, fmt, args);
-
 
 	p = printk_buf;
 
@@ -1275,7 +1274,7 @@ void release_console_sem(void)
 	unsigned _con_start, _log_end;
 	unsigned wake_klogd = 0;
 /* Fxcn port-S Wins, 0713-09 */
-	unsigned long wake_klogd2 = 0;		/*  added start pling 03/03/2008 */
+	unsigned long wake_klogd2 = 0;		/* Foxconn added start pling 03/03/2008 */
 /* Fxcn port-E Wins, 0713-09 */
 
 	if (console_suspended) {
@@ -1289,7 +1288,7 @@ void release_console_sem(void)
 		spin_lock_irqsave(&logbuf_lock, flags);
 		wake_klogd |= log_start - log_end;
 /* Fxcn port-S Wins, 0713-09 */
-		wake_klogd2 |= log_start2 - log_end2;		/*  added pling 03/03/2008 */
+		wake_klogd2 |= log_start2 - log_end2;		/* Foxconn added pling 03/03/2008 */
 /* Fxcn port-E Wins, 0713-09 */
 		if (con_start == log_end)
 			break;			/* Nothing to print */
@@ -1308,10 +1307,10 @@ void release_console_sem(void)
 	if (wake_klogd)
 		wake_up_klogd();
 /* Fxcn port-S Wins, 0713-09 */
-	/*  added start pling 03/03/2008 */
+	/* Foxconn added start pling 03/03/2008 */
 	if (wake_klogd2)
 		wake_up_klogd2();
-	/*  added end pling 03/03/2008 */
+	/* Foxconn added end pling 03/03/2008 */
 /* Fxcn port-E Wins, 0713-09 */
 }
 EXPORT_SYMBOL(release_console_sem);
@@ -1531,7 +1530,7 @@ void register_console(struct console *newcon)
 		spin_lock_irqsave(&logbuf_lock, flags);
 		con_start = log_start;
 /* Fxcn port-S Wins, 0713-09 */
-		con_start2 = log_start2;		/*  added pling 03/03/2008 */
+		con_start2 = log_start2;		/* Foxconn added pling 03/03/2008 */
 /* Fxcn port-E Wins, 0713-09 */
 		spin_unlock_irqrestore(&logbuf_lock, flags);
 	}
@@ -1765,7 +1764,7 @@ void kmsg_dump(enum kmsg_dump_reason reason)
 	spin_unlock_irqrestore(&dump_list_lock, flags);
 }
 
-#ifdef CONFIG_CRASHLOG
+#if defined(KERNEL_CRASH_DUMP_TO_MTD) || defined(CONFIG_CRASHLOG)
 /*
  * To write the kernel log buffer to nvram on a crash we need a pointer to it,
  * so return the buffer and the size of it. We also write some info into the

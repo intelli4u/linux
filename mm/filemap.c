@@ -2031,7 +2031,7 @@ inline int generic_write_checks(struct file *file, loff_t *pos, size_t *count, i
 	if (!isblk) {
 		if (file->f_flags & O_APPEND)
                         *pos = i_size_read(inode);
-        /*  modified start pling 12/04/2009 */
+        /* Foxconn modified start pling 12/04/2009 */
         /* Remove large file limitation */
 #if (!defined SAMBA_ENABLE)
 		if (limit != RLIM_INFINITY) {
@@ -2044,10 +2044,10 @@ inline int generic_write_checks(struct file *file, loff_t *pos, size_t *count, i
 			}
 		}
 #endif
-        /*  modified end pling 12/04/2009 */
+        /* Foxconn modified end pling 12/04/2009 */
 	}
 
-    /*  modified start pling 12/04/2009 */
+    /* Foxconn modified start pling 12/04/2009 */
     /* Ignore LFS rule to support large files */
 #if (!defined SAMBA_ENABLE)
 	/*
@@ -2063,7 +2063,7 @@ inline int generic_write_checks(struct file *file, loff_t *pos, size_t *count, i
 		}
 	}
 #endif
-    /*  modified end pling 12/04/2009 */
+    /* Foxconn modified end pling 12/04/2009 */
 
 	/*
 	 * Are we about to exceed the fs block limit ?

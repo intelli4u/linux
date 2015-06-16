@@ -15,10 +15,10 @@
 #define PPP_PROTOCOL_PPPOE  1
 #define PPP_PROTOCOL_PPTP   2
 #ifdef INCLUDE_L2TP
-#define PPP_PROTOCOL_L2TP   3 /*  added, zacker, 02/01/2010, @l2tp */
+#define PPP_PROTOCOL_L2TP   3 /* Foxconn added, zacker, 02/01/2010, @l2tp */
 #endif
 
-/*  added start, pptp, Winster Chan, 06/26/2006 */
+/* Foxconn added start, pptp, Winster Chan, 06/26/2006 */
 struct ppp_info {
     unsigned int protocol_type;
     struct ppp_channel *pchan;
@@ -59,4 +59,4 @@ struct addr_info {
     unsigned long src_addr;     /* Source IP address */
     unsigned long dst_addr;     /* Destination IP address */
 };
-/*  added end, pptp, Winster Chan, 06/26/2006 */
+/* Foxconn added end, pptp, Winster Chan, 06/26/2006 */

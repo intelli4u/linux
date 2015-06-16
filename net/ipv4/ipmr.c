@@ -785,19 +785,27 @@ static struct mfc_cache *ipmr_cache_find(struct mr_table *mrt,
 					 __be32 origin,
 					 __be32 mcastgrp)
 {
+/* Foxconn modified start Bob 09/18/2012 */
 #ifdef IGMP_PROXY
 	int line = 0;
 #else	
 	int line = MFC_HASH(mcastgrp, origin);
 #endif
+/* Foxconn modified end Bob 09/18/2012 */
+	
 	struct mfc_cache *c;
 
 	list_for_each_entry(c, &mrt->mfc_cache_array[line], list) {
+		
+		/* Foxconn modified start Bob 09/18/2012 */
+		/* Don't match the source IP address */
 #ifdef IGMP_PROXY
 		if (c->mfc_mcastgrp == mcastgrp)
 #else
 		if (c->mfc_origin == origin && c->mfc_mcastgrp == mcastgrp)
 #endif
+		/* Foxconn modified end Bob 09/18/2012 */
+		
 			return c;
 	}
 	return NULL;
@@ -965,12 +973,15 @@ ipmr_cache_unresolved(struct mr_table *mrt, vifi_t vifi, struct sk_buff *skb)
 
 	spin_lock_bh(&mfc_unres_lock);
 	list_for_each_entry(c, &mrt->mfc_unres_queue, list) {
+        /* Foxconn modified start Bob 09/18/2012 */
+		/* Don't match the source IP address */
 #ifdef IGMP_PROXY
 		if (c->mfc_mcastgrp == iph->daddr)
 #else		
 		if (c->mfc_mcastgrp == iph->daddr &&
 		    c->mfc_origin == iph->saddr) 
 #endif
+		/* Foxconn modified end Bob 09/18/2012 */
 		{
 			found = true;
 			break;
@@ -1043,13 +1054,17 @@ static int ipmr_mfc_delete(struct mr_table *mrt, struct mfcctl *mfc)
 	int line;
 	struct mfc_cache *c, *next;
 
+/* Foxconn modifed start Bob 09/18/2012 */
 #ifdef IGMP_PROXY
 	line=0;
 #else
 	line = MFC_HASH(mfc->mfcc_mcastgrp.s_addr, mfc->mfcc_origin.s_addr);
 #endif
-
+    /* Foxconn modifed end Bob 09/18/2012 */
+	
 	list_for_each_entry_safe(c, next, &mrt->mfc_cache_array[line], list) {
+/* Foxconn modifed start Bob 09/18/2021 */
+		/* Don't match the source IP address */
 #ifdef IGMP_PROXY
 		if (c->mfc_mcastgrp == mfc->mfcc_mcastgrp.s_addr)
 #else		
@@ -1078,19 +1093,23 @@ static int ipmr_mfc_add(struct net *net, struct mr_table *mrt,
 	if (mfc->mfcc_parent >= MAXVIFS)
 		return -ENFILE;
 
+	/* Foxconn modifed start Bob 09/18/2021 */
 #ifdef IGMP_PROXY
 	line=0;
 #else
 	line = MFC_HASH(mfc->mfcc_mcastgrp.s_addr, mfc->mfcc_origin.s_addr);
 #endif
-
+	/* Foxconn modifed end Bob 09/18/2021 */
+	
 	list_for_each_entry(c, &mrt->mfc_cache_array[line], list) {
+/* Foxconn modifed start Bob 09/18/2021 */
 #ifdef IGMP_PROXY
 		if (c->mfc_mcastgrp == mfc->mfcc_mcastgrp.s_addr)
 #else		
 		if (c->mfc_origin == mfc->mfcc_origin.s_addr &&
 		    c->mfc_mcastgrp == mfc->mfcc_mcastgrp.s_addr) 
 #endif		    
+/* Foxconn modifed end Bob 09/18/2021 */
 		{
 			found = true;
 			break;
@@ -1132,12 +1151,14 @@ static int ipmr_mfc_add(struct net *net, struct mr_table *mrt,
 	found = false;
 	spin_lock_bh(&mfc_unres_lock);
 	list_for_each_entry(uc, &mrt->mfc_unres_queue, list) {
+        /* Foxconn modified start Bob 09/18/2021 */
 #ifdef IGMP_PROXY
 		if (uc->mfc_mcastgrp == c->mfc_mcastgrp)
 #else				
 		if (uc->mfc_origin == c->mfc_origin &&
 		    uc->mfc_mcastgrp == c->mfc_mcastgrp) 
 #endif
+		/* Foxconn modified end Bob 09/18/2021 */    
 		{
 			list_del(&uc->list);
 			atomic_dec(&mrt->cache_resolve_queue_len);
@@ -1559,11 +1580,15 @@ static void ipmr_queue_xmit(struct net *net, struct mr_table *mrt,
 
 	if (vif->dev == NULL)
 		goto out_free;
+		
+	/* Foxconn added start pling 06/09/2011 */
+	/* WNDR4500 TD#48: Fix multicast storm issue when VLC TTL is set >= 64 */
 	if (strcmp(vif->dev->name, skb->dev->name) == 0)
 	{
 		//printk(KERN_EMERG "Don't send to orig intf (%s)\n", vif->dev->name);
 		goto out_free;
 	}
+	/* Foxconn added end pling 06/09/2011 */		
 
 #ifdef CONFIG_IP_PIMSM
 	if (vif->flags & VIFF_REGISTER) {
@@ -1621,10 +1646,12 @@ static void ipmr_queue_xmit(struct net *net, struct mr_table *mrt,
 
 	skb_dst_drop(skb);
 	skb_dst_set(skb, &rt->dst);
+	/* Foxconn modified start Bob 09/18/2021 */
 #ifndef IGMP_PROXY	
 	ip_decrease_ttl(ip_hdr(skb));
 #endif
-
+	/* Foxconn modified end Bob 09/18/2021 */
+	
 	if (vif->flags & VIFF_TUNNEL) {
 		ip_encap(skb, vif->local, vif->remote);
 		vif->dev->stats.tx_packets++;
@@ -1712,11 +1739,14 @@ static int ip_mr_forward(struct net *net, struct mr_table *mrt,
 	 *	Forward the frame
 	 */
 	for (ct = cache->mfc_un.res.maxvif-1; ct >= cache->mfc_un.res.minvif; ct--) {
+		/* Foxconn modified start Bob 09/18/2021, Change > to >= for ttl value */
 #ifdef IGMP_PROXY
 		if (ip_hdr(skb)->ttl >= cache->mfc_un.res.ttls[ct]) {
 #else				
 		if (ip_hdr(skb)->ttl > cache->mfc_un.res.ttls[ct]) {
 #endif
+		/* Foxconn modified end Bob 09/18/2021 */
+
 			if (psend != -1) {
 				struct sk_buff *skb2 = skb_clone(skb, GFP_ATOMIC);
 				if (skb2)

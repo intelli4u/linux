@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
  *		operating system.  INET is implemented using the  BSD Socket
@@ -99,9 +100,9 @@ struct wireless_dev;
 #define NET_XMIT_POLICED	0x03	/* skb is shot by police	*/
 #define NET_XMIT_MASK		0x0f	/* qdisc flags in net/sch_generic.h */
 /* Fxcn port-S Wins, 0714-09 */
-/*  added start, pptp, Winster Chan, 06/26/2006 */
+/* Foxconn added start, pptp, Winster Chan, 06/26/2006 */
 #define NET_RX_BYPASS       6   /* Bypassed the packet */
-/*  added start, pptp, Winster Chan, 06/26/2006 */
+/* Foxconn added start, pptp, Winster Chan, 06/26/2006 */
 /* Fxcn port-E Wins, 0714-09 */
 
 /* NET_XMIT_CN is special. It does not guarantee that this packet is lost. It
@@ -1067,19 +1068,19 @@ struct net_device {
 
 	/* phy device may attach itself for hardware timestamping */
 	struct phy_device *phydev;
-	/*  wklin added start, 11/06/2008 */
+	/* foxconn wklin added start, 11/06/2008 */
     #define NETIF_ACOSFLAGS_NATHOOK    1      /* an acos nat enabled if */
     #define NETIF_ACOSFLAGS_WANHOOK    2      /* an acos nat enabled if */
     #define NETIF_ACOSFLAGS_LANHOOK    4      /* an acos nat enabled if */
     #define NETIF_ACOSFLAGS_PPPOE      8      /* wan protocol - pppoe */
     #define NETIF_ACOSFLAGS_PPTP       16     /* wan protocol - pptp */
-    /*  wklin added start, 02/08/2010 */
+    /* foxconn wklin added start, 02/08/2010 */
     #define NETIF_ACOSFLAGS_TM_TX      32     /* monitor traffic meter tx direction */
     #define NETIF_ACOSFLAGS_TM_RX      64     /* monitor traffic meter rx direction */
-    /*  wklin added end, 02/08/2010 */
+    /* foxconn wklin added end, 02/08/2010 */
     unsigned    acos_flags;
-    int traffic_meter_counter;      /* wklin added, 02/08/2010 */
-    /*  wklin added end, 11/06/2008 */
+    int traffic_meter_counter;      /*foxconn wklin added, 02/08/2010 */
+    /* foxconn wklin added end, 11/06/2008 */
 };
 #define to_net_dev(d) container_of(d, struct net_device, dev)
 
@@ -1747,9 +1748,9 @@ extern int		dev_forward_skb(struct net_device *dev,
 extern int		netdev_budget;
 
 /* Fxcn port-S Wins, 0714-09 */
-/*  added start, pptp, Winster Chan, 06/26/2006 */
+/* Foxconn added start, pptp, Winster Chan, 06/26/2006 */
 extern void  dev_import_addr_info(unsigned long *saddr, unsigned long *daddr);
-/*  added end, pptp, Winster Chan, 06/26/2006 */
+/* Foxconn added end, pptp, Winster Chan, 06/26/2006 */
 /* Fxcn port-E Wins, 0714-09 */
 /* Called by rtnetlink.c:rtnl_unlock() */
 extern void netdev_run_todo(void);

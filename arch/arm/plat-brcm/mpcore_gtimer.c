@@ -77,8 +77,10 @@ extern void soc_watchdog(void);
 int wps_led_pattern = 0;
 int wps_led_state = 0;
 
+/* foxconn added start, zacker, 09/17/2009, @wps_led */
 int is_wl_secu_mode = 0;
 static int wps_led_is_on = 0;
+/* foxconn added end, zacker, 09/17/2009, @wps_led */
 static int wps_led_state_old = 1;
 
 static si_t *gpio_sih;
@@ -110,9 +112,16 @@ int gpio_led_on_off(int gpio, int value)
 {
     int pin = GPIO_PIN(gpio);
     
+    /* foxconn added start, zacker, 09/17/2009, @wps_led */
     if (gpio == WPS_LED_GPIO)
+#if defined(R7000)
+        wps_led_is_on = value;
+#else
         wps_led_is_on = !value;
+#endif        
+    /* foxconn added end, zacker, 09/17/2009, @wps_led */
     
+    /* Foxconn modified start pling 12/26/2011, for WNDR4000AC */
 #if (defined GPIO_EXT_CTRL)
     int ctrl_mode = GPIO_CTRL_MODE(gpio);
     
@@ -131,6 +140,7 @@ int gpio_led_on_off(int gpio, int value)
 #else
     gpio_control_normal(pin, value);
 #endif
+    /* Foxconn modified end pling 12/26/2011, for WNDR4000AC */
 
     return 0;
 }
@@ -151,8 +161,10 @@ static void quick_blink2(void)
 
 static void quick_blink(void)
 {
+    /* foxconn modified start, zacker, 09/17/2009, @wps_led */
     //static int blink_interval = 3000; /* 30 seconds */
     static int blink_interval = 500; /* 5 seconds */
+    /* foxconn modified end, zacker, 09/17/2009, @wps_led */
     static int interrupt_count = -1;
 
     blink_interval--;
@@ -167,8 +179,10 @@ static void quick_blink(void)
         
     if ( blink_interval <= 0 )
     {
+        /* foxconn modified start, zacker, 09/17/2009, @wps_led */
         //blink_interval = 3000;
         blink_interval = 500;
+        /* foxconn modified end, zacker, 09/17/2009, @wps_led */
         wps_led_state = 0;
     }
 }
@@ -182,10 +196,13 @@ static int normal_blink(void)
         interrupt_count = 0;
     
     if (interrupt_count == 0)
+    {
         gpio_led_on_off(WPS_LED_GPIO, 0);
+    }
     else if (interrupt_count == LED_BLINK_RATE_NORMAL)
         gpio_led_on_off(WPS_LED_GPIO, 1);
 }
+/* Foxconn added end */
 
 static int wps_ap_lockdown_blink(void)
 {
@@ -201,14 +218,26 @@ static int wps_ap_lockdown_blink(void)
         gpio_led_on_off(WPS_LED_GPIO, 1);
 }
 
+/* Foxconn added start pling 02/26/2010 */
 /* Add USB LED  */
 #if (defined INCLUDE_USB_LED)
+/* Foxconn modified start, Wins, 04/11/2011 */
+/* Foxconn modified start pling 12/26/2011, for WNDR4000AC */
 #if (defined WNDR4000AC)
 #define GPIO_USB1_LED       (GPIO_LED_USB)
+#elif (defined R7000)
+#if (defined R6400)
+#define GPIO_USB1_LED       12   /* USB1 LED. */
+#define GPIO_USB2_LED       13   /* USB2 LED. */
+#else
+#define GPIO_USB1_LED       17   /* USB1 LED. */
+#define GPIO_USB2_LED       18   /* USB2 LED. */
+#endif
 #else
 #define GPIO_USB1_LED       8   /* USB1 LED. */
 #define GPIO_USB2_LED       8   /* USB2 LED. */
 #endif /* WNDR4000AC */
+/* Foxconn modified end pling 12/26/2011, for WNDR4000AC */
 #define LED_BLINK_RATE  5
 int usb1_pkt_cnt = 0;
 int usb2_pkt_cnt = 0;
@@ -220,6 +249,7 @@ EXPORT_SYMBOL(usb1_pkt_cnt);
 EXPORT_SYMBOL(usb2_pkt_cnt);
 EXPORT_SYMBOL(usb1_led_state);
 EXPORT_SYMBOL(usb2_led_state);
+/* Foxconn modified end, Wins, 04/11/2011 */
 
 static int gpio_on_off(int gpio_num, int on_off)
 {
@@ -229,12 +259,15 @@ static int gpio_on_off(int gpio_num, int on_off)
     return 0;
 }
 
+/*Foxconn modify start by Hank 06/21/2012*/
 /*change LED behavior, avoid blink when have traffic, plug second USB must blink,  plug first USB not blink*/
 static int usb1_normal_blink(void)
 {
 #if (defined WNDR4000AC)
         gpio_led_on_off(GPIO_USB1_LED, 1);
-#elif defined(R6250)
+#elif defined(R7000)
+        gpio_on_off(GPIO_USB2_LED, 0);
+#elif defined(R6250) || defined(R6200v2)
         gpio_on_off(GPIO_USB1_LED, 0);
 #else
 		if(usb2_led_state==0)
@@ -243,8 +276,10 @@ static int usb1_normal_blink(void)
 
     return 0;
 }
+/*Foxconn modify end by Hank 06/21/2012*/
 
-#if (!defined WNDR4000AC) && !defined(R6250)
+#if (!defined WNDR4000AC) && !defined(R6250) && !defined(R6200v2) && !defined(R7000)
+/*Foxconn modify start by Hank 06/21/2012*/
 /*change LED behavior, avoid blink when have traffic, plug second USB must blink,  plug first USB not blink*/
 static int usb2_normal_blink(void)
 {
@@ -275,8 +310,10 @@ static int usb2_normal_blink(void)
 
     return 0;
 }
+/*Foxconn modify end by Hank 06/21/2012*/
 #endif /* WNDR4000AC */
 #endif
+/* Foxconn added end pling 02/26/2010 */
 
 static cycle_t gptimer_count_read(struct clocksource *cs)
 {
@@ -310,6 +347,7 @@ static void __init gptimer_clocksource_init(u32 freq)
 	/* <freq> is timer clock in Hz */
         clocksource_calc_mult_shift(cs, freq, GTIMER_MIN_RANGE);
 
+printk(KERN_EMERG"WPS_LED_GPIO=%d\n",WPS_LED_GPIO);
 	clocksource_register(cs);
 }
 
@@ -328,13 +366,30 @@ static irqreturn_t gtimer_interrupt(int irq, void *dev_id)
 	buzzz_kevt_log1(BUZZZ_KEVT_ID_GTIMER_EVENT, (u32)evt->event_handler);
 #endif	/* BUZZZ_KEVT_LVL */
 	evt->event_handler(evt);
-
+	
 	soc_watchdog();
+
+	/* Foxconn added start */
+    /* Blink LED depending of WPS status */
     if ( wps_led_state == 0 )
     {
+#if defined(R7000)
+        if (wps_led_state_old != 0)
+            gpio_led_on_off(WPS_LED_GPIO, 0);
+
+        /* foxconn added start, zacker, 09/17/2009, @wps_led */
+#if (!defined WNDR4000AC)   /* pling added 02/03/2012, not needed for R6200 */
+        if ((!is_wl_secu_mode) && wps_led_is_on)
+            gpio_led_on_off(WPS_LED_GPIO, 0);
+
+        if (is_wl_secu_mode && (!wps_led_is_on))
+            gpio_led_on_off(WPS_LED_GPIO, 1);
+#endif /* WNDR4000AC */
+#else
         if (wps_led_state_old != 0)
             gpio_led_on_off(WPS_LED_GPIO, 1);
 
+        /* foxconn added start, zacker, 09/17/2009, @wps_led */
 #if (!defined WNDR4000AC)   /* pling added 02/03/2012, not needed for R6200 */
         if ((!is_wl_secu_mode) && wps_led_is_on)
             gpio_led_on_off(WPS_LED_GPIO, 1);
@@ -342,6 +397,9 @@ static irqreturn_t gtimer_interrupt(int irq, void *dev_id)
         if (is_wl_secu_mode && (!wps_led_is_on))
             gpio_led_on_off(WPS_LED_GPIO, 0);
 #endif /* WNDR4000AC */
+#endif
+        /* foxconn added end, zacker, 09/17/2009, @wps_led */
+        
     }
     else
     if (wps_led_state == 1)
@@ -365,29 +423,37 @@ static irqreturn_t gtimer_interrupt(int irq, void *dev_id)
     }
     
     wps_led_state_old = wps_led_state;
+    /* Foxconn added end */
 #if (defined INCLUDE_USB_LED)
+    /* Foxconn modified start, Wins, 04/11/2011 */
+	/*Foxconn modify start by Hank 06/21/2012*/
 	/*change LED behavior, avoid blink when have traffic,
 	 plug second USB must blink,  plug first USB not blink*/	
     if (usb1_led_state)
+	/*Foxconn modify end by Hank 06/21/2012*/
     {
         usb1_normal_blink();
     }
     else
     {
         if (usb1_led_state_old){
+            /* Foxconn modified start pling 12/26/2011, for WNDR4000AC */
 #if (defined WNDR4000AC)
             gpio_led_on_off(GPIO_USB1_LED, 0);
-#elif defined(R6250)
+#elif defined(R6250) || defined(R6200v2)
             gpio_led_on_off(GPIO_USB1_LED, 1); //off
 #else
+            /* Foxconn, [MJ], turn on USB1_Led. */
             gpio_on_off(GPIO_USB1_LED, 1);
 #endif
+            /* Foxconn modified end pling 12/26/2011 */
         }
     }
+	/*Foxconn modify start by Hank 06/21/2012*/
 	/*change LED behavior, avoid blink when have traffic,
 	 plug second USB must blink,  plug first USB not blink*/
 
-#if (!defined WNDR4000AC) && !defined(R6250)
+#if (!defined WNDR4000AC) && !defined(R6250) && !defined(R6200v2) && !defined(R7000)
     if (usb2_led_state)
     {
         usb2_normal_blink();
@@ -395,13 +461,17 @@ static irqreturn_t gtimer_interrupt(int irq, void *dev_id)
     else
     {
         if (usb2_led_state_old){
+            /* Foxconn, [MJ], turn on USB2_Led. */
             gpio_on_off(GPIO_USB2_LED, 1);
         }
     }
     usb2_led_state_old = usb2_led_state;
 #endif /* WNDR4000AC */
+    /* Foxconn modified end, Wins, 04/11/2011 */
 	usb1_led_state_old = usb1_led_state;
+	/*Foxconn modify end by Hank 06/21/2012*/
 #endif
+    /* Foxconn added end pling 02/26/2010 */
     
 	
 	return IRQ_HANDLED;
@@ -553,5 +623,5 @@ void __init mpcore_gtimer_init(
 	if( count == 0 )
 		printk(KERN_CRIT "MPCORE Global Timer Dead!!\n");
 		
-    wps_led_init();	
+    wps_led_init(); /* Foxconn added */		
 }

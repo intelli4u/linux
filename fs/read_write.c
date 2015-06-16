@@ -894,13 +894,13 @@ SYSCALL_DEFINE4(sendfile, int, out_fd, int, in_fd, off_t __user *, offset, size_
 		if (unlikely(get_user(off, offset)))
 			return -EFAULT;
 		pos = off;
-        /*  modified start pling 12/04/2009 */
+        /* Foxconn modified start pling 12/04/2009 */
 #ifdef SAMBA_ENABLE
 		ret = do_sendfile(out_fd, in_fd, &pos, count, (loff_t)0xFFFFFFFFUL);
 #else
 		ret = do_sendfile(out_fd, in_fd, &pos, count, MAX_NON_LFS);
 #endif
-        /*  modified end pling 12/04/2009 */
+        /* Foxconn modified end pling 12/04/2009 */
 		if (unlikely(put_user(pos, offset)))
 			return -EFAULT;
 		return ret;

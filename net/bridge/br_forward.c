@@ -21,26 +21,26 @@
 #include <linux/netfilter_bridge.h>
 #include "br_private.h"
 
-/*  add start, Zz Shan@MutiSsidControl 03/13/2009*/
+/* Foxconn add start, Zz Shan@MutiSsidControl 03/13/2009*/
 #ifdef MULTIPLE_SSID
-/* modified start, water, 01/07/10*/
+/*foxconn modified start, water, 01/07/10*/
 //#include "../../../../router/multissidcontrol/MultiSsidControl.h"
 #include "../../../../../../ap/acos/multissidcontrol/MultiSsidControl.h"
-/* add start by Hank 08/29/2012*/
+/*Foxconn add start by Hank 08/29/2012*/
 #ifdef INCLUDE_ACCESSCONTROL
 #include "../../../../../../ap/acos/access_control/AccessControl.h"
 #endif
-/* add end by Hank 08/29/2012*/
-/* modified end, water, 01/07/10*/
+/*Foxconn add end by Hank 08/29/2012*/
+/*foxconn modified end, water, 01/07/10*/
 int (*br_insert_multissid_hook)(struct sk_buff *skb, struct net_bridge_port *dst)=NULL;
 extern T_MSsidCtlProfile *gProfile;
 extern int gProfilenum;
-/*  added start pling 10/06/2010 */
+/* Foxconn added start pling 10/06/2010 */
 extern T_MSsidCtlProfile *gProfile_5g;
 extern int gProfilenum_5g;
-/*  added end pling 10/06/2010 */
+/* Foxconn added end pling 10/06/2010 */
 #endif
-/*  add end, Zz Shan 03/13/2009*/
+/* Foxconn add end, Zz Shan 03/13/2009*/
 
 /*Fxcn added start by dennis,02/17/2012,for access control*/
 #ifdef INCLUDE_ACCESSCONTROL
@@ -60,7 +60,7 @@ static inline int should_deliver(const struct net_bridge_port *p,
 				 const struct sk_buff *skb)
 {
 
-    /*  add start, Zz Shan@MutiSsidControl 03/16/2009*/
+    /* Foxconn add start, Zz Shan@MutiSsidControl 03/16/2009*/
 #ifdef MULTIPLE_SSID    
 	if(br_insert_multissid_hook)
 	{
@@ -72,7 +72,7 @@ static inline int should_deliver(const struct net_bridge_port *p,
 		    return 0;  		    
 	}
 #endif	 
-	/*  add end, Zz Shan 03/16/2009*/
+	/* Foxconn add end, Zz Shan 03/16/2009*/
 	/*Fxcn added start by dennis,02/17/2012,for access control*/
 #ifdef INCLUDE_ACCESSCONTROL
     if(br_insert_accesscntl_hook){
@@ -342,7 +342,7 @@ void br_multicast_forward(struct net_bridge_mdb_entry *mdst,
 	br_multicast_flood(mdst, skb, skb2, __br_forward);
 }
 #endif
-/*  add start, Zz Shan@MutiSsidControl 03/13/2009*/
+/* Foxconn add start, Zz Shan@MutiSsidControl 03/13/2009*/
 #ifdef MULTIPLE_SSID
 void insert_msc_func_to_br(void *FUNC)
 {
@@ -357,7 +357,7 @@ EXPORT_SYMBOL(insert_msc_func_to_br);
 EXPORT_SYMBOL(remove_msc_func_from_br);
 
 #endif
-/*  add end, Zz Shan 03/13/2009*/
+/* Foxconn add end, Zz Shan 03/13/2009*/
 /* Fxcn port-E Wins, 0715-09 */
 #ifdef INCLUDE_ACCESSCONTROL
 /*fxcn added start by dennis,02/17/12*/
@@ -371,8 +371,8 @@ void remove_acs_func_from_br(void)
    br_insert_accesscntl_hook= NULL;
 }
 /*dxcn added end by dennis, 02/17/12*/
-/* add start by Hank 08/29/2012*/
+/*Foxconn add start by Hank 08/29/2012*/
 EXPORT_SYMBOL(insert_acs_func_to_br);
 EXPORT_SYMBOL(remove_acs_func_from_br);
-/* add end by Hank 08/29/2012*/
+/*Foxconn add end by Hank 08/29/2012*/
 #endif

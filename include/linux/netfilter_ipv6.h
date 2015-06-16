@@ -40,7 +40,7 @@
 #define NFC_IP6_DST_PT           0x0400
 /* Something else about the proto */
 #define NFC_IP6_PROTO_UNKNOWN    0x2000
-/* modify start by Hank 08/10/2012 */
+/*Foxconn modify start by Hank 08/10/2012 */
 /*let some definition can be see by acos_nat*/
 #endif /* ! __KERNEL__ */
 
@@ -56,7 +56,7 @@
 /* Packets about to hit the wire. */
 #define NF_IP6_POST_ROUTING	4
 #define NF_IP6_NUMHOOKS		5
-/* modify end by Hank 08/10/2012 */
+/*Foxconn modify end by Hank 08/10/2012 */
 
 
 enum nf_ip6_hook_priorities {

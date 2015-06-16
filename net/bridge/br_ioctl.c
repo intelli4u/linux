@@ -24,20 +24,20 @@
 #include <ctf/hndctf.h>
 #endif /* HNDCTF */
 
-/*  add start, Zz Shan@MutiSsidControl 03/13/2009*/
+/* Foxconn add start, Zz Shan@MutiSsidControl 03/13/2009*/
 #ifdef MULTIPLE_SSID
 
-/* modified start, water, 01/07/10*/
+/*foxconn modified start, water, 01/07/10*/
 //#include "../../../../router/multissidcontrol/MultiSsidControl.h"
 #include "../../../../../../ap/acos/multissidcontrol/MultiSsidControl.h"
-/* modified end, water, 01/07/10*/
+/*foxconn modified end, water, 01/07/10*/
 
 T_MSsidCtlProfile *gProfile = NULL;
 int gProfilenum = 0;
-/*  added start pling 10/06/2010 */
+/* Foxconn added start pling 10/06/2010 */
 T_MSsidCtlProfile *gProfile_5g = NULL;
 int gProfilenum_5g = 0;
-/*  added end pling 10/06/2010 */
+/* Foxconn added end pling 10/06/2010 */
 
 EXPORT_SYMBOL(gProfilenum);
 EXPORT_SYMBOL(gProfilenum_5g);
@@ -53,11 +53,11 @@ T_AccessControlTable *gAccessTable = NULL;
 int gAccessControlMode = 0; /*0:access control disabled,1:access all new devices,2:block all new devices*/
 int gAccessTablenum = 0;
 /*Fxcn added end by dennis,02/16/2012,for access control*/
-/* add start by Hank 08/29/2012*/
+/*Foxconn add start by Hank 08/29/2012*/
 EXPORT_SYMBOL(gAccessTable);
 EXPORT_SYMBOL(gAccessControlMode);
 EXPORT_SYMBOL(gAccessTablenum);
-/* add end by Hank 08/29/2012*/
+/*Foxconn add end by Hank 08/29/2012*/
 #endif
 void profileprint(void)
 {
@@ -72,7 +72,7 @@ void profileprint(void)
     }
 }
 #endif
-/*  add end, Zz Shan 03/13/2009*/
+/* Foxconn add end, Zz Shan 03/13/2009*/
 
 /* called with RTNL */
 static int get_bridge_ifindices(struct net *net, int *indices, int num)
@@ -418,7 +418,7 @@ static int old_deviceless(struct net *net, void __user *uarg)
 
 		return br_del_bridge(net, buf);
 	}
-	/*  add start, Zz Shan@MutiSsidControl 03/13/2009*/
+	/* Foxconn add start, Zz Shan@MutiSsidControl 03/13/2009*/
 #ifdef MULTIPLE_SSID	
 	case BRCTL_SET_MSSIDPROFILE:
 	{
@@ -456,7 +456,7 @@ static int old_deviceless(struct net *net, void __user *uarg)
 
 		return 0;
 	}
-    /*  added start pling 10/06/2010 */
+    /* Foxconn added start pling 10/06/2010 */
     /* For 5G guest network control */
 	case BRCTL_SET_5G_MSSIDPROFILE:
 	{
@@ -494,10 +494,10 @@ static int old_deviceless(struct net *net, void __user *uarg)
 
 		return 0;
 	}
-    /*  added end pling 10/06/2010 */
+    /* Foxconn added end pling 10/06/2010 */
 #endif	
-	/*  add end, Zz Shan 03/13/2009*/
-	/*  added start, zacker, 03/24/2011 */
+	/* Foxconn add end, Zz Shan 03/13/2009*/
+	/* foxconn added start, zacker, 03/24/2011 */
 	case BRCTL_SET_BCMCTF_ENABLE:
 	{
 #ifdef HNDCTF
@@ -505,10 +505,10 @@ static int old_deviceless(struct net *net, void __user *uarg)
 		int ret = 0;
 		int ctf_is_enabled = 0;
 
-		/* modify start by Hank 08/10/2012 */
+		/*Foxconn modify start by Hank 08/10/2012 */
 		/*kernel function be modified*/
 		dev = dev_get_by_index(net,args[1]);
-		/* modify end by Hank 08/10/2012 */
+		/*Foxconn modify end by Hank 08/10/2012 */
 		if (dev == NULL)
 			return -EINVAL;
 
@@ -527,7 +527,7 @@ static int old_deviceless(struct net *net, void __user *uarg)
 		break;
 #endif /* HNDCTF */
 	}
-	/*  added end, zacker, 03/24/2011 */
+	/* foxconn added end, zacker, 03/24/2011 */
 	 /*Fxcn added start dennis,02/18/2012,for access control*/
 #ifdef INCLUDE_ACCESSCONTROL
     case BRCTL_SET_ACCESS_CONTROL:

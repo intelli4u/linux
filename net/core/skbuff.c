@@ -237,10 +237,6 @@ struct sk_buff * BCMFASTPATH_HOST __alloc_skb(unsigned int size, gfp_t gfp_mask,
 #ifdef NET_SKBUFF_DATA_USES_OFFSET
 	skb->mac_header = ~0U;
 #endif
-#ifdef BCMFA
-	skb->napt_idx = BCM_FA_INVALID_IDX_VAL;
-	skb->napt_flags = 0;
-#endif
 
 	/* make sure we initialize shinfo sequentially */
 	shinfo = skb_shinfo(skb);
@@ -560,9 +556,6 @@ static void BCMFASTPATH_HOST __copy_skb_header(struct sk_buff *new, const struct
 #ifdef PKTC
 	memset(new->pktc_cb, 0, sizeof(new->pktc_cb));
 #endif
-#ifdef CTF_PPPOE
-	memset(new->ctf_pppoe_cb, 0, sizeof(new->ctf_pppoe_cb));
-#endif
 	memset(new->fpath_cb, 0, sizeof(new->fpath_cb));    /* foxconn Bob added 02/06/2013 to init fpath_cb */ 
 	
 	new->tstamp		= old->tstamp;
@@ -622,11 +615,6 @@ static void BCMFASTPATH_HOST __copy_skb_header(struct sk_buff *new, const struct
 	new->ctrace_start = 0;
 	new->ctrace_count = 1;
 #endif /* BCMDBG_CTRACE */
-
-#ifdef BCMFA
-	new->napt_idx		= BCM_FA_INVALID_IDX_VAL;
-	new->napt_flags		= 0;
-#endif
 
 	skb_copy_secmark(new, old);
 }

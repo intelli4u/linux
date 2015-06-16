@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  * arch/arm/mm/cache-l230.c - L310 cache controller support
  *
@@ -91,7 +92,7 @@ static void BCMFASTPATH l2x0_inv_range(unsigned long start, unsigned long end)
 {
 	void __iomem *base = l2x0_base;
 
-	/* Ramge edges could contain live dirty data */
+	/* Range edges could contain live dirty data */
 	if( start & (CACHE_LINE_SIZE-1) )
 		atomic_flush_line(base, start & ~(CACHE_LINE_SIZE-1));
 	if( end & (CACHE_LINE_SIZE-1) )

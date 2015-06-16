@@ -25,10 +25,10 @@
 #include <asm/atomic.h>
 #include <asm/unaligned.h>
 #include "br_private.h"
-/*  added start pling 07/02/2007 */
+/* Foxconn added start pling 07/02/2007 */
 #define MAX_MAC_CNT     1024
 static int mac_cnt = 0; 
-/*  added end pling 07/02/2007 */
+/* Foxconn added end pling 07/02/2007 */
 #ifdef HNDCTF
 #include <linux/if.h>
 #include <linux/if_vlan.h>
@@ -183,7 +183,7 @@ static void fdb_rcu_free(struct rcu_head *head)
 		= container_of(head, struct net_bridge_fdb_entry, rcu);
 	kmem_cache_free(br_fdb_cache, ent);
 	if (mac_cnt>0)
-		mac_cnt--; /*  added pling 08/12/2014 */
+		mac_cnt--; /* foxconn added pling 08/12/2014 */
 }
 
 static inline void fdb_delete(struct net_bridge_fdb_entry *f)
@@ -455,13 +455,13 @@ static struct net_bridge_fdb_entry *fdb_create(struct hlist_head *head,
 {
 	struct net_bridge_fdb_entry *fdb;
 
-    /*  wklin added start, 06/18/2008 */
+    /* foxconn wklin added start, 06/18/2008 */
     if (mac_cnt > MAX_MAC_CNT)
         return 0;
-    /*  wklin added end, 06/18/2008 */
+    /* foxconn wklin added end, 06/18/2008 */
 	fdb = kmem_cache_alloc(br_fdb_cache, GFP_ATOMIC);
 	if (fdb) {
-        mac_cnt++; /*  wklin added , 06/18/2008 */
+        mac_cnt++; /* foxconn wklin added , 06/18/2008 */
 		memcpy(fdb->addr.addr, addr, ETH_ALEN);
 		hlist_add_head_rcu(&fdb->hlist, head);
 

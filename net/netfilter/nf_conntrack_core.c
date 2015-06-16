@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /* Connection state tracking for netfilter.  This is separated from,
    but required by, the NAT layer; it can also be used by an iptables
    extension. */
@@ -297,17 +298,16 @@ ip_conntrack_ipct_add(struct sk_buff *skb, u_int32_t hooknum,
 	if (skb_dst(skb)->dev->flags & IFF_POINTOPOINT) {
 		/* Transmit interface and sid will be populated by pppoe module */
 		ipc_entry.action |= CTF_ACTION_PPPOE_ADD;
-		skb->ctf_pppoe_cb[0] = 2;
+		skb->pktc_cb[0] = 2;
 		ipc_entry.ppp_ifp = skb_dst(skb)->dev;
-	} else if ((skb->dev->flags & IFF_POINTOPOINT) && (skb->ctf_pppoe_cb[0] == 1)) {
+	} else if ((skb->dev->flags & IFF_POINTOPOINT) && (skb->pktc_cb[0] == 1)) {
 		ipc_entry.action |= CTF_ACTION_PPPOE_DEL;
-		ipc_entry.pppoe_sid = *(uint16 *)&skb->ctf_pppoe_cb[2];
+		ipc_entry.pppoe_sid = *(uint16 *)&skb->pktc_cb[2];
 		ipc_entry.ppp_ifp = skb->dev;
 	}
 #endif
 
-	if (((ipc_entry.tuple.proto == IPPROTO_TCP) && (kcih->ipc_suspend & CTF_SUSPEND_TCP)) ||
-	    ((ipc_entry.tuple.proto == IPPROTO_UDP) && (kcih->ipc_suspend & CTF_SUSPEND_UDP))) {
+	if (kcih->ipc_suspend) {
 		/* The default action is suspend */
 		ipc_entry.action |= CTF_ACTION_SUSPEND;
 	}
@@ -398,10 +398,10 @@ ip_conntrack_ipct_add(struct sk_buff *skb, u_int32_t hooknum,
 	ctf_ipc_add(kcih, &ipc_entry, !IPVERSION_IS_4(ipver));
 
 #ifdef CTF_PPPOE
-	if (skb->ctf_pppoe_cb[0] == 2) {
+	if (skb->pktc_cb[0] == 2) {
 		ctf_ipc_t *ipct;
 		ipct = ctf_ipc_lkup(kcih, &ipc_entry, ipver == 6);
-		*(uint32 *)&skb->ctf_pppoe_cb[4] = (uint32)ipct;
+		*(uint32 *)&skb->pktc_cb[4] = (uint32)ipct;
 		if (ipct != NULL)
 			ctf_ipc_release(kcih, ipct);
 	}
@@ -463,9 +463,6 @@ ip_conntrack_ipct_delete(struct nf_conn *ct, int ct_timeout)
 		 * flowing in this direction.
 		 */
 		if (ipct != NULL) {
-#ifdef BCMFA
-			ctf_live(kcih, ipct, v6);
-#endif
 			if (ipct->live > 0) {
 				ipct->live = 0;
 				ctf_ipc_release(kcih, ipct);
@@ -479,9 +476,6 @@ ip_conntrack_ipct_delete(struct nf_conn *ct, int ct_timeout)
 		ipct = ctf_ipc_lkup(kcih, &repl_ipct, v6);
 
 		if (ipct != NULL) {
-#ifdef BCMFA
-			ctf_live(kcih, ipct, v6);
-#endif
 			if (ipct->live > 0) {
 				ipct->live = 0;
 				ctf_ipc_release(kcih, ipct);

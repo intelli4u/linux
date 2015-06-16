@@ -1196,7 +1196,7 @@ kill_proc_info(int sig, struct siginfo *info, pid_t pid)
 	return error;
 }
 
-/* modify start by Hank 08/10/2012 */
+/*Foxconn modify start by Hank 08/10/2012 */
 /*add a function for user space using*/
 #define __si_special(priv) \
 	((priv) ? SEND_SIG_PRIV : SEND_SIG_NOINFO)
@@ -1207,7 +1207,7 @@ kill_proc(pid_t pid, int sig, int priv)
 	return kill_proc_info(sig, __si_special(priv), pid);
 }
 EXPORT_SYMBOL(kill_proc);
-/* modify end by Hank 08/10/2012 */
+/*Foxconn modify end by Hank 08/10/2012 */
 /* like kill_pid_info(), but doesn't use uid/euid of "current" */
 int kill_pid_info_as_uid(int sig, struct siginfo *info, struct pid *pid,
 		      uid_t uid, uid_t euid, u32 secid)

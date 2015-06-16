@@ -47,9 +47,20 @@ static long no_blink(int state)
 /* Returns how long it waited in ms */
 long (*panic_blink)(int state);
 EXPORT_SYMBOL(panic_blink);
-
-#ifdef CONFIG_CRASHLOG
+#if (defined CONFIG_CRASHLOG)
+//#if (defined CONFIG_CRASHLOG) || (defined KERNEL_CRASH_DUMP_TO_MTD)
 void  nvram_store_crash(void);
+#endif
+
+#if (defined R6400)
+#define NEW_DEBUG_HIDDEN_PAGE
+#endif
+
+#ifdef KERNEL_CRASH_DUMP_TO_MTD
+int flash_write_buffer(void);
+#ifdef NEW_DEBUG_HIDDEN_PAGE
+int flash_write_reboot_reason(int);
+#endif
 #endif
 
 /**
@@ -103,8 +114,15 @@ NORET_TYPE void panic(const char * fmt, ...)
 	atomic_notifier_call_chain(&panic_notifier_list, 0, buf);
 
 	bust_spinlocks(0);
-
-#ifdef CONFIG_CRASHLOG
+	
+#ifdef KERNEL_CRASH_DUMP_TO_MTD
+        flash_write_buffer();
+#ifdef NEW_DEBUG_HIDDEN_PAGE
+		flash_write_reboot_reason(0);
+#endif
+#endif
+#if (defined CONFIG_CRASHLOG)  //when fbwifi debug disable
+//#if (defined CONFIG_CRASHLOG) || (defined KERNEL_CRASH_DUMP_TO_MTD) //when fbwifi debug enable
 	nvram_store_crash();
 #endif
 

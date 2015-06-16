@@ -275,7 +275,7 @@ static int unit_set(struct idr *p, void *ptr, int n);
 static void unit_put(struct idr *p, int n);
 static void *unit_find(struct idr *p, int n);
 
-/*  added start pling 03/28/2006 */
+/* Foxconn added start pling 03/28/2006 */
 /**********************************************************************
 * FUNCTION: computeTCPChecksum
 * ARGUMENTS:
@@ -460,7 +460,7 @@ void ppp_modify_tcp_mss(unsigned char *payload, int clampMss)
 }
 #undef UINT16
 #undef UINT32
-/*  added end pling 03/28/2006 */
+/* Foxconn added end pling 03/28/2006 */
 
 static struct class *ppp_class;
 
@@ -878,7 +878,7 @@ static long ppp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		break;
 
 	case PPPIOCGIDLE:
-		/* modified start, water, 11/27/09, @pppoe/pptp idle time not correct issue*/
+		/*foxconn modified start, water, 11/27/09, @pppoe/pptp idle time not correct issue*/
 		if (jiffies >= ppp->last_xmit) /* wklin modified from > to >=*/
 			idle.xmit_idle = (jiffies - ppp->last_xmit) / HZ;
 		else
@@ -888,7 +888,7 @@ static long ppp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		idle.xmit_idle = (jiffies - ppp->last_xmit) / HZ;
 		idle.recv_idle = (jiffies - ppp->last_recv) / HZ;
 		*/
-		/* modified end, water, 11/27/09*/
+		/*foxconn modified end, water, 11/27/09*/
 		if (copy_to_user(argp, &idle, sizeof(idle)))
 			break;
 		err = 0;
@@ -1178,12 +1178,16 @@ ppp_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	return NETDEV_TX_OK;
 }
 
+/*Foxconn add start by Eric Huang 12/04/2012*/
+/*add get ppp interface status function*/
 static struct net_device_stats * ppp_dev_collect_stats(struct net_device *dev_p)
 {
 	struct ppp *ppp = netdev_priv(dev_p);
 
 	return &ppp->dev->stats;
 }
+/*Foxconn add end by Eric Huang 12/04/2012*/
+
 static int
 ppp_net_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 {
@@ -1230,7 +1234,10 @@ ppp_net_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 static const struct net_device_ops ppp_netdev_ops = {
 	.ndo_start_xmit = ppp_start_xmit,
 	.ndo_do_ioctl   = ppp_net_ioctl,
+	/*Foxconn add start by Eric Huang 12/04/2012*/
+	/*add get ppp interface status function*/
 	.ndo_get_stats  = ppp_dev_collect_stats,
+	/*Foxconn add end by Eric Huang 12/04/2012*/
 };
 
 static void ppp_setup(struct net_device *dev)
@@ -1359,13 +1366,14 @@ ppp_send_frame(struct ppp *ppp, struct sk_buff *skb)
 #else
 		/* for data packets, record the time */
 		//ppp->last_xmit = jiffies;
-        /*  wklin modified start, 01/18/2007 */
+        /* foxconn wklin modified start, 01/18/2007 */
+		/* Foxconn modified start pling 08/26/2013 */
 		/* skb->sk seems can't use to identify whether packet is from IP stack
 		 * or not. Use skb->skb_iif instead (==0 means it come from "lo") */
 		//if (!skb->sk) /* record the time if not from IP stack */
 		if (skb->skb_iif )
-		    ppp->last_xmit = jiffies;
-        /*  wklin modified end, 01/02/2007 */
+		/* Foxconn modified end pling 08/26/2013 */		    ppp->last_xmit = jiffies;
+        /* foxconn wklin modified end, 01/02/2007 */
 #endif /* CONFIG_PPP_FILTER */
 	}
 
@@ -1433,27 +1441,28 @@ ppp_send_frame(struct ppp *ppp, struct sk_buff *skb)
 	if (ppp->flags & SC_LOOP_TRAFFIC) {
 		if (ppp->file.rq.qlen > PPP_MAX_RQLEN)
 			goto drop;
-        /*  added start, Winster Chan, 01/02/2007 */
+		/* Foxconn added start, Winster Chan, 01/02/2007 */
+		/* Foxconn modified start pling 08/26/2013 */
 		/* skb->sk seems can't use to identify whether packet is from IP stack
 		 * or not. Use skb->skb_iif instead (==0 means it come from "lo") */
 		//if (skb->sk) {
 		if (!skb->skb_iif ) { 
-				if (skb->data[0]==0x00 && skb->data[1]==0x21 &&
+		/* Foxconn modified end pling 08/26/2013 */				if (skb->data[0]==0x00 && skb->data[1]==0x21 &&
 					skb->data[11]==0x01 && skb->data[18]==0xFF)
 				{
 					printk("PPP: Received triggerring packet.\n");
-					/* added start, water, 04/16/10*/
+					/*foxconn added start, water, 04/16/10*/
 					/*add michael's patch, @3500L BTS-A201001425: 
 					Internet PPPoE/PPTP idle time is not precise 
 					at the first time.*/
 					ppp->last_xmit = jiffies;
-					/* added end, water, 04/16/10*/
+					/*foxconn added end, water, 04/16/10*/
             	}
 		    	else
         	    	goto drop;
         }
         printk("PPP: DoD triggered.\n");
-        /*  added end, Winster Chan, 01/02/2007 */
+        /* Foxconn added end, Winster Chan, 01/02/2007 */
 		skb_queue_tail(&ppp->file.rq, skb);
 		wake_up_interruptible(&ppp->file.rwait);
 		return;
@@ -1491,17 +1500,17 @@ ppp_push(struct ppp *ppp)
 	}
 
 	if ((ppp->flags & SC_MULTILINK) == 0) {
-        /*  wklin added start, 12/09/2010 */
+        /* foxconn wklin added start, 12/09/2010 */
 #define PPP_SHORTCUT
 #ifdef PPP_SHORTCUT
         extern struct ppp_channel_ops async_ops;
 #endif
-        /*  wklin added end, 12/09/2010 */
+        /* foxconn wklin added end, 12/09/2010 */
 		/* not doing multilink: send it down the first channel */
 		list = list->next;
 		pch = list_entry(list, struct channel, clist);
 
-        /*  wklin added start, 12/09/2010 */
+        /* foxconn wklin added start, 12/09/2010 */
 #ifdef PPP_SHORTCUT
         /* we bound two channels to ppp interface, make sure the we send to the
          * short-cut chanel (!&async_ops).
@@ -1511,7 +1520,7 @@ ppp_push(struct ppp *ppp)
             pch = list_entry(list, struct channel, clist);
         }
 #endif
-        /*  wklin added end, 12/09/2010 */
+        /* foxconn wklin added end, 12/09/2010 */
 		spin_lock_bh(&pch->downl);
 		if (pch->chan) {
 			if (pch->chan->ops->start_xmit(pch->chan, skb))
@@ -2022,9 +2031,9 @@ ppp_receive_nonmp_frame(struct ppp *ppp, struct sk_buff *skb)
 		} else
 #endif /* CONFIG_PPP_FILTER */
 		//ppp->last_recv = jiffies;
-        /*  removed start, Winster Chan, 01/12/2007 */
+        /* Foxconn removed start, Winster Chan, 01/12/2007 */
 		; /* ppp->last_recv = jiffies; */
-        /*  removed end, Winster Chan, 01/12/2007 */
+        /* Foxconn removed end, Winster Chan, 01/12/2007 */
 
 		if ((ppp->dev->flags & IFF_UP) == 0 ||
 		    ppp->npmode[npi] != NPMODE_PASS) {
@@ -2797,10 +2806,10 @@ ppp_get_stats(struct ppp *ppp, struct ppp_stats *st)
  * or if there is already a unit with the requested number.
  * unit == -1 means allocate a new number.
  */
-/* modify start by Hank 08/10/2012 */
+/*Foxconn modify start by Hank 08/10/2012 */
 /*change function definition*/
 extern char *nvram_get(const char *name); 
-/* modify end by Hank 08/10/2012 */
+/*Foxconn modify end by Hank 08/10/2012 */
 static struct ppp *
 ppp_create_interface(struct net *net, int unit, int *retp)
 {
@@ -2836,7 +2845,7 @@ ppp_create_interface(struct net *net, int unit, int *retp)
 	 * the net device is belong to
 	 */
 	dev_net_set(dev, net);
-    /*  wklin added start, 11/06/2008 */
+    /* foxconn wklin added start, 11/06/2008 */
     {
 #define nvram_safe_get(name) (nvram_get(name) ? : "")
 	char *value = nvram_safe_get("wan_proto");

@@ -10,7 +10,7 @@
  ******************************************************************************
  * 0915-09 :	Create PPTP module for Linux 2.6.22
  ******************************************************************************
- * Author:  Winster Chan <winster.wh.chan@.com>
+ * Author:  Winster Chan <winster.wh.chan@foxconn.com>
  * Contributors:
  *
  * License:
@@ -309,7 +309,7 @@ static struct notifier_block pptp_notifier = {
 };
 
 
-/*  added start, pptp, Winster Chan, 06/26/2006 */
+/* Foxconn added start, pptp, Winster Chan, 06/26/2006 */
 /************************************************************************
  *
  * Get the length of IP header to be stripped off.
@@ -426,7 +426,7 @@ static int pptp_fill_gre_header(unsigned long callid,
     }
     return hdrlen;
 }
-/*  added end, pptp, Winster Chan, 06/26/2006 */
+/* Foxconn added end, pptp, Winster Chan, 06/26/2006 */
 
 /************************************************************************
  *
@@ -438,13 +438,13 @@ static int pptp_rcv_core(struct sock *sk, struct sk_buff *skb)
 	struct pppox_sock *po = pppox_sk(sk);
 	struct pppox_sock *relay_po;
 	int hdrlen, iphdrlen, grehdrlen;
-    int ppp_hdr_start;  /*  added pling 04/18/2011 */
+    int ppp_hdr_start;  /* Foxconn added pling 04/18/2011 */
 
     iphdrlen = pptp_get_ip_header((char *)skb_network_header(skb));
     grehdrlen = pptp_get_gre_header((char *)skb_network_header(skb) + iphdrlen);
     hdrlen = iphdrlen + grehdrlen + 2; /* 2 is length for 0xFF03 */
 
-    /*  added start pling  04/18/2011 */
+    /* Foxconn added start pling  04/18/2011 */
     /* Russia PPTP server (mpd3) issue:
      * Sometimes the server send packet without the 'FF03' 
      * in PPP header.
@@ -463,7 +463,7 @@ static int pptp_rcv_core(struct sock *sk, struct sk_buff *skb)
             hdrlen -= 2;
         }
     }
-    /*  added end pling  04/18/2011 */
+    /* Foxconn added end pling  04/18/2011 */
 
 	if (sk->sk_state & PPPOX_BOUND) {
 #if 0
@@ -580,9 +580,11 @@ static int pptp_create(struct net *net, struct socket *sock)
 
 	sock_init_data(sock, sk);
 
+    /* Foxconn added start, pptp, Winster Chan, 06/26/2006 */
     //pptp_sock.sk = sk;
     //pptp_sock.protocol_type = PPP_PROTOCOL_PPTP;
     //ppp_import_sock_info(&pptp_sock);
+    /* Foxconn added end, pptp, Winster Chan, 06/26/2006 */
 	sock->state	= SS_UNCONNECTED;
 	sock->ops	= &pptp_ops;
 
@@ -734,11 +736,11 @@ static int pptp_connect(struct socket *sock, struct sockaddr *uservaddr,
         dev_import_addr_info(&sp->sa_addr.pptp.srcaddr,
                              &sp->sa_addr.pptp.dstaddr);
 
-		/*  added start pling 03/20/2012 */
+		/* Foxconn added start pling 03/20/2012 */
 		/* export the call id so that dev.c know 
 		 * such info */
 		dev_import_call_id(call_id, peer_call_id);
-		/*  added end pling 03/20/2012 */
+		/* Foxconn added end pling 03/20/2012 */
 	}
 
 	po->num = sp->sa_addr.pptp.srcaddr;
@@ -869,7 +871,7 @@ static int pptp_ioctl(struct socket *sock, unsigned int cmd,
 		err = 0;
 		break;
 
-    /*  added start, pptp, Winster Chan, 06/26/2006 */
+    /* Foxconn added start, pptp, Winster Chan, 06/26/2006 */
 	case PPTPIOCGGRESEQ:
 		err = -ENXIO;
 
@@ -883,7 +885,7 @@ static int pptp_ioctl(struct socket *sock, unsigned int cmd,
 		err = 0;
 		seq_number++;
 		break;
-    /*  added end, pptp, Winster Chan, 06/26/2006 */
+    /* Foxconn added end, pptp, Winster Chan, 06/26/2006 */
 
 	default:;
 	};
@@ -989,7 +991,7 @@ end:
  * xmit function for internal use.
  *
  ***********************************************************************/
-/*  wklin modified start, 08/05/2010 @pptp throughput */
+/* foxconn wklin modified start, 08/05/2010 @pptp throughput */
 static int __pptp_xmit(struct sock *sk, struct sk_buff *skb)
 {
 	struct pppox_sock *po = pppox_sk(sk);
@@ -1073,7 +1075,7 @@ static int __pptp_xmit(struct sock *sk, struct sk_buff *skb)
 abort:
 	return 0;
 }
-/*  wklin moified end, 08/05/2010 @pptp throughput */
+/* foxconn wklin moified end, 08/05/2010 @pptp throughput */
 
 
 /************************************************************************

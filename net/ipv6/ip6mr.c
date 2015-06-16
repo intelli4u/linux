@@ -989,7 +989,7 @@ static struct mfc6_cache *ip6mr_cache_find(struct mr6_table *mrt,
 					   struct in6_addr *origin,
 					   struct in6_addr *mcastgrp)
 {
-
+	/* Bob modified start, 04/01/2013, ipv6ready logo */
 	
 	int line;
 	struct mfc6_cache *c=NULL;
@@ -1035,6 +1035,7 @@ static struct mfc6_cache *ip6mr_cache_find(struct mr6_table *mrt,
 	
 
 	return NULL;
+	/* Bob modified end, 04/01/2013, ipv6ready logo */
 }
 
 /*
@@ -1947,10 +1948,14 @@ static int ip6_mr_forward(struct net *net, struct mr6_table *mrt,
 	cache->mfc_un.res.pkt++;
 	cache->mfc_un.res.bytes += skb->len;
 	
+	
+	/* Bob added start, 08/19/2009, ipv6ready v6LC.1.1.10 part J */
 	if(! (ipv6_hdr(skb)->daddr.s6_addr[1] & 0x0f))
 	{
 	    goto dont_forward;
 	}
+	/* Bob added end, 08/19/2009, ipv6ready v6LC.1.1.10 part J */
+	/* Bob added start, 08/19/2009, ipv6ready v6LC.5.1.4 part B */
 	if(!lan_device)
 	    lan_device = dev_get_by_name(&init_net, "eth0");    //todo: not to hardcode br0
 	    //lan_device = dev_get_by_name("br0");    //todo: not to hardcode br0
@@ -1964,6 +1969,7 @@ static int ip6_mr_forward(struct net *net, struct mr6_table *mrt,
 		kfree_skb(skb);
 		return -EMSGSIZE;
 	}
+	/* Bob added end, 08/19/2009, ipv6ready v6LC.5.1.4 part B */
 
 	/*
 	 * Wrong interface: drop packet and (maybe) send PIM assert.

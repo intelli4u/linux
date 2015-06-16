@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  * xHCI host controller driver PCI Bus Glue.
  *
@@ -54,7 +55,6 @@ static int xhci_pci_setup(struct usb_hcd *hcd)
 	struct pci_dev		*pdev = to_pci_dev(hcd->self.controller);
 	int			retval;
 	u32			temp;
-
 
 #ifdef CONFIG_BCM47XX
 	hcd->self.sg_tablesize = (TRBS_PER_SEGMENT - 2) / 2;

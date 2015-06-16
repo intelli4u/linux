@@ -287,8 +287,7 @@ si_bus_irq_map_t si_bus_irq_map[] = {
 	{BCM47XX_GMAC_ID, 0, 4, 179}	/* 179, 180, 181, 182 */,
 	{BCM47XX_USB20H_ID, 0, 1, 111}	/* 111 EHCI. */,
 	{BCM47XX_USB20H_ID, 0, 1, 111}	/* 111 OHCI. */,
-	{BCM47XX_USB30H_ID, 0, 5, 112}	/* 112, 113, 114, 115, 116. XHCI */,
-	{BCM47XX_SDIO3H_ID, 0, 1, 177}	/* 177 SDIO3 */
+	{BCM47XX_USB30H_ID, 0, 5, 112}	/* 112, 113, 114, 115, 116. XHCI */
 };
 #define SI_BUS_IRQ_MAP_SIZE (sizeof(si_bus_irq_map) / sizeof(si_bus_irq_map_t))
 
@@ -874,10 +873,11 @@ bcm5301x_usb_power_on(int coreid)
 {
 	int enable_usb;
 
+    /* foxconn modified start, 09/10/2013, enable usb later to avoid boot up failed if USB 3.0 storage is connected to USB 3.0 port */
 	if (coreid == NS_USB20_CORE_ID) {
 		enable_usb = getgpiopin(NULL, "usbport1", GPIO_PIN_NOTDEFINED);
 		if (enable_usb != GPIO_PIN_NOTDEFINED) {
-			int enable_usb_mask = 1 << enable_usb;
+			int enable_usb_mask = 0 << enable_usb;
 
 			si_gpioout(sih, enable_usb_mask, enable_usb_mask, GPIO_DRV_PRIORITY);
 			si_gpioouten(sih, enable_usb_mask, enable_usb_mask, GPIO_DRV_PRIORITY);
@@ -885,21 +885,30 @@ bcm5301x_usb_power_on(int coreid)
 
 		enable_usb = getgpiopin(NULL, "usbport2", GPIO_PIN_NOTDEFINED);
 		if (enable_usb != GPIO_PIN_NOTDEFINED) {
-			int enable_usb_mask = 1 << enable_usb;
+			int enable_usb_mask = 0 << enable_usb;
 
 			si_gpioout(sih, enable_usb_mask, enable_usb_mask, GPIO_DRV_PRIORITY);
 			si_gpioouten(sih, enable_usb_mask, enable_usb_mask, GPIO_DRV_PRIORITY);
 		}
 	}
 	else if (coreid == NS_USB30_CORE_ID) {
+	    
+	    enable_usb = getgpiopin(NULL, "usbport1", GPIO_PIN_NOTDEFINED);
+		if (enable_usb != GPIO_PIN_NOTDEFINED) {
+			int enable_usb_mask = 0 << enable_usb;
+
+			si_gpioout(sih, enable_usb_mask, enable_usb_mask, GPIO_DRV_PRIORITY);
+			si_gpioouten(sih, enable_usb_mask, enable_usb_mask, GPIO_DRV_PRIORITY);
+		}
 		enable_usb = getgpiopin(NULL, "usbport2", GPIO_PIN_NOTDEFINED);
 		if (enable_usb != GPIO_PIN_NOTDEFINED) {
-			int enable_usb_mask = 1 << enable_usb;
+			int enable_usb_mask = 0 << enable_usb;
 
 			si_gpioout(sih, enable_usb_mask, enable_usb_mask, GPIO_DRV_PRIORITY);
 			si_gpioouten(sih, enable_usb_mask, enable_usb_mask, GPIO_DRV_PRIORITY);
 		}
 	}
+	/* foxconn modified end, 09/10/2013, enable usb later to avoid boot up failed if USB 3.0 storage is connected to USB 3.0 port*/
 }
 
 static void
@@ -973,82 +982,34 @@ bcm5301x_usb30_phy_init(void)
 	OSL_DELAY(2);
 
 	if (CHIPID(sih->chip) == BCM4707_CHIP_ID) {
-		if (CHIPREV(sih->chiprev) == 4) {
-			/* For NS-B0, USB3 PLL Block */
-			SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-			writel(0x587e8000, ccb_mii_mng_cmd_data_addr);
+		/* PLL30 block */
+		SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
+		writel(0x587e8000, ccb_mii_mng_cmd_data_addr);
 
-			/* Clear ana_pllSeqStart */
-			SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-			writel(0x58061000, ccb_mii_mng_cmd_data_addr);
+		SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
+		writel(0x582a6400, ccb_mii_mng_cmd_data_addr);
 
-			/* CMOS Divider ratio to 25 */
-			SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-			writel(0x582a6400, ccb_mii_mng_cmd_data_addr);
+		SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
+		writel(0x587e80e0, ccb_mii_mng_cmd_data_addr);
 
-			/* Asserting PLL Reset */
-			SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-			writel(0x582ec000, ccb_mii_mng_cmd_data_addr);
+		SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
+		writel(0x580a009c, ccb_mii_mng_cmd_data_addr);
 
-			/* Deaaserting PLL Reset */
-			SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-			writel(0x582e8000, ccb_mii_mng_cmd_data_addr);
+		/* Enable SSC */
+		SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
+		writel(0x587e8040, ccb_mii_mng_cmd_data_addr);
 
-			/* Deasserting USB3 system reset */
-			writel(0x00000000, usb3_idm_idm_reset_ctrl_addr);
+		SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
+		writel(0x580a21d3, ccb_mii_mng_cmd_data_addr);
 
-			/* Set ana_pllSeqStart */
-			SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-			writel(0x58069000, ccb_mii_mng_cmd_data_addr);
+		SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
+		writel(0x58061003, ccb_mii_mng_cmd_data_addr);
 
-			/* RXPMD block */
-			SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-			writel(0x587e8020, ccb_mii_mng_cmd_data_addr);
+		/* Waiting MII Mgt interface idle */
+		SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
 
-			/* CDR int loop locking BW to 1 */
-			SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-			writel(0x58120049, ccb_mii_mng_cmd_data_addr);
-
-			/* CDR int loop acquisition BW to 1 */
-			SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-			writel(0x580e0049, ccb_mii_mng_cmd_data_addr);
-
-			/* CDR prop loop BW to 1 */
-			SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-			writel(0x580a005c, ccb_mii_mng_cmd_data_addr);
-
-			/* Waiting MII Mgt interface idle */
-			SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-		} else {
-			/* PLL30 block */
-			SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-			writel(0x587e8000, ccb_mii_mng_cmd_data_addr);
-
-			SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-			writel(0x582a6400, ccb_mii_mng_cmd_data_addr);
-
-			SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-			writel(0x587e80e0, ccb_mii_mng_cmd_data_addr);
-
-			SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-			writel(0x580a009c, ccb_mii_mng_cmd_data_addr);
-
-			/* Enable SSC */
-			SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-			writel(0x587e8040, ccb_mii_mng_cmd_data_addr);
-
-			SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-			writel(0x580a21d3, ccb_mii_mng_cmd_data_addr);
-
-			SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-			writel(0x58061003, ccb_mii_mng_cmd_data_addr);
-
-			/* Waiting MII Mgt interface idle */
-			SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-
-			/* Deasserting USB3 system reset */
-			writel(0x00000000, usb3_idm_idm_reset_ctrl_addr);
-		}
+		/* Deasserting USB3 system reset */
+		writel(0x00000000, usb3_idm_idm_reset_ctrl_addr);
 	}
 	else if (CHIPID(sih->chip) == BCM53018_CHIP_ID) {
 		/* USB3 PLL Block */
@@ -1156,40 +1117,6 @@ bcm5301x_usb_hc_init(struct pci_dev *dev, int coreid)
 	}
 }
 
-static void
-bcm5301x_sdio_init(void)
-{
-	uint32 sdio3_idm_idm_base;
-	uint32 *sdio3_idm_idm_reset_ctrl_addr;
-	uint32 dmu_base;
-	uint32 *cru_gpio_control0_addr;
-	uint32 val32;
-	uint32 mask;
-
-	/* Check Chip ID */
-	if (!BCM4707_CHIP(CHIPID(sih->chip)) ||
-		(sih->chippkg != BCM4709_PKG_ID))
-		return;
-
-	dmu_base = (uint32)REG_MAP(0x1800c000, 4096);
-	cru_gpio_control0_addr = (uint32 *)(dmu_base + 0x1c0);
-	mask = ((1 << 19) |	/* SDIO_CARD_PWR_CTL */
-		(1 << 20));	/* SDIO_EN_1P8 */
-	val32 = readl(cru_gpio_control0_addr);
-	val32 &= ~mask;
-	writel(val32, cru_gpio_control0_addr);
-	REG_UNMAP((void *)dmu_base);
-
-	sdio3_idm_idm_base = (uint32)REG_MAP(0x18116000, 4096);
-	sdio3_idm_idm_reset_ctrl_addr = (uint32 *)(sdio3_idm_idm_base + 0x800);
-	/* Perform SDIO3 system soft reset */
-	writel(0x00000001, sdio3_idm_idm_reset_ctrl_addr);
-	OSL_DELAY(1);
-	/* Deasserting SDIO3 system reset */
-	writel(0x00000000, sdio3_idm_idm_reset_ctrl_addr);
-	REG_UNMAP((void *)sdio3_idm_idm_base);
-}
-
 int
 pcibios_enable_device(struct pci_dev *dev, int mask)
 {
@@ -1236,8 +1163,6 @@ pcibios_enable_device(struct pci_dev *dev, int mask)
 		/* USB HC init */
 		bcm5301x_usb_hc_init(dev, coreid);
 	}
-	else if (coreid == NS_SDIO3_CORE_ID)
-		bcm5301x_sdio_init();
 
 	rc = 0;
 out:

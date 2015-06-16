@@ -502,10 +502,12 @@ static int igmpv3_send_report(struct in_device *in_dev, struct ip_mc_list *pmc)
 	int type;
 
 #if 0
+	/* foxconn added start, zacker, 11/19/2010 */
 	/* not to let kernel send igmp packets */
 #ifdef IGMP_PROXY
 	return 0;
 #endif
+	/* foxconn added end, zacker, 11/19/2010 */
 #endif
 
 	if (!pmc) {
@@ -564,10 +566,12 @@ static void igmpv3_send_cr(struct in_device *in_dev)
 	int type, dtype;
 
 #if 0
+	/* foxconn added start, zacker, 11/19/2010 */
 	/* not to let kernel send igmp packets */
 #ifdef IGMP_PROXY
 	return;
 #endif
+	/* foxconn added end, zacker, 11/19/2010 */
 #endif
 
 	read_lock(&in_dev->mc_list_lock);
@@ -650,10 +654,12 @@ static int igmp_send_report(struct in_device *in_dev, struct ip_mc_list *pmc,
 	__be32	dst;
 
 #if 0
+	/* foxconn added start, zacker, 11/19/2010 */
 	/* not to let kernel send igmp packets */
 #ifdef IGMP_PROXY
 	return 0;
 #endif
+	/* foxconn added end, zacker, 11/19/2010 */
 #endif
 
 	if (type == IGMPV3_HOST_MEMBERSHIP_REPORT)

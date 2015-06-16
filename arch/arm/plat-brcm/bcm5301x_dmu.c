@@ -6,21 +6,6 @@
  * Documents:
  * Northstar_top_power_uarch_v1_0.pdf
  *
- * Copyright (C) 2013, Broadcom Corporation. All Rights Reserved.
- * 
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
- * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
- * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
- * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- *
- * $Id: $
  */
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -81,7 +66,8 @@ static int lcpll_status(struct clk * clk)
 	reg = readl( clk->regs_base + 0x10 );
 
 	/* bit 12 is "lock" signal, has to be "1" for proper PLL operation */
-	if ((reg & (1 << 12)) == 0) {
+	if( (reg & (1 << 12)) == 0 )
+		{
 		clk->rate = 0;
 		}
 
@@ -128,7 +114,8 @@ static int lcpll_chan_status(struct clk * clk)
 	/* enable bit is in enableb_ch[] inversed */
 	enable = ((readl( base + 0 ) >> 6) & 7) ^ 7;
 
-	if ((enable & (1 << clk->chan)) == 0) {
+	if( 0 == (enable & (1 << clk->chan)))
+		{
 		clk->rate = 0;
 		return -EIO;
 		}
@@ -170,14 +157,14 @@ static struct clk clk_lcpll = {
  */
 
 static struct clk clk_lcpll_ch[4] = {
-	{.ops = &lcpll_chan_ops, .parent = &clk_lcpll, .type = CLK_DIV,
-	.name = "lcpll_ch0", .chan = 0},
-	{.ops = &lcpll_chan_ops, .parent = &clk_lcpll, .type = CLK_DIV,
-	.name = "lcpll_ch1", .chan = 1},
-	{.ops = &lcpll_chan_ops, .parent = &clk_lcpll, .type = CLK_DIV,
-	.name = "lcpll_ch2", .chan = 2},
-	{.ops = &lcpll_chan_ops, .parent = &clk_lcpll, .type = CLK_DIV,
-	.name = "lcpll_ch3", .chan = 3},
+	{ .ops	= &lcpll_chan_ops, .parent = &clk_lcpll, .type = CLK_DIV,
+	  .name	= "lcpll_ch0", .chan	= 0, },
+	{ .ops	= &lcpll_chan_ops, .parent = &clk_lcpll, .type = CLK_DIV,
+	  .name	= "lcpll_ch1", .chan	= 1, },
+	{ .ops	= &lcpll_chan_ops, .parent = &clk_lcpll, .type = CLK_DIV,
+	  .name	= "lcpll_ch2", .chan	= 2, },
+	{ .ops	= &lcpll_chan_ops, .parent = &clk_lcpll, .type = CLK_DIV,
+	  .name	= "lcpll_ch3", .chan	= 3, },
 };
 
 /*
@@ -196,7 +183,8 @@ static int genpll_status(struct clk * clk)
 	reg = readl( clk->regs_base + 0x20 );
 
 	/* bit 12 is "lock" signal, has to be "1" for proper PLL operation */
-	if ((reg & (1 << 12)) == 0) {
+	if( (reg & (1 << 12)) == 0 )
+		{
 		clk->rate = 0;
 		return -EIO;
 		}
@@ -249,7 +237,8 @@ static int genpll_chan_status(struct clk * clk)
 	/* enable bit is in enableb_ch[0..5] inversed */
 	enable = ((readl( base + 0x04 ) >> 12) & 0x3f) ^ 0x3f ;
 
-	if ((enable & (1 << clk->chan)) == 0) {
+	if( 0 == (enable & (1 << clk->chan)))
+		{
 		clk->rate = 0;
 		return -EIO;
 		}
@@ -325,18 +314,18 @@ static struct clk clk_genpll = {
  */
 
 static struct clk clk_genpll_ch[6] = {
-	{.ops = &genpll_chan_ops, .parent = &clk_genpll, .type = CLK_DIV,
-	.name = "genpll_ch0", .chan = 0},
-	{.ops = &genpll_chan_ops, .parent = &clk_genpll, .type = CLK_DIV,
-	.name = "genpll_ch1", .chan = 1},
-	{.ops = &genpll_chan_ops, .parent = &clk_genpll, .type = CLK_DIV,
-	.name = "genpll_ch2", .chan = 2},
-	{.ops = &genpll_chan_ops, .parent = &clk_genpll, .type = CLK_DIV,
-	.name = "genpll_ch3", .chan = 3},
-	{.ops = &genpll_chan_ops, .parent = &clk_genpll, .type = CLK_DIV,
-	.name = "genpll_ch4", .chan = 4},
-	{.ops = &genpll_chan_ops, .parent = &clk_genpll, .type = CLK_DIV,
-	.name = "genpll_ch5", .chan = 5}
+	{ .ops	= &genpll_chan_ops, .parent = &clk_genpll, .type = CLK_DIV,
+	  .name	= "genpll_ch0", .chan	= 0, },
+	{ .ops	= &genpll_chan_ops, .parent = &clk_genpll, .type = CLK_DIV,
+	  .name	= "genpll_ch1", .chan	= 1, },
+	{ .ops	= &genpll_chan_ops, .parent = &clk_genpll, .type = CLK_DIV,
+	  .name	= "genpll_ch2", .chan	= 2, },
+	{ .ops	= &genpll_chan_ops, .parent = &clk_genpll, .type = CLK_DIV,
+	  .name	= "genpll_ch3", .chan	= 3, },
+	{ .ops	= &genpll_chan_ops, .parent = &clk_genpll, .type = CLK_DIV,
+	  .name	= "genpll_ch4", .chan	= 4, },
+	{ .ops	= &genpll_chan_ops, .parent = &clk_genpll, .type = CLK_DIV,
+	  .name	= "genpll_ch5", .chan	= 5, },
 };
 
 /*
@@ -345,28 +334,38 @@ static struct clk clk_genpll_ch[6] = {
  */
 
 static struct clk_lookup soc_clk_lookups[] = {
-	/* a.k.a. "c_clk100" */
-	{.con_id = "pcie_clk", .clk = &clk_lcpll_ch[0]},
-	/* a.k.a. "c_clk200" */
-	{.con_id = "sdio_clk", .clk = &clk_lcpll_ch[1]},
-	/* a.k.a. "c_clk400" */
-	{.con_id = "ddr_clk", .clk = &clk_lcpll_ch[2]},
-	/* unassigned ? */
-	{.con_id = "c_clk120", .clk = &clk_lcpll_ch[3]},
-	/* "c_clk250" */
-	{.con_id = "en_phy_clk", .clk = &clk_genpll_ch[0]},
-	/* "c_clk150" */
-	{.con_id = "en_clk", .clk = &clk_genpll_ch[1]},
-	/* "c_clk30" */
-	{.con_id = "usb_phy_clk", .clk = &clk_genpll_ch[2]},
-	/* "c_clk500" */
-	{.con_id = "iproc_fast_clk", .clk = &clk_genpll_ch[3]},
-	/* "c_clk250" */
-	{.con_id = "iproc_med_clk", .clk = &clk_genpll_ch[4]},
-	/* "c_clk125" */
-	{.con_id = "iproc_slow_clk", .clk = &clk_genpll_ch[5]}
+	{
+	.con_id         = "pcie_clk", 		/* a.k.a. "c_clk100" */
+	.clk            = &clk_lcpll_ch[0],
+	},{
+	.con_id         = "sdio_clk", 		/* a.k.a. "c_clk200" */
+	.clk            = &clk_lcpll_ch[1],
+	},{
+	.con_id         = "ddr_clk",		/* a.k.a. "c_clk400" */
+	.clk            = &clk_lcpll_ch[2],
+	},{
+	.con_id         = "c_clk120",		/* unassigned ? */
+	.clk            = &clk_lcpll_ch[3],
+	},{
+	.con_id		= "en_phy_clk",		/* "c_clk250" */
+	.clk            = &clk_genpll_ch[0],
+	},{
+	.con_id		= "en_clk",		/* "c_clk150" */
+	.clk            = &clk_genpll_ch[1],
+	},{
+	.con_id         = "usb_phy_clk", 	/* "c_clk30" */
+	.clk            = &clk_genpll_ch[2],
+	},{
+	.con_id         = "iproc_fast_clk",	/* "c_clk500" */
+	.clk            = &clk_genpll_ch[3],
+	},{
+	.con_id         = "iproc_med_clk",	/* "c_clk250" */
+	.clk            = &clk_genpll_ch[4],
+	},{
+	.con_id         = "iproc_slow_clk",	/* "c_clk125" */
+	.clk            = &clk_genpll_ch[5],
+	}
 };
-
 void dmu_gpiomux_init(void)
 {
 #ifdef CONFIG_PLAT_MUX_CONSOLE
@@ -383,12 +382,14 @@ void dmu_gpiomux_init(void)
 #endif /* CONFIG_PLAT_MUX_CONSOLE */
 }
 
-/*
- * Install above clocks into clock lookup table
+/* 
+ * Install above clocks into clock lookup table 
  * and initialize the register base address for each
 */
-static void __init soc_clocks_init(void * __iomem cru_regs_base,
-	struct clk * clk_ref)
+static void __init soc_clocks_init( 
+		void * __iomem cru_regs_base, 
+		struct clk * clk_ref
+		)
 {
 
 	/* registers are already mapped with the rest of DMU block */
@@ -411,17 +412,19 @@ static void __init soc_clocks_init(void * __iomem cru_regs_base,
 #endif
 
 	/* Install clock sources into the lookup table */
-	clkdev_add_table(soc_clk_lookups, ARRAY_SIZE(soc_clk_lookups));
+	clkdev_add_table(soc_clk_lookups, 
+			ARRAY_SIZE(soc_clk_lookups));
 }
 
 void __init soc_dmu_init( struct clk *	clk_ref )
 {
 	void * __iomem 	reg_base;
 
-	if (IS_ERR_OR_NULL(clk_ref)) {
-		printk(KERN_ERR "DMU no clock source - skip init\n");
-		return;
-	}
+        if( IS_ERR_OR_NULL( clk_ref ))
+                {
+                printk( KERN_ERR "DMU no clock source - skip init\n");
+                return;
+                }
 
 	BUG_ON( request_resource( &iomem_resource, &dmu_regs ));
 
@@ -446,16 +449,17 @@ void soc_clocks_show( void )
 {
 	unsigned i;
 
-	printk("DMU Clocks:\n");
-	for (i = 0; i < ARRAY_SIZE(soc_clk_lookups); i++) {
-		printk("%s, %s: (%s) %lu\n",
+	printk( "DMU Clocks:\n" );
+	for(i = 0; i < ARRAY_SIZE( soc_clk_lookups); i++ )
+		{
+		printk( "%s, %s: (%s) %lu\n",
 			soc_clk_lookups[i].con_id,
 			soc_clk_lookups[i].dev_id,
 			soc_clk_lookups[i].clk->name,
-			clk_get_rate(soc_clk_lookups[i].clk));
-	}
-
-	printk("DMU Clocks# %u\n", i);
+			clk_get_rate( soc_clk_lookups[i].clk )
+			);
+		}
+	printk( "DMU Clocks# %u\n", i );
 }
 
 #ifdef CONFIG_PROC_FS

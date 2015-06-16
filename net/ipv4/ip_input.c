@@ -149,7 +149,7 @@
 #include <bcmdefs.h>
 
 /* Fxcn port-S Wins, 0714-09 */
-extern int (*ip_pre_insert_hook)(struct sk_buff *skb);
+extern int (*ip_pre_insert_hook)(struct sk_buff *skb);//Foxconn add , Lewis Min, for UBD, 04/18/2008
 /* Fxcn port-E Wins, 0714-09 */
 
 /*
@@ -377,7 +377,7 @@ drop:
 }
 
 /* Fxcn port-S Wins, 0714-09 */
-int (*br_pre_insert_hook)(struct sk_buff *skb);
+int (*br_pre_insert_hook)(struct sk_buff *skb);//Foxconn add , Lewis Min, for UBD, 04/18/2008
 /* Fxcn port-E Wins, 0714-09 */
 /*
  * 	Main IP Receive routine.
@@ -423,6 +423,8 @@ int BCMFASTPATH_HOST ip_rcv(struct sk_buff *skb, struct net_device *dev, struct 
 	if (!pskb_may_pull(skb, iph->ihl*4))
 		goto inhdr_error;
 		
+/* Fxcn port-S Wins, 0714-09 */
+	//Foxconn add start, Lewis Min, for OpenDNS, 12/08/2008
 	if(NULL!=br_pre_insert_hook)
 	{
 		int ret;
@@ -432,7 +434,9 @@ int BCMFASTPATH_HOST ip_rcv(struct sk_buff *skb, struct net_device *dev, struct 
 		if((ret==NF_DROP)||(ret==NF_STOLEN))
 			return 0;
 	}
+	//Foxconn add end, Lewis Min, for OpenDNS, 12/08/2008
 		
+	//Foxconn add start, Lewis Min, for UBD, 04/18/2008
 	if(NULL!=ip_pre_insert_hook)
 	{
 		int ret;
@@ -442,6 +446,8 @@ int BCMFASTPATH_HOST ip_rcv(struct sk_buff *skb, struct net_device *dev, struct 
 		if((ret==NF_DROP)||(ret==NF_STOLEN))
 			return 0;
 	}
+	//Foxconn add end, Lewis Min, for UBD, 04/18/2008
+/* Fxcn port-E Wins, 0714-09 */		
 
 	iph = ip_hdr(skb);
 
@@ -471,7 +477,7 @@ int BCMFASTPATH_HOST ip_rcv(struct sk_buff *skb, struct net_device *dev, struct 
 	skb_orphan(skb);
 
 	/* Skip NF lookup of TCP ACKs for SMB data packets */
-#if 0 /* removed , to wait BRCM's solutoin. It will cause WAN site port scan failed. */	
+#if 0 /* foxconn removed , to wait BRCM's solutoin. It will cause WAN site port scan failed. */	
 	if (ip_hdr(skb)->protocol == IPPROTO_TCP) {
 		__be16 *th = (__be16 *)(((__u8 *)ip_hdr(skb)) + (ip_hdr(skb)->ihl << 2));
 		skb->tcpf_smb = (th[1] == htons(0x01bd)); /* SMB data */
@@ -490,6 +496,8 @@ out:
 }
 
 
+/* Fxcn port-S Wins, 0714-09 */
+//Foxconn add start, Lewis Min, for OpenDNS, 12/12/2008
 void insert_func_to_BR_PRE_ROUTE(void *FUNC)
 {
    br_pre_insert_hook= FUNC;
@@ -500,4 +508,6 @@ void remove_func_from_BR_PRE_ROUTE(void)
 {
    br_pre_insert_hook= NULL;
 }
+//Foxconn add end, Lewis Min, for OpenDNS, 12/12/2008
+/* Fxcn port-E Wins, 0714-09 */
 

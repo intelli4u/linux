@@ -321,9 +321,6 @@ struct sk_buff {
 #ifdef PKTC
 	unsigned char           pktc_cb[8];
 #endif
-#ifdef CTF_PPPOE
-	unsigned char           ctf_pppoe_cb[8];
-#endif
 	ktime_t			tstamp;
 
 	struct sock		*sk;
@@ -336,7 +333,7 @@ struct sk_buff {
 	 * first. This is owned by whoever has the skb queued ATM.
 	 */
 	char			cb[48] __aligned(8);
-	char			fpath_cb[48] __aligned(8);    /*  Bob added 02/06/2013 for cb is used by other kernel code */ 
+	char			fpath_cb[48] __aligned(8);    /* foxconn Bob added 02/06/2013 for cb is used by other kernel code */ 
 	
 	/* foxconn wklin added, 2010/06/15 @attach_dev */
 #define pp_bridge_indev(skb) (struct net_device **)(&(skb->cb[44]))
@@ -359,12 +356,6 @@ struct sk_buff {
 #if defined(HNDCTF) || defined(CTFPOOL)
 	__u32			pktc_flags;
 #endif
-#ifdef BCMFA
-#define BCM_FA_INVALID_IDX_VAL	0xFFF00000
-	__u32                   napt_idx;
-	__u32			napt_flags;
-#endif /* BCMFA */
-
 	__u8			tcpf_smb:1,
 				tcpf_hdrbuf:1,
 				tcpf_nf:1;
