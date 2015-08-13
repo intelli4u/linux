@@ -18,20 +18,25 @@
 # $Id: Makefile,v 1.3 2008-08-13 20:20:16 $
 #
 
-IGSSRCDIR := ../../../../../../../src/router/emf/igs
+# Choose BASE_DIR based on where router resides - src or components
+EMF_BASE_DIR := $(firstword $(wildcard ../../../../components/router/emf	\
+                                       ../../../../src/router/emf))
+EMFDIR       := ../../../$(EMF_BASE_DIR)
+IGSSRCDIR    := $(EMFDIR)/igs
 IGSCSRCDIR := ../../../../../../../src/emf/igs
-EMFDIR := ../../../../../../../src/router/emf
+
+SRCBASE_ROUTER ?= $(SRCBASE)/router
 
 IGS_OBJS := $(IGSCSRCDIR)/igsc.o $(IGSCSRCDIR)/igsc_sdb.o $(IGSSRCDIR)/igs_linux.o \
 	    $(IGSCSRCDIR)/osl_linux.o
 
 # Search for sources under src/router/emf/igs
 ifneq ($(wildcard $(src)/$(IGSSRCDIR)),)
-	EXTRA_CFLAGS += -I$(SRCBASE)/router/emf/igs -I$(SRCBASE)/router/emf/emf
-	EXTRA_CFLAGS += -I$(SRCBASE)/include/emf/igs -I$(SRCBASE)/include/emf/emf
-	igs-objs := $(IGS_OBJS)
+    EXTRA_CFLAGS += -I$(SRCBASE_ROUTER)/emf/igs -I$(SRCBASE_ROUTER)/emf/emf
+    EXTRA_CFLAGS += -I$(SRCBASE)/include/emf/igs -I$(SRCBASE)/include/emf/emf
+    igs-objs := $(IGS_OBJS)
 else
-	igs-objs := $(EMFDIR)/igs.o
+    igs-objs := $(EMFDIR)/igs.o
 endif
 
 obj-$(CONFIG_EMF) := igs.o

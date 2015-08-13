@@ -314,7 +314,7 @@ static void __init build_mem_type_table(void)
 	cachepolicy = CPOLICY_WRITEALLOC;
 #else
 	/* for NS-B0 ACP on UP mode */
-	if (ACP_WAR_EN() || arch_is_coherent())
+	if (ACP_WAR_ENAB() || arch_is_coherent())
 		cachepolicy = CPOLICY_WRITEALLOC;
 #endif	/* CONFIG_SMP */
 
@@ -446,7 +446,7 @@ static void __init build_mem_type_table(void)
 		mem_shared = 1;
 #else
 		/* for NS-B0 ACP on UP mode */
-		if (ACP_WAR_EN() || arch_is_coherent())
+		if (ACP_WAR_ENAB() || arch_is_coherent())
 			mem_shared = 1;
 #endif	/* CONFIG_SMP */
 

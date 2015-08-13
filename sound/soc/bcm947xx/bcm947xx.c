@@ -1,19 +1,25 @@
 /*
  * SoC audio for BCM947XX Board
  *
- * Copyright (C) 2014, Broadcom Corporation. All Rights Reserved.
+ * Copyright (C) 1999-2015, Broadcom Corporation
  * 
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
+ *      Unless you and Broadcom execute a separate written software license
+ * agreement governing use of this software, this software is licensed to you
+ * under the terms of the GNU General Public License version 2 (the "GPL"),
+ * available at http://www.broadcom.com/licenses/GPLv2.php, with the
+ * following added to such license:
  * 
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
- * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
- * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
- * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ *      As a special exception, the copyright holders of this software give you
+ * permission to link this software with independent modules, and to copy and
+ * distribute the resulting executable under terms of your choice, provided that
+ * you also meet, for each linked independent module, the terms and conditions of
+ * the license of that module.  An independent module is a module which is not
+ * derived from this software.  The special exception does not apply to any
+ * modifications of the software.
+ * 
+ *      Notwithstanding the above, under no circumstances may you combine this
+ * software in any way with any other Broadcom software provided under a license
+ * other than the GPL, without Broadcom's express prior written consent.
  *
  * $Id: bcm947xx.c,v 1.1 2010-05-13 23:46:27 $
  */
@@ -105,6 +111,12 @@ static int bcm947xx_hw_params(struct snd_pcm_substream *substream,
 	int mclk_input = BCM947XX_MCLK_FREQ;
 	char *tmp;
 	int ret = 0;
+
+	if (substream->stream == SNDRV_PCM_STREAM_CAPTURE) {
+		/* These settings are only applicable for configuring playback. */
+		DBG("%s: skipping (capture stream)", __FUNCTION__);
+		return 0;
+	}
 
 	fmt = SND_SOC_DAIFMT_I2S |		/* I2S mode audio */
 	      SND_SOC_DAIFMT_NB_NF |		/* BCLK not inverted and normal LRCLK polarity */
@@ -401,4 +413,4 @@ module_exit(bcm947xx_exit);
 
 /* Module information */
 MODULE_DESCRIPTION("ALSA SoC BCM947XX");
-MODULE_LICENSE("GPL");
+MODULE_LICENSE("GPL and additional rights");

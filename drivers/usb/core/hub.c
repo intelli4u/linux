@@ -31,6 +31,14 @@
 
 #include "usb.h"
 
+#include <bcmutils.h>
+#include <siutils.h>
+#include <bcmdefs.h>
+#include <bcmdevs.h>
+/* Global SB handle */
+extern si_t *bcm947xx_sih;
+#define sih bcm947xx_sih
+
 /* if we are in debug mode, always announce new devices */
 #ifdef DEBUG
 #ifndef CONFIG_USB_ANNOUNCE_NEW_DEVICES
@@ -63,7 +71,7 @@ struct usb_hub {
 							resumed */
 	unsigned long		removed_bits[1]; /* ports with a "removed"
 							device present */
-#if USB_MAXCHILDREN > 31     /* 8*sizeof(unsigned long) - 1 */
+#if USB_MAXCHILDREN > 31 /* 8*sizeof(unsigned long) - 1 */
 #error event_bits[] is too short!
 #endif
 
@@ -1954,15 +1962,17 @@ static int hub_port_wait_reset(struct usb_hub *hub, int port1,
 		ret = hub_port_status(hub, port1, &portstatus, &portchange);
 		if (ret < 0)
 			return ret;
+		if ((CHIPID(sih->chip) != BCM53573_CHIP_ID) ||
+			(CHIPREV(sih->chiprev) != 0) || (port1 != 1)) {
+			/* Device went away? */
+			if (!(portstatus & USB_PORT_STAT_CONNECTION))
+				return -ENOTCONN;
 
-		/* Device went away? */
-		if (!(portstatus & USB_PORT_STAT_CONNECTION))
-			return -ENOTCONN;
+			/* bomb out completely if the connection bounced */
+			if ((portchange & USB_PORT_STAT_C_CONNECTION))
+				return -ENOTCONN;
 
-		/* bomb out completely if the connection bounced */
-		if ((portchange & USB_PORT_STAT_C_CONNECTION))
-			return -ENOTCONN;
-
+		}
 		/* if we`ve finished resetting, then break out of the loop */
 		if (!(portstatus & USB_PORT_STAT_RESET) &&
 		    (portstatus & USB_PORT_STAT_ENABLE)) {
@@ -2017,6 +2027,12 @@ static int hub_port_reset(struct usb_hub *hub, int port1,
 				dev_dbg(hub->intfdev,
 						"port_wait_reset: err = %d\n",
 						status);
+
+			if (((CHIPID(sih->chip) == BCM53573_CHIP_ID) &&
+				(CHIPREV(sih->chiprev) == 0)) && (status != 0) && (port1 == 1)) {
+				status = 0;
+			}
+
 		}
 
 		/* return on disconnect or reset */
@@ -2639,6 +2655,19 @@ hub_port_init (struct usb_hub *hub, struct usb_device *udev, int port1,
 		usb_set_device_state(udev, USB_STATE_DEFAULT);
 	} else {
 		/* Reset the device; full speed may morph to high speed */
+		if ((CHIPID(sih->chip) == BCM53573_CHIP_ID) &&
+			(CHIPREV(sih->chiprev) == 0) && (port1 == 1)) {
+			u32 portsc = 0;
+			void __iomem *ehci_base;
+
+			ehci_base = (void *)REG_MAP(0x18004000, 4096);
+			portsc = readl(ehci_base + 0x54);
+			writel((portsc & 0xffffefff), ehci_base + 0x54);
+			portsc = readl(ehci_base + 0x54);
+			writel((portsc | 0x1000), ehci_base + 0x54);
+			portsc = readl(ehci_base + 0x54);
+			REG_UNMAP(ehci_base);
+		}
 		retval = hub_port_reset(hub, port1, udev, delay);
 		if (retval < 0)		/* error or disconnect */
 			goto fail;
@@ -2772,7 +2801,19 @@ hub_port_init (struct usb_hub *hub, struct usb_device *udev, int port1,
 			udev->descriptor.bMaxPacketSize0 =
 					buf->bMaxPacketSize0;
 			kfree(buf);
+			if ((CHIPID(sih->chip) == BCM53573_CHIP_ID) &&
+				(CHIPREV(sih->chiprev) == 0) && (port1 == 1)) {
+				u32 portsc = 0;
+				void __iomem *ehci_base;
 
+				ehci_base = (void *)REG_MAP(0x18004000, 4096);
+				portsc = readl(ehci_base + 0x54);
+				writel((portsc & 0xffffefff), ehci_base + 0x54);
+				portsc = readl(ehci_base + 0x54);
+				writel((portsc | 0x1000), ehci_base + 0x54);
+				portsc = readl(ehci_base + 0x54);
+				REG_UNMAP(ehci_base);
+			}
 			retval = hub_port_reset(hub, port1, udev, delay);
 			if (retval < 0)		/* error or disconnect */
 				goto fail;
@@ -3026,6 +3067,14 @@ static void hub_port_connect_change(struct usb_hub *hub, int port1,
 	if (portchange & (USB_PORT_STAT_C_CONNECTION |
 				USB_PORT_STAT_C_ENABLE)) {
 		status = hub_port_debounce(hub, port1);
+
+	if ((CHIPID(sih->chip) == BCM53573_CHIP_ID) && (CHIPREV(sih->chiprev) == 0)) {
+		if (((status & USB_PORT_STAT_CONNECTION) != USB_PORT_STAT_CONNECTION) &&
+			(port1 == 1)) {
+			status |= USB_PORT_STAT_CONNECTION | USB_PORT_STAT_HIGH_SPEED;
+		}
+	}
+
 		if (status < 0) {
 			if (printk_ratelimit())
 				dev_err(hub_dev, "connect-debounce failed, "
@@ -3463,6 +3512,10 @@ int usb_hub_init(void)
 		printk(KERN_ERR "%s: can't register hub driver\n",
 			usbcore_name);
 		return -1;
+	}
+
+	if (CHIPID(sih->chip) == BCM53573_CHIP_ID && (CHIPREV(sih->chiprev) == 0)) {
+		use_both_schemes = 3;
 	}
 
 	khubd_task = kthread_run(hub_thread, NULL, "khubd");

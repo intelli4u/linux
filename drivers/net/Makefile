@@ -289,6 +289,7 @@ obj-$(CONFIG_HND) += hnd/
 obj-$(CONFIG_BCM_CTF) += ctf/
 obj-$(CONFIG_DHDAP) += dhd/
 obj-$(CONFIG_DPSTA) += dpsta/
+obj-$(CONFIG_LACP) += lacp/
 obj-$(CONFIG_ET) += et/
 obj-$(CONFIG_BCM57XX) += bcm57xx/
 obj-$(CONFIG_WL) += wl/

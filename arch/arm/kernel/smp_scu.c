@@ -40,7 +40,7 @@ void __init scu_enable(void __iomem *scu_base)
 
 	scu_ctrl = __raw_readl(scu_base + SCU_CTRL);
 
-	if (ACP_WAR_EN() || arch_is_coherent()) {
+	if (ACP_WAR_ENAB() || arch_is_coherent()) {
 		u32 scu_val;
 
 		scu_val = PHYS_OFFSET;

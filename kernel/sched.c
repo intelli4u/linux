@@ -3711,7 +3711,7 @@ void scheduler_tick(void)
 	struct task_struct *curr = rq->curr;
 
 #if defined(BUZZZ_KEVT_LVL) && (BUZZZ_KEVT_LVL >= 1)
-	buzzz_kevt_log1(BUZZZ_KEVT_ID_SCHED_TICK, jiffies);
+	buzzz_kevt_log2(BUZZZ_KEVT_ID_SCHED_TICK, jiffies, buzzz_cycles());
 #endif	/* BUZZZ_KEVT_LVL */
 
 	sched_clock_tick();

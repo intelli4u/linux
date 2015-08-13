@@ -227,6 +227,50 @@ static int usb_probe_device(struct device *dev)
 
 	dev_dbg(dev, "%s\n", __func__);
 
+    /*foxconn Han edited start, 06/06/2015 added for USB LED blink when probe*/
+    if(dev)
+    {
+        extern int usb1_led_probe;
+        extern int usb2_led_probe;
+        const char * name = dev_name(dev);
+        printk("%s %d dev(%s) >%s< name=%s\n",__func__,__LINE__,dev_driver_string(dev), dev_name(dev), name);
+        /*
+        if(*name == '1')
+            usb1_led_probe = 1;
+        else if (*name == '2')
+            usb2_led_probe = 1;
+        else */if(name)
+        {
+            /*foxconn Han edited, 06/09/2015 
+             *  find '-' a-b in the name, a means device type (USB 2.0/3.0), b means port.
+             *  we should check port rather device type */
+            int i = 0;
+            char *pt = name;
+            int len = strlen(name);
+            printk("%s %d pt=%s< len=%d\n",__func__,__LINE__,pt,len);
+            for (i = 0;i<len;i++)
+            {
+                //printk("*pt=%c\n",*pt);
+                if(*pt == '-')
+                {
+                    pt++;
+                    //printk("*pt=%c\n",*pt);
+                    if(*pt == '1')
+                        usb1_led_probe = 1;
+                    else if(*pt == '2')
+                        usb2_led_probe = 1;
+                    break;
+                }
+                pt++;
+            }
+
+        }
+        printk("%s %d usb1_led_probe=%d, usb2_led_probe=%d\n",__func__,__LINE__,usb1_led_probe,usb2_led_probe);
+    }
+    else
+        printk("%s %d \n",__func__,__LINE__);
+    /*foxconn Han edited end, 06/06/2015 added for USB LED blink when probe*/
+
 	/* TODO: Add real matching code */
 
 	/* The device should always appear to be in use
@@ -237,6 +281,7 @@ static int usb_probe_device(struct device *dev)
 
 	if (!error)
 		error = udriver->probe(udev);
+
 	return error;
 }
 
@@ -699,14 +744,48 @@ static int usb_device_match(struct device *dev, struct device_driver *drv)
 
 		intf = to_usb_interface(dev);
 		usb_drv = to_usb_driver(drv);
+#ifdef HOME_ROUTER_SUPPORT_3G_4G
+#define HUAWEI_VENDOR_ID			0x12D1
+#define TELECOM_CHINA_VENDOR_ID		0x15EB
+		int modem_match=0;
+		struct usb_device *uudev;
+		int uudev_vid=0, uudev_pid=0;
+        int uudev_dev = 0;
+        int uudev_class = 0;
+        int uudev_subclass = 0;
+        int uudev_proto = 0;
+		uudev = interface_to_usbdev(intf);
+		uudev_vid = le16_to_cpu(uudev->descriptor.idVendor);
+		uudev_pid = le16_to_cpu(uudev->descriptor.idProduct);
+		uudev_dev = le16_to_cpu(uudev->descriptor.bcdDevice);
+		uudev_class = le16_to_cpu(uudev->descriptor.bDeviceClass);
+		uudev_subclass = le16_to_cpu(uudev->descriptor.bDeviceSubClass);
+		uudev_proto = le16_to_cpu(uudev->descriptor.bDeviceProtocol);
+		//printk("0x%04X-%04X-%04X-%04X-%04X-%04X drv->name:%s \n", uudev_vid,uudev_pid,uudev_dev,uudev_class,uudev_subclass,uudev_proto, drv->name);
+		if(modem_match != 1 && !strcmp(drv->name, "KC NetUSB General Driver")){
+			if(uudev_vid == HUAWEI_VENDOR_ID || uudev_vid == TELECOM_CHINA_VENDOR_ID) //|| uudev_vid == ZTE_VENDOR_ID)
+				modem_match = 1;
+		}
+		if(modem_match)
+        {
+            printk("%s %s %d\nmodem_match=1\n",__func__,__FILE__,__LINE__);
+			return 0;
+        }
+#endif
 
 		id = usb_match_id(intf, usb_drv->id_table);
 		if (id)
+        {
+            printk("match id\n");
 			return 1;
+        }
 
 		id = usb_match_dynamic_id(intf, usb_drv);
 		if (id)
+        {
+            printk("dyn_match id\n");
 			return 1;
+        }
 	}
 
 	return 0;

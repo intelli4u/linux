@@ -112,6 +112,7 @@ unsigned long arg)
             usb1_led_state = 1;
         else
             usb1_led_state = 0;
+printk(KERN_EMERG"%s %s %d usb1_led_state=%d=>%d\n",__func__,__FILE__,__LINE__,usb1_led_state_smp,usb1_led_state);
         usb1_led_state_smp=usb1_led_state;
 #endif /* R6300v2 */
         /* Foxconn modified end, Wins, 04/11/2011 */
@@ -128,6 +129,7 @@ unsigned long arg)
             usb2_led_state = 1;
         else
             usb2_led_state = 0;
+printk(KERN_EMERG"%s %s %d usb2_led_state=%d=>%d\n",__func__,__FILE__,__LINE__,usb2_led_state_smp,usb2_led_state);
         usb2_led_state_smp = usb2_led_state;
         return 0;
     }

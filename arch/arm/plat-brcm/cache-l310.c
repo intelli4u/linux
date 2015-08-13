@@ -24,6 +24,7 @@
 #include <linux/spinlock.h>
 #include <linux/io.h>
 #include <linux/interrupt.h>
+#include <linux/module.h>
 
 #include <asm/cacheflush.h>
 #include <asm/hardware/cache-l2x0.h>	/* Old register offsets */
@@ -39,14 +40,19 @@ static uint32_t l2x0_way_mask;	/* Bitmask of active ways */
 int l2x0_irq = 32 ;
 
 DEFINE_SPINLOCK(l2x0_reg_lock);
-#ifdef BCM47XX_ACP_WAR
-#define L2C_WAR_LOCK_OUTER(flags)      spin_lock_irqsave(&l2x0_reg_lock, flags)
-#define L2C_WAR_UNLOCK_OUTER(flags)    spin_unlock_irqrestore(&l2x0_reg_lock, flags)
-#else
-#define L2C_WAR_LOCK_OUTER(flags)
-#define L2C_WAR_UNLOCK_OUTER(flags)
-#endif /* BCM47XX_ACP_WAR */
+EXPORT_SYMBOL(l2x0_reg_lock);
 
+#define L2C_WAR_LOCK(flags) \
+	do { \
+		if (ACP_WAR_ENAB()) \
+			spin_lock_irqsave(&l2x0_reg_lock, flags); \
+	} while(0)
+
+#define L2C_WAR_UNLOCK(flags) \
+	do { \
+		if (ACP_WAR_ENAB()) \
+			spin_unlock_irqrestore(&l2x0_reg_lock, flags); \
+	} while(0)
 
 static inline void cache_wait(void __iomem *reg, unsigned long mask)
 {
@@ -95,19 +101,19 @@ static inline void atomic_flush_line( void __iomem *base, unsigned long addr)
 static void l2x0_cache_sync(void)
 {
 	void __iomem *base = l2x0_base;
-	uint32 flags;
+	unsigned long flags = 0;
 
-	L2C_WAR_LOCK_OUTER(flags);
+	L2C_WAR_LOCK(flags);
 	atomic_cache_sync( base );
-	L2C_WAR_UNLOCK_OUTER(flags);
+	L2C_WAR_UNLOCK(flags);
 }
 
 static void BCMFASTPATH l2x0_inv_range(unsigned long start, unsigned long end)
 {
 	void __iomem *base = l2x0_base;
-	uint32 flags;
+	unsigned long flags = 0;
 
-	L2C_WAR_LOCK_OUTER(flags);
+	L2C_WAR_LOCK(flags);
 
 	/* Range edges could contain live dirty data */
 	if( start & (CACHE_LINE_SIZE-1) )
@@ -123,15 +129,15 @@ static void BCMFASTPATH l2x0_inv_range(unsigned long start, unsigned long end)
 	}
 	atomic_cache_sync(base);
 
-	L2C_WAR_UNLOCK_OUTER(flags);
+	L2C_WAR_UNLOCK(flags);
 }
 
 static void BCMFASTPATH l2x0_clean_range(unsigned long start, unsigned long end)
 {
 	void __iomem *base = l2x0_base;
-	uint32 flags;
+	unsigned long flags = 0;
 
-	L2C_WAR_LOCK_OUTER(flags);
+	L2C_WAR_LOCK(flags);
 
 	start &= ~(CACHE_LINE_SIZE - 1);
 
@@ -141,15 +147,15 @@ static void BCMFASTPATH l2x0_clean_range(unsigned long start, unsigned long end)
 	}
 	atomic_cache_sync(base);
 
-	L2C_WAR_UNLOCK_OUTER(flags);
+	L2C_WAR_UNLOCK(flags);
 }
 
 static void l2x0_flush_range(unsigned long start, unsigned long end)
 {
 	void __iomem *base = l2x0_base;
-	uint32 flags;
+	unsigned long flags = 0;
 
-	L2C_WAR_LOCK_OUTER(flags);
+	L2C_WAR_LOCK(flags);
 
 	start &= ~(CACHE_LINE_SIZE - 1);
 	while (start < end) {
@@ -158,7 +164,7 @@ static void l2x0_flush_range(unsigned long start, unsigned long end)
 	}
 	atomic_cache_sync(base);
 
-	L2C_WAR_UNLOCK_OUTER(flags);
+	L2C_WAR_UNLOCK(flags);
 }
 
 /*
@@ -169,9 +175,9 @@ static inline void l2x0_inv_all(void)
 {
 	void __iomem *base = l2x0_base;
 	unsigned long flags;
-	uint32 flags2;
+	unsigned long flags2 = 0;
 
-	L2C_WAR_LOCK_OUTER(flags2);
+	L2C_WAR_LOCK(flags2);
 
 	/* invalidate all ways */
 	spin_lock_irqsave(&l2x0_lock, flags);
@@ -180,7 +186,7 @@ static inline void l2x0_inv_all(void)
 	atomic_cache_sync(base);
 	spin_unlock_irqrestore(&l2x0_lock, flags);
 
-	L2C_WAR_UNLOCK_OUTER(flags2);
+	L2C_WAR_UNLOCK(flags2);
 }
 
 static irqreturn_t l2x0_isr( int irq, void * cookie )
@@ -236,7 +242,7 @@ void __init l310_init(void __iomem *base, u32 aux_val, u32 aux_mask, int irq)
 
 	l2x0_way_mask = (1 << ways) - 1;
 
-	if (ACP_WAR_EN() || arch_is_coherent()) {
+	if (ACP_WAR_ENAB() || arch_is_coherent()) {
 		/* Enable L2C filtering */
 		writel_relaxed(PHYS_OFFSET + SZ_1G, l2x0_base + L2X0_FILT_END);
 		writel_relaxed((PHYS_OFFSET | 1), l2x0_base + L2X0_FILT_START);

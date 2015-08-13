@@ -25,6 +25,9 @@ config ET_ALL_PASSIVE_ON
 config ET_ALL_PASSIVE_RUNTIME
 	bool "ET ALL PASSIVE with runtime setting"
 endchoice
+config BCM_AGG
+    bool "BCM HW Port Trunking/Aggregation support"
+    depends on HND
 config BCM_CTF
 	tristate "BCMCTF support"
 	depends on HND
@@ -34,9 +37,6 @@ config BCM_FA
 config BCM_GMAC3
 	bool "BCM 3 GMAC Forwarding support"
 	depends on BCM_CTF
-config BCM47XX_ACP_WAR
-	bool "ACP WAR for NS/Ax"
-	depends on HND
 config WL_EMULATOR
 	bool "WL emulation using Gigabit ethernet"
 	depends on HND
@@ -116,10 +116,9 @@ endchoice
 config DPSTA
 	tristate "Broadcom dualband wireless proxy repeater support"
 	depends on WL
+config LACP
+    tristate "Broadcom lacp support"
 config EMF
 	tristate "Efficient Multicast Forwarding & IGMP Snooping Layers"
 	depends on NETFILTER
-config PLC
-	bool "Broadcom PLC network failover support"
-	depends on ET && WL
 endmenu

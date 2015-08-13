@@ -541,7 +541,7 @@ struct scsi_host_template usb_stor_host_template = {
 	.sg_tablesize =			SCSI_MAX_SG_CHAIN_SEGMENTS,
 
 #ifdef CONFIG_BCM47XX
-	.max_sectors =                  960,
+	.max_sectors =                  1440,
 #else
 	/* limit the total size of a transfer to 120 KB */
 	.max_sectors =                  240,

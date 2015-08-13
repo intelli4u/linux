@@ -7,6 +7,12 @@
 # $Id: wl_generic.mk,v 1.10 2011-01-21 22:12:09 $
 #
 
+ifneq ($(wildcard ../../../../src/router/dpsta),)
+    DPSTASRC := $(SRCBASE_OFFSET)/router/dpsta
+else
+    DPSTASRC := $(SRCBASE_OFFSET)/../components/router/dpsta
+endif
+
 REBUILD_WL_MODULE=$(shell if [ -d "$(src)/$(SRCBASE_OFFSET)/wl/sys" -a "$(REUSE_PREBUILT_WL)" != "1" ]; then echo 1; else echo 0; fi)
 
 # If source directory (src/wl/sys) exists and REUSE_PREBUILT_WL is undefined, 
@@ -19,17 +25,17 @@ ifeq ($(REBUILD_WL_MODULE),1)
          $(error var_vlist($(VLIST)) var_config_wl_use($(shell env|grep CONFIG_WL_USE)))
          $(error CONFIG_WL_CONF is undefined)
     endif
-    
+
     WLCONFFILE := $(strip $(subst ",,$(CONFIG_WL_CONF))) 
     WLCFGDIR   := $(src)/$(SRCBASE_OFFSET)/wl/config
     
     # define OS flag to pick up wl osl file from wl.mk
     WLLX=1
-    ifdef CONFIG_PLC
-        PLC=1
-    endif
     ifdef CONFIG_DPSTA
         DPSTA=1
+    endif
+    ifdef CONFIG_CR4_OFFLOAD
+        WLOFFLD=1
     endif
     include $(WLCFGDIR)/$(WLCONFFILE)
     # Disable ROUTER_COMA in ARM router for now.
@@ -67,7 +73,8 @@ endif
     endif
     EXTRA_CFLAGS += -DDMA $(WLFLAGS) -Werror
     EXTRA_CFLAGS += -I$(src) -I$(src)/.. -I$(src)/$(SRCBASE_OFFSET)/wl/linux \
-		    -I$(src)/$(SRCBASE_OFFSET)/wl/sys
+		    -I$(src)/$(SRCBASE_OFFSET)/wl/sys -I$(src)/$(SRCBASE_OFFSET)/wl/dot1as/include \
+		    -I$(src)/$(SRCBASE_OFFSET)/wl/dot1as/src -I$(src)/$(SRCBASE_OFFSET)/wl/proxd/include
     EXTRA_CFLAGS += $(WLAN_ComponentIncPathA) $(WLAN_IncPathA)
 
     ifneq ("$(CONFIG_CC_OPTIMIZE_FOR_SIZE)","y")
@@ -75,7 +82,7 @@ endif
     endif
     
     # include path for dpsta.h
-    EXTRA_CFLAGS += -I$(src)/$(SRCBASE_OFFSET)/router/dpsta
+    EXTRA_CFLAGS += -I$(src)/$(DPSTASRC)
 
     # Build the phy source files iff -DPHY_HAL is present.
     ifneq ($(findstring PHY_HAL,$(WLFLAGS)),)

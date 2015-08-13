@@ -1,7 +1,7 @@
 #
 # Makefile for the Broadcom EMF Layer
 #
-# Copyright (C) 2012, Broadcom Corporation. All Rights Reserved.
+# Copyright (C) 2015, Broadcom Corporation. All Rights Reserved.
 # 
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -18,9 +18,14 @@
 # $Id: Makefile,v 1.3 2008-08-13 20:20:16 $
 #
 
-EMFSRCDIR := ../../../../../../../src/router/emf/emf
-EMFCSRCDIR := ../../../../../../../src/emf/emf
-EMFDIR := ../../../../../../../src/router/emf
+# Choose BASE_DIR based on where router resides - src or components
+EMF_BASE_DIR := $(firstword $(wildcard ../../../../components/router/emf	\
+                                       ../../../../src/router/emf))
+EMFDIR       := ../../../$(EMF_BASE_DIR)
+EMFSRCDIR    := $(EMFDIR)/emf
+EMFCSRCDIR   := ../../../../../../../src/emf/emf
+
+SRCBASE_ROUTER ?= $(SRCBASE)/router
 
 EMF_OBJS := $(EMFCSRCDIR)/emfc.o $(EMFSRCDIR)/emf_linux.o
 
@@ -30,11 +35,11 @@ endif # CONFIG_BUZZZ_FUNC
 
 # Search for sources under src/router/emf/emf
 ifneq ($(wildcard $(src)/$(EMFSRCDIR)),)
-	EXTRA_CFLAGS += -I$(SRCBASE)/router/emf/emf -I$(SRCBASE)/router/emf/igs
-	EXTRA_CFLAGS += -I$(SRCBASE)/include/emf/emf -I$(SRCBASE)/include/emf/igs
-	emf-objs := $(EMF_OBJS)
+    EXTRA_CFLAGS += -I$(SRCBASE_ROUTER)/emf/emf -I$(SRCBASE_ROUTER)/emf/igs
+    EXTRA_CFLAGS += -I$(SRCBASE)/include/emf/emf -I$(SRCBASE)/include/emf/igs
+    emf-objs := $(EMF_OBJS)
 else
-	emf-objs := $(EMFDIR)/emf.o
+    emf-objs := $(EMFDIR)/emf.o
 endif
 
 obj-$(CONFIG_EMF) := emf.o

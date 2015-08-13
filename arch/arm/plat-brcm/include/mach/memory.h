@@ -7,13 +7,20 @@
 #ifndef __ASM_ARCH_MEMORY_H
 #define __ASM_ARCH_MEMORY_H
 
-#ifdef BCM47XX_ACP_WAR
-#define DDR_PADDR_ACP			(0x80000000)
-#define ACP_WAR_EN()			(1)
-#else
-#define DDR_PADDR_ACP			(0x40000000)
-#define ACP_WAR_EN()			(0)
-#endif
+#define PADDR_ACP_AX		(0x80000000)
+#define PADDR_ACP_BX		(0x40000000)
+#define PADDR_ACE_BCM53573	(0x00000000)
+#define PADDR_ACE1_BCM53573	(0x80000000)
+
+/*
+ * Different coherence setting for coherence_flag
+ */
+#define COHERENCE_NONE		0
+#define COHERENCE_ACP_WAR	1
+#define COHERENCE_ACP		2
+#define COHERENCE_ACE		4
+#define COHERENCE_ACP_ACE	(COHERENCE_ACP | COHERENCE_ACE)
+#define COHERENCE_MASK		(COHERENCE_ACP_WAR | COHERENCE_ACP_ACE)
 
 /*
  * Main memory base address and size
@@ -23,14 +30,20 @@
 #ifndef PHYS_OFFSET
 #if !defined(__ASSEMBLY__)
 extern unsigned int ddr_phys_offset_va;
-#define PHYS_OFFSET				((unsigned long)ddr_phys_offset_va)
-#ifdef BCM47XX_ACP_WAR
-extern unsigned int ns_acp_win_size;
-#define ACP_WIN_SIZE			(ns_acp_win_size)
+#define PHYS_OFFSET		((unsigned long)ddr_phys_offset_va)
+
+extern unsigned int ddr_phys_offset2_va;
+#define PHYS_OFFSET2   ((unsigned long)ddr_phys_offset2_va)
+
+extern unsigned int coherence_flag;
+#define ACP_WAR_ENAB()		((coherence_flag & COHERENCE_ACP_WAR) != 0)
+
+extern unsigned int coherence_win_sz;
+#define ACP_WIN_SIZE			(coherence_win_sz)
 #define ACP_WIN_LIMIT			(PHYS_OFFSET + ACP_WIN_SIZE)
-#endif
 #else
 #define PHYS_OFFSET             UL(CONFIG_DRAM_BASE)
+#define PHYS_OFFSET2             UL(0xa8000000) /* Default value for NS */
 #endif	/* !__ASSEMBLY__ */
 #endif
 
@@ -45,9 +58,6 @@ extern unsigned int ns_acp_win_size;
  * to program the PAX inbound mapping registers.
  */
 #define CONSISTENT_DMA_SIZE     SZ_128M
-
-/* 2nd physical memory window */
-#define PHYS_OFFSET2		0xa8000000
 
 #if !defined(__ASSEMBLY__) && defined(CONFIG_ZONE_DMA)
 extern void bcm47xx_adjust_zones(unsigned long *size, unsigned long *hole);
@@ -67,12 +77,12 @@ extern void bcm47xx_adjust_zones(unsigned long *size, unsigned long *hole);
 #define PAGE_OFFSET1	(PAGE_OFFSET + SZ_128M)
 
 #define __phys_to_virt(phys)								\
-	(((PHYS_OFFSET) == DDR_PADDR_ACP) ? ((phys) - DDR_PADDR_ACP + PAGE_OFFSET) :	\
+	((coherence_flag & COHERENCE_MASK) ? ((phys) - (PHYS_OFFSET) + PAGE_OFFSET) :	\
 	(((phys) >= PHYS_OFFSET2) ? ((phys) - PHYS_OFFSET2 + PAGE_OFFSET1) :		\
 	((phys) - CONFIG_DRAM_BASE + PAGE_OFFSET)))
 
 #define __virt_to_phys(virt)								\
-	(((PHYS_OFFSET) == DDR_PADDR_ACP) ? ((virt) - PAGE_OFFSET + DDR_PADDR_ACP) :	\
+	((coherence_flag & COHERENCE_MASK) ? ((virt) - PAGE_OFFSET + (PHYS_OFFSET)) :	\
 	(((virt) >= PAGE_OFFSET1) ? ((virt) - PAGE_OFFSET1 + PHYS_OFFSET2) :		\
 	((virt) - PAGE_OFFSET + CONFIG_DRAM_BASE)))
 #else /* !CONFIG_SPARSEMEM */

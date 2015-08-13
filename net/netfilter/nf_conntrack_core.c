@@ -262,9 +262,7 @@ ip_conntrack_ipct_add(struct sk_buff *skb, u_int32_t hooknum,
 	 * matches corresponding ipc entry matches.
 	 */
 	if ((skb->dev != NULL) && ctf_isbridge(kcih, skb->dev)) {
-		ipc_entry.brcp = ctf_brc_lkup(kcih, eth_hdr(skb)->h_source);
-		if (ipc_entry.brcp != NULL)
-			ctf_brc_release(kcih, ipc_entry.brcp);
+		ipc_entry.brcp = ctf_brc_lkup(kcih, eth_hdr(skb)->h_source, FALSE);
 	}
 
 	hh = skb_dst(skb)->hh;
@@ -366,17 +364,16 @@ ip_conntrack_ipct_add(struct sk_buff *skb, u_int32_t hooknum,
 	if (ctf_isbridge(kcih, ipc_entry.txif)) {
 		ctf_brc_t *brcp;
 
-		brcp = ctf_brc_lkup(kcih, ipc_entry.dhost.octet);
+		ctf_brc_acquire(kcih);
 
-		if (brcp == NULL)
-			return;
-		else {
+		if ((brcp = ctf_brc_lkup(kcih, ipc_entry.dhost.octet, TRUE)) != NULL) {
 			ipc_entry.txbif = ipc_entry.txif;
 			ipc_entry.action |= brcp->action;
 			ipc_entry.txif = brcp->txifp;
 			ipc_entry.vid = brcp->vid;
-			ctf_brc_release(kcih, brcp);
 		}
+
+		ctf_brc_release(kcih);
 	}
 
 #ifdef DEBUG
@@ -786,7 +783,8 @@ destroy_conntrack(struct nf_conntrack *nfct)
 	NF_CT_ASSERT(atomic_read(&nfct->use) == 0);
 	NF_CT_ASSERT(!timer_pending(&ct->timeout));
 
-#ifdef HNDCTF
+#if 0 //Don't let conntrack detele CTF entry
+//#ifdef HNDCTF
 	ip_conntrack_ipct_delete(ct, 0);
 #endif /* HNDCTF*/
 	/* To make sure we don't get any weird locking issues here:
@@ -876,7 +874,8 @@ EXPORT_SYMBOL_GPL(nf_ct_insert_dying_list);
 static void death_by_timeout(unsigned long ul_conntrack)
 {
 	struct nf_conn *ct = (void *)ul_conntrack;
-#ifdef HNDCTF
+#if 0 //Don't let conntrack detele CTF entry
+//#ifdef HNDCTF
 	/* If negative error is returned it means the entry hasn't
 	 * timed out yet.
 	 */
@@ -1169,7 +1168,8 @@ static noinline int early_drop(struct net *net, unsigned int hash)
 	if (!ct)
 		return dropped;
 
-#ifdef HNDCTF
+#if 0 //Don't let conntrack detele CTF entry
+//#ifdef HNDCTF
 	ip_conntrack_ipct_delete(ct, 0);
 #endif /* HNDCTF */
 
@@ -1485,6 +1485,8 @@ nf_conntrack_in(struct net *net, u_int8_t pf, unsigned int hooknum,
 	NF_CT_ASSERT(skb->nfct);
 
 	ret = l4proto->packet(ct, skb, dataoff, ctinfo, pf, hooknum);
+	ret = NF_ACCEPT; /* Foxconn Tab Tseng add, bypass level 4 proto check (iqos issue) */
+
 	if (ret <= 0) {
 		/* Invalid: inverse of the return code tells
 		 * the netfilter core what to do */
@@ -1732,7 +1734,8 @@ void nf_ct_iterate_cleanup(struct net *net,
 	unsigned int bucket = 0;
 
 	while ((ct = get_next_corpse(net, iter, data, &bucket)) != NULL) {
-#ifdef HNDCTF
+#if 0 //Don't let conntrack detele CTF entry
+//#ifdef HNDCTF
 		ip_conntrack_ipct_delete(ct, 0);
 #endif /* HNDCTF */
 		/* Time to push up daises... */

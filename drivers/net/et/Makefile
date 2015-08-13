@@ -37,6 +37,11 @@
 #EXTRA_CFLAGS	+= -DETFA
 #endif
 #
+#ifeq ($(CONFIG_BCM_AGG),y)
+#et-objs         += $(ETSRCDIR)/sys/etc_agg.o
+#EXTRA_CFLAGS    += -DETAGG
+#endif
+
 #obj-$(CONFIG_ET) := et.o
 #
 #EXTRA_CFLAGS	+= -DDMA -Werror

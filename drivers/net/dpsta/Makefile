@@ -1,7 +1,7 @@
 #
 # Makefile for the Dualband Proxy STA
 #
-# Copyright (C) 2012, Broadcom Corporation. All Rights Reserved.
+# Copyright (C) 2015, Broadcom Corporation. All Rights Reserved.
 # 
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -15,12 +15,14 @@
 # OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
 # CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
-# $Id: Makefile 345839 2012-07-19 07:38:57Z $
+# $Id: Makefile 517800 2014-11-26 19:35:30Z $
 #
 
 obj-${CONFIG_DPSTA} := dpsta.o
 
-DPSTASRC := ../../../../../../../src/router/dpsta
+DPSTA_BASE_DIR := $(firstword $(wildcard ../../../../components/router/dpsta	\
+                                         ../../../../src/router/dpsta))
+DPSTASRC := ../../../$(DPSTA_BASE_DIR)
 DPSTAOBJ := $(DPSTASRC)/dpsta_linux.o
 SYMOBJ := $(DPSTASRC)/dpsta_linux.o
 

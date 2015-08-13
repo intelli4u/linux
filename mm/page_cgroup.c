@@ -261,7 +261,8 @@ void __init page_cgroup_init(void)
 	if (mem_cgroup_disabled())
 		return;
 
-	for (pfn = 0; !fail && pfn < max_pfn; pfn += PAGES_PER_SECTION) {
+	for (pfn = PHYS_PFN_OFFSET; !fail && pfn < max_pfn + PHYS_PFN_OFFSET;
+			pfn += PAGES_PER_SECTION) {
 		if (!pfn_present(pfn))
 			continue;
 		fail = init_section_page_cgroup(pfn);

@@ -39,7 +39,7 @@ T_MSsidCtlProfile *gProfile_5g = NULL;
 int gProfilenum_5g = 0;
 /* Foxconn added end pling 10/06/2010 */
 
-#if defined(R8000)
+#if defined(INCLULDE_2ND_5G_RADIO)
 T_MSsidCtlProfile *gProfile_5g_2 = NULL;
 int gProfilenum_5g_2 = 0;
 #endif
@@ -48,7 +48,7 @@ EXPORT_SYMBOL(gProfilenum);
 EXPORT_SYMBOL(gProfilenum_5g);
 EXPORT_SYMBOL(gProfile);
 EXPORT_SYMBOL(gProfile_5g);
-#if defined(R8000)
+#if defined(INCLULDE_2ND_5G_RADIO)
 EXPORT_SYMBOL(gProfilenum_5g_2);
 EXPORT_SYMBOL(gProfile_5g_2);
 #endif
@@ -79,7 +79,7 @@ void profileprint(void)
     {
         printk("<0>Profile_5g[%d]:name:%s,enable:%d\n",i,gProfile_5g[i].IfName,gProfile_5g[i].enable);
     }
-#if defined(R8000)
+#if defined(INCLULDE_2ND_5G_RADIO)
     for (i = 0;i < gProfilenum_5g_2;i++)
     {
         printk("<0>Profile_5g_2[%d]:name:%s,enable:%d\n",i,gProfile_5g_2[i].IfName,gProfile_5g_2[i].enable);
@@ -510,7 +510,7 @@ static int old_deviceless(struct net *net, void __user *uarg)
 		return 0;
 	}
     /* Foxconn added end pling 10/06/2010 */
-#if defined(R8000)
+#if defined(INCLULDE_2ND_5G_RADIO)
 	case BRCTL_SET_5G_2_MSSIDPROFILE:
 	{
 		unsigned long num = 0;

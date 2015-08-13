@@ -1,7 +1,7 @@
 /*
  * HND MIPS boards setup routines
  *
- * Copyright (C) 2011, Broadcom Corporation. All Rights Reserved.
+ * Copyright (C) 2015, Broadcom Corporation. All Rights Reserved.
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -382,9 +382,7 @@ static uint32 boot_partition_size(uint32 flash_phys) {
 	return bootsz;
 }
 
-#if defined(BCMCONFMTD) && defined(PLC)
-#define FLASH_PARTS_NUM	7
-#elif defined(BCMCONFMTD) || defined(PLC)
+#if defined(BCMCONFMTD)
 #define FLASH_PARTS_NUM	6
 #else
 #define FLASH_PARTS_NUM	5 /* boot;nvram;kernel;rootfs;empty */
@@ -489,10 +487,6 @@ init_mtd_partitions(struct mtd_info *mtd, size_t size)
 		bcm947xx_flash_parts[nparts].name = "linux";
 		bcm947xx_flash_parts[nparts].size = mtd->size - vmlz_off;
 		
-#ifdef PLC
-		/* Reserve for PLC */
-		bcm947xx_flash_parts[nparts].size -= ROUNDUP(0x1000, mtd->erasesize);
-#endif
 		/* Reserve for NVRAM */
 		bcm947xx_flash_parts[nparts].size -= ROUNDUP(NVRAM_SPACE, mtd->erasesize);
 
@@ -530,14 +524,6 @@ init_mtd_partitions(struct mtd_info *mtd, size_t size)
 	offset = bcm947xx_flash_parts[nparts].offset + bcm947xx_flash_parts[nparts].size;
 	nparts++;
 #endif	/* BCMCONFMTD */
-
-#ifdef PLC
-	/* Setup plc MTD partition */
-	bcm947xx_flash_parts[nparts].name = "plc";
-	bcm947xx_flash_parts[nparts].size = ROUNDUP(0x1000, mtd->erasesize);
-	bcm947xx_flash_parts[nparts].offset = size - (ROUNDUP(NVRAM_SPACE, mtd->erasesize) + ROUNDUP(0x1000, mtd->erasesize));
-	nparts++;
-#endif
 
 	/* Setup nvram MTD partition */
 	bcm947xx_flash_parts[nparts].name = "nvram";

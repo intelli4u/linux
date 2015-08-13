@@ -49,6 +49,7 @@
 #include "suncore.h"
 #endif
 
+
 /*
  * Configuration:
  *   share_irqs - whether we pass IRQF_SHARED to request_irq().  This option
@@ -2846,6 +2847,7 @@ static struct console serial8250_console = {
 
 static int __init serial8250_console_init(void)
 {
+
 	if (nr_uarts > UART_NR)
 		nr_uarts = UART_NR;
 
@@ -2991,6 +2993,9 @@ static int __devinit serial8250_probe(struct platform_device *dev)
 		port.set_termios	= p->set_termios;
 		port.dev		= &dev->dev;
 		port.irqflags		|= irqflag;
+#ifdef CONFIG_BCM47XX
+		port.custom_divisor	= p->custom_divisor;
+#endif
 		ret = serial8250_register_port(&port);
 		if (ret < 0) {
 			dev_err(&dev->dev, "unable to register port at index %d "
@@ -3140,6 +3145,9 @@ int serial8250_register_port(struct uart_port *port)
 		uart->port.flags        = port->flags | UPF_BOOT_AUTOCONF;
 		uart->port.mapbase      = port->mapbase;
 		uart->port.private_data = port->private_data;
+#ifdef CONFIG_BCM47XX
+		uart->port.custom_divisor = port->custom_divisor;
+#endif
 		if (port->dev)
 			uart->port.dev = port->dev;
 
@@ -3194,6 +3202,7 @@ EXPORT_SYMBOL(serial8250_unregister_port);
 static int __init serial8250_init(void)
 {
 	int ret;
+
 
 	if (nr_uarts > UART_NR)
 		nr_uarts = UART_NR;

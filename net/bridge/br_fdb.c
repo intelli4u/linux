@@ -80,7 +80,7 @@ br_brc_init(ctf_brc_t *brc, unsigned char *ea, struct net_device *rxdev, unsigne
 void
 br_brc_add(unsigned char *ea, struct net_device *rxdev, struct sk_buff *skb)
 {
-	ctf_brc_t brc_entry, *brcp;
+	ctf_brc_t brc_entry;
 	struct ethhdr *eth;
 	struct arphdr *arp;
 	unsigned char *arp_ptr = NULL;
@@ -114,12 +114,7 @@ br_brc_add(unsigned char *ea, struct net_device *rxdev, struct sk_buff *skb)
 #endif
 
 	/* Add the bridge cache entry */
-	if ((brcp = ctf_brc_lkup(kcih, ea)) == NULL)
-		ctf_brc_add(kcih, &brc_entry);
-	else {
-		ctf_brc_release(kcih, brcp);
-		ctf_brc_update(kcih, &brc_entry);
-	}
+	ctf_brc_add(kcih, &brc_entry);
 
 	return;
 }
@@ -178,6 +173,7 @@ static void fdb_rcu_free(struct rcu_head *head)
 	struct net_bridge_fdb_entry *ent
 		= container_of(head, struct net_bridge_fdb_entry, rcu);
 	kmem_cache_free(br_fdb_cache, ent);
+	if (mac_cnt>0)
 	mac_cnt--; /* foxconn wklin added , 06/18/2008 */
 }
 
@@ -255,34 +251,38 @@ void br_fdb_cleanup(unsigned long _data)
 #ifdef HNDCTF
 				ctf_brc_t *brcp;
 
+				ctf_brc_acquire(kcih);
+
 				/* Before expiring the fdb entry check the brc
 				 * live counter to make sure there are no frames
 				 * on this connection for timeout period.
 				 */
-				brcp = ctf_brc_lkup(kcih, f->addr.addr);
+				brcp = ctf_brc_lkup(kcih, f->addr.addr, TRUE);
 				if (brcp != NULL) {
 					uint32 arpip = 0;
 
 					if (brcp->live > 0) {
 						brcp->live = 0;
 						brcp->hitting = 0;
-						ctf_brc_release(kcih, brcp);
+						ctf_brc_release(kcih);
 						f->ageing_timer = jiffies;
 						continue;
 					} else if (brcp->hitting > 0) {
 						/* When bridge deletes a CTF hitting cache entry,
-						/* we use DHCP "probes" (ARP Request) to trigger
+						 * we use DHCP "probes" (ARP Request) to trigger
 						 * the CTF fast path restoration.
 						 */
 						brcp->hitting = 0;
 						if (brcp->ip != 0)
 							arpip = brcp->ip;
 					}
-					ctf_brc_release(kcih, brcp);
+					ctf_brc_release(kcih);
 					if (arpip != 0)
 						arp_send(ARPOP_REQUEST, ETH_P_ARP,
 							arpip, br->dev, 0, NULL,
 							NULL, NULL);
+				} else {
+					ctf_brc_release(kcih);
 				}
 #endif /* HNDCTF */
 				fdb_delete(f);

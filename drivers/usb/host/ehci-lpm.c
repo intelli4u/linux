@@ -16,6 +16,14 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include <bcmutils.h>
+#include <siutils.h>
+#include <bcmdefs.h>
+#include <bcmdevs.h>
+/* Global SB handle */
+extern si_t *bcm947xx_sih;
+#define sih bcm947xx_sih
+
 /* this file is part of ehci-hcd.c */
 static int ehci_lpm_set_da(struct ehci_hcd *ehci, int dev_addr, int port_num)
 {
@@ -49,6 +57,13 @@ static int ehci_lpm_check(struct ehci_hcd *ehci, int port)
 		ehci_dbg(ehci, "LPM: no device attached\n");
 		return -ENODEV;
 	}
+
+	if ((CHIPID(sih->chip) == BCM53573_CHIP_ID) &&
+		(CHIPREV(sih->chiprev) == 0) && (port == 1)) {
+		retval = -ETIMEDOUT;
+		return retval;
+	}
+
 	val32 |= PORT_LPM;
 	ehci_writel(ehci, val32, portsc);
 	msleep(5);

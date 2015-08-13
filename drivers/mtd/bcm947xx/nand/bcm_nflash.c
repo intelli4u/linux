@@ -159,7 +159,9 @@ _nflash_mtd_read(struct mtd_info *mtd, struct mtd_partition *part,
 	if (!need_copy) {
 		ptr = buf;
 	} else {
+		NFLASH_UNLOCK(nflash);
 		tmpbuf = (uchar *)kmalloc(size, GFP_KERNEL);
+		NFLASH_LOCK(nflash);
 		ptr = tmpbuf;
 	}
 
@@ -679,7 +681,7 @@ nflash_mtd_init(void)
 	/* Scan bad block */
 	NFLASH_LOCK(&nflash);
 	for (i = 0; i < info->numblocks; i++) {
-		if (hndnand_checkbadb(nflash.nfl, (i * info->blocksize)) != 0) {
+		if (hndnand_checkbadb(nflash.nfl, (i * (uint64)info->blocksize)) != 0) {
 			nflash.map[i] = 1;
 		}
 	}

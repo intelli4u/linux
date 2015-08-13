@@ -320,7 +320,6 @@ static inline int ip_rcv_options(struct sk_buff *skb)
 drop:
 	return -1;
 }
-
 static int BCMFASTPATH_HOST ip_rcv_finish(struct sk_buff *skb)
 {
 	const struct iphdr *iph = ip_hdr(skb);
@@ -423,6 +422,20 @@ int BCMFASTPATH_HOST ip_rcv(struct sk_buff *skb, struct net_device *dev, struct 
 	if (!pskb_may_pull(skb, iph->ihl*4))
 		goto inhdr_error;
 		
+/* Foxconn Tab Tesng add start, drop DHCP packet from WAN side */
+#if 0
+#define DHCP_SERVER_PORT 67
+#define DHCP_CLIENT_PORT 68
+#define WAN_IFNAME          "eth0"
+	if (iph->protocol == IPPROTO_UDP)
+	{
+		struct udphdr *uh=(struct udphdr *)(skb->data + 4*(iph->ihl));
+		if ((__constant_ntohs(uh->dest) == DHCP_SERVER_PORT) && (__constant_ntohs(uh->source) == DHCP_CLIENT_PORT)){
+			if(!strcmp(skb->dev->name,WAN_IFNAME)) goto drop;
+		}
+	}
+#endif
+/* Foxconn Tab Tesng add end, drop DHCP packet from WAN side */
 /* Fxcn port-S Wins, 0714-09 */
 	//Foxconn add start, Lewis Min, for OpenDNS, 12/08/2008
 	if(NULL!=br_pre_insert_hook)

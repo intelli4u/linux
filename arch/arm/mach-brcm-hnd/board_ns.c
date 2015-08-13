@@ -79,11 +79,23 @@ EXPORT_SYMBOL(ctf_attach_fn);
 /* To store real PHYS_OFFSET value */
 unsigned int ddr_phys_offset_va = -1;
 EXPORT_SYMBOL(ddr_phys_offset_va);
+unsigned int ddr_phys_offset2_va = 0xa8000000;	/* Default value for NS */
+EXPORT_SYMBOL(ddr_phys_offset2_va);
 
-#ifdef BCM47XX_ACP_WAR
-unsigned int ns_acp_win_size = SZ_256M;
-EXPORT_SYMBOL(ns_acp_win_size);
-#endif
+unsigned int coherence_win_sz = SZ_256M;
+EXPORT_SYMBOL(coherence_win_sz);
+
+/*
+ * Coherence flag:
+ * 0: arch is non-coherent with NS ACP or BCM53573 ACE (CCI-400) disabled.
+ * 1: arch is non-coherent with NS-Ax ACP enabled for ACP WAR.
+ * 2: arch is coherent with NS-Bx ACP enabled.
+ * 4: arch is coherent with BCM53573 ACE enabled.
+ * give non-zero initial value to let this global variable be stored in Data Segment
+ */
+unsigned int coherence_flag = ~(COHERENCE_MASK);
+EXPORT_SYMBOL(coherence_flag);
+
 
 struct dummy_super_block {
 	u32	s_magic ;
@@ -107,15 +119,21 @@ static struct clk_lookup board_clk_lookups[] = {
 
 extern int _memsize;
 
+extern int _chipid;
+
 void __init board_map_io(void)
 {
 early_printk("board_map_io\n");
+	if (_chipid == BCM53573_CHIP_ID) {
+		/* Override the main reference clock to be 40 MHz */
+		clk_ref.rate = 40 * 1000000;
+	}
 	/* Install clock sources into the lookup table */
-	clkdev_add_table(board_clk_lookups, 
+	clkdev_add_table(board_clk_lookups,
 			ARRAY_SIZE(board_clk_lookups));
 
 	/* Map SoC specific I/O */
-	soc_map_io( &clk_ref );
+	soc_map_io(&clk_ref);
 }
 
 #if defined(CONFIG_SPI_SPIDEV) && defined(CONFIG_SPI_BCM5301X)
@@ -153,6 +171,10 @@ early_printk("board_init_irq\n");
 void board_init_timer(void)
 {
 early_printk("board_init_timer\n");
+
+	/* Get global SB handle */
+	sih = si_kattach(SI_OSH);
+
 	soc_init_timer();
 }
 
@@ -207,25 +229,29 @@ static int __init rootfs_mtdblock(void)
 
 static void __init brcm_setup(void)
 {
-	/* Get global SB handle */
-	sih = si_kattach(SI_OSH);
-
-#ifdef BCM47XX_ACP_WAR
-	if (BCM4707_CHIP(CHIPID(sih->chip))) {
+	if (ACP_WAR_ENAB() && BCM4707_CHIP(CHIPID(sih->chip))) {
 		if (sih->chippkg == BCM4708_PKG_ID)
-			ns_acp_win_size = SZ_128M;
+			coherence_win_sz = SZ_128M;
 		else if (sih->chippkg == BCM4707_PKG_ID)
-			ns_acp_win_size = SZ_32M;
+			coherence_win_sz = SZ_32M;
 		else
-			ns_acp_win_size = SZ_256M;
+			coherence_win_sz = SZ_256M;
+	} else if ((BCM4707_CHIP(CHIPID(sih->chip)) &&
+		(CHIPREV(sih->chiprev) == 4 || CHIPREV(sih->chiprev) == 6)) ||
+		(CHIPID(sih->chip) == BCM47094_CHIP_ID)) {
+		/* For NS-Bx and NS47094. Chiprev 4 for NS-B0 and chiprev 6 for NS-B1 */
+		coherence_win_sz = SZ_1G;
+	} else if (CHIPID(sih->chip) == BCM53573_CHIP_ID) {
+		if (PHYS_OFFSET == PADDR_ACE1_BCM53573)
+			coherence_win_sz = SZ_512M;
+		else
+			coherence_win_sz = SZ_256M;
 	}
-#endif
-
 	if (strncmp(boot_command_line, "root=/dev/mtdblock", strlen("root=/dev/mtdblock")) == 0)
 		sprintf(saved_root_name, "/dev/mtdblock%d", rootfs_mtdblock());
 
 	/* Set watchdog interval in ms */
-        watchdog = simple_strtoul(nvram_safe_get("watchdog"), NULL, 0);
+	watchdog = simple_strtoul(nvram_safe_get("watchdog"), NULL, 0);
 
 	/* Ensure at least WATCHDOG_MIN */
 	if ((watchdog > 0) && (watchdog < WATCHDOG_MIN))
@@ -254,6 +280,9 @@ early_printk("board_init\n");
 
 	board_init_spi();
 
+	printk(KERN_NOTICE "ACP (Accelerator Coherence Port) %s\n",
+		(ACP_WAR_ENAB() || arch_is_coherent()) ? "enabled" : "disabled");
+
 	return;
 }
 
@@ -264,20 +293,35 @@ static void __init board_fixup(
 	struct meminfo *mi
 	)
 {
-	u32 mem_size, lo_size ;
-        early_printk("board_fixup\n" );
+	u32 mem_size, lo_size;
+	early_printk("board_fixup\n");
 
 	/* Fuxup reference clock rate */
-	if (desc->nr == MACH_TYPE_BRCM_NS_QT )
+	if (desc->nr == MACH_TYPE_BRCM_NS_QT)
 		clk_ref.rate = 17594;	/* Emulator ref clock rate */
 
 
+#if defined(BCM_GMAC3)
+	/* In ATLAS builds, cap the total memory to 256M (for both Ax and Bx). */
+	if ((_memsize > SZ_256M) && (_chipid == BCM4707_CHIP_ID)) {
+		_memsize = SZ_256M;
+		early_printk("ATLAS-I board_fixup: cap memory to 256M\n");
+	}
+#endif /* BCM_GMAC3 */
+	if (_chipid == BCM53573_CHIP_ID) {
+		u32 size;
+		/* 53573's DDR limitation size is 512MB for shadow region. */
+		/* 256MB for first region */
+		size = (PHYS_OFFSET == PADDR_ACE1_BCM53573) ? SZ_512M : SZ_256M;
+		if (_memsize > size)
+			_memsize = size;
+	}
 	mem_size = _memsize;
 
 	early_printk("board_fixup: mem=%uMiB\n", mem_size >> 20);
 
-	/* for NS-B0-ACP */
-	if (ACP_WAR_EN() || arch_is_coherent()) {
+	/* for NS-B0-ACP and for BCM53573 */
+	if (ACP_WAR_ENAB() || arch_is_coherent() || (_chipid == BCM53573_CHIP_ID)) {
 		mi->bank[0].start = PHYS_OFFSET;
 		mi->bank[0].size = mem_size;
 		mi->nr_banks++;
@@ -309,7 +353,7 @@ void __init bcm47xx_adjust_zones(unsigned long *size, unsigned long *hole)
 	if (size[0] <= dma_size)
 		return;
 
-	if (ACP_WAR_EN() || arch_is_coherent())
+	if (ACP_WAR_ENAB() || arch_is_coherent())
 		return;
 
 	size[ZONE_NORMAL] = size[0] - dma_size;
@@ -741,20 +785,23 @@ EXPORT_SYMBOL(init_mtd_partitions);
 #ifdef	CONFIG_MTD_NFLASH
 
 /* Foxconn Bob added start 03/13/2014, these definitions should be the same as declared in board_config.h of CFE */
-#define FLASH_BLOCK_SIZE                (0x20000)
-#define FIRMWARE_SIZE                   NFL_BOOT_OS_SIZE    /* foxconn added Bob for nflash firmware, limit to 32MB now. 0x2000000 */
-                                                            /* this value should be the same as NFL_BOOT_OS_SIZE */
-#define FIRMWARE_RESERVED_BLOCK_SIZE    FIRMWARE_SIZE + 0x400000 /* reserve extra 4MB for bad blocks */
-#define ML_BLOCK_SIZE                   (1 * FLASH_BLOCK_SIZE)
-#define ML_RESERVED_BLOCK_SIZE          (4 * ML_BLOCK_SIZE)
-#define QOS_BLOCK_SIZE                  (1 * FLASH_BLOCK_SIZE)
-#define QOS_RESERVED_BLOCK_SIZE         (4 * QOS_BLOCK_SIZE)
-#define TM_BLOCK_SIZE                   (1 * FLASH_BLOCK_SIZE)
-#define TM_RESERVED_BLOCK_SIZE          (22 * TM_BLOCK_SIZE)
-#define POT_BLOCK_SIZE                  (1 * FLASH_BLOCK_SIZE)
-#define POT_RESERVED_BLOCK_SIZE         (8 * POT_BLOCK_SIZE)
-#define BD_BLOCK_SIZE                   (1 * FLASH_BLOCK_SIZE)
-#define BD_RESERVED_BLOCK_SIZE          (4 * BD_BLOCK_SIZE)
+#define FLASH_BLOCK_SIZE        (0x20000)
+
+#define ST_SUPPORT_NUM          (7)
+#define TM_SUPPORT_NUM          (2)
+
+#define FIRMWARE_SIZE           0x6000000 /* foxconn added Bob for nflash firmware, limit to 96MB now */
+#define FIRMWARE_RESERVED_BLOCK_SIZE    0x6d00000   /*reserve all unused flash for linux+rootfs (liunx+rootfs+brcmnand=06d0000)*/
+#define ML_BLOCK_SIZE           (1 * FLASH_BLOCK_SIZE)
+#define ML_RESERVED_BLOCK_SIZE  (4 * ML_BLOCK_SIZE)
+#define QOS_BLOCK_SIZE          (1 * FLASH_BLOCK_SIZE)
+#define QOS_RESERVED_BLOCK_SIZE (4 * QOS_BLOCK_SIZE)
+#define TM_BLOCK_SIZE           (1 * FLASH_BLOCK_SIZE)
+#define TM_RESERVED_BLOCK_SIZE  (22 * TM_BLOCK_SIZE)
+#define POT_BLOCK_SIZE          (1 * FLASH_BLOCK_SIZE)
+#define POT_RESERVED_BLOCK_SIZE (8 * POT_BLOCK_SIZE)
+#define BD_BLOCK_SIZE           (1 * FLASH_BLOCK_SIZE)
+#define BD_RESERVED_BLOCK_SIZE  (4 * BD_BLOCK_SIZE)
 /* Foxconn Bob added end 03/13/2014, these definitions should be the same as declared in board_config.h of CFE */
 
 /* foxconn Bob modified start 03/13/2014, for foxconn proprietary partitions. */
@@ -844,7 +891,7 @@ static struct mtd_partition bcm947xx_nflash_parts[NFLASH_PARTS_NUM] = {
 		.size = ML_RESERVED_BLOCK_SIZE, 
 	},
 	{ 
-		.name = "QoSRule", 
+		.name = "DebugMsg", 
 		.offset = 0, 
 		.size = QOS_RESERVED_BLOCK_SIZE, 
 	},
@@ -946,6 +993,7 @@ init_nflash_mtd_partitions(hndnand_t *nfl, struct mtd_info *mtd, size_t size)
 	int bootdev;
 	int knldev;
 	int nparts = 0;
+	int i;
 	uint32 offset = 0;
 	uint shift = 0;
 	uint32 top = 0;
@@ -1101,10 +1149,12 @@ init_nflash_mtd_partitions(hndnand_t *nfl, struct mtd_info *mtd, size_t size)
 		nparts++;
 	}
 #endif
+    
+    bcm947xx_nflash_parts[4].offset = 0x7400000;
     /* Setup other MTD partition */
-    for (; nparts < NFLASH_PARTS_NUM-1; nparts++)
+    for (i = 5; i < 17; i++)
     {	
-        bcm947xx_nflash_parts[nparts].offset = bcm947xx_nflash_parts[nparts-1].offset + bcm947xx_nflash_parts[nparts-1].size;
+        bcm947xx_nflash_parts[i].offset = bcm947xx_nflash_parts[i-1].offset + bcm947xx_nflash_parts[i-1].size;
     }
 
 	return bcm947xx_nflash_parts;
@@ -1114,7 +1164,7 @@ init_nflash_mtd_partitions(hndnand_t *nfl, struct mtd_info *mtd, size_t size)
 EXPORT_SYMBOL(init_nflash_mtd_partitions);
 #endif /* CONFIG_MTD_NFLASH */
 
-#ifdef CONFIG_CRASHLOG
+#if (defined CONFIG_CRASHLOG)
 extern char *get_logbuf(void);
 extern char *get_logsize(void);
 
@@ -1127,9 +1177,15 @@ void nvram_store_crash(void)
 	int buf_len;
 	int len;
 
-	printk("Trying to store crash\n");
+	printk("%s(%d): Trying to store crash\n", __FUNCTION__, __LINE__);
 
+#ifdef KERNEL_CRASH_DUMP_TO_MTD
+    /* write log to POT1 */
+//	mtd = get_mtd_device_nm("POT1");
+	mtd = get_mtd_device_nm("DebugMsg");
+#else
 	mtd = get_mtd_device_nm("crash");
+#endif
 
 	if (!IS_ERR(mtd)) {
 
@@ -1138,20 +1194,20 @@ void nvram_store_crash(void)
 		if (buf_len > mtd->size)
 			buf_len = mtd->size;
 
-		memset(buf, 0, sizeof(buf));
+		memset(buf,0,sizeof(buf));
 		mtd->read(mtd, 0, sizeof(buf), &len, buf);
-		for (len = 0; len < sizeof(buf); len++)
-			if (buf[len] != 0xff) {
-				printk("Could not save crash, partition not clean\n");
+		for (len=0;len<sizeof(buf);len++)
+			if (buf[len]!=0xff) {
+				printk("%s(%d): Could not save crash, partition not clean\n", __FUNCTION__, __LINE__);
 				break;
 			}
 		if (len == sizeof(buf)) {
 			mtd->write(mtd, 0, buf_len, &len, buffer);
 			if (buf_len == len)
-				printk("Crash Saved\n");
+				printk("%s(%d): Crash Saved\n", __FUNCTION__, __LINE__);
 		}
 	} else {
-		printk("Could not find NVRAM partition\n");
+		printk("%s(%d): Could not find NVRAM partition\n", __FUNCTION__, __LINE__);
 	}
 }
 #endif /* CONFIG_CRASHLOG */

@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  *  linux/arch/arm/kernel/head.S
  *
@@ -64,6 +65,14 @@
 	ldr	\rd, [\rd, #0x0]
 	.endm
 
+	.macro	get_coherence_flag_pa, rd, rs
+	ldr	\rd, =coherence_flag
+	ldr	\rs, =PAGE_OFFSET
+	sub	\rd, \rd, \rs
+	ldr	\rs, =CONFIG_DRAM_BASE
+	add	\rd, \rd, \rs
+	.endm
+
 	.macro	pgtbl, rd
 	ldr	\rd, =(KERNEL_RAM_PADDR - 0x4000)
 	.endm
@@ -106,36 +115,92 @@ ENTRY(stext)
 	ldr	r3, =0x0000ffff			@ CID_ID_MASK
 	and	r5, r4, r3
 	ldr	r3, =53010			@ BCM4707_CHIP_ID
+	cmp	r5, r3				@ r5 to store chip id
+	beq	1f
+	ldr	r3, =53030			@ BCM47094_CHIP_ID
 	cmp	r5, r3
-	bne	no_acp
-	/* Compare Chip Rev */	
+	bne	check_ace			@ Not NS chips
+	b	bx_acp
+1:
+	/* Compare Chip Rev */
 	ldr	r3, =0x000f0000			@ CID_REV_MASK
 	and	r4, r4, r3
 	cmp	r4, #0				@ The revision number of NS-Ax is 0.
-	bne	b0_acp
-#ifdef BCM47XX_ACP_WAR
+	bne	bx_acp
+ax_acp:
+	/* A0 and A1 don't support ACP */
+	ldr	r3, =0x1800702c			@ CCB_SRAB_CMDSTAT
+	ldr	r4, =0x02400001			@ SPI page 0x02, SPI offset 0x40
+	str	r4, [r3]
+	ldr	r3, =0x1800703c			@ CCB_SRAB_RDL
+	ldr	r4, [r3]
+	ldr	r3, =0xff			@ 8-bits CHIP_REVID mask
+	and	r4, r4, r3
+	cmp	r4, #1				@ REVID: A0 = 0, A1 = 1
+	ble	no_acp
+
+	/* A2 and later are able to support ACP */
+	get_coherence_flag_pa r6, r7		@ r6 to store coherence_flag
+	mov	r7, #COHERENCE_ACP_WAR		@ set coherence_flag = 1
+	str	r7, [r6]			@ for NS-Ax with ACP WAR
+
 	ldr	r3, =tgt_phys
-	ldr	r4, =0xc0000000
+	ldr	r4, =0xc0000000			@ Clear the upper two bits
 	bic	r3, r3, r4
-	ldr	r4, =0x80000000
+	ldr	r4, =PADDR_ACP_AX		@ NS-Ax ACP starting address
 	orr	r3, r3, r4
-	mov	pc, r3
-#endif
-no_acp:
-	mov	r3, pc				@ PC=0x8000 for NS-Ax, PC=0x40008000 for NS-B0-ACP
+	mov	pc, r3				@ PC=0x80008000 for NS-Ax ACP
 	b	tgt_phys
-b0_acp:
+bx_acp:
+	get_coherence_flag_pa r6, r7		@ r6 to store coherence_flag
+	mov	r7, #COHERENCE_ACP		@ set coherence_flag = 2
+	str	r7, [r6]			@ arch is coherent
+
 	ldr	r3, =tgt_phys
-	ldr	r4, =0xc0000000
+	ldr	r4, =0xc0000000			@ Clear the upper two bits
 	bic	r3, r3, r4
-	ldr	r4, =0x40000000
+	ldr	r4, =PADDR_ACP_BX		@ NS-Bx ACP starting address
 	orr	r3, r3, r4
-	mov	pc, r3
+	mov	pc, r3				@ PC=0x40008000 for NS-Bx ACP
+	b	tgt_phys
+check_ace:
+	ldr	r3, =53573			@ BCM53573_CHIP_ID
+	cmp	r5, r3				@ r5 to store chip id
+	bne	no_acp				@ Not BCM53573
+
+	ldr     r3, =ddr_phys_offset2_va
+	ldr     r0, =PAGE_OFFSET
+	sub     r3, r3, r0
+	ldr     r0, =CONFIG_DRAM_BASE
+	add     r3, r3, r0
+	ldr     r0, =0x08000000                 @ phys_offset2 for BCM53573
+	str     r0, [r3]
+
+	get_coherence_flag_pa r6, r7		@ r6 to store coherence_flag
+	mov	r7, #COHERENCE_ACE		@ set coherence_flag = 4
+	str	r7, [r6]			@ arch is coherent for BCM53573
+
+	ldr	r3, =tgt_phys
+	ldr	r4, =0xc0000000			@ Clear the upper two bits
+	bic	r3, r3, r4
+	ldr	r4, =PADDR_ACE_BCM53573		@ BCM53573 ACE starting address
+	orr	r3, r3, r4
+	mov	pc, r3				@ PC=0x80008000 for BCM53573 ACE
+	b	tgt_phys
+
+no_acp:
+	get_coherence_flag_pa r6, r7		@ r6 to store coherence_flag
+	mov	r7, #COHERENCE_NONE		@ set coherence_flag = 0
+	str	r7, [r6]			@ arch is non-coherent
+
+	mov	r3, pc				@ PC=0x8000
 tgt_phys:
 	ldr	r0, =0xf0000000
 	and	r3, r3, r0
 	get_ddr_phys_offset_pa r6, r7
-	str	r3, [r6]			@ r3 = 0x0 for NS-Ax and 0x40000000 for NS-B0-ACP
+	str	r3, [r6]			@ r3=0x80000000 for NS-Ax ACP
+						@ r3=0x40000000 for NS-Bx ACP
+						@ r3=0x0 for Non ACP
 	mov	r0, #0				@ restore r0 to 0x0
 
 #ifdef	CONFIG_ARCH_HAS_HEAD_FIXUP

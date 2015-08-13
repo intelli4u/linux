@@ -1,7 +1,7 @@
 /*
  * NVRAM variable manipulation (Linux kernel half)
  *
- * Copyright (C) 2014, Broadcom Corporation. All Rights Reserved.
+ * Copyright (C) 2015, Broadcom Corporation. All Rights Reserved.
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -45,6 +45,7 @@
 #include <siutils.h>
 #include <hndmips.h>
 #include <hndsflash.h>
+#include <bcmdevs.h>
 #ifdef CONFIG_MTD_NFLASH
 #include <nflash.h>
 #endif
@@ -86,15 +87,15 @@ static struct resource norflash_region = {
         .flags = IORESOURCE_MEM,
 };
 
+static unsigned char flash_nvh[MAX_NVRAM_SPACE];
 #ifdef CONFIG_MTD_NFLASH
-static unsigned char nflash_nvh[MAX_NVRAM_SPACE];
 
 static struct nvram_header *
 BCMINITFN(nand_find_nvram)(hndnand_t *nfl, uint32 off)
 {
 	int blocksize = nfl->blocksize;
-	unsigned char *buf = nflash_nvh;
-	int rlen = sizeof(nflash_nvh);
+	unsigned char *buf = flash_nvh;
+	int rlen = sizeof(flash_nvh);
 	int len;
 
 	for (; off < nfl_boot_size(nfl); off += blocksize) {
@@ -111,12 +112,40 @@ BCMINITFN(nand_find_nvram)(hndnand_t *nfl, uint32 off)
 		buf += len;
 		rlen -= len;
 		if (rlen == 0)
-			return (struct nvram_header *)nflash_nvh;
+			return (struct nvram_header *)flash_nvh;
 	}
 
 	return NULL;
 }
 #endif /* CONFIG_MTD_NFLASH */
+
+static struct nvram_header *
+BCMINITFN(sflash_find_nvram)(hndsflash_t *sfl, uint32 off)
+{
+	struct nvram_header header;
+	unsigned char *buf = flash_nvh;
+	uint32 rlen = sizeof(flash_nvh), hdrlen = sizeof(struct nvram_header);
+
+	/* direct access to offset if within XIP region(16M) or NorthStar platform */
+	if (off < SI_FLASH_WINDOW || sih->ccrev == 42) {
+		return (struct nvram_header *)(sfl->base + off);
+	}
+
+	/* check read size boundary */
+	if (off + rlen > sfl->size) {
+		printk("Out of flash boundary off %x sfl->size %x\n", off, sfl->size);
+		return NULL;
+	}
+
+	/* retrieve flash content if buffer have NVRAM_MAGIC header */
+	if (sfl->read(sfl, off, hdrlen, (uint8 *)&header) == hdrlen &&
+	    header.magic == NVRAM_MAGIC) {
+		if (sfl->read(sfl, off, rlen, buf) == rlen)
+			return (struct nvram_header *)buf;
+	}
+
+	return NULL;
+}
 
 /* Probe for NVRAM header */
 static int
@@ -167,7 +196,7 @@ early_nvram_init(void)
 		}
 	}
 	else
-#endif
+#endif /* CONFIG_MTD_NFLASH */
 	if (bootdev == SOC_BOOTDEV_SFLASH ||
 	    bootdev == SOC_BOOTDEV_ROM) {
 		/* Boot from SFLASH or ROM */
@@ -175,21 +204,26 @@ early_nvram_init(void)
 			return -1;
 
 		lim = sfl_info->size;
-
+		if (CHIPID(sih->chip) == BCM53573_CHIP_ID) {
+			norflash_region.start = sfl_info->phybase;
+			norflash_region.end = norflash_region.start + sfl_info->size - 1;
+		}
 		BUG_ON(request_resource(&iomem_resource, &norflash_region));
-	
+
 		flash_base = sfl_info->base;
-	
+
 		BUG_ON(IS_ERR_OR_NULL((void *)flash_base));
-		
+
 		off = FLASH_MIN;
 		while (off <= lim) {
 			/* Windowed flash access */
-			header = (struct nvram_header *)(flash_base + off - nvram_space);
-			if (header->magic == NVRAM_MAGIC)
+			header = sflash_find_nvram(sfl_info, off - nvram_space);
+
+			if (header && header->magic == NVRAM_MAGIC) {
 				if (nvram_calc_crc(header) == (uint8)header->crc_ver_init) {
 					goto found;
 				}
+			}
 			off += DEF_NVRAM_SPACE;
 		}
 	}

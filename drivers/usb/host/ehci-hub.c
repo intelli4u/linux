@@ -28,6 +28,14 @@
 
 /*-------------------------------------------------------------------------*/
 
+#include <bcmutils.h>
+#include <siutils.h>
+#include <bcmdefs.h>
+#include <bcmdevs.h>
+/* Global SB handle */
+extern si_t *bcm947xx_sih;
+#define sih bcm947xx_sih
+
 #define	PORT_WAKE_BITS	(PORT_WKOC_E|PORT_WKDISC_E|PORT_WKCONN_E)
 
 #ifdef	CONFIG_PM
@@ -705,6 +713,10 @@ ehci_hub_descriptor (
 	desc->wHubCharacteristics = cpu_to_le16(temp);
 }
 
+#define PORT_USB20(x) (((x) & (3 << 10)) == (1 << 11))	/* USB 2.0 device */
+#define SET_PORT_USB20(x) ((((x) & (0xf3ff))) | (1 << 11))	/* Set USB 2.0 device */
+static u32 port_connected = 0;
+
 /*-------------------------------------------------------------------------*/
 
 static int ehci_hub_control (
@@ -833,6 +845,24 @@ static int ehci_hub_control (
 		status = 0;
 		temp = ehci_readl(ehci, status_reg);
 
+		if ((CHIPID(sih->chip) == BCM53573_CHIP_ID) &&
+			(CHIPREV(sih->chiprev) == 0) && (wIndex == 0)) {
+			if (port_connected) {
+				if (temp & PORT_CSC) {
+					port_connected = 0;
+				} else {
+					temp |= PORT_CONNECT;
+				}
+			} else {
+				if ((temp & PORT_CSC) || (temp & PORT_CONNECT) ||
+					PORT_USB20(temp)) {
+					temp |= PORT_CONNECT;
+					temp = SET_PORT_USB20(temp);
+					port_connected = 1;
+					mdelay(10);
+				}
+			}
+		}
 		// wPortChange bits
 		if (temp & PORT_CSC)
 			status |= USB_PORT_STAT_C_CONNECTION << 16;
@@ -917,6 +947,10 @@ static int ehci_hub_control (
 			/* see what we found out */
 			temp = check_reset_complete (ehci, wIndex, status_reg,
 					ehci_readl(ehci, status_reg));
+			if ((CHIPID(sih->chip) == BCM53573_CHIP_ID) &&
+			 (CHIPREV(sih->chiprev) == 0) && port_connected && (wIndex == 0)) {
+				temp |= PORT_CONNECT;
+			}
 		}
 
 		if (!(temp & (PORT_RESUME|PORT_RESET)))

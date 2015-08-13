@@ -1,19 +1,25 @@
 /*
  * ALSA I2S Interface for the Broadcom BCM947XX family of SOCs
  *
- * Copyright (C) 2014, Broadcom Corporation. All Rights Reserved.
+ * Copyright (C) 1999-2015, Broadcom Corporation
  * 
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
+ *      Unless you and Broadcom execute a separate written software license
+ * agreement governing use of this software, this software is licensed to you
+ * under the terms of the GNU General Public License version 2 (the "GPL"),
+ * available at http://www.broadcom.com/licenses/GPLv2.php, with the
+ * following added to such license:
  * 
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
- * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
- * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
- * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ *      As a special exception, the copyright holders of this software give you
+ * permission to link this software with independent modules, and to copy and
+ * distribute the resulting executable under terms of your choice, provided that
+ * you also meet, for each linked independent module, the terms and conditions of
+ * the license of that module.  An independent module is a module which is not
+ * derived from this software.  The special exception does not apply to any
+ * modifications of the software.
+ * 
+ *      Notwithstanding the above, under no circumstances may you combine this
+ * software in any way with any other Broadcom software provided under a license
+ * other than the GPL, without Broadcom's express prior written consent.
  *
  * $Id: bcm947xx-i2s.c,v 1.3 2010-05-14 00:36:48 $
  */
@@ -58,10 +64,6 @@
 
 #define BCM947XX_SND "bcm947xx i2s sound"
 
-bcm947xx_i2s_info_t *snd_bcm = NULL;
-EXPORT_SYMBOL_GPL(snd_bcm);
-
-
 
 static int bcm947xx_i2s_startup(struct snd_pcm_substream *substream,
 	struct snd_soc_dai *dai)
@@ -81,6 +83,7 @@ static int bcm947xx_i2s_probe(struct platform_device *pdev,
 	struct snd_soc_dai *dai)
 {
 	int ret = 0;
+	bcm947xx_i2s_info_t *snd_bcm = dai->private_data;
 
 	if (snd_bcm && snd_bcm->sih)
 		if (si_findcoreidx(snd_bcm->sih, I2S_CORE_ID, 0) == BADIDX)
@@ -102,10 +105,15 @@ static int bcm947xx_i2s_resume(struct snd_soc_dai *dai)
 	return 0;
 }
 
+#define I2S_INTRECE_LAZY_FC_MASK	0xFF000000
+#define I2S_INTRECE_LAZY_FC_SHIFT	24
+
 static int bcm947xx_i2s_trigger(struct snd_pcm_substream *substream, int cmd,
 	struct snd_soc_dai *dai)
 {
+	bcm947xx_i2s_info_t *snd_bcm = dai->private_data;
 	uint32 i2scontrol = R_REG(snd_bcm->osh, &snd_bcm->regs->i2scontrol);
+	uint32 i2sintrecelazy = R_REG(snd_bcm->osh, &snd_bcm->regs->intrecvlazy);
 	int ret = 0;
 
 	DBG("%s w/cmd %d\n", __FUNCTION__, cmd);
@@ -114,18 +122,38 @@ static int bcm947xx_i2s_trigger(struct snd_pcm_substream *substream, int cmd,
 	case SNDRV_PCM_TRIGGER_START:
 	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
 	case SNDRV_PCM_TRIGGER_RESUME:
-		i2scontrol |= I2S_CTRL_PLAYEN;
+		if (substream->stream == SNDRV_PCM_STREAM_CAPTURE) {
+			/* Enable I2S lazy interrupt.  The lazy interrupt is required
+			 * to generate reception interrupts in contrast to using the
+			 * IOC mechansism for TX.  Interrupt when 1 frame is
+			 * transferred, corresponding to one descriptor.
+			*/
+			i2sintrecelazy &= ~I2S_INTRECE_LAZY_FC_MASK;
+			i2sintrecelazy |= 1 << I2S_INTRECE_LAZY_FC_SHIFT;
+			i2scontrol |= I2S_CTRL_RECEN;
+		} else {
+			i2scontrol |= I2S_CTRL_PLAYEN;
+		}
 		W_REG(snd_bcm->osh, &snd_bcm->regs->i2scontrol, i2scontrol);
+		W_REG(snd_bcm->osh, &snd_bcm->regs->intrecvlazy, i2sintrecelazy);
 		break;
 	case SNDRV_PCM_TRIGGER_STOP:
 	case SNDRV_PCM_TRIGGER_SUSPEND:
 	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
-		i2scontrol &= ~I2S_CTRL_PLAYEN;
+		if (substream->stream == SNDRV_PCM_STREAM_CAPTURE) {
+			i2scontrol &= ~I2S_CTRL_RECEN;
+		} else {
+			i2scontrol &= ~I2S_CTRL_PLAYEN;
+		}
 		W_REG(snd_bcm->osh, &snd_bcm->regs->i2scontrol, i2scontrol);
 		break;
 	default:
-		ret = -EINVAL;
+	ret = -EINVAL;
 	}
+
+	DBG("%s: i2s intstatus 0x%x intmask 0x%x\n", __FUNCTION__,
+	    R_REG(snd_bcm->osh, &snd_bcm->regs->intstatus),
+	    R_REG(snd_bcm->osh, &snd_bcm->regs->intmask));
 
 	return ret;
 }
@@ -134,6 +162,7 @@ static int bcm947xx_i2s_trigger(struct snd_pcm_substream *substream, int cmd,
 static int bcm947xx_i2s_set_fmt(struct snd_soc_dai *cpu_dai,
 		unsigned int fmt)
 {
+	bcm947xx_i2s_info_t *snd_bcm = cpu_dai->private_data;
 	u32 devctrl = R_REG(snd_bcm->osh, &snd_bcm->regs->devcontrol);
 
 	DBG("%s: format 0x%x\n", __FUNCTION__, fmt);
@@ -191,6 +220,7 @@ static int bcm947xx_i2s_set_fmt(struct snd_soc_dai *cpu_dai,
 static int bcm947xx_i2s_set_sysclk(struct snd_soc_dai *cpu_dai,
 		int clk_id, unsigned int freq, int dir)
 {
+	bcm947xx_i2s_info_t *snd_bcm = cpu_dai->private_data;
 	/* Stash the MCLK rate that we're using, we can use it to help us to pick
 	 * the right clkdiv settings later.
 	 */
@@ -203,6 +233,7 @@ static int bcm947xx_i2s_set_sysclk(struct snd_soc_dai *cpu_dai,
 static int bcm947xx_i2s_hw_params(struct snd_pcm_substream *substream,
 				struct snd_pcm_hw_params *params, struct snd_soc_dai *dai)
 {
+	bcm947xx_i2s_info_t *snd_bcm = dai->private_data;
 	u32 devctrl = R_REG(snd_bcm->osh, &snd_bcm->regs->devcontrol);
 	u32 clkdiv = R_REG(snd_bcm->osh, &snd_bcm->regs->clkdivider);
 	u32 stxctrl = R_REG(snd_bcm->osh, &snd_bcm->regs->stxctrl);
@@ -211,96 +242,164 @@ static int bcm947xx_i2s_hw_params(struct snd_pcm_substream *substream,
 	int channels = params_channels(params);
 	int ii = 0;
 	bool found = FALSE;
+	bool in_use;
+	
+	/* Joint settings in-use?
+	 * Limit the scope of what can be configured.  For example,
+	 * it doesn't make sense to change the sample rate since clocks
+	 * are shared.
+	*/
+	in_use = (snd_bcm->in_use & ~(1 << substream->stream));
 
-	/* Set up our ClockDivider register with audio sample rate */
-	for (ii = 0; ii < ARRAY_SIZE(i2s_clkdiv_coeffs); ii++) {
-		if ((i2s_clkdiv_coeffs[ii].rate == rate) &&
-		    (i2s_clkdiv_coeffs[ii].mclk == snd_bcm->mclk)) {
-			found = TRUE;
-			break;
+	DBG("%s: %s in_use=%d\n", __FUNCTION__, bcm947xx_direction_str(substream), in_use);
+
+	/* Touching DevControl when in_use will cause the I2S FIFO to be
+	 * reset thus introducing an audible "pop" on the in-use stream.
+	 * Just bail for now instead of trying to support additional
+	 * configurations.
+	*/
+	if (in_use)
+		goto DONE;
+
+	/* ClockDivider.SRate */
+	{
+		/* Set up our ClockDivider register with audio sample rate */
+		for (ii = 0; ii < ARRAY_SIZE(i2s_clkdiv_coeffs); ii++) {
+			if ((i2s_clkdiv_coeffs[ii].rate == rate) &&
+				(i2s_clkdiv_coeffs[ii].mclk == snd_bcm->mclk)) {
+				found = TRUE;
+				break;
+			}
+		}
+
+		if(found != TRUE) {
+			printk(KERN_ERR "%s: unsupported audio sample rate %d Hz and mclk %d Hz "
+				   "combination\n", __FUNCTION__, rate, snd_bcm->mclk);
+			return -EINVAL;
+		} else {
+			/* Write the new SRATE into the clock divider register */
+			srate = (i2s_clkdiv_coeffs[ii].srate << I2S_CLKDIV_SRATE_SHIFT);
+			clkdiv &= ~I2S_CLKDIV_SRATE_MASK;
+			W_REG(snd_bcm->osh, &snd_bcm->regs->clkdivider, clkdiv | srate);
+
+			DBG("%s: i2s clkdivider 0x%x txplayth 0x%x\n", __FUNCTION__,
+				R_REG(snd_bcm->osh, &snd_bcm->regs->clkdivider),
+				R_REG(snd_bcm->osh, &snd_bcm->regs->txplayth));
+			DBG("%s: audio sample rate %d Hz and mclk %d Hz\n",
+				__FUNCTION__, rate, snd_bcm->mclk);
 		}
 	}
 
-	if (found != TRUE) {
-		printk(KERN_ERR "%s: unsupported audio sample rate %d Hz and mclk %d Hz "
-		       "combination\n", __FUNCTION__, rate, snd_bcm->mclk);
-		return -EINVAL;
-	} else {
-		/* Write the new SRATE into the clock divider register */
-		srate = (i2s_clkdiv_coeffs[ii].srate << I2S_CLKDIV_SRATE_SHIFT);
-		clkdiv &= ~I2S_CLKDIV_SRATE_MASK;
-		W_REG(snd_bcm->osh, &snd_bcm->regs->clkdivider, clkdiv | srate);
+	/* DevControl.OPCHSEL */
+	{
+		/* Set up for the # of channels in this stream */
+		/* For I2S/SPDIF we support 2 channel -OR- 6 (5.1) channels */
+		DBG("%s: %d channels in this stream\n", __FUNCTION__, channels);
 
-		DBG("%s: i2s clkdivider 0x%x txplayth 0x%x\n", __FUNCTION__,
-		    R_REG(snd_bcm->osh, &snd_bcm->regs->clkdivider),
-		    R_REG(snd_bcm->osh, &snd_bcm->regs->txplayth));
-		DBG("%s: audio sample rate %d Hz and mclk %d Hz\n",
-		    __FUNCTION__, rate, snd_bcm->mclk);
+		switch (channels) {
+		case 2:
+			devctrl &= ~I2S_DC_OPCHSEL_6;
+			break;
+		case 6:
+			devctrl |= I2S_DC_OPCHSEL_6;
+			break;
+		default:
+			printk(KERN_ERR "%s: unsupported number of channels in stream - %d\n"
+				   "combination\n", __FUNCTION__, channels);
+			return -EINVAL;
+		}
 	}
 
-	DBG("%s: %d channels in this stream\n", __FUNCTION__, channels);
+	DBG("%s: rate %d access 0x%x format 0x%x subformat 0x%x\n", __FUNCTION__,
+		rate, params_access(params), params_format(params), params_subformat(params));
 
-	/* Set up for the # of channels in this stream */
-	/* For I2S/SPDIF we support 2 channel -OR- 6 (5.1) channels */
-	switch (channels) {
-	case 2:
-		devctrl &= ~I2S_DC_OPCHSEL_6;
-		break;
-	case 6:
-		devctrl |= I2S_DC_OPCHSEL_6;
-		break;
-	default:
-		printk(KERN_ERR "%s: unsupported number of channels in stream - %d\n"
-		       "combination\n", __FUNCTION__, channels);
-		return -EINVAL;
+	/* Clear TX/RX word length bits then set the # of bits per sample in this stream.
+	 * This could be configurated separately from the in-use substream (see in_use
+	 * comment above).
+	*/
+	{
+		/* DevControl.WL_RX */
+		if (substream->stream == SNDRV_PCM_STREAM_CAPTURE) {
+			devctrl &= ~(I2S_DC_WL_RX_MASK);
+			switch (params_format(params)) {
+			/* Available in I2S core rev > 2. */
+			case SNDRV_PCM_FORMAT_U8:
+				devctrl |= 0x8000;
+				break;
+			case SNDRV_PCM_FORMAT_S16_LE:
+				devctrl |= 0x0;
+				break;
+			case SNDRV_PCM_FORMAT_S20_3LE:
+				devctrl |= 0x1000;
+				break;
+			case SNDRV_PCM_FORMAT_S24_LE:
+			case SNDRV_PCM_FORMAT_S24_3LE:
+				devctrl |= 0x2000;
+				break;
+			case SNDRV_PCM_FORMAT_S32_LE:
+				devctrl |= 0x3000;
+				break;
+			default:
+				DBG("%s: unsupported format\n", __FUNCTION__);
+				return -EINVAL;
+			}
+
+		/* DevControl.WL_TX */
+		} else {
+			devctrl &= ~(I2S_DC_WL_TX_MASK);
+			stxctrl &= ~(I2S_STXC_WL_MASK);
+			switch (params_format(params)) {
+			/* Available in I2S core rev > 2. */
+			case SNDRV_PCM_FORMAT_U8:
+				devctrl |= 0x4000;
+				stxctrl |= 0x1000;
+				break;
+			case SNDRV_PCM_FORMAT_S16_LE:
+				devctrl |= 0x0;
+				stxctrl |= 0x0;
+				break;
+			case SNDRV_PCM_FORMAT_S20_3LE:
+				devctrl |= 0x400;
+				stxctrl |= 0x01;
+				break;
+			case SNDRV_PCM_FORMAT_S24_LE:
+			case SNDRV_PCM_FORMAT_S24_3LE:
+				devctrl |= 0x800;
+				stxctrl |= 0x02;
+				break;
+			case SNDRV_PCM_FORMAT_S32_LE:
+				devctrl |= 0xC00;
+				/* SPDIF doesn't support 32 bit samples */
+				/* Should we just disable SPDIF rather than putting out garbage? */
+				stxctrl |= 0x03;
+				break;
+			default:
+				DBG("%s: unsupported format\n", __FUNCTION__);
+				return -EINVAL;
+			}
+		}
 	}
 
-	DBG("%s: access 0x%x\n", __FUNCTION__, params_access(params));
-	DBG("%s: format 0x%x\n", __FUNCTION__, params_format(params));
-	DBG("%s: subformat 0x%x\n", __FUNCTION__, params_subformat(params));
-
-	/* clear TX word length bits then Set the # of bits per sample in this stream */
-	devctrl &= ~I2S_DC_WL_TX_MASK;
-	stxctrl &= ~I2S_STXC_WL_MASK;
-	switch (params_format(params)) {
-	case SNDRV_PCM_FORMAT_U8:
-		devctrl |= 0x4000;
-		stxctrl |= 0x1000;
-		break;
-	case SNDRV_PCM_FORMAT_S16_LE:
-		devctrl |= 0x0;
-		stxctrl |= 0x0;
-		break;
-	case SNDRV_PCM_FORMAT_S20_3LE:
-		devctrl |= 0x400;
-		stxctrl |= 0x01;
-		break;
-	case SNDRV_PCM_FORMAT_S24_LE:
-	case SNDRV_PCM_FORMAT_S24_3LE:
-		devctrl |= 0x800;
-		stxctrl |= 0x02;
-		break;
-	case SNDRV_PCM_FORMAT_S32_LE:
-		devctrl |= 0xC00;
-		/* SPDIF doesn't support 32 bit samples */
-		/* Should we just disable SPDIF rather than putting out garbage? */
-		stxctrl |= 0x03;
-		break;
-	default:
-		DBG("unsupported format\n");
-		break;
+	/* DevControl.DPX */
+	{
+		/* Full duplex. */
+		devctrl |= I2S_DC_DPX_MASK;
 	}
-
-	/* For now, we're only interested in Tx so we'll set up half-duplex Tx-only */
-	devctrl &= ~I2S_DC_DPX_MASK;
 
 	/* Write I2S devcontrol reg */
 	W_REG(snd_bcm->osh, &snd_bcm->regs->devcontrol, devctrl);
-	devctrl |= I2S_DC_I2SCFG;  /* Set up core's SRAM for Half duplex Tx */
-	W_REG(snd_bcm->osh, &snd_bcm->regs->devcontrol, devctrl);
-	W_REG(snd_bcm->osh, &snd_bcm->regs->stxctrl, stxctrl);
-	DBG("%s: set devctrl 0x%x && stxctrl 0x%x\n", __FUNCTION__, devctrl, stxctrl);
+	
+	/* DevControl.I2SCFG */
+	{
+		/* Required when changing duplex. */
+		devctrl |= I2S_DC_I2SCFG;
+		W_REG(snd_bcm->osh, &snd_bcm->regs->devcontrol, devctrl);
+	}
+	
+//	W_REG(snd_bcm->osh, &snd_bcm->regs->stxctrl, stxctrl);
+//	DBG("%s: set devctrl 0x%x && stxctrl 0x%x\n", __FUNCTION__, devctrl, stxctrl);
 
+DONE:
 	DBG("%s: read devctrl 0x%x stxctrl 0x%x\n", __FUNCTION__,
 	    R_REG(snd_bcm->osh, &snd_bcm->regs->devcontrol),
 	    R_REG(snd_bcm->osh, &snd_bcm->regs->stxctrl));
@@ -340,22 +439,17 @@ struct snd_soc_dai bcm947xx_i2s_dai = {
 		.channels_max = 2,
 		.rates = BCM947XX_I2S_RATES,
 		.formats = BCM947XX_I2S_FORMATS,},
+	.capture = {
+		.channels_min = 2,
+		.channels_max = 2,
+		.rates = BCM947XX_I2S_RATES,
+		.formats = BCM947XX_I2S_FORMATS,},
 	.ops = &bcm947xx_i2s_dai_ops,
 };
 
 EXPORT_SYMBOL_GPL(bcm947xx_i2s_dai);
 
-static int __init bcm947xx_i2s_init(void)
-{
-	return snd_soc_register_dai(&bcm947xx_i2s_dai);
-}
-
-static void __exit bcm947xx_i2s_exit(void)
-{
-	return snd_soc_unregister_dai(&bcm947xx_i2s_dai);
-}
-
-MODULE_LICENSE("GPL");
+MODULE_LICENSE("GPL and additional rights");
 /* MODULE_AUTHOR(""); */
 MODULE_DESCRIPTION("BCM947XX I2S module");
 
@@ -394,6 +488,10 @@ bcm947xx_i2s_pci_attach(uint16 vendor, uint16 device, ulong regs, uint bustype, 
 	osh = osl_attach(btparam, bustype, FALSE);
 	ASSERT(osh);
 
+	/* Set ACP coherence flag */
+	if (OSL_ARCH_IS_COHERENT())
+		osl_flag_set(osh, OSL_ACP_COHERENCE);
+
 	/* allocate private info */
 	if ((snd = (bcm947xx_i2s_info_t *) MALLOC(osh, sizeof(bcm947xx_i2s_info_t))) == NULL) {
 		osl_detach(osh);
@@ -421,9 +519,15 @@ bcm947xx_i2s_pci_attach(uint16 vendor, uint16 device, ulong regs, uint bustype, 
 	si_core_reset(snd->sih, 0, 0);
 
 	snd->di[0] = dma_attach(snd->osh, "i2s_dma", snd->sih,
-	                            DMAREG(snd, DMA_TX, 0),
-	                            NULL, BCM947XX_NR_DMA_TXDS_MAX, 0,
-	                            0, -1, 0, 0, &msg_level);
+					DMAREG(snd, DMA_TX, 0),
+					DMAREG(snd, DMA_RX, 0),
+					BCM947XX_NR_DMA_TXDS_MAX,
+					BCM947XX_NR_DMA_RXDS_MAX,
+					BCM947XX_DMA_DATA_BYTES_MAX,
+					0, /* rxextraheadroom */
+					0, /* nrxpost */
+					BCM947XX_DMA_RXOFS_BYTES,
+					&msg_level);
 	if (snd->di[0] == NULL)
 		DBG("%s: DMA attach unsuccessful!\n", __FUNCTION__);
 
@@ -445,7 +549,10 @@ bcm947xx_i2s_pci_attach(uint16 vendor, uint16 device, ulong regs, uint bustype, 
 		/* Write to the 2nd chipcontrol reg. to turn on I2C-via-gpio pins */
 		ret = si_pmu_chipcontrol(snd->sih, PMU1_PLL0_CHIPCTL1,
 		                         CCTRL_5357_I2CSPI_PINS_ENABLE, 0);
-	} else if (CHIPID(snd->sih->chip) == BCM4707_CHIP_ID && snd->sih->chippkg == BCM4709_PKG_ID) {
+	} else if ((CHIPID(snd->sih->chip) == BCM4707_CHIP_ID &&
+			snd->sih->chippkg == BCM4709_PKG_ID) ||
+			(CHIPID(snd->sih->chip) == BCM47094_CHIP_ID &&
+			snd->sih->chippkg == BCM4709_PKG_ID)) {
 		snd->irq = 120;
 		/* Enable I2S clock. */
 		{
@@ -455,9 +562,18 @@ bcm947xx_i2s_pci_attach(uint16 vendor, uint16 device, ulong regs, uint bustype, 
 		/*
 		 * Gotta be a better way to set this!
 		 */
-		uint32 val = R_REG(snd_bcm->osh, i2s_m0_idm_io_control_direct);
-		W_REG(snd_bcm->osh, i2s_m0_idm_io_control_direct, val | 0x1);
-		val = R_REG(snd_bcm->osh, i2s_m0_idm_io_control_direct);
+		uint32 val = R_REG(snd->osh, i2s_m0_idm_io_control_direct);
+		uint32 arcache = 0xb, awcache = 0x7;
+
+		/* ARCACHE=0xb - Cacheable write-back, allocate on write
+		 * AWCACHE=0x7 - Cacheable write-back, allocate on read
+		 */
+		if (arch_is_coherent()) {
+			val &= ~((0xf << 16) | (0xf << 20));
+			val |= (arcache << 16) | (awcache << 20);
+		}
+		W_REG(snd->osh, i2s_m0_idm_io_control_direct, val | 0x1);
+		val = R_REG(snd->osh, i2s_m0_idm_io_control_direct);
 		DBG("%s: idm_io_control_direct 0x%x\n", __FUNCTION__, val);
 		REG_UNMAP(i2s_m0_idm_io_control_direct);
 		}
@@ -484,6 +600,7 @@ bcm947xx_i2s_free(bcm947xx_i2s_info_t *sndbcm)
 static int __devinit
 bcm947xx_i2s_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 {
+	bcm947xx_i2s_info_t *snd_bcm;
 	int err = 0;
 
 	DBG("%s: for pdev 0x%x w/irq %d.\n", __FUNCTION__, pdev->device, pdev->irq);
@@ -507,6 +624,15 @@ bcm947xx_i2s_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (!snd_bcm)
 		return -ENODEV;
 
+	bcm947xx_i2s_dai.dev = &pdev->dev;
+	bcm947xx_i2s_dai.private_data = snd_bcm;
+	err = snd_soc_register_dai(&bcm947xx_i2s_dai);
+	if (err) {
+		DBG("%s: Cannot register SOC DAI 0x%x\n", __FUNCTION__, err);
+		bcm947xx_i2s_free(snd_bcm);
+		return -ENODEV;
+	}
+
 	pci_set_drvdata(pdev, snd_bcm);
 
 	return err;
@@ -516,8 +642,8 @@ static void __devexit bcm947xx_i2s_pci_remove(struct pci_dev *pdev, struct snd_s
 {
 	bcm947xx_i2s_info_t *sndbcm = (bcm947xx_i2s_info_t *) pci_get_drvdata(pdev);
 
+	snd_soc_unregister_dai(&bcm947xx_i2s_dai);
 	bcm947xx_i2s_free(sndbcm);
-	snd_bcm = (bcm947xx_i2s_info_t *)NULL;
 	pci_set_drvdata(pdev, NULL);
 }
 
@@ -533,25 +659,11 @@ static int __init bcm947xx_i2s_pci_init(void)
 {
 	int err = 0;
 
-	err = bcm947xx_i2s_init();
-	if (err) {
-		printk(KERN_ERR "%s: Couldn't init bcm947xx_i2s 0x%x\n",
-		       __FUNCTION__, err);
-		goto error_bcm947xx_i2s_init;
-	}
-
 	err = pci_register_driver(&bcm947xx_i2s_pci_driver);
 	if (err) {
 		printk(KERN_ERR "%s: Couldn't register bcm947xx_i2s_pci_driver 0x%x\n",
 		       __FUNCTION__, err);
-		goto error_pci_register_driver;
 	}
-
-	return err;
-
-error_pci_register_driver:
-	bcm947xx_i2s_exit();
-error_bcm947xx_i2s_init:
 
 	return err;
 }
@@ -559,7 +671,6 @@ error_bcm947xx_i2s_init:
 static void __exit bcm947xx_i2s_pci_exit(void)
 {
 	pci_unregister_driver(&bcm947xx_i2s_pci_driver);
-	bcm947xx_i2s_exit();
 }
 
 module_init(bcm947xx_i2s_pci_init)

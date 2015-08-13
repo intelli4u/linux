@@ -1,7 +1,7 @@
 #
 # Makefile for the Broadcom CTF
 #
-# Copyright (C) 2012, Broadcom Corporation. All Rights Reserved.
+# Copyright (C) 2015, Broadcom Corporation. All Rights Reserved.
 # 
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -20,7 +20,9 @@
 
 obj-${CONFIG_BCM_CTF} := ctf.o
 
-CTFSRC := ../../../../../../../src/router/ctf/
+CTF_BASE_DIR := $(firstword $(wildcard ../../../../components/router/ctf	\
+                                       ../../../../src/router/ctf))
+CTFSRC := ../../../$(CTF_BASE_DIR)
 CTFOBJ := $(CTFSRC)/hndctf.o $(CTFSRC)/hndctf_linux.o
 SYMOBJ := $(CTFSRC)/hndctf.o
 
