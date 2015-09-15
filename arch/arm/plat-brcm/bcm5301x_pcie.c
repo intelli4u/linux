@@ -1374,9 +1374,43 @@ out:
 	REG_UNMAP((void *)dmu_base);
 }
 
+ static void
+bcm5301x_usb_and_3rd_pcie_phy_reset(void)
+{
+    static bool phy_reset = FALSE;
+    uint32 dmu_base;
+    uint32 *cru_rst_addr;
+    uint32 val;
+
+    /* only reset once */
+    if (phy_reset)
+       return;
+
+    /* NS-Bx and NS47094
+    * Chiprev 4 for NS-B0 and chiprev 6 for NS-B1
+    */
+    if ((CHIPID(sih->chip) == BCM4707_CHIP_ID &&
+        (CHIPREV(sih->chiprev) == 4 || CHIPREV(sih->chiprev) == 6)) ||
+        (CHIPID(sih->chip) == BCM47094_CHIP_ID)) {
+            /* reset PHY */
+            dmu_base = (uint32)REG_MAP(0x1800c000, 4096);
+            cru_rst_addr = (uint32 *)(dmu_base +  0x184);
+            val = readl(cru_rst_addr);
+            val &= ~(0x3 << 3);
+            writel(val, cru_rst_addr);
+            OSL_DELAY(100);
+            val |= (0x3 << 3);
+            writel(val, cru_rst_addr);
+            REG_UNMAP((void *)dmu_base);
+            phy_reset = TRUE;
+    }
+}
+
 static void
 bcm5301x_usb_phy_init(int coreid)
 {
+    bcm5301x_usb_and_3rd_pcie_phy_reset();
+
 	if (coreid == NS_USB20_CORE_ID || coreid == USB20H_CORE_ID) {
 		bcm5301x_usb20_phy_init();
 	}
