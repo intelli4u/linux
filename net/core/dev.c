@@ -2136,7 +2136,7 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
 				 struct netdev_queue *txq)
 {
 	spinlock_t *root_lock = qdisc_lock(q);
-#if 0	
+#if 0
 	bool contended = qdisc_is_running(q);
 #endif
 	int rc;
@@ -2151,7 +2151,6 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
 	if (unlikely(contended))
 		spin_lock(&q->busylock);
 #endif
-
 	spin_lock(root_lock);
 	if (unlikely(test_bit(__QDISC_STATE_DEACTIVATED, &q->state))) {
 		kfree_skb(skb);
@@ -2167,7 +2166,7 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
 			skb_dst_force(skb);
 		__qdisc_update_bstats(q, skb->len);
 		if (sch_direct_xmit(skb, q, dev, txq, root_lock)) {
-#if 0		    
+#if 0
 			if (unlikely(contended)) {
 				spin_unlock(&q->busylock);
 				contended = false;
@@ -2182,7 +2181,7 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
 		skb_dst_force(skb);
 		rc = qdisc_enqueue_root(skb, q);
 		if (qdisc_run_begin(q)) {
-#if 0		    
+#if 0
 			if (unlikely(contended)) {
 				spin_unlock(&q->busylock);
 				contended = false;
