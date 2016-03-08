@@ -1533,6 +1533,10 @@ static void scsi_request_fn(struct request_queue *q)
 		scsi_target(sdev)->target_busy++;
 		shost->host_busy++;
 
+		/*
+		 * XXX(hch): This is rather suboptimal, scsi_dispatch_cmd will
+		 *		take the lock again.
+		 */
 		spin_unlock_irq(shost->host_lock);
 
 		/*
@@ -2205,6 +2209,15 @@ void sdev_evt_send(struct scsi_device *sdev, struct scsi_event *evt)
 {
 	unsigned long flags;
 
+#if 0
+	/* FIXME: currently this check eliminates all media change events
+	 * for polled devices.  Need to update to discriminate between AN
+	 * and polled events */
+	if (!test_bit(evt->evt_type, sdev->supported_events)) {
+		kfree(evt);
+		return;
+	}
+#endif
 
 	spin_lock_irqsave(&sdev->list_lock, flags);
 	list_add_tail(&evt->node, &sdev->event_list);

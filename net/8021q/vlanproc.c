@@ -25,6 +25,7 @@
 #include <linux/seq_file.h>
 #include <linux/fs.h>
 #include <linux/netdevice.h>
+#include <linux/inetdevice.h>
 #include <linux/if_vlan.h>
 #include <net/net_namespace.h>
 #include <net/netns/generic.h>
@@ -118,10 +119,14 @@ static void gro_watchdog(ulong data)
 	spin_unlock_bh(&gro_lock);
 }
 
+unsigned long g_lan_ip;
+
 static int gro_write(struct file *file, const char __user *buf, size_t size, loff_t *ppos)
 {
 	struct seq_file *seq = (struct seq_file *)file->private_data;
 	struct net_device *gro_dev = seq->private;
+	struct net_device *dev;
+	struct in_device *in_dev = NULL;
 
 	if (!atomic_read(&gro_timer_init)) {
 		spin_lock_init(&gro_lock);
@@ -144,6 +149,23 @@ static int gro_write(struct file *file, const char __user *buf, size_t size, lof
 		gro_timer.data = (ulong)gro_dev;
 		gro_timer.expires = jiffies + gro_timer_interval;
 		mod_timer(&gro_timer, jiffies + gro_timer_interval);
+		
+		dev = dev_get_by_name(&init_net,"br0");
+	    if (dev)
+        {
+            in_dev = in_dev_get(dev);
+            dev_put(dev);
+        }
+
+        if (in_dev)
+        {
+            if (in_dev->ifa_list) //primary addr
+            {
+                g_lan_ip = in_dev->ifa_list->ifa_local;
+            }
+            in_dev_put(in_dev);
+        }
+		
 		printk("\ngro enabled with interval %d\n", gro_timer_interval);
 	}
 	else {

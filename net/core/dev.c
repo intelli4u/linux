@@ -2136,7 +2136,7 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
 				 struct netdev_queue *txq)
 {
 	spinlock_t *root_lock = qdisc_lock(q);
-#if 0
+#if 0	
 	bool contended = qdisc_is_running(q);
 #endif
 	int rc;
@@ -2151,6 +2151,7 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
 	if (unlikely(contended))
 		spin_lock(&q->busylock);
 #endif
+
 	spin_lock(root_lock);
 	if (unlikely(test_bit(__QDISC_STATE_DEACTIVATED, &q->state))) {
 		kfree_skb(skb);
@@ -2166,7 +2167,7 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
 			skb_dst_force(skb);
 		__qdisc_update_bstats(q, skb->len);
 		if (sch_direct_xmit(skb, q, dev, txq, root_lock)) {
-#if 0
+#if 0		    
 			if (unlikely(contended)) {
 				spin_unlock(&q->busylock);
 				contended = false;
@@ -2181,7 +2182,7 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
 		skb_dst_force(skb);
 		rc = qdisc_enqueue_root(skb, q);
 		if (qdisc_run_begin(q)) {
-#if 0
+#if 0		    
 			if (unlikely(contended)) {
 				spin_unlock(&q->busylock);
 				contended = false;
@@ -3257,6 +3258,9 @@ void BCMFASTPATH_HOST generic_napi_gro_flush(struct napi_struct *napi)
 	napi_gro_flush(napi);
 }
 EXPORT_SYMBOL(generic_napi_gro_flush);
+
+extern unsigned long g_lan_ip;
+
 #endif /* CONFIG_INET_GRO */
 
 enum gro_result BCMFASTPATH_HOST dev_gro_receive(struct napi_struct *napi, struct sk_buff *skb)
@@ -3267,6 +3271,7 @@ enum gro_result BCMFASTPATH_HOST dev_gro_receive(struct napi_struct *napi, struc
 	struct list_head *head = &ptype_base[ntohs(type) & PTYPE_HASH_MASK];
 	int same_flow;
 	int mac_len;
+	struct iphdr *iph;
 	enum gro_result ret;
 
 	if (!(skb->dev->features & NETIF_F_GRO) || netpoll_rx_on(skb))
@@ -3274,6 +3279,10 @@ enum gro_result BCMFASTPATH_HOST dev_gro_receive(struct napi_struct *napi, struc
 
 	if (skb_is_gso(skb) || skb_has_frags(skb))
 		goto normal;
+		
+    iph = skb_network_header(skb) + 4;
+    if(iph && g_lan_ip != iph->daddr)
+        goto normal;
 
 	rcu_read_lock();
 	list_for_each_entry_rcu(ptype, head, list) {

@@ -461,10 +461,22 @@ struct scsi_host_template {
 	unsigned ordered_tag:1;
 
 	/*
+	 * True if asynchronous aborts are not supported
+	 */
+	unsigned no_async_abort:1;
+
+	/*
 	 * Countdown for host blocking with no commands outstanding.
 	 */
 	unsigned int max_host_blocked;
 
+	/*
+	 * Default value for the blocking.  If the queue is empty,
+	 * host_blocked counts down in the request_fn until it restarts
+	 * host operations as zero is reached.  
+	 *
+	 * FIXME: This should probably be a value in the template
+	 */
 #define SCSI_DEFAULT_HOST_BLOCKED	7
 
 	/*
@@ -634,6 +646,11 @@ struct Scsi_Host {
 	 */
 	char work_q_name[20];
 	struct workqueue_struct *work_q;
+
+	/*
+	 * Task management function work queue
+	 */
+	struct workqueue_struct *tmf_work_q;
 
 	/*
 	 * Host has rejected a command because it was busy.

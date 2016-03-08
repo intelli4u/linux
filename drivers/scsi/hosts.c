@@ -169,6 +169,7 @@ void scsi_remove_host(struct Scsi_Host *shost)
 	spin_unlock_irqrestore(shost->host_lock, flags);
 
 	scsi_autopm_get_host(shost);
+	flush_workqueue(shost->tmf_work_q);
 	scsi_forget_host(shost);
 	mutex_unlock(&shost->scan_mutex);
 	scsi_proc_host_rm(shost);
@@ -289,6 +290,8 @@ static void scsi_host_dev_release(struct device *dev)
 
 	scsi_proc_hostdir_rm(shost->hostt);
 
+	if (shost->tmf_work_q)
+		destroy_workqueue(shost->tmf_work_q);
 	if (shost->ehandler)
 		kthread_stop(shost->ehandler);
 	if (shost->work_q)
@@ -331,6 +334,7 @@ struct Scsi_Host *scsi_host_alloc(struct scsi_host_template *sht, int privsize)
 {
 	struct Scsi_Host *shost;
 	gfp_t gfp_mask = GFP_KERNEL;
+	char tmf_name[32];
 
 	if (sht->unchecked_isa_dma && privsize)
 		gfp_mask |= __GFP_DMA;
@@ -430,9 +434,18 @@ struct Scsi_Host *scsi_host_alloc(struct scsi_host_template *sht, int privsize)
 		goto fail_kfree;
 	}
 
+	snprintf(tmf_name, sizeof(tmf_name), "scsi_tmf_%d", shost->host_no);
+	shost->tmf_work_q = create_singlethread_workqueue(tmf_name);
+	if (!shost->tmf_work_q) {
+		shost_printk(KERN_WARNING, shost,
+			     "failed to create tmf workq\n");
+		goto fail_kthread;
+	}
 	scsi_proc_hostdir_add(shost->hostt);
 	return shost;
 
+ fail_kthread:
+	kthread_stop(shost->ehandler);
  fail_kfree:
 	kfree(shost);
 	return NULL;

@@ -296,6 +296,7 @@ struct scsi_cmnd *scsi_get_command(struct scsi_device *dev, gfp_t gfp_mask)
 
 		cmd->device = dev;
 		INIT_LIST_HEAD(&cmd->list);
+		INIT_DELAYED_WORK(&cmd->abort_work, scmd_eh_abort_handler);
 		spin_lock_irqsave(&dev->list_lock, flags);
 		list_add_tail(&cmd->list, &dev->cmd_list);
 		spin_unlock_irqrestore(&dev->list_lock, flags);
@@ -351,6 +352,8 @@ void scsi_put_command(struct scsi_cmnd *cmd)
 	BUG_ON(list_empty(&cmd->list));
 	list_del_init(&cmd->list);
 	spin_unlock_irqrestore(&cmd->device->list_lock, flags);
+
+	BUG_ON(delayed_work_pending(&cmd->abort_work));
 
 	__scsi_put_command(cmd->device->host, cmd, &sdev->sdev_gendev);
 }
@@ -814,6 +817,14 @@ void scsi_finish_command(struct scsi_cmnd *cmd)
 
 	scsi_device_unbusy(sdev);
 
+        /*
+         * Clear the flags which say that the device/host is no longer
+         * capable of accepting new commands.  These are set in scsi_queue.c
+         * for both the queue full condition on a device, and for a
+         * host full condition on the host.
+	 *
+	 * XXX(hch): What about locking?
+         */
         shost->host_blocked = 0;
 	starget->target_blocked = 0;
         sdev->device_blocked = 0;
