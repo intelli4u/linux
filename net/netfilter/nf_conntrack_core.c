@@ -295,6 +295,11 @@ ip_conntrack_ipct_add(struct sk_buff *skb, u_int32_t hooknum,
 	if (skb_dst(skb)->dev->priv_flags & IFF_802_1Q_VLAN) {
 		ipc_entry.txif = (void *)vlan_dev_real_dev(skb_dst(skb)->dev);
 		ipc_entry.vid = vlan_dev_vlan_id(skb_dst(skb)->dev);
+        /*foxconn Han edited start, 03/07/2016 patch from BRCM for ctf support 802.1q*/
+        //ipc_entry.vid = vlan_dev_vlan_id(skb_dst(skb)->dev);
+        ipc_entry.vid = (vlan_dev_vlan_id(skb_dst(skb)->dev) |
+                         vlan_dev_vlan_qos(skb_dst(skb)->dev));
+        /*foxconn Han edited end, 03/07/2016 patch from BRCM for ctf support 802.1q*/
 		ipc_entry.action = ((vlan_dev_vlan_flags(skb_dst(skb)->dev) & 1) ?
 		                    CTF_ACTION_TAG : CTF_ACTION_UNTAG);
 	} else {

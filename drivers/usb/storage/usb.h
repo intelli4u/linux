@@ -64,6 +64,11 @@ struct us_unusual_dev {
 	int (*initFunction)(struct us_data *);
 };
 
+#define USB_STALL_WAR
+
+#ifdef USB_STALL_WAR
+#define USB_STALL_MAX  30
+#endif /* USB_STALL_WAR */
 
 /* Dynamic bitflag definitions (us->dflags): used in set_bit() etc. */
 #define US_FLIDX_URB_ACTIVE	0	/* current_urb is in use    */
@@ -158,6 +163,11 @@ struct us_data {
 	/* hacks for READ CAPACITY bug handling */
 	int			use_last_sector_hacks;
 	int			last_sector_retries;
+#ifdef USB_STALL_WAR
+    int         stall_cnt;
+    unsigned long       check_time;
+    int         check_stall_cnt;
+#endif /* USB_STALL_WAR */
 };
 
 /* Convert between us_data and the corresponding Scsi_Host */

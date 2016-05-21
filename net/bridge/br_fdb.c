@@ -51,7 +51,10 @@ br_brc_init(ctf_brc_t *brc, unsigned char *ea, struct net_device *rxdev, unsigne
 
         if (rxdev->priv_flags & IFF_802_1Q_VLAN) {
 		brc->txifp = (void *)vlan_dev_real_dev(rxdev);
-		brc->vid = vlan_dev_vlan_id(rxdev);
+        /*foxconn Han edited start, 03/07/2016 patch from BRCM for ctf support 802.1q*/
+		//brc->vid = vlan_dev_vlan_id(rxdev);
+        brc->vid = (vlan_dev_vlan_id(rxdev) | vlan_dev_vlan_qos(rxdev));
+        /*foxconn Han edited end, 03/07/2016 patch from BRCM for ctf support 802.1q*/
 		brc->action = ((vlan_dev_vlan_flags(rxdev) & 1) ?
 		                     CTF_ACTION_TAG : CTF_ACTION_UNTAG);
 	} else {

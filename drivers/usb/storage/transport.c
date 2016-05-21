@@ -280,6 +280,34 @@ EXPORT_SYMBOL_GPL(usb_stor_clear_halt);
 static int interpret_urb_result(struct us_data *us, unsigned int pipe,
 		unsigned int length, int result, unsigned int partial)
 {
+#ifdef USB_STALL_WAR
+    US_DEBUGP("DISCONNECTING bit is %d\n", test_bit(US_FLIDX_DISCONNECTING, &us->dflags) ? 1 : 0);
+
+    if (result == -EPIPE) {
+        us->stall_cnt++;
+        if (us->stall_cnt == 1) {
+            us->check_time = jiffies;
+            us->check_stall_cnt = 1;
+        }
+        if (us->stall_cnt == USB_STALL_MAX) {
+            set_bit(US_FLIDX_DISCONNECTING, &us->dflags);
+            printk("%s: set disconnecting bit due to too many stalls\n", __FUNCTION__);
+        }
+    }
+    else if (us->stall_cnt > 0 &&
+        time_is_before_jiffies(10 * HZ + us->check_time)) {
+        if (us->stall_cnt == us->check_stall_cnt)
+            us->stall_cnt = 0;
+        else {
+            us->check_time = jiffies;
+            us->check_stall_cnt = us->stall_cnt;
+        }   
+    }
+
+    US_DEBUGP("result %d stall_cnt %d check_stall_cnt %d\n",
+        result, us->stall_cnt, us->check_stall_cnt);
+#endif /* USB_STALL_WAR */
+
 	US_DEBUGP("Status code %d; transferred %u/%u\n",
 			result, partial, length);
 	switch (result) {

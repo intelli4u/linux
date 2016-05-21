@@ -489,12 +489,13 @@ int
 nvram_nflash_commit(void)
 {
 	char *buf;
-	size_t len;
+	size_t len, magic_len;
 	unsigned int i;
 	int ret;
 	struct nvram_header *header;
 	unsigned long flags;
 	u_int32_t offset;
+	struct erase_info erase;
 
 	if (!(buf = kmalloc(nvram_space, GFP_KERNEL))) {
 		printk(KERN_WARNING "nvram_commit: out of memory\n");
@@ -502,6 +503,27 @@ nvram_nflash_commit(void)
 	}
 
 	down(&nvram_sem);
+
+	/* foxconn added start, zacker, 11/17/2010 */
+	/* read header for checking */
+	offset = 0;
+	i = sizeof(struct nvram_header);
+	ret = nvram_mtd->read(nvram_mtd, offset, i, &len, buf);
+	if (ret || len != i) {
+		printk("nvram_commit: read error ret = %d, len = %d/%d\n", ret, len, i);
+		ret = -EIO;
+		goto done;
+	}
+
+	header = (struct nvram_header *)buf;
+	/* do NOT commit after loaddefault */
+	if (header->magic == NVRAM_INVALID_MAGIC) {
+		printk(KERN_EMERG "nvram_commit: NOT allow commit, magic = 0x%x\n",
+							header->magic);
+		ret = -EPERM;
+		goto done;
+	}
+	/* foxconn added end, zacker, 11/17/2010 */
 
 	offset = 0;
 	header = (struct nvram_header *)buf;
@@ -573,9 +595,15 @@ nvram_commit(void)
 	if ((i = erasesize - nvram_space) > 0) {
 		offset = nvram_mtd->size - erasesize;
 		len = 0;
-		ret = nvram_mtd->read(nvram_mtd, offset, i, &len, buf);
-		if (ret || len != i) {
-			printk(KERN_ERR "nvram_commit: read error ret = %d, len = %d/%d\n", ret, len, i);
+		/* foxconn modified start, zacker, 11/17/2010 */
+		/* read extra bytes of header for later checking */
+		//ret = nvram_mtd->read(nvram_mtd, offset, i, &len, buf);
+		//if (ret || len != i) {
+		ret = nvram_mtd->read(nvram_mtd, offset, i + sizeof(struct nvram_header),
+			&len, buf);
+		if (ret || len != (i + sizeof(struct nvram_header))) {
+			printk("nvram_commit: read error ret = %d, len = %d/%d\n",
+					ret, len, i + sizeof(struct nvram_header));
 			ret = -EIO;
 			goto done;
 		}
@@ -583,9 +611,31 @@ nvram_commit(void)
 		magic_offset = i + ((void *)&header->magic - (void *)header);
 	} else {
 		offset = nvram_mtd->size - nvram_space;
+
+		/* foxconn added start, zacker, 11/17/2010 */
+		/* read header for checking, i == 0 && offset == 0 here */
+		i = sizeof(struct nvram_header);
+		ret = nvram_mtd->read(nvram_mtd, offset, i, &len, buf);
+		if (ret || len != i) {
+			printk("nvram_commit: read error ret = %d, len = %d/%d\n", ret, len, i);
+			ret = -EIO;
+			goto done;
+		}
+		/* foxconn added end, zacker, 11/17/2010 */
+
 		magic_offset = ((void *)&header->magic - (void *)header);
 		header = (struct nvram_header *)buf;
 	}
+
+    /* foxconn added start, zacker, 11/17/2010 */
+    /* do NOT commit after loaddefault */
+    if (header->magic == NVRAM_INVALID_MAGIC) {
+        printk(KERN_EMERG "nvram_commit: NOT allow commit, magic = 0x%x\n",
+                            header->magic);
+        ret = -EPERM;
+        goto done;
+    }
+    /* foxconn added end, zacker, 11/17/2010 */
 
 	/* clear the existing magic # to mark the NVRAM as unusable 
 	 * we can pull MAGIC bits low without erase

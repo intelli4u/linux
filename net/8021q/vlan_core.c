@@ -96,6 +96,17 @@ u16 vlan_dev_vlan_flags(const struct net_device *dev)
 }
 EXPORT_SYMBOL(vlan_dev_vlan_flags);
 
+/*foxconn Han edited start, 03/07/2016 patch from BRCM for ctf support 802.1q*/
+u16 vlan_dev_vlan_qos(const struct net_device *dev)
+{
+    if (vlan_dev_info(dev)->egress_priority_map[0])
+        return vlan_dev_info(dev)->egress_priority_map[0]->vlan_qos;
+    else 
+        return 0;
+}
+EXPORT_SYMBOL(vlan_dev_vlan_qos);
+/*foxconn Han edited end, 03/07/2016 patch from BRCM for ctf support 802.1q*/
+
 static gro_result_t
 vlan_gro_common(struct napi_struct *napi, struct vlan_group *grp,
 		unsigned int vlan_tci, struct sk_buff *skb)

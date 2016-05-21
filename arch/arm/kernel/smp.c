@@ -265,6 +265,12 @@ int led_usb1    = GPIO_USB1_LED;
 int led_usb2    = GPIO_USB2_LED;
 int led_wps     = WPS_LED_GPIO;
 int is8500 = 0;
+/*foxconn Han edited start, 01/18/2016*/
+#ifdef U12H335T21
+int isR8300 = 0; 
+#endif /*U12H335T21*/
+/*foxconn Han edited end, 01/18/2016*/
+
 EXPORT_SYMBOL(led_wl_2g);
 EXPORT_SYMBOL(led_wl_5g);
 EXPORT_SYMBOL(led_wl_5g2);
@@ -275,6 +281,30 @@ EXPORT_SYMBOL(led_wps);
 #if defined(DUAL_TRI_BAND_HW_SUPPORT)
 #include "ambitCfg.h"
 extern char *nvram_get(const char *name);
+
+/*foxconn Han edited start, 01/18/2016*/
+#ifdef U12H335T21
+int checkR8300(void)
+{
+    int ret = 0;
+    int i = 0, t = 0;
+    //char *pt = NULL;
+    char *hwrev = nvram_get("hwrev");
+ 
+    if(hwrev == NULL)
+        return 0;
+    
+    if(sscanf(hwrev,"MP%dT%d", &i, &t)==2)
+    {
+        if(t == AMBIT_R8300_REV)
+            ret = 1;
+    }
+    return ret;
+}
+#endif /*U12H335T21*/
+/*foxconn Han edited end, 01/18/2016*/
+
+
 void switch_led_definition(void)
 {
     char *hwver = nvram_get("hwver");
@@ -296,7 +326,14 @@ void switch_led_definition(void)
     }
     else
         printk(KERN_EMERG"===================\n%s using R7800\n==================\n",__func__);
+/*foxconn Han edited start, 01/18/2016*/
+#ifdef U12H335T21
+   isR8300 = checkR8300(); 
+#endif /*U12H335T21*/
+/*foxconn Han edited end, 01/18/2016*/
+
 }
+
 #endif /*DUAL_TRI_BAND_HW_SUPPORT*/
 
 
@@ -588,6 +625,14 @@ static int gpio_led_on_off(int gpio, int value)
 #else
         wps_led_is_on_smp = !value;
 #endif
+
+    /*foxconn Han edited start, 01/18/2016*/
+#ifdef U12H335T21
+    /*for costco sku, don't blink USB2.0*/
+    if(isR8300 && (gpio == led_usb2))
+        return 0;
+#endif /*U12H335T21*/
+    /*foxconn Han edited end, 01/18/2016*/
     
 #if (defined GPIO_EXT_CTRL)
     int ctrl_mode = GPIO_CTRL_MODE(gpio);
