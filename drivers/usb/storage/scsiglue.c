@@ -449,13 +449,6 @@ static int proc_info (struct Scsi_Host *host, char *buffer,
 	SPRINTF("     Protocol: %s\n", us->protocol_name);
 	SPRINTF("    Transport: %s\n", us->transport_name);
 
-#ifdef USB_STALL_WAR
-    if (test_bit(US_FLIDX_DISCONNECTING, &us->dflags))
-        SPRINTF("    DISCONNECTING bit is set\n");
-    else
-        SPRINTF("    DISCONNECTING bit is cleared\n");
-#endif /* USB_STALL_WAR */
-
 	/* show the device flags */
 	if (pos < buffer + length) {
 		pos += sprintf(pos, "       Quirks:");
