@@ -468,6 +468,26 @@ nvram_nflash_commit(void)
 	}
 
 	down(&nvram_sem);
+	/* foxconn added start, zacker, 11/17/2010 */
+	/* read header for checking */
+	offset = 0;
+	i = sizeof(struct nvram_header);
+	ret = nvram_mtd->read(nvram_mtd, offset, i, &len, buf);
+	if (ret || len != i) {
+		printk("nvram_commit: read error ret = %d, len = %d/%d\n", ret, len, i);
+		ret = -EIO;
+		goto done;
+	}
+
+	header = (struct nvram_header *)buf;
+	/* do NOT commit after loaddefault */
+	if (header->magic == NVRAM_INVALID_MAGIC) {
+		printk(KERN_EMERG "nvram_commit: NOT allow commit, magic = 0x%x\n",
+							header->magic);
+		ret = -EPERM;
+		goto done;
+	}
+	/* foxconn added end, zacker, 11/17/2010 */
 
 	offset = 0;
 	header = (struct nvram_header *)buf;

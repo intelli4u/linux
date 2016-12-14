@@ -784,6 +784,7 @@ init_brcmnand_mtd_partitions(struct mtd_info *mtd, size_t size)
 		offset = 0x3400000;
 #else
 	if (knldev == SOC_KNLDEV_NANDFLASH)
+		/*Foxconn modify by Hank for change offset in Foxconn firmware 10/24/2012*/
 		offset = 0x2600000;
 #endif
 	ASSERT(size > offset);

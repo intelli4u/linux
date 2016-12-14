@@ -6191,6 +6191,10 @@ static struct pernet_operations __net_initdata default_device_ops = {
 	.exit_batch = default_device_exit_batch,
 };
 
+#ifdef CATHY_DEBUG_MEM
+void *dead_message = NULL;
+#endif
+
 /*
  *	Initialize the DEV module. At boot time this walks the device list and
  *	unhooks any devices that fail to initialise (normally hardware not
@@ -6220,6 +6224,12 @@ static int __init net_dev_init(void)
 
 	if (register_pernet_subsys(&netdev_net_ops))
 		goto out;
+#ifdef CATHY_DEBUG_MEM
+	dead_message = kmalloc(16 * 1024, GFP_KERNEL);
+	if (dead_message) {
+		MSG_SAVE_LEN(0);
+	}
+#endif
 
 	/*
 	 *	Initialise the packet receive queues.

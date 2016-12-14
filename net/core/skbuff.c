@@ -436,6 +436,23 @@ static void BCMFASTPATH_HOST skb_release_head_state(struct sk_buff *skb)
 #endif
 }
 
+#ifdef CATHY_DEBUG_MEM
+extern void *dead_message;
+void save_dead_message(struct sk_buff *skb)
+{
+	//printk("message saved! head %p end %p data %p tail %p\n",
+	//	skb->head, skb->end, skb->data, skb->tail);
+	MSG_SAVE_LEN((skb->end - skb->head + sizeof(struct skb_shared_info)));
+	MSG_SAVE_SKB_PTR(skb);
+	MSG_SAVE_HEAD_PTR(skb);
+	MSG_SAVE_END_PTR(skb);
+	MSG_SAVE_DATA_PTR(skb);
+	MSG_SAVE_TAIL_PTR(skb);
+	memcpy(MSG_BUF, skb->head, MSG_GET_LEN);
+	memcpy(MSG_HDR, skb, sizeof(struct sk_buff));
+}
+#endif
+
 /* Free everything but the sk_buff shell. */
 static void skb_release_all(struct sk_buff *skb)
 {
@@ -458,6 +475,13 @@ void BCMFASTPATH_HOST __kfree_skb(struct sk_buff *skb)
 		skb_tcph_pool_free(tcph_pool, skb);
 		return;
 	}
+
+#ifdef CATHY_DEBUG_MEM
+	if (skb_shinfo(skb)->nr_frags) {
+		save_dead_message(skb);
+	}
+#endif
+
 	skb_release_all(skb);
 	kfree_skbmem(skb);
 }

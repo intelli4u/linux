@@ -31,6 +31,37 @@
 #include <linux/dmaengine.h>
 #include <linux/hrtimer.h>
 
+#ifdef CATHY_DEBUG_MEM
+extern void *dead_message;
+
+#define MSG_HDR_OFFSET		(0x100)
+#define MSG_BUF_OFFSET		(0x400)
+
+#define MSG_HDR			(dead_message + MSG_HDR_OFFSET)
+
+#define MSG_BUF			(dead_message + MSG_BUF_OFFSET)
+
+#define MSG_SAVE_LEN(len) do { if (!dead_message) return; *(unsigned int *)dead_message = (unsigned int)(len); } while (0);
+
+#define MSG_GET_LEN	(dead_message ? (*(unsigned int *)dead_message) : 0)
+
+#define MSG_SAVE_SKB_PTR(skb)	do { if (!dead_message) return; *(unsigned int *)(dead_message + 4) = (unsigned int)(skb); } while (0);
+#define MSG_GET_SKB_PTR		(dead_message ? (*(unsigned int *)(dead_message + 4)) : 0)
+
+#define MSG_SAVE_HEAD_PTR(skb)	do { if (!dead_message) return; *(unsigned int *)(dead_message + 8) = (unsigned int)(skb->head); } while (0);
+#define MSG_GET_HEAD_PTR		(dead_message ? (*(unsigned int *)(dead_message + 8)) : 0)
+
+#define MSG_SAVE_END_PTR(skb)	do { if (!dead_message) return; *(unsigned int *)(dead_message + 12) = (unsigned int)(skb->end); } while (0);
+#define MSG_GET_END_PTR		(dead_message ? (*(unsigned int *)(dead_message + 12)) : 0)
+
+#define MSG_SAVE_DATA_PTR(skb)	do { if (!dead_message) return; *(unsigned int *)(dead_message + 16) = (unsigned int)(skb->data); } while (0);
+#define MSG_GET_DATA_PTR		(dead_message ? (*(unsigned int *)(dead_message + 16)) : 0)
+
+#define MSG_SAVE_TAIL_PTR(skb)	do { if (!dead_message) return; *(unsigned int *)(dead_message + 20) = (unsigned int)(skb->tail); } while (0);
+#define MSG_GET_TAIL_PTR		(dead_message ? (*(unsigned int *)(dead_message + 20)) : 0)
+
+#endif
+
 /* Don't change this without changing skb_csum_unnecessary! */
 #define CHECKSUM_NONE 0
 #define CHECKSUM_UNNECESSARY 1

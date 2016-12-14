@@ -191,7 +191,7 @@ int __cpuinit __cpu_up(unsigned int cpu)
 
 /* Foxconn modified start antony 07/22/2013, for R7000 WIFI Blinking */
 #if (defined WIFI_LED_BLINKING)
-#if (defined R6400)
+#if (defined R6400) /* added by Kathy, 12/09/2014 @ R6400 GPIO */
 #define GPIO_WIFI_2G_LED        9   
 #define GPIO_WIFI_5G_LED        8  
 #else
