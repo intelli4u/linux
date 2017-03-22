@@ -84,6 +84,12 @@ struct usb_hub {
 };
 
 
+/* Foxconn added start by Kathy, 09/10/2016 @ USB workaround for R6400 TD#125 */ 
+#if (defined R6400)
+struct usb_power_on_off uhub;
+#endif
+/* Foxconn added end by Kathy, 09/10/2016 @ USB workaround for R6400 TD#125 */
+ 
 /* Protect struct usb_device->state and ->children members
  * Note: Both are also protected by ->dev.sem, except that ->state can
  * change to USB_STATE_NOTATTACHED even when the semaphore isn't held. */
@@ -1565,61 +1571,135 @@ static void hub_free_dev(struct usb_device *udev)
  *
  * This call is synchronous, and may not be used in an interrupt context.
  */
+  /* Foxconn added start, 04/26/2016 @ R6400 TD#125 Readyshare drive keeps on disconnecting on USB 3.0 port */
+#include <siutils.h>
+
+static int gpio_on_off(int gpio_num, int on_off)
+{
+    static si_t *gpio_sih;
+    if (!(gpio_sih = si_kattach(SI_OSH))) 
+    {
+        printk("%s failed!\n", __FUNCTION__);
+        return -ENODEV;
+    }
+    si_gpioreserve(gpio_sih, 1 << gpio_num, GPIO_APP_PRIORITY);
+    si_gpioouten(gpio_sih, 1 << gpio_num, 1 << gpio_num, GPIO_APP_PRIORITY);
+    si_gpioout(gpio_sih, 1 << gpio_num, on_off << gpio_num, GPIO_APP_PRIORITY);
+    return 0;
+}
+ /* Foxconn added start, 04/26/2016 @ R6400 TD#125 Readyshare drive keeps on disconnecting on USB 3.0 port */
+
 void usb_disconnect(struct usb_device **pdev)
 {
-	struct usb_device	*udev = *pdev;
-	int			i;
+    struct usb_device   *udev = *pdev;
+    int i;
 
-	if (!udev) {
-		pr_debug ("%s nodev\n", __func__);
-		return;
-	}
+    if (!udev) {
+        pr_debug ("%s nodev\n", __func__);
+        return;
+    }
 
-	/* mark the device as inactive, so any further urb submissions for
-	 * this device (and any of its children) will fail immediately.
-	 * this quiesces everyting except pending urbs.
-	 */
-	usb_set_device_state(udev, USB_STATE_NOTATTACHED);
-	dev_info (&udev->dev, "USB disconnect, address %d\n", udev->devnum);
+    /* mark the device as inactive, so any further urb submissions for
+     * this device (and any of its children) will fail immediately.
+     * this quiesces everyting except pending urbs.
+     */
+    usb_set_device_state(udev, USB_STATE_NOTATTACHED);
+    dev_info (&udev->dev, "USB disconnect, address %d\n", udev->devnum);
 
-	usb_lock_device(udev);
+    usb_lock_device(udev);
 
-	/* Free up all the children before we remove this device */
-	for (i = 0; i < USB_MAXCHILDREN; i++) {
-		if (udev->children[i])
-			usb_disconnect(&udev->children[i]);
-	}
+    /* Free up all the children before we remove this device */
+    for (i = 0; i < USB_MAXCHILDREN; i++) {
+        if (udev->children[i])
+            usb_disconnect(&udev->children[i]);
+    }
 
-	/* deallocate hcd/hardware state ... nuking all pending urbs and
-	 * cleaning up all state associated with the current configuration
-	 * so that the hardware is now fully quiesced.
-	 */
-	dev_dbg (&udev->dev, "unregistering device\n");
-	usb_disable_device(udev, 0);
-	usb_hcd_synchronize_unlinks(udev);
+/* Foxconn added start by Kathy, 09/10/2016 @ USB workaround for R6400 TD#125 */ 
+#if (defined R6400)
+    int doPowerOffOn = 0;
+    uhub.usb_assoc_time = uhub.usb_assoc_time_cur;
+    
+    if ((jiffies - uhub.usb_assoc_time) >= (300 * HZ))
+    {
+        //printk("------>cnt:%d %lu(%lu)%lu time_is_after_jiffies > 300s\n",  uhub.usb_power_on_off_cnt, jiffies, uhub.usb_assoc_time, (jiffies - uhub.usb_assoc_time) );
+        uhub.usb_power_on_off_cnt = 0;
+        doPowerOffOn = 1;
+    }
+    else 
+    {
+    
+        if ((jiffies - uhub.usb_assoc_time) > (30 * HZ))
+        {
+            //printk("------>cnt:%d %lu(%lu)%lu time_is_after_jiffies > 15s\n",  uhub.usb_power_on_off_cnt, jiffies, uhub.usb_assoc_time, (jiffies - uhub.usb_assoc_time) );
+            doPowerOffOn = 1;
+        }
+        else
+        {
+            //printk("------>cnt:%d %lu(%lu)%lu time_is_after_jiffies < 15s\n",  uhub.usb_power_on_off_cnt, jiffies, uhub.usb_assoc_time, (jiffies - uhub.usb_assoc_time) );
+            if ((jiffies - uhub.usb_assoc_time) >= (10 * HZ))
+            {
+                if( uhub.usb_power_on_off_cnt >= 10)
+                    doPowerOffOn = 0;
+                else
+                    doPowerOffOn = 1;
+            }
+            else
+            {
+                if( uhub.usb_power_on_off_cnt >= 5)
+                    doPowerOffOn = 0;
+                else
+                    doPowerOffOn = 1;
+            }
+        }
+    }
 
-	usb_remove_ep_devs(&udev->ep0);
-	usb_unlock_device(udev);
+/*add start @ R6400 TD#125 CSP1029497 2016/04/12 BRCM Cathy's suggestion*/
+#if 1
+    //if (udev->parent && !udev->parent->parent && udev->speed == USB_SPEED_SUPER)
+    if (udev->parent && !udev->parent->parent && udev->speed == USB_SPEED_SUPER && doPowerOffOn)
+    {
+	    uhub.usb_power_on_off_cnt++;
+        printk("-----------------------> power off usb3 port\n");
+        gpio_on_off(0, 0);
+        msleep(200);
+        printk("-----------------------> power on usb3 port\n");
+        gpio_on_off(0, 1);
+    }
+#endif
+    /* add end @ R6400 TD#125 CSP1029497 2016/04/12 BRCM Cathy's suggestion*/
+#endif //if defined R6400
+/* Foxconn end start by Kathy, 09/10/2016 @ USB workaround for R6400 TD#125 */ 
 
-	/* Unregister the device.  The device driver is responsible
-	 * for de-configuring the device and invoking the remove-device
-	 * notifier chain (used by usbfs and possibly others).
-	 */
-	device_del(&udev->dev);
+    /* deallocate hcd/hardware state ... nuking all pending urbs and
+     * cleaning up all state associated with the current configuration
+     * so that the hardware is now fully quiesced.
+     */
+    dev_dbg (&udev->dev, "unregistering device\n");
+    usb_disable_device(udev, 0);
+    usb_hcd_synchronize_unlinks(udev);
 
-	/* Free the device number and delete the parent's children[]
-	 * (or root_hub) pointer.
-	 */
-	release_address(udev);
+    usb_remove_ep_devs(&udev->ep0);
+    usb_unlock_device(udev);
 
-	/* Avoid races with recursively_mark_NOTATTACHED() */
-	spin_lock_irq(&device_state_lock);
-	*pdev = NULL;
-	spin_unlock_irq(&device_state_lock);
+    /* Unregister the device.  The device driver is responsible
+     * for de-configuring the device and invoking the remove-device
+     * notifier chain (used by usbfs and possibly others).
+     */
+    device_del(&udev->dev);
 
-	hub_free_dev(udev);
+    /* Free the device number and delete the parent's children[]
+     * (or root_hub) pointer.
+     */
+    release_address(udev);
 
-	put_device(&udev->dev);
+    /* Avoid races with recursively_mark_NOTATTACHED() */
+    spin_lock_irq(&device_state_lock);
+    *pdev = NULL;
+    spin_unlock_irq(&device_state_lock);
+
+    hub_free_dev(udev);
+
+    put_device(&udev->dev);
 }
 
 #ifdef CONFIG_USB_ANNOUNCE_NEW_DEVICES

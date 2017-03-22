@@ -1,6 +1,16 @@
 #include <linux/pm.h>
 
 /* Functions local to drivers/usb/core/ */
+/* Foxconn added start by Kathy, 09/10/2016 @ USB workaround for R6400 TD#125 */ 
+#if (defined R6400)
+struct usb_power_on_off {
+    unsigned long usb_assoc_time_cur;
+    unsigned long usb_assoc_time;
+    int           usb_power_on_off_cnt;
+};
+#endif
+/* Foxconn added end by Kathy, 09/10/2016 @ USB workaround for R6400 TD#125 */ 
+
 
 extern int usb_create_sysfs_dev_files(struct usb_device *dev);
 extern void usb_remove_sysfs_dev_files(struct usb_device *dev);
