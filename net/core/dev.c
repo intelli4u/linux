@@ -2233,8 +2233,9 @@ int BCMFASTPATH_HOST dev_queue_xmit(struct sk_buff *skb)
 #ifdef CONFIG_NET_CLS_ACT
 	skb->tc_verd = SET_TC_AT(skb->tc_verd, AT_EGRESS);
 #endif
-	proto = *(unsigned short *)(skb->data + ETH_ALEN + ETH_ALEN);   /* foxconn added Bob, 10/30/2008 */
-	if ( (q->enqueue) && (htons(proto) != ETH_P_8021Q)) {     /* foxconn added Bob, 10/30/2008, check 802.1q vlan type */
+//	proto = *(unsigned short *)(skb->data + ETH_ALEN + ETH_ALEN);  
+//	if ( (q->enqueue) && (htons(proto) != ETH_P_8021Q)) {     
+	if ( (q->enqueue) ) {
 		rc = __dev_xmit_skb(skb, q, dev, txq);
 		goto out;
 	}
