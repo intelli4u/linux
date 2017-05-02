@@ -825,7 +825,7 @@ static struct mtd_partition bcm947xx_nflash_parts[NFLASH_PARTS_NUM] = {
 };
 #else
 #if defined(R7000)
-#define NFLASH_PARTS_NUM	18
+#define NFLASH_PARTS_NUM	19
 #else
 #define NFLASH_PARTS_NUM	17
 #endif
@@ -917,6 +917,11 @@ static struct mtd_partition bcm947xx_nflash_parts[NFLASH_PARTS_NUM] = {
 #if defined(R7000)
 	{ 
 		.name = "QoSRule", 
+		.offset = 0, 
+		.size = 0, 
+	},
+	{ 
+		.name = "debug", 
 		.offset = 0, 
 		.size = 0, 
 	},
@@ -1150,7 +1155,7 @@ init_nflash_mtd_partitions(hndnand_t *nfl, struct mtd_info *mtd, size_t size)
 	
 		/* size of rootfs */
 		/* Setup other MTD partition */
-		for (i = 4; i < 17; i++){
+		for (i = 4; i < 18; i++){
                      if(i==7 ||i==8)
 			bcm947xx_nflash_parts[i].size = (partition_size <<2 );
                      else
