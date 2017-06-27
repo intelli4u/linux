@@ -290,12 +290,6 @@ static int run_filter(struct tap_filter *filter, const struct sk_buff *skb)
 	 * at this point. */
 	struct ethhdr *eh = (struct ethhdr *) skb->data;
 	int i;
-    if(eh->h_proto== htons(0x86DD))
-    {
-        return 0;
-    }
-    else
-        return 1;
 
 	/* Exact match */
 	for (i = 0; i < filter->count; i++)
@@ -315,13 +309,8 @@ static int run_filter(struct tap_filter *filter, const struct sk_buff *skb)
  */
 static int check_filter(struct tap_filter *filter, const struct sk_buff *skb)
 {
-    #if 0	/* Foxconn Bob remove on 11/25/2014, workaround to avoid kernel panic if OpenVPN and IPv6 are both enabled,
-               need to be removed when OpenVPN supports IPv6 */
 	if (!filter->count)
-	{
-	return 1;
-	}
-	#endif
+		return 1;
 
 	return run_filter(filter, skb);
 }
