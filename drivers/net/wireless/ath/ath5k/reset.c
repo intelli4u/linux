@@ -461,12 +461,6 @@ int ath5k_hw_nic_wakeup(struct ath5k_hw *ah, int flags, bool initial)
 			if (flags & CHANNEL_CCK) {
 				mode |= AR5K_PHY_MODE_MOD_CCK;
 			} else if (flags & CHANNEL_OFDM) {
-				/* XXX Dynamic OFDM/CCK is not supported by the
-				 * AR5211 so we set MOD_OFDM for plain g (no
-				 * CCK headers) operation. We need to test
-				 * this, 5211 might support ofdm-only g after
-				 * all, there are also initial register values
-				 * in the code for g mode (see initvals.c). */
 				if (ah->ah_version == AR5K_AR5211)
 					mode |= AR5K_PHY_MODE_MOD_OFDM;
 				else
@@ -522,15 +516,6 @@ int ath5k_hw_nic_wakeup(struct ath5k_hw *ah, int flags, bool initial)
 	return 0;
 }
 
-/*
- * If there is an external 32KHz crystal available, use it
- * as ref. clock instead of 32/40MHz clock and baseband clocks
- * to save power during sleep or restore normal 32/40MHz
- * operation.
- *
- * XXX: When operating on 32KHz certain PHY registers (27 - 31,
- * 	123 - 127) require delay on access.
- */
 static void ath5k_hw_set_sleep_clock(struct ath5k_hw *ah, bool enable)
 {
 	struct ath5k_eeprom_info *ee = &ah->ah_capabilities.cap_eeprom;
@@ -763,8 +748,6 @@ static void ath5k_hw_commit_eeprom_settings(struct ath5k_hw *ah,
 						ee->ee_cck_ofdm_gain_delta;
 	}
 
-	/* XXX: necessary here? is called from ath5k_hw_set_antenna_mode()
-	 * too */
 	ath5k_hw_set_antenna_switch(ah, ee_mode);
 
 	/* Noise floor threshold */
@@ -959,19 +942,6 @@ int ath5k_hw_reset(struct ath5k_hw *ah, enum nl80211_iftype op_mode,
 						AR5K_QUEUE_DCU_SEQNUM(0));
 			}
 
-			/* TSF accelerates on AR5211 durring reset
-			 * As a workaround save it here and restore
-			 * it later so that it's back in time after
-			 * reset. This way it'll get re-synced on the
-			 * next beacon without breaking ad-hoc.
-			 *
-			 * On AR5212 TSF is almost preserved across a
-			 * reset so it stays back in time anyway and
-			 * we don't have to save/restore it.
-			 *
-			 * XXX: Since this breaks power saving we have
-			 * to disable power saving until we receive the
-			 * next beacon, so we can resync beacon timers */
 			if (ah->ah_version == AR5K_AR5211) {
 				tsf_up = ath5k_hw_reg_read(ah, AR5K_TSF_U32);
 				tsf_lo = ath5k_hw_reg_read(ah, AR5K_TSF_L32);
@@ -1055,10 +1025,6 @@ int ath5k_hw_reset(struct ath5k_hw *ah, enum nl80211_iftype op_mode,
 		if (ret)
 			return ret;
 
-		/* Write rate duration table only on AR5212 and if
-		 * virtual interface has already been brought up
-		 * XXX: rethink this after new mode changes to
-		 * mac80211 are integrated */
 		if (ah->ah_version == AR5K_AR5212 &&
 			ah->ah_sc->vif != NULL)
 			ath5k_hw_write_rate_duration(ah, mode);
@@ -1320,19 +1286,6 @@ int ath5k_hw_reset(struct ath5k_hw *ah, enum nl80211_iftype op_mode,
 	 * Configure DMA/Interrupts
 	 */
 
-	/*
-	 * Set Rx/Tx DMA Configuration
-	 *
-	 * Set standard DMA size (128). Note that
-	 * a DMA size of 512 causes rx overruns and tx errors
-	 * on pci-e cards (tested on 5424 but since rx overruns
-	 * also occur on 5416/5418 with madwifi we set 128
-	 * for all PCI-E cards to be safe).
-	 *
-	 * XXX: need to check 5210 for this
-	 * TODO: Check out tx triger level, it's always 64 on dumps but I
-	 * guess we can tweak it and see how it goes ;-)
-	 */
 	if (ah->ah_version != AR5K_AR5210) {
 		AR5K_REG_WRITE_BITS(ah, AR5K_TXCFG,
 			AR5K_TXCFG_SDMAMR, AR5K_DMASIZE_128B);

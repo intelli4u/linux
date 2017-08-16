@@ -160,7 +160,6 @@ packet_buffer_get(struct client *client, char __user *data, size_t user_length)
 	if (atomic_read(&buffer->size) == 0)
 		return -ENODEV;
 
-	/* FIXME: Check length <= user_length. */
 
 	end = buffer->data + buffer->capacity;
 	length = buffer->head->length;
@@ -417,7 +416,6 @@ packet_irq_handler(struct pcilynx *lynx)
 	size_t length;
 	struct timeval tv;
 
-	/* FIXME: Also report rcv_speed. */
 
 	length = __le32_to_cpu(lynx->rcv_pcl->pcl_status) & 0x00001fff;
 	tcode  = __le32_to_cpu(lynx->rcv_buffer[1]) >> 4 & 0xf;
@@ -598,19 +596,6 @@ add_card(struct pci_dev *dev, const struct pci_device_id *unused)
 	reg_write(lynx, DMA0_CHAN_CTRL, 0);
 	reg_write(lynx, DMA_GLOBAL_REGISTER, 0x00 << 24);
 
-#if 0
-	/* now, looking for PHY register set */
-	if ((get_phy_reg(lynx, 2) & 0xe0) == 0xe0) {
-		lynx->phyic.reg_1394a = 1;
-		PRINT(KERN_INFO, lynx->id,
-		      "found 1394a conform PHY (using extended register set)");
-		lynx->phyic.vendor = get_phy_vendorid(lynx);
-		lynx->phyic.product = get_phy_productid(lynx);
-	} else {
-		lynx->phyic.reg_1394a = 0;
-		PRINT(KERN_INFO, lynx->id, "found old 1394 PHY");
-	}
-#endif
 
 	/* Setup the general receive FIFO max size. */
 	reg_write(lynx, FIFO_SIZES, 255);

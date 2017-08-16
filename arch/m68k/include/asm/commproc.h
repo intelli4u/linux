@@ -77,14 +77,6 @@ uint         m360_cpm_dpalloc(uint size);
 /* void         *m360_cpm_hostalloc(uint size); */
 void	      m360_cpm_setbrg(uint brg, uint rate);
 
-#if 0 /* use QUICC_BD declared in include/asm/m68360_quicc.h  */
-/* Buffer descriptors used by many of the CPM protocols. */
-typedef struct cpm_buf_desc {
-	ushort	cbd_sc;		/* Status and Control */
-	ushort	cbd_datlen;	/* Data length in buffer */
-	uint	cbd_bufaddr;	/* Buffer address in host memory */
-} cbd_t;
-#endif
 
 
 /* rx bd status/control bits */
@@ -430,7 +422,7 @@ typedef struct scc_enet {
 
 
 
-#if defined (CONFIG_UCQUICC)
+#if defined(CONFIG_UCQUICC)
 /* uCquicc has the following signals connected to Ethernet:
  *  68360    - lxt905
  * PA0/RXD1  - rxd

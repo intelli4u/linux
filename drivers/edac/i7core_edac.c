@@ -581,7 +581,6 @@ static int get_dimm_config(struct mem_ctl_info *mci, int *csrow)
 		mode = EDAC_NONE;
 	}
 
-	/* FIXME: need to handle the error codes */
 	debugf0("DOD Max limits: DIMMS: %d, %d-ranked, %d-banked "
 		"x%x x 0x%x\n",
 		numdimms(pvt->info.max_dod),
@@ -616,14 +615,6 @@ static int get_dimm_config(struct mem_ctl_info *mci, int *csrow)
 			mtype = MEM_RDDR3;
 		else
 			mtype = MEM_DDR3;
-#if 0
-		if (data & THREE_DIMMS_PRESENT)
-			pvt->channel[i].dimms = 3;
-		else if (data & SINGLE_QUAD_RANK_PRESENT)
-			pvt->channel[i].dimms = 1;
-		else
-			pvt->channel[i].dimms = 2;
-#endif
 
 		/* Devices 4-6 function 1 */
 		pci_read_config_dword(pvt->pci_ch[i][1],
@@ -948,24 +939,6 @@ static int write_and_test(struct pci_dev *dev, int where, u32 val)
 	return -EINVAL;
 }
 
-/*
- * This routine prepares the Memory Controller for error injection.
- * The error will be injected when some process tries to write to the
- * memory that matches the given criteria.
- * The criteria can be set in terms of a mask where dimm, rank, bank, page
- * and col can be specified.
- * A -1 value for any of the mask items will make the MCU to ignore
- * that matching criteria for error injection.
- *
- * It should be noticed that the error will only happen after a write operation
- * on a memory that matches the condition. if REPEAT_EN is not enabled at
- * inject mask, then it will produce just one error. Otherwise, it will repeat
- * until the injectmask would be cleaned.
- *
- * FIXME: This routine assumes that MAXNUMDIMMS value of MC_MAX_DOD
- *    is reliable enough to check if the MC is using the
- *    three channels. However, this is not clear at the datasheet.
- */
 static ssize_t i7core_inject_enable_store(struct mem_ctl_info *mci,
 				       const char *data, size_t count)
 {
@@ -1712,7 +1685,6 @@ static void i7core_mce_output_error(struct mem_ctl_info *mci,
 		err = "unknown";
 	}
 
-	/* FIXME: should convert addr into bank and rank information */
 	msg = kasprintf(GFP_ATOMIC,
 		"%s (addr = 0x%08llx, cpu=%d, Dimm=%d, Channel=%d, "
 		"syndrome=0x%08x, count=%d, Err=%08llx:%08llx (%s: %s))\n",
@@ -1727,10 +1699,10 @@ static void i7core_mce_output_error(struct mem_ctl_info *mci,
 	/* Call the helper to output message */
 	if (m->mcgstatus & 1)
 		edac_mc_handle_fbd_ue(mci, csrow, 0,
-				0 /* FIXME: should be channel here */, msg);
+				0, msg);
 	else if (!pvt->is_registered)
 		edac_mc_handle_fbd_ce(mci, csrow,
-				0 /* FIXME: should be channel here */, msg);
+				0, msg);
 
 	kfree(msg);
 }
@@ -1867,11 +1839,6 @@ static int i7core_register_mci(struct i7core_dev *i7core_dev,
 	pvt = mci->pvt_info;
 	memset(pvt, 0, sizeof(*pvt));
 
-	/*
-	 * FIXME: how to handle RDDR3 at MCI level? It is possible to have
-	 * Mixed RDDR3/UDDR3 with Nehalem, provided that they are on different
-	 * memory channels
-	 */
 	mci->mtype_cap = MEM_FLAG_DDR3;
 	mci->edac_ctl_cap = EDAC_FLAG_NONE;
 	mci->edac_cap = EDAC_FLAG_NONE;
@@ -1897,9 +1864,6 @@ static int i7core_register_mci(struct i7core_dev *i7core_dev,
 	if (unlikely(edac_mc_add_mc(mci))) {
 		debugf0("MC: " __FILE__
 			": %s(): failed edac_mc_add_mc()\n", __func__);
-		/* FIXME: perhaps some code should go here that disables error
-		 * reporting if we just enabled it
-		 */
 
 		rc = -EINVAL;
 		goto fail;

@@ -51,7 +51,7 @@ static int __devinit snd_vortex_midi(vortex_t * vortex)
 #ifdef VORTEX_MPU401_LEGACY
 	/* EnableHardCodedMPU401Port() */
 	/* Enable Legacy MIDI Interface port. */
-	port = (0x03 << 5);	/* FIXME: static address. 0x330 */
+	port = (0x03 << 5);
 	temp =
 	    (hwread(vortex->mmio, VORTEX_CTRL) & ~CTRL_MIDI_PORT) |
 	    CTRL_MIDI_EN | port;

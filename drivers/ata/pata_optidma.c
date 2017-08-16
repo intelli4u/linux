@@ -139,11 +139,6 @@ static void optidma_mode_setup(struct ata_port *ap, struct ata_device *adev, u8 
 	optidma_unlock(ap);
 
 
-	/*
- 	 *	As with many controllers the address setup time is shared
- 	 *	and must suit both devices if present. FIXME: Check if we
- 	 *	need to look at slowest of PIO/DMA mode of either device
-	 */
 
 	if (mode >= XFER_MW_DMA_0)
 		addr = 0;

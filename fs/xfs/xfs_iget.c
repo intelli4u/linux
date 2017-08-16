@@ -153,16 +153,6 @@ xfs_iget_cache_hit(
 
 	spin_lock(&ip->i_flags_lock);
 
-	/*
-	 * If we are racing with another cache hit that is currently
-	 * instantiating this inode or currently recycling it out of
-	 * reclaimabe state, wait for the initialisation to complete
-	 * before continuing.
-	 *
-	 * XXX(hch): eventually we should do something equivalent to
-	 *	     wait_on_inode to wait for these flags to be cleared
-	 *	     instead of polling for it.
-	 */
 	if (ip->i_flags & (XFS_INEW|XFS_IRECLAIM)) {
 		trace_xfs_iget_skip(ip);
 		XFS_STATS_INC(xs_ig_frecycle);

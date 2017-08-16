@@ -147,11 +147,9 @@ static int page_chain_free(struct page *page)
 static void page_chain_add(struct page **head,
 		struct page *chain_first, struct page *chain_last)
 {
-#if 1
 	struct page *tmp;
 	tmp = page_chain_tail(chain_first, NULL);
 	BUG_ON(tmp != chain_last);
-#endif
 
 	/* add chain to head */
 	set_page_private(chain_last, (unsigned long)*head);
@@ -2618,10 +2616,6 @@ static enum drbd_conns drbd_sync_handshake(struct drbd_conf *mdev, enum drbd_rol
 	}
 
 	if (hg == -100) {
-		/* FIXME this log message is not correct if we end up here
-		 * after an attempted attach on a diskless node.
-		 * We just refuse to attach -- well, we drop the "connection"
-		 * to that disk, in a way... */
 		dev_alert(DEV, "Split-Brain detected but unresolved, dropping connection!\n");
 		drbd_khelper(mdev, "split-brain");
 		return C_MASK;

@@ -339,10 +339,6 @@ static int wl1251_join(struct wl1251 *wl, u8 bss_type, u8 channel,
 	if (ret < 0)
 		goto out;
 
-	/*
-	 * FIXME: we should wait for JOIN_EVENT_COMPLETE_ID but to simplify
-	 * locking we just sleep instead, for now
-	 */
 	msleep(10);
 
 out:
@@ -397,11 +393,6 @@ static int wl1251_op_tx(struct ieee80211_hw *hw, struct sk_buff *skb)
 		wl1251_debug(DEBUG_TX, "op_tx: tx_queue full, stop queues");
 		ieee80211_stop_queues(wl->hw);
 
-		/*
-		 * FIXME: this is racy, the variable is not properly
-		 * protected. Maybe fix this by removing the stupid
-		 * variable altogether and checking the real queue state?
-		 */
 		wl->tx_queue_stopped = true;
 	}
 
@@ -581,7 +572,6 @@ static int wl1251_build_qos_null_data(struct wl1251 *wl)
 					     IEEE80211_STYPE_QOS_NULLFUNC |
 					     IEEE80211_FCTL_TODS);
 
-	/* FIXME: not sure what priority to use here */
 	template.qos_ctrl = cpu_to_le16(0);
 
 	return wl1251_cmd_template_set(wl, CMD_QOS_NULL_DATA, &template,
@@ -684,7 +674,6 @@ static void wl1251_op_configure_filter(struct ieee80211_hw *hw,
 		/* no filters which we support changed */
 		return;
 
-	/* FIXME: wl->rx_config and wl->rx_filter are not protected */
 
 	wl->rx_config = WL1251_DEFAULT_RX_CONFIG;
 	wl->rx_filter = WL1251_DEFAULT_RX_FILTER;
@@ -710,11 +699,6 @@ static void wl1251_op_configure_filter(struct ieee80211_hw *hw,
 	if (*total & FIF_OTHER_BSS)
 		wl->rx_filter &= ~CFG_BSSID_FILTER_EN;
 
-	/*
-	 * FIXME: workqueues need to be properly cancelled on stop(), for
-	 * now let's just disable changing the filter settings. They will
-	 * be updated any on config().
-	 */
 	/* schedule_work(&wl->filter_work); */
 }
 
@@ -1308,7 +1292,6 @@ int wl1251_init_ieee80211(struct wl1251 *wl)
 		+ WL1251_TKIP_IV_SPACE;
 
 	/* unit us */
-	/* FIXME: find a proper value */
 	wl->hw->channel_change_time = 10000;
 
 	wl->hw->flags = IEEE80211_HW_SIGNAL_DBM |

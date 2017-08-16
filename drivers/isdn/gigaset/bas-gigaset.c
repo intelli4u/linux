@@ -2430,7 +2430,6 @@ static int gigaset_pre_reset(struct usb_interface *intf)
  */
 static int gigaset_post_reset(struct usb_interface *intf)
 {
-	/* FIXME: send HD_DEVICE_INIT_ACK? */
 
 	/* resume operations */
 	return gigaset_resume(intf);

@@ -1412,7 +1412,6 @@ static void hsu_global_init(void)
 		dchan->reg = hsu->reg + HSU_DMA_CHANS_REG_OFFSET +
 				i * HSU_DMA_CHANS_REG_LENGTH;
 
-		/* Work around for RX */
 		if (dchan->dirt == DMA_FROM_DEVICE) {
 			init_timer(&dchan->rx_timer);
 			dchan->rx_timer.function = hsu_dma_rx_timeout;

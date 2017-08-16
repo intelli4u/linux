@@ -30,10 +30,6 @@
 
 #define IEEE80211_MAX_PROBE_TRIES 5
 
-/*
- * beacon loss detection timeout
- * XXX: should depend on beacon interval
- */
 #define IEEE80211_BEACON_LOSS_TIME	(2 * HZ)
 /*
  * Time the connection can be idle before we probe
@@ -361,7 +357,6 @@ static void ieee80211_chswitch_work(struct work_struct *work)
 			IEEE80211_CONF_CHANGE_CHANNEL);
 	}
 
-	/* XXX: shouldn't really modify cfg80211-owned data! */
 	ifmgd->associated->channel = sdata->local->oper_channel;
 
 	ieee80211_wake_queues_by_reason(&sdata->local->hw,
@@ -1491,19 +1486,6 @@ static void ieee80211_rx_mgmt_probe_resp(struct ieee80211_sub_if_data *sdata,
 	}
 }
 
-/*
- * This is the canonical list of information elements we care about,
- * the filter code also gives us all changes to the Microsoft OUI
- * (00:50:F2) vendor IE which is used for WMM which we need to track.
- *
- * We implement beacon filtering in software since that means we can
- * avoid processing the frame here and in cfg80211, and userspace
- * will not be able to tell whether the hardware supports it or not.
- *
- * XXX: This list needs to be dynamic -- userspace needs to be able to
- *	add items it requires. It also needs to be able to tell us to
- *	look out for other vendor IEs.
- */
 static const u64 care_about_ies =
 	(1ULL << WLAN_EID_COUNTRY) |
 	(1ULL << WLAN_EID_ERP_INFO) |

@@ -212,7 +212,7 @@ static ssize_t o2nm_node_num_write(struct o2nm_node *node, const char *page,
 	 * before writing the node attribute? */
 	if (!test_bit(O2NM_NODE_ATTR_ADDRESS, &node->nd_set_attributes) ||
 	    !test_bit(O2NM_NODE_ATTR_PORT, &node->nd_set_attributes))
-		return -EINVAL; /* XXX */
+		return -EINVAL;
 
 	write_lock(&cluster->cl_nodes_lock);
 	if (cluster->cl_nodes[tmp])
@@ -320,7 +320,7 @@ static ssize_t o2nm_node_local_write(struct o2nm_node *node, const char *page,
 	if (!test_bit(O2NM_NODE_ATTR_ADDRESS, &node->nd_set_attributes) ||
 	    !test_bit(O2NM_NODE_ATTR_NUM, &node->nd_set_attributes) ||
 	    !test_bit(O2NM_NODE_ATTR_PORT, &node->nd_set_attributes))
-		return -EINVAL; /* XXX */
+		return -EINVAL;
 
 	/* the only failure case is trying to set a new local node
 	 * when a different one is already set */
@@ -467,14 +467,6 @@ struct o2nm_node_group {
 	/* some stuff? */
 };
 
-#if 0
-static struct o2nm_node_group *to_o2nm_node_group(struct config_group *group)
-{
-	return group ?
-		container_of(group, struct o2nm_node_group, ns_group)
-		: NULL;
-}
-#endif
 
 struct o2nm_cluster_attribute {
 	struct configfs_attribute attr;
@@ -729,11 +721,9 @@ static void o2nm_node_group_drop_item(struct config_group *group,
 		o2net_stop_listening(node);
 	}
 
-	/* XXX call into net to stop this node from trading messages */
 
 	write_lock(&cluster->cl_nodes_lock);
 
-	/* XXX sloppy */
 	if (node->nd_ipv4_address)
 		rb_erase(&node->nd_ip_node, &cluster->cl_node_ip_tree);
 
@@ -786,14 +776,6 @@ struct o2nm_cluster_group {
 	/* some stuff? */
 };
 
-#if 0
-static struct o2nm_cluster_group *to_o2nm_cluster_group(struct config_group *group)
-{
-	return group ?
-		container_of(to_configfs_subsystem(group), struct o2nm_cluster_group, cs_subsys)
-	       : NULL;
-}
-#endif
 
 static struct config_group *o2nm_cluster_group_make_group(struct config_group *group,
 							  const char *name)
@@ -927,7 +909,6 @@ void o2nm_undepend_this_node(void)
 
 static void __exit exit_o2nm(void)
 {
-	/* XXX sync with hb callbacks and shut down hb? */
 	o2net_unregister_hb_callbacks();
 	configfs_unregister_subsystem(&o2nm_cluster_group.cs_subsys);
 	o2cb_sys_shutdown();

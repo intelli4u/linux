@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
  *		operating system.  INET is implemented using the  BSD Socket
@@ -72,6 +73,9 @@
 #include <linux/ipsec.h>
 #include <asm/unaligned.h>
 #include <net/netdma.h>
+
+#include <typedefs.h>
+#include <bcmdefs.h>
 
 int sysctl_tcp_timestamps __read_mostly = 1;
 int sysctl_tcp_window_scaling __read_mostly = 1;
@@ -1247,14 +1251,6 @@ struct tcp_sacktag_state {
 	int flag;
 };
 
-/* Check if skb is fully within the SACK block. In presence of GSO skbs,
- * the incoming SACK may not exactly match but we can find smaller MSS
- * aligned portion of it that matches. Therefore we might need to fragment
- * which may fail and creates some hassle (caller must handle error case
- * returns).
- *
- * FIXME: this could be merged to shift decision code
- */
 static int tcp_match_skb_to_sack(struct sock *sk, struct sk_buff *skb,
 				 u32 start_seq, u32 end_seq)
 {
@@ -2880,7 +2876,6 @@ static void tcp_mtup_probe_success(struct sock *sk)
 	struct tcp_sock *tp = tcp_sk(sk);
 	struct inet_connection_sock *icsk = inet_csk(sk);
 
-	/* FIXME: breaks with very large cwnd */
 	tp->prior_ssthresh = tcp_current_ssthresh(sk);
 	tp->snd_cwnd = tp->snd_cwnd *
 		       tcp_mss_to_mtu(sk, tp->mss_cache) /
@@ -3616,7 +3611,7 @@ static int tcp_process_frto(struct sock *sk, int flag)
 }
 
 /* This routine deals with incoming acks, but not outgoing ones. */
-static int tcp_ack(struct sock *sk, struct sk_buff *skb, int flag)
+static int BCMFASTPATH_HOST tcp_ack(struct sock *sk, struct sk_buff *skb, int flag)
 {
 	struct inet_connection_sock *icsk = inet_csk(sk);
 	struct tcp_sock *tp = tcp_sk(sk);
@@ -3950,12 +3945,6 @@ static inline void tcp_store_ts_recent(struct tcp_sock *tp)
 static inline void tcp_replace_ts_recent(struct tcp_sock *tp, u32 seq)
 {
 	if (tp->rx_opt.saw_tstamp && !after(seq, tp->rcv_wup)) {
-		/* PAWS bug workaround wrt. ACK frames, the PAWS discard
-		 * extra check below makes sure this can only happen
-		 * for pure ACK frames.  -DaveM
-		 *
-		 * Not only, also it occurs for expired timestamps.
-		 */
 
 		if (tcp_paws_check(&tp->rx_opt, 0))
 			tcp_store_ts_recent(tp);
@@ -5233,7 +5222,7 @@ discard:
  *	the rest is checked inline. Fast processing is turned on in
  *	tcp_data_queue when everything is OK.
  */
-int tcp_rcv_established(struct sock *sk, struct sk_buff *skb,
+int BCMFASTPATH_HOST tcp_rcv_established(struct sock *sk, struct sk_buff *skb,
 			struct tcphdr *th, unsigned len)
 {
 	struct tcp_sock *tp = tcp_sk(sk);
@@ -5684,20 +5673,7 @@ discard:
 		tcp_initialize_rcv_mss(sk);
 
 		tcp_send_synack(sk);
-#if 0
-		/* Note, we could accept data and URG from this segment.
-		 * There are no obstacles to make this.
-		 *
-		 * However, if we ignore data in ACKless segments sometimes,
-		 * we have no reasons to accept it sometimes.
-		 * Also, seems the code doing it in step6 of tcp_rcv_state_process
-		 * is not flawless. So, discard packet for sanity.
-		 * Uncomment this return to process the data.
-		 */
-		return -1;
-#else
 		goto discard;
-#endif
 	}
 	/* "fifth, if neither of the SYN or RST bits is set then
 	 * drop the segment and return."

@@ -1,48 +1,4 @@
-/*
- * WiMedia Logical Link Control Protocol (WLP)
- *
- * Copyright (C) 2007 Intel Corporation
- * Reinette Chatre <reinette.chatre@intel.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
- *
- *
- * Implementation of the WLP association protocol.
- *
- * FIXME: Docs
- *
- * A UWB network interface will configure a WSS through wlp_wss_setup() after
- * the interface has been assigned a MAC address, typically after
- * "ifconfig" has been called. When the interface goes down it should call
- * wlp_wss_remove().
- *
- * When the WSS is ready for use the user interacts via sysfs to create,
- * discover, and activate WSS.
- *
- * wlp_wss_enroll_activate()
- *
- * wlp_wss_create_activate()
- * 	wlp_wss_set_wssid_hash()
- * 		wlp_wss_comp_wssid_hash()
- * 	wlp_wss_sel_bcast_addr()
- * 	wlp_wss_sysfs_add()
- *
- * Called when no more references to WSS exist:
- * 	wlp_wss_release()
- * 		wlp_wss_reset()
- */
+
 #include <linux/etherdevice.h> /* for is_valid_ether_addr */
 #include <linux/skbuff.h>
 #include <linux/slab.h>
@@ -83,16 +39,6 @@ u8 wlp_wss_comp_wssid_hash(struct wlp_uuid *wssid)
 	       ^ wssid->data[15];
 }
 
-/**
- * Select a multicast EUI-48 for the WSS broadcast address.
- * WLP Draft 0.99 [7.2.1]
- *
- * Selected based on the WiMedia Alliance OUI, 00-13-88, within the WLP
- * range, [01-13-88-00-01-00, 01-13-88-00-01-FF] inclusive.
- *
- * This address is currently hardcoded.
- * FIXME?
- */
 static
 struct uwb_mac_addr wlp_wss_sel_bcast_addr(struct wlp_wss *wss)
 {

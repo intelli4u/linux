@@ -1633,7 +1633,7 @@ int iwctl_siwauth(struct net_device *dev,
 
 		break;
 	case IW_AUTH_TKIP_COUNTERMEASURES:
-		break;		/* FIXME */
+		break;
 	case IW_AUTH_DROP_UNENCRYPTED:
 		break;
 	case IW_AUTH_80211_AUTH_ALG:

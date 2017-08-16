@@ -200,5 +200,3 @@ int jffs2_flash_direct_write(struct jffs2_sb_info *c, loff_t ofs, size_t len,
 			size_t *retlen, const u_char *buf);
 
 #endif /* __JFFS2_OS_LINUX_H__ */
-
-

@@ -239,7 +239,6 @@ static u32 alloc_mem(struct isp1760_hcd *priv, u32 size)
 				i, priv->memory_pool[i].size,
 				priv->memory_pool[i].free);
 	}
-	/* XXX maybe -ENOMEM could be possible */
 	BUG();
 	return 0;
 }
@@ -498,11 +497,6 @@ static int isp1760_run(struct usb_hcd *hcd)
 	if (retval)
 		return retval;
 
-	/*
-	 * XXX
-	 * Spec says to write FLAG_CF as last config action, priv code grabs
-	 * the semaphore while doing so.
-	 */
 	down_write(&ehci_cf_port_reset_rwsem);
 	isp1760_writel(FLAG_CF, hcd->regs + HC_CONFIGFLAG);
 
@@ -1033,12 +1027,6 @@ static void do_atl_int(struct usb_hcd *usb_hcd)
 		if ((dw3 & DW3_ERROR_BIT) && (dw3 & DW3_QTD_ACTIVE) &&
 				!(dw3 & DW3_HALT_BIT)) {
 
-			/* according to ppriv code, we have to
-			 * reload this one if trasfered bytes != requested bytes
-			 * else act like everything went smooth..
-			 * XXX This just doesn't feel right and hasn't
-			 * triggered so far.
-			 */
 
 			length = PTD_XFERRED_LENGTH(dw3);
 			printk(KERN_ERR "Should reload now.... transfered %d "
@@ -1101,14 +1089,6 @@ static void do_atl_int(struct usb_hcd *usb_hcd)
 			priv->atl_ints[queue_entry].qh->ping = 0;
 			urb->status = -EPIPE;
 
-#if 0
-			printk(KERN_ERR "Error in %s().\n", __func__);
-			printk(KERN_ERR "IN dw0: %08x dw1: %08x dw2: %08x "
-					"dw3: %08x dw4: %08x dw5: %08x dw6: "
-					"%08x dw7: %08x\n",
-					ptd.dw0, ptd.dw1, ptd.dw2, ptd.dw3,
-					ptd.dw4, ptd.dw5, ptd.dw6, ptd.dw7);
-#endif
 		} else {
 			if (usb_pipetype(urb->pipe) == PIPE_BULK) {
 				priv->atl_ints[queue_entry].qh->toggle = dw3 &
@@ -1259,14 +1239,6 @@ static void do_intl_int(struct usb_hcd *usb_hcd)
 
 		error = check_error(&ptd);
 		if (error) {
-#if 0
-			printk(KERN_ERR "Error in %s().\n", __func__);
-			printk(KERN_ERR "IN dw0: %08x dw1: %08x dw2: %08x "
-					"dw3: %08x dw4: %08x dw5: %08x dw6: "
-					"%08x dw7: %08x\n",
-					ptd.dw0, ptd.dw1, ptd.dw2, ptd.dw3,
-					ptd.dw4, ptd.dw5, ptd.dw6, ptd.dw7);
-#endif
 			urb->status = -EPIPE;
 			priv->int_ints[queue_entry].qh->toggle = 0;
 			priv->int_ints[queue_entry].qh->ping = 0;
@@ -1564,7 +1536,6 @@ static struct list_head *qh_urb_transaction(struct isp1760_hcd *priv,
 		int this_qtd_len;
 
 		if (!buf && len) {
-			/* XXX This looks like usb storage / SCSI bug */
 			printk(KERN_ERR "buf is null, dma is %08lx len is %d\n",
 					(long unsigned)urb->transfer_dma, len);
 			WARN_ON(1);
@@ -1823,7 +1794,6 @@ static int isp1760_hub_status_data(struct usb_hcd *hcd, char *buf)
 		buf [0] |= 1 << (0 + 1);
 		status = STS_PCD;
 	}
-	/* FIXME autosuspend idle root hubs */
 done:
 	spin_unlock_irqrestore(&priv->lock, flags);
 	return status ? retval : 0;
@@ -1894,12 +1864,6 @@ static int isp1760_hub_control(struct usb_hcd *hcd, u16 typeReq,
 	int retval = 0;
 	unsigned selector;
 
-	/*
-	 * FIXME:  support SetPortFeatures USB_PORT_FEAT_INDICATOR.
-	 * HCS_INDICATOR may say we can change LEDs to off/amber/green.
-	 * (track current state ourselves) ... blink for diagnostics,
-	 * power, "this is the one", etc.  EHCI spec supports this.
-	 */
 
 	spin_lock_irqsave(&priv->lock, flags);
 	switch (typeReq) {
@@ -1931,7 +1895,6 @@ static int isp1760_hub_control(struct usb_hcd *hcd, u16 typeReq,
 			isp1760_writel(temp & ~PORT_PE, status_reg);
 			break;
 		case USB_PORT_FEAT_C_ENABLE:
-			/* XXX error? */
 			break;
 		case USB_PORT_FEAT_SUSPEND:
 			if (temp & PORT_RESET)
@@ -1960,7 +1923,6 @@ static int isp1760_hub_control(struct usb_hcd *hcd, u16 typeReq,
 					status_reg);
 			break;
 		case USB_PORT_FEAT_C_OVER_CURRENT:
-			/* XXX error ?*/
 			break;
 		case USB_PORT_FEAT_C_RESET:
 			/* GetPortStatus clears reset */

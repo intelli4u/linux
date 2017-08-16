@@ -179,4 +179,3 @@ void comet_timer(unsigned long data)
 		{ netif_carrier_on(dev); }
 	mod_timer(&tp->timer, RUN_AT(next_tick));
 }
-

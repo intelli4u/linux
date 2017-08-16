@@ -380,4 +380,3 @@ module_exit(kirkwood_soc_platform_exit);
 MODULE_AUTHOR("Arnaud Patard <apatard@mandriva.com>");
 MODULE_DESCRIPTION("Marvell Kirkwood Audio DMA module");
 MODULE_LICENSE("GPL");
-

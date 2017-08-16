@@ -275,7 +275,6 @@ static const char *v4l2_ioctls[] = {
 	[_IOC_NR(VIDIOC_G_EXT_CTRLS)]      = "VIDIOC_G_EXT_CTRLS",
 	[_IOC_NR(VIDIOC_S_EXT_CTRLS)]      = "VIDIOC_S_EXT_CTRLS",
 	[_IOC_NR(VIDIOC_TRY_EXT_CTRLS)]    = "VIDIOC_TRY_EXT_CTRLS",
-#if 1
 	[_IOC_NR(VIDIOC_ENUM_FRAMESIZES)]  = "VIDIOC_ENUM_FRAMESIZES",
 	[_IOC_NR(VIDIOC_ENUM_FRAMEINTERVALS)] = "VIDIOC_ENUM_FRAMEINTERVALS",
 	[_IOC_NR(VIDIOC_G_ENC_INDEX)] 	   = "VIDIOC_G_ENC_INDEX",
@@ -287,7 +286,6 @@ static const char *v4l2_ioctls[] = {
 
 	[_IOC_NR(VIDIOC_DBG_G_CHIP_IDENT)] = "VIDIOC_DBG_G_CHIP_IDENT",
 	[_IOC_NR(VIDIOC_S_HW_FREQ_SEEK)]   = "VIDIOC_S_HW_FREQ_SEEK",
-#endif
 	[_IOC_NR(VIDIOC_ENUM_DV_PRESETS)]  = "VIDIOC_ENUM_DV_PRESETS",
 	[_IOC_NR(VIDIOC_S_DV_PRESET)]	   = "VIDIOC_S_DV_PRESET",
 	[_IOC_NR(VIDIOC_G_DV_PRESET)]	   = "VIDIOC_G_DV_PRESET",
@@ -751,7 +749,6 @@ static long __video_do_ioctl(struct file *file,
 	{
 		struct v4l2_format *f = (struct v4l2_format *)arg;
 
-		/* FIXME: Should be one dump per type */
 		dbgarg(cmd, "type=%s\n", prt_names(f->type, v4l2_type_names));
 
 		switch (f->type) {
@@ -808,7 +805,6 @@ static long __video_do_ioctl(struct file *file,
 	{
 		struct v4l2_format *f = (struct v4l2_format *)arg;
 
-		/* FIXME: Should be one dump per type */
 		dbgarg(cmd, "type=%s\n", prt_names(f->type, v4l2_type_names));
 
 		switch (f->type) {
@@ -871,7 +867,6 @@ static long __video_do_ioctl(struct file *file,
 	{
 		struct v4l2_format *f = (struct v4l2_format *)arg;
 
-		/* FIXME: Should be one dump per type */
 		dbgarg(cmd, "type=%s\n", prt_names(f->type,
 						v4l2_type_names));
 		switch (f->type) {
@@ -933,10 +928,6 @@ static long __video_do_ioctl(struct file *file,
 
 		break;
 	}
-	/* FIXME: Those buf reqs could be handled here,
-	   with some changes on videobuf to allow its header to be included at
-	   videodev2.h or being merged at videodev2.
-	 */
 	case VIDIOC_REQBUFS:
 	{
 		struct v4l2_requestbuffers *p = arg;
@@ -1149,7 +1140,6 @@ static long __video_do_ioctl(struct file *file,
 		break;
 	}
 	/* ------ input switching ---------- */
-	/* FIXME: Inputs can be handled inside videodev2 */
 	case VIDIOC_ENUMINPUT:
 	{
 		struct v4l2_input *p = arg;
@@ -1540,7 +1530,6 @@ static long __video_do_ioctl(struct file *file,
 	{
 		struct v4l2_cropcap *p = arg;
 
-		/*FIXME: Should also show v4l2_fract pixelaspect */
 		if (!ops->vidioc_cropcap)
 			break;
 

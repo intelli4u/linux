@@ -280,19 +280,6 @@ xen_get_itc(void)
 	} while (unlikely(ret_itc_last != itc_last));
 	return res;
 
-#if 0
-	/* ia64_itc_udelay() calls ia64_get_itc() with interrupt enabled.
-	   Should it be paravirtualized instead? */
-	WARN_ON(!irqs_disabled());
-	itc_offset = XEN_MAPPEDREGS->itc_offset;
-	itc_last = XEN_MAPPEDREGS->itc_last;
-	res = ia64_native_getreg(_IA64_REG_AR_ITC);
-	res += itc_offset;
-	if (itc_last >= res)
-		res = itc_last + 1;
-	XEN_MAPPEDREGS->itc_last = res;
-	return res;
-#endif
 }
 
 static void xen_setreg(int regnum, unsigned long val)

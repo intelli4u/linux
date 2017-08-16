@@ -227,12 +227,6 @@ static void remove_host(struct hpsb_host *host)
 	if (hi != NULL) {
 		list_del(&hi->list);
 		host_count--;
-		/*
-		   FIXME: address ranges should be removed
-		   and fileinfo states should be initialized
-		   (including setting generation to
-		   internal-generation ...)
-		 */
 	}
 	spin_unlock_irqrestore(&host_info_lock, flags);
 
@@ -576,7 +570,7 @@ static int state_initialized(struct file_info *fi, struct pending_request *req)
 		list_for_each_entry(hi, &host_info_list, list)
 			if (!req->req.misc--)
 				break;
-		get_device(&hi->host->device); /* FIXME handle failure case */
+		get_device(&hi->host->device);
 		list_add_tail(&fi->list, &hi->file_info_list);
 
 		/* prevent unloading of the host's low-level driver */

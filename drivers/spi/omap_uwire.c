@@ -56,9 +56,6 @@
 #include <plat/omap7xx.h>	/* OMAP7XX_IO_CONF registers */
 
 
-/* FIXME address is now a platform device resource,
- * and irqs should show there too...
- */
 #define UWIRE_BASE_PHYS		0xFFFB3000
 
 /* uWire Registers: */
@@ -540,7 +537,6 @@ static int __exit uwire_remove(struct platform_device *pdev)
 	struct uwire_spi	*uwire = dev_get_drvdata(&pdev->dev);
 	int			status;
 
-	// FIXME remove all child devices, somewhere ...
 
 	status = spi_bitbang_stop(&uwire->bitbang);
 	uwire_off(uwire);
@@ -563,9 +559,6 @@ static struct platform_driver uwire_driver = {
 
 static int __init omap_uwire_init(void)
 {
-	/* FIXME move these into the relevant board init code. also, include
-	 * H3 support; it uses tsc2101 like H2 (on a different chipselect).
-	 */
 
 	if (machine_is_omap_h2()) {
 		/* defaults: W21 SDO, U18 SDI, V19 SCL */
@@ -590,4 +583,3 @@ subsys_initcall(omap_uwire_init);
 module_exit(omap_uwire_exit);
 
 MODULE_LICENSE("GPL");
-

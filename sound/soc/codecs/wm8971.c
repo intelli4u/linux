@@ -714,7 +714,7 @@ err:
    around */
 static struct snd_soc_device *wm8971_socdev;
 
-#if defined (CONFIG_I2C) || defined (CONFIG_I2C_MODULE)
+#if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
 
 static int wm8971_i2c_probe(struct i2c_client *i2c,
 			    const struct i2c_device_id *id)
@@ -835,7 +835,7 @@ static int wm8971_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	}
 
-#if defined (CONFIG_I2C) || defined (CONFIG_I2C_MODULE)
+#if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
 	if (setup->i2c_address) {
 		ret = wm8971_add_i2c_device(pdev, setup);
 	}
@@ -863,7 +863,7 @@ static int wm8971_remove(struct platform_device *pdev)
 		destroy_workqueue(wm8971_workq);
 	snd_soc_free_pcms(socdev);
 	snd_soc_dapm_free(socdev);
-#if defined (CONFIG_I2C) || defined (CONFIG_I2C_MODULE)
+#if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
 	i2c_unregister_device(codec->control_data);
 	i2c_del_driver(&wm8971_i2c_driver);
 #endif

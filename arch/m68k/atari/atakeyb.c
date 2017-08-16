@@ -297,10 +297,6 @@ repeat:
 		}
 	}
 
-#if 0
-	if (acia_stat & ACIA_CTS)
-		/* cannot happen */;
-#endif
 
 	if (acia_stat & (ACIA_FE | ACIA_PE)) {
 		printk("Error in keyboard communication\n");
@@ -482,18 +478,6 @@ void ikbd_joystick_get_state(void)
 	ikbd_write(cmd, 1);
 }
 
-#if 0
-/* This disables all other ikbd activities !!!! */
-/* Set joystick monitoring */
-void ikbd_joystick_monitor(int rate)
-{
-	static const char cmd[2] = { 0x17, rate };
-
-	ikbd_write(cmd, 2);
-
-	kb_state.state = JOYSTICK_MONITOR;
-}
-#endif
 
 /* some joystick routines not in yet (0x18-0x19) */
 

@@ -1,4 +1,4 @@
-/* $Id: diva.c,v 1.33.2.6 2004/02/11 13:21:33 keil Exp $
+/* $Id: diva.c,v 1.33.2.6 2004/02/11 13:21:33 Exp $
  *
  * low level stuff for Eicon.Diehl Diva Family ISDN cards
  *
@@ -785,7 +785,6 @@ reset_diva(struct IsdnCardState *cs)
 		if (cs->subtyp == DIVA_ISA)
 			cs->hw.diva.ctrl_reg |= DIVA_ISA_LED_A;
 		else {
-			/* Workaround PCI9060 */
 			byteout(cs->hw.diva.pci_cfg + 0x69, 9);
 			cs->hw.diva.ctrl_reg |= DIVA_PCI_LED_A;
 		}

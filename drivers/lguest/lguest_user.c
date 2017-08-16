@@ -373,7 +373,6 @@ static int initialize(struct file *file, const unsigned long __user *input)
 	return sizeof(args);
 
 free_regs:
-	/* FIXME: This should be in free_vcpu */
 	free_page(lg->cpus[0].regs_page);
 free_eventfds:
 	kfree(lg->eventfds);

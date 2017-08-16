@@ -878,13 +878,6 @@ static void __devinit dfx_bus_config_check(DFX_board_t *bp)
 	/* Configuration check only valid for EISA adapter */
 
 	if (dfx_bus_eisa) {
-		/*
-		 * First check if revision 2 EISA controller.  Rev. 1 cards used
-		 * PDQ revision B, so no workaround needed in this case.  Rev. 3
-		 * cards used PDQ revision E, so no workaround needed in this
-		 * case, either.  Only Rev. 2 cards used either Rev. D or E
-		 * chips, so we must verify the chip revision on Rev. 2 cards.
-		 */
 		if (to_eisa_device(bdev)->id.driver_data == DEFEA_PROD_ID_2) {
 			/*
 			 * Revision 2 FDDI EISA controller found,
@@ -897,11 +890,6 @@ static void __devinit dfx_bus_config_check(DFX_board_t *bp)
 											&host_data);
 			if ((status != DFX_K_SUCCESS) || (host_data == 2))
 				{
-				/*
-				 * Either we couldn't determine the PDQ revision, or
-				 * we determined that it is at revision D.  In either case,
-				 * we need to implement the workaround.
-				 */
 
 				/* Ensure that the burst size is set to 8 longwords or less */
 
@@ -999,14 +987,6 @@ static int __devinit dfx_driver_init(struct net_device *dev,
 	bp->burst_size			= PI_PDATA_B_DMA_BURST_SIZE_DEF;
 	bp->rcv_bufs_to_post	= RCV_BUFS_DEF;
 
-	/*
-	 * Ensure that HW configuration is OK
-	 *
-	 * Note: Depending on the hardware revision, we may need to modify
-	 *       some of the configurable parameters to workaround hardware
-	 *       limitations.  We'll perform this configuration check AFTER
-	 *       setting the parameters to their default values.
-	 */
 
 	dfx_bus_config_check(bp);
 

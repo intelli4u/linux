@@ -1,4 +1,4 @@
-/* $Id: sunhme.h,v 1.33 2001/08/03 06:23:04 davem Exp $
+/* $Id: sunhme.h,v 1.33 2001/08/03 06:23:04 Exp $
  * sunhme.h: Definitions for Sparc HME/BigMac 10/100baseT ethernet driver.
  *           Also known as the "Happy Meal".
  *
@@ -470,7 +470,7 @@ struct happy_meal {
 #define HFLAG_FULL                0x00000020      /* Full duplex enable                */
 #define HFLAG_MACFULL             0x00000040      /* Using full duplex in the MAC      */
 #define HFLAG_POLLENABLE          0x00000080      /* Actually try MIF polling          */
-#define HFLAG_RXCV                0x00000100      /* XXX RXCV ENABLE                   */
+#define HFLAG_RXCV                0x00000100
 #define HFLAG_INIT                0x00000200      /* Init called at least once         */
 #define HFLAG_LINKUP              0x00000400      /* 1 = Link is up                    */
 #define HFLAG_PCI                 0x00000800      /* PCI based Happy Meal              */

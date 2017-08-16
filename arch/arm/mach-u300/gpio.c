@@ -392,10 +392,6 @@ int gpio_direction_output(unsigned gpio, int value)
 				U300_GPIO_PORTX_SPACING);
 	/* Mask out this pin */
 	val &= ~(U300_GPIO_PXPCR_PIN_MODE_MASK << ((gpio & 0x07) << 1));
-	/*
-	 * FIXME: configure for push/pull, open drain or open source per pin
-	 * in setup. The current driver will only support push/pull.
-	 */
 	val |= (U300_GPIO_PXPCR_PIN_MODE_OUTPUT_PUSH_PULL
 			<< ((gpio & 0x07) << 1));
 	writel(val, virtbase + U300_GPIO_PXPCR + PIN_TO_PORT(gpio) *

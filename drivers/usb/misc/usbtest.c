@@ -13,7 +13,6 @@
 
 /*-------------------------------------------------------------------------*/
 
-// FIXME make these public somewhere; usbdevfs.h?
 //
 struct usbtest_param {
 	// inputs
@@ -319,7 +318,6 @@ static int simple_io (
 			urb->transfer_buffer_length = len;
 		}
 
-		/* FIXME if endpoint halted, clear halt (and log) */
 	}
 	urb->transfer_buffer_length = max;
 
@@ -421,12 +419,9 @@ static int perform_sglist (
 		usb_sg_wait (req);
 		retval = req->status;
 
-		/* FIXME check resulting data pattern */
 
-		/* FIXME if endpoint halted, clear halt (and log) */
 	}
 
-	// FIXME for unlink or fault handling tests, don't report
 	// failure if retval is as we expected ...
 
 	if (retval)
@@ -621,7 +616,6 @@ static int ch9_postconfig (struct usbtest_dev *dev)
 			return (retval < 0) ? retval : -EDOM;
 		}
 
-		// FIXME cross-checking udev->config[i] to make sure usbcore
 		// parsed it right (etc) would be good testing paranoia
 	}
 
@@ -663,7 +657,6 @@ static int ch9_postconfig (struct usbtest_dev *dev)
 			}
 		}
 	}
-	// FIXME fetch strings from at least the device descriptor
 
 	/* [9.4.5] get_status always works */
 	retval = usb_get_status (udev, USB_RECIP_DEVICE, 0, dev->buf);
@@ -672,7 +665,6 @@ static int ch9_postconfig (struct usbtest_dev *dev)
 		return (retval < 0) ? retval : -EDOM;
 	}
 
-	// FIXME configuration.bmAttributes says if we could try to set/clear
 	// the device's remote wakeup feature ... if we can, test that here
 
 	retval = usb_get_status (udev, USB_RECIP_INTERFACE,
@@ -681,7 +673,6 @@ static int ch9_postconfig (struct usbtest_dev *dev)
 		dev_err(&iface->dev, "get interface status --> %d\n", retval);
 		return (retval < 0) ? retval : -EDOM;
 	}
-	// FIXME get status for each endpoint in the interface
 
 	return 0;
 }
@@ -781,9 +772,6 @@ error:
 					urb->actual_length,
 					urb->transfer_buffer_length);
 
-			/* FIXME this "unlink everything" exit route should
-			 * be a separate test case.
-			 */
 
 			/* unlink whatever's still pending */
 			for (i = 1; i < ctx->param->sglen; i++) {
@@ -1007,7 +995,6 @@ test_ctrl_queue (struct usbtest_dev *dev, struct usbtest_param *param)
 	}
 	spin_unlock_irq (&context.lock);
 
-	/* FIXME  set timer and time out; provide a disconnect hook */
 
 	/* wait for the last one to complete */
 	if (context.pending > 0)
@@ -1055,12 +1042,6 @@ static int unlink1 (struct usbtest_dev *dev, int pipe, int size, int async)
 	urb->context = &completion;
 	urb->complete = unlink1_callback;
 
-	/* keep the endpoint busy.  there are lots of hc/hcd-internal
-	 * states, and testing should get to all of them over time.
-	 *
-	 * FIXME want additional tests for when endpoint is STALLing
-	 * due to errors, or is just NAKing requests.
-	 */
 	if ((retval = usb_submit_urb (urb, GFP_KERNEL)) != 0) {
 		dev_err(&dev->intf->dev, "submit fail %d\n", retval);
 		return retval;
@@ -1449,7 +1430,7 @@ test_iso_queue (struct usbtest_dev *dev, struct usbtest_param *param,
 	unsigned		i;
 	unsigned long		packets = 0;
 	int			status = 0;
-	struct urb		*urbs[10];	/* FIXME no limit */
+	struct urb		*urbs[10];
 
 	if (param->sglen > 10)
 		return -EDOM;
@@ -1569,7 +1550,6 @@ usbtest_ioctl (struct usb_interface *intf, unsigned int code, void *buf)
 	struct timeval		start;
 	unsigned		i;
 
-	// FIXME USBDEVFS_CONNECTINFO doesn't say how fast the device is.
 
 	pattern = mod_pattern;
 
@@ -1582,7 +1562,6 @@ usbtest_ioctl (struct usb_interface *intf, unsigned int code, void *buf)
 	if (mutex_lock_interruptible(&dev->lock))
 		return -ERESTARTSYS;
 
-	/* FIXME: What if a system sleep starts while a test is running? */
 
 	/* some devices, like ez-usb default devices, need a non-default
 	 * altsetting to have any active endpoints.  some tests change
@@ -1605,15 +1584,6 @@ usbtest_ioctl (struct usb_interface *intf, unsigned int code, void *buf)
 		}
 	}
 
-	/*
-	 * Just a bunch of test cases that every HCD is expected to handle.
-	 *
-	 * Some may need specific firmware, though it'd be good to have
-	 * one firmware image to handle all the test cases.
-	 *
-	 * FIXME add more tests!  cancel requests, verify the data, control
-	 * queueing, concurrent read+write threads, and so on.
-	 */
 	do_gettimeofday (&start);
 	switch (param->test_num) {
 
@@ -1862,9 +1832,7 @@ usbtest_ioctl (struct usb_interface *intf, unsigned int code, void *buf)
 				dev->in_iso_pipe, dev->iso_in);
 		break;
 
-	// FIXME unlink from queue (ring with N urbs)
 
-	// FIXME scatterlist cancel (needs helper thread)
 
 	}
 	do_gettimeofday (&param->duration);
@@ -2204,4 +2172,3 @@ module_exit (usbtest_exit);
 
 MODULE_DESCRIPTION ("USB Core/HCD Testing Driver");
 MODULE_LICENSE ("GPL");
-

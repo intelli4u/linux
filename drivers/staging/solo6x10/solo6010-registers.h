@@ -183,7 +183,6 @@
 #define   SOLO_VI_STATUS0_PAGE(__n)		((__n) & 0x07)
 #define SOLO_VI_STATUS1				0x012C
 
-/* XXX: Might be better off in kernel level disp.h */
 #define DISP_PAGE(stat)				((stat) & 0x07)
 
 #define SOLO_VI_PB_CONFIG			0x0130

@@ -374,7 +374,6 @@ marvel_map_irq(struct pci_dev *dev, u8 slot, u8 pin)
 		irq = msg_dat & 0x1ff;		/* we use msg_data<8:0> */
 		irq += 0x80;			/* offset for lsi       */
 
-#if 1
 		printk("PCI:%d:%d:%d (hose %d) is using MSI\n",
 		       dev->bus->number, 
 		       PCI_SLOT(dev->devfn), 
@@ -387,16 +386,7 @@ marvel_map_irq(struct pci_dev *dev, u8 slot, u8 pin)
 		       1 << ((msg_ctl & PCI_MSI_FLAGS_QSIZE) >> 4),
 		       (irq + 16) | (io7->pe << MARVEL_IRQ_VEC_PE_SHIFT),
 		       (irq + 16) | (io7->pe << MARVEL_IRQ_VEC_PE_SHIFT));
-#endif
 
-#if 0
-		pci_write_config_word(dev, msi_loc + PCI_MSI_FLAGS,
-				      msg_ctl & ~PCI_MSI_FLAGS_ENABLE);
-		pci_read_config_byte(dev, PCI_INTERRUPT_LINE, &intline);
-		irq = intline;
-
-		printk("  forcing LSI interrupt on irq %d [0x%x]\n", irq, irq);
-#endif
 	}
 
 	irq += 16;					/* offset for legacy */

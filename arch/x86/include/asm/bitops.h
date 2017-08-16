@@ -324,14 +324,6 @@ static inline int variable_test_bit(int nr, volatile const unsigned long *addr)
 	return oldbit;
 }
 
-#if 0 /* Fool kernel-doc since it doesn't do macros yet */
-/**
- * test_bit - Determine whether a bit is set
- * @nr: bit number to test
- * @addr: Address to start counting from
- */
-static int test_bit(int nr, const volatile unsigned long *addr);
-#endif
 
 #define test_bit(nr, addr)			\
 	(__builtin_constant_p((nr))		\

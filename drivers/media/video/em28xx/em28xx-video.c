@@ -462,12 +462,8 @@ static inline int em28xx_isoc_copy(struct em28xx *dev, struct urb *urb)
 
 		p = urb->transfer_buffer + urb->iso_frame_desc[i].offset;
 
-		/* FIXME: incomplete buffer checks where removed to make
-		   logic simpler. Impacts of those changes should be evaluated
-		 */
 		if (p[0] == 0x33 && p[1] == 0x95 && p[2] == 0x00) {
 			em28xx_isocdbg("VBI HEADER!!!\n");
-			/* FIXME: Should add vbi copy */
 			continue;
 		}
 		if (p[0] == 0x22 && p[1] == 0x5a) {
@@ -1032,7 +1028,6 @@ static int vidioc_g_fmt_vid_cap(struct file *file, void *priv,
 	f->fmt.pix.sizeimage = f->fmt.pix.bytesperline  * dev->height;
 	f->fmt.pix.colorspace = V4L2_COLORSPACE_SMPTE170M;
 
-	/* FIXME: TOP? NONE? BOTTOM? ALTENATE? */
 	if (dev->progressive)
 		f->fmt.pix.field = V4L2_FIELD_NONE;
 	else
@@ -1711,7 +1706,7 @@ static int vidioc_cropcap(struct file *file, void *priv,
 	cc->bounds.width = dev->width;
 	cc->bounds.height = dev->height;
 	cc->defrect = cc->bounds;
-	cc->pixelaspect.numerator = 54;	/* 4:3 FIXME: remove magic numbers */
+	cc->pixelaspect.numerator = 54;
 	cc->pixelaspect.denominator = 59;
 
 	return 0;
@@ -1952,11 +1947,6 @@ static int vidioc_querybuf(struct file *file, void *priv,
 	if (fh->type == V4L2_BUF_TYPE_VIDEO_CAPTURE)
 		return videobuf_querybuf(&fh->vb_vidq, b);
 	else {
-		/* FIXME: I'm not sure yet whether this is a bug in zvbi or
-		   the videobuf framework, but we probably shouldn't be
-		   returning a buffer larger than that which was asked for.
-		   At a minimum, it causes a crash in zvbi since it does
-		   a memcpy based on the source buffer length */
 		int result = videobuf_querybuf(&fh->vb_vbiq, b);
 		b->length = dev->vbi_width * dev->vbi_height * 2;
 
@@ -2202,7 +2192,6 @@ static int em28xx_v4l2_open(struct file *filp)
 void em28xx_release_analog_resources(struct em28xx *dev)
 {
 
-	/*FIXME: I2C IR should be disconnected */
 
 	if (dev->radio_dev) {
 		if (video_is_registered(dev->radio_dev))
@@ -2304,9 +2293,6 @@ em28xx_v4l2_read(struct file *filp, char __user *buf, size_t count,
 	if (rc < 0)
 		return rc;
 
-	/* FIXME: read() is not prepared to allow changing the video
-	   resolution while streaming. Seems a bug at em28xx_set_fmt
-	 */
 
 	if (fh->type == V4L2_BUF_TYPE_VIDEO_CAPTURE) {
 		if (res_locked(dev, EM28XX_RESOURCE_VIDEO))

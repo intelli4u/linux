@@ -42,8 +42,6 @@ nv04_instmem_determine_amount(struct drm_device *dev)
 			break;
 		}
 	} else {
-		/*XXX: what *are* the limits on <NV40 cards?
-		 */
 		dev_priv->ramin_rsvd_vram = (512 * 1024);
 	}
 	NV_DEBUG(dev, "RAMIN size: %dKiB\n", dev_priv->ramin_rsvd_vram >> 10);
@@ -198,4 +196,3 @@ void
 nv04_instmem_resume(struct drm_device *dev)
 {
 }
-

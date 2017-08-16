@@ -102,8 +102,7 @@ static struct platform_device net2272_bfin_device = {
 #if defined(CONFIG_SPI_BFIN) || defined(CONFIG_SPI_BFIN_MODULE)
 /* all SPI peripherals info goes here */
 
-#if defined(CONFIG_MTD_M25P80) \
-	|| defined(CONFIG_MTD_M25P80_MODULE)
+#if defined(CONFIG_MTD_M25P80) || defined(CONFIG_MTD_M25P80_MODULE)
 
 /* Partition sizes */
 #define FLASH_SIZE       0x00400000
@@ -149,8 +148,7 @@ static struct bfin5xx_spi_chip mmc_spi_chip_info = {
 #endif
 
 static struct spi_board_info bfin_spi_board_info[] __initdata = {
-#if defined(CONFIG_MTD_M25P80) \
-	|| defined(CONFIG_MTD_M25P80_MODULE)
+#if defined(CONFIG_MTD_M25P80) || defined(CONFIG_MTD_M25P80_MODULE)
 	{
 		/* the modalias must be the same as spi device driver name */
 		.modalias = "m25p80", /* Name of spi_driver for this device */
@@ -546,7 +544,6 @@ void __init native_machine_early_platform_add_devices(void)
 
 void native_machine_restart(char *cmd)
 {
-	/* workaround reboot hang when booting from SPI */
 	if ((bfin_read_SYSCR() & 0x7) == 0x3)
 		bfin_reset_boot_spi_cs(P_DEFAULT_BOOT_SPI_CS);
 }

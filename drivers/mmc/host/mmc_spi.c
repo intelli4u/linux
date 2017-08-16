@@ -1103,14 +1103,6 @@ static void mmc_spi_request(struct mmc_host *mmc, struct mmc_request *mrq)
 	mmc_request_done(host->mmc, mrq);
 }
 
-/* See Section 6.4.1, in SD "Simplified Physical Layer Specification 2.0"
- *
- * NOTE that here we can't know that the card has just been powered up;
- * not all MMC/SD sockets support power switching.
- *
- * FIXME when the card is still in SPI mode, e.g. from a previous kernel,
- * this doesn't seem to do the right thing at all...
- */
 static void mmc_spi_initsequence(struct mmc_spi_host *host)
 {
 	/* Try to be very sure any previous command has completed;
@@ -1216,15 +1208,6 @@ static void mmc_spi_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 				dev_dbg(&host->spi->dev,
 					"put spi signals to low failed\n");
 
-			/*
-			 * Now clock should be low due to spi mode 0;
-			 * MOSI should be low because of written 0x00;
-			 * chipselect should be low (it is active low)
-			 * power supply is off, so now MMC is off too!
-			 *
-			 * FIXME no, chipselect can be high since the
-			 * device is inactive and SPI_CS_HIGH is clear...
-			 */
 			msleep(10);
 			if (mres == 0) {
 				host->spi->mode |= (SPI_CPOL|SPI_CPHA);

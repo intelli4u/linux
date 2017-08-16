@@ -28,4 +28,3 @@ int dsp_notifier_event(struct notifier_block *this, unsigned long event,
 		sync_set_event(&ne->sync_obj);
 	return NOTIFY_OK;
 }
-

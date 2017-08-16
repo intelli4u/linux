@@ -890,21 +890,6 @@ static int init_port(void)
 
 static void drop_port(void)
 {
-#if 0
-	unsigned char init_bytes[4] = IT87_INIT;
-
-	/* Enter MB PnP Mode */
-	outb(init_bytes[0], IT87_ADRPORT);
-	outb(init_bytes[1], IT87_ADRPORT);
-	outb(init_bytes[2], IT87_ADRPORT);
-	outb(init_bytes[3], IT87_ADRPORT);
-
-	/* deactivate CIR-Device */
-	it87_write(IT87_CIR_ACT, 0x0);
-
-	/* Leaving MB PnP Mode */
-	it87_write(IT87_CFGCTRL, 0x2);
-#endif
 
 	del_timer_sync(&timerlist);
 	free_irq(irq, NULL);

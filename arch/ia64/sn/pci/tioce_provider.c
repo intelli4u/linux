@@ -845,15 +845,6 @@ tioce_kern_init(struct tioce_common *tioce_common)
 	return tioce_kern;
 }
 
-/**
- * tioce_force_interrupt - implement altix force_interrupt() backend for CE
- * @sn_irq_info: sn asic irq that we need an interrupt generated for
- *
- * Given an sn_irq_info struct, set the proper bit in ce_adm_force_int to
- * force a secondary interrupt to be generated.  This is to work around an
- * asic issue where there is a small window of opportunity for a legacy device
- * interrupt to be lost.
- */
 static void
 tioce_force_interrupt(struct sn_irq_info *sn_irq_info)
 {
@@ -877,10 +868,6 @@ tioce_force_interrupt(struct sn_irq_info *sn_irq_info)
 	ce_mmr = (struct tioce __iomem *)ce_common->ce_pcibus.bs_base;
 	ce_kern = (struct tioce_kernel *)ce_common->ce_kernel_private;
 
-	/*
-	 * TIOCE Rev A workaround (PV 945826), force an interrupt by writing
-	 * the TIO_INTx register directly (1/26/2006)
-	 */
 	if (ce_common->ce_rev == TIOCE_REV_A) {
 		u64 int_bit_mask = (1ULL << sn_irq_info->irq_int_bit);
 		u64 status;

@@ -190,7 +190,6 @@ enum seal_alg {
 #define ENCTYPE_DES_CBC_MD4     0x0002	/* DES cbc mode with RSA-MD4 */
 #define ENCTYPE_DES_CBC_MD5     0x0003	/* DES cbc mode with RSA-MD5 */
 #define ENCTYPE_DES_CBC_RAW     0x0004	/* DES cbc mode raw */
-/* XXX deprecated? */
 #define ENCTYPE_DES3_CBC_SHA    0x0005	/* DES-3 cbc mode with NIST-SHA */
 #define ENCTYPE_DES3_CBC_RAW    0x0006	/* DES-3 cbc mode raw */
 #define ENCTYPE_DES_HMAC_SHA1   0x0008

@@ -165,12 +165,6 @@ void q40_sched_init (irq_handler_t timer_routine)
 */
 
 struct IRQ_TABLE{ unsigned mask; int irq ;};
-#if 0
-static struct IRQ_TABLE iirqs[]={
-  {Q40_IRQ_FRAME_MASK,Q40_IRQ_FRAME},
-  {Q40_IRQ_KEYB_MASK,Q40_IRQ_KEYBOARD},
-  {0,0}};
-#endif
 static struct IRQ_TABLE eirqs[] = {
   { .mask = Q40_IRQ3_MASK,	.irq = 3 },	/* ser 1 */
   { .mask = Q40_IRQ4_MASK,	.irq = 4 },	/* ser 2 */
@@ -187,7 +181,6 @@ static struct IRQ_TABLE eirqs[] = {
 static int ccleirq=60;    /* ISA dev IRQs*/
 /*static int cclirq=60;*/     /* internal */
 
-/* FIXME: add shared ints,mask,unmask,probing.... */
 
 #define IRQ_INPROGRESS 1
 /*static unsigned short saved_mask;*/

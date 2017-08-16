@@ -66,7 +66,6 @@ void microblaze_cache_init(void);
 
 #define enable_dcache()					mbc->de();
 #define disable_dcache()				mbc->dd();
-/* FIXME for LL-temac driver */
 #define invalidate_dcache()				mbc->din();
 #define invalidate_dcache_range(start, end)		mbc->dinr(start, end);
 #define flush_dcache()					mbc->dfl();
@@ -92,12 +91,6 @@ do { \
 #define flush_cache_page(vma, vmaddr, pfn)	do { } while (0)
 
 /* MS: kgdb code use this macro, wrong len with FLASH */
-#if 0
-#define flush_cache_range(vma, start, len)	{	\
-	flush_icache_range((unsigned) (start), (unsigned) (start) + (len)); \
-	flush_dcache_range((unsigned) (start), (unsigned) (start) + (len)); \
-}
-#endif
 
 #define flush_cache_range(vma, start, len) do { } while (0)
 

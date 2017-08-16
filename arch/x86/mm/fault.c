@@ -491,20 +491,6 @@ bad:
 
 #endif /* CONFIG_X86_64 */
 
-/*
- * Workaround for K8 erratum #93 & buggy BIOS.
- *
- * BIOS SMM functions are required to use a specific workaround
- * to avoid corruption of the 64bit RIP register on C stepping K8.
- *
- * A lot of BIOS that didn't get tested properly miss this.
- *
- * The OS sees this as a page fault with the upper 32bits of RIP cleared.
- * Try to work around it here.
- *
- * Note we only handle faults in kernel here.
- * Does nothing on 32-bit.
- */
 static int is_errata93(struct pt_regs *regs, unsigned long address)
 {
 #ifdef CONFIG_X86_64
@@ -525,14 +511,6 @@ static int is_errata93(struct pt_regs *regs, unsigned long address)
 	return 0;
 }
 
-/*
- * Work around K8 erratum #100 K8 in compat mode occasionally jumps
- * to illegal addresses >4GB.
- *
- * We catch this in the page fault handler because these addresses
- * are not reachable. Just detect this case and return.  Any code
- * segment in LDT is compatibility mode.
- */
 static int is_errata100(struct pt_regs *regs, unsigned long address)
 {
 #ifdef CONFIG_X86_64
@@ -547,9 +525,6 @@ static int is_f00f_bug(struct pt_regs *regs, unsigned long address)
 #ifdef CONFIG_X86_F00F_BUG
 	unsigned long nr;
 
-	/*
-	 * Pentium F0 0F C7 C8 bug workaround:
-	 */
 	if (boot_cpu_data.f00f_bug) {
 		nr = (address - idt_descr.address) >> 3;
 

@@ -1408,7 +1408,6 @@ int mdp_ppp_blit(struct fb_info *info, struct mdp_blit_req *req,
 #ifdef CONFIG_FB_MSM_MDP31
 	mdp_start_ppp(mfd, &iBuf, req, p_src_file, p_dst_file);
 #else
-	/* bg tile fetching HW workaround */
 	if (((iBuf.mdpImg.mdpOp & (MDPOP_TRANSP | MDPOP_ALPHAB)) ||
 	     (req->src.format == MDP_ARGB_8888) ||
 	     (req->src.format == MDP_BGRA_8888) ||

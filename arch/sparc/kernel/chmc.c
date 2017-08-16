@@ -611,21 +611,6 @@ static u64 chmc_read_mcreg(struct chmc *p, unsigned long offset)
 	return ret;
 }
 
-#if 0 /* currently unused */
-static void chmc_write_mcreg(struct chmc *p, unsigned long offset, u64 val)
-{
-	if (p->portid == smp_processor_id()) {
-		__asm__ __volatile__("stxa	%0, [%1] %2"
-				     : : "r" (val),
-				         "r" (offset), "i" (ASI_MCU_CTRL_REG));
-	} else {
-		__asm__ __volatile__("ldxa	%0, [%1] %2"
-				     : : "r" (val),
-				         "r" (p->regs + offset),
-				         "i" (ASI_PHYS_BYPASS_EC_E));
-	}
-}
-#endif
 
 static void chmc_interpret_one_decode_reg(struct chmc *p, int which_bank, u64 val)
 {

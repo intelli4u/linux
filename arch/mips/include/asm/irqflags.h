@@ -64,17 +64,6 @@ static inline void raw_local_irq_enable(void)
  * R4000/R4400 need three nops, the R4600 two nops and the R10000 needs
  * no nops at all.
  */
-/*
- * For TX49, operating only IE bit is not enough.
- *
- * If mfc0 $12 follows store and the mfc0 is last instruction of a
- * page and fetching the next instruction causes TLB miss, the result
- * of the mfc0 might wrongly contain EXL bit.
- *
- * ERT-TX49H2-027, ERT-TX49H3-012, ERT-TX49HL3-006, ERT-TX49H4-008
- *
- * Workaround: mask EXL bit of the result or place a nop before mfc0.
- */
 __asm__(
 	"	.macro	raw_local_irq_disable\n"
 	"	.set	push						\n"

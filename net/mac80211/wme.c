@@ -78,11 +78,6 @@ u16 ieee80211_select_queue(struct ieee80211_sub_if_data *sdata,
 		break;
 #ifdef CONFIG_MAC80211_MESH
 	case NL80211_IFTYPE_MESH_POINT:
-		/*
-		 * XXX: This is clearly broken ... but already was before,
-		 * because ieee80211_fill_mesh_addresses() would clear A1
-		 * except for multicast addresses.
-		 */
 		break;
 #endif
 	case NL80211_IFTYPE_STATION:
@@ -124,12 +119,6 @@ u16 ieee80211_downgrade_queue(struct ieee80211_local *local,
 	/* in case we are a client verify acm is not set for this ac */
 	while (unlikely(local->wmm_acm & BIT(skb->priority))) {
 		if (wme_downgrade_ac(skb)) {
-			/*
-			 * This should not really happen. The AP has marked all
-			 * lower ACs to require admission control which is not
-			 * a reasonable configuration. Allow the frame to be
-			 * transmitted using AC_BK as a workaround.
-			 */
 			break;
 		}
 	}

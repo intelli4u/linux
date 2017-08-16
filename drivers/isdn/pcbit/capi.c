@@ -647,8 +647,3 @@ int capi_decode_debug_188(u_char *hdr, ushort hdrlen)
         return 0;
 }
 #endif
-
-
-
-
-

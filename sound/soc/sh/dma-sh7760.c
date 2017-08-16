@@ -1,16 +1,4 @@
-/*
- * SH7760 ("camelot") DMABRG audio DMA unit support
- *
- * Copyright (C) 2007 Manuel Lauss <mano@roarinelk.homelinux.net>
- *  licensed under the terms outlined in the file COPYING at the root
- *  of the linux kernel sources.
- *
- * The SH7760 DMABRG provides 4 dma channels (2x rec, 2x play), which
- * trigger an interrupt when one half of the programmed transfer size
- * has been xmitted.
- *
- * FIXME: little-endian only for now
- */
+
 
 #include <linux/module.h>
 #include <linux/gfp.h>

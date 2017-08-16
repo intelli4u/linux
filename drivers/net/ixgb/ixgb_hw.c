@@ -82,7 +82,6 @@ static u32 ixgb_mac_reset(struct ixgb_hw *hw)
 				IXGB_CTRL0_SDP0;
 
 #ifdef HP_ZX1
-	/* Workaround for 82597EX reset errata */
 	IXGB_WRITE_REG_IO(hw, CTRL0, ctrl_reg);
 #else
 	IXGB_WRITE_REG(hw, CTRL0, ctrl_reg);
@@ -313,7 +312,6 @@ ixgb_init_hw(struct ixgb_hw *hw)
 
 	pr_debug("Issuing an EE reset to MAC\n");
 #ifdef HP_ZX1
-	/* Workaround for 82597EX reset errata */
 	IXGB_WRITE_REG_IO(hw, CTRL1, IXGB_CTRL1_EE_RST);
 #else
 	IXGB_WRITE_REG(hw, CTRL1, IXGB_CTRL1_EE_RST);

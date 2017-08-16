@@ -179,8 +179,6 @@ static int st6422_init(struct sd *sd)
 		{ 0x143d, 0x00 },
 
 		{ 0x1442, 0xe2 },
-/* write: 1x1x xxxx */
-/* read:  1x1x xxxx */
 /*        bit 5 == button pressed and hold if 0 */
 /* write 0xe2,0xea */
 

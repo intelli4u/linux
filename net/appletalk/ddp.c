@@ -113,8 +113,6 @@ static struct sock *atalk_search_socket(struct sockaddr_at *to,
 		     to->sat_addr.s_node == ATADDR_ANYNODE))
 			goto found;
 
-		/* XXXX.0 -- we got a request for this router. make sure
-		 * that the node is appropriately set. */
 		if (to->sat_addr.s_node == ATADDR_ANYNODE &&
 		    to->sat_addr.s_net != ATADDR_ANYNET &&
 		    atif->address.s_node == at->src_node) {
@@ -413,7 +411,6 @@ static struct atalk_iface *atalk_find_interface(__be16 net, int node)
 		    !(iface->status & ATIF_PROBE))
 			break;
 
-		/* XXXX.0 -- net.0 returns the iface associated with net */
 		if (node == ATADDR_ANYNODE && net != ATADDR_ANYNET &&
 		    ntohs(iface->nets.nr_firstnet) <= ntohs(net) &&
 		    ntohs(net) <= ntohs(iface->nets.nr_lastnet))
@@ -509,10 +506,6 @@ static int atrtr_create(struct rtentry *r, struct net_device *devhint)
 	struct atalk_iface *iface, *riface;
 	int retval = -EINVAL;
 
-	/*
-	 * Fixme: Raise/Lower a routing change semaphore for these
-	 * operations.
-	 */
 
 	/* Validate the request */
 	if (ta->sat_family != AF_APPLETALK ||
@@ -1205,14 +1198,10 @@ static int atalk_connect(struct socket *sock, struct sockaddr *uaddr,
 
 	if (addr->sat_addr.s_node == ATADDR_BCAST &&
 	    !sock_flag(sk, SOCK_BROADCAST)) {
-#if 1
 		printk(KERN_WARNING "%s is broken and did not set "
 				    "SO_BROADCAST. It will break when 2.2 is "
 				    "released.\n",
 			current->comm);
-#else
-		return -EACCES;
-#endif
 	}
 
 	lock_kernel();
@@ -1335,12 +1324,6 @@ static int atalk_route_packet(struct sk_buff *skb, struct net_device *dev,
 	 * network"
 	 */
 	if (skb->pkt_type != PACKET_HOST || !ddp->deh_dnet) {
-		/*
-		 * FIXME:
-		 *
-		 * Can it ever happen that a packet is from a PPP iface and
-		 * needs to be broadcast onto the default network?
-		 */
 		if (dev->type == ARPHRD_PPP)
 			printk(KERN_DEBUG "AppleTalk: didn't forward broadcast "
 					  "packet received from PPP iface\n");
@@ -1357,7 +1340,6 @@ static int atalk_route_packet(struct sk_buff *skb, struct net_device *dev,
 	if (!rt || !(len_hops & (15 << 10)))
 		goto free_it;
 
-	/* FIXME: use skb->cb to be able to use shared skbs */
 
 	/*
 	 * Route goes through another gateway, so set the target to the
@@ -1374,7 +1356,6 @@ static int atalk_route_packet(struct sk_buff *skb, struct net_device *dev,
 			    (rt->dev->hard_header_len +
 			     ddp_dl->header_length + (len_hops & 1023))));
 
-	/* FIXME: use skb->cb to be able to use shared skbs */
 	ddp->deh_len_hops = htons(len_hops);
 
 	/*
@@ -1759,7 +1740,6 @@ static int atalk_recvmsg(struct kiocb *iocb, struct socket *sock, struct msghdr 
 	if (!skb)
 		goto out;
 
-	/* FIXME: use skb->cb to be able to use shared skbs */
 	ddp = ddp_hdr(skb);
 	copied = ntohs(ddp->deh_len_hops) & 1023;
 

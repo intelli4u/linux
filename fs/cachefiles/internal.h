@@ -302,7 +302,6 @@ do {							\
 #define _debug(FMT, ...) no_printk(FMT, ##__VA_ARGS__)
 #endif
 
-#if 1 /* defined(__KDEBUGALL) */
 
 #define ASSERT(X)							\
 do {									\
@@ -343,12 +342,3 @@ do {									\
 		BUG();							\
 	}								\
 } while (0)
-
-#else
-
-#define ASSERT(X)			do {} while (0)
-#define ASSERTCMP(X, OP, Y)		do {} while (0)
-#define ASSERTIF(C, X)			do {} while (0)
-#define ASSERTIFCMP(C, X, OP, Y)	do {} while (0)
-
-#endif

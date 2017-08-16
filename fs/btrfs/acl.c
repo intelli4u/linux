@@ -66,7 +66,6 @@ static struct posix_acl *btrfs_get_acl(struct inode *inode, int type)
 		}
 		kfree(value);
 	} else if (size == -ENOENT || size == -ENODATA || size == 0) {
-		/* FIXME, who returns -ENOENT?  I think nobody */
 		acl = NULL;
 		set_cached_acl(inode, type, acl);
 	} else {

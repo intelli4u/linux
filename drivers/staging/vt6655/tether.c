@@ -106,4 +106,3 @@ bool ETHbIsBufferCrc32Ok (unsigned char *pbyBuffer, unsigned int cbFrameLength)
     }
     return true;
 }
-

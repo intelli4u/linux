@@ -126,6 +126,3 @@ extern int totalUsedBanks;
 extern u32 GLOB_valid_banks[LLD_MAX_FLASH_BANKS];
 
 #endif /*_LLD_NAND_*/
-
-
-

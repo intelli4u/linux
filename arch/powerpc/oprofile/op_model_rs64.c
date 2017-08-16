@@ -99,7 +99,6 @@ static int rs64_reg_setup(struct op_counter_config *ctr,
 	for (i = 0; i < num_counters; ++i)
 		reset_value[i] = 0x80000000UL - ctr[i].count;
 
-	/* XXX setup user and kernel profiling */
 	return 0;
 }
 

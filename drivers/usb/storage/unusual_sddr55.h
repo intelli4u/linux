@@ -15,8 +15,7 @@
  * 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#if defined(CONFIG_USB_STORAGE_SDDR55) || \
-		defined(CONFIG_USB_STORAGE_SDDR55_MODULE)
+#if defined(CONFIG_USB_STORAGE_SDDR55) || defined(CONFIG_USB_STORAGE_SDDR55_MODULE)
 
 /* Contributed by Peter Waechtler */
 UNUSUAL_DEV( 0x07c4, 0xa103, 0x0000, 0x9999,

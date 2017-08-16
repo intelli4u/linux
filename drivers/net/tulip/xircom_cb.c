@@ -11,7 +11,7 @@
  *      of the GNU General Public License, incorporated herein by reference.
  *
  *
- * 	$Id: xircom_cb.c,v 1.33 2001/03/19 14:02:07 arjanv Exp $
+ * 	$Id: xircom_cb.c,v 1.33 2001/03/19 14:02:07 Exp $
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -374,8 +374,7 @@ static irqreturn_t xircom_interrupt(int irq, void *dev_instance)
 	}
 
 	/* Clear all remaining interrupts */
-	status |= 0xffffffff; /* FIXME: make this clear only the
-				        real existing bits */
+	status |= 0xffffffff;
 	outl(status,card->io_port+CSR5);
 
 
@@ -419,8 +418,6 @@ static netdev_tx_t xircom_start_xmit(struct sk_buff *skb,
 			skb_copy_from_linear_data(skb,
 				  &(card->tx_buffer[bufferoffsets[desc] / 4]),
 						  skb->len);
-			/* FIXME: The specification tells us that the length we send HAS to be a multiple of
-			   4 bytes. */
 
 			card->tx_buffer[4*desc+1] = cpu_to_le32(skb->len);
 			if (desc == NUMDESCRIPTORS - 1) /* bit 25: last descriptor of the ring */
@@ -489,11 +486,6 @@ static int xircom_close(struct net_device *dev)
 	spin_lock_irqsave(&card->lock,flags);
 
 	disable_all_interrupts(card);
-#if 0
-	/* We can enable this again once we send dummy packets on ifconfig ethX up */
-	deactivate_receiver(card);
-	deactivate_transmitter(card);
-#endif
 	remove_descriptors(card);
 
 	spin_unlock_irqrestore(&card->lock,flags);
@@ -1226,13 +1218,6 @@ static void investigate_write_descriptor(struct net_device *dev, struct xircom_p
 		enter("investigate_write_descriptor");
 
 		status = le32_to_cpu(card->tx_buffer[4*descnr]);
-#if 0
-		if (status & 0x8000) {	/* Major error */
-			pr_err("Major transmit error status %x\n", status);
-			card->tx_buffer[4*descnr] = 0;
-			netif_wake_queue (dev);
-		}
-#endif
 		if (status > 0) {	/* bit 31 is 0 when done */
 			if (card->tx_skb[descnr]!=NULL) {
 				dev->stats.tx_bytes += card->tx_skb[descnr]->len;
@@ -1264,4 +1249,3 @@ static void __exit xircom_exit(void)
 
 module_init(xircom_init)
 module_exit(xircom_exit)
-

@@ -165,7 +165,6 @@ static int __uac_clock_find_source(struct snd_usb_audio *chip,
 					       visited);
 	}
 
-	/* FIXME: multipliers only act as pass-thru element for now */
 	multiplier = snd_usb_find_clock_multiplier(chip->ctrl_intf, entity_id);
 	if (multiplier)
 		return __uac_clock_find_source(chip, multiplier->bCSourceID,
@@ -302,4 +301,3 @@ int snd_usb_init_sample_rate(struct snd_usb_audio *chip, int iface,
 		return set_sample_rate_v2(chip, iface, alts, fmt, rate);
 	}
 }
-

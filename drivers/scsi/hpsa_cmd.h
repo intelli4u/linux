@@ -119,7 +119,6 @@ union u64bit {
 	u64 val;
 };
 
-/* FIXME this is a per controller value (barf!) */
 #define HPSA_MAX_TARGETS_PER_CTLR 16
 #define HPSA_MAX_LUN 256
 #define HPSA_MAX_PHYS_LUN 1024

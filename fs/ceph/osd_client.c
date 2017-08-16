@@ -927,12 +927,6 @@ static int __kick_requests(struct ceph_osd_client *osdc,
 		if (err == 0)
 			continue;  /* no change */
 		if (err < 0) {
-			/*
-			 * FIXME: really, we should set the request
-			 * error and fail if this isn't a 'nofail'
-			 * request, but that's a fair bit more
-			 * complicated to do.  So retry!
-			 */
 			dout(" setting r_resend on %llu\n", req->r_tid);
 			req->r_resend = true;
 			continue;

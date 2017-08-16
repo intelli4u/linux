@@ -62,17 +62,10 @@ ath5k_ani_set_noise_immunity_level(struct ath5k_hw *ah, int level)
 	 * essentially an on/off option. There *may* be a reason for this (???),
 	 * so i stick with the HAL version for now...
 	 */
-#if 0
-	const s8 hi[] = { -18, -18, -16, -14, -12 };
-	const s8 lo[] = { -52, -56, -60, -64, -70 };
-	const s8 sz[] = { -34, -41, -48, -55, -62 };
-	const s8 fr[] = { -70, -72, -75, -78, -80 };
-#else
 	const s8 sz[] = { -55, -62 };
 	const s8 lo[] = { -64, -70 };
 	const s8 hi[] = { -14, -12 };
 	const s8 fr[] = { -78, -80 };
-#endif
 	if (level < 0 || level >= ARRAY_SIZE(sz)) {
 		ATH5K_ERR(ah->ah_sc, "noise immuniy level %d out of range",
 			  level);

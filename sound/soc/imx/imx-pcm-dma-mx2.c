@@ -333,4 +333,3 @@ struct snd_soc_platform *imx_ssi_dma_mx2_init(struct platform_device *pdev,
 
 	return &imx_soc_platform_dma;
 }
-

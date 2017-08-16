@@ -31,19 +31,6 @@
  */
 #include <asm/octeon/octeon.h>
 
-/**
- * Given the chip processor ID from COP0, this function returns a
- * string representing the chip model number. The string is of the
- * form CNXXXXpX.X-FREQ-SUFFIX.
- * - XXXX = The chip model number
- * - X.X = Chip pass number
- * - FREQ = Current frequency in Mhz
- * - SUFFIX = NSP, EXP, SCP, SSP, or CP
- *
- * @chip_id: Chip ID
- *
- * Returns Model string
- */
 const char *octeon_model_get_string(uint32_t chip_id)
 {
 	static char buffer[32];

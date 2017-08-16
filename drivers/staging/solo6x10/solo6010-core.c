@@ -43,7 +43,6 @@ void solo6010_irq_off(struct solo6010_dev *solo_dev, u32 mask)
 	solo_reg_write(solo_dev, SOLO_IRQ_ENABLE, solo_dev->irq_mask);
 }
 
-/* XXX We should check the return value of the sub-device ISR's */
 static irqreturn_t solo6010_isr(int irq, void *data)
 {
 	struct solo6010_dev *solo_dev = data;

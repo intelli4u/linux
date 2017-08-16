@@ -23,7 +23,6 @@
 # define I8042_KBD_IRQ	1
 # define I8042_AUX_IRQ	(RTC_PORT(0) == 0x170 ? 9 : 12)	/* Jensen is special */
 #elif defined(__arm__)
-/* defined in include/asm-arm/arch-xxx/irqs.h */
 #include <asm/irq.h>
 #elif defined(CONFIG_SH_CAYMAN)
 #include <asm/irq.h>

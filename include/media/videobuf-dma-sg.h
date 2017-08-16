@@ -106,4 +106,3 @@ void videobuf_queue_sg_init(struct videobuf_queue *q,
 			 void *priv);
 
 #endif /* _VIDEOBUF_DMA_SG_H */
-

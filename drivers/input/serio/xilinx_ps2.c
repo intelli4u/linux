@@ -387,4 +387,3 @@ module_exit(xps2_cleanup);
 MODULE_AUTHOR("Xilinx, Inc.");
 MODULE_DESCRIPTION("Xilinx XPS PS/2 driver");
 MODULE_LICENSE("GPL");
-

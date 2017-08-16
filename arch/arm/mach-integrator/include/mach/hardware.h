@@ -49,4 +49,3 @@
 #define __io_address(n)		((void __iomem *)IO_ADDRESS(n))
 
 #endif
-

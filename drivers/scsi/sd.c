@@ -694,7 +694,7 @@ static int sd_prep_fn(struct request_queue *q, struct request *rq)
 		SCpnt->cmnd[29] = (unsigned char) (this_count >> 16) & 0xff;
 		SCpnt->cmnd[30] = (unsigned char) (this_count >> 8) & 0xff;
 		SCpnt->cmnd[31] = (unsigned char) this_count & 0xff;
-	} else if (block > 0xffffffff) {
+	} else if (sdp->use_16_for_rw) {
 		SCpnt->cmnd[0] += READ_16 - READ_6;
 		SCpnt->cmnd[1] = protect | ((rq->cmd_flags & REQ_FUA) ? 0x8 : 0);
 		SCpnt->cmnd[2] = sizeof(block) > 4 ? (unsigned char) (block >> 56) & 0xff : 0;
@@ -875,10 +875,6 @@ static int sd_release(struct gendisk *disk, fmode_t mode)
 			scsi_set_medium_removal(sdev, SCSI_REMOVAL_ALLOW);
 	}
 
-	/*
-	 * XXX and what if there are packets in flight and this close()
-	 * XXX is followed by a "rmmod sd_mod"?
-	 */
 
 	scsi_autopm_put_device(sdev);
 	scsi_disk_put(sdkp);
@@ -1770,6 +1766,8 @@ got_data:
 		}
 	}
 
+	sdp->use_16_for_rw = (sdkp->capacity > 0xffffffff);
+
 	/* Rescale capacity to 512-byte units */
 	if (sector_size == 4096)
 		sdkp->capacity <<= 3;
@@ -2648,4 +2646,3 @@ static void sd_print_result(struct scsi_disk *sdkp, int result)
 	sd_printk(KERN_INFO, sdkp, " ");
 	scsi_show_result(result);
 }
-

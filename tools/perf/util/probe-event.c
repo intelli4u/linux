@@ -947,30 +947,6 @@ error:
 	return NULL;
 }
 
-#if 0
-char *synthesize_perf_probe_command(struct perf_probe_event *pev)
-{
-	char *buf;
-	int i, len, ret;
-
-	buf = synthesize_perf_probe_point(&pev->point);
-	if (!buf)
-		return NULL;
-
-	len = strlen(buf);
-	for (i = 0; i < pev->nargs; i++) {
-		ret = e_snprintf(&buf[len], MAX_CMDLEN - len, " %s",
-				 pev->args[i].name);
-		if (ret <= 0) {
-			free(buf);
-			return NULL;
-		}
-		len += ret;
-	}
-
-	return buf;
-}
-#endif
 
 static int __synthesize_probe_trace_arg_ref(struct probe_trace_arg_ref *ref,
 					     char **buf, size_t *buflen,
@@ -1013,7 +989,6 @@ static int synthesize_probe_trace_arg(struct probe_trace_arg *arg,
 	buf += ret;
 	buflen -= ret;
 
-	/* Special case: @XXX */
 	if (arg->value[0] == '@' && arg->ref)
 			ref = ref->next;
 
@@ -1752,4 +1727,3 @@ int del_perf_probe_events(struct strlist *dellist)
 
 	return ret;
 }
-

@@ -109,8 +109,6 @@ static u64 parse_audio_format_i_type(struct snd_usb_audio *chip,
 		}
 	}
 	if (format & (1 << UAC_FORMAT_TYPE_I_PCM8)) {
-		/* Dallas DS4201 workaround: it advertises U8 format, but really
-		   supports S8. */
 		if (chip->usb_id == USB_ID(0x04fa, 0x4201))
 			pcm_formats |= SNDRV_PCM_FMTBIT_S8;
 		else
@@ -352,10 +350,6 @@ static int parse_audio_format_i(struct snd_usb_audio *chip,
 	int pcm_format, ret;
 
 	if (fmt->bFormatType == UAC_FORMAT_TYPE_III) {
-		/* FIXME: the format type is really IECxxx
-		 *        but we give normal PCM format to get the existing
-		 *        apps working...
-		 */
 		switch (chip->usb_id) {
 
 		case USB_ID(0x0763, 0x2003): /* M-Audio Audiophile USB */
@@ -419,7 +413,6 @@ static int parse_audio_format_ii(struct snd_usb_audio *chip,
 
 	switch (format) {
 	case UAC_FORMAT_TYPE_II_AC3:
-		/* FIXME: there is no AC3 format defined yet */
 		// fp->formats = SNDRV_PCM_FMTBIT_AC3;
 		fp->formats = SNDRV_PCM_FMTBIT_U8; /* temporary hack to receive byte streams */
 		break;
@@ -486,8 +479,6 @@ int snd_usb_parse_audio_format(struct snd_usb_audio *chip, struct audioformat *f
 	fp->fmt_type = fmt->bFormatType;
 	if (err < 0)
 		return err;
-#if 1
-	/* FIXME: temporary hack for extigy/audigy 2 nx/zs */
 	/* extigy apparently supports sample rates other than 48k
 	 * but not in ordinary way.  so we enable only 48k atm.
 	 */
@@ -499,7 +490,5 @@ int snd_usb_parse_audio_format(struct snd_usb_audio *chip, struct audioformat *f
 		    fp->rates != SNDRV_PCM_RATE_96000)
 			return -ENOTSUPP;
 	}
-#endif
 	return 0;
 }
-

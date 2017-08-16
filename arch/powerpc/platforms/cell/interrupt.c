@@ -345,9 +345,6 @@ static struct irq_host_ops iic_host_ops = {
 static void __init init_one_iic(unsigned int hw_cpu, unsigned long addr,
 				struct device_node *node)
 {
-	/* XXX FIXME: should locate the linux CPU number from the HW cpu
-	 * number properly. We are lucky for now
-	 */
 	struct iic *iic = &per_cpu(cpu_iic, hw_cpu);
 
 	iic->regs = ioremap(addr, sizeof(struct cbe_iic_thread_regs));
@@ -391,11 +388,6 @@ static int __init setup_iic(void)
 		init_one_iic(np[0], r0.start, dn);
 		init_one_iic(np[1], r1.start, dn);
 
-		/* Setup cascade for IO exceptions. XXX cleanup tricks to get
-		 * node vs CPU etc...
-		 * Note that we configure the IIC_IRR here with a hard coded
-		 * priority of 1. We might want to improve that later.
-		 */
 		node = np[0] >> 1;
 		node_iic = cbe_get_cpu_iic_regs(np[0]);
 		cascade = node << IIC_IRQ_NODE_SHIFT;

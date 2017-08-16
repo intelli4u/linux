@@ -675,5 +675,3 @@ send_vendor_fail:
 	return err;
 }
 EXPORT_SYMBOL(scsi_nl_send_vendor_msg);
-
-

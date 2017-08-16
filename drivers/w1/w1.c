@@ -207,15 +207,6 @@ static struct device_driver w1_slave_driver = {
 	.bus = &w1_bus_type,
 };
 
-#if 0
-struct device w1_slave_device = {
-	.parent = NULL,
-	.bus = &w1_bus_type,
-	.init_name = "w1 bus slave",
-	.driver = &w1_slave_driver,
-	.release = &w1_slave_release
-};
-#endif  /*  0  */
 
 static ssize_t w1_master_attribute_show_name(struct device *dev, struct device_attribute *attr, char *buf)
 {
@@ -410,10 +401,6 @@ static int w1_atoreg_num(struct device *dev, const char *buf, size_t count,
 	rn64_le = cpu_to_le64(*(u64 *)rn);
 	rn->crc = w1_calc_crc8((u8 *)&rn64_le, 7);
 
-#if 0
-	dev_info(dev, "With CRC device is %02x.%012llx.%02x.\n",
-		  rn->family, (unsigned long long)rn->id, rn->crc);
-#endif
 
 	return 0;
 }
@@ -1018,11 +1005,6 @@ static int __init w1_init(void)
 
 	return 0;
 
-#if 0
-/* For undoing the slave register if there was a step after it. */
-err_out_slave_unregister:
-	driver_unregister(&w1_slave_driver);
-#endif
 
 err_out_master_unregister:
 	driver_unregister(&w1_master_driver);

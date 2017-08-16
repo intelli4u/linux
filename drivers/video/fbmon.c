@@ -955,11 +955,6 @@ void fb_edid_to_monspecs(unsigned char *edid, struct fb_monspecs *specs)
 
 	specs->modedb = fb_create_modedb(edid, &specs->modedb_len);
 
-	/*
-	 * Workaround for buggy EDIDs that sets that the first
-	 * detailed timing is preferred but has not detailed
-	 * timing specified
-	 */
 	for (i = 0; i < specs->modedb_len; i++) {
 		if (specs->modedb[i].flag & FB_MODE_IS_DETAILED) {
 			found = 1;

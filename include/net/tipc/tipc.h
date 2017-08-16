@@ -232,13 +232,6 @@ int tipc_multicast(u32 portref,
 		   unsigned int section_count,
 		   struct iovec const *msg);
 
-#if 0
-int tipc_multicast_buf(u32 portref, 
-		       struct tipc_name_seq const *seq, 
-		       u32 domain,
-		       void *buf,
-		       unsigned int size);
-#endif
 
 /*
  * TIPC subscription routines

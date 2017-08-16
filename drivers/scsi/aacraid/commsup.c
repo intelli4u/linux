@@ -1133,7 +1133,7 @@ retry_next:
 	if (device) {
 		switch (device_config_needed) {
 		case DELETE:
-#if (defined(AAC_DEBUG_INSTRUMENT_AIF_DELETE))
+#if defined(AAC_DEBUG_INSTRUMENT_AIF_DELETE)
 			scsi_remove_device(device);
 #else
 			if (scsi_device_online(device)) {
@@ -1159,7 +1159,7 @@ retry_next:
 		case CHANGE:
 			if ((channel == CONTAINER_CHANNEL)
 			 && (!dev->fsa_dev[container].valid)) {
-#if (defined(AAC_DEBUG_INSTRUMENT_AIF_DELETE))
+#if defined(AAC_DEBUG_INSTRUMENT_AIF_DELETE)
 				scsi_remove_device(device);
 #else
 				if (!scsi_device_online(device))

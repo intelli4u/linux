@@ -1,4 +1,4 @@
-/* $Id: ix1_micro.c,v 2.12.2.4 2004/01/13 23:48:39 keil Exp $
+/* $Id: ix1_micro.c,v 2.12.2.4 2004/01/13 23:48:39 Exp $
  *
  * low level stuff for ITK ix1-micro Rev.2 isdn cards
  * derived from the original file teles3.c from Karsten Keil

@@ -185,8 +185,7 @@ static void __init colibri_pxa320_init_lcd(void)
 static inline void colibri_pxa320_init_lcd(void) {}
 #endif
 
-#if	defined(CONFIG_SND_AC97_CODEC) || \
-	defined(CONFIG_SND_AC97_CODEC_MODULE)
+#if	defined(CONFIG_SND_AC97_CODEC) || defined(CONFIG_SND_AC97_CODEC_MODULE)
 static mfp_cfg_t colibri_pxa320_ac97_pin_config[] __initdata = {
 	GPIO34_AC97_SYSCLK,
 	GPIO35_AC97_SDATA_IN_0,
@@ -263,4 +262,3 @@ MACHINE_START(COLIBRI320, "Toradex Colibri PXA320")
 	.init_irq	= pxa3xx_init_irq,
 	.timer		= &pxa_timer,
 MACHINE_END
-

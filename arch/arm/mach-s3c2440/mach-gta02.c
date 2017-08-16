@@ -468,7 +468,6 @@ static void gta02_udc_command(enum s3c2410_udc_cmd_e cmd)
 		break;
 	case S3C2410_UDC_P_RESET:
 		pr_debug("%s S3C2410_UDC_P_RESET\n", __func__);
-		/* FIXME: Do something here. */
 	}
 }
 

@@ -243,7 +243,6 @@ static void cx8801_aud_irq(snd_cx88_card_t *chip)
 		atomic_set(&chip->count, cx_read(MO_AUDD_GPCNT));
 		snd_pcm_period_elapsed(chip->substream);
 	}
-	/* FIXME: Any other status should deserve a special handling? */
 }
 
 /*

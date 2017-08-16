@@ -853,7 +853,6 @@ static void eraser(unsigned char c, struct tty_struct *tty)
 	int head, seen_alnums, cnt;
 	unsigned long flags;
 
-	/* FIXME: locking needed ? */
 	if (tty->read_head == tty->canon_head) {
 		/* process_output('\a', tty); */ /* what do you think? */
 		return;
@@ -888,7 +887,6 @@ static void eraser(unsigned char c, struct tty_struct *tty)
 	}
 
 	seen_alnums = 0;
-	/* FIXME: Locking ?? */
 	while (tty->read_head != tty->canon_head) {
 		head = tty->read_head;
 
@@ -1268,9 +1266,6 @@ send_signal:
 					process_output('\a', tty);
 				return;
 			}
-			/*
-			 * XXX are EOL_CHAR and EOL2_CHAR echoed?!?
-			 */
 			if (L_ECHO(tty)) {
 				/* Record the column of first canon char. */
 				if (tty->canon_head == tty->read_head)
@@ -1278,10 +1273,6 @@ send_signal:
 				echo_char(c, tty);
 				process_echoes(tty);
 			}
-			/*
-			 * XXX does PARMRK doubling happen for
-			 * EOL_CHAR and EOL2_CHAR?
-			 */
 			if (parmrk)
 				put_tty_queue(c, tty);
 
@@ -1653,20 +1644,6 @@ static int copy_from_read_buf(struct tty_struct *tty,
 extern ssize_t redirected_tty_write(struct file *, const char __user *,
 							size_t, loff_t *);
 
-/**
- *	job_control		-	check job control
- *	@tty: tty
- *	@file: file handle
- *
- *	Perform job control management checks on this file/tty descriptor
- *	and if appropriate send any needed signals and return a negative
- *	error code if action should be taken.
- *
- *	FIXME:
- *	Locking: None - redirected write test is safe, testing
- *	current->signal should possibly lock current->sighand
- *	pgrp locking ?
- */
 
 static int job_control(struct tty_struct *tty, struct file *file)
 {
@@ -1711,7 +1688,7 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
 			 unsigned char __user *buf, size_t nr)
 {
 	unsigned char __user *b = buf;
-	DECLARE_WAITQUEUE(wait, current);
+	DEFINE_WAIT_FUNC(wait, woken_wake_function);
 	int c;
 	int minimum, time;
 	ssize_t retval = 0;
@@ -1780,10 +1757,6 @@ do_it_again:
 			nr--;
 			break;
 		}
-		/* This statement must be first before checking for input
-		   so that any interrupt will set the state back to
-		   TASK_RUNNING. */
-		set_current_state(TASK_INTERRUPTIBLE);
 
 		if (((minimum - (b - buf)) < tty->minimum_to_wake) &&
 		    ((minimum - (b - buf)) >= 1))
@@ -1806,12 +1779,10 @@ do_it_again:
 				retval = -ERESTARTSYS;
 				break;
 			}
-			/* FIXME: does n_tty_set_room need locking ? */
 			n_tty_set_room(tty);
-			timeout = schedule_timeout(timeout);
+			timeout = wait_woken(&wait, TASK_INTERRUPTIBLE, timeout);
 			continue;
 		}
-		__set_current_state(TASK_RUNNING);
 
 		/* Deal with packet mode. */
 		if (packet && b == buf) {
@@ -1895,7 +1866,6 @@ do_it_again:
 	if (!waitqueue_active(&tty->read_wait))
 		tty->minimum_to_wake = minimum;
 
-	__set_current_state(TASK_RUNNING);
 	size = b - buf;
 	if (size) {
 		retval = size;
@@ -1934,7 +1904,7 @@ static ssize_t n_tty_write(struct tty_struct *tty, struct file *file,
 			   const unsigned char *buf, size_t nr)
 {
 	const unsigned char *b = buf;
-	DECLARE_WAITQUEUE(wait, current);
+	DEFINE_WAIT_FUNC(wait, woken_wake_function);
 	int c;
 	ssize_t retval = 0;
 
@@ -1950,7 +1920,6 @@ static ssize_t n_tty_write(struct tty_struct *tty, struct file *file,
 
 	add_wait_queue(&tty->write_wait, &wait);
 	while (1) {
-		set_current_state(TASK_INTERRUPTIBLE);
 		if (signal_pending(current)) {
 			retval = -ERESTARTSYS;
 			break;
@@ -1998,10 +1967,9 @@ static ssize_t n_tty_write(struct tty_struct *tty, struct file *file,
 			retval = -EAGAIN;
 			break;
 		}
-		schedule();
+		wait_woken(&wait, TASK_INTERRUPTIBLE, MAX_SCHEDULE_TIMEOUT);
 	}
 break_out:
-	__set_current_state(TASK_RUNNING);
 	remove_wait_queue(&tty->write_wait, &wait);
 	if (b - buf != nr && tty->fasync)
 		set_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
@@ -2078,7 +2046,6 @@ static int n_tty_ioctl(struct tty_struct *tty, struct file *file,
 	case TIOCOUTQ:
 		return put_user(tty_chars_in_buffer(tty), (int __user *) arg);
 	case TIOCINQ:
-		/* FIXME: Locking */
 		retval = tty->read_cnt;
 		if (L_ICANON(tty))
 			retval = inq_canon(tty);

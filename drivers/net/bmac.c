@@ -85,50 +85,6 @@ struct bmac_data {
 	spinlock_t lock;
 };
 
-#if 0 /* Move that to ethtool */
-
-typedef struct bmac_reg_entry {
-	char *name;
-	unsigned short reg_offset;
-} bmac_reg_entry_t;
-
-#define N_REG_ENTRIES 31
-
-static bmac_reg_entry_t reg_entries[N_REG_ENTRIES] = {
-	{"MEMADD", MEMADD},
-	{"MEMDATAHI", MEMDATAHI},
-	{"MEMDATALO", MEMDATALO},
-	{"TXPNTR", TXPNTR},
-	{"RXPNTR", RXPNTR},
-	{"IPG1", IPG1},
-	{"IPG2", IPG2},
-	{"ALIMIT", ALIMIT},
-	{"SLOT", SLOT},
-	{"PALEN", PALEN},
-	{"PAPAT", PAPAT},
-	{"TXSFD", TXSFD},
-	{"JAM", JAM},
-	{"TXCFG", TXCFG},
-	{"TXMAX", TXMAX},
-	{"TXMIN", TXMIN},
-	{"PAREG", PAREG},
-	{"DCNT", DCNT},
-	{"NCCNT", NCCNT},
-	{"NTCNT", NTCNT},
-	{"EXCNT", EXCNT},
-	{"LTCNT", LTCNT},
-	{"TXSM", TXSM},
-	{"RXCFG", RXCFG},
-	{"RXMAX", RXMAX},
-	{"RXMIN", RXMIN},
-	{"FRCNT", FRCNT},
-	{"AECNT", AECNT},
-	{"FECNT", FECNT},
-	{"RXSM", RXSM},
-	{"RXCV", RXCV}
-};
-
-#endif
 
 static unsigned char *bmac_emergency_rxbuf;
 
@@ -383,19 +339,6 @@ bmac_init_registers(struct net_device *dev)
 	bmwrite(dev, INTDISABLE, EnableNormal);
 }
 
-#if 0
-static void
-bmac_disable_interrupts(struct net_device *dev)
-{
-	bmwrite(dev, INTDISABLE, DisableAll);
-}
-
-static void
-bmac_enable_interrupts(struct net_device *dev)
-{
-	bmwrite(dev, INTDISABLE, EnableNormal);
-}
-#endif
 
 
 static void
@@ -937,29 +880,6 @@ bmac_update_hash_table_mask(struct net_device *dev, struct bmac_data *bp)
 	bmwrite(dev, BHASH0, bp->hash_table_mask[3]); /* bits 63 - 48 */
 }
 
-#if 0
-static void
-bmac_add_multi(struct net_device *dev,
-	       struct bmac_data *bp, unsigned char *addr)
-{
-	/* XXDEBUG(("bmac: enter bmac_add_multi\n")); */
-	bmac_addhash(bp, addr);
-	bmac_rx_off(dev);
-	bmac_update_hash_table_mask(dev, bp);
-	bmac_rx_on(dev, 1, (dev->flags & IFF_PROMISC)? 1 : 0);
-	/* XXDEBUG(("bmac: exit bmac_add_multi\n")); */
-}
-
-static void
-bmac_remove_multi(struct net_device *dev,
-		  struct bmac_data *bp, unsigned char *addr)
-{
-	bmac_removehash(bp, addr);
-	bmac_rx_off(dev);
-	bmac_update_hash_table_mask(dev, bp);
-	bmac_rx_on(dev, 1, (dev->flags & IFF_PROMISC)? 1 : 0);
-}
-#endif
 
 /* Set or clear the multicast filter for this adaptor.
     num_addrs == -1	Promiscuous mode, receive all packets
@@ -1560,60 +1480,7 @@ static void bmac_tx_timeout(unsigned long data)
 	spin_unlock_irqrestore(&bp->lock, flags);
 }
 
-#if 0
-static void dump_dbdma(volatile struct dbdma_cmd *cp,int count)
-{
-	int i,*ip;
 
-	for (i=0;i< count;i++) {
-		ip = (int*)(cp+i);
-
-		printk("dbdma req 0x%x addr 0x%x baddr 0x%x xfer/res 0x%x\n",
-		       ld_le32(ip+0),
-		       ld_le32(ip+1),
-		       ld_le32(ip+2),
-		       ld_le32(ip+3));
-	}
-
-}
-#endif
-
-#if 0
-static int
-bmac_proc_info(char *buffer, char **start, off_t offset, int length)
-{
-	int len = 0;
-	off_t pos   = 0;
-	off_t begin = 0;
-	int i;
-
-	if (bmac_devs == NULL)
-		return (-ENOSYS);
-
-	len += sprintf(buffer, "BMAC counters & registers\n");
-
-	for (i = 0; i<N_REG_ENTRIES; i++) {
-		len += sprintf(buffer + len, "%s: %#08x\n",
-			       reg_entries[i].name,
-			       bmread(bmac_devs, reg_entries[i].reg_offset));
-		pos = begin + len;
-
-		if (pos < offset) {
-			len = 0;
-			begin = pos;
-		}
-
-		if (pos > offset+length) break;
-	}
-
-	*start = buffer + (offset - begin);
-	len -= (offset - begin);
-
-	if (len > length) len = length;
-
-	return len;
-}
-#endif
 
 static int __devexit bmac_remove(struct macio_dev *mdev)
 {

@@ -437,7 +437,7 @@ static void pc_close(struct tty_struct *tty, struct file *filp)
 	shutdown(ch, tty);
 
 	tty_port_close_end(port, tty);
-	ch->event = 0;	/* FIXME: review ch->event locking */
+	ch->event = 0;
 	tty_port_tty_set(port, NULL);
 }
 
@@ -493,7 +493,7 @@ static void pc_hangup(struct tty_struct *tty)
 		tty_ldisc_flush(tty);
 		shutdown(ch, tty);
 
-		ch->event = 0;	/* FIXME: review locking of ch->event */
+		ch->event = 0;
 		tty_port_hangup(&ch->port);
 	}
 }
@@ -1215,7 +1215,6 @@ static void post_fep_init(unsigned int crd)
 		nbdevs += (bd->numports);
 	} else {
 		/* Fix up the mappings for ISA/EISA etc */
-		/* FIXME: 64K - can we be smarter ? */
 		bd->re_map_membase = ioremap_nocache(bd->membase, 0x10000);
 	}
 

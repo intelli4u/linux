@@ -184,4 +184,3 @@
 #define S3C64XX_SLPEN_CFG_BYSLPEN	(1 << 1)
 
 #endif /* __ASM_PLAT_S3C64XX_REGS_GPIO_H */
-

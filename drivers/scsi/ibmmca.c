@@ -834,7 +834,6 @@ static int get_pos_info(struct Scsi_Host *shpnt)
 		got_interrupt(shpnt) = 0;
 		issue_cmd(shpnt, isa_virt_to_bus(scb), IM_SCB | MAX_LOG_DEV);
 		
-		/* FIXME: timeout */
 		while (!got_interrupt(shpnt))
 			barrier();
 
@@ -914,7 +913,6 @@ static int immediate_feature(struct Scsi_Host *shpnt, unsigned int speed, unsign
 		global_command_error_excuse = 1;
 		issue_cmd(shpnt, (unsigned long) (imm_cmd), IM_IMM_CMD | MAX_LOG_DEV);
 		
-		/* FIXME: timeout */
 		while (!got_interrupt(shpnt))
 			barrier();
 		if (global_command_error_excuse == CMD_FAIL) {
@@ -1433,60 +1431,6 @@ static void internal_ibmmca_scsi_setup(char *str, int *ints)
 	return;
 }
 
-#if 0
- FIXME NEED TO MOVE TO SYSFS
-
-static int ibmmca_getinfo(char *buf, int slot, void *dev_id)
-{
-	struct Scsi_Host *shpnt;
-	int len, speciale, connectore, k;
-	unsigned int pos[8];
-	unsigned long flags;
-	struct Scsi_Host *dev = dev_id;
-
-	spin_lock_irqsave(dev->host_lock, flags);
-
-	shpnt = dev;		/* assign host-structure to local pointer */
-	len = 0;		/* set filled text-buffer index to 0 */
-	/* get the _special contents of the hostdata structure */
-	speciale = ((struct ibmmca_hostdata *) shpnt->hostdata)->_special;
-	connectore = ((struct ibmmca_hostdata *) shpnt->hostdata)->_connector_size;
-	for (k = 2; k < 4; k++)
-		pos[k] = ((struct ibmmca_hostdata *) shpnt->hostdata)->_pos[k];
-	if (speciale == FORCED_DETECTION) {	/* forced detection */
-		len += sprintf(buf + len,
-			       "Adapter category: forced detected\n" "***************************************\n" "***  Forced detected SCSI Adapter   ***\n" "***  No chip-information available  ***\n" "***************************************\n");
-	} else if (speciale == INTEGRATED_SCSI) {
-		/* if the integrated subsystem has been found automatically: */
-		len += sprintf(buf + len,
-			       "Adapter category: integrated\n" "Chip revision level: %d\n" "Chip status: %s\n" "8 kByte NVRAM status: %s\n", ((pos[2] & 0xf0) >> 4), (pos[2] & 1) ? "enabled" : "disabled", (pos[2] & 2) ? "locked" : "accessible");
-	} else if ((speciale >= 0) && (speciale < ARRAY_SIZE(subsys_list))) {
-		/* if the subsystem is a slot adapter */
-		len += sprintf(buf + len, "Adapter category: slot-card\n" "ROM Segment Address: ");
-		if ((pos[2] & 0xf0) == 0xf0)
-			len += sprintf(buf + len, "off\n");
-		else
-			len += sprintf(buf + len, "0x%x\n", ((pos[2] & 0xf0) << 13) + 0xc0000);
-		len += sprintf(buf + len, "Chip status: %s\n", (pos[2] & 1) ? "enabled" : "disabled");
-		len += sprintf(buf + len, "Adapter I/O Offset: 0x%x\n", ((pos[2] & 0x0e) << 2));
-	} else {
-		len += sprintf(buf + len, "Adapter category: unknown\n");
-	}
-	/* common subsystem information to write to the slotn file */
-	len += sprintf(buf + len, "Subsystem PUN: %d\n", shpnt->this_id);
-	len += sprintf(buf + len, "I/O base address range: 0x%x-0x%x\n", (unsigned int) (shpnt->io_port), (unsigned int) (shpnt->io_port + 7));
-	len += sprintf(buf + len, "MCA-slot size: %d bits", connectore);
-	/* Now make sure, the bufferlength is devidable by 4 to avoid
-	 * paging problems of the buffer. */
-	while (len % sizeof(int) != (sizeof(int) - 1))
-		len += sprintf(buf + len, " ");
-	len += sprintf(buf + len, "\n");
-
-	spin_unlock_irqrestore(shpnt->host_lock, flags);
-
-	return len;
-}
-#endif
 
 static struct scsi_host_template ibmmca_driver_template = {
           .proc_name      = "ibmmca",
@@ -1661,9 +1605,6 @@ static int ibmmca_probe(struct device *dev)
 		((struct ibmmca_hostdata *) shpnt->hostdata)->_pos[k] = pos[k];
 	((struct ibmmca_hostdata *) shpnt->hostdata)->_special = INTEGRATED_SCSI;
 	mca_device_set_name(mca_dev, description);
-	/* FIXME: NEED TO REPLUMB TO SYSFS
-	   mca_set_adapter_procfn(MCA_INTEGSCSI, (MCA_ProcFn) ibmmca_getinfo, shpnt);
-	*/
 	mca_device_set_claim(mca_dev, 1);
 	if (scsi_add_host(shpnt, dev)) {
 		dev_printk(KERN_ERR, dev, "IBM MCA SCSI: scsi_add_host failed\n");
@@ -2047,7 +1988,6 @@ static int __ibmmca_abort(Scsi_Cmnd * cmd)
 	imm_command &= (unsigned long) (0xffff0000);	/* mask reserved stuff */
 	imm_command |= (unsigned long) (IM_ABORT_IMM_CMD);
 	/* must wait for attention reg not busy */
-	/* FIXME - timeout, politeness */
 	while (1) {
 		if (!(inb(IM_STAT_REG(shpnt)) & IM_BUSY))
 			break;
@@ -2141,7 +2081,6 @@ static int __ibmmca_host_reset(Scsi_Cmnd * cmd)
 	/* wait for interrupt finished or intr_stat register to be set, as the
 	 * interrupt will not be executed, while we are in here! */
 	 
-	/* FIXME: This is really really icky we so want a sleeping version of this ! */
 	while (reset_status(shpnt) == IM_RESET_IN_PROGRESS && --ticks && ((inb(IM_INTR_REG(shpnt)) & 0x8f) != 0x8f)) {
 		udelay((1 + 999 / HZ) * 1000);
 		barrier();

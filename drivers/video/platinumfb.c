@@ -585,7 +585,7 @@ static int __devinit platinumfb_probe(struct platform_device* odev,
 	pinfo->platinum_regs_phys = pinfo->rsrc_reg.start;
 	pinfo->platinum_regs = ioremap(pinfo->rsrc_reg.start, 0x1000);
 
-	pinfo->cmap_regs_phys = 0xf301b000;	/* XXX not in prom? */
+	pinfo->cmap_regs_phys = 0xf301b000;
 	request_mem_region(pinfo->cmap_regs_phys, 0x1000, "platinumfb cmap");
 	pinfo->cmap_regs = ioremap(pinfo->cmap_regs_phys, 0x1000);
 

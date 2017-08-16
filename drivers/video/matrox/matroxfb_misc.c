@@ -289,7 +289,6 @@ int matroxfb_vgaHWinit(struct matrox_fb_info *minfo, struct my_timming *m)
 			  ((hd      & 0x100) >> 7) | /* blanking */
 			  ((hs      & 0x100) >> 6) | /* sync start */
 			   (hbe     & 0x040);	 /* end hor. blanking */
-	/* FIXME: Enable vidrst only on G400, and only if TV-out is used */
 	if (minfo->outputs[1].src == MATROXFB_SRC_CRTC1)
 		hw->CRTCEXT[1] |= 0x88;		/* enable horizontal and vertical vidrst */
 	hw->CRTCEXT[2] =  ((vt & 0xC00) >> 10) |

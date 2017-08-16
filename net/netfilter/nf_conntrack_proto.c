@@ -263,8 +263,6 @@ static void nf_ct_l4proto_unregister_sysctl(struct nf_conntrack_l4proto *l4proto
 #endif /* CONFIG_SYSCTL */
 }
 
-/* FIXME: Allow NULL functions and sub in pointers to generic for
-   them. --RR */
 int nf_conntrack_l4proto_register(struct nf_conntrack_l4proto *l4proto)
 {
 	int ret = 0;

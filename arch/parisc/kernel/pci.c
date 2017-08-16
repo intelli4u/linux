@@ -204,13 +204,6 @@ void __devinit pcibios_resource_to_bus(struct pci_dev *dev,
 #endif
 
 	if (res->flags & IORESOURCE_IO) {
-		/*
-		** I/O space may see busnumbers here. Something
-		** in the form of 0xbbxxxx where bb is the bus num
-		** and xxxx is the I/O port space address.
-		** Remaining address translation are done in the
-		** PCI Host adapter specific code - ie dino_out8.
-		*/
 		region->start = PCI_PORT_ADDR(res->start);
 		region->end   = PCI_PORT_ADDR(res->end);
 	} else if (res->flags & IORESOURCE_MEM) {
@@ -300,11 +293,6 @@ int pcibios_enable_device(struct pci_dev *dev, int mask)
 
 	cmd |= (PCI_COMMAND_SERR | PCI_COMMAND_PARITY);
 
-#if 0
-	/* If bridge/bus controller has FBB enabled, child must too. */
-	if (dev->bus->bridge_ctl & PCI_BRIDGE_CTL_FAST_BACK)
-		cmd |= PCI_COMMAND_FAST_BACK;
-#endif
 
 	if (cmd != old_cmd) {
 		dev_info(&dev->dev, "enabling SERR and PARITY (%04x -> %04x)\n",

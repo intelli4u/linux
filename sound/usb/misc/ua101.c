@@ -1367,10 +1367,6 @@ static struct usb_driver ua101_driver = {
 	.id_table = ua101_ids,
 	.probe = ua101_probe,
 	.disconnect = ua101_disconnect,
-#if 0
-	.suspend = ua101_suspend,
-	.resume = ua101_resume,
-#endif
 };
 
 static int __init alsa_card_ua101_init(void)

@@ -120,5 +120,3 @@ const struct clkops clkops_am35xx_ipss_wait = {
 	.find_idlest	= am35xx_clk_ipss_find_idlest,
 	.find_companion	= omap2_clk_dflt_find_companion,
 };
-
-

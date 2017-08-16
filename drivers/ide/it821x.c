@@ -302,7 +302,6 @@ static void it821x_tune_mwdma(ide_drive_t *drive, u8 mode_wanted)
 	pci_write_config_byte(dev, 0x50, conf);
 
 	it821x_clock_strategy(drive);
-	/* FIXME: do we need to program this ? */
 	/* it821x_program(drive, itdev->mwdma[unit]); */
 }
 
@@ -345,18 +344,6 @@ static void it821x_tune_udma(ide_drive_t *drive, u8 mode_wanted)
 
 }
 
-/**
- *	it821x_dma_read	-	DMA hook
- *	@drive: drive for DMA
- *
- *	The IT821x has a single timing register for MWDMA and for PIO
- *	operations. As we flip back and forth we have to reload the
- *	clock. In addition the rev 0x10 device only works if the same
- *	timing value is loaded into the master and slave UDMA clock
- * 	so we must also reload that.
- *
- *	FIXME: we could figure out in advance if we need to do reloads
- */
 
 static void it821x_dma_start(ide_drive_t *drive)
 {
@@ -430,14 +417,6 @@ static u8 it821x_cable_detect(ide_hwif_t *hwif)
 	return ATA_CBL_PATA80;
 }
 
-/**
- *	it821x_quirkproc	-	post init callback
- *	@drive: drive
- *
- *	This callback is run after the drive has been probed but
- *	before anything gets attached. It allows drivers to do any
- *	final tuning that is needed, or fixups to work around bugs.
- */
 
 static void it821x_quirkproc(ide_drive_t *drive)
 {

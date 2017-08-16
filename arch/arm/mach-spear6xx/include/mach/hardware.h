@@ -18,4 +18,3 @@
 #define IO_ADDRESS(x)		(x | 0xF0000000)
 
 #endif /* __MACH_HARDWARE_H */
-

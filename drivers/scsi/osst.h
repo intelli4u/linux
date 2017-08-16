@@ -6,10 +6,6 @@
 #include <linux/completion.h>
 #include <linux/mutex.h>
 
-/*	FIXME - rename and use the following two types or delete them!
- *              and the types really should go to st.h anyway...
- *	INQUIRY packet command - Data Format (From Table 6-8 of QIC-157C)
- */
 typedef struct {
 	unsigned	device_type	:5;	/* Peripheral Device Type */
 	unsigned	reserved0_765	:3;	/* Peripheral Qualifier - Reserved */

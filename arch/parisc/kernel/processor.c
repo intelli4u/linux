@@ -67,12 +67,6 @@ extern int update_cr16_clocksource(void);	/* from time.c */
 ** The initialization of OS data structures is the same (done below).
 */
 
-/**
- * init_cpu_profiler - enable/setup per cpu profiling hooks.
- * @cpunum: The processor instance.
- *
- * FIXME: doesn't do much yet...
- */
 static void __cpuinit
 init_percpu_prof(unsigned long cpunum)
 {
@@ -182,10 +176,6 @@ static int __cpuinit processor_probe(struct parisc_device *dev)
 	p->cpuid = cpuid;	/* save CPU id */
 	p->txn_addr = txn_addr;	/* save CPU IRQ address */
 #ifdef CONFIG_SMP
-	/*
-	** FIXME: review if any other initialization is clobbered
-	**	  for boot_cpu by the above memset().
-	*/
 	init_percpu_prof(cpuid);
 #endif
 
@@ -195,24 +185,6 @@ static int __cpuinit processor_probe(struct parisc_device *dev)
 	**	p->state = STATE_RENDEZVOUS;
 	*/
 
-#if 0
-	/* CPU 0 IRQ table is statically allocated/initialized */
-	if (cpuid) {
-		struct irqaction actions[];
-
-		/*
-		** itimer and ipi IRQ handlers are statically initialized in
-		** arch/parisc/kernel/irq.c. ie Don't need to register them.
-		*/
-		actions = kmalloc(sizeof(struct irqaction)*MAX_CPU_IRQ, GFP_ATOMIC);
-		if (!actions) {
-			/* not getting it's own table, share with monarch */
-			actions = cpu_irq_actions[0];
-		}
-
-		cpu_irq_actions[cpuid] = actions;
-	}
-#endif
 
 	/* 
 	 * Bring this CPU up now! (ignore bootstrap cpuid == 0)

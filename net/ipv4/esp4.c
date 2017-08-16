@@ -275,13 +275,6 @@ static int esp_input_done2(struct sk_buff *skb, int err)
 			ipaddr.a4 = iph->saddr;
 			km_new_mapping(x, &ipaddr, uh->source);
 
-			/* XXX: perhaps add an extra
-			 * policy check here, to see
-			 * if we should allow or
-			 * reject a packet from a
-			 * different source
-			 * address/port.
-			 */
 		}
 
 		/*

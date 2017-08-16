@@ -30,7 +30,6 @@
 #include <pcmcia/ss.h>
 #include <pcmcia/cs.h>
 
-/* XXX: should be moved into asm/irq.h */
 #define PCC0_IRQ 24
 #define PCC1_IRQ 25
 
@@ -111,7 +110,7 @@ void pcc_iorw(int sock, unsigned long port, void *buf, size_t size, size_t nmemb
 	/*
 	 * calculate access address
 	 */
-	addr = t->mapaddr + port - t->ioaddr + KSEG1; /* XXX */
+	addr = t->mapaddr + port - t->ioaddr + KSEG1;
 
 	/*
 	 * Check current mapping
@@ -138,11 +137,7 @@ void pcc_iorw(int sock, unsigned long port, void *buf, size_t size, size_t nmemb
 		pcc_set(sock, PCCR, 1);
 
 #ifdef CHAOS_PCC_DEBUG
-#if 0
-		map_changed = (t->current_space == as_attr && size == 2); /* XXX */
-#else
 		map_changed = 1;
-#endif
 #endif
 		t->current_space = as_io;
 	}
@@ -211,14 +206,12 @@ void pcc_iorw(int sock, unsigned long port, void *buf, size_t size, size_t nmemb
 	    }
 	}
 
-#if 1
 	/* addr is no longer used */
 	if ((addr = pcc_get(sock, PCIRC)) & PCIRC_BWERR) {
 	  printk("m32r_pcc: BWERR detected : port 0x%04lx : iosize %dbit\n",
 			 port, size * 8);
 	  pcc_set(sock, PCIRC, addr);
 	}
-#endif
 	/*
 	 * save state
 	 */
@@ -328,7 +321,7 @@ static void add_pcc_socket(ulong base, int irq, ulong mapaddr,
 	t->socket.map_size = M32R_PCC_MAPSIZE;
 	t->socket.io_offset = ioaddr;	/* use for io access offset */
 	t->socket.irq_mask = 0;
-	t->socket.pci_irq = 2 + pcc_sockets; /* XXX */
+	t->socket.pci_irq = 2 + pcc_sockets;
 
 	request_irq(irq, pcc_interrupt, 0, "m32r-pcc", pcc_interrupt);
 
@@ -402,11 +395,7 @@ static int _pcc_get_status(u_short sock, u_int *value)
 
 	status = pcc_get(sock,PCCR);
 
-#if 0
-	*value |= (status & PCCR_PCEN) ? SS_READY : 0;
-#else
-	*value |= SS_READY; /* XXX: always */
-#endif
+	*value |= SS_READY;
 
 	status = pcc_get(sock,PCCSIGCR);
 	*value |= (status & PCCSIGCR_VEN) ? SS_POWERON : 0;
@@ -497,9 +486,6 @@ static int _pcc_set_mem_map(u_short sock, struct pccard_mem_map *mem)
 	u_long addr;
 	pcc_socket_t *t = &socket[sock];
 #ifdef CHAOS_PCC_DEBUG
-#if 0
-	pcc_as_t last = t->current_space;
-#endif
 #endif
 
 	pr_debug("m32r_pcc: SetMemMap(%d, %d, %#2.2x, %d ns, "
@@ -553,11 +539,7 @@ static int _pcc_set_mem_map(u_short sock, struct pccard_mem_map *mem)
 	pcc_set(sock, PCCR, 1);
 
 #ifdef CHAOS_PCC_DEBUG
-#if 0
-	if (last != as_attr) {
-#else
 	if (1) {
-#endif
 		dummy_readbuf = *(u_char *)(addr + KSEG1);
 	}
 #endif
@@ -566,33 +548,6 @@ static int _pcc_set_mem_map(u_short sock, struct pccard_mem_map *mem)
 
 } /* _set_mem_map */
 
-#if 0 /* driver model ordering issue */
-/*======================================================================
-
-	Routines for accessing socket information and register dumps via
-	/proc/bus/pccard/...
-
-======================================================================*/
-
-static ssize_t show_info(struct class_device *class_dev, char *buf)
-{
-	pcc_socket_t *s = container_of(class_dev, struct pcc_socket,
-		socket.dev);
-
-	return sprintf(buf, "type:     %s\nbase addr:    0x%08lx\n",
-		pcc[s->type].name, s->base);
-}
-
-static ssize_t show_exca(struct class_device *class_dev, char *buf)
-{
-	/* FIXME */
-
-	return 0;
-}
-
-static CLASS_DEVICE_ATTR(info, S_IRUGO, show_info, NULL);
-static CLASS_DEVICE_ATTR(exca, S_IRUGO, show_exca, NULL);
-#endif
 
 /*====================================================================*/
 
@@ -720,12 +675,6 @@ static int __init init_m32r_pcc(void)
 		if (!ret)
 			socket[i].flags |= IS_REGISTERED;
 
-#if 0	/* driver model ordering issue */
-		class_device_create_file(&socket[i].socket.dev,
-					 &class_device_attr_info);
-		class_device_create_file(&socket[i].socket.dev,
-					 &class_device_attr_exca);
-#endif
 	}
 
 	/* Finally, schedule a polling interrupt */

@@ -1288,4 +1288,3 @@ int gfs2_write_alloc_required(struct gfs2_inode *ip, u64 offset,
 
 	return 0;
 }
-

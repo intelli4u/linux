@@ -39,11 +39,7 @@
 
 #include "ttpci-eeprom.h"
 
-#if 1
 #define dprintk(x...) do { printk(x); } while (0)
-#else
-#define dprintk(x...) do { } while (0)
-#endif
 
 
 static int check_mac_tt(u8 *buf)

@@ -343,14 +343,6 @@ done:
 
 EXPORT_SYMBOL(t3_l2t_get);
 
-/*
- * Called when address resolution fails for an L2T entry to handle packets
- * on the arpq head.  If a packet specifies a failure handler it is invoked,
- * otherwise the packets is sent to the offload device.
- *
- * XXX: maybe we should abandon the latter behavior and just require a failure
- * handler.
- */
 static void handle_failed_resolution(struct t3cdev *dev, struct sk_buff_head *arpq)
 {
 	struct sk_buff *skb, *tmp;
@@ -442,4 +434,3 @@ void t3_free_l2t(struct l2t_data *d)
 {
 	cxgb_free_mem(d);
 }
-

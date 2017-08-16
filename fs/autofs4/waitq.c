@@ -521,4 +521,3 @@ int autofs4_wait_release(struct autofs_sb_info *sbi, autofs_wqt_t wait_queue_tok
 
 	return 0;
 }
-

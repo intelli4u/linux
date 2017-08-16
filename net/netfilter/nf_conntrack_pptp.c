@@ -566,8 +566,6 @@ conntrack_pptp_help(struct sk_buff *skb, unsigned int protoff,
 
 	spin_lock_bh(&nf_pptp_lock);
 
-	/* FIXME: We just blindly assume that the control connection is always
-	 * established from PNS->PAC.  However, RFC makes no guarantee */
 	if (dir == IP_CT_DIR_ORIGINAL)
 		/* client -> server (PNS -> PAC) */
 		ret = pptp_outbound_pkt(skb, ctlh, pptpReq, reqlen, ct,

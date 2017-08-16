@@ -16,14 +16,14 @@
   Copyright 1992 - 2002 Kai Makisara / 2000 - 2006 Willem Riede
 	 email osst@riede.org
 
-  $Header: /cvsroot/osst/Driver/osst.c,v 1.73 2005/01/01 21:13:34 wriede Exp $
+  $Header: /cvsroot/osst/Driver/osst.c,v 1.73 2005/01/01 21:13:34 Exp $
 
   Microscopic alterations - Rik Ling, 2000/12/21
   Last st.c sync: Tue Oct 15 22:01:04 2002 by makisara
   Some small formal changes - aeb, 950809
 */
 
-static const char * cvsid = "$Id: osst.c,v 1.73 2005/01/01 21:13:34 wriede Exp $";
+static const char * cvsid = "$Id: osst.c,v 1.73 2005/01/01 21:13:34 Exp $";
 static const char * osst_version = "0.99.4";
 
 /* The "failure to reconnect" firmware bug */
@@ -3148,7 +3148,7 @@ static int osst_flush_write_buffer(struct osst_tape *STp, struct osst_request **
 				SRpnt->sense[12], SRpnt->sense[13]);
 #endif
 			if ((SRpnt->sense[0] & 0x70) == 0x70 &&
-			    (SRpnt->sense[2] & 0x40) && /* FIXME - SC-30 drive doesn't assert EOM bit */
+			    (SRpnt->sense[2] & 0x40) &&
 			    (SRpnt->sense[2] & 0x0f) == NO_SENSE) {
 				STp->dirty = 0;
 				(STp->buffer)->buffer_bytes = 0;
@@ -3160,7 +3160,7 @@ static int osst_flush_write_buffer(struct osst_tape *STp, struct osst_request **
 					result = (-EIO);
 				}
 			}
-			STps->drv_block = (-1);		/* FIXME - even if write recovery succeeds? */
+			STps->drv_block = (-1);
 		}
 		else {
 			STp->first_frame_position++;
@@ -3212,7 +3212,7 @@ static int osst_flush_buffer(struct osst_tape * STp, struct osst_request ** aSRp
 			    ((STp->buffer)->read_pointer + STp->block_size - 1        ) / STp->block_size ;
 		(STp->buffer)->buffer_bytes = 0;
 		(STp->buffer)->read_pointer = 0;
-		STp->frame_in_buffer = 0;		/* FIXME is this relevant w. OSST? */
+		STp->frame_in_buffer = 0;
 	}
 
 	if (!seek_next) {
@@ -3585,7 +3585,7 @@ if (SRpnt) printk(KERN_ERR "%s:A: Not supposed to have SRpnt at line %d\n", name
 		i = osst_write_frame(STp, &SRpnt, 1);
 
 		if (i == (-ENOSPC)) {
-			transfer = STp->buffer->writing;	/* FIXME -- check this logic */
+			transfer = STp->buffer->writing;
 			if (transfer <= do_count) {
 				*ppos += do_count - transfer;
 				count -= do_count - transfer;
@@ -3746,7 +3746,6 @@ static ssize_t osst_read(struct file * filp, char __user * buf, size_t count, lo
 		if (retval)
 			goto out;
 		STps->rw = ST_IDLE;
-		/* FIXME -- this may leave the tape without EOD and up2date headers */
 	}
 
 	if ((count % STp->block_size) != 0) {
@@ -4130,7 +4129,7 @@ static int osst_int_ioctl(struct osst_tape * STp, struct osst_request ** aSRpnt,
 
 	 case MTFSS:
 		cmd[0] = SPACE;
-		cmd[1] = 0x04; /* Space Setmarks */   /* FIXME -- OS can't do this? */
+		cmd[1] = 0x04; /* Space Setmarks */
 		cmd[2] = (arg >> 16);
 		cmd[3] = (arg >> 8);
 		cmd[4] = arg;
@@ -4146,7 +4145,7 @@ static int osst_int_ioctl(struct osst_tape * STp, struct osst_request ** aSRpnt,
 		break;
 	 case MTBSS:
 		cmd[0] = SPACE;
-		cmd[1] = 0x04; /* Space Setmarks */   /* FIXME -- OS can't do this? */
+		cmd[1] = 0x04; /* Space Setmarks */
 		ltmp = (-arg);
 		cmd[2] = (ltmp >> 16);
 		cmd[3] = (ltmp >> 8);
@@ -4186,7 +4185,7 @@ static int osst_int_ioctl(struct osst_tape * STp, struct osst_request ** aSRpnt,
 			return (-EACCES);
 		 if (!STp->raw)
 			return 0;
-		 cmd[0] = WRITE_FILEMARKS;   /* FIXME -- need OS version */
+		 cmd[0] = WRITE_FILEMARKS;
 		 if (cmd_in == MTWSM)
 			 cmd[1] = 2;
 		 cmd[2] = (arg >> 16);
@@ -4322,7 +4321,7 @@ static int osst_int_ioctl(struct osst_tape * STp, struct osst_request ** aSRpnt,
 						(OS_DATA_SIZE % (arg & MT_ST_BLKSIZE_MASK))?"":" now");
 			 return (-EINVAL);
 		 }
-		 return 0;  /* FIXME silently ignore if block size didn't change */
+		 return 0;
 
 	 default:
 		return (-ENOSYS);
@@ -4384,7 +4383,7 @@ os_bypass:
 		else if (cmd_in == MTLOAD) {
 			for (i=0; i < ST_NBR_PARTITIONS; i++) {
 			    STp->ps[i].rw = ST_IDLE;
-			    STp->ps[i].last_block_valid = 0;/* FIXME - where else is this field maintained? */
+			    STp->ps[i].last_block_valid = 0;
 			}
 			STp->partition = 0;
 		}
@@ -4546,7 +4545,7 @@ static int __os_scsi_tape_open(struct inode * inode, struct file * filp)
 
 	SRpnt = osst_do_scsi(NULL, STp, cmd, 0, DMA_NONE, STp->timeout, MAX_RETRIES, 1);
 	if (!SRpnt) {
-		retval = (STp->buffer)->syscall_result;		/* FIXME - valid? */
+		retval = (STp->buffer)->syscall_result;
 		goto err_out;
 	}
 	if ((SRpnt->sense[0] & 0x70) == 0x70      &&
@@ -4594,7 +4593,7 @@ static int __os_scsi_tape_open(struct inode * inode, struct file * filp)
 			STp->nbr_partitions = 1;  /* This guess will be updated later if necessary */
 		for (i=0; i < ST_NBR_PARTITIONS; i++) {
 			STps = &(STp->ps[i]);
-			STps->rw = ST_IDLE;		/* FIXME - seems to be redundant... */
+			STps->rw = ST_IDLE;
 			STps->eof = ST_NOEOF;
 			STps->at_sm = 0;
 			STps->last_block_valid = 0;
@@ -4715,7 +4714,7 @@ static int __os_scsi_tape_open(struct inode * inode, struct file * filp)
 		}
 	}
 
-	if (osst_wait_ready(STp, &SRpnt, 15 * 60, 0))		/* FIXME - not allowed with NOBLOCK */
+	if (osst_wait_ready(STp, &SRpnt, 15 * 60, 0))
 		 printk(KERN_INFO "%s:I: Device did not become Ready in open\n", name);
 
 	if ((STp->buffer)->syscall_result != 0) {
@@ -5575,9 +5574,6 @@ static void validate_options (void)
 }
 	
 #ifndef MODULE
-/* Set the boot options. Syntax: osst=xxx,yyy,...
-   where xxx is write threshold in 1024 byte blocks,
-   and   yyy is number of s/g segments to use. */
 static int __init osst_setup (char *str)
 {
   int i, ints[5];
@@ -5639,7 +5635,6 @@ static int osst_supports(struct scsi_device * SDp)
 	};
 
 static	struct	osst_support_data support_list[] = {
-		/* {"XXX", "Yy-", "", NULL},  example */
 		SIGS_FROM_OSST,
 		{NULL, }};
 
@@ -5910,7 +5905,7 @@ static int osst_probe(struct device *dev)
 	tpnt->can_partitions = 0;
 	tpnt->two_fm = OSST_TWO_FM;
 	tpnt->fast_mteom = OSST_FAST_MTEOM;
-	tpnt->scsi2_logical = OSST_SCSI2LOGICAL; /* FIXME */
+	tpnt->scsi2_logical = OSST_SCSI2LOGICAL;
 	tpnt->write_threshold = osst_write_threshold;
 	tpnt->default_drvbuffer = 0xff; /* No forced buffering */
 	tpnt->partition = 0;

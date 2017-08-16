@@ -87,7 +87,6 @@ static inline u32 iotlb_init_entry(struct iotlb_entry *e, u32 da, u32 pa,
 	e->da		= da;
 	e->pa		= pa;
 	e->valid	= 1;
-	/* FIXME: add OMAP1 support */
 	e->pgsz		= flags & MMU_CAM_PGSZ_MASK;
 	e->endian	= flags & MMU_RAM_ENDIAN_MASK;
 	e->elsz		= flags & MMU_RAM_ELSZ_MASK;

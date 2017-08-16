@@ -324,12 +324,10 @@ void ieee80211_tx_query_agg_cap(struct ieee80211_device* ieee, struct sk_buff* s
 	if(pHTInfo->IOTAction & HT_IOT_ACT_TX_NO_AGGREGATION)
 		return;
 
-#if 1
 	if(!ieee->GetNmodeSupportBySecCfg(ieee->dev))
 	{
 		return;
 	}
-#endif
 	if(pHTInfo->bCurrentAMPDUEnable)
 	{
 		if (!GetTs(ieee, (PTS_COMMON_INFO*)(&pTxTs), hdr->addr1, skb->priority, TX_DIR, true))
@@ -870,7 +868,6 @@ int rtl8192_ieee80211_rtl_xmit(struct sk_buff *skb, struct net_device *dev)
 //WB add to fill data tcb_desc here. only first fragment is considered, need to change, and you may remove to other place.
 	if (txb)
 	{
-#if 1
 		cb_desc *tcb_desc = (cb_desc *)(txb->fragments[0]->cb + MAX_DEV_ADDR_SIZE);
 		tcb_desc->bTxEnableFwCalcDur = 1;
 		if (is_multicast_ether_addr(header.addr1))
@@ -888,7 +885,6 @@ int rtl8192_ieee80211_rtl_xmit(struct sk_buff *skb, struct net_device *dev)
 		ieee80211_query_BandwidthMode(ieee, tcb_desc);
 		ieee80211_query_protectionmode(ieee, tcb_desc, txb->fragments[0]);
 		ieee80211_query_seqnum(ieee, txb->fragments[0], header.addr1);
-#endif
 	}
 	spin_unlock_irqrestore(&ieee->lock, flags);
 	dev_kfree_skb_any(skb);

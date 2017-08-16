@@ -12,7 +12,7 @@
 #include "slirp.h"
 
 struct slirp_init {
-	struct arg_list_dummy_wrapper argw;  /* XXX should be simpler... */
+	struct arg_list_dummy_wrapper argw;
 };
 
 void slirp_init(struct net_device *dev, void *data)

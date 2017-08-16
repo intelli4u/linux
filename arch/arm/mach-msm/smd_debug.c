@@ -312,4 +312,3 @@ void smsm_print_sleep_info(void)
 #endif
 	spin_unlock_irqrestore(&smem_lock, flags);
 }
-

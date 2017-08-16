@@ -1523,4 +1523,3 @@ typedef struct _MPI2_PWR_MGMT_CONTROL_REPLY {
 
 
 #endif
-

@@ -113,7 +113,7 @@ typedef struct {
 	uCHAR pciDeviceNum;	// PCI Device # (Optional)
 	uSHORT hbaFlags;	// Miscellaneous HBA flags
 	uSHORT Interrupt;	// Interrupt set for this device.
-#   if (defined(_DPT_ARC))
+#   if defined(_DPT_ARC)
 	uINT baseLength;
 	ADAPTER_OBJECT *AdapterObject;
 	LARGE_INTEGER DmaLogicalAddress;
@@ -136,4 +136,3 @@ typedef struct TARGET_BUSY
 } TARGET_BUSY_T;
 
 #endif
-

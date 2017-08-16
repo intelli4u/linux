@@ -251,4 +251,3 @@ static int __init s3c2416_irq_init(void)
 }
 
 arch_initcall(s3c2416_irq_init);
-

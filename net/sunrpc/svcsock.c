@@ -383,14 +383,6 @@ static int svc_recvfrom(struct svc_rqst *rqstp, struct kvec *iov, int nr,
 static void svc_sock_setbufsize(struct socket *sock, unsigned int snd,
 				unsigned int rcv)
 {
-#if 0
-	mm_segment_t	oldfs;
-	oldfs = get_fs(); set_fs(KERNEL_DS);
-	sock_setsockopt(sock, SOL_SOCKET, SO_SNDBUF,
-			(char*)&snd, sizeof(snd));
-	sock_setsockopt(sock, SOL_SOCKET, SO_RCVBUF,
-			(char*)&rcv, sizeof(rcv));
-#else
 	/* sock_setsockopt limits use to sysctl_?mem_max,
 	 * which isn't acceptable.  Until that is made conditional
 	 * on not having CAP_SYS_RESOURCE or similar, we go direct...
@@ -402,7 +394,6 @@ static void svc_sock_setbufsize(struct socket *sock, unsigned int snd,
 	sock->sk->sk_userlocks |= SOCK_SNDBUF_LOCK|SOCK_RCVBUF_LOCK;
 	sock->sk->sk_write_space(sock->sk);
 	release_sock(sock->sk);
-#endif
 }
 /*
  * INET callback when data has been received on the socket.
@@ -915,11 +906,6 @@ static int svc_tcp_recv_record(struct svc_sock *svsk, struct svc_rqst *rqstp)
 
 		svsk->sk_reclen = ntohl(svsk->sk_reclen);
 		if (!(svsk->sk_reclen & RPC_LAST_STREAM_FRAGMENT)) {
-			/* FIXME: technically, a record can be fragmented,
-			 *  and non-terminal fragments will not have the top
-			 *  bit set in the fragment length header.
-			 *  But apparently no known nfs clients send fragmented
-			 *  records. */
 			if (net_ratelimit())
 				printk(KERN_NOTICE "RPC: multiple fragments "
 					"per record not supported\n");
@@ -1275,10 +1261,6 @@ void svc_sock_update_bufs(struct svc_serv *serv)
 }
 EXPORT_SYMBOL_GPL(svc_sock_update_bufs);
 
-/*
- * Initialize socket for RPC use and create svc_sock struct
- * XXX: May want to setsockopt SO_SNDBUF and SO_RCVBUF.
- */
 static struct svc_sock *svc_setup_socket(struct svc_serv *serv,
 						struct socket *sock,
 						int *errp, int flags)

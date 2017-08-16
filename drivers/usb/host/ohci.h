@@ -575,11 +575,6 @@ static inline void _ohci_writel (const struct ohci_hcd *ohci,
 }
 
 #ifdef CONFIG_ARCH_LH7A404
-/* Marc Singer: at the time this code was written, the LH7A404
- * had a problem reading the USB host registers.  This
- * implementation of the ohci_readl function performs the read
- * twice as a work-around.
- */
 #define ohci_readl(o,r)		(_ohci_readl(o,r),_ohci_readl(o,r))
 #define ohci_writel(o,v,r)	_ohci_writel(o,v,r)
 #else
@@ -710,10 +705,6 @@ static inline void periodic_reinit (struct ohci_hcd *ohci)
 						&ohci->regs->periodicstart);
 }
 
-/* AMD-756 (D2 rev) reports corrupt register contents in some cases.
- * The erratum (#4) description is incorrect.  AMD's workaround waits
- * till some bits (mostly reserved) are clear; ok for all revs.
- */
 #define read_roothub(hc, register, mask) ({ \
 	u32 temp = ohci_readl (hc, &hc->regs->roothub.register); \
 	if (temp == -1) \

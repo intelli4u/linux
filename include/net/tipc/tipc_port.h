@@ -100,4 +100,3 @@ int tipc_disconnect_port(struct tipc_port *tp_ptr);
 #endif
 
 #endif
-

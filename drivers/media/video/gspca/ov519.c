@@ -2595,11 +2595,11 @@ static int ov7xx0_configure(struct sd *sd)
 				return -1;
 			case 0x40:
 				PDEBUG(D_PROBE, "Sensor is an OV7645");
-				sd->sensor = SEN_OV7640; /* FIXME */
+				sd->sensor = SEN_OV7640;
 				break;
 			case 0x45:
 				PDEBUG(D_PROBE, "Sensor is an OV7645B");
-				sd->sensor = SEN_OV7640; /* FIXME */
+				sd->sensor = SEN_OV7640;
 				break;
 			case 0x48:
 				PDEBUG(D_PROBE, "Sensor is an OV7648");
@@ -3294,8 +3294,6 @@ static int ov511_mode_init_regs(struct sd *sd)
 		sd->clockdiv = 3;
 		break;
 
-	/* Note once the FIXME's in mode_init_ov_sensor_regs() are fixed
-	   for more sensors we need to do this for them too */
 	case SEN_OV7620:
 	case SEN_OV7620AE:
 	case SEN_OV7640:
@@ -3449,7 +3447,6 @@ static int ov518_mode_init_regs(struct sd *sd)
 	} else
 		reg_w(sd, 0x71, 0x17);	/* Compression-related? */
 
-	/* FIXME: Sensor-specific */
 	/* Bit 5 is what matters here. Of course, it is "reserved" */
 	i2c_w(sd, 0x54, 0x23);
 
@@ -3577,7 +3574,6 @@ static int ov519_mode_init_regs(struct sd *sd)
 	if (frame_rate > 0)
 		sd->frame_rate = frame_rate;
 
-/* FIXME: These are only valid at the max resolution. */
 	sd->clockdiv = 0;
 	switch (sd->sensor) {
 	case SEN_OV7640:

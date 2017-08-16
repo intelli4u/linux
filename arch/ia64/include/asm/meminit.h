@@ -55,7 +55,7 @@ extern int reserve_elfcorehdr(u64 *start, u64 *end);
 # define call_pernode_memory(start, len, func)	(*func)(start, len, 0)
 #endif
 
-#define IGNORE_PFN0	1	/* XXX fix me: ignore pfn 0 until TLB miss handler is updated... */
+#define IGNORE_PFN0	1
 
 extern int register_active_ranges(u64 start, u64 len, int nid);
 

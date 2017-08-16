@@ -52,8 +52,6 @@ static inline void drbd_plug_device(struct drbd_conf *mdev)
 
 	spin_lock_irq(q->queue_lock);
 
-/* XXX the check on !blk_queue_plugged is redundant,
- * implicitly checked in blk_plug_device */
 
 	if (!blk_queue_plugged(q)) {
 		blk_plug_device(q);

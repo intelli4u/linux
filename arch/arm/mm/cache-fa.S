@@ -34,7 +34,6 @@
 #define CACHE_DSIZE	16384 
 #endif 
 
-/* FIXME: put optimal value here. Current one is just estimation */
 #define CACHE_DLIMIT	(CACHE_DSIZE * 2)
 
 /*

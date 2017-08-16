@@ -2393,7 +2393,6 @@ static int nfs4_proc_lookupfh(struct nfs_server *server, struct nfs_fh *dirfh,
 	int err;
 	do {
 		err = _nfs4_proc_lookupfh(server, dirfh, name, fhandle, fattr);
-		/* FIXME: !!!! */
 		if (err == -NFS4ERR_MOVED) {
 			err = -EREMOTE;
 			break;

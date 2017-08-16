@@ -407,64 +407,6 @@ static struct scsi_host_template nv_swncq_sht = {
 	.slave_configure	= nv_swncq_slave_config,
 };
 
-/*
- * NV SATA controllers have various different problems with hardreset
- * protocol depending on the specific controller and device.
- *
- * GENERIC:
- *
- *  bko11195 reports that link doesn't come online after hardreset on
- *  generic nv's and there have been several other similar reports on
- *  linux-ide.
- *
- *  bko12351#c23 reports that warmplug on MCP61 doesn't work with
- *  softreset.
- *
- * NF2/3:
- *
- *  bko3352 reports nf2/3 controllers can't determine device signature
- *  reliably after hardreset.  The following thread reports detection
- *  failure on cold boot with the standard debouncing timing.
- *
- *  http://thread.gmane.org/gmane.linux.ide/34098
- *
- *  bko12176 reports that hardreset fails to bring up the link during
- *  boot on nf2.
- *
- * CK804:
- *
- *  For initial probing after boot and hot plugging, hardreset mostly
- *  works fine on CK804 but curiously, reprobing on the initial port
- *  by rescanning or rmmod/insmod fails to acquire the initial D2H Reg
- *  FIS in somewhat undeterministic way.
- *
- * SWNCQ:
- *
- *  bko12351 reports that when SWNCQ is enabled, for hotplug to work,
- *  hardreset should be used and hardreset can't report proper
- *  signature, which suggests that mcp5x is closer to nf2 as long as
- *  reset quirkiness is concerned.
- *
- *  bko12703 reports that boot probing fails for intel SSD with
- *  hardreset.  Link fails to come online.  Softreset works fine.
- *
- * The failures are varied but the following patterns seem true for
- * all flavors.
- *
- * - Softreset during boot always works.
- *
- * - Hardreset during boot sometimes fails to bring up the link on
- *   certain comibnations and device signature acquisition is
- *   unreliable.
- *
- * - Hardreset is often necessary after hotplug.
- *
- * So, preferring softreset for boot probing and error handling (as
- * hardreset might bring down the link) but using hardreset for
- * post-boot probing should work around the above issues in most
- * cases.  Define nv_hardreset() which only kicks in for post-boot
- * probing and use it for all variants.
- */
 static struct ata_port_operations nv_generic_ops = {
 	.inherits		= &ata_bmdma_port_ops,
 	.lost_interrupt		= ATA_OP_NULL,
@@ -2566,4 +2508,3 @@ module_param_named(swncq, swncq_enabled, bool, 0444);
 MODULE_PARM_DESC(swncq, "Enable use of SWNCQ (Default: true)");
 module_param_named(msi, msi_enabled, bool, 0444);
 MODULE_PARM_DESC(msi, "Enable use of MSI (Default: false)");
-

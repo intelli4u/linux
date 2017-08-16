@@ -119,10 +119,6 @@ static void intel_crt_mode_set(struct drm_encoder *encoder,
 	else
 		adpa_reg = ADPA;
 
-	/*
-	 * Disable separate mode multiplier used when cloning SDVO to CRT
-	 * XXX this needs to be adjusted when we really are cloning
-	 */
 	if (IS_I965G(dev) && !HAS_PCH_SPLIT(dev)) {
 		dpll_md = I915_READ(dpll_md_reg);
 		I915_WRITE(dpll_md_reg,

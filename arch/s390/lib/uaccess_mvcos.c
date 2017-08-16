@@ -118,7 +118,6 @@ static size_t copy_in_user_mvcos(size_t size, void __user *to,
 	unsigned long tmp1, tmp2;
 
 	tmp1 = -4096UL;
-	/* FIXME: copy with reduced length. */
 	asm volatile(
 		"0: .insn ss,0xc80000000000,0(%0,%1),0(%2),0\n"
 		"   jz    2f\n"

@@ -97,4 +97,3 @@ saved_gdt:	.long	0,0
 saved_idt:	.long	0,0
 saved_ldt:	.long	0
 saved_tss:	.long	0
-

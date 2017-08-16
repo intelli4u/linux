@@ -370,7 +370,6 @@ int ioat2_enumerate_channels(struct ioatdma_device *device)
 		return 0;
 	dev_dbg(dev, "%s: xfercap = %d\n", __func__, 1 << xfercap_log);
 
-	/* FIXME which i/oat version is i7300? */
 #ifdef CONFIG_I7300_IDLE_IOAT_CHANNEL
 	if (i7300_idle_platform_probe(NULL, NULL, 1) == 0)
 		dma->chancnt--;

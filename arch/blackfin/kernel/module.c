@@ -34,13 +34,6 @@ int
 module_frob_arch_sections(Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
 			  char *secstrings, struct module *mod)
 {
-	/*
-	 * XXX: sechdrs are vmalloced in kernel/module.c
-	 * and would be vfreed just after module is loaded,
-	 * so we hack to keep the only information we needed
-	 * in mod->arch to correctly free L1 I/D sram later.
-	 * NOTE: this breaks the semantic of mod->arch structure.
-	 */
 	Elf_Shdr *s, *sechdrs_end = sechdrs + hdr->e_shnum;
 	void *dest;
 

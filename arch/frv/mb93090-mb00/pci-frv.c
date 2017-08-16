@@ -45,38 +45,6 @@ pcibios_align_resource(void *data, const struct resource *res,
 }
 
 
-/*
- *  Handle resources of PCI devices.  If the world were perfect, we could
- *  just allocate all the resource regions and do nothing more.  It isn't.
- *  On the other hand, we cannot just re-allocate all devices, as it would
- *  require us to know lots of host bridge internals.  So we attempt to
- *  keep as much of the original configuration as possible, but tweak it
- *  when it's found to be wrong.
- *
- *  Known BIOS problems we have to work around:
- *	- I/O or memory regions not configured
- *	- regions configured, but not enabled in the command register
- *	- bogus I/O addresses above 64K used
- *	- expansion ROMs left enabled (this may sound harmless, but given
- *	  the fact the PCI specs explicitly allow address decoders to be
- *	  shared between expansion ROMs and other resource regions, it's
- *	  at least dangerous)
- *
- *  Our solution:
- *	(1) Allocate resources for all buses behind PCI-to-PCI bridges.
- *	    This gives us fixed barriers on where we can allocate.
- *	(2) Allocate resources for all enabled devices.  If there is
- *	    a collision, just mark the resource as unallocated. Also
- *	    disable expansion ROMs during this step.
- *	(3) Try to allocate resources for disabled devices.  If the
- *	    resources were assigned correctly, everything goes well,
- *	    if they weren't, they won't disturb allocation of other
- *	    resources.
- *	(4) Assign new addresses to resources which were either
- *	    not configured at all or misconfigured.  If explicitly
- *	    requested by the user, configure expansion ROM address
- *	    as well.
- */
 
 static void __init pcibios_allocate_bus_resources(struct list_head *bus_list)
 {

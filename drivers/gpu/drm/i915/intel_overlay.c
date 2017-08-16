@@ -890,8 +890,6 @@ static void update_pfit_vscale_ratio(struct intel_overlay *overlay)
 	u32 ratio;
 	u32 pfit_control = I915_READ(PFIT_CONTROL);
 
-	/* XXX: This is not the same logic as in the xorg driver, but more in
-	 * line with the intel documentation for the i965 */
 	if (!IS_I965G(dev) && (pfit_control & VERT_AUTO_SCALE)) {
 		ratio = I915_READ(PFIT_AUTO_RATIOS) >> PFIT_VERT_SCALE_SHIFT;
 	} else { /* on i965 use the PGM reg to read out the autoscaler values */

@@ -424,7 +424,6 @@ static int is_leaf(char *buf, int blocksize, struct buffer_head *bh)
 				 "free space seems wrong: %z", bh);
 		return 0;
 	}
-	// FIXME: it is_leaf will hit performance too much - we may have
 	// return 1 here
 
 	/* check tables of item heads */
@@ -853,7 +852,6 @@ int search_for_position_by_key(struct super_block *sb,	/* Pointer to the super b
 	if (comp_short_keys(&(p_le_ih->ih_key), p_cpu_key)) {
 		return FILE_NOT_FOUND;
 	}
-	// FIXME: quite ugly this far
 
 	item_offset = le_ih_k_offset(p_le_ih);
 	offset = cpu_key_k_offset(p_cpu_key);
@@ -1108,9 +1106,6 @@ static int calc_deleted_bytes_number(struct tree_balance *tb, char mode)
 	    (mode ==
 	     M_DELETE) ? ih_item_len(p_le_ih) : -tb->insert_size[0];
 	if (is_direntry_le_ih(p_le_ih)) {
-		/* return EMPTY_DIR_SIZE; We delete emty directoris only.
-		 * we can't use EMPTY_DIR_SIZE, as old format dirs have a different
-		 * empty size.  ick. FIXME, is this right? */
 		return del_size;
 	}
 
@@ -1412,7 +1407,7 @@ int reiserfs_delete_object(struct reiserfs_transaction_handle *th,
 	if (err)
 		return err;
 
-#if defined( USE_INODE_GENERATION_COUNTER )
+#if defined(USE_INODE_GENERATION_COUNTER)
 	if (!old_format_only(th->t_super)) {
 		__le32 *inode_generation;
 
@@ -1649,7 +1644,6 @@ int reiserfs_cut_from_item(struct reiserfs_transaction_handle *th,
 	// check fix_nodes results (IO_ERROR or NO_DISK_SPACE)
 	if (ret_value != CARRY_ON) {
 		if (is_inode_locked) {
-			// FIXME: this seems to be not needed: we are always able
 			// to cut item
 			indirect_to_direct_roll_back(th, inode, path);
 		}
@@ -1682,7 +1676,6 @@ int reiserfs_cut_from_item(struct reiserfs_transaction_handle *th,
 		if (mode == M_DELETE &&
 		    (le_ih_k_offset(p_le_ih) & (sb->s_blocksize - 1)) ==
 		    1) {
-			// FIXME: this is to keep 3.5 happy
 			REISERFS_I(inode)->i_first_direct_byte = U32_MAX;
 			quota_cut_bytes = sb->s_blocksize + UNFM_P_SIZE;
 		} else {
@@ -1787,7 +1780,6 @@ int reiserfs_do_truncate(struct reiserfs_transaction_handle *th,
 	/* Get new file size. */
 	new_file_size = inode->i_size;
 
-	// FIXME: note, that key type is unimportant here
 	make_cpu_key(&s_item_key, inode, max_reiserfs_offset(inode),
 		     TYPE_DIRECT, 3);
 

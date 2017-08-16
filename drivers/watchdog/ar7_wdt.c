@@ -73,7 +73,6 @@ static unsigned long wdt_is_open;
 static spinlock_t wdt_lock;
 static unsigned expect_close;
 
-/* XXX currently fixed, allows max margin ~68.72 secs */
 #define prescale_value 0xffff
 
 /* Resource of the WDT registers */

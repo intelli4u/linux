@@ -424,7 +424,7 @@ static int lec_atm_send(struct atm_vcc *vcc, struct sk_buff *skb)
 	struct atmlec_msg *mesg;
 	struct lec_arp_table *entry;
 	int i;
-	char *tmp;		/* FIXME */
+	char *tmp;
 
 	atomic_sub(skb->truesize, &sk_atm(vcc)->sk_wmem_alloc);
 	mesg = (struct atmlec_msg *)skb->data;
@@ -1293,9 +1293,6 @@ static int lane2_associate_req(struct net_device *dev, const u8 *lan_dst,
 static void lane2_associate_ind(struct net_device *dev, const u8 *mac_addr,
 				const u8 *tlvs, u32 sizeoftlvs)
 {
-#if 0
-	int i = 0;
-#endif
 	struct lec_priv *priv = netdev_priv(dev);
 #if 0				/*
 				 * Why have the TLVs in LE_ARP entries
@@ -1314,14 +1311,6 @@ static void lane2_associate_ind(struct net_device *dev, const u8 *mac_addr,
 	if (entry->tlvs == NULL)
 		return;
 	entry->sizeoftlvs = sizeoftlvs;
-#endif
-#if 0
-	pr_info("\n");
-	pr_info("dump of tlvs, sizeoftlvs=%d\n", sizeoftlvs);
-	while (i < sizeoftlvs)
-		pr_cont("%02x ", tlvs[i++]);
-
-	pr_cont("\n");
 #endif
 
 	/* tell MPOA about the TLVs we saw */
@@ -1345,12 +1334,6 @@ static void lane2_associate_ind(struct net_device *dev, const u8 *mac_addr,
 #include <linux/inetdevice.h>
 #include <net/route.h>
 
-#if 0
-#define pr_debug(format, args...)
-/*
-  #define pr_debug printk
-*/
-#endif
 #define DEBUG_ARP_TABLE 0
 
 #define LEC_ARP_REFRESH_INTERVAL (3*HZ)
@@ -1456,7 +1439,7 @@ lec_arp_remove(struct lec_priv *priv, struct lec_arp_table *to_remove)
 		if (remove_vcc)
 			lec_arp_clear_vccs(to_remove);
 	}
-	skb_queue_purge(&to_remove->tx_wait);	/* FIXME: good place for this? */
+	skb_queue_purge(&to_remove->tx_wait);
 
 	pr_debug("Removed entry:%pM\n", to_remove->mac_addr);
 	return 0;
@@ -2082,16 +2065,6 @@ lec_vcc_added(struct lec_priv *priv, const struct atmlec_ioc *ioc_data,
 	/* Vcc for Multicast Forward. No timer, LANEv2 7.1.20 and 2.3.5.3 */
 	if (ioc_data->receive == 2) {
 		pr_debug("LEC_ARP: Attaching mcast forward\n");
-#if 0
-		entry = lec_arp_find(priv, bus_mac);
-		if (!entry) {
-			pr_info("LEC_ARP: Multicast entry not found!\n");
-			goto out;
-		}
-		memcpy(entry->atm_addr, ioc_data->atm_addr, ATM_ESA_LEN);
-		entry->recv_vcc = vcc;
-		entry->old_recv_push = old_push;
-#endif
 		entry = make_entry(priv, bus_mac);
 		if (entry == NULL)
 			goto out;
@@ -2167,12 +2140,6 @@ lec_vcc_added(struct lec_priv *priv, const struct atmlec_ioc *ioc_data,
 						entry->timestamp = jiffies;
 						entry->status =
 						    ESI_FLUSH_PENDING;
-#if 0
-						send_to_lecd(priv, l_flush_xmt,
-							     NULL,
-							     entry->atm_addr,
-							     NULL);
-#endif
 					}
 				} else {
 					/*

@@ -1,29 +1,4 @@
-/*
- * OMAP2xxx DVFS virtual clock functions
- *
- * Copyright (C) 2005-2008 Texas Instruments, Inc.
- * Copyright (C) 2004-2010 Nokia Corporation
- *
- * Contacts:
- * Richard Woodruff <r-woodruff2@ti.com>
- * Paul Walmsley
- *
- * Based on earlier work by Tuukka Tikkanen, Tony Lindgren,
- * Gordon McNutt and RidgeRun, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * XXX Some of this code should be replaceable by the upcoming OPP layer
- * code.  However, some notion of "rate set" is probably still necessary
- * for OMAP2xxx at least.  Rate sets should be generalized so they can be
- * used for any OMAP chip, not just OMAP2xxx.  In particular, Richard Woodruff
- * has in the past expressed a preference to use rate sets for OPP changes,
- * rather than dynamically recalculating the clock tree, so if someone wants
- * this badly enough to write the code to handle it, we should support it
- * as an option.
- */
+
 #undef DEBUG
 
 #include <linux/kernel.h>
@@ -166,10 +141,6 @@ int omap2_select_table_rate(struct clk *clk, unsigned long rate)
 }
 
 #ifdef CONFIG_CPU_FREQ
-/*
- * Walk PRCM rate table and fillout cpufreq freq_table
- * XXX This should be replaced by an OPP layer in the near future
- */
 static struct cpufreq_frequency_table *freq_table;
 
 void omap2_clk_init_cpufreq_table(struct cpufreq_frequency_table **table)
@@ -194,10 +165,6 @@ void omap2_clk_init_cpufreq_table(struct cpufreq_frequency_table **table)
 		tbl_sz++;
 	}
 
-	/*
-	 * XXX Ensure that we're doing what CPUFreq expects for this error
-	 * case and the following one
-	 */
 	if (tbl_sz == 0) {
 		pr_warning("%s: no matching entries in rate_table\n",
 			   __func__);

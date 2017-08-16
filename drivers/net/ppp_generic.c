@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  * Generic PPP layer for Linux.
  *
@@ -53,6 +54,12 @@
 #include <net/net_namespace.h>
 #include <net/netns/generic.h>
 
+#ifdef HNDCTF
+#define TYPEDEF_INT32
+#include <ctf/hndctf.h>
+#include <linux/if_pppox.h>
+#endif
+
 #define PPP_VERSION	"2.4.2"
 
 /*
@@ -91,6 +98,10 @@ struct ppp_file {
 
 #define PF_TO_PPP(pf)		PF_TO_X(pf, struct ppp)
 #define PF_TO_CHANNEL(pf)	PF_TO_X(pf, struct channel)
+
+#ifdef HNDCTF
+typedef struct channel channel_t;
+#endif
 
 /*
  * Data structure describing one ppp unit.
@@ -135,6 +146,9 @@ struct ppp {
 	unsigned pass_len, active_len;
 #endif /* CONFIG_PPP_FILTER */
 	struct net	*ppp_net;	/* the net we belong to */
+#ifdef HNDCTF
+	channel_t	*ctfpch;
+#endif
 };
 
 /*
@@ -966,7 +980,6 @@ ppp_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	pp[0] = proto >> 8;
 	pp[1] = proto;
 
-	netif_stop_queue(dev);
 	skb_queue_tail(&ppp->file.xq, skb);
 	ppp_xmit_process(ppp);
 	return NETDEV_TX_OK;
@@ -1061,6 +1074,8 @@ ppp_xmit_process(struct ppp *ppp)
 		   code that we can accept some more. */
 		if (!ppp->xmit_pending && !skb_peek(&ppp->file.xq))
 			netif_wake_queue(ppp->dev);
+		else
+			netif_stop_queue(ppp->dev);
 	}
 	ppp_xmit_unlock(ppp);
 }
@@ -1346,7 +1361,6 @@ static int ppp_mp_explode(struct ppp *ppp, struct sk_buff *skb)
 	if (nfree == 0 || nfree < navail / 2)
 		return 0; /* can't take now, leave it in xmit_pending */
 
-	/* Do protocol field compression (XXX this should be optional) */
 	p = skb->data;
 	len = skb->len;
 	if (*p == 0) {
@@ -1632,7 +1646,6 @@ ppp_receive_frame(struct ppp *ppp, struct sk_buff *skb, struct channel *pch)
 	/* note: a 0-length skb is used as an error indication */
 	if (skb->len > 0) {
 #ifdef CONFIG_PPP_MULTILINK
-		/* XXX do channel-level decompression here */
 		if (PPP_PROTO(skb) == PPP_MP)
 			ppp_receive_mp_frame(ppp, skb, pch);
 		else
@@ -2336,7 +2349,7 @@ ppp_ccp_peek(struct ppp *ppp, struct sk_buff *skb, int inbound)
 		 * Remember:
 		 * A ConfReq indicates what the sender would like to receive
 		 */
-		if(inbound)
+		if (inbound)
 			/* He is proposing what I should send */
 			ppp->xstate &= ~SC_COMP_RUN;
 		else
@@ -2619,6 +2632,12 @@ ppp_create_interface(struct net *net, int unit, int *retp)
 
 	ppp->ppp_net = net;
 
+#ifdef HNDCTF
+	if ((ctf_dev_register(kcih, dev, FALSE) != BCME_OK) ||
+	    (ctf_enable(kcih, dev, TRUE, NULL) != BCME_OK))
+		ctf_dev_unregister(kcih, dev);
+#endif
+
 	atomic_inc(&ppp_unit_count);
 	mutex_unlock(&pn->all_ppp_mutex);
 
@@ -2662,6 +2681,9 @@ static void ppp_shutdown_interface(struct ppp *ppp)
 	if (!ppp->closing) {
 		ppp->closing = 1;
 		ppp_unlock(ppp);
+#ifdef HNDCTF
+		ctf_dev_unregister(kcih, ppp->dev);
+#endif
 		unregister_netdev(ppp->dev);
 	} else
 		ppp_unlock(ppp);
@@ -2782,6 +2804,9 @@ ppp_connect_channel(struct channel *pch, int unit)
 	list_add_tail(&pch->clist, &ppp->channels);
 	++ppp->n_channels;
 	pch->ppp = ppp;
+#ifdef HNDCTF
+	ppp->ctfpch = pch;
+#endif
 	atomic_inc(&ppp->file.refcnt);
 	ppp_unlock(ppp);
 	ret = 0;
@@ -2813,6 +2838,9 @@ ppp_disconnect_channel(struct channel *pch)
 		if (--ppp->n_channels == 0)
 			wake_up_interruptible(&ppp->file.rwait);
 		ppp_unlock(ppp);
+#ifdef HNDCTF
+		ppp->ctfpch = NULL;
+#endif
 		if (atomic_dec_and_test(&ppp->file.refcnt))
 			ppp_destroy_interface(ppp);
 		err = 0;
@@ -2906,6 +2934,113 @@ static void *unit_find(struct idr *p, int n)
 {
 	return idr_find(p, n);
 }
+
+#if defined(CTF_PPPOE) || defined(CTF_PPTP) || defined(CTF_L2TP)
+void
+ppp_rxstats_upd(void *pppif, struct sk_buff *skb)
+{
+	struct ppp *ppp;
+	if (pppif == NULL || skb == NULL) return;
+	ppp = netdev_priv((const struct net_device *)pppif);
+	if (ppp == NULL || ppp->dev == NULL) return;
+	++ppp->dev->stats.rx_packets;
+	ppp->dev->stats.rx_bytes += skb->len;
+	ppp->last_recv = jiffies;
+}
+
+void
+ppp_txstats_upd(void *pppif, struct sk_buff *skb)
+{
+	struct ppp *ppp;
+	if (pppif == NULL || skb == NULL) return;
+	ppp = netdev_priv((const struct net_device *)pppif);
+	if (ppp == NULL || ppp->dev == NULL) return;
+	++ppp->dev->stats.tx_packets;
+	ppp->dev->stats.tx_bytes += skb->len;
+	ppp->last_xmit = jiffies;
+}
+
+#if defined(CTF_PPTP) || defined(CTF_L2TP)
+int
+ppp_get_conn_pkt_info(void *pppif, struct ctf_ppp *ctfppp)
+{
+	struct pppox_sock *po = NULL;
+	struct sock *sk = NULL;
+	struct ppp *ppp = NULL;
+	struct channel *pch = NULL;
+
+	ppp = (struct ppp *)netdev_priv((const struct net_device *)pppif);
+	if (ppp) pch = ppp->ctfpch;
+
+	if (pch == NULL) {
+		return (BCME_ERROR);
+	}
+
+	po = pppox_sk((struct sock *)pch->chan->private);
+
+	if (po == NULL) {
+		return (BCME_ERROR);
+	}
+	ctfppp->psk.po = po;
+
+	sk = po->chan.private;
+	if (sk && sk == &po->sk) {
+		ctfppp->psk.pppox_protocol = sk->sk_protocol;
+		switch (sk->sk_protocol) {
+		case PX_PROTO_OE:
+			ctfppp->pppox_id = po->pppoe_pa.sid;
+			memcpy(ctfppp->psk.dhost.octet , po->pppoe_pa.remote, ETH_ALEN);
+
+#ifdef DEBUG
+		printk("%s: Adding pppoe connection:  session ID =%04x, Address=%02x:%02x:%02x:%02x:%02x:%02x\n",
+			__FUNCTION__,ntohs(ctfppp->pppox_id),
+				ctfppp->psk.dhost.octet[0], ctfppp->psk.dhost.octet[1],
+				ctfppp->psk.dhost.octet[2], ctfppp->psk.dhost.octet[3],
+				ctfppp->psk.dhost.octet[4], ctfppp->psk.dhost.octet[5]);
+#endif /*DEBUG*/
+			break;
+#ifdef CTF_PPTP
+		case PX_PROTO_PPTP:
+			ctfppp->pppox_id = 0xffff;
+#ifdef DEBUG
+
+		printk("%s: Adding pptp entry:  src call ID =%04x, src ip=%u.%u.%u.%u, dst call ID=%4x, dst ip=%u.%u.%u.%u\n ",
+			__FUNCTION__,po->proto.pptp.dst_addr.call_id,   NIPQUAD(po->proto.pptp.src_addr.sin_addr.s_addr),
+			po->proto.pptp.dst_addr.call_id,NIPQUAD(po->proto.pptp.dst_addr.sin_addr.s_addr));
+
+#endif
+			break;
+#endif /*CTF_PPTP*/
+#ifdef CTF_L2TP
+		case PX_PROTO_OL2TP:
+			ctfppp->pppox_id = 0xffff;
+#ifdef DEBUG
+		printk("%s: Adding l2tp entry:\n", __FUNCTION__);
+		printk("local tunnel ID =0x%04x,session ID =0x%04x, src ip=%u.%u.%u.%u\n",
+			po->proto.l2tp.ts.tunnel_id, po->proto.l2tp.ts.session_id,NIPQUAD(po->proto.l2tp.inet.saddr));
+		printk("peer  tunnel ID=0x%4x, session ID = 0x%04x, dst ip=%u.%u.%u.%u\n ",
+			po->proto.l2tp.ts.peer_tunnel_id, po->proto.l2tp.ts.peer_session_id,NIPQUAD(po->proto.l2tp.inet.daddr));
+		printk("header len =%d\n", po->proto.l2tp.ts.l2tph_len);
+
+#endif
+			break;
+#endif /* CTF_L2TP*/
+
+		default:
+			return (BCME_ERROR);
+		}
+	}
+	else {
+		return (BCME_ERROR);
+	}
+	return (BCME_OK);
+}
+EXPORT_SYMBOL(ppp_get_conn_pkt_info);
+#endif /** defined(CTF_PPTP) || defined(CTF_L2TP) **/
+
+EXPORT_SYMBOL(ppp_rxstats_upd);
+EXPORT_SYMBOL(ppp_txstats_upd);
+#endif /** defined(CTF_PPPOE) || defined(CTF_PPTP) || defined(CTF_L2TP) **/
 
 /* Module/initialization stuff */
 

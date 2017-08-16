@@ -1118,7 +1118,6 @@ static void sx_change_speed(struct specialix_board *bp,
 		port->COR2 |= COR2_CTSAE;
 #endif
 	}
-	/* Enable Software Flow Control. FIXME: I'm not sure about this */
 	/* Some people reported that it works, but I still doubt it */
 	if (I_IXON(tty)) {
 		port->COR2 |= COR2_TXIBE;
@@ -2019,7 +2018,6 @@ static void sx_unthrottle(struct tty_struct *tty)
 	bp = port_Board(port);
 
 	spin_lock_irqsave(&port->lock, flags);
-	/* XXXX Use DTR INSTEAD???? */
 	if (sx_crtscts(tty))
 		port->MSVR |= MSVR_DTR;
 	/* Else clause: see remark in "sx_throttle"... */

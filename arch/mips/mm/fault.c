@@ -42,11 +42,6 @@ asmlinkage void __kprobes do_page_fault(struct pt_regs *regs, unsigned long writ
 	siginfo_t info;
 	int fault;
 
-#if 0
-	printk("Cpu%d[%s:%d:%0*lx:%ld:%0*lx]\n", raw_smp_processor_id(),
-	       current->comm, current->pid, field, address, write,
-	       field, regs->cp0_epc);
-#endif
 
 #ifdef CONFIG_KPROBES
 	/*
@@ -113,23 +108,9 @@ good_area:
 	} else {
 		if (kernel_uses_smartmips_rixi) {
 			if (address == regs->cp0_epc && !(vma->vm_flags & VM_EXEC)) {
-#if 0
-				pr_notice("Cpu%d[%s:%d:%0*lx:%ld:%0*lx] XI violation\n",
-					  raw_smp_processor_id(),
-					  current->comm, current->pid,
-					  field, address, write,
-					  field, regs->cp0_epc);
-#endif
 				goto bad_area;
 			}
 			if (!(vma->vm_flags & VM_READ)) {
-#if 0
-				pr_notice("Cpu%d[%s:%d:%0*lx:%ld:%0*lx] RI violation\n",
-					  raw_smp_processor_id(),
-					  current->comm, current->pid,
-					  field, address, write,
-					  field, regs->cp0_epc);
-#endif
 				goto bad_area;
 			}
 		} else {
@@ -171,15 +152,6 @@ bad_area_nosemaphore:
 	if (user_mode(regs)) {
 		tsk->thread.cp0_badvaddr = address;
 		tsk->thread.error_code = write;
-#if 0
-		printk("do_page_fault() #2: sending SIGSEGV to %s for "
-		       "invalid %s\n%0*lx (epc == %0*lx, ra == %0*lx)\n",
-		       tsk->comm,
-		       write ? "write access to" : "read access from",
-		       field, address,
-		       field, (unsigned long) regs->cp0_epc,
-		       field, (unsigned long) regs->regs[31]);
-#endif
 		info.si_signo = SIGSEGV;
 		info.si_errno = 0;
 		/* info.si_code has been set above */
@@ -227,15 +199,6 @@ do_sigbus:
 	 * Send a sigbus, regardless of whether we were in kernel
 	 * or user mode.
 	 */
-#if 0
-		printk("do_page_fault() #3: sending SIGBUS to %s for "
-		       "invalid %s\n%0*lx (epc == %0*lx, ra == %0*lx)\n",
-		       tsk->comm,
-		       write ? "write access to" : "read access from",
-		       field, address,
-		       field, (unsigned long) regs->cp0_epc,
-		       field, (unsigned long) regs->regs[31]);
-#endif
 	tsk->thread.cp0_badvaddr = address;
 	info.si_signo = SIGBUS;
 	info.si_errno = 0;

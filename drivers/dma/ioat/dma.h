@@ -42,10 +42,6 @@
 
 #define chan_num(ch) ((int)((ch)->reg_base - (ch)->device->reg_base) / 0x80)
 
-/*
- * workaround for IOAT ver.3.0 null descriptor issue
- * (channel returns error when size is 0)
- */
 #define NULL_DESC_BUFFER_SIZE 1
 
 /**

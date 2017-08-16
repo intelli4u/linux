@@ -51,30 +51,10 @@ ACPI_MODULE_NAME("utids")
 /* Local prototypes */
 static void acpi_ut_copy_id_string(char *destination, char *source);
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ut_copy_id_string
- *
- * PARAMETERS:  Destination         - Where to copy the string
- *              Source              - Source string
- *
- * RETURN:      None
- *
- * DESCRIPTION: Copies an ID string for the _HID, _CID, and _UID methods.
- *              Performs removal of a leading asterisk if present -- workaround
- *              for a known issue on a bunch of machines.
- *
- ******************************************************************************/
 
 static void acpi_ut_copy_id_string(char *destination, char *source)
 {
 
-	/*
-	 * Workaround for ID strings that have a leading asterisk. This construct
-	 * is not allowed by the ACPI specification  (ID strings must be
-	 * alphanumeric), but enough existing machines have this embedded in their
-	 * ID strings that the following code is useful.
-	 */
 	if (*source == '*') {
 		source++;
 	}

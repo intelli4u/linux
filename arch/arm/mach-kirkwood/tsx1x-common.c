@@ -110,4 +110,3 @@ void qnap_tsx1x_power_off(void)
 	/* send the power-off command 'A' to PIC */
 	writel('A', UART1_REG(TX));
 }
-

@@ -722,12 +722,6 @@ static int nfs_write_pageuptodate(struct page *page, struct inode *inode)
 		!(NFS_I(inode)->cache_validity & (NFS_INO_REVAL_PAGECACHE|NFS_INO_INVALID_DATA));
 }
 
-/*
- * Update and possibly write a cached page of an NFS file.
- *
- * XXX: Keep an eye on generic_file_read to make sure it doesn't do bad
- * things with a page scheduled for an RPC call (e.g. invalidate it).
- */
 int nfs_updatepage(struct file *file, struct page *page,
 		unsigned int offset, unsigned int count)
 {
@@ -1067,13 +1061,6 @@ static const struct rpc_call_ops nfs_write_partial_ops = {
 	.rpc_release = nfs_writeback_release_partial,
 };
 
-/*
- * Handle a write reply that flushes a whole page.
- *
- * FIXME: There is an inherent race with invalidate_inode_pages and
- *	  writebacks since the page->count is kept > 1 for as long
- *	  as the page has a write request pending.
- */
 static void nfs_writeback_done_full(struct rpc_task *task, void *calldata)
 {
 	struct nfs_write_data	*data = calldata;
@@ -1629,4 +1616,3 @@ void nfs_destroy_writepagecache(void)
 	mempool_destroy(nfs_wdata_mempool);
 	kmem_cache_destroy(nfs_wdata_cachep);
 }
-

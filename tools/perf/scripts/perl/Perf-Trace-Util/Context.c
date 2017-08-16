@@ -132,4 +132,3 @@ XS(boot_Perf__Trace__Context)
          call_list(PL_scopestack_ix, PL_unitcheckav);
     XSRETURN_YES;
 }
-

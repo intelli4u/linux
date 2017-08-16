@@ -84,14 +84,6 @@ u32 ath5k_hw_get_rxdp(struct ath5k_hw *ah)
 	return ath5k_hw_reg_read(ah, AR5K_RXDP);
 }
 
-/**
- * ath5k_hw_set_rxdp - Set RX Descriptor's address
- *
- * @ah: The &struct ath5k_hw
- * @phys_addr: RX descriptor address
- *
- * XXX: Should we check if rx is enabled before setting rxdp ?
- */
 void ath5k_hw_set_rxdp(struct ath5k_hw *ah, u32 phys_addr)
 {
 	ath5k_hw_reg_write(ah, phys_addr, AR5K_RXDP);
@@ -199,7 +191,6 @@ int ath5k_hw_stop_tx_dma(struct ath5k_hw *ah, unsigned int queue)
 			break;
 		case AR5K_TX_QUEUE_BEACON:
 		case AR5K_TX_QUEUE_CAB:
-			/* XXX Fix me... */
 			tx_queue |= AR5K_CR_TXD1 & ~AR5K_CR_TXD1;
 			ath5k_hw_reg_write(ah, 0, AR5K_BSR);
 			break;
@@ -274,19 +265,6 @@ int ath5k_hw_stop_tx_dma(struct ath5k_hw *ah, unsigned int queue)
 	return 0;
 }
 
-/**
- * ath5k_hw_get_txdp - Get TX Descriptor's address for a specific queue
- *
- * @ah: The &struct ath5k_hw
- * @queue: The hw queue number
- *
- * Get TX descriptor's address for a specific queue. For 5210 we ignore
- * the queue number and use tx queue type since we only have 2 queues.
- * We use TXDP0 for normal data queue and TXDP1 for beacon queue.
- * For newer chips with QCU/DCU we just read the corresponding TXDP register.
- *
- * XXX: Is TXDP read and clear ?
- */
 u32 ath5k_hw_get_txdp(struct ath5k_hw *ah, unsigned int queue)
 {
 	u16 tx_reg;
@@ -369,24 +347,6 @@ int ath5k_hw_set_txdp(struct ath5k_hw *ah, unsigned int queue, u32 phys_addr)
 	return 0;
 }
 
-/**
- * ath5k_hw_update_tx_triglevel - Update tx trigger level
- *
- * @ah: The &struct ath5k_hw
- * @increase: Flag to force increase of trigger level
- *
- * This function increases/decreases the tx trigger level for the tx fifo
- * buffer (aka FIFO threshold) that is used to indicate when PCU flushes
- * the buffer and transmits it's data. Lowering this results sending small
- * frames more quickly but can lead to tx underruns, raising it a lot can
- * result other problems (i think bmiss is related). Right now we start with
- * the lowest possible (64Bytes) and if we get tx underrun we increase it using
- * the increase flag. Returns -EIO if we have have reached maximum/minimum.
- *
- * XXX: Link this with tx DMA size ?
- * XXX: Use it to save interrupts ?
- * TODO: Needs testing, i think it's related to bmiss...
- */
 int ath5k_hw_update_tx_triglevel(struct ath5k_hw *ah, bool increase)
 {
 	u32 trigger_level, imr;
@@ -575,13 +535,6 @@ int ath5k_hw_get_isr(struct ath5k_hw *ah, enum ath5k_int *interrupt_mask)
 				| AR5K_ISR_HIUERR | AR5K_ISR_DPERR)))
 			*interrupt_mask |= AR5K_INT_FATAL;
 
-		/*
-		 * XXX: BMISS interrupts may occur after association.
-		 * I found this on 5210 code but it needs testing. If this is
-		 * true we should disable them before assoc and re-enable them
-		 * after a successful assoc + some jiffies.
-			interrupt_mask &= ~AR5K_INT_BMISS;
-		 */
 	}
 
 	/*
@@ -687,4 +640,3 @@ enum ath5k_int ath5k_hw_set_imr(struct ath5k_hw *ah, enum ath5k_int new_mask)
 
 	return old_mask;
 }
-

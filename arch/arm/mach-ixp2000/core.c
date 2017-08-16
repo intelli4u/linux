@@ -507,4 +507,3 @@ void __init ixp2000_init_irq(void)
 		set_irq_flags(irq, IRQF_VALID);
 	}
 }
-

@@ -59,7 +59,7 @@ static int logfs_write_end(struct file *file, struct address_space *mapping,
 		}
 	}
 	if (copied == 0)
-		goto out; /* FIXME: do we need to update inode? */
+		goto out;
 
 	if (i_size_read(inode) < (index << PAGE_CACHE_SHIFT) + end) {
 		i_size_write(inode, (index << PAGE_CACHE_SHIFT) + end);

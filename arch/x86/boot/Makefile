@@ -10,7 +10,6 @@
 #
 
 # ROOT_DEV specifies the default root-device when making the image.
-# This can be either FLOPPY, CURRENT, /dev/xxxx or empty, in which case
 # the default of FLOPPY is used by 'build'.
 
 ROOT_DEV	:= CURRENT

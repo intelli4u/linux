@@ -205,10 +205,6 @@ static int node_probe(struct device *dev)
 	if (!fdtv)
 		return -ENOMEM;
 
-	/*
-	 * Work around a bug in udev's path_id script:  Use the fw-host's dev
-	 * instead of the unit directory's dev as parent of the input device.
-	 */
 	err = fdtv_register_rc(fdtv, dev->parent->parent);
 	if (err)
 		goto fail_free;

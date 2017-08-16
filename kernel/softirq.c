@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  *	linux/kernel/softirq.c
  *
@@ -29,6 +30,14 @@
 #include <trace/events/irq.h>
 
 #include <asm/irq.h>
+
+#if defined(CONFIG_BUZZZ)
+#include <asm/buzzz.h>
+#endif	/*  CONFIG_BUZZZ */
+
+#include <typedefs.h>
+#include <bcmdefs.h>
+
 /*
    - No shared variables, all the data are CPU local.
    - If a softirq needs serialization, let it serialize itself
@@ -114,7 +123,7 @@ static inline void __local_bh_disable(unsigned long ip)
 }
 #endif /* CONFIG_TRACE_IRQFLAGS */
 
-void local_bh_disable(void)
+void BCMFASTPATH local_bh_disable(void)
 {
 	__local_bh_disable((unsigned long)__builtin_return_address(0));
 }
@@ -128,8 +137,10 @@ EXPORT_SYMBOL(local_bh_disable);
  */
 void _local_bh_enable(void)
 {
+#ifdef BCMDBG
 	WARN_ON_ONCE(in_irq());
 	WARN_ON_ONCE(!irqs_disabled());
+#endif
 
 	if (softirq_count() == SOFTIRQ_OFFSET)
 		trace_softirqs_on((unsigned long)__builtin_return_address(0));
@@ -140,7 +151,9 @@ EXPORT_SYMBOL(_local_bh_enable);
 
 static inline void _local_bh_enable_ip(unsigned long ip)
 {
+#ifdef BCMDBG
 	WARN_ON_ONCE(in_irq() || irqs_disabled());
+#endif
 #ifdef CONFIG_TRACE_IRQFLAGS
 	local_irq_disable();
 #endif
@@ -165,7 +178,7 @@ static inline void _local_bh_enable_ip(unsigned long ip)
 	preempt_check_resched();
 }
 
-void local_bh_enable(void)
+void BCMFASTPATH local_bh_enable(void)
 {
 	_local_bh_enable_ip((unsigned long)__builtin_return_address(0));
 }
@@ -188,7 +201,7 @@ EXPORT_SYMBOL(local_bh_enable_ip);
  */
 #define MAX_SOFTIRQ_RESTART 10
 
-asmlinkage void __do_softirq(void)
+asmlinkage void BCMFASTPATH __do_softirq(void)
 {
 	struct softirq_action *h;
 	__u32 pending;
@@ -216,7 +229,17 @@ restart:
 			kstat_incr_softirqs_this_cpu(h - softirq_vec);
 
 			trace_softirq_entry(h, softirq_vec);
+
+#if defined(BUZZZ_KEVT_LVL) && (BUZZZ_KEVT_LVL >= 1)
+			buzzz_kevt_log1(BUZZZ_KEVT_ID_SIRQ_ENTRY, (int)h->action);
+#endif	/* BUZZZ_KEVT_LVL */
+
 			h->action(h);
+
+#if defined(BUZZZ_KEVT_LVL) && (BUZZZ_KEVT_LVL >= 1)
+			buzzz_kevt_log1(BUZZZ_KEVT_ID_SIRQ_EXIT, (int)h->action);
+#endif	/* BUZZZ_KEVT_LVL */
+
 			trace_softirq_exit(h, softirq_vec);
 			if (unlikely(prev_count != preempt_count())) {
 				printk(KERN_ERR "huh, entered softirq %td %s %p"

@@ -118,4 +118,3 @@ ath5k_rfkill_hw_stop(struct ath5k_hw *ah)
 	/* enable RFKILL when stopping HW so Wifi LED is turned off */
 	ath5k_rfkill_enable(sc);
 }
-

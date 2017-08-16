@@ -1319,5 +1319,3 @@ void
 bfa_cb_lps_flogo_comp(void *bfad, void *uarg)
 {
 }
-
-

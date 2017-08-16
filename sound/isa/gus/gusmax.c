@@ -167,25 +167,6 @@ static int __devinit snd_gusmax_mixer(struct snd_wss *chip)
 	strcpy(id2.name, "CD Playback Volume");
 	if ((err = snd_ctl_rename_id(card, &id1, &id2)) < 0)
 		return err;
-#if 0
-	/* reassign Mono Input to MIC */
-	if (snd_mixer_group_rename(mixer,
-				SNDRV_MIXER_IN_MONO, 0,
-				SNDRV_MIXER_IN_MIC, 0) < 0)
-		goto __error;
-	if (snd_mixer_elem_rename(mixer,
-				SNDRV_MIXER_IN_MONO, 0, SNDRV_MIXER_ETYPE_INPUT,
-				SNDRV_MIXER_IN_MIC, 0) < 0)
-		goto __error;
-	if (snd_mixer_elem_rename(mixer,
-				"Mono Capture Volume", 0, SNDRV_MIXER_ETYPE_VOLUME1,
-				"Mic Capture Volume", 0) < 0)
-		goto __error;
-	if (snd_mixer_elem_rename(mixer,
-				"Mono Capture Switch", 0, SNDRV_MIXER_ETYPE_SWITCH1,
-				"Mic Capture Switch", 0) < 0)
-		goto __error;
-#endif
 	return 0;
 }
 
@@ -367,7 +348,6 @@ static struct isa_driver snd_gusmax_driver = {
 	.match		= snd_gusmax_match,
 	.probe		= snd_gusmax_probe,
 	.remove		= __devexit_p(snd_gusmax_remove),
-	/* FIXME: suspend/resume */
 	.driver		= {
 		.name	= DEV_NAME
 	},

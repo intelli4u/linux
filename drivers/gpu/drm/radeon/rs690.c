@@ -48,7 +48,6 @@ static int rs690_mc_wait_for_idle(struct radeon_device *rdev)
 
 static void rs690_gpu_init(struct radeon_device *rdev)
 {
-	/* FIXME: is this correct ? */
 	r420_pipes_init(rdev);
 	if (rs690_mc_wait_for_idle(rdev)) {
 		printk(KERN_WARNING "Failed to wait MC idle while "
@@ -235,7 +234,6 @@ void rs690_crtc_bandwidth_compute(struct radeon_device *rdev,
 	fixed20_12 consumption_time, line_time, chunk_time, read_delay_latency;
 
 	if (!crtc->base.enabled) {
-		/* FIXME: wouldn't it better to set priority mark to maximum */
 		wm->lb_request_fifo_depth = 4;
 		return;
 	}

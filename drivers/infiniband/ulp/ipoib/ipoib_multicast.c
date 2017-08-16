@@ -315,11 +315,7 @@ static int ipoib_mcast_sendonly_join(struct ipoib_mcast *mcast)
 	struct net_device *dev = mcast->dev;
 	struct ipoib_dev_priv *priv = netdev_priv(dev);
 	struct ib_sa_mcmember_rec rec = {
-#if 0				/* Some SMs don't support send-only yet */
-		.join_state = 4
-#else
 		.join_state = 1
-#endif
 	};
 	int ret = 0;
 

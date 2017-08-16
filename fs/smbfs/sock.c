@@ -250,13 +250,6 @@ out:
 
 static char drop_buffer[PAGE_SIZE];
 
-/*
- * smb_receive_drop - read and throw away the data
- * Only called by the smbiod thread.
- *
- * FIXME: we are in the kernel, could we just tell the socket that we want
- * to drop stuff from the buffer?
- */
 int
 smb_receive_drop(struct smb_sb_info *server)
 {

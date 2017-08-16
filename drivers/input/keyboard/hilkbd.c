@@ -332,10 +332,6 @@ static struct parisc_device_id hil_tbl[] = {
 	{ 0, }
 };
 
-#if 0
-/* Disabled to avoid conflicts with the HP SDC HIL drivers */
-MODULE_DEVICE_TABLE(parisc, hil_tbl);
-#endif
 
 static struct parisc_driver hil_driver = {
 	.name		= "hil",

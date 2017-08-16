@@ -119,4 +119,3 @@ void pcmcia_write_disable(void)
 	gayle.cardstatus = 0;
 }
 EXPORT_SYMBOL(pcmcia_write_disable);
-

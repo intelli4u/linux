@@ -51,8 +51,6 @@ static unsigned long virt_base_2700;
 
 #define MAX_PALETTES	16
 
-/* FIXME: take care of different chip revisions with different sizes
-   of ODFB */
 #define MEMORY_OFFSET	0x60000
 
 struct mbxfb_info {
@@ -127,7 +125,7 @@ static unsigned int mbxfb_get_pixclock(unsigned int pixclock_ps,
 	unsigned int min_err = ~0x0;
 	unsigned int clk;
 	unsigned int best_clk = 0;
-	unsigned int ref_clk = 13000;	/* FIXME: take from platform data */
+	unsigned int ref_clk = 13000;
 	unsigned int pixclock;
 
 	/* convert pixclock to KHz */
@@ -244,7 +242,6 @@ static int mbxfb_set_par(struct fb_info *info)
 
 	/* setup color mode */
 	gsctrl &= ~(FMsk(GSCTRL_GPIXFMT));
-	/* FIXME: add *WORKING* support for 8-bits per color */
 	if (info->var.bits_per_pixel == 8) {
 		return -EINVAL;
 	} else {
@@ -693,7 +690,6 @@ static void __devinit setup_memc(struct fb_info *fbi)
 	unsigned long tmp;
 	int i;
 
-	/* FIXME: use platform specific parameters */
 	/* setup SDRAM controller */
 	write_reg_dly((LMCFG_LMC_DS | LMCFG_LMC_TS | LMCFG_LMD_TS |
 		LMCFG_LMA_TS),

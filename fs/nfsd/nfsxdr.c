@@ -30,8 +30,6 @@ decode_fh(__be32 *p, struct svc_fh *fhp)
 	memcpy(&fhp->fh_handle.fh_base, p, NFS_FHSIZE);
 	fhp->fh_handle.fh_size = NFS_FHSIZE;
 
-	/* FIXME: Look up export pointer here and verify
-	 * Sun Secure RPC if requested */
 	return p + (NFS_FHSIZE >> 2);
 }
 

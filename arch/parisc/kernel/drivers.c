@@ -151,8 +151,6 @@ static int parisc_driver_remove(struct device *dev)
  */
 int register_parisc_driver(struct parisc_driver *driver)
 {
-	/* FIXME: we need this because apparently the sti
-	 * driver can be registered twice */
 	if(driver->drv.name) {
 		printk(KERN_WARNING 
 		       "BUG: skipping previously registered driver %s\n",

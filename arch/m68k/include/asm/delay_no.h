@@ -50,9 +50,8 @@ extern unsigned long loops_per_jiffy;
 
 static inline void _udelay(unsigned long usecs)
 {
-#if defined(CONFIG_M68328) || defined(CONFIG_M68EZ328) || \
-    defined(CONFIG_M68VZ328) || defined(CONFIG_M68360) || \
-    defined(CONFIG_COLDFIRE)
+#if defined(CONFIG_M68328) || defined(CONFIG_M68EZ328) || defined(CONFIG_M68VZ328) || \
+	defined(CONFIG_M68360) || defined(CONFIG_COLDFIRE)
 	__delay((((usecs * HZSCALE) >> 11) * (loops_per_jiffy >> 11)) >> 6);
 #else
 	unsigned long tmp;

@@ -166,7 +166,7 @@ static int das16cs_attach(struct comedi_device *dev,
 
 	printk("comedi%d: cb_das16_cs: ", dev->minor);
 
-	link = cur_dev;		/* XXX hack */
+	link = cur_dev;
 	if (!link)
 		return -EIO;
 

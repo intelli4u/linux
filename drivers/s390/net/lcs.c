@@ -50,8 +50,7 @@
 #include "lcs.h"
 
 
-#if !defined(CONFIG_NET_ETHERNET) && \
-    !defined(CONFIG_TR) && !defined(CONFIG_FDDI)
+#if !defined(CONFIG_NET_ETHERNET) && !defined(CONFIG_TR) && !defined(CONFIG_FDDI)
 #error Cannot compile lcs.c without some net devices switched on.
 #endif
 
@@ -1496,12 +1495,10 @@ lcs_tasklet(unsigned long data)
 	channel->buf_idx = buf_idx;
 
 	if (channel->state == LCS_CH_STATE_STOPPED)
-		// FIXME: what if rc != 0 ??
 		rc = lcs_start_channel(channel);
 	spin_lock_irqsave(get_ccwdev_lock(channel->ccwdev), flags);
 	if (channel->state == LCS_CH_STATE_SUSPENDED &&
 	    channel->iob[channel->io_idx].state == LCS_BUF_STATE_READY) {
-		// FIXME: what if rc != 0 ??
 		rc = __lcs_resume_channel(channel);
 	}
 	spin_unlock_irqrestore(get_ccwdev_lock(channel->ccwdev), flags);
@@ -1859,7 +1856,7 @@ lcs_get_frames_cb(struct lcs_channel *channel, struct lcs_buffer *buffer)
 				    sizeof(struct lcs_header));
 		else
 			/* Unknown frame type. */
-			; // FIXME: error message ?
+			;
 		/* Proceed to next frame. */
 		offset = lcs_hdr->offset;
 		lcs_hdr->offset = LCS_ILLEGAL_OFFSET;
@@ -1882,10 +1879,6 @@ lcs_getstats(struct net_device *dev)
 	return &card->stats;
 }
 
-/**
- * stop lcs device
- * This function will be called by user doing ifconfig xxx down
- */
 static int
 lcs_stop_device(struct net_device *dev)
 {
@@ -1906,10 +1899,6 @@ lcs_stop_device(struct net_device *dev)
 	return rc;
 }
 
-/**
- * start lcs device and make it runnable
- * This function will be called by user doing ifconfig xxx up
- */
 static int
 lcs_open_device(struct net_device *dev)
 {
@@ -2504,4 +2493,3 @@ module_exit(lcs_cleanup_module);
 
 MODULE_AUTHOR("Frank Pavlic <fpavlic@de.ibm.com>");
 MODULE_LICENSE("GPL");
-

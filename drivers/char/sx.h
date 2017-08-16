@@ -198,4 +198,3 @@ struct vpd_prom {
 
 #define WINDOW_LEN(board) (IS_CF_BOARD(board)?0x20000:SX_WINDOW_LEN)
 /*                         Need a #define for ^^^^^^^ !!! */
-

@@ -64,11 +64,7 @@
 #include "kvm_minstate.h"
 #include "vti.h"
 
-#if 1
 # define PSR_DEFAULT_BITS   psr.ac
-#else
-# define PSR_DEFAULT_BITS   0
-#endif
 
 #define KVM_FAULT(n)    \
 	kvm_fault_##n:;          \
@@ -241,8 +237,8 @@ ENTRY(kvm_break_fault)
 	;;
 	alloc r14=ar.pfs,0,0,4,0 //(must be first in insn group!)
 	mov out0=cr.ifa
-	mov out2=cr.isr     // FIXME: pity to make this slow access twice
-	mov out3=cr.iim     // FIXME: pity to make this slow access twice
+	mov out2=cr.isr
+	mov out3=cr.iim
 	adds r3=8,r2                // set up second base pointer
 	;;
 	ssm psr.ic
@@ -1288,14 +1284,6 @@ GLOBAL_ENTRY(ia64_vmm_entry)
 	;;
 END(ia64_vmm_entry)
 
-/*
- * extern u64 ia64_call_vsa(u64 proc, u64 arg1, u64 arg2,
- *                  u64 arg3, u64 arg4, u64 arg5,
- *                  u64 arg6, u64 arg7);
- *
- * XXX: The currently defined services use only 4 args at the max. The
- *  rest are not consumed.
- */
 GLOBAL_ENTRY(ia64_call_vsa)
     .regstk 4,4,0,0
 

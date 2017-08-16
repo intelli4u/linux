@@ -91,19 +91,6 @@ gss_krb5_remove_padding(struct xdr_buf *buf, int blocksize)
 	BUG_ON(len > buf->tail[0].iov_len);
 	pad = *(u8 *)(buf->tail[0].iov_base + len - 1);
 out:
-	/* XXX: NOTE: we do not adjust the page lengths--they represent
-	 * a range of data in the real filesystem page cache, and we need
-	 * to know that range so the xdr code can properly place read data.
-	 * However adjusting the head length, as we do above, is harmless.
-	 * In the case of a request that fits into a single page, the server
-	 * also uses length and head length together to determine the original
-	 * start of the request to copy the request for deferal; so it's
-	 * easier on the server if we adjust head and tail length in tandem.
-	 * It's not really a problem that we don't fool with the page and
-	 * tail lengths, though--at worst badly formed xdr might lead the
-	 * server to attempt to parse the padding.
-	 * XXX: Document all these weird requirements for gss mechanism
-	 * wrap/unwrap functions. */
 	if (pad > blocksize)
 		return -EINVAL;
 	if (buf->len > pad)
@@ -149,10 +136,7 @@ gss_krb5_make_confounder(char *p, u32 conflen)
 /* Assumptions: the head and tail of inbuf are ours to play with.
  * The pages, however, may be real pages in the page cache and we replace
  * them with scratch pages from **pages before writing to them. */
-/* XXX: obviously the above should be documentation of wrap interface,
- * and shouldn't be in this kerberos-specific file. */
 
-/* XXX factor out common code with seal/unseal. */
 
 static u32
 gss_wrap_kerberos_v1(struct krb5_ctx *kctx, int offset,
@@ -187,7 +171,6 @@ gss_wrap_kerberos_v1(struct krb5_ctx *kctx, int offset,
 	/* shift data to make room for header. */
 	xdr_extend_head(buf, offset, headlen);
 
-	/* XXX Would be cleverer to encrypt while copying. */
 	BUG_ON((buf->len - offset - headlen) % blocksize);
 
 	g_make_token_header(&kctx->mech_used,
@@ -226,8 +209,6 @@ gss_wrap_kerberos_v1(struct krb5_ctx *kctx, int offset,
 	seq_send = kctx->seq_send++;
 	spin_unlock(&krb5_seq_lock);
 
-	/* XXX would probably be more efficient to compute checksum
-	 * and encrypt at the same time: */
 	if ((krb5_make_seq_num(kctx, kctx->seq, kctx->initiate ? 0 : 0xff,
 			       seq_send, ptr + GSS_KRB5_TOK_HDR_LEN, ptr + 8)))
 		return GSS_S_FAILURE;
@@ -287,7 +268,6 @@ gss_unwrap_kerberos_v1(struct krb5_ctx *kctx, int offset, struct xdr_buf *buf)
 	    (ptr[1] !=  (KG_TOK_WRAP_MSG & 0xff)))
 		return GSS_S_DEFECTIVE_TOKEN;
 
-	/* XXX sanity-check bodysize?? */
 
 	/* get the sign and seal algorithms */
 
@@ -362,8 +342,6 @@ gss_unwrap_kerberos_v1(struct krb5_ctx *kctx, int offset, struct xdr_buf *buf)
 
 	/* do sequencing checks */
 
-	/* Copy the data back to the right position.  XXX: Would probably be
-	 * better to copy and encrypt at the same time. */
 
 	blocksize = crypto_blkcipher_blocksize(kctx->enc);
 	data_start = ptr + (GSS_KRB5_TOK_HDR_LEN + kctx->gk5e->cksumlength) +
@@ -584,4 +562,3 @@ gss_unwrap_kerberos(struct gss_ctx *gctx, int offset, struct xdr_buf *buf)
 		return gss_unwrap_kerberos_v2(kctx, offset, buf);
 	}
 }
-

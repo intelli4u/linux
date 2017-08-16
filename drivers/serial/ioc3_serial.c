@@ -459,11 +459,6 @@ static int inline port_init(struct ioc3_port *port)
 	/* Set high water mark at 3/4 of full ring */
 	port->ip_sscr = (ENTRIES_PER_RING * 3 / 4);
 
-	/* uart experiences pauses at high baud rate reducing actual
-	 * throughput by 10% or so unless we enable high speed polling
-	 * XXX when this hardware bug is resolved we should revert to
-	 * normal polling speed
-	 */
 	port->ip_sscr |= SSCR_HIGH_SPD;
 
 	writel(port->ip_sscr, &port->ip_serial_regs->sscr);

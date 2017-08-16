@@ -99,7 +99,6 @@ static inline u8 tda8083_readreg (struct tda8083_state* state, u8 reg)
 
 static int tda8083_set_inversion (struct tda8083_state* state, fe_spectral_inversion_t inversion)
 {
-	/*  XXX FIXME: implement other modes than FEC_AUTO */
 	if (inversion == INVERSION_AUTO)
 		return 0;
 
@@ -338,7 +337,6 @@ static int tda8083_get_frontend(struct dvb_frontend* fe, struct dvb_frontend_par
 {
 	struct tda8083_state* state = fe->demodulator_priv;
 
-	/*  FIXME: get symbolrate & frequency offset...*/
 	/*p->frequency = ???;*/
 	p->inversion = (tda8083_readreg (state, 0x0e) & 0x80) ?
 			INVERSION_ON : INVERSION_OFF;

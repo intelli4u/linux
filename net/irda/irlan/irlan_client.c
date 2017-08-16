@@ -158,12 +158,6 @@ void irlan_client_discovery_indication(discinfo_t *discovery,
 
 	IRDA_ASSERT(discovery != NULL, return;);
 
-	/*
-	 * I didn't check it, but I bet that IrLAN suffer from the same
-	 * deficiency as IrComm and doesn't handle two instances
-	 * simultaneously connecting to each other.
-	 * Same workaround, drop passive discoveries.
-	 * Jean II */
 	if(mode == DISCOVERY_PASSIVE)
 		return;
 

@@ -258,4 +258,3 @@ static void __exit quanta_exit(void)
 
 module_init(quanta_init);
 module_exit(quanta_exit);
-

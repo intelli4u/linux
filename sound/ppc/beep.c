@@ -232,7 +232,6 @@ int __devinit snd_pmac_attach_beep(struct snd_pmac *chip)
 	if (! dmabuf || ! input_dev)
 		goto fail1;
 
-	/* FIXME: set more better values */
 	input_dev->name = "PowerMac Beep";
 	input_dev->phys = "powermac/beep";
 	input_dev->id.bustype = BUS_ADB;

@@ -68,8 +68,8 @@ struct s5h1411_config {
 	u8 status_mode;
 };
 
-#if defined(CONFIG_DVB_S5H1411) || \
-	(defined(CONFIG_DVB_S5H1411_MODULE) && defined(MODULE))
+#if defined(CONFIG_DVB_S5H1411) || (defined(CONFIG_DVB_S5H1411_MODULE) && \
+	defined(MODULE))
 extern struct dvb_frontend *s5h1411_attach(const struct s5h1411_config *config,
 					   struct i2c_adapter *i2c);
 #else

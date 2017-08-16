@@ -26,7 +26,6 @@
 struct pep_sock {
 	struct pn_sock		pn_sk;
 
-	/* XXX: union-ify listening vs connected stuff ? */
 	/* Listening socket stuff: */
 	struct hlist_head	ackq;
 	struct hlist_head	hlist;

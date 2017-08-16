@@ -130,7 +130,6 @@ static int mtd_readpage(void *_sb, struct page *page)
 	if (err == -EUCLEAN || err == -EBADMSG) {
 		/* -EBADMSG happens regularly on power failures */
 		err = 0;
-		/* FIXME: force GC this segment */
 	}
 	if (err) {
 		ClearPageUptodate(page);

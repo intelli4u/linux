@@ -192,14 +192,6 @@ int usbdrv_ioctl_setessid(struct net_device *dev, struct iw_point *erq)
 	/* macp->wd.ws.ssid[1] = strlen(essidbuf); Update ssid length */
 
 	zfiWlanSetSSID(dev, essidbuf, erq->length);
-	#if 0
-		printk(KERN_ERR "macp->wd.ws.ssid: ");
-
-		for (i = 0; i < macp->wd.ws.ssidLen; i++)
-			printk(KERN_ERR "%02x ", macp->wd.ws.ssid[i]);
-
-		printk(KERN_ERR "\n");
-	#endif
 
 	zfiWlanDisable(dev, 0);
 	zfiWlanEnable(dev);
@@ -688,7 +680,6 @@ int usbdrvwext_giwrange(struct net_device *dev,
 		return -EINVAL;
 
 	range->txpower_capa = IW_TXPOW_DBM;
-	/* XXX what about min/max_pmp, min/max_pmt, etc. */
 
 	range->we_version_compiled = WIRELESS_EXT;
 	range->we_version_source = 13;
@@ -718,36 +709,6 @@ int usbdrvwext_giwrange(struct net_device *dev,
 	range->num_channels = channel_num;
 	range->num_frequency = channel_num;
 
-	#if 0
-	range->num_channels = 14; /* Only 2.4G */
-
-	/* XXX need to filter against the regulatory domain &| active set */
-	val = 0;
-	/* B,G Bands */
-	for (i = 1; i <= 14; i++) {
-		range->freq[val].i = i;
-		if (i == 14)
-			range->freq[val].m = 2484000;
-		else
-			range->freq[val].m = (2412+(i-1)*5)*1000;
-		range->freq[val].e = 3;
-		val++;
-	}
-
-	num_band_a = (IW_MAX_FREQUENCIES - val);
-	/* A Bands */
-	for (i = 0; i < num_band_a; i++) {
-		range->freq[val].i = channel_frequency_11A[2 * i];
-		range->freq[val].m = channel_frequency_11A[2 * i + 1] * 1000;
-		range->freq[val].e = 3;
-		val++;
-	}
-	/* MIMO Rate Not Defined Now
-	* For 802.11a, there are too more frequency.
-	* We can't return them all.
-	*/
-	range->num_frequency = val;
-	#endif
 
 	/* Max of /proc/net/wireless */
 	range->max_qual.qual = 100;  /* ??  92; */
@@ -755,7 +716,6 @@ int usbdrvwext_giwrange(struct net_device *dev,
 	range->max_qual.noise = 154; /* ?? */
 	range->sensitivity = 3;      /* ?? */
 
-	/* XXX these need to be nsd-specific! */
 	range->min_rts = 0;
 	range->max_rts = 2347;
 	range->min_frag = 256;
@@ -766,12 +726,8 @@ int usbdrvwext_giwrange(struct net_device *dev,
 	range->encoding_size[0] = 5; /* ?? WEP Key Encoding Size */
 	range->encoding_size[1] = 13; /* ?? */
 
-	/* XXX what about num_bitrates/throughput? */
 	range->num_bitrates = 0; /* ?? */
 
-	/* estimated max throughput
-	* XXX need to cap it if we're running at ~2Mbps..
-	*/
 
 	range->throughput = 300000000;
 
@@ -1359,511 +1315,11 @@ int usbdrvwext_giwpower(struct net_device *dev,
 	return 0;
 }
 
-/*int usbdrvwext_setparam(struct net_device *dev, struct iw_request_info *info,
-*				void *w, char *extra)
-*{
-*	struct ieee80211vap *vap = dev->ml_priv;
-*	struct ieee80211com *ic = vap->iv_ic;
-*	struct ieee80211_rsnparms *rsn = &vap->iv_bss->ni_rsn;
-*	int *i = (int *) extra;
-*	int param = i[0];		// parameter id is 1st
-*	int value = i[1];		// NB: most values are TYPE_INT
-*	int retv = 0;
-*	int j, caps;
-*	const struct ieee80211_authenticator *auth;
-*	const struct ieee80211_aclator *acl;
-*
-*	switch (param) {
-*	case IEEE80211_PARAM_AUTHMODE:
-*		switch (value) {
-*		case IEEE80211_AUTH_WPA:	// WPA
-*		case IEEE80211_AUTH_8021X:	// 802.1x
-*		case IEEE80211_AUTH_OPEN:	// open
-*		case IEEE80211_AUTH_SHARED:	// shared-key
-*		case IEEE80211_AUTH_AUTO:	// auto
-*			auth = ieee80211_authenticator_get(value);
-*			if (auth == NULL)
-*				return -EINVAL;
-*			break;
-*		default:
-*			return -EINVAL;
-*		}
-*		switch (value) {
-*		case IEEE80211_AUTH_WPA:	// WPA w/ 802.1x
-*			vap->iv_flags |= IEEE80211_F_PRIVACY;
-*			value = IEEE80211_AUTH_8021X;
-*			break;
-*		case IEEE80211_AUTH_OPEN:	// open
-*		vap->iv_flags &= ~(IEEE80211_F_WPA | IEEE80211_F_PRIVACY);
-*			break;
-*		case IEEE80211_AUTH_SHARED:	// shared-key
-*		case IEEE80211_AUTH_AUTO:	// auto
-*		case IEEE80211_AUTH_8021X:	// 802.1x
-*			vap->iv_flags &= ~IEEE80211_F_WPA;
-*			// both require a key so mark the PRIVACY capability
-*			vap->iv_flags |= IEEE80211_F_PRIVACY;
-*			break;
-*		}
-*		// NB: authenticator attach/detach happens on state change
-*		vap->iv_bss->ni_authmode = value;
-*		// XXX mixed/mode/usage?
-*		vap->iv_auth = auth;
-*		retv = ENETRESET;
-*		break;
-*	case IEEE80211_PARAM_PROTMODE:
-*		if (value > IEEE80211_PROT_RTSCTS)
-*			return -EINVAL;
-*		ic->ic_protmode = value;
-*		// NB: if not operating in 11g this can wait
-*		if (ic->ic_bsschan != IEEE80211_CHAN_ANYC &&
-*		    IEEE80211_IS_CHAN_ANYG(ic->ic_bsschan))
-*			retv = ENETRESET;
-*		break;
-*	case IEEE80211_PARAM_MCASTCIPHER:
-*		if ((vap->iv_caps & cipher2cap(value)) == 0 &&
-*		    !ieee80211_crypto_available(value))
-*			return -EINVAL;
-*		rsn->rsn_mcastcipher = value;
-*		if (vap->iv_flags & IEEE80211_F_WPA)
-*			retv = ENETRESET;
-*		break;
-*	case IEEE80211_PARAM_MCASTKEYLEN:
-*		if (!(0 < value && value < IEEE80211_KEYBUF_SIZE))
-*			return -EINVAL;
-*		// XXX no way to verify driver capability
-*		rsn->rsn_mcastkeylen = value;
-*		if (vap->iv_flags & IEEE80211_F_WPA)
-*			retv = ENETRESET;
-*		break;
-*	case IEEE80211_PARAM_UCASTCIPHERS:
-*
-*		 // Convert cipher set to equivalent capabilities.
-*		 // NB: this logic intentionally ignores unknown and
-*		 // unsupported ciphers so folks can specify 0xff or
-*		 // similar and get all available ciphers.
-*
-*		caps = 0;
-*		for (j = 1; j < 32; j++)	// NB: skip WEP
-*			if ((value & (1<<j)) &&
-*			    ((vap->iv_caps & cipher2cap(j)) ||
-*			     ieee80211_crypto_available(j)))
-*				caps |= 1<<j;
-*		if (caps == 0)			// nothing available
-*			return -EINVAL;
-*		// XXX verify ciphers ok for unicast use?
-*		// XXX disallow if running as it'll have no effect
-*		rsn->rsn_ucastcipherset = caps;
-*		if (vap->iv_flags & IEEE80211_F_WPA)
-*			retv = ENETRESET;
-*		break;
-*	case IEEE80211_PARAM_UCASTCIPHER:
-*		if ((rsn->rsn_ucastcipherset & cipher2cap(value)) == 0)
-*			return -EINVAL;
-*		rsn->rsn_ucastcipher = value;
-*		break;
-*	case IEEE80211_PARAM_UCASTKEYLEN:
-*		if (!(0 < value && value < IEEE80211_KEYBUF_SIZE))
-*			return -EINVAL;
-*		// XXX no way to verify driver capability
-*		rsn->rsn_ucastkeylen = value;
-*		break;
-*	case IEEE80211_PARAM_KEYMGTALGS:
-*		// XXX check
-*		rsn->rsn_keymgmtset = value;
-*		if (vap->iv_flags & IEEE80211_F_WPA)
-*			retv = ENETRESET;
-*		break;
-*	case IEEE80211_PARAM_RSNCAPS:
-*		// XXX check
-*		rsn->rsn_caps = value;
-*		if (vap->iv_flags & IEEE80211_F_WPA)
-*			retv = ENETRESET;
-*		break;
-*	case IEEE80211_PARAM_WPA:
-*		if (value > 3)
-*			return -EINVAL;
-*		// XXX verify ciphers available
-*		vap->iv_flags &= ~IEEE80211_F_WPA;
-*		switch (value) {
-*		case 1:
-*			vap->iv_flags |= IEEE80211_F_WPA1;
-*			break;
-*		case 2:
-*			vap->iv_flags |= IEEE80211_F_WPA2;
-*			break;
-*		case 3:
-*			vap->iv_flags |= IEEE80211_F_WPA1 | IEEE80211_F_WPA2;
-*			break;
-*		}
-*		retv = ENETRESET;		// XXX?
-*		break;
-*	case IEEE80211_PARAM_ROAMING:
-*		if (!(IEEE80211_ROAMING_DEVICE <= value &&
-*		    value <= IEEE80211_ROAMING_MANUAL))
-*			return -EINVAL;
-*		ic->ic_roaming = value;
-*		break;
-*	case IEEE80211_PARAM_PRIVACY:
-*		if (value) {
-*			// XXX check for key state?
-*			vap->iv_flags |= IEEE80211_F_PRIVACY;
-*		} else
-*			vap->iv_flags &= ~IEEE80211_F_PRIVACY;
-*		break;
-*	case IEEE80211_PARAM_DROPUNENCRYPTED:
-*		if (value)
-*			vap->iv_flags |= IEEE80211_F_DROPUNENC;
-*		else
-*			vap->iv_flags &= ~IEEE80211_F_DROPUNENC;
-*		break;
-*	case IEEE80211_PARAM_COUNTERMEASURES:
-*		if (value) {
-*			if ((vap->iv_flags & IEEE80211_F_WPA) == 0)
-*				return -EINVAL;
-*			vap->iv_flags |= IEEE80211_F_COUNTERM;
-*		} else
-*			vap->iv_flags &= ~IEEE80211_F_COUNTERM;
-*		break;
-*	case IEEE80211_PARAM_DRIVER_CAPS:
-*		vap->iv_caps = value;		// NB: for testing
-*		break;
-*	case IEEE80211_PARAM_MACCMD:
-*		acl = vap->iv_acl;
-*		switch (value) {
-*		case IEEE80211_MACCMD_POLICY_OPEN:
-*		case IEEE80211_MACCMD_POLICY_ALLOW:
-*		case IEEE80211_MACCMD_POLICY_DENY:
-*			if (acl == NULL) {
-*				acl = ieee80211_aclator_get("mac");
-*				if (acl == NULL || !acl->iac_attach(vap))
-*					return -EINVAL;
-*				vap->iv_acl = acl;
-*			}
-*			acl->iac_setpolicy(vap, value);
-*			break;
-*		case IEEE80211_MACCMD_FLUSH:
-*			if (acl != NULL)
-*				acl->iac_flush(vap);
-*			// NB: silently ignore when not in use
-*			break;
-*		case IEEE80211_MACCMD_DETACH:
-*			if (acl != NULL) {
-*				vap->iv_acl = NULL;
-*				acl->iac_detach(vap);
-*			}
-*			break;
-*		}
-*		break;
-*	case IEEE80211_PARAM_WMM:
-*		if (ic->ic_caps & IEEE80211_C_WME){
-*			if (value) {
-*				vap->iv_flags |= IEEE80211_F_WME;
-*				 *//* XXX needed by ic_reset *//*
+/*
 *				vap->iv_ic->ic_flags |= IEEE80211_F_WME;
 *			}
 *			else {
-*				*//* XXX needed by ic_reset *//*
-*				vap->iv_flags &= ~IEEE80211_F_WME;
-*				vap->iv_ic->ic_flags &= ~IEEE80211_F_WME;
-*			}
-*			retv = ENETRESET;	// Renegotiate for capabilities
-*		}
-*		break;
-*	case IEEE80211_PARAM_HIDESSID:
-*		if (value)
-*			vap->iv_flags |= IEEE80211_F_HIDESSID;
-*		else
-*			vap->iv_flags &= ~IEEE80211_F_HIDESSID;
-*		retv = ENETRESET;
-*		break;
-*	case IEEE80211_PARAM_APBRIDGE:
-*		if (value == 0)
-*			vap->iv_flags |= IEEE80211_F_NOBRIDGE;
-*		else
-*			vap->iv_flags &= ~IEEE80211_F_NOBRIDGE;
-*		break;
-*	case IEEE80211_PARAM_INACT:
-*		vap->iv_inact_run = value / IEEE80211_INACT_WAIT;
-*		break;
-*	case IEEE80211_PARAM_INACT_AUTH:
-*		vap->iv_inact_auth = value / IEEE80211_INACT_WAIT;
-*		break;
-*	case IEEE80211_PARAM_INACT_INIT:
-*		vap->iv_inact_init = value / IEEE80211_INACT_WAIT;
-*		break;
-*	case IEEE80211_PARAM_ABOLT:
-*		caps = 0;
-*
-*		 // Map abolt settings to capability bits;
-*		 // this also strips unknown/unwanted bits.
-*
-*		if (value & IEEE80211_ABOLT_TURBO_PRIME)
-*			caps |= IEEE80211_ATHC_TURBOP;
-*		if (value & IEEE80211_ABOLT_COMPRESSION)
-*			caps |= IEEE80211_ATHC_COMP;
-*		if (value & IEEE80211_ABOLT_FAST_FRAME)
-*			caps |= IEEE80211_ATHC_FF;
-*		if (value & IEEE80211_ABOLT_XR)
-*			caps |= IEEE80211_ATHC_XR;
-*		if (value & IEEE80211_ABOLT_AR)
-*			caps |= IEEE80211_ATHC_AR;
-*		if (value & IEEE80211_ABOLT_BURST)
-*			caps |= IEEE80211_ATHC_BURST;
-*        if (value & IEEE80211_ABOLT_WME_ELE)
-*            caps |= IEEE80211_ATHC_WME;
-*		// verify requested capabilities are supported
-*		if ((caps & ic->ic_ath_cap) != caps)
-*			return -EINVAL;
-*		if (vap->iv_ath_cap != caps) {
-*			if ((vap->iv_ath_cap ^ caps) & IEEE80211_ATHC_TURBOP) {
-*				if (ieee80211_set_turbo(dev,
-*						caps & IEEE80211_ATHC_TURBOP))
-*					return -EINVAL;
-*				ieee80211_scan_flush(ic);
-*			}
-*			vap->iv_ath_cap = caps;
-*			ic->ic_athcapsetup(vap->iv_ic, vap->iv_ath_cap);
-*			retv = ENETRESET;
-*		}
-*		break;
-*	case IEEE80211_PARAM_DTIM_PERIOD:
-*		if (vap->iv_opmode != IEEE80211_M_HOSTAP &&
-*		    vap->iv_opmode != IEEE80211_M_IBSS)
-*			return -EINVAL;
-*		if (IEEE80211_DTIM_MIN <= value &&
-*		    value <= IEEE80211_DTIM_MAX) {
-*			vap->iv_dtim_period = value;
-*			retv = ENETRESET;		// requires restart
-*		} else
-*			retv = EINVAL;
-*		break;
-*	case IEEE80211_PARAM_BEACON_INTERVAL:
-*		if (vap->iv_opmode != IEEE80211_M_HOSTAP &&
-*		    vap->iv_opmode != IEEE80211_M_IBSS)
-*			return -EINVAL;
-*		if (IEEE80211_BINTVAL_MIN <= value &&
-*		    value <= IEEE80211_BINTVAL_MAX) {
-*			ic->ic_lintval = value;		// XXX multi-bss
-*			retv = ENETRESET;		// requires restart
-*		} else
-*			retv = EINVAL;
-*		break;
-*	case IEEE80211_PARAM_DOTH:
-*		if (value) {
-*			ic->ic_flags |= IEEE80211_F_DOTH;
-*		}
-*		else
-*			ic->ic_flags &= ~IEEE80211_F_DOTH;
-*		retv = ENETRESET;	// XXX: need something this drastic?
-*		break;
-*	case IEEE80211_PARAM_PWRTARGET:
-*		ic->ic_curchanmaxpwr = value;
-*		break;
-*	case IEEE80211_PARAM_GENREASSOC:
-*		IEEE80211_SEND_MGMT(vap->iv_bss,
-*					IEEE80211_FC0_SUBTYPE_REASSOC_REQ, 0);
-*		break;
-*	case IEEE80211_PARAM_COMPRESSION:
-*		retv = ieee80211_setathcap(vap, IEEE80211_ATHC_COMP, value);
-*		break;
-*    case IEEE80211_PARAM_WMM_AGGRMODE:
-*        retv = ieee80211_setathcap(vap, IEEE80211_ATHC_WME, value);
-*        break;
-*	case IEEE80211_PARAM_FF:
-*		retv = ieee80211_setathcap(vap, IEEE80211_ATHC_FF, value);
-*		break;
-*	case IEEE80211_PARAM_TURBO:
-*		retv = ieee80211_setathcap(vap, IEEE80211_ATHC_TURBOP, value);
-*		if (retv == ENETRESET) {
-*			if(ieee80211_set_turbo(dev,value))
-*					return -EINVAL;
-*			ieee80211_scan_flush(ic);
-*		}
-*		break;
-*	case IEEE80211_PARAM_XR:
-*		retv = ieee80211_setathcap(vap, IEEE80211_ATHC_XR, value);
-*		break;
-*	case IEEE80211_PARAM_BURST:
-*		retv = ieee80211_setathcap(vap, IEEE80211_ATHC_BURST, value);
-*		break;
-*	case IEEE80211_PARAM_AR:
-*		retv = ieee80211_setathcap(vap, IEEE80211_ATHC_AR, value);
-*		break;
-*	case IEEE80211_PARAM_PUREG:
-*		if (value)
-*			vap->iv_flags |= IEEE80211_F_PUREG;
-*		else
-*			vap->iv_flags &= ~IEEE80211_F_PUREG;
-*		// NB: reset only if we're operating on an 11g channel
-*		if (ic->ic_bsschan != IEEE80211_CHAN_ANYC &&
-*		    IEEE80211_IS_CHAN_ANYG(ic->ic_bsschan))
-*			retv = ENETRESET;
-*		break;
-*	case IEEE80211_PARAM_WDS:
-*		if (value)
-*			vap->iv_flags_ext |= IEEE80211_FEXT_WDS;
-*		else
-*			vap->iv_flags_ext &= ~IEEE80211_FEXT_WDS;
-*		break;
-*	case IEEE80211_PARAM_BGSCAN:
-*		if (value) {
-*			if ((vap->iv_caps & IEEE80211_C_BGSCAN) == 0)
-*				return -EINVAL;
-*			vap->iv_flags |= IEEE80211_F_BGSCAN;
-*		} else {
-*			// XXX racey?
-*			vap->iv_flags &= ~IEEE80211_F_BGSCAN;
-*			ieee80211_cancel_scan(vap);	// anything current
-*		}
-*		break;
-*	case IEEE80211_PARAM_BGSCAN_IDLE:
-*		if (value >= IEEE80211_BGSCAN_IDLE_MIN)
-*			vap->iv_bgscanidle = value*HZ/1000;
-*		else
-*			retv = EINVAL;
-*		break;
-*	case IEEE80211_PARAM_BGSCAN_INTERVAL:
-*		if (value >= IEEE80211_BGSCAN_INTVAL_MIN)
-*			vap->iv_bgscanintvl = value*HZ;
-*		else
-*			retv = EINVAL;
-*		break;
-*	case IEEE80211_PARAM_MCAST_RATE:
-*		// units are in KILObits per second
-*		if (value >= 256 && value <= 54000)
-*			vap->iv_mcast_rate = value;
-*		else
-*			retv = EINVAL;
-*		break;
-*	case IEEE80211_PARAM_COVERAGE_CLASS:
-*		if (value >= 0 && value <= IEEE80211_COVERAGE_CLASS_MAX) {
-*			ic->ic_coverageclass = value;
-*			if (IS_UP_AUTO(vap))
-*				ieee80211_new_state(vap, IEEE80211_S_SCAN, 0);
-*			retv = 0;
-*		}
-*		else
-*			retv = EINVAL;
-*		break;
-*	case IEEE80211_PARAM_COUNTRY_IE:
-*		if (value)
-*			ic->ic_flags_ext |= IEEE80211_FEXT_COUNTRYIE;
-*		else
-*			ic->ic_flags_ext &= ~IEEE80211_FEXT_COUNTRYIE;
-*		retv = ENETRESET;
-*		break;
-*	case IEEE80211_PARAM_REGCLASS:
-*		if (value)
-*			ic->ic_flags_ext |= IEEE80211_FEXT_REGCLASS;
-*		else
-*			ic->ic_flags_ext &= ~IEEE80211_FEXT_REGCLASS;
-*		retv = ENETRESET;
-*		break;
-*	case IEEE80211_PARAM_SCANVALID:
-*		vap->iv_scanvalid = value*HZ;
-*		break;
-*	case IEEE80211_PARAM_ROAM_RSSI_11A:
-*		vap->iv_roam.rssi11a = value;
-*		break;
-*	case IEEE80211_PARAM_ROAM_RSSI_11B:
-*		vap->iv_roam.rssi11bOnly = value;
-*		break;
-*	case IEEE80211_PARAM_ROAM_RSSI_11G:
-*		vap->iv_roam.rssi11b = value;
-*		break;
-*	case IEEE80211_PARAM_ROAM_RATE_11A:
-*		vap->iv_roam.rate11a = value;
-*		break;
-*	case IEEE80211_PARAM_ROAM_RATE_11B:
-*		vap->iv_roam.rate11bOnly = value;
-*		break;
-*	case IEEE80211_PARAM_ROAM_RATE_11G:
-*		vap->iv_roam.rate11b = value;
-*		break;
-*	case IEEE80211_PARAM_UAPSDINFO:
-*		if (vap->iv_opmode == IEEE80211_M_HOSTAP) {
-*			if (ic->ic_caps & IEEE80211_C_UAPSD) {
-*				if (value)
-*					IEEE80211_VAP_UAPSD_ENABLE(vap);
-*				else
-*					IEEE80211_VAP_UAPSD_DISABLE(vap);
-*				retv = ENETRESET;
-*			}
-*		}
-*		else if (vap->iv_opmode == IEEE80211_M_STA) {
-*			vap->iv_uapsdinfo = value;
-*			IEEE80211_VAP_UAPSD_ENABLE(vap);
-*			retv = ENETRESET;
-*		}
-*		break;
-*	case IEEE80211_PARAM_SLEEP:
-*		// XXX: Forced sleep for testing. Does not actually place the
-*		//      HW in sleep mode yet. this only makes sense for STAs.
-*
-*		if (value) {
-*			// goto sleep
-*			IEEE80211_VAP_GOTOSLEEP(vap);
-*		}
-*		else {
-*			// wakeup
-*			IEEE80211_VAP_WAKEUP(vap);
-*		}
-*		ieee80211_send_nulldata(ieee80211_ref_node(vap->iv_bss));
-*		break;
-*	case IEEE80211_PARAM_QOSNULL:
-*		// Force a QoS Null for testing.
-*		ieee80211_send_qosnulldata(vap->iv_bss, value);
-*		break;
-*	case IEEE80211_PARAM_PSPOLL:
-*		// Force a PS-POLL for testing.
-*		ieee80211_send_pspoll(vap->iv_bss);
-*		break;
-*	case IEEE80211_PARAM_EOSPDROP:
-*		if (vap->iv_opmode == IEEE80211_M_HOSTAP) {
-*			if (value) IEEE80211_VAP_EOSPDROP_ENABLE(vap);
-*			else IEEE80211_VAP_EOSPDROP_DISABLE(vap);
-*		}
-*		break;
-*	case IEEE80211_PARAM_MARKDFS:
-*		if (value)
-*			ic->ic_flags_ext |= IEEE80211_FEXT_MARKDFS;
-*		else
-*			ic->ic_flags_ext &= ~IEEE80211_FEXT_MARKDFS;
-*		break;
-*	case IEEE80211_PARAM_CHANBW:
-*		switch (value) {
-*			case 0:
-*				ic->ic_chanbwflag = 0;
-*				break;
-*			case 1:
-*				ic->ic_chanbwflag = IEEE80211_CHAN_HALF;
-*				break;
-*			case 2:
-*				ic->ic_chanbwflag = IEEE80211_CHAN_QUARTER;
-*				break;
-*			default:
-*				retv = EINVAL;
-*				break;
-*		}
-*		break;
-*	case IEEE80211_PARAM_SHORTPREAMBLE:
-*		if (value) {
-*			ic->ic_caps |= IEEE80211_C_SHPREAMBLE;
-*		} else {
-*			ic->ic_caps &= ~IEEE80211_C_SHPREAMBLE;
-*		}
-*		retv = ENETRESET;
-*		break;
-*	default:
-*		retv = EOPNOTSUPP;
-*		break;
-*	}
-*	// XXX should any of these cause a rescan?
-*	if (retv == ENETRESET)
-*		retv = IS_UP_AUTO(vap) ? ieee80211_open(vap->iv_dev) : 0;
-*	return -retv;
-*}
-*/
+*				*/
 
 int usbdrvwext_setmode(struct net_device *dev, struct iw_request_info *info,
 			void *w, char *extra)
@@ -1922,7 +1378,6 @@ int zfLnxPrivateIoctl(struct net_device *dev, struct zdap_ioctl* zdreq)
 		/* zfiWlanReadReg(dev, 0x10f400); */
 		/* zfiWlanReadReg(dev, 0x10f404); */
 		printk(KERN_WARNING "IOCTL TEST\n");
-		#if 1
 		/* print packet */
 		for (i = 0; i < zdreq->addr; i++) {
 			if ((i&0x7) == 0)
@@ -1931,23 +1386,8 @@ int zfLnxPrivateIoctl(struct net_device *dev, struct zdap_ioctl* zdreq)
 					(unsigned char)zdreq->data[i]);
 		}
 		printk(KERN_WARNING "\n");
-		#endif
 
 		/* For Test?? 1 to 0 by CWYang(-) */
-		#if 0
-			struct sk_buff *s;
-
-			/* Allocate a skb */
-			s = alloc_skb(2000, GFP_ATOMIC);
-
-			/* Copy data to skb */
-			for (i = 0; i < zdreq->addr; i++)
-				s->data[i] = zdreq->data[i];
-			s->len = zdreq->addr;
-
-			/* Call zfIdlRecv() */
-			zfiRecv80211(dev, s, NULL);
-		#endif
 		break;
 	/************************* ZDCONFIG ***************************/
 	case ZM_IOCTL_FRAG:

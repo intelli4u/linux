@@ -716,10 +716,6 @@ static int snapper_put_mix(struct snd_kcontrol *kcontrol,
 }
 
 
-/*
- * mute switches. FIXME: Turn that into software mute when both outputs are muted
- * to avoid codec reset on ibook M7
- */
 
 enum { TUMBLER_MUTE_HP, TUMBLER_MUTE_AMP, TUMBLER_MUTE_LINE };
 
@@ -894,7 +890,7 @@ static struct snd_kcontrol_new snapper_mixers[] __devinitdata = {
 	  .put = tumbler_put_drc_value
 	},
 	{ .iface = SNDRV_CTL_ELEM_IFACE_MIXER,
-	  .name = "Input Source", /* FIXME: "Capture Source" doesn't work properly */
+	  .name = "Input Source",
 	  .info = snapper_info_capture_source,
 	  .get = snapper_get_capture_source,
 	  .put = snapper_put_capture_source

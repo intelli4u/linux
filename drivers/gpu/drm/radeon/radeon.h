@@ -380,15 +380,12 @@ void radeon_scratch_free(struct radeon_device *rdev, uint32_t reg);
 struct radeon_irq {
 	bool		installed;
 	bool		sw_int;
-	/* FIXME: use a define max crtc rather than hardcode it */
 	bool		crtc_vblank_int[6];
 	wait_queue_head_t	vblank_queue;
-	/* FIXME: use defines for max hpd/dacs */
 	bool            hpd[6];
 	bool            gui_idle;
 	bool            gui_idle_acked;
 	wait_queue_head_t	idle_queue;
-	/* FIXME: use defines for max HDMI blocks */
 	bool		hdmi[2];
 	spinlock_t sw_lock;
 	int sw_refcount;
@@ -715,7 +712,6 @@ struct radeon_pm_clock_info {
 
 struct radeon_power_state {
 	enum radeon_pm_state_type type;
-	/* XXX: use a define for num clock modes */
 	struct radeon_pm_clock_info clock_info[8];
 	/* number of valid clock modes in this power state */
 	int num_clock_modes;
@@ -751,7 +747,6 @@ struct radeon_pm {
 	fixed20_12		sclk;
 	fixed20_12		mclk;
 	fixed20_12		needed_bandwidth;
-	/* XXX: use a define for num power modes */
 	struct radeon_power_state power_state[8];
 	/* number of valid power states */
 	int                     num_power_states;

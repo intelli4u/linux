@@ -164,7 +164,7 @@ enum wbcir_protocol {
 #define WBCIR_NAME	"Winbond CIR"
 #define WBCIR_ID_FAMILY          0xF1 /* Family ID for the WPCD376I	*/
 #define	WBCIR_ID_CHIP            0x04 /* Chip ID for the WPCD376I	*/
-#define IR_KEYPRESS_TIMEOUT       250 /* FIXME: should be per-protocol? */
+#define IR_KEYPRESS_TIMEOUT       250
 #define INVALID_SCANCODE   0x7FFFFFFF /* Invalid with all protos	*/
 #define WAKEUP_IOMEM_LEN         0x10 /* Wake-Up I/O Reg Len		*/
 #define EHFUNC_IOMEM_LEN         0x10 /* Enhanced Func I/O Reg Len	*/
@@ -1604,5 +1604,3 @@ MODULE_LICENSE("GPL");
 
 module_init(wbcir_init);
 module_exit(wbcir_exit);
-
-

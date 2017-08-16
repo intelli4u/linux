@@ -1022,11 +1022,6 @@ fas216_reselected_intr(FAS216_Info *info)
 		 */
 		fas216_cmd(info, CMD_SETATN);
 
-#if 0
-		if (tag)
-			msgqueue_addmsg(&info->scsi.msgs, 2, ABORT_TAG, tag);
-		else
-#endif
 			msgqueue_addmsg(&info->scsi.msgs, 1, ABORT);
 		info->scsi.phase = PHASE_MSGOUT_EXPECT;
 		info->scsi.aborting = 1;
@@ -1744,12 +1739,6 @@ static void __fas216_start_command(FAS216_Info *info, struct scsi_cmnd *SCpnt)
  */
 static int parity_test(FAS216_Info *info, int target)
 {
-#if 0
-	if (target == 3) {
-		info->device[target].parity_check = 0;
-		return 1;
-	}
-#endif
 	return info->device[target].parity_check;
 }
 

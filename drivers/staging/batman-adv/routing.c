@@ -77,7 +77,6 @@ static void update_route(struct orig_node *orig_node,
 			 struct neigh_node *neigh_node,
 			 unsigned char *hna_buff, int hna_buff_len)
 {
-	/* FIXME: each orig_node->batman_if will be attached to a softif */
 	struct bat_priv *bat_priv = netdev_priv(soft_device);
 
 	/* route deleted */
@@ -128,7 +127,6 @@ static int is_bidirectional_neigh(struct orig_node *orig_node,
 				struct batman_packet *batman_packet,
 				struct batman_if *if_incoming)
 {
-	/* FIXME: each orig_node->batman_if will be attached to a softif */
 	struct bat_priv *bat_priv = netdev_priv(soft_device);
 	struct neigh_node *neigh_node = NULL, *tmp_neigh_node = NULL;
 	unsigned char total_count;
@@ -239,7 +237,6 @@ static void update_orig(struct orig_node *orig_node, struct ethhdr *ethhdr,
 			unsigned char *hna_buff, int hna_buff_len,
 			char is_duplicate)
 {
-	/* FIXME: get bat_priv */
 	struct bat_priv *bat_priv = netdev_priv(soft_device);
 	struct neigh_node *neigh_node = NULL, *tmp_neigh_node = NULL;
 	int tmp_hna_buff_len;
@@ -328,7 +325,6 @@ update_hna:
 static int window_protected(int32_t seq_num_diff,
 				unsigned long *last_reset)
 {
-	/* FIXME: each orig_node->batman_if will be attached to a softif */
 	struct bat_priv *bat_priv = netdev_priv(soft_device);
 
 	if ((seq_num_diff <= -TQ_LOCAL_WINDOW_SIZE)
@@ -359,7 +355,6 @@ static char count_real_packets(struct ethhdr *ethhdr,
 			       struct batman_packet *batman_packet,
 			       struct batman_if *if_incoming)
 {
-	/* FIXME: each orig_node->batman_if will be attached to a softif */
 	struct bat_priv *bat_priv = netdev_priv(soft_device);
 	struct orig_node *orig_node;
 	struct neigh_node *tmp_neigh_node;
@@ -520,7 +515,6 @@ void receive_bat_packet(struct ethhdr *ethhdr,
 				unsigned char *hna_buff, int hna_buff_len,
 				struct batman_if *if_incoming)
 {
-	/* FIXME: each orig_node->batman_if will be attached to a softif */
 	struct bat_priv *bat_priv = netdev_priv(soft_device);
 	struct batman_if *batman_if;
 	struct orig_node *orig_neigh_node, *orig_node;
@@ -783,7 +777,6 @@ int recv_bat_packet(struct sk_buff *skb,
 
 static int recv_my_icmp_packet(struct sk_buff *skb, size_t icmp_len)
 {
-	/* FIXME: each batman_if will be attached to a softif */
 	struct bat_priv *bat_priv = netdev_priv(soft_device);
 	struct orig_node *orig_node;
 	struct icmp_packet_rr *icmp_packet;
@@ -851,7 +844,6 @@ static int recv_my_icmp_packet(struct sk_buff *skb, size_t icmp_len)
 
 static int recv_icmp_ttl_exceeded(struct sk_buff *skb, size_t icmp_len)
 {
-	/* FIXME: each batman_if will be attached to a softif */
 	struct bat_priv *bat_priv = netdev_priv(soft_device);
 	struct orig_node *orig_node;
 	struct icmp_packet *icmp_packet;
@@ -1017,7 +1009,6 @@ int recv_icmp_packet(struct sk_buff *skb)
 struct neigh_node *find_router(struct orig_node *orig_node,
 		struct batman_if *recv_if)
 {
-	/* FIXME: each orig_node->batman_if will be attached to a softif */
 	struct bat_priv *bat_priv = netdev_priv(soft_device);
 	struct orig_node *primary_orig_node;
 	struct orig_node *router_orig;
@@ -1291,7 +1282,6 @@ int recv_vis_packet(struct sk_buff *skb)
 	if (is_my_mac(vis_packet->sender_orig))
 		return NET_RX_DROP;
 
-	/* FIXME: each batman_if will be attached to a softif */
 	bat_priv = netdev_priv(soft_device);
 
 	switch (vis_packet->vis_type) {

@@ -23,10 +23,6 @@
 	dsrl	\res, NSRI_NODEID_SHFT
 	.endm
 
-/*
- * Intentionally empty macro, used in head.S. Override in
- * arch/mips/mach-xxx/kernel-entry-init.h when necessary.
- */
 	.macro	kernel_entry_setup
 	GET_NASID_ASM	t1
 	move		t2, t1			# text and data are here

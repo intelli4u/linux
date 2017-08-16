@@ -565,7 +565,6 @@ int clkdm_read_wkdep(struct clockdomain *clkdm1, struct clockdomain *clkdm2)
 		return PTR_ERR(cd);
 	}
 
-	/* XXX It's faster to return the atomic wkdep_usecount */
 	return prm_read_mod_bits_shift(clkdm1->pwrdm.ptr->prcm_offs, PM_WKDEP,
 				       (1 << clkdm2->dep_bit));
 }
@@ -721,7 +720,6 @@ int clkdm_read_sleepdep(struct clockdomain *clkdm1, struct clockdomain *clkdm2)
 		return PTR_ERR(cd);
 	}
 
-	/* XXX It's faster to return the atomic sleepdep_usecount */
 	return prm_read_mod_bits_shift(clkdm1->pwrdm.ptr->prcm_offs,
 				       OMAP3430_CM_SLEEPDEP,
 				       (1 << clkdm2->dep_bit));
@@ -897,10 +895,6 @@ void omap2_clkdm_allow_idle(struct clockdomain *clkdm)
 	pr_debug("clockdomain: enabling automatic idle transitions for %s\n",
 		 clkdm->name);
 
-	/*
-	 * XXX This should be removed once TI adds wakeup/sleep
-	 * dependency code and data for OMAP4.
-	 */
 	if (cpu_is_omap44xx()) {
 		WARN_ONCE(1, "clockdomain: OMAP4 wakeup/sleep dependency "
 			  "support is not yet implemented\n");
@@ -939,10 +933,6 @@ void omap2_clkdm_deny_idle(struct clockdomain *clkdm)
 
 	_omap2_clkdm_set_hwsup(clkdm, 0);
 
-	/*
-	 * XXX This should be removed once TI adds wakeup/sleep
-	 * dependency code and data for OMAP4.
-	 */
 	if (cpu_is_omap44xx()) {
 		WARN_ONCE(1, "clockdomain: OMAP4 wakeup/sleep dependency "
 			  "support is not yet implemented\n");
@@ -973,10 +963,6 @@ int omap2_clkdm_clk_enable(struct clockdomain *clkdm, struct clk *clk)
 {
 	int v;
 
-	/*
-	 * XXX Rewrite this code to maintain a list of enabled
-	 * downstream clocks for debugging purposes?
-	 */
 
 	if (!clkdm || !clk)
 		return -EINVAL;
@@ -1028,10 +1014,6 @@ int omap2_clkdm_clk_disable(struct clockdomain *clkdm, struct clk *clk)
 {
 	int v;
 
-	/*
-	 * XXX Rewrite this code to maintain a list of enabled
-	 * downstream clocks for debugging purposes?
-	 */
 
 	if (!clkdm || !clk)
 		return -EINVAL;
@@ -1070,4 +1052,3 @@ int omap2_clkdm_clk_disable(struct clockdomain *clkdm, struct clk *clk)
 
 	return 0;
 }
-

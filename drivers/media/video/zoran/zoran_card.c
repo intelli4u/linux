@@ -349,17 +349,9 @@ static struct tvnorm f60ccir601_lml33 = { 858, 720, 57+34, 788, 525, 480, 16 };
 static struct tvnorm f50sqpixel_dc10 = { 944, 768, 0, 880, 625, 576, 0 };
 static struct tvnorm f60sqpixel_dc10 = { 780, 640, 0, 716, 525, 480, 12 };
 
-/* FIXME: I cannot swap U and V in saa7114, so i do one
- * pixel left shift in zoran (75 -> 74)
- * (Maxim Yevtyushkin <max@linuxmedialabs.com>) */
 static struct tvnorm f50ccir601_lm33r10 = { 864, 720, 74+54, 804, 625, 576, 18 };
 static struct tvnorm f60ccir601_lm33r10 = { 858, 720, 56+54, 788, 525, 480, 16 };
 
-/* FIXME: The ks0127 seem incapable of swapping U and V, too, which is why I
- * copy Maxim's left shift hack for the 6 Eyes.
- *
- * Christer's driver used the unshifted norms, though...
- * /Sam  */
 static struct tvnorm f50ccir601_avs6eyes = { 864, 720, 74, 804, 625, 576, 18 };
 static struct tvnorm f60ccir601_avs6eyes = { 858, 720, 56, 788, 525, 480, 16 };
 

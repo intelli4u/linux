@@ -314,4 +314,3 @@ void usb_serial_console_exit(void)
 		usbcons_info.port = NULL;
 	}
 }
-

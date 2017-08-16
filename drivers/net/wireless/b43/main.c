@@ -1078,7 +1078,6 @@ void b43_power_saving_ctl_bits(struct b43_wldev *dev, unsigned int ps_flags)
 	} else if (ps_flags & B43_PS_DISABLED) {
 		hwps = 0;
 	} else {
-		//TODO: If powersave is not off and FIXME is not set and we are not in adhoc
 		//      and thus is not an AP and we are associated, set bit 25
 	}
 	if (ps_flags & B43_PS_AWAKE) {
@@ -1086,12 +1085,9 @@ void b43_power_saving_ctl_bits(struct b43_wldev *dev, unsigned int ps_flags)
 	} else if (ps_flags & B43_PS_ASLEEP) {
 		awake = 0;
 	} else {
-		//TODO: If the device is awake or this is an AP, or we are scanning, or FIXME,
-		//      or we are associated, or FIXME, or the latest PS-Poll packet sent was
 		//      successful, set bit26
 	}
 
-/* FIXME: For now we force awake-on and hwps-off */
 	hwps = 0;
 	awake = 1;
 
@@ -1314,7 +1310,7 @@ static void handle_irq_tbtt_indication(struct b43_wldev *dev)
 	if (b43_is_mode(dev->wl, NL80211_IFTYPE_AP)) {
 		///TODO: PS TBTT
 	} else {
-		if (1 /*FIXME: the last PSpoll frame was sent successfully */ )
+		if (1 )
 			b43_power_saving_ctl_bits(dev, 0);
 	}
 	if (b43_is_mode(dev->wl, NL80211_IFTYPE_ADHOC))
@@ -1998,8 +1994,6 @@ int b43_do_request_fw(struct b43_request_fw_context *ctx,
 
 	if (!name) {
 		/* Don't fetch anything. Free possibly cached firmware. */
-		/* FIXME: We should probably keep it anyway, to save some headache
-		 * on suspend/resume with multiband devices. */
 		b43_do_release_fw(fw);
 		return 0;
 	}
@@ -2008,10 +2002,6 @@ int b43_do_request_fw(struct b43_request_fw_context *ctx,
 		    (strcmp(fw->filename, name) == 0))
 			return 0; /* Already have this fw. */
 		/* Free the cached firmware first. */
-		/* FIXME: We should probably do this later after we successfully
-		 * got the new fw. This could reduce headache with multiband devices.
-		 * We could also redesign this to cache the firmware for all possible
-		 * bands all the time. */
 		b43_do_release_fw(fw);
 	}
 
@@ -2537,7 +2527,7 @@ static int b43_gpio_init(struct b43_wldev *dev)
 		mask |= 0x0060;
 		set |= 0x0060;
 	}
-	if (0 /* FIXME: conditional unknown */ ) {
+	if (0 ) {
 		b43_write16(dev, B43_MMIO_GPIO_MASK,
 			    b43_read16(dev, B43_MMIO_GPIO_MASK)
 			    | 0x0100);
@@ -2552,7 +2542,7 @@ static int b43_gpio_init(struct b43_wldev *dev)
 		set |= 0x0200;
 	}
 	if (dev->dev->id.revision >= 2)
-		mask |= 0x0010;	/* FIXME: This is redundant. */
+		mask |= 0x0010;
 
 #ifdef CONFIG_SSB_DRIVER_PCICORE
 	pcidev = bus->pcicore.dev;
@@ -2681,9 +2671,6 @@ static void b43_adjust_opmode(struct b43_wldev *dev)
 	if (wl->filter_flags & FIF_BCN_PRBRESP_PROMISC)
 		ctl |= B43_MACCTL_BEACPROMISC;
 
-	/* Workaround: On old hardware the HW-MAC-address-filter
-	 * doesn't work properly, so always run promisc in filter
-	 * it in software. */
 	if (dev->dev->id.revision <= 4)
 		ctl |= B43_MACCTL_PROMISC;
 
@@ -2699,10 +2686,6 @@ static void b43_adjust_opmode(struct b43_wldev *dev)
 	}
 	b43_write16(dev, 0x612, cfp_pretbtt);
 
-	/* FIXME: We don't currently implement the PMQ mechanism,
-	 *        so always disable it. If we want to implement PMQ,
-	 *        we need to enable it here (clear DISCPMQ) in AP mode.
-	 */
 	if (0  /* ctl & B43_MACCTL_AP */) {
 		b43_write32(dev, B43_MMIO_MACCTL,
 			    b43_read32(dev, B43_MMIO_MACCTL)
@@ -2859,7 +2842,6 @@ static int b43_chip_init(struct b43_wldev *dev)
 		    | B43_MACCTL_INFRA);
 
 	/* Probe Response Timeout value */
-	/* FIXME: Default to 0, has to be set by ioctl probably... :-/ */
 	b43_shm_write16(dev, B43_SHM_SHARED, 0x0074, 0x0000);
 
 	/* Initially set the wireless operation mode. */
@@ -4184,7 +4166,6 @@ static void b43_imcfglo_timeouts_workaround(struct b43_wldev *dev)
 	if (bus->pcicore.dev &&
 	    bus->pcicore.dev->id.coreid == SSB_DEV_PCI &&
 	    bus->pcicore.dev->id.revision <= 5) {
-		/* IMCFGLO timeouts workaround. */
 		tmp = ssb_read32(dev->dev, SSB_IMCFGLO);
 		switch (bus->bustype) {
 		case SSB_BUSTYPE_PCI:
@@ -4329,7 +4310,7 @@ static int b43_wireless_core_init(struct b43_wldev *dev)
 #ifdef CONFIG_SSB_DRIVER_PCICORE
 	if ((bus->bustype == SSB_BUSTYPE_PCI) &&
 	    (bus->pcicore.dev->id.revision <= 10))
-		hf |= B43_HF_PCISCW; /* PCI slow clock workaround. */
+		hf |= B43_HF_PCISCW;
 #endif
 	hf &= ~B43_HF_SKCFPUP;
 	b43_hf_write(dev, hf);
@@ -4491,7 +4472,6 @@ static int b43_op_start(struct ieee80211_hw *hw)
 		}
 	}
 
-	/* XXX: only do if device doesn't support rfkill irq */
 	wiphy_rfkill_start_polling(hw->wiphy);
 
  out_mutex_unlock:
@@ -4527,7 +4507,6 @@ static int b43_op_beacon_set_tim(struct ieee80211_hw *hw,
 {
 	struct b43_wl *wl = hw_to_b43_wl(hw);
 
-	/* FIXME: add locking */
 	b43_update_templates(wl);
 
 	return 0;
@@ -4738,10 +4717,7 @@ static int b43_wireless_core_attach(struct b43_wldev *dev)
 		case B43_PHYTYPE_A:
 			have_5ghz_phy = 1;
 			break;
-		case B43_PHYTYPE_LP: //FIXME not always!
-#if 0 //FIXME enabling 5GHz causes a NULL pointer dereference
-			have_5ghz_phy = 1;
-#endif
+		case B43_PHYTYPE_LP:
 		case B43_PHYTYPE_G:
 		case B43_PHYTYPE_N:
 			have_2ghz_phy = 1;
@@ -4751,13 +4727,11 @@ static int b43_wireless_core_attach(struct b43_wldev *dev)
 		}
 	}
 	if (dev->phy.type == B43_PHYTYPE_A) {
-		/* FIXME */
 		b43err(wl, "IEEE 802.11a devices are unsupported\n");
 		err = -EOPNOTSUPP;
 		goto err_powerdown;
 	}
 	if (1 /* disable A-PHY */) {
-		/* FIXME: For now we disable the A-PHY on multi-PHY devices. */
 		if (dev->phy.type != B43_PHYTYPE_N &&
 		    dev->phy.type != B43_PHYTYPE_LP) {
 			have_2ghz_phy = 1;

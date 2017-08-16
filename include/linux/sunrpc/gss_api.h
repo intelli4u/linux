@@ -26,7 +26,6 @@ struct gss_ctx {
 #define GSS_C_NO_CONTEXT	((struct gss_ctx *) 0)
 #define GSS_C_NULL_OID		((struct xdr_netobj) 0)
 
-/*XXX  arbitrary length - is this set somewhere? */
 #define GSS_OID_MAX_LEN 32
 
 /* gss-api prototypes; note that these are somewhat simplified versions of
@@ -135,4 +134,3 @@ void gss_mech_put(struct gss_api_mech *);
 
 #endif /* __KERNEL__ */
 #endif /* _LINUX_SUNRPC_GSS_API_H */
-

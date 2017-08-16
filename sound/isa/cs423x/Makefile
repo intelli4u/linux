@@ -9,5 +9,3 @@ snd-cs4236-objs := cs4236.o cs4236_lib.o
 # Toplevel Module Dependency
 obj-$(CONFIG_SND_CS4231) += snd-cs4231.o
 obj-$(CONFIG_SND_CS4236) += snd-cs4236.o
-
-

@@ -401,25 +401,6 @@ enum _mii_esr {
 	MII_ESR_1000BT_HD = 0x1000,
 };
 /* PHY Specific Control Register */
-#if 0
-typedef union t_MII_PHY_SCR {
-	u16 image;
-	struct {
-		u16 disable_jabber:1;	// bit 0
-		u16 polarity_reversal:1;	// bit 1
-		u16 SEQ_test:1;	// bit 2
-		u16 _bit_3:1;	// bit 3
-		u16 disable_CLK125:1;	// bit 4
-		u16 mdi_crossover_mode:2;	// bit 6:5
-		u16 enable_ext_dist:1;	// bit 7
-		u16 _bit_8_9:2;	// bit 9:8
-		u16 force_link:1;	// bit 10
-		u16 assert_CRS:1;	// bit 11
-		u16 rcv_fifo_depth:2;	// bit 13:12
-		u16 xmit_fifo_depth:2;	// bit 15:14
-	} bits;
-} PHY_SCR_t, *PPHY_SCR_t;
-#endif
 
 typedef enum t_MII_ADMIN_STATUS {
 	adm_reset,

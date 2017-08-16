@@ -210,16 +210,6 @@ static int nsp_queuecommand(struct scsi_cmnd *SCpnt,
 		return 0;
 	}
 
-#if 0
-	/* XXX: pcmcia-cs generates SCSI command with "scsi_info" utility.
-	        This makes kernel crash when suspending... */
-	if (data->ScsiInfo->stop != 0) {
-		nsp_msg(KERN_INFO, "suspending device. reject command.");
-		SCpnt->result  = DID_BAD_TARGET << 16;
-		nsp_scsi_done(SCpnt);
-		return SCSI_MLQUEUE_HOST_BUSY;
-	}
-#endif
 
 	show_command(SCpnt);
 
@@ -385,7 +375,6 @@ static int nsphw_start_selection(struct scsi_cmnd *SCpnt)
 
 	time_out = 1000;
 	do {
-		/* XXX: what a stupid chip! */
 		arbit = nsp_index_read(base, ARBITSTATUS);
 		//nsp_dbg(NSP_DEBUG_RESELECTION, "arbit=%d, wait_count=%d", arbit, wait_count);
 		udelay(1); /* hold 1.2us */
@@ -633,10 +622,6 @@ static int nsp_dataphase_bypass(struct scsi_cmnd *SCpnt)
 		return 0;
 	}
 
-	/*
-	 * XXX: NSP_QUIRK
-	 * data phase skip only occures in case of SCSI_LOW_READ
-	 */
 	nsp_dbg(NSP_DEBUG_DATA_IO, "use bypass quirk");
 	SCpnt->SCp.phase = PH_DATA;
 	nsp_pio_read(SCpnt);
@@ -993,10 +978,6 @@ static irqreturn_t nspintr(int irq, void *dev_id)
 		return IRQ_NONE;
 	}
 
-	/* XXX: IMPORTANT
-	 * Do not read an irq_phase register if no scsi phase interrupt.
-	 * Unless, you should lose a scsi phase interrupt.
-	 */
 	phase = nsp_index_read(base, SCSIBUSMON);
 	if((irq_status & IRQSTATUS_SCSI) != 0) {
 		irq_phase = nsp_index_read(base, IRQPHASESENCE);

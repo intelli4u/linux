@@ -213,7 +213,6 @@ void sun4d_handler_irq(int irq, struct pt_regs * regs)
 	/* SBUS IRQ level (1 - 7) */
 	int sbusl = pil_to_sbus[irq];
 	
-	/* FIXME: Is this necessary?? */
 	cc_get_ipen();
 	
 	cc_set_iclr(1 << irq);

@@ -193,11 +193,6 @@ static unsigned short snd_cs46xx_codec_read(struct snd_cs46xx *chip,
 	 *  Read the data returned from the AC97 register.
 	 *  ACSDA = Status Data Register = 474h
 	 */
-#if 0
-	printk(KERN_DEBUG "e) reg = 0x%x, val = 0x%x, BA0_ACCAD = 0x%x\n", reg,
-			snd_cs46xx_peekBA0(chip, BA0_ACSDA),
-			snd_cs46xx_peekBA0(chip, BA0_ACCAD));
-#endif
 
 	//snd_cs46xx_peekBA0(chip, BA0_ACCAD);
 	result = snd_cs46xx_peekBA0(chip, BA0_ACSDA + offset);
@@ -1798,32 +1793,6 @@ static int snd_cs46xx_vol_dac_put(struct snd_kcontrol *kcontrol, struct snd_ctl_
 	return change;
 }
 
-#if 0
-static int snd_cs46xx_vol_iec958_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
-{
-	struct snd_cs46xx *chip = snd_kcontrol_chip(kcontrol);
-
-	ucontrol->value.integer.value[0] = chip->dsp_spos_instance->spdif_input_volume_left;
-	ucontrol->value.integer.value[1] = chip->dsp_spos_instance->spdif_input_volume_right;
-	return 0;
-}
-
-static int snd_cs46xx_vol_iec958_put(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
-{
-	struct snd_cs46xx *chip = snd_kcontrol_chip(kcontrol);
-	int change = 0;
-
-	if (chip->dsp_spos_instance->spdif_input_volume_left  != ucontrol->value.integer.value[0] ||
-	    chip->dsp_spos_instance->spdif_input_volume_right!= ucontrol->value.integer.value[1]) {
-		cs46xx_dsp_set_iec958_volume (chip,
-					      ucontrol->value.integer.value[0],
-					      ucontrol->value.integer.value[1]);
-		change = 1;
-	}
-
-	return change;
-}
-#endif
 
 #define snd_mixer_boolean_info		snd_ctl_boolean_mono_info
 
@@ -2149,17 +2118,6 @@ static struct snd_kcontrol_new snd_cs46xx_controls[] __devinitdata = {
 	.put = snd_cs46xx_iec958_put,
 	.private_value = CS46XX_MIXER_SPDIF_INPUT_ELEMENT,
 },
-#if 0
-/* Input IEC958 volume does not work for the moment. (Benny) */
-{
-	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
-	.name = SNDRV_CTL_NAME_IEC958("Input ",NONE,VOLUME),
-	.info = snd_cs46xx_vol_info,
-	.get = snd_cs46xx_vol_iec958_get,
-	.put = snd_cs46xx_vol_iec958_put,
-	.private_value = (ASYNCRX_SCB_ADDR + 0xE) << 2,
-},
-#endif
 {
 	.iface = SNDRV_CTL_ELEM_IFACE_PCM,
 	.name =  SNDRV_CTL_NAME_IEC958("",PLAYBACK,DEFAULT),
@@ -3071,12 +3029,6 @@ int __devinit snd_cs46xx_start_dsp(struct snd_cs46xx *chip)
 	 *  Download the image to the processor.
 	 */
 #ifdef CONFIG_SND_CS46XX_NEW_DSP
-#if 0
-	if (cs46xx_dsp_load_module(chip, &cwcemb80_module) < 0) {
-		snd_printk(KERN_ERR "image download error\n");
-		return -EIO;
-	}
-#endif
 
 	if (cs46xx_dsp_load_module(chip, &cwc4630_module) < 0) {
 		snd_printk(KERN_ERR "image download error [cwc4630]\n");
@@ -3382,30 +3334,6 @@ static void hercules_mixer_init (struct snd_cs46xx *chip)
 }
 
 
-#if 0
-/*
- *	Untested
- */
- 
-static void amp_voyetra_4294(struct snd_cs46xx *chip, int change)
-{
-	chip->amplifier += change;
-
-	if (chip->amplifier) {
-		/* Switch the GPIO pins 7 and 8 to open drain */
-		snd_cs46xx_codec_write(chip, 0x4C,
-				       snd_cs46xx_codec_read(chip, 0x4C) & 0xFE7F);
-		snd_cs46xx_codec_write(chip, 0x4E,
-				       snd_cs46xx_codec_read(chip, 0x4E) | 0x0180);
-		/* Now wake the AMP (this might be backwards) */
-		snd_cs46xx_codec_write(chip, 0x54,
-				       snd_cs46xx_codec_read(chip, 0x54) & ~0x0180);
-	} else {
-		snd_cs46xx_codec_write(chip, 0x54,
-				       snd_cs46xx_codec_read(chip, 0x54) | 0x0180);
-	}
-}
-#endif
 
 
 /*
@@ -3667,16 +3595,6 @@ int snd_cs46xx_resume(struct pci_dev *pci)
 	snd_cs46xx_download_image(chip);
 #endif
 
-#if 0
-	snd_cs46xx_codec_write(chip, BA0_AC97_GENERAL_PURPOSE, 
-			       chip->ac97_general_purpose);
-	snd_cs46xx_codec_write(chip, AC97_POWER_CONTROL, 
-			       chip->ac97_powerdown);
-	mdelay(10);
-	snd_cs46xx_codec_write(chip, BA0_AC97_POWERDOWN,
-			       chip->ac97_powerdown);
-	mdelay(5);
-#endif
 
 	snd_ac97_resume(chip->ac97[CS46XX_PRIMARY_CODEC_INDEX]);
 	snd_ac97_resume(chip->ac97[CS46XX_SECONDARY_CODEC_INDEX]);

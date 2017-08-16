@@ -39,11 +39,7 @@ struct stv0297_state {
 	unsigned long base_freq;
 };
 
-#if 1
 #define dprintk(x...) printk(x)
-#else
-#define dprintk(x...)
-#endif
 
 #define STV0297_CLOCK_KHZ   28900
 

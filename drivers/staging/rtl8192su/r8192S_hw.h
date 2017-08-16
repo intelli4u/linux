@@ -509,11 +509,9 @@ typedef enum _BaseBand_Config_Type{
 //============================================================================
 //       8190 Regsiter offset definition
 //============================================================================
-#if 1	// Delete the register later
 #define		AFR					0x010	// AutoLoad Function Register
 #define		BCN_TCFG			0x062	// Beacon Time Configuration
 #define		RATR0				0x320	// Rate Adaptive Table register1
-#endif
 // TODO: Remove unused register, We must declare backward compatiable
 //Undefined register set in 8192S. 0x320/350 DW is useless
 #define		UnusedRegister		0x0320

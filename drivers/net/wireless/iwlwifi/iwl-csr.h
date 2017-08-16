@@ -94,17 +94,6 @@
 /* 2nd byte of CSR_INT_COALESCING, not accessible via iwl_write32()! */
 #define CSR_INT_PERIODIC_REG	(CSR_BASE+0x005)
 
-/*
- * Hardware revision info
- * Bit fields:
- * 31-8:  Reserved
- *  7-4:  Type of device:  see CSR_HW_REV_TYPE_xxx definitions
- *  3-2:  Revision step:  0 = A, 1 = B, 2 = C, 3 = D
- *  1-0:  "Dash" (-) value, as in A-1, etc.
- *
- * NOTE:  Revision step affects calculation of CCK txpower for 4965.
- * NOTE:  See also CSR_HW_REV_WA_REG (work-around for bug in 4965).
- */
 #define CSR_HW_REV              (CSR_BASE+0x028)
 
 /*
@@ -139,14 +128,6 @@
 /* Analog phase-lock-loop configuration  */
 #define CSR_ANA_PLL_CFG         (CSR_BASE+0x20c)
 
-/*
- * CSR Hardware Revision Workaround Register.  Indicates hardware rev;
- * "step" determines CCK backoff for txpower calculation.  Used for 4965 only.
- * See also CSR_HW_REV register.
- * Bit fields:
- *  3-2:  0 = A, 1 = B, 2 = C, 3 = D step
- *  1-0:  "Dash" (-) value, as in C-1, etc.
- */
 #define CSR_HW_REV_WA_REG		(CSR_BASE+0x22C)
 
 #define CSR_DBG_HPET_MEM_REG		(CSR_BASE+0x240)
@@ -424,7 +405,6 @@
 #define HBUS_TARG_MEM_WDAT      (HBUS_BASE+0x018)
 #define HBUS_TARG_MEM_RDAT      (HBUS_BASE+0x01c)
 
-/* Mailbox C, used as workaround alternative to CSR_UCODE_DRV_GP1 mailbox */
 #define HBUS_TARG_MBX_C         (HBUS_BASE+0x030)
 #define HBUS_TARG_MBX_C_REG_BIT_CMD_BLOCKED         (0x00000004)
 

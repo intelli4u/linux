@@ -347,4 +347,3 @@ bcom_set_tcr_initiator(int task, int initiator)
 
 
 #endif /* __BESTCOMM_PRIV_H__ */
-

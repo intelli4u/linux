@@ -4390,4 +4390,3 @@ void reiserfs_abort_journal(struct super_block *sb, int errno)
 	dump_stack();
 #endif
 }
-

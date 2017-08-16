@@ -898,8 +898,6 @@ static void asd_init_scb_sites(struct asd_ha_struct *asd_ha)
 		 * frames received to be dropped. */
 		asd_scbsite_write_byte(asd_ha, site_no, 0x49, 0x01);
 
-		/* Workaround needed by SEQ to fix a SATA issue is to exclude
-		 * certain SCB sites from the free list. */
 		if (!SCB_SITE_VALID(site_no))
 			continue;
 

@@ -532,4 +532,3 @@ static void __exit snd_module_exit(void)
 
 module_init(snd_module_init)
 module_exit(snd_module_exit)
-

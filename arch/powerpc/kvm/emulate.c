@@ -114,22 +114,6 @@ void kvmppc_emulate_dec(struct kvm_vcpu *vcpu)
 	}
 }
 
-/* XXX to do:
- * lhax
- * lhaux
- * lswx
- * lswi
- * stswx
- * stswi
- * lha
- * lhau
- * lmw
- * stmw
- *
- * XXX is_bigendian should depend on MMU mapping or MSR[LE]
- */
-/* XXX Should probably auto-generate instruction decoding for a particular core
- * from opcode tables in the future. */
 int kvmppc_emulate_instruction(struct kvm_run *run, struct kvm_vcpu *vcpu)
 {
 	u32 inst = kvmppc_get_last_inst(vcpu);
@@ -324,8 +308,6 @@ int kvmppc_emulate_instruction(struct kvm_run *run, struct kvm_vcpu *vcpu)
 			case SPRN_SRR1:
 				vcpu->arch.srr1 = kvmppc_get_gpr(vcpu, rs); break;
 
-			/* XXX We need to context-switch the timebase for
-			 * watchdog and FIT. */
 			case SPRN_TBWL: break;
 			case SPRN_TBWU: break;
 

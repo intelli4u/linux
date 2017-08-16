@@ -451,25 +451,10 @@ static void __early_init_mmu(int boot_cpu)
 {
 	unsigned int mas4;
 
-	/* XXX This will have to be decided at runtime, but right
-	 * now our boot and TLB miss code hard wires it. Ideally
-	 * we should find out a suitable page size and patch the
-	 * TLB miss code (either that or use the PACA to store
-	 * the value we want)
-	 */
 	mmu_linear_psize = MMU_PAGE_1G;
 
-	/* XXX This should be decided at runtime based on supported
-	 * page sizes in the TLB, but for now let's assume 16M is
-	 * always there and a good fit (which it probably is)
-	 */
 	mmu_vmemmap_psize = MMU_PAGE_16M;
 
-	/* XXX This code only checks for TLB 0 capabilities and doesn't
-	 *     check what page size combos are supported by the HW. It
-	 *     also doesn't handle the case where a separate array holds
-	 *     the IND entries from the array loaded by the PT.
-	 */
 	if (boot_cpu) {
 		/* Look for supported page sizes */
 		setup_page_sizes();

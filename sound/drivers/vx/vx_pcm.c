@@ -414,10 +414,6 @@ static int vx_alloc_pipe(struct vx_core *chip, int capture,
 	*pipep = NULL;
 	vx_init_rmh(&rmh, CMD_RES_PIPE);
 	vx_set_pipe_cmd_params(&rmh, capture, audioid, num_audio);
-#if 0	// NYI
-	if (underrun_skip_sound)
-		rmh.Cmd[0] |= BIT_SKIP_SOUND;
-#endif	// NYI
 	data_mode = (chip->uer_bits & IEC958_AES0_NONAUDIO) != 0;
 	if (! capture && data_mode)
 		rmh.Cmd[0] |= BIT_DATA_MODE;
@@ -769,10 +765,6 @@ static int vx_pcm_trigger(struct snd_pcm_substream *subs, int cmd)
 	case SNDRV_PCM_TRIGGER_RESUME:
 		if (! pipe->is_capture)
 			vx_pcm_playback_transfer(chip, subs, pipe, 2);
-		/* FIXME:
-		 * we trigger the pipe using tasklet, so that the interrupts are
-		 * issued surely after the trigger is completed.
-		 */ 
 		tasklet_schedule(&pipe->start_tq);
 		chip->pcm_running++;
 		pipe->running = 1;

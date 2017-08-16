@@ -1676,7 +1676,6 @@ static int uhci_advance_check(struct uhci_hcd *uhci, struct uhci_qh *qh)
 
 	if (time_after(jiffies, qh->advance_jiffies + QH_WAIT_TIMEOUT)) {
 
-		/* Detect the Intel bug and work around it */
 		if (qh->post_td && qh_element(qh) == LINK_TO_TD(qh->post_td)) {
 			qh->element = qh->post_td->link;
 			qh->advance_jiffies = jiffies;

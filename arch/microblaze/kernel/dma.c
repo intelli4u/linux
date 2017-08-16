@@ -41,7 +41,7 @@ static unsigned long get_dma_direct_offset(struct device *dev)
 	if (likely(dev))
 		return (unsigned long)dev->archdata.dma_data;
 
-	return PCI_DRAM_OFFSET; /* FIXME Not sure if is correct */
+	return PCI_DRAM_OFFSET;
 }
 
 #define NOT_COHERENT_CACHE
@@ -87,7 +87,6 @@ static int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl,
 	struct scatterlist *sg;
 	int i;
 
-	/* FIXME this part of code is untested */
 	for_each_sg(sgl, sg, nents, i) {
 		sg->dma_address = sg_phys(sg) + get_dma_direct_offset(dev);
 		__dma_sync_page(page_to_phys(sg_page(sg)), sg->offset,

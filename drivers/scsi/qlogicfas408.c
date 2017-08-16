@@ -347,7 +347,6 @@ static unsigned int ql_pcmd(struct scsi_cmnd *cmd)
 		return (DID_TIME_OUT << 16);
 	}
 
-	/* FIXME: timeout ?? */
 	while (inb(qbase + 5))
 		cpu_relax();	/* clear pending ints */
 
@@ -474,10 +473,6 @@ int qlogicfas408_biosparam(struct scsi_device *disk, struct block_device *dev,
 		ip[0] = 0xff;
 		ip[1] = 0x3f;
 		ip[2] = (unsigned long) capacity / (ip[0] * ip[1]);
-#if 0
-		if (ip[2] > 1023)
-			ip[2] = 1023;
-#endif
 	}
 	return 0;
 }
@@ -494,11 +489,6 @@ int qlogicfas408_abort(struct scsi_cmnd *cmd)
 	return SUCCESS;
 }
 
-/* 
- *	Reset SCSI bus
- *	FIXME: This function is invoked with cmd = NULL directly by
- *	the PCMCIA qlogic_stub code. This wants fixing
- */
 
 int qlogicfas408_bus_reset(struct scsi_cmnd *cmd)
 {
@@ -550,7 +540,6 @@ void qlogicfas408_setup(int qbase, int id, int int_type)
 	outb(3, qbase + 3);
 
 	REG1;
-	/* FIXME: timeout */
 	while (inb(qbase + 0xf) & 4)
 		cpu_relax();
 
@@ -612,4 +601,3 @@ EXPORT_SYMBOL(qlogicfas408_get_chip_type);
 EXPORT_SYMBOL(qlogicfas408_setup);
 EXPORT_SYMBOL(qlogicfas408_detect);
 EXPORT_SYMBOL(qlogicfas408_disable_ints);
-

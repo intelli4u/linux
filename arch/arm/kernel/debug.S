@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  *  linux/arch/arm/kernel/debug.S
  *
@@ -10,6 +11,7 @@
  *  32-bit debugging code
  */
 #include <linux/linkage.h>
+#include <asm/memory.h>
 
 		.text
 
@@ -145,7 +147,17 @@ ENDPROC(printhex4)
 
 ENTRY(printhex2)
 		mov	r1, #2
-printhex:	adr	r2, hexbuf
+printhex:	
+		mrc	p15, 0, r2, c1, c0	@ read SysCtrl
+		tst	r2, #1			@ MMU enabled?
+		ldrne	r2, =hexbuf		@ =1 virtual
+		ldr	r3, =hexbuf
+		ldr	r4, =PAGE_OFFSET
+		sub	r3, r3, r4		@ get offset
+		ldr	r4, =ddr_phys_offset_va
+		ldr	r4, [r4, #0x0]		@ get real PHYS_OFFSET value
+		add	r3, r3, r4
+		ldreq	r2, [r3, #0x0]		@ =0 physical
 		add	r3, r2, r1
 		mov	r1, #0
 		strb	r1, [r3]
@@ -186,4 +198,5 @@ ENTRY(printch)
 		b	1b
 ENDPROC(printch)
 
+		.bss
 hexbuf:		.space 16

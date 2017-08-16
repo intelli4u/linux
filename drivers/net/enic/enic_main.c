@@ -1290,10 +1290,6 @@ static int enic_rq_alloc_buf_a1(struct vnic_rq *rq)
 
 	if (vnic_rq_posting_soon(rq)) {
 
-		/* SW workaround for A0 HW erratum: if we're just about
-		 * to write posted_index, insert a dummy desc
-		 * of type resvd
-		 */
 
 		rq_enet_desc_enc(desc, 0, RQ_ENET_TYPE_RESV2, 0);
 		vnic_rq_post(rq, 0, 0, 0, 0);

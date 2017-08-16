@@ -132,19 +132,6 @@ static inline void afs_dir_check_page(struct inode *dir, struct page *page)
 	loff_t latter;
 	int tmp, qty;
 
-#if 0
-	/* check the page count */
-	qty = desc.size / sizeof(dbuf->blocks[0]);
-	if (qty == 0)
-		goto error;
-
-	if (page->index == 0 && qty != ntohs(dbuf->blocks[0].pagehdr.npages)) {
-		printk("kAFS: %s(%lu): wrong number of dir blocks %d!=%hu\n",
-		       __func__, dir->i_ino, qty,
-		       ntohs(dbuf->blocks[0].pagehdr.npages));
-		goto error;
-	}
-#endif
 
 	/* determine how many magic numbers there should be in this page */
 	latter = dir->i_size - page_offset(page);

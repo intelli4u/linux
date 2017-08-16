@@ -172,17 +172,6 @@ static void zfLnxDisconnect(struct usb_interface *interface)
 		if (macp->device->flags & IFF_UP)
 			usbdrv_close(macp->device);
 
-	#if 0
-		/* Close WDS */
-		/* zfWdsClose(wds[0].dev); */
-		/* Unregister WDS */
-		/* zfUnregisterWdsDev(macp->device, 0); */
-
-		/* Close VAP */
-		zfLnxVapClose(vap[0].dev);
-		/* Unregister VAP */
-		zfLnxUnregisterVapDev(macp->device, 0);
-	#endif
 
 	zfLnxClearStructs(macp->device);
 

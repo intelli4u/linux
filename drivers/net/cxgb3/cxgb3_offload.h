@@ -167,14 +167,6 @@ struct tid_info {
 	unsigned int natids;
 	unsigned int atid_base;
 
-	/*
-	 * The following members are accessed R/W so we put them in their own
-	 * cache lines.
-	 *
-	 * XXX We could combine the atid fields above with the lock here since
-	 * atids are use once (unlike other tids).  OTOH the above fields are
-	 * usually in cache due to tid_tab.
-	 */
 	spinlock_t atid_lock ____cacheline_aligned_in_smp;
 	union active_open_entry *afree;
 	unsigned int atids_in_use;

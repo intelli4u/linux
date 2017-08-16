@@ -593,16 +593,10 @@ extern u32 __tcp_select_window(struct sock *sk);
 #define TCPHDR_ECE 0x40
 #define TCPHDR_CWR 0x80
 
-/* This is what the send packet queuing engine uses to pass
- * TCP per-packet control information to the transmission code.
- * We also store the host-order sequence numbers in here too.
- * This is 44 bytes if IPV6 is enabled.
- * If this grows please adjust skbuff.h:skbuff->cb[xxx] size appropriately.
- */
 struct tcp_skb_cb {
 	union {
 		struct inet_skb_parm	h4;
-#if defined(CONFIG_IPV6) || defined (CONFIG_IPV6_MODULE)
+#if defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE)
 		struct inet6_skb_parm	h6;
 #endif
 	} header;	/* For incoming frames		*/
@@ -1103,9 +1097,6 @@ struct tcp4_md5sig_key {
 
 struct tcp6_md5sig_key {
 	struct tcp_md5sig_key	base;
-#if 0
-	u32			scope_id;	/* XXX */
-#endif
 	struct in6_addr		addr;
 };
 

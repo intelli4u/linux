@@ -920,4 +920,3 @@ static int hdmi_parse_codec(struct hda_codec *codec)
 
 	return 0;
 }
-

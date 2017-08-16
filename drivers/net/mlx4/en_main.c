@@ -299,4 +299,3 @@ static void __exit mlx4_en_cleanup(void)
 
 module_init(mlx4_en_init);
 module_exit(mlx4_en_cleanup);
-

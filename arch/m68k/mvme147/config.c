@@ -128,7 +128,6 @@ void mvme147_sched_init (irq_handler_t timer_routine)
 }
 
 /* This is always executed with interrupts disabled.  */
-/* XXX There are race hazards in this code XXX */
 unsigned long mvme147_gettimeoffset (void)
 {
 	volatile unsigned short *cp = (volatile unsigned short *)0xfffe1012;

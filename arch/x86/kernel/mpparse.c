@@ -702,14 +702,6 @@ void __init default_find_smp_config(void)
 {
 	unsigned int address;
 
-	/*
-	 * FIXME: Linux assumes you have 640K of base ram..
-	 * this continues the error...
-	 *
-	 * 1) Scan the bottom 1K for a signature
-	 * 2) Scan the top 1K of base RAM
-	 * 3) Scan the 64K of bios
-	 */
 	if (smp_scan_config(0x0, 0x400) ||
 	    smp_scan_config(639 * 0x400, 0x400) ||
 	    smp_scan_config(0xF0000, 0x10000))

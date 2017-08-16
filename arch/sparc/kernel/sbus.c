@@ -372,9 +372,6 @@ static irqreturn_t sysio_ce_handler(int irq, void *dev_id)
 		  ((error_bits & SYSIO_CEAFSR_PDWR) ?
 		   "DVMA Write" : "???")))));
 
-	/* XXX Use syndrome and afar to print out module string just like
-	 * XXX UDB CE trap handler does... -DaveM
-	 */
 	printk("SYSIO[%x]: DOFF[%lx] ECC Syndrome[%lx] Size[%lx] MID[%lx]\n",
 	       portid,
 	       (afsr & SYSIO_CEAFSR_DOFF) >> 45UL,
@@ -474,7 +471,6 @@ static irqreturn_t sysio_sbus_error_handler(int irq, void *dev_id)
 		printk("(none)");
 	printk("]\n");
 
-	/* XXX check iommu/strbuf for further error status XXX */
 
 	return IRQ_HANDLED;
 }

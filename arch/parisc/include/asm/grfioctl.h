@@ -74,7 +74,7 @@
 
 /* structure for ioctl(GCDESCRIBE) */
 
-#define gaddr_t unsigned long	/* FIXME: PA2.0 (64bit) portable ? */
+#define gaddr_t unsigned long
 
 struct	grf_fbinfo {
 	unsigned int	id;		/* upper 32 bits of graphics id */
@@ -110,4 +110,3 @@ struct	grf_fbinfo {
 #define GCFASTLOCK	_IO('G', 26)
 
 #endif /* __ASM_PARISC_GRFIOCTL_H */
-

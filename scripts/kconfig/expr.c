@@ -983,9 +983,6 @@ tristate expr_calc_value(struct expr *e)
 
 int expr_compare_type(enum expr_type t1, enum expr_type t2)
 {
-#if 0
-	return 1;
-#else
 	if (t1 == t2)
 		return 0;
 	switch (t1) {
@@ -1010,7 +1007,6 @@ int expr_compare_type(enum expr_type t1, enum expr_type t2)
 	}
 	printf("[%dgt%d?]", t1, t2);
 	return 0;
-#endif
 }
 
 void expr_print(struct expr *e, void (*fn)(void *, struct symbol *, const char *), void *data, int prevtoken)

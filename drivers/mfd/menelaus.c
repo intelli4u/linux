@@ -266,12 +266,6 @@ static int menelaus_remove_irq_work(int irq)
 	return ret;
 }
 
-/*
- * Gets scheduled when a card detect interrupt happens. Note that in some cases
- * this line is wired to card cover switch rather than the card detect switch
- * in each slot. In this case the cards are not seen by menelaus.
- * FIXME: Add handling for D1 too
- */
 static void menelaus_mmc_cd_work(struct menelaus_chip *menelaus_hw)
 {
 	int reg;
@@ -1307,7 +1301,6 @@ static void __exit menelaus_exit(void)
 {
 	i2c_del_driver(&menelaus_i2c_driver);
 
-	/* FIXME: Shutdown menelaus parts that can be shut down */
 }
 
 MODULE_AUTHOR("Texas Instruments, Inc. (and others)");

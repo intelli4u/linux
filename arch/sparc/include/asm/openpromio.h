@@ -66,4 +66,3 @@ struct opiocdesc
 #define	OPIOCGETCHILD	_IOWR('O', 6, int)
 
 #endif /* _SPARC_OPENPROMIO_H */
-

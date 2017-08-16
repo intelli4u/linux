@@ -73,12 +73,6 @@ void __init uv_setup(char **cmdline_p)
 		m_n_config.s.m_skt = 37;
 		m_n_config.s.n_skt = 0;
 		mmr_base = 0;
-#if 0
-		/* Need BIOS calls - TDB */
-		if (!ia64_sn_is_fake_prom())
-			sn_prom_type = 1;
-		else
-#endif
 			sn_prom_type = 2;
 		printk(KERN_INFO "Running on medusa with %s PROM\n",
 					(sn_prom_type == 1) ? "real" : "fake");
@@ -113,4 +107,3 @@ void __init uv_setup(char **cmdline_p)
 		printk(KERN_DEBUG "UV cpu %d, nid %d\n", cpu, nid);
 	}
 }
-

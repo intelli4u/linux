@@ -396,4 +396,3 @@ module_exit(thermal_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Christian Krafft <krafft@de.ibm.com>");
-

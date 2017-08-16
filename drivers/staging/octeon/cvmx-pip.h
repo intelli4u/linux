@@ -296,37 +296,6 @@ static inline void cvmx_pip_config_port(uint64_t port_num,
 	cvmx_write_csr(CVMX_PIP_PRT_CFGX(port_num), port_cfg.u64);
 	cvmx_write_csr(CVMX_PIP_PRT_TAGX(port_num), port_tag_cfg.u64);
 }
-#if 0
-/**
- * @deprecated      This function is a thin wrapper around the Pass1 version
- *                  of the CVMX_PIP_QOS_WATCHX CSR; Pass2 has added a field for
- *                  setting the group that is incompatible with this function,
- *                  the preferred upgrade path is to use the CSR directly.
- *
- * Configure the global QoS packet watchers. Each watcher is
- * capable of matching a field in a packet to determine the
- * QoS queue for scheduling.
- *
- * @watcher:    Watcher number to configure (0 - 3).
- * @match_type: Watcher match type
- * @match_value:
- *                   Value the watcher will match against
- * @qos:        QoS queue for packets matching this watcher
- */
-static inline void cvmx_pip_config_watcher(uint64_t watcher,
-					   cvmx_pip_qos_watch_types match_type,
-					   uint64_t match_value, uint64_t qos)
-{
-	cvmx_pip_port_watcher_cfg_t watcher_config;
-
-	watcher_config.u64 = 0;
-	watcher_config.s.match_type = match_type;
-	watcher_config.s.match_value = match_value;
-	watcher_config.s.qos = qos;
-
-	cvmx_write_csr(CVMX_PIP_QOS_WATCHX(watcher), watcher_config.u64);
-}
-#endif
 /**
  * Configure the VLAN priority to QoS queue mapping.
  *

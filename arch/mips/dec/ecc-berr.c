@@ -208,13 +208,6 @@ irqreturn_t dec_ecc_be_interrupt(int irq, void *dev_id)
 	if (action == MIPS_BE_DISCARD)
 		return IRQ_HANDLED;
 
-	/*
-	 * FIXME: Find the affected processes and kill them, otherwise
-	 * we must die.
-	 *
-	 * The interrupt is asynchronously delivered thus EPC and RA
-	 * may be irrelevant, but are printed for a reference.
-	 */
 	printk(KERN_ALERT "Fatal bus interrupt, epc == %08lx, ra == %08lx\n",
 	       regs->cp0_epc, regs->regs[31]);
 	die("Unrecoverable bus error", regs);

@@ -514,11 +514,6 @@ static int handle_eviocgbit(struct input_dev *dev,
 	default: return -EINVAL;
 	}
 
-	/*
-	 * Work around bugs in userspace programs that like to do
-	 * EVIOCGBIT(EV_KEY, KEY_MAX) and not realize that 'len'
-	 * should be in bytes, not in bits.
-	 */
 	if (type == EV_KEY && size == OLD_KEY_MAX) {
 		len = OLD_KEY_MAX;
 		if (printk_timed_ratelimit(&keymax_warn_time, 10 * 1000))

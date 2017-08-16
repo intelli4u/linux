@@ -259,11 +259,9 @@ static void *sbus_alloc_coherent(struct device *dev, size_t len,
 	struct resource *res;
 	int order;
 
-	/* XXX why are some lengths signed, others unsigned? */
 	if (len <= 0) {
 		return NULL;
 	}
-	/* XXX So what is maxphys for us and how do drivers know it? */
 	if (len > 256*1024) {			/* __get_free_pages() limit */
 		return NULL;
 	}
@@ -281,12 +279,7 @@ static void *sbus_alloc_coherent(struct device *dev, size_t len,
 		goto err_nova;
 	}
 	mmu_inval_dma_area(va, len_total);
-	// XXX The mmu_map_dma_area does this for us below, see comments.
 	// sparc_mapiorange(0, virt_to_phys(va), res->start, len_total);
-	/*
-	 * XXX That's where sdev would be used. Currently we load
-	 * all iommu tables with the same translations.
-	 */
 	if (mmu_map_dma_area(dev, dma_addrp, va, res->start, len_total) != 0)
 		goto err_noiommu;
 
@@ -350,11 +343,9 @@ static dma_addr_t sbus_map_page(struct device *dev, struct page *page,
 {
 	void *va = page_address(page) + offset;
 
-	/* XXX why are some lengths signed, others unsigned? */
 	if (len <= 0) {
 		return 0;
 	}
-	/* XXX So what is maxphys for us and how do drivers know it? */
 	if (len > 256*1024) {			/* __get_free_pages() limit */
 		return 0;
 	}
@@ -372,10 +363,6 @@ static int sbus_map_sg(struct device *dev, struct scatterlist *sg, int n,
 {
 	mmu_get_scsi_sgl(dev, sg, n);
 
-	/*
-	 * XXX sparc64 can return a partial length here. sun4c should do this
-	 * but it currently panics if it can't fulfill the request - Anton
-	 */
 	return n;
 }
 
@@ -463,10 +450,6 @@ static void *pci32_alloc_coherent(struct device *dev, size_t len,
 		return NULL;
 	}
 	mmu_inval_dma_area(va, len_total);
-#if 0
-/* P3 */ printk("pci_alloc_consistent: kva %lx uncva %lx phys %lx size %lx\n",
-  (long)va, (long)res->start, (long)virt_to_phys(va), len_total);
-#endif
 	sparc_mapiorange(0, virt_to_phys(va), res->start, len_total);
 
 	*pba = virt_to_phys(va); /* equals virt_to_bus (R.I.P.) for us. */
@@ -707,13 +690,6 @@ static const struct file_operations sparc_io_proc_fops = {
 };
 #endif /* CONFIG_PROC_FS */
 
-/*
- * This is a version of find_resource and it belongs to kernel/resource.c.
- * Until we have agreement with Linus and Martin, it lingers here.
- *
- * XXX Too slow. Can have 8192 DVMA pages on sun4m in the worst case.
- * This probably warrants some sort of hashing.
- */
 static struct resource *_sparc_find_resource(struct resource *root,
 					     unsigned long hit)
 {

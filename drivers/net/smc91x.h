@@ -40,13 +40,10 @@
  * Define your architecture specific bus configuration parameters here.
  */
 
-#if defined(CONFIG_ARCH_LUBBOCK) ||\
-    defined(CONFIG_MACH_MAINSTONE) ||\
-    defined(CONFIG_MACH_ZYLONITE) ||\
-    defined(CONFIG_MACH_LITTLETON) ||\
-    defined(CONFIG_MACH_ZYLONITE2) ||\
-    defined(CONFIG_ARCH_VIPER) ||\
-    defined(CONFIG_MACH_STARGATE2)
+#if defined(CONFIG_ARCH_LUBBOCK) || defined(CONFIG_MACH_MAINSTONE) || \
+	defined(CONFIG_MACH_ZYLONITE) || defined(CONFIG_MACH_LITTLETON) || \
+	defined(CONFIG_MACH_ZYLONITE2) || defined(CONFIG_ARCH_VIPER) || \
+	defined(CONFIG_MACH_STARGATE2)
 
 #include <asm/mach-types.h>
 

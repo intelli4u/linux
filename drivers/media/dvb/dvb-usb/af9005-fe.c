@@ -847,16 +847,6 @@ static int af9005_fe_init(struct dvb_frontend *fe)
 	if (i == 150)
 		return -ETIMEDOUT;
 
-	/*FIXME in the dump
-	   write B200 A9
-	   write xd_g_reg_ofsm_clk 7
-	   read eepr c6 (2)
-	   read eepr c7 (2)
-	   misc ctrl 3 -> 1
-	   read eepr ca (6)
-	   write xd_g_reg_ofsm_clk 0
-	   write B200 a1
-	 */
 	ret = af9005_write_ofdm_register(state->d, 0xb200, 0xa9);
 	if (ret)
 		return ret;
@@ -922,7 +912,6 @@ static int af9005_fe_init(struct dvb_frontend *fe)
 	     af9005_write_register_bits(state->d, xd_p_reg_dca_en,
 					reg_dca_en_pos, reg_dca_en_len, 0)))
 		return ret;
-	/* FIXME these are register bits, but I don't know which ones */
 	ret = af9005_write_ofdm_register(state->d, 0xa16c, 1);
 	if (ret)
 		return ret;
@@ -961,7 +950,6 @@ static int af9005_fe_init(struct dvb_frontend *fe)
 					fec_vtb_rsd_mon_en_len, 1)))
 		return ret;
 
-	/* FIXME should be register bits, I don't know which ones */
 	ret = af9005_write_ofdm_register(state->d, 0xa601, 0);
 
 	/* set api_retrain_never_freeze */

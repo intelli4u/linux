@@ -1824,7 +1824,6 @@ find_save_locs (struct unw_frame_info *info)
 
 	if ((info->ip & (local_cpu_data->unimpl_va_mask | 0xf)) || info->ip < TASK_SIZE) {
 		/* don't let obviously bad addresses pollute the cache */
-		/* FIXME: should really be level 0 but it occurs too often. KAO */
 		UNW_DPRINT(1, "unwind.%s: rejecting bad ip=0x%lx\n", __func__, info->ip);
 		info->rp_loc = NULL;
 		return -1;
@@ -1880,7 +1879,6 @@ unw_unwind (struct unw_frame_info *info)
 
 	/* validate the return IP pointer */
 	if (!unw_valid(info, info->rp_loc)) {
-		/* FIXME: should really be level 0 but it occurs too often. KAO */
 		UNW_DPRINT(1, "unwind.%s: failed to locate return link (ip=0x%lx)!\n",
 			   __func__, info->ip);
 		STAT(unw.stat.api.unwind_time += ia64_get_itc() - start; local_irq_restore(flags));

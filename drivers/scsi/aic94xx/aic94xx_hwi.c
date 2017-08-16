@@ -706,16 +706,6 @@ Out:
 
 /* ---------- Chip reset ---------- */
 
-/**
- * asd_chip_reset -- reset the host adapter, etc
- * @asd_ha: pointer to host adapter structure of interest
- *
- * Called from the ISR.  Hard reset the chip.  Let everything
- * timeout.  This should be no different than hot-unplugging the
- * host adapter.  Once everything times out we'll init the chip with
- * a call to asd_init_chip() and enable interrupts with asd_enable_ints().
- * XXX finish.
- */
 static void asd_chip_reset(struct asd_ha_struct *asd_ha)
 {
 	struct sas_ha_struct *sas_ha = &asd_ha->sas_ha;
@@ -889,7 +879,6 @@ static void asd_arp2_err(struct asd_ha_struct *asd_ha, u32 dchstatus)
 				asd_printk("%s: LSEQ%d arp2int:0x%x\n",
 					   pci_name(asd_ha->pcidev),
 					   lseq, arp2int);
-				/* XXX we should only do lseq reset */
 			} else if (arp2int & ARP2HALTC)
 				asd_printk("%s: LSEQ%d halted: %s\n",
 					   pci_name(asd_ha->pcidev),
@@ -992,7 +981,6 @@ static void asd_hst_pcix_isr(struct asd_ha_struct *asd_ha)
 		asd_printk("received split completion error for %s\n",
 			   pci_name(asd_ha->pcidev));
 		pci_write_config_dword(asd_ha->pcidev,PCIX_STATUS,pcix_status);
-		/* XXX: Abort task? */
 		return;
 	} else if (pcix_status & UNEXP_SC) {
 		asd_printk("unexpected split completion for %s\n",
@@ -1330,7 +1318,6 @@ static int asd_enable_phy(struct asd_ha_struct *asd_ha, int phy_id)
 			   HOTPLUG_DELAY_TIMEOUT);
 
 	/* Get defaults from manuf. sector */
-	/* XXX we need defaults for those in case MS is broken. */
 	asd_write_reg_byte(asd_ha, LmSEQ_OOB_REG(phy_id, PHY_CONTROL_0),
 			   phy->phy_desc->phy_control_0);
 	asd_write_reg_byte(asd_ha, LmSEQ_OOB_REG(phy_id, PHY_CONTROL_1),

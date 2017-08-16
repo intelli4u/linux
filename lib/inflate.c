@@ -1305,5 +1305,3 @@ static int INIT gunzip(void)
     error("out of input data");
     return -1;
 }
-
-

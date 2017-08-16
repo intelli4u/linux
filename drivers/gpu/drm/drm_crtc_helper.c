@@ -57,28 +57,6 @@ static void drm_mode_validate_flag(struct drm_connector *connector,
 	return;
 }
 
-/**
- * drm_helper_probe_single_connector_modes - get complete set of display modes
- * @dev: DRM device
- * @maxX: max width for modes
- * @maxY: max height for modes
- *
- * LOCKING:
- * Caller must hold mode config lock.
- *
- * Based on @dev's mode_config layout, scan all the connectors and try to detect
- * modes on them.  Modes will first be added to the connector's probed_modes
- * list, then culled (based on validity and the @maxX, @maxY parameters) and
- * put into the normal modes list.
- *
- * Intended to be used either at bootup time or when major configuration
- * changes have occurred.
- *
- * FIXME: take into account monitor limits
- *
- * RETURNS:
- * Number of modes found on @connector.
- */
 int drm_helper_probe_single_connector_modes(struct drm_connector *connector,
 					    uint32_t maxX, uint32_t maxY)
 {
@@ -198,7 +176,6 @@ bool drm_helper_crtc_in_use(struct drm_crtc *crtc)
 {
 	struct drm_encoder *encoder;
 	struct drm_device *dev = crtc->dev;
-	/* FIXME: Locking around list access? */
 	list_for_each_entry(encoder, &dev->mode_config.encoder_list, head)
 		if (encoder->crtc == crtc && drm_helper_encoder_in_use(encoder))
 			return true;
@@ -427,9 +404,7 @@ bool drm_crtc_helper_set_mode(struct drm_crtc *crtc,
 
 	}
 
-	/* XXX free adjustedmode */
 	drm_mode_destroy(dev, adjusted_mode);
-	/* FIXME: add subpixel order */
 done:
 	if (!ret) {
 		crtc->mode = saved_mode;
@@ -442,23 +417,6 @@ done:
 EXPORT_SYMBOL(drm_crtc_helper_set_mode);
 
 
-/**
- * drm_crtc_helper_set_config - set a new config from userspace
- * @crtc: CRTC to setup
- * @crtc_info: user provided configuration
- * @new_mode: new mode to set
- * @connector_set: set of connectors for the new config
- * @fb: new framebuffer
- *
- * LOCKING:
- * Caller must hold mode config lock.
- *
- * Setup a new configuration, provided by the user in @crtc_info, and enable
- * it.
- *
- * RETURNS:
- * Zero. (FIXME)
- */
 int drm_crtc_helper_set_config(struct drm_mode_set *set)
 {
 	struct drm_device *dev;

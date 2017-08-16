@@ -197,8 +197,8 @@ symbol		=	value
 		.set	pop;				\
 9:
 #endif /* (_MIPS_ISA == _MIPS_ISA_MIPS2) || (_MIPS_ISA == _MIPS_ISA_MIPS3) */
-#if (_MIPS_ISA == _MIPS_ISA_MIPS4 ) || (_MIPS_ISA == _MIPS_ISA_MIPS5) || \
-    (_MIPS_ISA == _MIPS_ISA_MIPS32) || (_MIPS_ISA == _MIPS_ISA_MIPS64)
+#if (_MIPS_ISA == _MIPS_ISA_MIPS4 ) || (_MIPS_ISA == _MIPS_ISA_MIPS5) || (_MIPS_ISA == \
+	_MIPS_ISA_MIPS32) || (_MIPS_ISA == _MIPS_ISA_MIPS64)
 #define MOVN(rd, rs, rt)                                \
 		movn	rd, rs, rt
 #define MOVZ(rd, rs, rt)                                \

@@ -1,4 +1,4 @@
-/* $Id: hfc_sx.c,v 1.12.2.5 2004/02/11 13:21:33 keil Exp $
+/* $Id: hfc_sx.c,v 1.12.2.5 2004/02/11 13:21:33 Exp $
  *
  * level driver for Cologne Chip Designs hfc-s+/sp based cards
  *

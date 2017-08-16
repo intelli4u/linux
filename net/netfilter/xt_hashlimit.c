@@ -170,7 +170,6 @@ dsthash_alloc_init(struct xt_hashlimit_htable *ht,
 	}
 
 	if (ht->cfg.max && ht->count >= ht->cfg.max) {
-		/* FIXME: do something. question is what.. */
 		if (net_ratelimit())
 			pr_err("max count of %u reached\n", ht->cfg.max);
 		ent = NULL;
@@ -225,7 +224,6 @@ static int htable_create(struct net *net, struct xt_hashlimit_mtinfo1 *minfo,
 		if (size < 16)
 			size = 16;
 	}
-	/* FIXME: don't use vmalloc() here or anywhere else -HW */
 	hinfo = vmalloc(sizeof(struct xt_hashlimit_htable) +
 	                sizeof(struct list_head) * size);
 	if (hinfo == NULL)

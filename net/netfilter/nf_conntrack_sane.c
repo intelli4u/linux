@@ -199,8 +199,6 @@ static int __init nf_conntrack_sane_init(void)
 	if (ports_c == 0)
 		ports[ports_c++] = SANE_PORT;
 
-	/* FIXME should be configurable whether IPv4 and IPv6 connections
-		 are tracked or not - YK */
 	for (i = 0; i < ports_c; i++) {
 		sane[i][0].tuple.src.l3num = PF_INET;
 		sane[i][1].tuple.src.l3num = PF_INET6;

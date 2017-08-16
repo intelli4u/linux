@@ -173,4 +173,3 @@ int lg3ff_init(struct hid_device *hid)
 			"Gary Stein <LordCnidarian@gmail.com>\n");
 	return 0;
 }
-

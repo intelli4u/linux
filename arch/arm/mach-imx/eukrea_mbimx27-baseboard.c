@@ -96,8 +96,8 @@ static int eukrea_mbimx27_pins[] = {
 	PD30_PF_CSPI1_MISO,
 	PD31_PF_CSPI1_MOSI,
 	/* SSI4 */
-#if defined(CONFIG_SND_SOC_EUKREA_TLV320) \
-	|| defined(CONFIG_SND_SOC_EUKREA_TLV320_MODULE)
+#if defined(CONFIG_SND_SOC_EUKREA_TLV320) || \
+	defined(CONFIG_SND_SOC_EUKREA_TLV320_MODULE)
 	PC16_PF_SSI4_FS,
 	PC17_PF_SSI4_RXD | GPIO_PUEN,
 	PC18_PF_SSI4_TXD | GPIO_PUEN,
@@ -251,8 +251,7 @@ static const struct imxuart_platform_data uart_pdata __initconst = {
 	.flags = IMXUART_HAVE_RTSCTS,
 };
 
-#if defined(CONFIG_TOUCHSCREEN_ADS7846) \
-	|| defined(CONFIG_TOUCHSCREEN_ADS7846_MODULE)
+#if defined(CONFIG_TOUCHSCREEN_ADS7846) || defined(CONFIG_TOUCHSCREEN_ADS7846_MODULE)
 
 #define ADS7846_PENDOWN (GPIO_PORTD | 25)
 
@@ -326,8 +325,8 @@ void __init eukrea_mbimx27_baseboard_init(void)
 	mxc_gpio_setup_multiple_pins(eukrea_mbimx27_pins,
 		ARRAY_SIZE(eukrea_mbimx27_pins), "MBIMX27");
 
-#if defined(CONFIG_SND_SOC_EUKREA_TLV320) \
-	|| defined(CONFIG_SND_SOC_EUKREA_TLV320_MODULE)
+#if defined(CONFIG_SND_SOC_EUKREA_TLV320) || \
+	defined(CONFIG_SND_SOC_EUKREA_TLV320_MODULE)
 	/* SSI unit master I2S codec connected to SSI_PINS_4*/
 	mxc_audmux_v1_configure_port(MX27_AUDMUX_HPCR1_SSI0,
 			MXC_AUDMUX_V1_PCR_SYN |
@@ -359,8 +358,7 @@ void __init eukrea_mbimx27_baseboard_init(void)
 
 	mxc_register_device(&imx_ssi_device0, &eukrea_mbimx27_ssi_pdata);
 
-#if defined(CONFIG_TOUCHSCREEN_ADS7846) \
-	|| defined(CONFIG_TOUCHSCREEN_ADS7846_MODULE)
+#if defined(CONFIG_TOUCHSCREEN_ADS7846) || defined(CONFIG_TOUCHSCREEN_ADS7846_MODULE)
 	/* ADS7846 Touchscreen controller init */
 	mxc_gpio_mode(GPIO_PORTD | 25 | GPIO_GPIO | GPIO_IN);
 	ads7846_dev_init();

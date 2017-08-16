@@ -349,10 +349,6 @@ static enum si_sm_result smic_event(struct si_sm_data *smic, long time)
 			       "smic_event - smic->smic_timeout = %ld,"
 			       " time = %ld\n",
 			       smic->smic_timeout, time);
-		/*
-		 * FIXME: smic_event is sometimes called with time >
-		 * SMIC_RETRY_TIMEOUT
-		 */
 		if (time < SMIC_RETRY_TIMEOUT) {
 			smic->smic_timeout -= time;
 			if (smic->smic_timeout < 0) {

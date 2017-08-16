@@ -122,18 +122,6 @@ static struct irqaction xen_tlb_irqaction = {
 };
 #endif
 
-/*
- * This is xen version percpu irq registration, which needs bind
- * to xen specific evtchn sub-system. One trick here is that xen
- * evtchn binding interface depends on kmalloc because related
- * port needs to be freed at device/cpu down. So we cache the
- * registration on BSP before slab is ready and then deal them
- * at later point. For rest instances happening after slab ready,
- * we hook them to xen evtchn immediately.
- *
- * FIXME: MCA is not supported by far, and thus "nomca" boot param is
- * required.
- */
 static void
 __xen_register_percpu_irq(unsigned int cpu, unsigned int vec,
 			struct irqaction *action, int save)
@@ -262,9 +250,6 @@ xen_bind_early_percpu_irq(void)
 					  saved_percpu_irqs[i].action, 0);
 }
 
-/* FIXME: There's no obvious point to check whether slab is ready. So
- * a hack is used here by utilizing a late time hook.
- */
 
 #ifdef CONFIG_HOTPLUG_CPU
 static int __devinit
@@ -366,11 +351,6 @@ xen_platform_send_ipi(int cpu, int vector, int delivery_mode, int redirect)
 #ifdef CONFIG_SMP
 	/* TODO: we need to call vcpu_up here */
 	if (unlikely(vector == ap_wakeup_vector)) {
-		/* XXX
-		 * This should be in __cpu_up(cpu) in ia64 smpboot.c
-		 * like x86. But don't want to modify it,
-		 * keep it untouched.
-		 */
 		xen_smp_intr_init_early(cpu);
 
 		xen_send_ipi(cpu, vector);

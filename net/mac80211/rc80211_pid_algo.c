@@ -301,10 +301,6 @@ rate_control_pid_rate_init(void *priv, struct ieee80211_supported_band *sband,
 	int i, j, tmp;
 	bool s;
 
-	/* TODO: This routine should consider using RSSI from previous packets
-	 * as we need to have IEEE 802.1X auth succeed immediately after assoc..
-	 * Until that method is implemented, we will use the lowest supported
-	 * rate as a workaround. */
 
 	/* Sort the rates. This is optimized for the most common case (i.e.
 	 * almost-sorted CCK+OFDM rates). Kind of bubble-sort with reversed

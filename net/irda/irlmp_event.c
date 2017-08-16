@@ -280,7 +280,6 @@ static void irlmp_state_standby(struct lap_cb *self, IRLMP_EVENT event,
 
 		irlmp_next_lap_state(self, LAP_U_CONNECT);
 
-		/* FIXME: need to set users requested QoS */
 		irlap_connect_request(self->irlap, self->daddr, NULL, 0);
 		break;
 	case LM_LAP_DISCONNECT_INDICATION:

@@ -75,21 +75,6 @@ struct aes_ccm_block {
 	u8 data[16];
 } __attribute__((packed));
 
-/*
- * Counter-mode Blocks (WUSB1.0[6.4])
- *
- * According to CCM (or so it seems), for the purpose of calculating
- * the MIC, the message is broken in N counter-mode blocks, B0, B1,
- * ... BN.
- *
- * B0 contains flags, the CCM nonce and l(m).
- *
- * B1 contains l(a), the MAC header, the encryption offset and padding.
- *
- * If EO is nonzero, additional blocks are built from payload bytes
- * until EO is exahusted (FIXME: padding to 16 bytes, I guess). The
- * padding is not xmitted.
- */
 
 /* WUSB1.0[T6.4] */
 struct aes_ccm_b0 {
@@ -493,12 +478,6 @@ static int wusb_key_derive_verify(void)
 	return result;
 }
 
-/*
- * Initialize crypto system
- *
- * FIXME: we do nothing now, other than verifying. Later on we'll
- * cache the encryption stuff, so that's why we have a separate init.
- */
 int wusb_crypto_init(void)
 {
 	int result;
@@ -514,5 +493,4 @@ int wusb_crypto_init(void)
 
 void wusb_crypto_exit(void)
 {
-	/* FIXME: free cached crypto transforms */
 }

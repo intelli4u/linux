@@ -51,4 +51,3 @@ struct mts_desc {
 #define MTS_EP_TOTAL	0x3
 
 #define MTS_SCSI_ERR_MASK ~0x3fu
-

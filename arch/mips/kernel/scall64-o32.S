@@ -38,12 +38,6 @@ NESTED(handle_sys, PT_SIZE, sp)
 	daddiu	t1, 4			# skip to next instruction
 	sd	t1, PT_EPC(sp)
 	beqz	t0, not_o32_scall
-#if 0
- SAVE_ALL
- move a1, v0
- PRINT("Scall %ld\n")
- RESTORE_ALL
-#endif
 
 	/* We don't want to stumble over broken sign extensions from
 	   userland. O32 does never use the upper half. */
@@ -522,7 +516,7 @@ sys_call_table:
 	PTR	sys_ioprio_get			/* 4315 */
 	PTR	compat_sys_utimensat
 	PTR	compat_sys_signalfd
-	PTR	sys_ni_syscall
+	PTR	sys_ni_syscall			/* was timerfd */
 	PTR	sys_eventfd
 	PTR	sys32_fallocate			/* 4320 */
 	PTR	sys_timerfd_create

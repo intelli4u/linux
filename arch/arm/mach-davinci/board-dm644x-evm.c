@@ -637,21 +637,19 @@ static int davinci_phy_fixup(struct phy_device *phydev)
 }
 
 #if defined(CONFIG_BLK_DEV_PALMCHIP_BK3710) || \
-    defined(CONFIG_BLK_DEV_PALMCHIP_BK3710_MODULE)
+	defined(CONFIG_BLK_DEV_PALMCHIP_BK3710_MODULE)
 #define HAS_ATA 1
 #else
 #define HAS_ATA 0
 #endif
 
-#if defined(CONFIG_MTD_PHYSMAP) || \
-    defined(CONFIG_MTD_PHYSMAP_MODULE)
+#if defined(CONFIG_MTD_PHYSMAP) || defined(CONFIG_MTD_PHYSMAP_MODULE)
 #define HAS_NOR 1
 #else
 #define HAS_NOR 0
 #endif
 
-#if defined(CONFIG_MTD_NAND_DAVINCI) || \
-    defined(CONFIG_MTD_NAND_DAVINCI_MODULE)
+#if defined(CONFIG_MTD_NAND_DAVINCI) || defined(CONFIG_MTD_NAND_DAVINCI_MODULE)
 #define HAS_NAND 1
 #else
 #define HAS_NAND 0

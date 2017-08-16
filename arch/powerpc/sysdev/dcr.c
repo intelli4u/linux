@@ -168,7 +168,6 @@ u64 of_translate_dcr_address(struct device_node *dev,
 	p = of_get_property(dp, "dcr-mmio-stride", NULL);
 	stride = (p == NULL) ? 0x10 : *p;
 
-	/* XXX FIXME: Which property name is to use of the 2 following ? */
 	p = of_get_property(dp, "dcr-mmio-range", NULL);
 	if (p == NULL)
 		p = of_get_property(dp, "dcr-mmio-space", NULL);
@@ -230,4 +229,3 @@ EXPORT_SYMBOL_GPL(dcr_unmap_mmio);
 #ifdef CONFIG_PPC_DCR_NATIVE
 DEFINE_SPINLOCK(dcr_ind_lock);
 #endif	/* defined(CONFIG_PPC_DCR_NATIVE) */
-

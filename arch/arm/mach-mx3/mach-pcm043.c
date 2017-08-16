@@ -410,4 +410,3 @@ MACHINE_START(PCM043, "Phytec Phycore pcm043")
 	.init_machine   = mxc_board_init,
 	.timer          = &pcm043_timer,
 MACHINE_END
-

@@ -294,10 +294,8 @@ static inline void sci_init_pins(struct uart_port *port, unsigned int cflag)
 }
 #endif
 
-#if defined(CONFIG_CPU_SUBTYPE_SH7760) || \
-    defined(CONFIG_CPU_SUBTYPE_SH7780) || \
-    defined(CONFIG_CPU_SUBTYPE_SH7785) || \
-    defined(CONFIG_CPU_SUBTYPE_SH7786)
+#if defined(CONFIG_CPU_SUBTYPE_SH7760) || defined(CONFIG_CPU_SUBTYPE_SH7780) || \
+	defined(CONFIG_CPU_SUBTYPE_SH7785) || defined(CONFIG_CPU_SUBTYPE_SH7786)
 static int scif_txfill(struct uart_port *port)
 {
 	return sci_in(port, SCTFDR) & 0xff;

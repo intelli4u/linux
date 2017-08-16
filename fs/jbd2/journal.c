@@ -60,9 +60,6 @@ EXPORT_SYMBOL(jbd2_journal_set_triggers);
 EXPORT_SYMBOL(jbd2_journal_dirty_metadata);
 EXPORT_SYMBOL(jbd2_journal_release_buffer);
 EXPORT_SYMBOL(jbd2_journal_forget);
-#if 0
-EXPORT_SYMBOL(journal_sync_buffer);
-#endif
 EXPORT_SYMBOL(jbd2_journal_flush);
 EXPORT_SYMBOL(jbd2_journal_revoke);
 
@@ -2006,42 +2003,6 @@ static void journal_free_journal_head(struct journal_head *jh)
 	kmem_cache_free(jbd2_journal_head_cache, jh);
 }
 
-/*
- * A journal_head is attached to a buffer_head whenever JBD has an
- * interest in the buffer.
- *
- * Whenever a buffer has an attached journal_head, its ->b_state:BH_JBD bit
- * is set.  This bit is tested in core kernel code where we need to take
- * JBD-specific actions.  Testing the zeroness of ->b_private is not reliable
- * there.
- *
- * When a buffer has its BH_JBD bit set, its ->b_count is elevated by one.
- *
- * When a buffer has its BH_JBD bit set it is immune from being released by
- * core kernel code, mainly via ->b_count.
- *
- * A journal_head may be detached from its buffer_head when the journal_head's
- * b_transaction, b_cp_transaction and b_next_transaction pointers are NULL.
- * Various places in JBD call jbd2_journal_remove_journal_head() to indicate that the
- * journal_head can be dropped if needed.
- *
- * Various places in the kernel want to attach a journal_head to a buffer_head
- * _before_ attaching the journal_head to a transaction.  To protect the
- * journal_head in this situation, jbd2_journal_add_journal_head elevates the
- * journal_head's b_jcount refcount by one.  The caller must call
- * jbd2_journal_put_journal_head() to undo this.
- *
- * So the typical usage would be:
- *
- *	(Attach a journal_head if needed.  Increments b_jcount)
- *	struct journal_head *jh = jbd2_journal_add_journal_head(bh);
- *	...
- *	jh->b_transaction = xxx;
- *	jbd2_journal_put_journal_head(jh);
- *
- * Now, the journal_head's b_jcount is zero, but it is safe from being released
- * because it has a non-zero b_transaction.
- */
 
 /*
  * Give a buffer_head a journal_head.
@@ -2429,4 +2390,3 @@ EXPORT_SYMBOL(jbd2_dev_to_name);
 MODULE_LICENSE("GPL");
 module_init(journal_init);
 module_exit(journal_exit);
-

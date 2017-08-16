@@ -16,10 +16,8 @@
 #include <cpu/dma.h>
 
 /* DMAOR contorl: The DMAOR access size is different by CPU.*/
-#if defined(CONFIG_CPU_SUBTYPE_SH7723)	|| \
-    defined(CONFIG_CPU_SUBTYPE_SH7724)	|| \
-    defined(CONFIG_CPU_SUBTYPE_SH7780)	|| \
-    defined(CONFIG_CPU_SUBTYPE_SH7785)
+#if defined(CONFIG_CPU_SUBTYPE_SH7723)	|| defined(CONFIG_CPU_SUBTYPE_SH7724)	|| \
+	defined(CONFIG_CPU_SUBTYPE_SH7780)	|| defined(CONFIG_CPU_SUBTYPE_SH7785)
 #define dmaor_read_reg(n) \
     (n ? __raw_readw(SH_DMAC_BASE1 + DMAOR) \
 	: __raw_readw(SH_DMAC_BASE0 + DMAOR))

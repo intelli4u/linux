@@ -583,9 +583,6 @@ static void set_pal_call_data(struct kvm_vcpu *vcpu)
 	unsigned long gr29 = vcpu_get_gr(vcpu, 29);
 	unsigned long gr30 = vcpu_get_gr(vcpu, 30);
 
-	/*FIXME:For static and stacked convention, firmware
-	 * has put the parameters in gr28-gr31 before
-	 * break to vmm  !!*/
 
 	switch (gr28) {
 	case PAL_PERF_MON_INFO:

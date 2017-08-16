@@ -334,7 +334,6 @@ static int read_pod(struct zd_chip *chip, u8 *rf_type)
 		goto error;
 	dev_dbg_f(zd_chip_dev(chip), "E2P_POD %#010x\n", value);
 
-	/* FIXME: AL2230 handling (Bit 7 in POD) */
 	*rf_type = value & 0x0f;
 	chip->pa_type = (value >> 16) & 0x0f;
 	chip->patch_cck_gain = (value >> 8) & 0x1;
@@ -573,7 +572,6 @@ int zd_chip_generic_patch_6m_band(struct zd_chip *chip, int channel)
 		{ CR47,  0x1e },
 	};
 
-	/* FIXME: Channel 11 is not the edge for all regulatory domains. */
 	if (channel == 1 || channel == 11)
 		ioreqs[0].value = 0x12;
 

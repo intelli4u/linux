@@ -285,17 +285,6 @@ pci_controller_num(struct pci_dev *dev)
  *  -- paulus.
  */
 
-/*
- * Adjust vm_pgoff of VMA such that it is the physical page offset
- * corresponding to the 32-bit pci bus offset for DEV requested by the user.
- *
- * Basically, the user finds the base address for his device which he wishes
- * to mmap.  They read the 32-bit value from the config space base register,
- * add whatever PAGE_SIZE multiple offset they wish, and feed this into the
- * offset parameter of mmap on /proc/bus/pci/XXX for that device.
- *
- * Returns negative error code on failure, zero on success.
- */
 static __inline__ int
 __pci_mmap_make_offset(struct pci_dev *dev, struct vm_area_struct *vma,
 		       enum pci_mmap_state mmap_state)
@@ -359,10 +348,6 @@ __pci_mmap_set_pgprot(struct pci_dev *dev, struct vm_area_struct *vma,
 
 	/* Set to write-through */
 	prot &= ~_PAGE_NO_CACHE;
-#if 0
-	if (!write_combine)
-		prot |= _PAGE_WRITETHRU;
-#endif
 	vma->vm_page_prot = __pgprot(prot);
 }
 

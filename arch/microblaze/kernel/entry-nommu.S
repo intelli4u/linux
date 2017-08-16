@@ -370,7 +370,6 @@ ENTRY(_debug_exception)
 	bralid	r15, send_sig
 	add	r7, r0, r0			/* 3rd param zero */
 
-	/* Restore r3/r4 to work around how ret_to_user works */
 	lwi	r3, r1, PT_R3
 	lwi	r4, r1, PT_R4
 	bri	ret_to_user

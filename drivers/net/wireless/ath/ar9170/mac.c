@@ -80,7 +80,6 @@ int ar9170_set_basic_rates(struct ar9170 *ar)
 
 	ofdm = ar->vif->bss_conf.basic_rates >> 4;
 
-	/* FIXME: is still necessary? */
 	if (ar->hw->conf.channel->band == IEEE80211_BAND_5GHZ)
 		cck = 0;
 	else
@@ -198,7 +197,6 @@ int ar9170_init_mac(struct ar9170 *ar)
 	/* set PHY register read timeout (??) */
 	ar9170_regwrite(AR9170_MAC_REG_MISC_680, 0xf00008);
 
-	/* Disable Rx TimeOut, workaround for BB. */
 	ar9170_regwrite(AR9170_MAC_REG_RX_TIMEOUT, 0x0);
 
 	/* Set CPU clock frequency to 88/80MHz */
@@ -427,10 +425,6 @@ int ar9170_update_beacon(struct ar9170 *ar)
 
 	ar9170_regwrite_begin(ar);
 	for (i = 0; i < DIV_ROUND_UP(skb->len, 4); i++) {
-		/*
-		 * XXX: This accesses beyond skb data for up
-		 *	to the last 3 bytes!!
-		 */
 
 		if (old && (data[i] == old[i]))
 			continue;
@@ -439,7 +433,6 @@ int ar9170_update_beacon(struct ar9170 *ar)
 		ar9170_regwrite(AR9170_BEACON_BUFFER_ADDRESS + 4 * i, word);
 	}
 
-	/* XXX: use skb->cb info */
 	if (ar->hw->conf.channel->band == IEEE80211_BAND_2GHZ)
 		ar9170_regwrite(AR9170_MAC_REG_BCN_PLCP,
 				((skb->len + 4) << (3 + 16)) + 0x0400);

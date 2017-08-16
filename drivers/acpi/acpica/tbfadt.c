@@ -377,14 +377,6 @@ static void acpi_tb_convert_fadt(void)
 		    "32/64 DSDT address mismatch in FADT - two DSDT tables!"));
 	}
 
-	/*
-	 * For ACPI 1.0 FADTs (revision 1 or 2), ensure that reserved fields which
-	 * should be zero are indeed zero. This will workaround BIOSs that
-	 * inadvertently place values in these fields.
-	 *
-	 * The ACPI 1.0 reserved fields that will be zeroed are the bytes located at
-	 * offset 45, 55, 95, and the word located at offset 109, 110.
-	 */
 	if (acpi_gbl_FADT.header.revision < FADT2_REVISION_ID) {
 		acpi_gbl_FADT.preferred_profile = 0;
 		acpi_gbl_FADT.pstate_control = 0;

@@ -504,15 +504,6 @@ static int exact_lock(dev_t devt, void *data)
 	return 0;
 }
 
-/**
- * add_disk - add partitioning information to kernel list
- * @disk: per-device partitioning information
- *
- * This function registers the partitioning information in @disk
- * with the kernel.
- *
- * FIXME: error handling
- */
 void add_disk(struct gendisk *disk)
 {
 	struct backing_dev_info *bdi;
@@ -1121,14 +1112,6 @@ static void media_change_notify_thread(struct work_struct *work)
 	put_device(gd->driverfs_dev);
 }
 
-#if 0
-void genhd_media_change_notify(struct gendisk *disk)
-{
-	get_device(disk->driverfs_dev);
-	schedule_work(&disk->async_notify);
-}
-EXPORT_SYMBOL_GPL(genhd_media_change_notify);
-#endif  /*  0  */
 
 dev_t blk_lookup_devt(const char *name, int partno)
 {

@@ -243,13 +243,6 @@ do {								\
 		set_personality(PER_LINUX |			\
 			(current->personality & (~PER_MASK)));	\
 } while (0)
-/*
- * An executable for which elf_read_implies_exec() returns TRUE will
- * have the READ_IMPLIES_EXEC personality flag set automatically. This
- * is only required to work around bugs in old 32bit toolchains. Since
- * the 64bit ABI has never had these issues dont enable the workaround
- * even if we have an executable stack.
- */
 # define elf_read_implies_exec(ex, exec_stk) (test_thread_flag(TIF_32BIT) ? \
 		(exec_stk == EXSTACK_DEFAULT) : 0)
 #else 

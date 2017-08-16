@@ -371,15 +371,6 @@ static int civic_setpalette(unsigned int regno, unsigned int red,
 
 	if ((clut_status & 0x0008) == 0)
 	{
-#if 0
-		if ((clut_status & 0x000D) != 0)
-		{
-			nubus_writeb(0x00, &civic_cmap_regs->lut);
-			nop();
-			nubus_writeb(0x00, &civic_cmap_regs->lut);
-			nop();
-		}
-#endif
 
 		nubus_writeb(red, &civic_cmap_regs->lut);
 		nop();
@@ -613,10 +604,6 @@ static int __init macfb_init(void)
 
 	switch (macfb_defined.bits_per_pixel) {
 	case 1:
-		/*
-		 * XXX: I think this will catch any program that tries
-		 * to do FBIO_PUTCMAP when the visual is monochrome.
-		 */
 		macfb_defined.red.length = macfb_defined.bits_per_pixel;
 		macfb_defined.green.length = macfb_defined.bits_per_pixel;
 		macfb_defined.blue.length = macfb_defined.bits_per_pixel;

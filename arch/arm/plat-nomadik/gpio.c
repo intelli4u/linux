@@ -639,5 +639,3 @@ core_initcall(nmk_gpio_init);
 MODULE_AUTHOR("Prafulla WADASKAR and Alessandro Rubini");
 MODULE_DESCRIPTION("Nomadik GPIO Driver");
 MODULE_LICENSE("GPL");
-
-

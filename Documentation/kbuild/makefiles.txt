@@ -1337,6 +1337,3 @@ Language QA by Jan Engelhardt <jengelh@gmx.de>
 - Describe how kbuild supports shipped files with _shipped.
 - Generating offset header files.
 - Add more variables to section 7?
-
-
-

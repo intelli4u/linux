@@ -134,17 +134,6 @@ static struct s3c2410fb_mach_info smdk2440_fb_info __initdata = {
 	.num_displays	= 1,
 	.default_display = 0,
 
-#if 0
-	/* currently setup by downloader */
-	.gpccon		= 0xaa940659,
-	.gpccon_mask	= 0xffffffff,
-	.gpcup		= 0x0000ffff,
-	.gpcup_mask	= 0xffffffff,
-	.gpdcon		= 0xaa84aaa0,
-	.gpdcon_mask	= 0xffffffff,
-	.gpdup		= 0x0000faff,
-	.gpdup_mask	= 0xffffffff,
-#endif
 
 	.lpcsel		= ((0xCE6) & ~7) | 1<<4,
 };

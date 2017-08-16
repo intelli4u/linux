@@ -385,9 +385,9 @@ unsigned long cpu_initialized __initdata = 0;
  * We reload them nevertheless, this function acts as a
  * 'CPU state barrier', nothing should get across.
  */
-#if defined(CONFIG_CHIP_VDEC2) || defined(CONFIG_CHIP_XNUX2)	\
-	|| defined(CONFIG_CHIP_M32700) || defined(CONFIG_CHIP_M32102) \
-	|| defined(CONFIG_CHIP_OPSP) || defined(CONFIG_CHIP_M32104)
+#if defined(CONFIG_CHIP_VDEC2) || defined(CONFIG_CHIP_XNUX2) || \
+	defined(CONFIG_CHIP_M32700) || defined(CONFIG_CHIP_M32102) || defined(CONFIG_CHIP_OPSP) \
+	|| defined(CONFIG_CHIP_M32104)
 void __init cpu_init (void)
 {
 	int cpu_id = smp_processor_id();

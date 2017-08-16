@@ -452,10 +452,6 @@ int netfs_trans_finish_send(struct netfs_trans *t, struct pohmelfs_sb *psb)
 	struct pohmelfs_config *c;
 	int err = -ENODEV;
 	struct netfs_state *st;
-#if 0
-	dprintk("%s: t: %p, gen: %u, size: %u, page_num: %u, active: %p.\n",
-		__func__, t, t->gen, t->iovec.iov_len, t->page_num, psb->active_state);
-#endif
 	mutex_lock(&psb->state_lock);
 	list_for_each_entry(c, &psb->state_list, config_entry) {
 		st = &c->state;
@@ -478,10 +474,6 @@ int netfs_trans_finish_send(struct netfs_trans *t, struct pohmelfs_sb *psb)
 	}
 
 	mutex_unlock(&psb->state_lock);
-#if 0
-	dprintk("%s: fully sent t: %p, gen: %u, size: %u, page_num: %u, err: %d.\n",
-		__func__, t, t->gen, t->iovec.iov_len, t->page_num, err);
-#endif
 	if (err)
 		t->result = err;
 	return err;

@@ -58,7 +58,6 @@
 
 #define TWL4030_MSECURE_GPIO 22
 
-/* FIXME: These values need to be updated based on more profiling on 3430sdp*/
 static struct cpuidle_params omap3_cpuidle_params_table[] = {
 	/* C1 */
 	{1, 2, 2, 5},

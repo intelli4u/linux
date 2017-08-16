@@ -539,13 +539,6 @@ void usbvideo_TestPattern(struct uvd *uvd, int fullframe, int pmode)
 		frame->curline = 0;
 		frame->seqRead_Length = 0;
 	}
-#if 0
-	{	/* For debugging purposes only */
-		char tmp[20];
-		usbvideo_VideosizeToString(tmp, sizeof(tmp), frame->request);
-		dev_info(&uvd->dev->dev, "testpattern: frame=%s\n", tmp);
-	}
-#endif
 	/* Form every scan line */
 	for (; frame->curline < VIDEOSIZE_Y(frame->request); frame->curline++) {
 		int i;
@@ -624,7 +617,6 @@ EXPORT_SYMBOL(usbvideo_HexDump);
 
 /* ******************************************************************** */
 
-/* XXX: this piece of crap really wants some error handling.. */
 static int usbvideo_ClientIncModCount(struct uvd *uvd)
 {
 	if (uvd == NULL) {
@@ -1352,7 +1344,7 @@ static long usbvideo_v4l_do_ioctl(struct file *file, unsigned int cmd, void *arg
 			if (VALID_CALLBACK(uvd, getFPS))
 				vw->flags = GET_CALLBACK(uvd, getFPS)(uvd);
 			else
-				vw->flags = 10; /* FIXME: do better! */
+				vw->flags = 10;
 			return 0;
 		}
 		case VIDIOCGMBUF:
@@ -1538,7 +1530,6 @@ static ssize_t usbvideo_v4l_read(struct file *file, char __user *buf,
 		}
 	}
 
-	/* FIXME: If we don't start a frame here then who ever does? */
 	if (noblock && (frmx == -1)) {
 		count = -EAGAIN;
 		goto read_done;
@@ -1703,18 +1694,6 @@ static void usbvideo_IsocIrq(struct urb *urb)
 	/* We don't want to do anything if we are about to be removed! */
 	if (!CAMERA_IS_OPERATIONAL(uvd))
 		return;
-#if 0
-	if (urb->actual_length > 0) {
-		dev_info(&uvd->dev->dev,
-			 "urb=$%p status=%d. errcount=%d. length=%d.\n",
-			 urb, urb->status, urb->error_count,
-			 urb->actual_length);
-	} else {
-		static int c = 0;
-		if (c++ % 100 == 0)
-			dev_info(&uvd->dev->dev, "No Isoc data\n");
-	}
-#endif
 
 	if (!uvd->streaming) {
 		if (uvd->debug >= 1)

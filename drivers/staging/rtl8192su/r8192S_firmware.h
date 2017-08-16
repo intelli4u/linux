@@ -207,4 +207,3 @@ typedef struct _rt_firmware{
 bool FirmwareDownload92S(struct net_device *dev);
 
 #endif
-

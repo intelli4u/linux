@@ -439,16 +439,6 @@ static __init int parse_memmap(char *arg)
 	return 0;
 }
 
-/*
- * Initial parsing of the command line.  Currently, we support:
- *  - Controlling the linux memory size: mem=xxx[KMG]
- *  - Controlling the physical memory size: max_mem=xxx[KMG][$][#]
- *       $ -> reserved memory is dcacheable
- *       # -> reserved memory is icacheable
- *  - "memmap=XXX[KkmM][@][$]XXX[KkmM]" defines a memory region
- *       @ from <start> to <start>+<mem>, type RAM
- *       $ from <start> to <start>+<mem>, type RESERVED
- */
 static __init void parse_cmdline_early(char *cmdline_p)
 {
 	char c = ' ', *to = cmdline_p;
@@ -529,7 +519,7 @@ static __init void memory_setup(void)
 	 * instruction memory to max 60MB, 56 if HUNT_FOR_ZERO is on
 	 * 05000263 - Hardware loop corrupted when taking an ICPLB exception
 	 */
-# if (defined(CONFIG_DEBUG_HUNT_FOR_ZERO))
+# if defined(CONFIG_DEBUG_HUNT_FOR_ZERO)
 	if (max_mem >= 56 * 1024 * 1024)
 		max_mem = 56 * 1024 * 1024;
 # else
@@ -897,8 +887,8 @@ void __init setup_arch(char **cmdline_p)
 	printk(KERN_INFO "Boot Mode: %i\n", bfin_read_SYSCR() & 0xF);
 
 	/* Newer parts mirror SWRST bits in SYSCR */
-#if defined(CONFIG_BF53x) || defined(CONFIG_BF561) || \
-    defined(CONFIG_BF538) || defined(CONFIG_BF539)
+#if defined(CONFIG_BF53x) || defined(CONFIG_BF561) || defined(CONFIG_BF538) || \
+	defined(CONFIG_BF539)
 	_bfin_swrst = bfin_read_SWRST();
 #else
 	/* Clear boot mode field */

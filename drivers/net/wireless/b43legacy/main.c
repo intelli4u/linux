@@ -864,7 +864,7 @@ static void handle_irq_tbtt_indication(struct b43legacy_wldev *dev)
 	if (b43legacy_is_mode(dev->wl, NL80211_IFTYPE_AP)) {
 		/* TODO: PS TBTT */
 	} else {
-		if (1/*FIXME: the last PSpoll frame was sent successfully */)
+		if (1)
 			b43legacy_power_saving_ctl_bits(dev, -1, -1);
 	}
 	if (b43legacy_is_mode(dev->wl, NL80211_IFTYPE_ADHOC))
@@ -1147,8 +1147,6 @@ static void b43legacy_upload_beacon0(struct b43legacy_wldev *dev)
 	if (wl->beacon0_uploaded)
 		return;
 	b43legacy_write_beacon_template(dev, 0x68, 0x18);
-	/* FIXME: Probe resp upload doesn't really belong here,
-	 *        but we don't use that feature anyway. */
 	b43legacy_write_probe_resp_template(dev, 0x268, 0x4A,
 				      &__b43legacy_ratetable[3]);
 	wl->beacon0_uploaded = 1;
@@ -1394,7 +1392,6 @@ static void b43legacy_interrupt_ack(struct b43legacy_wldev *dev, u32 reason)
 	if (b43legacy_using_pio(dev) &&
 	    (dev->dev->id.revision < 3) &&
 	    (!(reason & B43legacy_IRQ_PIO_WORKAROUND))) {
-		/* Apply a PIO specific workaround to the dma_reasons */
 		pio_irq_workaround(dev, B43legacy_MMIO_PIO1_BASE, 0);
 		pio_irq_workaround(dev, B43legacy_MMIO_PIO2_BASE, 1);
 		pio_irq_workaround(dev, B43legacy_MMIO_PIO3_BASE, 2);
@@ -1871,7 +1868,7 @@ static int b43legacy_gpio_init(struct b43legacy_wldev *dev)
 		set |= 0x0200;
 	}
 	if (dev->dev->id.revision >= 2)
-		mask  |= 0x0010; /* FIXME: This is redundant. */
+		mask  |= 0x0010;
 
 #ifdef CONFIG_SSB_DRIVER_PCICORE
 	pcidev = bus->pcicore.dev;
@@ -1996,9 +1993,6 @@ static void b43legacy_adjust_opmode(struct b43legacy_wldev *dev)
 	if (wl->filter_flags & FIF_BCN_PRBRESP_PROMISC)
 		ctl |= B43legacy_MACCTL_BEACPROMISC;
 
-	/* Workaround: On old hardware the HW-MAC-address-filter
-	 * doesn't work properly, so always run promisc in filter
-	 * it in software. */
 	if (dev->dev->id.revision <= 4)
 		ctl |= B43legacy_MACCTL_PROMISC;
 
@@ -2078,8 +2072,6 @@ static void b43legacy_mgmtframe_txantenna(struct b43legacy_wldev *dev,
 		B43legacy_BUG_ON(1);
 	}
 
-	/* FIXME We also need to set the other flags of the PHY control
-	 * field somewhere. */
 
 	/* For Beacons */
 	tmp = b43legacy_shm_read16(dev, B43legacy_SHM_SHARED,
@@ -2182,7 +2174,6 @@ static int b43legacy_chip_init(struct b43legacy_wldev *dev)
 	}
 
 	/* Probe Response Timeout value */
-	/* FIXME: Default to 0, has to be set by ioctl probably... :-/ */
 	b43legacy_shm_write16(dev, B43legacy_SHM_SHARED, 0x0074, 0x0000);
 
 	/* Initially set the wireless operation mode. */
@@ -2257,7 +2248,7 @@ static void b43legacy_periodic_every30sec(struct b43legacy_wldev *dev)
 
 static void b43legacy_periodic_every15sec(struct b43legacy_wldev *dev)
 {
-	b43legacy_phy_xmitpower(dev); /* FIXME: unless scanning? */
+	b43legacy_phy_xmitpower(dev);
 
 	atomic_set(&dev->phy.txerr_cnt, B43legacy_PHY_TX_BADNESS_LIMIT);
 	wmb();
@@ -2808,7 +2799,6 @@ static void b43legacy_op_bss_info_changed(struct ieee80211_hw *hw,
 
 	spin_lock_irqsave(&wl->irq_lock, flags);
 	b43legacy_write32(dev, B43legacy_MMIO_GEN_IRQ_MASK, dev->irq_mask);
-	/* XXX: why? */
 	mmiowb();
 	spin_unlock_irqrestore(&wl->irq_lock, flags);
  out_unlock_mutex:
@@ -2878,7 +2868,7 @@ static void b43legacy_wireless_core_stop(struct b43legacy_wldev *dev)
 	cancel_delayed_work_sync(&dev->periodic_work);
 	mutex_lock(&wl->mutex);
 
-	ieee80211_stop_queues(wl->hw); /* FIXME this could cause a deadlock */
+	ieee80211_stop_queues(wl->hw);
 
 	b43legacy_mac_suspend(dev);
 	free_irq(dev->dev->irq, dev);
@@ -3086,7 +3076,6 @@ static void b43legacy_imcfglo_timeouts_workaround(struct b43legacy_wldev *dev)
 	if (bus->pcicore.dev &&
 	    bus->pcicore.dev->id.coreid == SSB_DEV_PCI &&
 	    bus->pcicore.dev->id.revision <= 5) {
-		/* IMCFGLO timeouts workaround. */
 		tmp = ssb_read32(dev->dev, SSB_IMCFGLO);
 		switch (bus->bustype) {
 		case SSB_BUSTYPE_PCI:
@@ -3793,7 +3782,7 @@ static int b43legacy_wireless_init(struct ssb_device *dev)
 		BIT(NL80211_IFTYPE_STATION) |
 		BIT(NL80211_IFTYPE_WDS) |
 		BIT(NL80211_IFTYPE_ADHOC);
-	hw->queues = 1; /* FIXME: hardware has more queues */
+	hw->queues = 1;
 	hw->max_rates = 2;
 	SET_IEEE80211_DEV(hw, dev->dev);
 	if (is_valid_ether_addr(sprom->et1mac))

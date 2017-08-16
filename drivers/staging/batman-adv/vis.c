@@ -700,7 +700,6 @@ static void send_vis_packets(struct work_struct *work)
 {
 	struct vis_info *info, *temp;
 	unsigned long flags;
-	/* FIXME: each batman_if will be attached to a softif */
 	struct bat_priv *bat_priv = netdev_priv(soft_device);
 
 	spin_lock_irqsave(&vis_hash_lock, flags);

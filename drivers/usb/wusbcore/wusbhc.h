@@ -70,27 +70,6 @@
  */
 #define WUSB_CHANNEL_STOP_DELAY_MS 8
 
-/**
- * Wireless USB device
- *
- * Describe a WUSB device connected to the cluster. This struct
- * belongs to the 'struct wusb_port' it is attached to and it is
- * responsible for putting and clearing the pointer to it.
- *
- * Note this "complements" the 'struct usb_device' that the usb_hcd
- * keeps for each connected USB device. However, it extends some
- * information that is not available (there is no hcpriv ptr in it!)
- * *and* most importantly, it's life cycle is different. It is created
- * as soon as we get a DN_Connect (connect request notification) from
- * the device through the WUSB host controller; the USB stack doesn't
- * create the device until we authenticate it. FIXME: this will
- * change.
- *
- * @bos:    This is allocated when the BOS descriptors are read from
- *          the device and freed upon the wusb_dev struct dying.
- * @wusb_cap_descr: points into @bos, and has been verified to be size
- *                  safe.
- */
 struct wusb_dev {
 	struct kref refcnt;
 	struct wusbhc *wusbhc;
@@ -270,7 +249,6 @@ struct wusbhc {
 	struct mutex mmcie_mutex;		/* MMC WUIE handling */
 	struct wuie_hdr **mmcie;		/* WUIE array */
 	u8 mmcies_max;
-	/* FIXME: make wusbhc_ops? */
 	int (*start)(struct wusbhc *wusbhc);
 	void (*stop)(struct wusbhc *wusbhc, int delay);
 	int (*mmcie_add)(struct wusbhc *wusbhc, u8 interval, u8 repeat_cnt,
@@ -343,16 +321,6 @@ static inline struct wusbhc *wusbhc_get(struct wusbhc *wusbhc)
 	return usb_get_hcd(&wusbhc->usb_hcd) ? wusbhc : NULL;
 }
 
-/*
- * Return the wusbhc associated to a @usb_dev
- *
- * @usb_dev: USB device, UNLOCKED and referenced (or otherwise, safe ptr)
- *
- * @returns: wusbhc for @usb_dev; NULL if the @usb_dev is being torn down.
- *           WARNING: referenced at the usb_hcd level, unlocked
- *
- * FIXME: move offline
- */
 static inline struct wusbhc *wusbhc_get_by_usb_dev(struct usb_device *usb_dev)
 {
 	struct wusbhc *wusbhc = NULL;
@@ -468,13 +436,6 @@ static inline u8 wusb_port_no_to_idx(u8 port_no)
 extern struct wusb_dev *__wusb_dev_get_by_usb_dev(struct wusbhc *,
 						  struct usb_device *);
 
-/*
- * Return a referenced wusb_dev given a @usb_dev
- *
- * Returns NULL if the usb_dev is being torn down.
- *
- * FIXME: move offline
- */
 static inline
 struct wusb_dev *wusb_dev_get_by_usb_dev(struct usb_device *usb_dev)
 {

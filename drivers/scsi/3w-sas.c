@@ -1926,4 +1926,3 @@ static void __exit twl_exit(void)
 
 module_init(twl_init);
 module_exit(twl_exit);
-

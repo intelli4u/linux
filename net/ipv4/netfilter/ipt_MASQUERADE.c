@@ -27,7 +27,6 @@ MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Netfilter Core Team <coreteam@netfilter.org>");
 MODULE_DESCRIPTION("Xtables: automatic-address SNAT");
 
-/* FIXME: Multiple targets. --RR */
 static int masquerade_tg_check(const struct xt_tgchk_param *par)
 {
 	const struct nf_nat_multi_range_compat *mr = par->targinfo;
@@ -62,6 +61,10 @@ masquerade_tg(struct sk_buff *skb, const struct xt_action_param *par)
 	NF_CT_ASSERT(ct && (ctinfo == IP_CT_NEW || ctinfo == IP_CT_RELATED ||
 			    ctinfo == IP_CT_RELATED + IP_CT_IS_REPLY));
 
+#ifdef CONFIG_IP_NF_TARGET_CONE
+	/* Mark the connection as cone if we have such rule configured */
+	nat->nat_type |= (skb->nfcache & NFC_IP_CONE_NAT) ? NFC_IP_CONE_NAT:0;
+#endif /* CONFIG_IP_NF_TARGET_CONE */
 	/* Source address is 0.0.0.0 - locally generated packet that is
 	 * probably not supposed to be masqueraded.
 	 */

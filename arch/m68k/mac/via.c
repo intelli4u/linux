@@ -176,10 +176,6 @@ void __init via_init(void)
 	via1[vACR] &= ~0xC0; /* setup T1 timer with no PB7 output */
 	via1[vACR] &= ~0x03; /* disable port A & B latches */
 
-	/*
-	 * SE/30: disable video IRQ
-	 * XXX: testing for SE/30 VBL
-	 */
 
 	if (macintosh_config->ident == MAC_MODEL_SE30) {
 		via1[vDirB] |= 0x40;
@@ -611,9 +607,6 @@ void via_irq_clear(int irq) {
 	} else if (irq_src == 2) {
 		via2[gIFR] = irq_bit | rbv_clear;
 	} else if (irq_src == 7) {
-		/* FIXME: There is no way to clear an individual nubus slot
-		 * IRQ flag, other than getting the device to do it.
-		 */
 	}
 }
 

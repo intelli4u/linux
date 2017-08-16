@@ -427,8 +427,6 @@ static int if_cs_receive_cmdres(struct lbs_private *priv, u8 *data, u32 *len)
 	if (*len & 1)
 		data[*len-1] = if_cs_read8(priv->card, IF_CS_RESP);
 
-	/* This is a workaround for a firmware that reports too much
-	 * bytes */
 	*len -= 8;
 	ret = 0;
 

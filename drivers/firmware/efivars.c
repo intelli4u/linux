@@ -759,4 +759,3 @@ efivars_exit(void)
 
 module_init(efivars_init);
 module_exit(efivars_exit);
-

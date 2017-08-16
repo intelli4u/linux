@@ -22,13 +22,6 @@
 #define wp_works_ok 1
 #define wp_works_ok__is_a_macro /* for versions in ksyms.c */
 
-/*
- * User lives in his very own context, and cannot reference us. Note
- * that TASK_SIZE is a misnomer, it really gives maximum user virtual
- * address that the kernel will allocate out.
- *
- * XXX No longer using virtual page tables, kill this upper limit...
- */
 #define VA_BITS		44
 #ifndef __ASSEMBLY__
 #define VPTE_SIZE	(1UL << (VA_BITS - PAGE_SHIFT + 3))
@@ -59,7 +52,6 @@ typedef struct {
 } mm_segment_t;
 
 /* The Sparc processor specific thread struct. */
-/* XXX This should die, everything can go into thread_info now. */
 struct thread_struct {
 #ifdef CONFIG_DEBUG_SPINLOCK
 	/* How many spinlocks held by this thread.

@@ -85,10 +85,6 @@ snd_emux_note_on(void *p, int note, int vel, struct snd_midi_channel *chan)
 			exclusive_note_off(emu, port, zp->v.exclusiveClass);
 	}
 
-#if 0 // seems not necessary
-	/* Turn off the same note on the same channel. */
-	terminate_note1(emu, key, chan, 0);
-#endif
 
 	spin_lock_irqsave(&emu->voice_lock, flags);
 	for (i = 0; i < nvoices; i++) {
@@ -343,7 +339,6 @@ snd_emux_control(void *p, int type, struct snd_midi_channel *chan)
 
 	case MIDI_CTL_SOFT_PEDAL:
 #ifdef SNDRV_EMUX_USE_RAW_EFFECT
-		/* FIXME: this is an emulation */
 		if (chan->control[type] >= 64)
 			snd_emux_send_effect(port, chan, EMUX_FX_CUTOFF, -160,
 				     EMUX_FX_FLAG_ADD);
@@ -542,13 +537,6 @@ update_voice(struct snd_emux *emu, struct snd_emux_voice *vp, int update)
 }
 
 
-#if 0 // not used
-/* table for volume target calculation */
-static unsigned short voltarget[16] = { 
-	0xEAC0, 0xE0C8, 0xD740, 0xCE20, 0xC560, 0xBD08, 0xB500, 0xAD58,
-	0xA5F8, 0x9EF0, 0x9830, 0x91C0, 0x8B90, 0x85A8, 0x8000, 0x7A90
-};
-#endif
 
 #define LO_BYTE(v)	((v) & 0xff)
 #define HI_BYTE(v)	(((v) >> 8) & 0xff)
@@ -615,12 +603,6 @@ setup_voice(struct snd_emux_voice *vp)
 
 	/* compute volume target and correct volume parameters */
 	vp->vtarget = 0;
-#if 0 /* FIXME: this leads to some clicks.. */
-	if (LO_BYTE(parm->volatkhld) >= 0x80 && parm->voldelay >= 0x8000) {
-		parm->voldelay = 0xbfff;
-		vp->vtarget = voltarget[vp->avol % 0x10] >> (vp->avol >> 4);
-	}
-#endif
 
 	if (LO_BYTE(parm->volatkhld) >= 0x80) {
 		parm->volatkhld &= ~0xff;

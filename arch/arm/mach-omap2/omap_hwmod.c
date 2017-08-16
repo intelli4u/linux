@@ -1,38 +1,4 @@
-/*
- * omap_hwmod implementation for OMAP2/3/4
- *
- * Copyright (C) 2009-2010 Nokia Corporation
- *
- * Paul Walmsley, Benoît Cousson, Kevin Hilman
- *
- * Created in collaboration with (alphabetical order): Thara Gopinath,
- * Tony Lindgren, Rajendra Nayak, Vikram Pandita, Sakari Poussa, Anand
- * Sawant, Santosh Shilimkar, Richard Woodruff
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This code manages "OMAP modules" (on-chip devices) and their
- * integration with Linux device driver and bus code.
- *
- * References:
- * - OMAP2420 Multimedia Processor Silicon Revision 2.1.1, 2.2 (SWPU064)
- * - OMAP2430 Multimedia Device POP Silicon Revision 2.1 (SWPU090)
- * - OMAP34xx Multimedia Device Silicon Revision 3.1 (SWPU108)
- * - OMAP4430 Multimedia Device Silicon Revision 1.0 (SWPU140)
- * - Open Core Protocol Specification 2.2
- *
- * To do:
- * - pin mux handling
- * - handle IO mapping
- * - bus throughput & module latency measurement code
- *
- * XXX add tests at the beginning of each function to ensure the hwmod is
- * in the appropriate state
- * XXX error return values should be checked to ensure that they are
- * appropriate
- */
+
 #undef DEBUG
 
 #include <linux/kernel.h>
@@ -88,7 +54,6 @@ static int _update_sysc_cache(struct omap_hwmod *oh)
 		return -EINVAL;
 	}
 
-	/* XXX ensure module interface clock is up */
 
 	oh->_sysc_cache = omap_hwmod_readl(oh, oh->class->sysc->sysc_offs);
 
@@ -113,7 +78,6 @@ static void _write_sysconfig(u32 v, struct omap_hwmod *oh)
 		return;
 	}
 
-	/* XXX ensure module interface clock is up */
 
 	if (oh->_sysc_cache != v) {
 		oh->_sysc_cache = v;
@@ -313,7 +277,6 @@ static int _enable_wakeup(struct omap_hwmod *oh)
 	v |= wakeup_mask;
 	_write_sysconfig(v, oh);
 
-	/* XXX test pwrdm_get_wken for this hwmod's subsystem */
 
 	oh->_int_flags |= _HWMOD_WAKEUP_ENABLED;
 
@@ -346,7 +309,6 @@ static int _disable_wakeup(struct omap_hwmod *oh)
 	v &= ~wakeup_mask;
 	_write_sysconfig(v, oh);
 
-	/* XXX test pwrdm_get_wken for this hwmod's subsystem */
 
 	oh->_int_flags &= ~_HWMOD_WAKEUP_ENABLED;
 
@@ -659,13 +621,7 @@ static void _sysc_enable(struct omap_hwmod *oh)
 		_set_module_autoidle(oh, idlemode, &v);
 	}
 
-	/* XXX OCP ENAWAKEUP bit? */
 
-	/*
-	 * XXX The clock framework should handle this, by
-	 * calling into this code.  But this must wait until the
-	 * clock structures are tagged with omap_hwmod entries
-	 */
 	if ((oh->flags & HWMOD_SET_DEFAULT_CLOCKACT) &&
 	    (sf & SYSC_HAS_CLOCKACTIVITY))
 		_set_clockactivity(oh, oh->class->sysc->clockact, &v);
@@ -816,9 +772,7 @@ static int _wait_target_ready(struct omap_hwmod *oh)
 	if (oh->flags & HWMOD_NO_IDLEST)
 		return 0;
 
-	/* XXX check module SIDLEMODE */
 
-	/* XXX check clock enable states */
 
 	if (cpu_is_omap24xx() || cpu_is_omap34xx()) {
 		ret = omap2_cm_wait_module_ready(oh->prcm.omap2.module_offs,
@@ -878,10 +832,6 @@ static int _reset(struct omap_hwmod *oh)
 	else
 		pr_debug("omap_hwmod: %s: reset in %d usec\n", oh->name, c);
 
-	/*
-	 * XXX add _HWMOD_STATE_WEDGED for modules that don't come back from
-	 * _wait_target_ready() or _reset()
-	 */
 
 	return (c == MAX_MODULE_RESET_WAIT) ? -ETIMEDOUT : 0;
 }
@@ -909,7 +859,6 @@ int _omap_hwmod_enable(struct omap_hwmod *oh)
 
 	pr_debug("omap_hwmod: %s: enabling\n", oh->name);
 
-	/* XXX mux balls */
 
 	_add_initiator_dep(oh, mpu_oh);
 	_enable_clocks(oh);
@@ -983,11 +932,8 @@ static int _shutdown(struct omap_hwmod *oh)
 	if (oh->class->sysc)
 		_sysc_shutdown(oh);
 	_del_initiator_dep(oh, mpu_oh);
-	/* XXX what about the other system initiators here? DMA, tesla, d2d */
 	_disable_clocks(oh);
-	/* XXX Should this code also force-disable the optional clocks? */
 
-	/* XXX mux any associated balls to safe mode */
 
 	oh->_state = _HWMOD_STATE_DISABLED;
 
@@ -1026,9 +972,7 @@ static int _setup(struct omap_hwmod *oh, void *data)
 				continue;
 
 			if (os->flags & OCPIF_SWSUP_IDLE) {
-				/* XXX omap_iclk_deny_idle(c); */
 			} else {
-				/* XXX omap_iclk_allow_idle(c); */
 				clk_enable(c);
 			}
 		}
@@ -1044,13 +988,6 @@ static int _setup(struct omap_hwmod *oh, void *data)
 	}
 
 	if (!(oh->flags & HWMOD_INIT_NO_RESET)) {
-		/*
-		 * XXX Do the OCP_SYSCONFIG bits need to be
-		 * reprogrammed after a reset?  If not, then this can
-		 * be removed.  If they do, then probably the
-		 * _omap_hwmod_enable() function should be split to avoid the
-		 * rewrite of the OCP_SYSCONFIG register.
-		 */
 		if (oh->class->sysc) {
 			_update_sysc_cache(oh);
 			_sysc_enable(oh);
@@ -1077,21 +1014,6 @@ void omap_hwmod_writel(u32 v, struct omap_hwmod *oh, u16 reg_offs)
 	__raw_writel(v, oh->_mpu_rt_va + reg_offs);
 }
 
-/**
- * omap_hwmod_set_slave_idlemode - set the hwmod's OCP slave idlemode
- * @oh: struct omap_hwmod *
- * @idlemode: SIDLEMODE field bits (shifted to bit 0)
- *
- * Sets the IP block's OCP slave idlemode in hardware, and updates our
- * local copy.  Intended to be used by drivers that have some erratum
- * that requires direct manipulation of the SIDLEMODE bits.  Returns
- * -EINVAL if @oh is null, or passes along the return value from
- * _set_slave_idlemode().
- *
- * XXX Does this function have any current users?  If not, we should
- * remove it; it is better to let the rest of the hwmod code handle this.
- * Any users of this function should be scrutinized carefully.
- */
 int omap_hwmod_set_slave_idlemode(struct omap_hwmod *oh, u8 idlemode)
 {
 	u32 v;
@@ -1109,23 +1031,6 @@ int omap_hwmod_set_slave_idlemode(struct omap_hwmod *oh, u8 idlemode)
 	return retval;
 }
 
-/**
- * omap_hwmod_register - register a struct omap_hwmod
- * @oh: struct omap_hwmod *
- *
- * Registers the omap_hwmod @oh.  Returns -EEXIST if an omap_hwmod
- * already has been registered by the same name; -EINVAL if the
- * omap_hwmod is in the wrong state, if @oh is NULL, if the
- * omap_hwmod's class field is NULL; if the omap_hwmod is missing a
- * name, or if the omap_hwmod's class is missing a name; or 0 upon
- * success.
- *
- * XXX The data should be copied into bootmem, so the original data
- * should be marked __initdata and freed after init.  This would allow
- * unneeded omap_hwmods to be freed on multi-OMAP configurations.  Note
- * that the copy process would be relatively complex due to the large number
- * of substructures.
- */
 int omap_hwmod_register(struct omap_hwmod *oh)
 {
 	int ret, ms_id;
@@ -1263,7 +1168,6 @@ int omap_hwmod_late_init(u8 skip_setup_idle)
 {
 	int r;
 
-	/* XXX check return value */
 	r = omap_hwmod_for_each(_init_clocks, NULL);
 	WARN(r, "omap_hwmod: omap_hwmod_late_init(): _init_clocks failed\n");
 
@@ -1279,17 +1183,6 @@ int omap_hwmod_late_init(u8 skip_setup_idle)
 	return 0;
 }
 
-/**
- * omap_hwmod_unregister - unregister an omap_hwmod
- * @oh: struct omap_hwmod *
- *
- * Unregisters a previously-registered omap_hwmod @oh.  There's probably
- * no use case for this, so it is likely to be removed in a later version.
- *
- * XXX Free all of the bootmem-allocated structures here when that is
- * implemented.  Make it clear that core code is the only code that is
- * expected to unregister modules.
- */
 int omap_hwmod_unregister(struct omap_hwmod *oh)
 {
 	if (!oh)
@@ -1396,17 +1289,6 @@ int omap_hwmod_disable_clocks(struct omap_hwmod *oh)
 	return 0;
 }
 
-/**
- * omap_hwmod_ocp_barrier - wait for posted writes against the hwmod to complete
- * @oh: struct omap_hwmod *oh
- *
- * Intended to be called by drivers and core code when all posted
- * writes to a device must complete before continuing further
- * execution (for example, after clearing some device IRQSTATUS
- * register bits)
- *
- * XXX what about targets with multiple OCP threads?
- */
 void omap_hwmod_ocp_barrier(struct omap_hwmod *oh)
 {
 	BUG_ON(!oh);
@@ -1448,22 +1330,6 @@ int omap_hwmod_reset(struct omap_hwmod *oh)
 	return r;
 }
 
-/**
- * omap_hwmod_count_resources - count number of struct resources needed by hwmod
- * @oh: struct omap_hwmod *
- * @res: pointer to the first element of an array of struct resource to fill
- *
- * Count the number of struct resource array elements necessary to
- * contain omap_hwmod @oh resources.  Intended to be called by code
- * that registers omap_devices.  Intended to be used to determine the
- * size of a dynamically-allocated struct resource array, before
- * calling omap_hwmod_fill_resources().  Returns the number of struct
- * resource array elements needed.
- *
- * XXX This code is not optimized.  It could attempt to merge adjacent
- * resource IDs.
- *
- */
 int omap_hwmod_count_resources(struct omap_hwmod *oh)
 {
 	int ret, i;
@@ -1525,17 +1391,6 @@ int omap_hwmod_fill_resources(struct omap_hwmod *oh, struct resource *res)
 	return r;
 }
 
-/**
- * omap_hwmod_get_pwrdm - return pointer to this module's main powerdomain
- * @oh: struct omap_hwmod *
- *
- * Return the powerdomain pointer associated with the OMAP module
- * @oh's main clock.  If @oh does not have a main clk, return the
- * powerdomain associated with the interface clock associated with the
- * module's MPU port. (XXX Perhaps this should use the SDMA port
- * instead?)  Returns NULL on error, or a struct powerdomain * on
- * success.
- */
 struct powerdomain *omap_hwmod_get_pwrdm(struct omap_hwmod *oh)
 {
 	struct clk *c;
@@ -1581,45 +1436,13 @@ void __iomem *omap_hwmod_get_mpu_rt_va(struct omap_hwmod *oh)
 	return oh->_mpu_rt_va;
 }
 
-/**
- * omap_hwmod_add_initiator_dep - add sleepdep from @init_oh to @oh
- * @oh: struct omap_hwmod *
- * @init_oh: struct omap_hwmod * (initiator)
- *
- * Add a sleep dependency between the initiator @init_oh and @oh.
- * Intended to be called by DSP/Bridge code via platform_data for the
- * DSP case; and by the DMA code in the sDMA case.  DMA code, *Bridge
- * code needs to add/del initiator dependencies dynamically
- * before/after accessing a device.  Returns the return value from
- * _add_initiator_dep().
- *
- * XXX Keep a usecount in the clockdomain code
- */
 int omap_hwmod_add_initiator_dep(struct omap_hwmod *oh,
 				 struct omap_hwmod *init_oh)
 {
 	return _add_initiator_dep(oh, init_oh);
 }
 
-/*
- * XXX what about functions for drivers to save/restore ocp_sysconfig
- * for context save/restore operations?
- */
 
-/**
- * omap_hwmod_del_initiator_dep - remove sleepdep from @init_oh to @oh
- * @oh: struct omap_hwmod *
- * @init_oh: struct omap_hwmod * (initiator)
- *
- * Remove a sleep dependency between the initiator @init_oh and @oh.
- * Intended to be called by DSP/Bridge code via platform_data for the
- * DSP case; and by the DMA code in the sDMA case.  DMA code, *Bridge
- * code needs to add/del initiator dependencies dynamically
- * before/after accessing a device.  Returns the return value from
- * _del_initiator_dep().
- *
- * XXX Keep a usecount in the clockdomain code
- */
 int omap_hwmod_del_initiator_dep(struct omap_hwmod *oh,
 				 struct omap_hwmod *init_oh)
 {
@@ -1723,4 +1546,3 @@ int omap_hwmod_for_each_by_class(const char *classname,
 
 	return ret;
 }
-

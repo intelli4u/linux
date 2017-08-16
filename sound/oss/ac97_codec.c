@@ -736,12 +736,6 @@ int ac97_probe_codec(struct ac97_codec *codec)
 			udelay(10);
 	}
 
-	/* probing AC97 codec, AC97 2.0 says that bit 15 of register 0x00 (reset) should
-	 * be read zero.
-	 *
-	 * FIXME: is the following comment outdated?  -jgarzik
-	 * Probing of AC97 in this way is not reliable, it is not even SAFE !!
-	 */
 	if ((audio = codec->codec_read(codec, AC97_RESET)) & 0x8000) {
 		printk(KERN_ERR "ac97_codec: %s ac97 codec not present\n",
 		       (codec->id & 0x2) ? (codec->id&1 ? "4th" : "Tertiary")
@@ -1028,12 +1022,6 @@ static int tritech_maestro_init(struct ac97_codec * codec)
 
 
 
-/* 
- *	Presario700 workaround 
- * 	for Jack Sense/SPDIF Register mis-setting causing
- *	no audible output
- *	by Santiago Nullo 04/05/2002
- */
 
 #define AC97_AD1886_JACK_SENSE 0x72
 
@@ -1203,4 +1191,3 @@ static int pt101_init(struct ac97_codec * codec)
 EXPORT_SYMBOL(ac97_probe_codec);
 
 MODULE_LICENSE("GPL");
-

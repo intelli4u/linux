@@ -153,14 +153,6 @@ static int test_NX(void)
 	}
 #endif
 
-#if 0
-	/* Test 4: Check if the .data section of a module is executable */
-	if (test_address(&test_data)) {
-		printk(KERN_ERR "test_nx: .data section is executable\n");
-		ret = -ENODEV;
-	}
-
-#endif
 	return 0;
 }
 

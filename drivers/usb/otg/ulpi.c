@@ -223,4 +223,3 @@ otg_ulpi_create(struct otg_io_access_ops *ops,
 	return otg;
 }
 EXPORT_SYMBOL_GPL(otg_ulpi_create);
-

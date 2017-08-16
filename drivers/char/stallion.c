@@ -2932,12 +2932,7 @@ static int stl_cd1400getsignals(struct stlport *portp)
 	sigs |= (msvr1 & MSVR1_CTS) ? TIOCM_CTS : 0;
 	sigs |= (msvr1 & MSVR1_DTR) ? TIOCM_DTR : 0;
 	sigs |= (msvr2 & MSVR2_RTS) ? TIOCM_RTS : 0;
-#if 0
-	sigs |= (msvr1 & MSVR1_RI) ? TIOCM_RI : 0;
-	sigs |= (msvr1 & MSVR1_DSR) ? TIOCM_DSR : 0;
-#else
 	sigs |= TIOCM_DSR;
-#endif
 	return sigs;
 }
 
@@ -3553,13 +3548,6 @@ static int stl_sc26198getglobreg(struct stlport *portp, int regnr)
 	return inb(portp->ioaddr + XP_DATA);
 }
 
-#if 0
-static void stl_sc26198setglobreg(struct stlport *portp, int regnr, int value)
-{
-	outb(regnr, (portp->ioaddr + XP_ADDR));
-	outb(value, (portp->ioaddr + XP_DATA));
-}
-#endif
 
 /*****************************************************************************/
 
@@ -4210,10 +4198,6 @@ static void stl_sc26198intr(struct stlpanel *panelp, unsigned int iobase)
 
 	spin_lock(&brd_lock);
 
-/* 
- *	Work around bug in sc26198 chip... Cannot have A6 address
- *	line of UART high, else iack will be returned as 0.
- */
 	outb(0, (iobase + 1));
 
 	iack = inb(iobase + XP_IACK);

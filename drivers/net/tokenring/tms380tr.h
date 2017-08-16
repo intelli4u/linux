@@ -463,7 +463,6 @@ typedef struct {
 				  * fragments following.
 				  */
 
-/* XXX is there some better way to do this? */
 #define ISA_MAX_ADDRESS 	0x00ffffff
 #define PCI_MAX_ADDRESS		0xffffffff
 

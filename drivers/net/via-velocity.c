@@ -1105,7 +1105,6 @@ static int velocity_soft_reset(struct velocity_info *vptr)
 
 	if (i == W_MAX_TIMEOUT) {
 		writel(CR0_FORSRST, &regs->CR0Set);
-		/* FIXME: PCI POSTING */
 		/* delay 2ms */
 		mdelay(2);
 	}
@@ -1732,9 +1731,6 @@ static void velocity_free_tx_buf(struct velocity_info *vptr,
 }
 
 
-/*
- *	FIXME: could we merge this with velocity_free_tx_buf ?
- */
 static void velocity_free_td_ring_entry(struct velocity_info *vptr,
 							 int q, int n)
 {
@@ -1809,8 +1805,6 @@ static void velocity_error(struct velocity_info *vptr, int status)
 		writew(TRDCSR_RUN, &regs->TDCSRClr);
 		netif_stop_queue(vptr->dev);
 
-		/* FIXME: port over the pci_device_failed code and use it
-		   here */
 	}
 
 	if (status & ISR_SRCI) {
@@ -2730,9 +2724,6 @@ static int __devinit velocity_found1(struct pci_dev *pdev, const struct pci_devi
 	struct mac_regs __iomem *regs;
 	int ret = -ENOMEM;
 
-	/* FIXME: this driver, like almost all other ethernet drivers,
-	 * can support more than MAX_UNITS.
-	 */
 	if (velocity_nics >= MAX_UNITS) {
 		dev_notice(&pdev->dev, "already found %d NICs.\n",
 			   velocity_nics);
@@ -2893,15 +2884,6 @@ static u16 wol_calc_crc(int size, u8 *pattern, u8 *mask_pattern)
 	return bitrev32(crc) >> 16;
 }
 
-/**
- *	velocity_set_wol	-	set up for wake on lan
- *	@vptr: velocity to set WOL status on
- *
- *	Set a card up for wake on lan either by unicast or by
- *	ARP packet.
- *
- *	FIXME: check static buffer is safe here
- */
 static int velocity_set_wol(struct velocity_info *vptr)
 {
 	struct mac_regs __iomem *regs = vptr->mac_regs;

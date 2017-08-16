@@ -1902,7 +1902,6 @@ static inline void em28xx_set_model(struct em28xx *dev)
 }
 
 
-/* FIXME: Should be replaced by a proper mt9m111 driver */
 static int em28xx_initialize_mt9m111(struct em28xx *dev)
 {
 	int i;
@@ -1920,7 +1919,6 @@ static int em28xx_initialize_mt9m111(struct em28xx *dev)
 }
 
 
-/* FIXME: Should be replaced by a proper mt9m001 driver */
 static int em28xx_initialize_mt9m001(struct em28xx *dev)
 {
 	int i;
@@ -1977,15 +1975,6 @@ static int em28xx_hint_sensor(struct em28xx *dev)
 		dev->em28xx_sensor = EM28XX_MT9V011;
 		dev->sensor_xres = 640;
 		dev->sensor_yres = 480;
-		/*
-		 * FIXME: mt9v011 uses I2S speed as xtal clk - at least with
-		 * the Silvercrest cam I have here for testing - for higher
-		 * resolutions, a high clock cause horizontal artifacts, so we
-		 * need to use a lower xclk frequency.
-		 * Yet, it would be possible to adjust xclk depending on the
-		 * desired resolution, since this affects directly the
-		 * frame rate.
-		 */
 		dev->board.xclk = EM28XX_XCLK_FREQUENCY_4_3MHZ;
 		dev->sensor_xtal = 4300000;
 
@@ -2182,7 +2171,6 @@ static void em28xx_setup_xc3028(struct em28xx *dev, struct xc2028_ctrl *ctl)
 	case EM2883_BOARD_HAUPPAUGE_WINTV_HVR_850:
 	case EM2883_BOARD_HAUPPAUGE_WINTV_HVR_950:
 	case EM2880_BOARD_PINNACLE_PCTV_HD_PRO:
-		/* FIXME: Better to specify the needed IF */
 		ctl->demod = XC3028_FE_DEFAULT;
 		break;
 	case EM2883_BOARD_KWORLD_HYBRID_330U:
@@ -2618,7 +2606,6 @@ void em28xx_release_resources(struct em28xx *dev)
 	if (dev->ir)
 		em28xx_ir_fini(dev);
 
-	/*FIXME: I2C IR should be disconnected */
 
 	em28xx_release_analog_resources(dev);
 

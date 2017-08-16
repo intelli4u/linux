@@ -69,7 +69,6 @@ static void radeon_register_accessor_init(struct radeon_device *rdev)
 	} else {
 		rdev->pcie_reg_mask = 0x7ff;
 	}
-	/* FIXME: not sure here */
 	if (rdev->family <= CHIP_R580) {
 		rdev->pll_rreg = &r100_pll_rreg;
 		rdev->pll_wreg = &r100_pll_wreg;
@@ -836,7 +835,6 @@ int radeon_asic_init(struct radeon_device *rdev)
 		rdev->asic = &evergreen_asic;
 		break;
 	default:
-		/* FIXME: not supported yet */
 		return -EINVAL;
 	}
 
@@ -857,4 +855,3 @@ int radeon_asic_init(struct radeon_device *rdev)
 
 	return 0;
 }
-

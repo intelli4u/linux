@@ -379,10 +379,6 @@ static int __devinit gscps2_probe(struct parisc_device *dev)
 		goto fail;
 	}
 
-#if 0
-	if (!request_mem_region(hpa, GSC_STATUS + 4, ps2port->port.name))
-		goto fail;
-#endif
 
 	printk(KERN_INFO "serio: %s port at 0x%p irq %d @ %s\n",
 		ps2port->port->name,
@@ -423,9 +419,6 @@ static int __devexit gscps2_remove(struct parisc_device *dev)
 	gscps2_flush(ps2port);
 	list_del(&ps2port->node);
 	iounmap(ps2port->addr);
-#if 0
-	release_mem_region(dev->hpa, GSC_STATUS + 4);
-#endif
 	dev_set_drvdata(&dev->dev, NULL);
 	kfree(ps2port);
 	return 0;
@@ -461,4 +454,3 @@ static void __exit gscps2_exit(void)
 
 module_init(gscps2_init);
 module_exit(gscps2_exit);
-

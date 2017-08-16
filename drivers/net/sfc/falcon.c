@@ -1642,7 +1642,6 @@ static int falcon_init_nic(struct efx_nic *efx)
 		efx_writeo(efx, &temp, FR_BZ_RX_FILTER_CTL);
 	}
 
-	/* XXX This is documented only for Falcon A0/A1 */
 	/* Setup RX.  Wait for descriptor is broken and must
 	 * be disabled.  RXDP recovery shouldn't be needed, but is.
 	 */
@@ -1883,4 +1882,3 @@ struct efx_nic_type falcon_b0_nic_type = {
 	.offload_features = NETIF_F_IP_CSUM | NETIF_F_RXHASH,
 	.reset_world_flags = ETH_RESET_IRQ,
 };
-

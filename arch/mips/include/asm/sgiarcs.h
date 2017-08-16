@@ -83,7 +83,7 @@ struct linux_component {
 	USHORT 			vers;	/* node version */
 	USHORT 			rev;	/* node revision */
 	ULONG 			key;	/* completely magic */
-	ULONG 			amask;	/* XXX affinity mask??? */
+	ULONG 			amask;
 	ULONG			cdsize;	/* size of configuration data */
 	ULONG			ilen;	/* length of string identifier */
 	_PULONG			iname;	/* string identifier */
@@ -144,7 +144,7 @@ struct linux_tinfo {
 struct linux_vdirent {
 	ULONG namelen;
 	unsigned char attr;
-	char fname[32]; /* XXX imperical, should be a define */
+	char fname[32];
 };
 
 /* Other stuff for files. */
@@ -179,7 +179,7 @@ struct linux_finfo {
 	enum linux_devtypes   dtype;
 	unsigned long         namelen;
 	unsigned char         attr;
-	char                  name[32]; /* XXX imperical, should be define */
+	char                  name[32];
 };
 
 /* This describes the vector containing function pointers to the ARC
@@ -191,7 +191,7 @@ struct linux_romvec {
 					   standalone image. */
 	LONG	halt;			/* Halt the machine. */
 	LONG	pdown;			/* Power down the machine. */
-	LONG	restart;		/* XXX soft reset??? */
+	LONG	restart;
 	LONG	reboot;			/* Reboot the machine. */
 	LONG	imode;			/* Enter PROM interactive mode. */
 	LONG	_unused1;		/* Was ReturnFromMain(). */
@@ -251,8 +251,8 @@ typedef struct _SYSTEM_PARAMETER_BLOCK {
 	USHORT			rev;		/* ARCS firmware revision */
 	_PLONG			rs_block;	/* Restart block. */
 	_PLONG			dbg_block;	/* Debug block. */
-	_PLONG			gevect;		/* XXX General vector??? */
-	_PLONG			utlbvect;	/* XXX UTLB vector??? */
+	_PLONG			gevect;
+	_PLONG			utlbvect;
 	ULONG			rveclen;	/* Size of romvec struct. */
 	_PVOID			romvec;		/* Function interface. */
 	ULONG			pveclen;	/* Length of private vector. */
@@ -477,8 +477,8 @@ struct linux_smonblock {
 
 #endif /* defined(CONFIG_64BIT) && defined(CONFIG_ARC32) */
 
-#if (defined(CONFIG_32BIT) && defined(CONFIG_ARC32)) ||		\
-    (defined(CONFIG_64BIT) && defined(CONFIG_ARC64))
+#if (defined(CONFIG_32BIT) && defined(CONFIG_ARC32)) || (defined(CONFIG_64BIT) && \
+	defined(CONFIG_ARC64))
 
 #define ARC_CALL0(dest)							\
 ({	long __res;							\

@@ -983,10 +983,6 @@ static u16 mdio_ctrl_phy_82552_v(struct nic *nic,
 			u16 advert = mdio_read(nic->netdev, nic->mii.phy_id,
 							MII_ADVERTISE);
 
-			/*
-			 * Workaround Si issue where sometimes the part will not
-			 * autoneg to 100Mbps even when advertised.
-			 */
 			if (advert & ADVERTISE_100FULL)
 				data |= BMCR_SPEED100 | BMCR_FULLDPLX;
 			else if (advert & ADVERTISE_100HALF)
@@ -1466,11 +1462,6 @@ static int e100_phy_init(struct nic *nic)
 				bmcr & ~BMCR_ISOLATE);
 		}
 	}
-	/*
-	 * Workaround for 82552:
-	 * Clear the ISOLATE bit on selected phy_id last (mirrored on all
-	 * other phy_id's) using bmcr value from addr discovery loop above.
-	 */
 	if (nic->phy == phy_82552_v)
 		mdio_write(netdev, nic->mii.phy_id, MII_BMCR,
 			bmcr & ~BMCR_ISOLATE);
@@ -1491,7 +1482,6 @@ static int e100_phy_init(struct nic *nic)
 		/* assign special tweaked mdio_ctrl() function */
 		nic->mdio_ctrl = mdio_ctrl_phy_82552_v;
 
-		/* Workaround Si not advertising flow-control during autoneg */
 		advert |= ADVERTISE_PAUSE_CAP | ADVERTISE_PAUSE_ASYM;
 		mdio_write(netdev, nic->mii.phy_id, MII_ADVERTISE, advert);
 
@@ -1701,11 +1691,9 @@ static void e100_watchdog(unsigned long data)
 	e100_adjust_adaptive_ifs(nic, cmd.speed, cmd.duplex);
 
 	if (nic->mac <= mac_82557_D100_C)
-		/* Issue a multicast command to workaround a 557 lock up */
 		e100_set_multicast_list(nic->netdev);
 
 	if (nic->flags & ich && cmd.speed==SPEED_10 && cmd.duplex==DUPLEX_HALF)
-		/* Need SW workaround for ICH[x] 10Mbps/half duplex Tx hang. */
 		nic->flags |= ich_10h_workaround;
 	else
 		nic->flags &= ~ich_10h_workaround;
@@ -1738,9 +1726,6 @@ static netdev_tx_t e100_xmit_frame(struct sk_buff *skb,
 	int err;
 
 	if (nic->flags & ich_10h_workaround) {
-		/* SW workaround for ICH[x] 10Mbps/half duplex Tx hang.
-		   Issue a NOP command followed by a 1us delay before
-		   issuing the Tx command. */
 		if (e100_exec_cmd(nic, cuc_nop, 0))
 			netif_printk(nic, tx_err, KERN_DEBUG, nic->netdev,
 				     "exec cuc_nop failed\n");

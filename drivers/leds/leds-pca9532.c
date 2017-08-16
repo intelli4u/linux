@@ -132,7 +132,7 @@ static void pca9532_set_brightness(struct led_classdev *led_cdev,
 		led->state = PCA9532_PWM0; /* Thecus: hardcode one pwm */
 		err = pca9532_calcpwm(led->client, 0, 0, value);
 		if (err)
-			return; /* XXX: led api doesn't allow error code? */
+			return;
 	}
 	schedule_work(&led->work);
 }
@@ -170,7 +170,6 @@ static int pca9532_event(struct input_dev *dev, unsigned int type,
 	if (!(type == EV_SND && (code == SND_BELL || code == SND_TONE)))
 		return -1;
 
-	/* XXX: allow different kind of beeps with psc/pwm modifications */
 	if (value > 1 && value < 32767)
 		data->pwm[1] = 127;
 	else
@@ -368,4 +367,3 @@ MODULE_DESCRIPTION("PCA 9532 LED dimmer");
 
 module_init(pca9532_init);
 module_exit(pca9532_exit);
-

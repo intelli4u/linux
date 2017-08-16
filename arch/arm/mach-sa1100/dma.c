@@ -345,4 +345,3 @@ EXPORT_SYMBOL(sa1100_free_dma);
 EXPORT_SYMBOL(sa1100_start_dma);
 EXPORT_SYMBOL(sa1100_get_dma_pos);
 EXPORT_SYMBOL(sa1100_reset_dma);
-

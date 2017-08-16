@@ -1862,7 +1862,6 @@ static int omapfb_remove(struct platform_device *pdev)
 	struct omapfb_device *fbdev = platform_get_drvdata(pdev);
 	enum omapfb_state saved_state = fbdev->state;
 
-	/* FIXME: wait till completion of pending events */
 
 	fbdev->state = OMAPFB_DISABLED;
 	omapfb_free_resources(fbdev, saved_state);

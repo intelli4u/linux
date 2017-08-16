@@ -288,4 +288,3 @@ struct xl_private {
 	/* firmware section */
 	const struct firmware *fw;
 };
-

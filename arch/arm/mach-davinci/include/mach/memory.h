@@ -42,11 +42,6 @@
 #define CONSISTENT_DMA_SIZE (14<<20)
 
 #ifndef __ASSEMBLY__
-/*
- * Restrict DMA-able region to workaround silicon bug.  The bug
- * restricts buffers available for DMA to video hardware to be
- * below 128M
- */
 static inline void
 __arch_adjust_zones(unsigned long *size, unsigned long *holes)
 {

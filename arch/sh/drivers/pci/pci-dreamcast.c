@@ -56,12 +56,6 @@ static int __init gapspci_init(void)
 	char idbuf[16];
 	int i;
 
-	/*
-	 * FIXME: All of this wants documenting to some degree,
-	 * even some basic register definitions would be nice.
-	 *
-	 * I haven't seen anything this ugly since.. maple.
-	 */
 
 	for (i=0; i<16; i++)
 		idbuf[i] = inb(GAPSPCI_REGS+i);

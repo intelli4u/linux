@@ -170,7 +170,6 @@ static void wl1251_spi_read(struct wl1251 *wl, int addr, void *buf,
 
 	spi_sync(wl_to_spi(wl), &m);
 
-	/* FIXME: check busy words */
 
 	wl1251_dump(DEBUG_SPI, "spi_read cmd -> ", cmd, sizeof(*cmd));
 	wl1251_dump(DEBUG_SPI, "spi_read buf <- ", buf, len);

@@ -151,7 +151,6 @@ static int orinoco_plx_hw_init(struct orinoco_pci_card *card)
 	printk("\n");
 
 	/* Verify whether a supported PC card is present */
-	/* FIXME: we probably need to be smarted about this */
 	for (i = 0; i < sizeof(cis_magic); i++) {
 		if (cis_magic[i] != ioread8(card->attr_io + (i << 1))) {
 			printk(KERN_ERR PFX "The CIS value of Prism2 PC "

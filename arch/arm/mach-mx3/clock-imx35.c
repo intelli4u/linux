@@ -540,4 +540,3 @@ int __init mx35_clocks_init()
 
 	return 0;
 }
-

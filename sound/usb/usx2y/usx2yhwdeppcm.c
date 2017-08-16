@@ -54,7 +54,8 @@
 #include <linux/gfp.h>
 #include "usbusx2yaudio.c"
 
-#if defined(USX2Y_NRPACKS_VARIABLE) || (!defined(USX2Y_NRPACKS_VARIABLE) &&  USX2Y_NRPACKS == 1)
+#if defined(USX2Y_NRPACKS_VARIABLE) || (!defined(USX2Y_NRPACKS_VARIABLE) && \
+	USX2Y_NRPACKS == 1)
 
 #include <sound/hwdep.h>
 
@@ -65,7 +66,7 @@ static int usX2Y_usbpcm_urb_capt_retire(struct snd_usX2Y_substream *subs)
 	struct snd_pcm_runtime *runtime = subs->pcm_substream->runtime;
 	int 		i, lens = 0, hwptr_done = subs->hwptr_done;
 	struct usX2Ydev	*usX2Y = subs->usX2Y;
-	if (0 > usX2Y->hwdep_pcm_shm->capture_iso_start) { //FIXME
+	if (0 > usX2Y->hwdep_pcm_shm->capture_iso_start) {
 		int head = usX2Y->hwdep_pcm_shm->captured_iso_head + 1;
 		if (head >= ARRAY_SIZE(usX2Y->hwdep_pcm_shm->captured_iso))
 			head = 0;
@@ -94,7 +95,7 @@ static int usX2Y_usbpcm_urb_capt_retire(struct snd_usX2Y_substream *subs)
 static inline int usX2Y_iso_frames_per_buffer(struct snd_pcm_runtime *runtime,
 					      struct usX2Ydev * usX2Y)
 {
-	return (runtime->buffer_size * 1000) / usX2Y->rate + 1;	//FIXME: so far only correct period_size == 2^x ?
+	return (runtime->buffer_size * 1000) / usX2Y->rate + 1;
 }
 
 /*

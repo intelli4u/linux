@@ -914,24 +914,6 @@ static void ocfs2_clear_local_alloc(struct ocfs2_dinode *alloc)
 	mlog_exit_void();
 }
 
-#if 0
-/* turn this on and uncomment below to aid debugging window shifts. */
-static void ocfs2_verify_zero_bits(unsigned long *bitmap,
-				   unsigned int start,
-				   unsigned int count)
-{
-	unsigned int tmp = count;
-	while(tmp--) {
-		if (ocfs2_test_bit(start + tmp, bitmap)) {
-			printk("ocfs2_verify_zero_bits: start = %u, count = "
-			       "%u\n", start, count);
-			printk("ocfs2_verify_zero_bits: bit %u is set!",
-			       start + tmp);
-			BUG();
-		}
-	}
-}
-#endif
 
 /*
  * sync the local alloc to main bitmap.
@@ -1327,4 +1309,3 @@ bail:
 	mlog_exit(status);
 	return status;
 }
-

@@ -178,4 +178,3 @@ void MIC_vGetMIC (unsigned long *pdwL, unsigned long *pdwR)
     // Reset to the empty message.
     s_vClear();
 }
-

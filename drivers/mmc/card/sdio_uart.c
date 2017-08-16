@@ -216,8 +216,6 @@ static unsigned int sdio_uart_get_mctrl(struct sdio_uart_port *port)
 	unsigned char status;
 	unsigned int ret;
 
-	/* FIXME: What stops this losing the delta bits and breaking
-	   sdio_uart_check_modem_status ? */
 	status = sdio_in(port, UART_MSR);
 
 	ret = 0;

@@ -899,16 +899,6 @@ nfsd4_decode_setclientid_confirm(struct nfsd4_compoundargs *argp, struct nfsd4_s
 static __be32
 nfsd4_decode_verify(struct nfsd4_compoundargs *argp, struct nfsd4_verify *verify)
 {
-#if 0
-	struct nfsd4_compoundargs save = {
-		.p = argp->p,
-		.end = argp->end,
-		.rqstp = argp->rqstp,
-	};
-	u32             ve_bmval[2];
-	struct iattr    ve_iattr;           /* request */
-	struct nfs4_acl *ve_acl;            /* request */
-#endif
 	DECODE_HEAD;
 
 	if ((status = nfsd4_decode_bitmap(argp, verify->ve_bmval)))
@@ -917,13 +907,6 @@ nfsd4_decode_verify(struct nfsd4_compoundargs *argp, struct nfsd4_verify *verify
 	/* For convenience's sake, we compare raw xdr'd attributes in
 	 * nfsd4_proc_verify; however we still decode here just to return
 	 * correct error in case of bad xdr. */
-#if 0
-	status = nfsd4_decode_fattr(ve_bmval, &ve_iattr, &ve_acl);
-	if (status == nfserr_inval) {
-		status = nfserrno(status);
-		goto out;
-	}
-#endif
 	READ_BUF(4);
 	READ32(verify->ve_attrlen);
 	READ_BUF(verify->ve_attrlen);
@@ -1377,12 +1360,6 @@ nfsd4_decode_compound(struct nfsd4_compoundargs *argp)
 	struct nfsd4_minorversion_ops *ops;
 	int i;
 
-	/*
-	 * XXX: According to spec, we should check the tag
-	 * for UTF-8 compliance.  I'm postponing this for
-	 * now because it seems that some clients do use
-	 * binary tags.
-	 */
 	READ_BUF(4);
 	READ32(argp->taglen);
 	READ_BUF(argp->taglen + 8);
@@ -2543,7 +2520,7 @@ nfsd4_encode_open(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_op
 		WRITE32(NFS4_ACE_ACCESS_ALLOWED_ACE_TYPE);
 		WRITE32(0);
 		WRITE32(0);
-		WRITE32(0);   /* XXX: is NULL principal ok? */
+		WRITE32(0);
 		ADJUST_ARGS();
 		break;
 	case NFS4_OPEN_DELEGATE_WRITE:
@@ -2564,13 +2541,12 @@ nfsd4_encode_open(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_op
 		WRITE32(NFS4_ACE_ACCESS_ALLOWED_ACE_TYPE);
 		WRITE32(0);
 		WRITE32(0);
-		WRITE32(0);   /* XXX: is NULL principal ok? */
+		WRITE32(0);
 		ADJUST_ARGS();
 		break;
 	default:
 		BUG();
 	}
-	/* XXX save filehandle here */
 out:
 	ENCODE_SEQID_OP_TAIL(open->op_stateowner);
 	return nfserr;
@@ -2682,12 +2658,6 @@ nfsd4_encode_readlink(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd
 	maxcount = PAGE_SIZE;
 	RESERVE_SPACE(4);
 
-	/*
-	 * XXX: By default, the ->readlink() VFS op will truncate symlinks
-	 * if they would overflow the buffer.  Is this kosher in NFSv4?  If
-	 * not, one easy fix is: if ->readlink() precisely fills the buffer,
-	 * assume that truncation occurred, and return NFS4ERR_RESOURCE.
-	 */
 	nfserr = nfsd_readlink(readlink->rl_rqstp, readlink->rl_fhp, page, &maxcount);
 	if (nfserr == nfserr_isdir)
 		return nfserr_inval;
@@ -2729,7 +2699,6 @@ nfsd4_encode_readdir(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4
 	RESERVE_SPACE(8);  /* verifier */
 	savep = p;
 
-	/* XXX: Following NFSv3, we ignore the READDIR verifier for now. */
 	WRITE32(0);
 	WRITE32(0);
 	ADJUST_ARGS();
@@ -3070,11 +3039,6 @@ nfsd4_encode_sequence(struct nfsd4_compoundres *resp, int nfserr,
 	WRITE32(seq->seqid);
 	WRITE32(seq->slotid);
 	WRITE32(seq->maxslots);
-	/*
-	 * FIXME: for now:
-	 *   target_maxslots = maxslots
-	 *   status_flags = 0
-	 */
 	WRITE32(seq->maxslots);
 	WRITE32(0);
 

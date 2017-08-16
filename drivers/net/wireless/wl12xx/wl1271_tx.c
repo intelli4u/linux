@@ -143,10 +143,6 @@ static int wl1271_tx_send_packet(struct wl1271 *wl, struct sk_buff *skb,
 	struct wl1271_tx_hw_descr *desc;
 	int len;
 
-	/* FIXME: This is a workaround for getting non-aligned packets.
-	   This happens at least with EAPOL packets from the user space.
-	   Our DMA requires packets to be aligned on a 4-byte boundary.
-	*/
 	if (unlikely((long)skb->data & 0x03)) {
 		int offset = (4 - (long)skb->data) & 0x03;
 		wl1271_debug(DEBUG_TX, "skb offset %d", offset);
@@ -199,7 +195,6 @@ static int wl1271_tx_frame(struct wl1271 *wl, struct sk_buff *skb)
 	if (info->control.hw_key) {
 		idx = info->control.hw_key->hw_key_idx;
 
-		/* FIXME: do we have to do this if we're not using WEP? */
 		if (unlikely(wl->default_key != idx)) {
 			ret = wl1271_cmd_set_default_wep_key(wl, idx);
 			if (ret < 0)
@@ -422,7 +417,6 @@ void wl1271_tx_reset(struct wl1271 *wl)
 	struct sk_buff *skb;
 
 	/* TX failure */
-/* 	control->flags = 0; FIXME */
 
 	while ((skb = skb_dequeue(&wl->tx_queue))) {
 		wl1271_debug(DEBUG_TX, "freeing skb 0x%p", skb);

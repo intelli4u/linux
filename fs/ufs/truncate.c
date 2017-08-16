@@ -507,7 +507,6 @@ int ufs_setattr(struct dentry *dentry, struct iattr *attr)
 	if (ia_valid & ATTR_SIZE && attr->ia_size != inode->i_size) {
 		loff_t old_i_size = inode->i_size;
 
-		/* XXX(truncate): truncate_setsize should be called last */
 		truncate_setsize(inode, attr->ia_size);
 
 		error = ufs_truncate(inode, old_i_size);

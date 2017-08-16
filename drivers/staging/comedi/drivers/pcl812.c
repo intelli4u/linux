@@ -1239,10 +1239,6 @@ static void setup_range_channel(struct comedi_device *dev,
 
 
 	if (wait)
-		/*
-		 * XXX this depends on selected range and can be very long for
-		 * some high gain ranges!
-		 */
 		udelay(devpriv->max_812_ai_mode0_rangewait);
 }
 

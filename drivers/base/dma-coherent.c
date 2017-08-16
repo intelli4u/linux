@@ -28,7 +28,6 @@ int dma_declare_coherent_memory(struct device *dev, dma_addr_t bus_addr,
 	if (dev->dma_mem)
 		goto out;
 
-	/* FIXME: this routine just ignores DMA_MEMORY_INCLUDES_CHILDREN */
 
 	mem_base = ioremap(bus_addr, size);
 	if (!mem_base)

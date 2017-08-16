@@ -1,23 +1,4 @@
-/*
- * DPLL + CORE_CLK composite clock functions
- *
- * Copyright (C) 2005-2008 Texas Instruments, Inc.
- * Copyright (C) 2004-2010 Nokia Corporation
- *
- * Contacts:
- * Richard Woodruff <r-woodruff2@ti.com>
- * Paul Walmsley
- *
- * Based on earlier work by Tuukka Tikkanen, Tony Lindgren,
- * Gordon McNutt and RidgeRun, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * XXX The DPLL and CORE clocks should be split into two separate clock
- * types.
- */
+
 #undef DEBUG
 
 #include <linux/kernel.h>
@@ -170,4 +151,3 @@ int omap2_reprogram_dpllcore(struct clk *clk, unsigned long rate)
 
 	return 0;
 }
-

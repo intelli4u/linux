@@ -43,48 +43,24 @@ static void snd_emu10k1_pcm_interrupt(struct snd_emu10k1 *emu,
 		return;
 	if (epcm->substream == NULL)
 		return;
-#if 0
-	printk(KERN_DEBUG "IRQ: position = 0x%x, period = 0x%x, size = 0x%x\n",
-			epcm->substream->runtime->hw->pointer(emu, epcm->substream),
-			snd_pcm_lib_period_bytes(epcm->substream),
-			snd_pcm_lib_buffer_bytes(epcm->substream));
-#endif
 	snd_pcm_period_elapsed(epcm->substream);
 }
 
 static void snd_emu10k1_pcm_ac97adc_interrupt(struct snd_emu10k1 *emu,
 					      unsigned int status)
 {
-#if 0
-	if (status & IPR_ADCBUFHALFFULL) {
-		if (emu->pcm_capture_substream->runtime->mode == SNDRV_PCM_MODE_FRAME)
-			return;
-	}
-#endif
 	snd_pcm_period_elapsed(emu->pcm_capture_substream);
 }
 
 static void snd_emu10k1_pcm_ac97mic_interrupt(struct snd_emu10k1 *emu,
 					      unsigned int status)
 {
-#if 0
-	if (status & IPR_MICBUFHALFFULL) {
-		if (emu->pcm_capture_mic_substream->runtime->mode == SNDRV_PCM_MODE_FRAME)
-			return;
-	}
-#endif
 	snd_pcm_period_elapsed(emu->pcm_capture_mic_substream);
 }
 
 static void snd_emu10k1_pcm_efx_interrupt(struct snd_emu10k1 *emu,
 					  unsigned int status)
 {
-#if 0
-	if (status & IPR_EFXBUFHALFFULL) {
-		if (emu->pcm_capture_efx_substream->runtime->mode == SNDRV_PCM_MODE_FRAME)
-			return;
-	}
-#endif
 	snd_pcm_period_elapsed(emu->pcm_capture_efx_substream);
 }	 
 
@@ -875,11 +851,6 @@ static snd_pcm_uframes_t snd_emu10k1_playback_pointer(struct snd_pcm_substream *
 	if (!epcm->running)
 		return 0;
 	ptr = snd_emu10k1_ptr_read(emu, CCCA, epcm->voices[0]->number) & 0x00ffffff;
-#if 0	/* Perex's code */
-	ptr += runtime->buffer_size;
-	ptr -= epcm->ccca_start_addr;
-	ptr %= runtime->buffer_size;
-#else	/* EMU10K1 Open Source code from Creative */
 	if (ptr < epcm->ccca_start_addr)
 		ptr += runtime->buffer_size - epcm->ccca_start_addr;
 	else {
@@ -887,7 +858,6 @@ static snd_pcm_uframes_t snd_emu10k1_playback_pointer(struct snd_pcm_substream *
 		if (ptr >= runtime->buffer_size)
 			ptr -= runtime->buffer_size;
 	}
-#endif
 	/*
 	printk(KERN_DEBUG
 	       "ptr = 0x%lx, buffer_size = 0x%lx, period_size = 0x%lx\n",
@@ -1289,7 +1259,6 @@ static int snd_emu10k1_capture_efx_open(struct snd_pcm_substream *substream)
 		 * for 192kHz 24bit, one has 4 channels
 		 *
 		 */
-#if 1
 		switch (emu->emu1010.internal_clock) {
 		case 0:
 			/* For 44.1kHz */
@@ -1306,19 +1275,6 @@ static int snd_emu10k1_capture_efx_open(struct snd_pcm_substream *substream)
 				runtime->hw.channels_max = 16;
 			break;
 		};
-#endif
-#if 0
-		/* For 96kHz */
-		runtime->hw.rates = SNDRV_PCM_RATE_96000;
-		runtime->hw.rate_min = runtime->hw.rate_max = 96000;
-		runtime->hw.channels_min = runtime->hw.channels_max = 4;
-#endif
-#if 0
-		/* For 192kHz */
-		runtime->hw.rates = SNDRV_PCM_RATE_192000;
-		runtime->hw.rate_min = runtime->hw.rate_max = 192000;
-		runtime->hw.channels_min = runtime->hw.channels_max = 2;
-#endif
 		runtime->hw.formats = SNDRV_PCM_FMTBIT_S32_LE;
 		/* efx_voices_mask[0] is expected to be zero
  		 * efx_voices_mask[1] is expected to have 32bits set

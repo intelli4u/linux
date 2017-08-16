@@ -372,5 +372,3 @@ l1oip_4bit_alloc(int ulaw)
 
 	return 0;
 }
-
-

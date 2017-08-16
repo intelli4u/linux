@@ -285,7 +285,6 @@ static int proc_lpevents_show(struct seq_file *m, void *v)
 	unsigned long sum;
 	static unsigned long cpu_totals[NR_CPUS];
 
-	/* FIXME: do we care that there's no locking here? */
 	sum = 0;
 	for_each_online_cpu(cpu) {
 		cpu_totals[cpu] = 0;
@@ -338,4 +337,3 @@ static int __init proc_lpevents_init(void)
 	return 0;
 }
 __initcall(proc_lpevents_init);
-

@@ -383,7 +383,6 @@ static int check_fb_res_bounds(struct fb_var_screeninfo *var)
 	int yres_min = OMAPFB_PLANE_YRES_MIN;
 	int yres_max = 2048;
 
-	/* XXX: some applications seem to set virtual res to 0. */
 	if (var->xres_virtual == 0)
 		var->xres_virtual = var->xres;
 
@@ -523,7 +522,6 @@ static int setup_vrfb_rotation(struct fb_info *fbi)
 	/* We need to reconfigure VRFB if the resolution changes, if yuv mode
 	 * is enabled/disabled, or if bytes per pixel changes */
 
-	/* XXX we shouldn't allow this when framebuffer is mmapped */
 
 	reconf = false;
 
@@ -749,35 +747,6 @@ static int omapfb_open(struct fb_info *fbi, int user)
 
 static int omapfb_release(struct fb_info *fbi, int user)
 {
-#if 0
-	struct omapfb_info *ofbi = FB2OFB(fbi);
-	struct omapfb2_device *fbdev = ofbi->fbdev;
-	struct omap_dss_device *display = fb2display(fbi);
-
-	DBG("Closing fb with plane index %d\n", ofbi->id);
-
-	omapfb_lock(fbdev);
-
-	if (display && display->get_update_mode && display->update) {
-		/* XXX this update should be removed, I think. But it's
-		 * good for debugging */
-		if (display->get_update_mode(display) ==
-				OMAP_DSS_UPDATE_MANUAL) {
-			u16 w, h;
-
-			if (display->sync)
-				display->sync(display);
-
-			display->get_resolution(display, &w, &h);
-			display->update(display, 0, 0, w, h);
-		}
-	}
-
-	if (display && display->sync)
-		display->sync(display);
-
-	omapfb_unlock(fbdev);
-#endif
 	return 0;
 }
 
@@ -1180,7 +1149,7 @@ static int _setcolreg(struct fb_info *fbi, u_int regno, u_int red, u_int green,
 	struct fb_var_screeninfo *var = &fbi->var;
 	int r = 0;
 
-	enum omapfb_color_format mode = OMAPFB_COLOR_RGB24U; /* XXX */
+	enum omapfb_color_format mode = OMAPFB_COLOR_RGB24U;
 
 	/*switch (plane->color_mode) {*/
 	switch (mode) {
@@ -1317,16 +1286,6 @@ exit:
 	return r;
 }
 
-#if 0
-/* XXX fb_read and fb_write are needed for VRFB */
-ssize_t omapfb_write(struct fb_info *info, const char __user *buf,
-		size_t count, loff_t *ppos)
-{
-	DBG("omapfb_write %d, %lu\n", count, (unsigned long)*ppos);
-	/* XXX needed for VRFB */
-	return count;
-}
-#endif
 
 static struct fb_ops omapfb_ops = {
 	.owner          = THIS_MODULE,
@@ -2310,7 +2269,6 @@ static int omapfb_remove(struct platform_device *pdev)
 {
 	struct omapfb2_device *fbdev = platform_get_drvdata(pdev);
 
-	/* FIXME: wait till completion of pending events */
 
 	omapfb_remove_sysfs(fbdev);
 

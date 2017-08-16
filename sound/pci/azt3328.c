@@ -1,177 +1,4 @@
-/*
- *  azt3328.c - driver for Aztech AZF3328 based soundcards (e.g. PCI168).
- *  Copyright (C) 2002, 2005 - 2009 by Andreas Mohr <andi AT lisas.de>
- *
- *  Framework borrowed from Bart Hartgers's als4000.c.
- *  Driver developed on PCI168 AP(W) version (PCI rev. 10, subsystem ID 1801),
- *  found in a Fujitsu-Siemens PC ("Cordant", aluminum case).
- *  Other versions are:
- *  PCI168 A(W), sub ID 1800
- *  PCI168 A/AP, sub ID 8000
- *  Please give me feedback in case you try my driver with one of these!!
- *
- *  Keywords: Windows XP Vista 168nt4-125.zip 168win95-125.zip PCI 168 download
- *  (XP/Vista do not support this card at all but every Linux distribution
- *   has very good support out of the box;
- *   just to make sure that the right people hit this and get to know that,
- *   despite the high level of Internet ignorance - as usual :-P -
- *   about very good support for this card - on Linux!)
- *
- * GPL LICENSE
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
 
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
- * NOTES
- *  Since Aztech does not provide any chipset documentation,
- *  even on repeated request to various addresses,
- *  and the answer that was finally given was negative
- *  (and I was stupid enough to manage to get hold of a PCI168 soundcard
- *  in the first place >:-P}),
- *  I was forced to base this driver on reverse engineering
- *  (3 weeks' worth of evenings filled with driver work).
- *  (and no, I did NOT go the easy way: to pick up a SB PCI128 for 9 Euros)
- *
- *  It is quite likely that the AZF3328 chip is the PCI cousin of the
- *  AZF3318 ("azt1020 pnp", "MM Pro 16") ISA chip, given very similar specs.
- *
- *  The AZF3328 chip (note: AZF3328, *not* AZT3328, that's just the driver name
- *  for compatibility reasons) from Azfin (joint-venture of Aztech and Fincitec,
- *  Fincitec acquired by National Semiconductor in 2002, together with the
- *  Fincitec-related company ARSmikro) has the following features:
- *
- *  - compatibility & compliance:
- *    - Microsoft PC 97 ("PC 97 Hardware Design Guide",
- *                       http://www.microsoft.com/whdc/archive/pcguides.mspx)
- *    - Microsoft PC 98 Baseline Audio
- *    - MPU401 UART
- *    - Sound Blaster Emulation (DOS Box)
- *  - builtin AC97 conformant codec (SNR over 80dB)
- *    Note that "conformant" != "compliant"!! this chip's mixer register layout
- *    *differs* from the standard AC97 layout:
- *    they chose to not implement the headphone register (which is not a
- *    problem since it's merely optional), yet when doing this, they committed
- *    the grave sin of letting other registers follow immediately instead of
- *    keeping a headphone dummy register, thereby shifting the mixer register
- *    addresses illegally. So far unfortunately it looks like the very flexible
- *    ALSA AC97 support is still not enough to easily compensate for such a
- *    grave layout violation despite all tweaks and quirks mechanisms it offers.
- *  - builtin genuine OPL3 - verified to work fine, 20080506
- *  - full duplex 16bit playback/record at independent sampling rate
- *  - MPU401 (+ legacy address support, claimed by one official spec sheet)
- *    FIXME: how to enable legacy addr??
- *  - game port (legacy address support)
- *  - builtin DirectInput support, helps reduce CPU overhead (interrupt-driven
- *    features supported). - See common term "Digital Enhanced Game Port"...
- *    (probably DirectInput 3.0 spec - confirm)
- *  - builtin 3D enhancement (said to be YAMAHA Ymersion)
- *  - built-in General DirectX timer having a 20 bits counter
- *    with 1us resolution (see below!)
- *  - I2S serial output port for external DAC
- *    [FIXME: 3.3V or 5V level? maximum rate is 66.2kHz right?]
- *  - supports 33MHz PCI spec 2.1, PCI power management 1.0, compliant with ACPI
- *  - supports hardware volume control
- *  - single chip low cost solution (128 pin QFP)
- *  - supports programmable Sub-vendor and Sub-system ID [24C02 SEEPROM chip]
- *    required for Microsoft's logo compliance (FIXME: where?)
- *    At least the Trident 4D Wave DX has one bit somewhere
- *    to enable writes to PCI subsystem VID registers, that should be it.
- *    This might easily be in extended PCI reg space, since PCI168 also has
- *    some custom data starting at 0x80. What kind of config settings
- *    are located in our extended PCI space anyway??
- *  - PCI168 AP(W) card: power amplifier with 4 Watts/channel at 4 Ohms
- *    [TDA1517P chip]
- *
- *  Note that this driver now is actually *better* than the Windows driver,
- *  since it additionally supports the card's 1MHz DirectX timer - just try
- *  the following snd-seq module parameters etc.:
- *  - options snd-seq seq_default_timer_class=2 seq_default_timer_sclass=0
- *    seq_default_timer_card=0 seq_client_load=1 seq_default_timer_device=0
- *    seq_default_timer_subdevice=0 seq_default_timer_resolution=1000000
- *  - "timidity -iAv -B2,8 -Os -EFreverb=0"
- *  - "pmidi -p 128:0 jazz.mid"
- *
- *  OPL3 hardware playback testing, try something like:
- *  cat /proc/asound/hwdep
- *  and
- *  aconnect -o
- *  Then use
- *  sbiload -Dhw:x,y --opl3 /usr/share/sounds/opl3/std.o3 ......./drums.o3
- *  where x,y is the xx-yy number as given in hwdep.
- *  Then try
- *  pmidi -p a:b jazz.mid
- *  where a:b is the client number plus 0 usually, as given by aconnect above.
- *  Oh, and make sure to unmute the FM mixer control (doh!)
- *  NOTE: power use during OPL3 playback is _VERY_ high (70W --> 90W!)
- *  despite no CPU activity, possibly due to hindering ACPI idling somehow.
- *  Shouldn't be a problem of the AZF3328 chip itself, I'd hope.
- *  Higher PCM / FM mixer levels seem to conflict (causes crackling),
- *  at least sometimes.   Maybe even use with hardware sequencer timer above :)
- *  adplay/adplug-utils might soon offer hardware-based OPL3 playback, too.
- *
- *  Certain PCI versions of this card are susceptible to DMA traffic underruns
- *  in some systems (resulting in sound crackling/clicking/popping),
- *  probably because they don't have a DMA FIFO buffer or so.
- *  Overview (PCI ID/PCI subID/PCI rev.):
- *  - no DMA crackling on SiS735: 0x50DC/0x1801/16
- *  - unknown performance: 0x50DC/0x1801/10
- *    (well, it's not bad on an Athlon 1800 with now very optimized IRQ handler)
- *
- *  Crackling happens with VIA chipsets or, in my case, an SiS735, which is
- *  supposed to be very fast and supposed to get rid of crackling much
- *  better than a VIA, yet ironically I still get crackling, like many other
- *  people with the same chipset.
- *  Possible remedies:
- *  - use speaker (amplifier) output instead of headphone output
- *    (in case crackling is due to overloaded output clipping)
- *  - plug card into a different PCI slot, preferrably one that isn't shared
- *    too much (this helps a lot, but not completely!)
- *  - get rid of PCI VGA card, use AGP instead
- *  - upgrade or downgrade BIOS
- *  - fiddle with PCI latency settings (setpci -v -s BUSID latency_timer=XX)
- *    Not too helpful.
- *  - Disable ACPI/power management/"Auto Detect RAM/PCI Clk" in BIOS
- *
- * BUGS
- *  - full-duplex might *still* be problematic, however a recent test was fine
- *  - (non-bug) "Bass/Treble or 3D settings don't work" - they do get evaluated
- *    if you set PCM output switch to "pre 3D" instead of "post 3D".
- *    If this can't be set, then get a mixer application that Isn't Stupid (tm)
- *    (e.g. kmix, gamix) - unfortunately several are!!
- *  - locking is not entirely clean, especially the audio stream activity
- *    ints --> may be racy
- *  - an _unconnected_ secondary joystick at the gameport will be reported
- *    to be "active" (floating values, not precisely -1) due to the way we need
- *    to read the Digital Enhanced Game Port. Not sure whether it is fixable.
- *
- * TODO
- *  - use PCI_VDEVICE
- *  - verify driver status on x86_64
- *  - test multi-card driver operation
- *  - (ab)use 1MHz DirectX timer as kernel clocksource
- *  - test MPU401 MIDI playback etc.
- *  - add more power micro-management (disable various units of the card
- *    as long as they're unused, to improve audio quality and save power).
- *    However this requires more I/O ports which I haven't figured out yet
- *    and which thus might not even exist...
- *    The standard suspend/resume functionality could probably make use of
- *    some improvement, too...
- *  - figure out what all unknown port bits are responsible for
- *  - figure out some cleverly evil scheme to possibly make ALSA AC97 code
- *    fully accept our quite incompatible ""AC97"" mixer and thus save some
- *    code (but I'm not too optimistic that doing this is possible at all)
- *  - use MMIO (memory-mapped I/O)? Slightly faster access, e.g. for gameport.
- */
 
 #include <asm/io.h>
 #include <linux/init.h>
@@ -997,13 +824,6 @@ snd_azf3328_codec_setfmt(struct snd_azf3328 *chip,
 	/* set bitrate/format */
 	snd_azf3328_codec_outw(codec, IDX_IO_CODEC_SOUNDFORMAT, val);
 
-	/* changing the bitrate/format settings switches off the
-	 * audio output with an annoying click in case of 8/16bit format change
-	 * (maybe shutting down DAC/ADC?), thus immediately
-	 * do some tweaking to reenable it and get rid of the clicking
-	 * (FIXME: yes, it works, but what exactly am I doing here?? :)
-	 * FIXME: does this have some side effects for full-duplex
-	 * or other dramatic side effects? */
 	if (codec_type == AZF_CODEC_PLAYBACK) /* only do it for playback */
 		snd_azf3328_codec_outw(codec, IDX_IO_CODEC_DMA_FLAGS,
 			snd_azf3328_codec_inw(codec, IDX_IO_CODEC_DMA_FLAGS) |
@@ -1149,22 +969,8 @@ snd_azf3328_codec_setdmaa(struct snd_azf3328 *chip,
 static int
 snd_azf3328_codec_prepare(struct snd_pcm_substream *substream)
 {
-#if 0
-	struct snd_azf3328 *chip = snd_pcm_substream_chip(substream);
-	struct snd_pcm_runtime *runtime = substream->runtime;
-        unsigned int size = snd_pcm_lib_buffer_bytes(substream);
-	unsigned int count = snd_pcm_lib_period_bytes(substream);
-#endif
 
 	snd_azf3328_dbgcallenter();
-#if 0
-	snd_azf3328_codec_setfmt(chip, AZF_CODEC_...,
-		runtime->rate,
-		snd_pcm_format_width(runtime->format),
-		runtime->channels);
-	snd_azf3328_codec_setdmaa(chip, AZF_CODEC_...,
-					runtime->dma_addr, count, size);
-#endif
 	snd_azf3328_dbgcallleave();
 	return 0;
 }
@@ -1208,7 +1014,6 @@ snd_azf3328_codec_trigger(enum snd_azf3328_codec_type codec_type,
 		flags1 &= ~DMA_RESUME;
 		snd_azf3328_codec_outw(codec, IDX_IO_CODEC_DMA_FLAGS, flags1);
 
-		/* FIXME: clear interrupts or what??? */
 		snd_azf3328_codec_outw(codec, IDX_IO_CODEC_IRQTYPE, 0xffff);
 		spin_unlock(&chip->reg_lock);
 
@@ -1219,12 +1024,10 @@ snd_azf3328_codec_trigger(enum snd_azf3328_codec_type codec_type,
 
 		spin_lock(&chip->reg_lock);
 #ifdef WIN9X
-		/* FIXME: enable playback/recording??? */
 		flags1 |= DMA_RUN_SOMETHING1 | DMA_RUN_SOMETHING2;
 		snd_azf3328_codec_outw(codec, IDX_IO_CODEC_DMA_FLAGS, flags1);
 
 		/* start transfer again */
-		/* FIXME: what is this value (0x0010)??? */
 		flags1 |= DMA_RESUME | DMA_EPILOGUE_SOMETHING;
 		snd_azf3328_codec_outw(codec, IDX_IO_CODEC_DMA_FLAGS, flags1);
 #else /* NT4 */
@@ -1725,7 +1528,6 @@ snd_azf3328_interrupt(int irq, void *dev_id)
 */
 static const struct snd_pcm_hardware snd_azf3328_hardware =
 {
-	/* FIXME!! Correct? */
 	.info =			SNDRV_PCM_INFO_MMAP |
 				SNDRV_PCM_INFO_INTERLEAVED |
 				SNDRV_PCM_INFO_MMAP_VALID,
@@ -1745,9 +1547,6 @@ static const struct snd_pcm_hardware snd_azf3328_hardware =
 	.period_bytes_max =	65536,
 	.periods_min =		1,
 	.periods_max =		1024,
-	/* FIXME: maybe that card actually has a FIFO?
-	 * Hmm, it seems newer revisions do have one, but we still don't know
-	 * its size... */
 	.fifo_size =		0,
 };
 
@@ -1980,7 +1779,6 @@ snd_azf3328_timer_stop(struct snd_timer *timer)
 	chip = snd_timer_chip(timer);
 	spin_lock_irqsave(&chip->reg_lock, flags);
 	/* disable timer countdown and interrupt */
-	/* FIXME: should we write TIMER_IRQ_ACK here? */
 	snd_azf3328_ctrl_outb(chip, IDX_IO_TIMER_VALUE + 3, 0);
 	spin_unlock_irqrestore(&chip->reg_lock, flags);
 	snd_azf3328_dbgcallleave();
@@ -2080,28 +1878,6 @@ snd_azf3328_dev_free(struct snd_device *device)
 	return snd_azf3328_free(chip);
 }
 
-#if 0
-/* check whether a bit can be modified */
-static void
-snd_azf3328_test_bit(unsigned unsigned reg, int bit)
-{
-	unsigned char val, valoff, valon;
-
-	val = inb(reg);
-
-	outb(val & ~(1 << bit), reg);
-	valoff = inb(reg);
-
-	outb(val|(1 << bit), reg);
-	valon = inb(reg);
-
-	outb(val, reg);
-
-	printk(KERN_DEBUG "reg %04x bit %d: %02x %02x %02x\n",
-				reg, bit, val, valoff, valon
-	);
-}
-#endif
 
 static inline void
 snd_azf3328_debug_show_ports(const struct snd_azf3328 *chip)

@@ -689,20 +689,6 @@ static void verify_dl_startup(u_long data)
 		dev_dbg(&link->dev, "ray_cs verify_dl_startup - device not present\n");
 		return;
 	}
-#if 0
-	{
-		int i;
-		printk(KERN_DEBUG
-		       "verify_dl_startup parameters sent via ccs %d:\n",
-		       local->dl_param_ccs);
-		for (i = 0; i < sizeof(struct b5_startup_params); i++) {
-			printk(" %2x",
-			       (unsigned int)readb(local->sram +
-						   HOST_TO_ECF_BASE + i));
-		}
-		printk("\n");
-	}
-#endif
 
 	status = readb(&pccs->buffer_status);
 	if (status != CCS_BUFFER_FREE) {
@@ -2345,18 +2331,6 @@ static void untranslate(ray_dev_t *local, struct sk_buff *skb, int len)
 	memcpy(destaddr, ieee80211_get_DA(pmac), ADDRLEN);
 	memcpy(srcaddr, ieee80211_get_SA(pmac), ADDRLEN);
 
-#if 0
-	if {
-		print_hex_dump(KERN_DEBUG, "skb->data before untranslate: ",
-			       DUMP_PREFIX_NONE, 16, 1,
-			       skb->data, 64, true);
-		printk(KERN_DEBUG
-		       "type = %08x, xsap = %02x%02x%02x, org = %02x02x02x\n",
-		       ntohs(type), psnap->dsap, psnap->ssap, psnap->ctrl,
-		       psnap->org[0], psnap->org[1], psnap->org[2]);
-		printk(KERN_DEBUG "untranslate skb->data = %p\n", skb->data);
-	}
-#endif
 
 	if (psnap->dsap != 0xaa || psnap->ssap != 0xaa || psnap->ctrl != 3) {
 		/* not a snap type so leave it alone */
@@ -2405,15 +2379,6 @@ static void untranslate(ray_dev_t *local, struct sk_buff *skb, int len)
 	      skb->data);
 	memcpy(peth->h_dest, destaddr, ADDRLEN);
 	memcpy(peth->h_source, srcaddr, ADDRLEN);
-#if 0
-	{
-		int i;
-		printk(KERN_DEBUG "skb->data after untranslate:");
-		for (i = 0; i < 64; i++)
-			printk("%02x ", skb->data[i]);
-		printk("\n");
-	}
-#endif
 } /* end untranslate */
 
 /*===========================================================================*/

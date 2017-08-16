@@ -407,11 +407,6 @@ static void smc_shutdown( int ioaddr )
 	SMC_SELECT_BANK( 0 );
 	outb( RCR_CLEAR, ioaddr + RCR );
 	outb( TCR_CLEAR, ioaddr + TCR );
-#if 0
-	/* finally, shut the chip down */
-	SMC_SELECT_BANK( 1 );
-	outw( inw( ioaddr + CONTROL ), CTL_POWERDOWN, ioaddr + CONTROL  );
-#endif
 }
 
 
@@ -996,22 +991,6 @@ static int __init smc_probe(struct net_device *dev, int ioaddr)
 	/* now, reset the chip, and put it into a known state */
 	smc_reset( ioaddr );
 
-	/*
-	 . If dev->irq is 0, then the device has to be banged on to see
-	 . what the IRQ is.
- 	 .
-	 . This banging doesn't always detect the IRQ, for unknown reasons.
-	 . a workaround is to reset the chip and try again.
-	 .
-	 . Interestingly, the DOS packet driver *SETS* the IRQ on the card to
-	 . be what is requested on the command line.   I don't do that, mostly
-	 . because the card that I have uses a non-standard method of accessing
-	 . the IRQs, and because this _should_ work in most configurations.
-	 .
-	 . Specifying an IRQ is done with the assumption that the user knows
-	 . what (s)he is doing.  No checking is done!!!!
- 	 .
-	*/
 	if ( dev->irq < 2 ) {
 		int	trials;
 
@@ -1061,36 +1040,6 @@ err_out:
 #if SMC_DEBUG > 2
 static void print_packet( byte * buf, int length )
 {
-#if 0
-	int i;
-	int remainder;
-	int lines;
-
-	printk("Packet of length %d\n", length);
-	lines = length / 16;
-	remainder = length % 16;
-
-	for ( i = 0; i < lines ; i ++ ) {
-		int cur;
-
-		for ( cur = 0; cur < 8; cur ++ ) {
-			byte a, b;
-
-			a = *(buf ++ );
-			b = *(buf ++ );
-			printk("%02x%02x ", a, b );
-		}
-		printk("\n");
-	}
-	for ( i = 0; i < remainder/2 ; i++ ) {
-		byte a, b;
-
-		a = *(buf ++ );
-		b = *(buf ++ );
-		printk("%02x%02x ", a, b );
-	}
-	printk("\n");
-#endif
 }
 #endif
 
@@ -1334,9 +1283,6 @@ static void smc_tx( struct net_device * dev )
 			": Late collision occurred on last xmit.\n");
 		dev->stats.tx_window_errors++;
 	}
-#if 0
-		if ( tx_status & TS_16COL ) { ... }
-#endif
 
 	if ( tx_status & TS_SUCCESS ) {
 		printk(CARDNAME": Successful packet caused interrupt\n");

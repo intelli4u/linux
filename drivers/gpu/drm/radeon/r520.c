@@ -74,7 +74,6 @@ static void r520_gpu_init(struct radeon_device *rdev)
 	 * GA_ENHANCE			0x4274
 	 * SU_REG_DEST			0x42C8
 	 */
-	/* workaround for RV530 */
 	if (rdev->family == CHIP_RV530) {
 		WREG32(0x4128, 0xFF);
 	}

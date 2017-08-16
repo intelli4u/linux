@@ -150,14 +150,6 @@ static struct ia64_pal_retval pal_cache_flush(struct kvm_vcpu *vcpu)
 				"in1:%lx,in2:%lx\n",
 				vcpu, result.status, gr29, gr30);
 
-#if 0
-	if (gr29 == PAL_CACHE_TYPE_COHERENT) {
-		cpus_setall(vcpu->arch.cache_coherent_map);
-		cpu_clear(vcpu->cpu, vcpu->arch.cache_coherent_map);
-		cpus_setall(cpu_cache_coherent_map);
-		cpu_clear(vcpu->cpu, cpu_cache_coherent_map);
-	}
-#endif
 	return result;
 }
 
@@ -474,8 +466,6 @@ int kvm_pal_emul(struct kvm_vcpu *vcpu, struct kvm_run *run)
 		break;
 	case PAL_MC_DRAIN:
 		result.status = ia64_pal_mc_drain();
-		/* FIXME: All vcpus likely call PAL_MC_DRAIN.
-		   That causes the congestion. */
 		smp_call_function(remote_pal_mc_drain, NULL, 1);
 		break;
 

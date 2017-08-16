@@ -1359,16 +1359,6 @@ static int __init mv_xor_init(void)
 module_init(mv_xor_init);
 
 /* it's currently unsafe to unload this module */
-#if 0
-static void __exit mv_xor_exit(void)
-{
-	platform_driver_unregister(&mv_xor_driver);
-	platform_driver_unregister(&mv_xor_shared_driver);
-	return;
-}
-
-module_exit(mv_xor_exit);
-#endif
 
 MODULE_AUTHOR("Saeed Bishara <saeed@marvell.com>");
 MODULE_DESCRIPTION("DMA engine driver for Marvell's XOR engine");

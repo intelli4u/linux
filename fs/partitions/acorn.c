@@ -25,8 +25,7 @@
 #define PARTITION_RISCIX_SCSI	2
 #define PARTITION_LINUX		9
 
-#if defined(CONFIG_ACORN_PARTITION_CUMANA) || \
-	defined(CONFIG_ACORN_PARTITION_ADFS)
+#if defined(CONFIG_ACORN_PARTITION_CUMANA) || defined(CONFIG_ACORN_PARTITION_ADFS)
 static struct adfs_discrecord *
 adfs_partition(struct parsed_partitions *state, char *name, char *data,
 	       unsigned long first_sector, int slot)
@@ -71,8 +70,7 @@ struct riscix_record {
 	struct riscix_part part[8];
 };
 
-#if defined(CONFIG_ACORN_PARTITION_CUMANA) || \
-	defined(CONFIG_ACORN_PARTITION_ADFS)
+#if defined(CONFIG_ACORN_PARTITION_CUMANA) || defined(CONFIG_ACORN_PARTITION_ADFS)
 static int riscix_partition(struct parsed_partitions *state,
 			    unsigned long first_sect, int slot,
 			    unsigned long nr_sects)
@@ -126,8 +124,7 @@ struct linux_part {
 	__le32 nr_sects;
 };
 
-#if defined(CONFIG_ACORN_PARTITION_CUMANA) || \
-	defined(CONFIG_ACORN_PARTITION_ADFS)
+#if defined(CONFIG_ACORN_PARTITION_CUMANA) || defined(CONFIG_ACORN_PARTITION_ADFS)
 static int linux_partition(struct parsed_partitions *state,
 			   unsigned long first_sect, int slot,
 			   unsigned long nr_sects)

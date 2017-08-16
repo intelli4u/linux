@@ -173,4 +173,3 @@ const struct ethtool_ops pasemi_mac_ethtool_ops = {
 	.get_sset_count		= pasemi_mac_get_sset_count,
 	.get_ethtool_stats	= pasemi_mac_get_ethtool_stats,
 };
-

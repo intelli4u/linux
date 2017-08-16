@@ -2029,10 +2029,6 @@ int hfa384x_drvr_flashdl_write(hfa384x_t *hw, u32 daddr, void *buf, u32 len)
 	pr_debug("dlbuf.page=0x%04x dlbuf.offset=0x%04x dlbufaddr=0x%08x\n",
 		 hw->bufinfo.page, hw->bufinfo.offset, dlbufaddr);
 
-#if 0
-	printk(KERN_WARNING "dlbuf@0x%06lx len=%d to=%d\n", dlbufaddr,
-	       hw->bufinfo.len, hw->dltimeout);
-#endif
 	/* Calculations to determine how many fills of the dlbuffer to do
 	 * and how many USB wmemreq's to do for each fill.  At this point
 	 * in time, the dlbuffer size and the wmemreq size are the same.
@@ -2596,16 +2592,6 @@ int hfa384x_drvr_start(hfa384x_t *hw)
 		goto done;
 	}
 
-	/* Call initialize twice, with a 1 second sleep in between.
-	 * This is a nasty work-around since many prism2 cards seem to
-	 * need time to settle after an init from cold. The second
-	 * call to initialize in theory is not necessary - but we call
-	 * it anyway as a double insurance policy:
-	 * 1) If the first init should fail, the second may well succeed
-	 *    and the card can still be used
-	 * 2) It helps ensures all is well with the card after the first
-	 *    init and settle time.
-	 */
 	result1 = hfa384x_cmd_initialize(hw);
 	msleep(1000);
 	result = result2 = hfa384x_cmd_initialize(hw);

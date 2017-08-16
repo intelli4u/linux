@@ -188,7 +188,7 @@ SUBARCH := $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ \
 # Default value for CROSS_COMPILE is not to prefix executables
 # Note: Some architectures assign CROSS_COMPILE in their arch/*/Makefile
 export KBUILD_BUILDHOST := $(SUBARCH)
-ARCH		?= $(SUBARCH)
+ARCH		?= arm
 CROSS_COMPILE	?= $(CONFIG_CROSS_COMPILE:"%"=%)
 
 # Architecture as present in compile.h
@@ -358,6 +358,18 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__
 KBUILD_AFLAGS_MODULE  := -DMODULE
 KBUILD_CFLAGS_MODULE  := -DMODULE
 KBUILD_LDFLAGS_MODULE := -T $(srctree)/scripts/module-common.lds
+
+# Broadcom source tree
+KBUILD_CFLAGS += -I$(SRCBASE)/include
+KBUILD_CFLAGS += -I$(SRCBASE)/common/include
+KBUILD_CFLAGS += $(WLAN_ComponentIncPath)
+KBUILD_CFLAGS += $(WLAN_StdIncPathA)
+KBUILD_AFLAGS += -I$(SRCBASE)/include
+KBUILD_AFLAGS += -I$(SRCBASE)/common/include
+KBUILD_CFLAGS += -DBCMDRIVER -Dlinux
+# bcm dbg
+#KBUILD_CFLAGS += -DBCMDBG
+
 
 # Read KERNELRELEASE from include/config/kernel.release (if it exists)
 KERNELRELEASE = $(shell cat include/config/kernel.release 2> /dev/null)
@@ -534,10 +546,56 @@ endif # $(dot-config)
 # Defaults to vmlinux, but the arch makefile usually adds further targets
 all: vmlinux
 
+# Broadcom features compile options
+ifneq ($(CONFIG_BCM_CTF),)
+KBUILD_CFLAGS += -DHNDCTF -DCTFPOOL -DCTFMAP -DPKTC -DCTF_PPPOE -DCTF_PPTP -DCTF_L2TP
+ifneq ($(CONFIG_WL_USBAP),)
+KBUILD_CFLAGS += -DCTFPOOL_SPINLOCK
+endif
+ifneq ($(CONFIG_IPV6),)
+KBUILD_CFLAGS += -DCTF_IPV6
+endif
+endif
+
+ifneq ($(CONFIG_BCM_GMAC3),)
+KBUILD_CFLAGS += -DBCM_GMAC3
+endif
+
+ifneq ($(CONFIG_BCM_FA),)
+KBUILD_CFLAGS += -DBCMFA
+endif
+
+ifneq ($(CONFIG_RGMII_BCM_FA),)
+KBUILD_CFLAGS += -DRGMII_BCM_FA
+endif
+
+ifneq ($(CONFIG_BCM47XX),)
+KBUILD_CFLAGS += -DBCM47XX
+KBUILD_AFLAGS += -DBCM47XX
+endif
+
+ifneq ($(CONFIG_MTD_BCMCONF_PARTS),)
+KBUILD_CFLAGS += -DBCMCONFMTD
+endif
+
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 KBUILD_CFLAGS	+= -Os
 else
 KBUILD_CFLAGS	+= -O2
+endif
+
+ifeq ($(CONFIG_LINUX_MTD),32)
+KBUILD_CFLAGS += -D"CONFIG_LINUX_MTD=32"
+endif
+ifeq ($(CONFIG_LINUX_MTD),64)
+KBUILD_CFLAGS += -D"CONFIG_LINUX_MTD=64"
+endif
+ifeq ($(CONFIG_LINUX_MTD),128)
+KBUILD_CFLAGS += -D"CONFIG_LINUX_MTD=128"
+endif
+
+ifneq ($(NVSIZE),)
+KBUILD_CFLAGS += -D"CONFIG_NVSIZE_$(NVSIZE)"
 endif
 
 include $(srctree)/arch/$(SRCARCH)/Makefile
@@ -554,7 +612,11 @@ endif
 ifdef CONFIG_FRAME_POINTER
 KBUILD_CFLAGS	+= -fno-omit-frame-pointer -fno-optimize-sibling-calls
 else
-KBUILD_CFLAGS	+= -fomit-frame-pointer
+ifeq ($(CONFIG_BUZZZ_FUNC),y)
+KBUILD_CFLAGS   += -fno-omit-frame-pointer
+else
+KBUILD_CFLAGS   += -fomit-frame-pointer
+endif # CONFIG_BUZZZ_FUNC
 endif
 
 ifdef CONFIG_DEBUG_INFO
@@ -564,6 +626,12 @@ endif
 
 ifdef CONFIG_DEBUG_INFO_REDUCED
 KBUILD_CFLAGS 	+= $(call cc-option, -femit-struct-debug-baseonly)
+endif
+
+ifeq ($(CONFIG_ELF_CORE),y)
+KBUILD_CFLAGS   += -DDEBUG
+KBUILD_CFLAGS   += -g
+KBUILD_AFLAGS   += -gdwarf-2
 endif
 
 ifdef CONFIG_FUNCTION_TRACER
@@ -646,6 +714,9 @@ export MODLIB
 #  the default option --strip-debug will be used.  Otherwise,
 #  INSTALL_MOD_STRIP will used as the options to the strip command.
 
+ifeq ($(CONFIG_BUZZZ_FUNC),y)
+mod_strip_cmd = $(STRIP) --strip-debug
+else
 ifdef INSTALL_MOD_STRIP
 ifeq ($(INSTALL_MOD_STRIP),1)
 mod_strip_cmd = $(STRIP) --strip-debug
@@ -655,6 +726,7 @@ endif # INSTALL_MOD_STRIP=1
 else
 mod_strip_cmd = true
 endif # INSTALL_MOD_STRIP
+endif # CONFIG_BUZZZ_FUNC
 export mod_strip_cmd
 
 
@@ -1463,7 +1535,6 @@ endif
 	$(build)=$(build-dir) $(@:.ko=.o)
 	$(Q)$(MAKE) -f $(srctree)/scripts/Makefile.modpost
 
-# FIXME Should go into a make.lib or something 
 # ===========================================================================
 
 quiet_cmd_rmdirs = $(if $(wildcard $(rm-dirs)),CLEAN   $(wildcard $(rm-dirs)))

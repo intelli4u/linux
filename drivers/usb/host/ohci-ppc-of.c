@@ -151,15 +151,6 @@ ohci_hcd_ppc_of_probe(struct platform_device *op, const struct of_device_id *mat
 	/* by now, 440epx is known to show usb_23 erratum */
 	np = of_find_compatible_node(NULL, NULL, "ibm,usb-ehci-440epx");
 
-	/* Work around - At this point ohci_run has executed, the
-	* controller is running, everything, the root ports, etc., is
-	* set up.  If the ehci driver is loaded, put the ohci core in
-	* the suspended state.  The ehci driver will bring it out of
-	* suspended state when / if a non-high speed USB device is
-	* attached to the USB Host port.  If the ehci driver is not
-	* loaded, do nothing. request_mem_region is used to test if
-	* the ehci driver is loaded.
-	*/
 	if (np !=  NULL) {
 		if (!of_address_to_resource(np, 0, &res)) {
 			if (!request_mem_region(res.start, 0x4, hcd_name)) {
@@ -237,8 +228,7 @@ static const struct of_device_id ohci_hcd_ppc_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, ohci_hcd_ppc_of_match);
 
-#if	!defined(CONFIG_USB_OHCI_HCD_PPC_OF_BE) && \
-	!defined(CONFIG_USB_OHCI_HCD_PPC_OF_LE)
+#if	!defined(CONFIG_USB_OHCI_HCD_PPC_OF_BE) && !defined(CONFIG_USB_OHCI_HCD_PPC_OF_LE)
 #error "No endianess selected for ppc-of-ohci"
 #endif
 
@@ -253,4 +243,3 @@ static struct of_platform_driver ohci_hcd_ppc_of_driver = {
 		.of_match_table = ohci_hcd_ppc_of_match,
 	},
 };
-

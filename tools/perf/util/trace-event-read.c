@@ -387,7 +387,6 @@ struct record *trace_peek_data(int cpu)
 		return NULL;
 
 	if (!idx) {
-		/* FIXME: handle header page */
 		if (header_page_ts_size != 8)
 			die("expected a long long type for timestamp");
 		cpu_data[cpu].timestamp = data2host8(ptr);

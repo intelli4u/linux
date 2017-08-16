@@ -1886,4 +1886,3 @@ module_exit(ctcm_exit);
 MODULE_AUTHOR("Peter Tiedemann <ptiedem@de.ibm.com>");
 MODULE_DESCRIPTION("Network driver for S/390 CTC + CTCMPC (SNA)");
 MODULE_LICENSE("GPL");
-

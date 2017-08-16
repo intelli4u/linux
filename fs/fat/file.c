@@ -175,6 +175,9 @@ const struct file_operations fat_file_operations = {
 #endif
 	.fsync		= fat_file_fsync,
 	.splice_read	= generic_file_splice_read,
+#if defined(CONFIG_BCM_RECVFILE)
+	.splice_write = generic_file_splice_write,
+#endif /* CONFIG_BCM_RECVFILE */
 };
 
 static int fat_cont_expand(struct inode *inode, loff_t size)
@@ -390,12 +393,6 @@ int fat_setattr(struct dentry *dentry, struct iattr *attr)
 		goto out;
 	}
 
-	/*
-	 * Expand the file. Since inode_setattr() updates ->i_size
-	 * before calling the ->truncate(), but FAT needs to fill the
-	 * hole before it. XXX: this is no longer true with new truncate
-	 * sequence.
-	 */
 	if (attr->ia_valid & ATTR_SIZE) {
 		if (attr->ia_size > inode->i_size) {
 			error = fat_cont_expand(inode, attr->ia_size);

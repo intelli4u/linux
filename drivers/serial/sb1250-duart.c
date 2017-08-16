@@ -111,17 +111,6 @@ struct sbd_duart {
 static struct sbd_duart sbd_duarts[DUART_MAX_CHIP];
 
 
-/*
- * Reading and writing SB1250 DUART registers.
- *
- * There are three register spaces: two per-channel ones and
- * a shared one.  We have to define accessors appropriately.
- * All registers are 64-bit and all but the Baud Rate Clock
- * registers only define 8 least significant bits.  There is
- * also a workaround to take into account.  Raw accessors use
- * the full register width, but cooked ones truncate it
- * intentionally so that the rest of the driver does not care.
- */
 static u64 __read_sbdchn(struct sbd_port *sport, int reg)
 {
 	void __iomem *csr = sport->port.membase + reg;
@@ -150,10 +139,6 @@ static void __write_sbdshr(struct sbd_port *sport, int reg, u64 value)
 	__raw_writeq(value, csr);
 }
 
-/*
- * In bug 1956, we get glitches that can mess up uart registers.  This
- * "read-mode-reg after any register access" is an accepted workaround.
- */
 static void __war_sbd1956(struct sbd_port *sport)
 {
 	__read_sbdchn(sport, R_DUART_MODE_REG_1);

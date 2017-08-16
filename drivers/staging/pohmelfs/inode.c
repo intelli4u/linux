@@ -233,11 +233,6 @@ retry:
 
 			trans->attached_size += page_private(page);
 			trans->attached_pages++;
-#if 0
-			dprintk("%s: %u/%u added trans: %p, gen: %u, page: %p, [High: %d], size: %lu, idx: %lu.\n",
-					__func__, i, trans->page_num, trans, trans->gen, page,
-					!!PageHighMem(page), page_private(page), page->index);
-#endif
 			wbc->nr_to_write--;
 
 			if (wbc->nr_to_write <= 0)
@@ -585,10 +580,6 @@ static int pohmelfs_write_begin(struct file *file, struct address_space *mapping
 	end = start + len;
 
 	page = grab_cache_page(mapping, index);
-#if 0
-	dprintk("%s: page: %p pos: %llu, len: %u, index: %lu, start: %u, end: %u, uptodate: %d.\n",
-			__func__, page,	pos, len, index, start, end, PageUptodate(page));
-#endif
 	if (!page) {
 		err = -ENOMEM;
 		goto err_out_exit;
@@ -644,12 +635,6 @@ static int pohmelfs_write_end(struct file *file, struct address_space *mapping,
 
 	SetPageUptodate(page);
 	set_page_dirty(page);
-#if 0
-	dprintk("%s: page: %p [U: %d, D: %d, L: %d], pos: %llu, len: %u, copied: %u.\n",
-			__func__, page,
-			PageUptodate(page), PageDirty(page), PageLocked(page),
-			pos, len, copied);
-#endif
 	flush_dcache_page(page);
 
 	unlock_page(page);
@@ -1159,17 +1144,6 @@ err_out_put:
 static int pohmelfs_getattr(struct vfsmount *mnt, struct dentry *dentry, struct kstat *stat)
 {
 	struct inode *inode = dentry->d_inode;
-#if 0
-	struct pohmelfs_inode *pi = POHMELFS_I(inode);
-	int err;
-
-	err = pohmelfs_data_lock(pi, 0, ~0, POHMELFS_READ_LOCK);
-	if (err)
-		return err;
-	dprintk("%s: ino: %llu, mode: %o, uid: %u, gid: %u, size: %llu.\n",
-			__func__, pi->ino, inode->i_mode, inode->i_uid,
-			inode->i_gid, inode->i_size);
-#endif
 
 	generic_fillattr(inode, stat);
 	return 0;

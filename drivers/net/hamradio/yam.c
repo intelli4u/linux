@@ -1216,4 +1216,3 @@ module_init(yam_init_driver);
 module_exit(yam_cleanup_driver);
 
 /* --------------------------------------------------------------------- */
-

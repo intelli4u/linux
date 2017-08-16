@@ -109,11 +109,6 @@ static void iwl_rx_calc_noise(struct iwl_priv *priv)
 }
 
 #ifdef CONFIG_IWLWIFI_DEBUGFS
-/*
- *  based on the assumption of all statistics counter are in DWORD
- *  FIXME: This function is for debugging, do not deal with
- *  the case of counters roll-over.
- */
 static void iwl_accumulative_statistics(struct iwl_priv *priv,
 					__le32 *stats)
 {

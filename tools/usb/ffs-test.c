@@ -534,7 +534,6 @@ int main(void)
 {
 	unsigned i;
 
-	/* XXX TODO: Argument parsing missing */
 
 	init_thread(threads);
 	ep0_init(threads);

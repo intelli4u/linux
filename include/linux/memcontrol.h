@@ -314,4 +314,3 @@ u64 mem_cgroup_get_limit(struct mem_cgroup *mem)
 #endif /* CONFIG_CGROUP_MEM_CONT */
 
 #endif /* _LINUX_MEMCONTROL_H */
-

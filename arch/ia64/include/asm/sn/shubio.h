@@ -2945,11 +2945,6 @@ typedef union ii_ippr_u {
 #define IIO_IMEM_B0ESD	(1UL << 4)	/* BTE 0 shut down due to error */
 #define IIO_IMEM_B1ESD	(1UL << 8)	/* BTE 1 Shut down due to error */
 
-/*
- * As a permanent workaround for a bug in the PI side of the shub, we've
- * redefined big window 7 as small window 0.
- XXX does this still apply for SN1??
- */
 #define HUB_NUM_BIG_WINDOW	(IIO_NUM_ITTES - 1)
 
 /*
@@ -2969,9 +2964,6 @@ typedef union ii_ippr_u {
 #define IIO_ICRB_OFFSET         8
 #define IIO_ICRB_0              IIO_ICRB0_A
 #define IIO_ICRB_ADDR_SHFT	2	/* Shift to get proper address */
-/* XXX - This is now tuneable:
-        #define IIO_FIRST_PC_ENTRY 12
- */
 
 #define IIO_ICRB_A(_x)	((u64)(IIO_ICRB_0 + (6 * IIO_ICRB_OFFSET * (_x))))
 #define IIO_ICRB_B(_x)	((u64)((char *)IIO_ICRB_A(_x) + 1*IIO_ICRB_OFFSET))
@@ -3061,10 +3053,6 @@ typedef union ii_ippr_u {
 #define IIO_ICMR_CLR_RPPD	(1UL << 13)
 #define IIO_ICMR_CLR_RQPD	(1UL << 12)
 
-/*
- * IIO PIO Deallocation register field masks : (IIO_IPDR)
- XXX present but not needed in bedrock?  See the manual.
- */
 #define IIO_IPDR_PND    	(1 << 4)
 
 /*

@@ -395,4 +395,3 @@ MODULE_LICENSE("GPL");
 
 module_init(lis3lv02d_init_module);
 module_exit(lis3lv02d_exit_module);
-

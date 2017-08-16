@@ -128,7 +128,7 @@ static int ccid2_hc_tx_send_packet(struct sock *sk, struct sk_buff *skb)
 	if (hc->tx_pipe < hc->tx_cwnd)
 		return 0;
 
-	return 1; /* XXX CCID should dequeue when ready instead of polling */
+	return 1;
 }
 
 static void ccid2_change_l_ack_ratio(struct sock *sk, u32 val)
@@ -237,7 +237,6 @@ static void ccid2_hc_tx_packet_sent(struct sock *sk, int more, unsigned int len)
 	if (next == hc->tx_seqt) {
 		if (ccid2_hc_tx_alloc_seq(hc)) {
 			DCCP_CRIT("packet history - out of memory!");
-			/* FIXME: find a more graceful way to bail out */
 			return;
 		}
 		next = hc->tx_seqh->ccid2s_next;
@@ -247,54 +246,6 @@ static void ccid2_hc_tx_packet_sent(struct sock *sk, int more, unsigned int len)
 
 	ccid2_pr_debug("cwnd=%d pipe=%d\n", hc->tx_cwnd, hc->tx_pipe);
 
-	/*
-	 * FIXME: The code below is broken and the variables have been removed
-	 * from the socket struct. The `ackloss' variable was always set to 0,
-	 * and with arsent there are several problems:
-	 *  (i) it doesn't just count the number of Acks, but all sent packets;
-	 *  (ii) it is expressed in # of packets, not # of windows, so the
-	 *  comparison below uses the wrong formula: Appendix A of RFC 4341
-	 *  comes up with the number K = cwnd / (R^2 - R) of consecutive windows
-	 *  of data with no lost or marked Ack packets. If arsent were the # of
-	 *  consecutive Acks received without loss, then Ack Ratio needs to be
-	 *  decreased by 1 when
-	 *	      arsent >=  K * cwnd / R  =  cwnd^2 / (R^3 - R^2)
-	 *  where cwnd / R is the number of Acks received per window of data
-	 *  (cf. RFC 4341, App. A). The problems are that
-	 *  - arsent counts other packets as well;
-	 *  - the comparison uses a formula different from RFC 4341;
-	 *  - computing a cubic/quadratic equation each time is too complicated.
-	 *  Hence a different algorithm is needed.
-	 */
-#if 0
-	/* Ack Ratio.  Need to maintain a concept of how many windows we sent */
-	hc->tx_arsent++;
-	/* We had an ack loss in this window... */
-	if (hc->tx_ackloss) {
-		if (hc->tx_arsent >= hc->tx_cwnd) {
-			hc->tx_arsent  = 0;
-			hc->tx_ackloss = 0;
-		}
-	} else {
-		/* No acks lost up to now... */
-		/* decrease ack ratio if enough packets were sent */
-		if (dp->dccps_l_ack_ratio > 1) {
-			/* XXX don't calculate denominator each time */
-			int denom = dp->dccps_l_ack_ratio * dp->dccps_l_ack_ratio -
-				    dp->dccps_l_ack_ratio;
-
-			denom = hc->tx_cwnd * hc->tx_cwnd / denom;
-
-			if (hc->tx_arsent >= denom) {
-				ccid2_change_l_ack_ratio(sk, dp->dccps_l_ack_ratio - 1);
-				hc->tx_arsent = 0;
-			}
-		} else {
-			/* we can't increase ack ratio further [1] */
-			hc->tx_arsent = 0; /* or maybe set it to cwnd*/
-		}
-	}
-#endif
 
 	/* setup RTO timer */
 	if (!timer_pending(&hc->tx_rtotimer))
@@ -316,10 +267,6 @@ static void ccid2_hc_tx_packet_sent(struct sock *sk, int more, unsigned int len)
 #endif
 }
 
-/* XXX Lame code duplication!
- * returns -1 if none was found.
- * else returns the next offset to use in the function call.
- */
 static int ccid2_ackvector(struct sock *sk, struct sk_buff *skb, int offset,
 			   unsigned char **vec, unsigned char *veclen)
 {
@@ -446,10 +393,8 @@ static inline void ccid2_new_ack(struct sock *sk,
 		/* must be at least a second */
 		s = hc->tx_rto / HZ;
 		/* DCCP doesn't require this [but I like it cuz my code sux] */
-#if 1
 		if (s < 1)
 			hc->tx_rto = HZ;
-#endif
 		/* max 60 seconds */
 		if (s > 60)
 			hc->tx_rto = HZ * 60;
@@ -514,10 +459,6 @@ static void ccid2_hc_tx_packet_recv(struct sock *sk, struct sk_buff *skb)
 	/* check reverse path congestion */
 	seqno = DCCP_SKB_CB(skb)->dccpd_seq;
 
-	/* XXX this whole "algorithm" is broken.  Need to fix it to keep track
-	 * of the seqnos of the dupacks so that rpseq and rpdupack are correct
-	 * -sorbo.
-	 */
 	/* need to bootstrap */
 	if (hc->tx_rpdupack == -1) {
 		hc->tx_rpdupack = 0;
@@ -532,7 +473,7 @@ static void ccid2_hc_tx_packet_recv(struct sock *sk, struct sk_buff *skb)
 
 			/* check if we got enough dupacks */
 			if (hc->tx_rpdupack >= NUMDUPACK) {
-				hc->tx_rpdupack = -1; /* XXX lame */
+				hc->tx_rpdupack = -1;
 				hc->tx_rpseq    = 0;
 
 				ccid2_change_l_ack_ratio(sk, 2 * dp->dccps_l_ack_ratio);
@@ -672,10 +613,6 @@ static void ccid2_hc_tx_packet_recv(struct sock *sk, struct sk_buff *skb)
 			if (!seqp->ccid2s_acked) {
 				ccid2_pr_debug("Packet lost: %llu\n",
 					       (unsigned long long)seqp->ccid2s_seq);
-				/* XXX need to traverse from tail -> head in
-				 * order to detect multiple congestion events in
-				 * one ack vector.
-				 */
 				ccid2_congestion_event(sk, seqp);
 				ccid2_hc_tx_dec_pipe(sk);
 			}
@@ -719,7 +656,6 @@ static int ccid2_hc_tx_init(struct ccid *ccid, struct sock *sk)
 	if (dp->dccps_l_ack_ratio == 0 || dp->dccps_l_ack_ratio > max_ratio)
 		dp->dccps_l_ack_ratio = max_ratio;
 
-	/* XXX init ~ to window size... */
 	if (ccid2_hc_tx_alloc_seq(hc))
 		return -ENOMEM;
 

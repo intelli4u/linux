@@ -427,7 +427,6 @@ static int mt9m111_make_rect(struct i2c_client *client,
 		/* Let the user play with the starting pixel */
 	}
 
-	/* FIXME: the datasheet doesn't specify minimum sizes */
 	soc_camera_limit_side(&rect->left, &rect->width,
 		     MT9M111_MIN_DARK_COLS, 2, MT9M111_MAX_WIDTH);
 

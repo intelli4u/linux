@@ -242,7 +242,6 @@ struct tx_pkt_header {
 	unsigned ins_vlan:1;		/* txmac should insert vlan */
 	unsigned short vlan;		/* vlan tag */
 };
-/* FIXME: replace above bitfields with MASK/SHIFT defines below */
 #define TX_PKT_HEADER_SIZE_MASK		0x7FF
 #define TX_PKT_HEADER_SIZE_SHIFT	0
 #define TX_PKT_HEADER_INS_VLAN_MASK	0x1
@@ -269,7 +268,6 @@ struct tx_pkt_status {
 	unsigned:3;		/* reserved */
 	unsigned update:1;	/* always 1'b1 in tx_status_buf */
 };
-/* FIXME: replace above bitfields with MASK/SHIFT defines below */
 #define TX_PKT_STATUS_SIZE_MASK		0x7FF
 #define TX_PKT_STATUS_SIZE_SHIFT	0
 #define TX_PKT_STATUS_OK_MASK		0x1
@@ -321,7 +319,6 @@ struct rx_pkt_status {
 	unsigned short vtag;	/* vlan tag */
 	unsigned:16;
 };
-/* FIXME: replace above bitfields with MASK/SHIFT defines below */
 #define RX_PKT_STATUS_SIZE_MASK		0x7FF
 #define RX_PKT_STATUS_SIZE_SHIFT	0
 #define RX_PKT_STATUS_OK_MASK		0x1
@@ -432,7 +429,6 @@ struct atl2_hw {
 	u8 mac_addr[NODE_ADDRESS_SIZE];
 	u8 perm_mac_addr[NODE_ADDRESS_SIZE];
 
-	/* FIXME */
 	/* bool phy_preamble_sup; */
 	bool phy_configured;
 };
@@ -512,7 +508,6 @@ struct atl2_adapter {
 	struct atl2_hw hw;
 
 	u32 usr_cmd;
-	/* FIXME */
 	/* u32 regs_buff[ATL2_REGS_LEN]; */
 	u32 pci_state[16];
 

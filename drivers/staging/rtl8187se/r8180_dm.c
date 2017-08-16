@@ -201,7 +201,6 @@ DIG_Zebra(
 		OfdmFA1 =  0x20;
 	}
 
-#if 1 //lzm reserved 080826
 	AwakePeriodIn2Sec = (2000-priv ->DozePeriodInPast2Sec);
 	//printk("&&& DozePeriod=%d AwakePeriod=%d\n", priv->DozePeriodInPast2Sec, AwakePeriodIn2Sec);
 	priv ->DozePeriodInPast2Sec=0;
@@ -218,7 +217,6 @@ DIG_Zebra(
 	{
 		;//RT_TRACE(COMP_DIG, DBG_WARNING, ("ERROR!!  AwakePeriodIn2Sec should not be ZERO!!\n"));
 	}
-#endif
 
 	InitialGainStep = 8;
 	LowestGainStage = priv->RegBModeGainStage; // Lowest gain stage.
@@ -1626,4 +1624,3 @@ SwAntennaDiversityTimerCallback(
 
 	//printk("-SwAntennaDiversityTimerCallback()\n");
 }
-

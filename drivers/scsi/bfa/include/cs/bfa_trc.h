@@ -173,4 +173,3 @@ __bfa_trc32(struct bfa_trc_mod_s *trcm, int fileno, int line, u32 data)
 #endif
 
 #endif /* __BFA_TRC_H__ */
-

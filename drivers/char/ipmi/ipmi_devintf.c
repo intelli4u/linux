@@ -163,7 +163,6 @@ static int ipmi_release(struct inode *inode, struct file *file)
 	if (rv)
 		return rv;
 
-	/* FIXME - free the messages in the list. */
 	kfree(priv);
 
 	return 0;

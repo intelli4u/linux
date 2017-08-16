@@ -241,10 +241,8 @@ int bdi_set_max_ratio(struct backing_dev_info *bdi, unsigned int max_ratio);
 #define BDI_CAP_NO_ACCT_AND_WRITEBACK \
 	(BDI_CAP_NO_WRITEBACK | BDI_CAP_NO_ACCT_DIRTY | BDI_CAP_NO_ACCT_WB)
 
-#if defined(VM_MAYREAD) && \
-	(BDI_CAP_READ_MAP != VM_MAYREAD || \
-	 BDI_CAP_WRITE_MAP != VM_MAYWRITE || \
-	 BDI_CAP_EXEC_MAP != VM_MAYEXEC)
+#if defined(VM_MAYREAD) && (BDI_CAP_READ_MAP != VM_MAYREAD || BDI_CAP_WRITE_MAP != \
+	VM_MAYWRITE || BDI_CAP_EXEC_MAP != VM_MAYEXEC)
 #error please change backing_dev_info::capabilities flags
 #endif
 

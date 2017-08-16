@@ -637,7 +637,7 @@ static struct buffer_head *inode_getblk(struct inode *inode, sector_t block,
 			goal = iinfo->i_next_alloc_goal;
 
 		if (!goal) {
-			if (!(goal = pgoal)) /* XXX: what was intended here? */
+			if (!(goal = pgoal))
 				goal = iinfo->i_location.logicalBlockNum + 1;
 		}
 

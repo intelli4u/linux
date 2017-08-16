@@ -273,7 +273,7 @@ spufs_mkdir(struct inode *dir, struct dentry *dentry, unsigned int flags,
 		inode->i_gid = dir->i_gid;
 		inode->i_mode &= S_ISGID;
 	}
-	ctx = alloc_spu_context(SPUFS_I(dir)->i_gang); /* XXX gang */
+	ctx = alloc_spu_context(SPUFS_I(dir)->i_gang);
 	SPUFS_I(inode)->i_ctx = ctx;
 	if (!ctx)
 		goto out_iput;
@@ -864,4 +864,3 @@ module_exit(spufs_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Arnd Bergmann <arndb@de.ibm.com>");
-

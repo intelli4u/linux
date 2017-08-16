@@ -423,7 +423,6 @@ checkSMB(struct smb_hdr *smb, __u16 mid, unsigned int length)
 		} else if ((length == sizeof(struct smb_hdr) + 1) &&
 				(smb->WordCount == 0)) {
 			char *tmp = (char *)smb;
-			/* Need to work around a bug in two servers here */
 			/* First, check if the part of bcc they sent was zero */
 			if (tmp[sizeof(struct smb_hdr)] == 0) {
 				/* some servers return only half of bcc

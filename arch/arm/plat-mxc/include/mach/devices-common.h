@@ -14,7 +14,7 @@ struct platform_device *imx_add_platform_device(const char *name, int id,
 		const struct resource *res, unsigned int num_resources,
 		const void *data, size_t size_data);
 
-#if defined (CONFIG_CAN_FLEXCAN) || defined (CONFIG_CAN_FLEXCAN_MODULE)
+#if defined(CONFIG_CAN_FLEXCAN) || defined(CONFIG_CAN_FLEXCAN_MODULE)
 #include <linux/can/platform/flexcan.h>
 struct platform_device *__init imx_add_flexcan(int id,
 		resource_size_t iobase, resource_size_t iosize,

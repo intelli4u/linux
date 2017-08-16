@@ -313,7 +313,7 @@ acpi_status acpi_tb_verify_checksum(struct acpi_table_header *table, u32 length)
 			      table->signature, table->checksum,
 			      (u8) (table->checksum - checksum)));
 
-#if (ACPI_CHECKSUM_ABORT)
+#if ACPI_CHECKSUM_ABORT
 
 		return (AE_BAD_CHECKSUM);
 #endif

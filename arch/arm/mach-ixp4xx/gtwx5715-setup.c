@@ -172,5 +172,3 @@ MACHINE_START(GTWX5715, "Gemtek GTWX5715 (Linksys WRV54G)")
 	.boot_params	= 0x0100,
 	.init_machine	= gtwx5715_init,
 MACHINE_END
-
-

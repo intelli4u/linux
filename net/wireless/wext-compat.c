@@ -128,7 +128,7 @@ int cfg80211_wext_giwmode(struct net_device *dev, struct iw_request_info *info,
 		*mode = IW_MODE_REPEAT;
 		break;
 	case NL80211_IFTYPE_AP_VLAN:
-		*mode = IW_MODE_SECOND;		/* FIXME */
+		*mode = IW_MODE_SECOND;
 		break;
 	default:
 		*mode = IW_MODE_AUTO;
@@ -1093,7 +1093,6 @@ int cfg80211_wext_giwauth(struct net_device *dev,
 			  struct iw_request_info *info,
 			  struct iw_param *data, char *extra)
 {
-	/* XXX: what do we need? */
 
 	return -EOPNOTSUPP;
 }

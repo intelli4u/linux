@@ -3185,5 +3185,3 @@ vDMA0_tx_80211(PSDevice  pDevice, struct sk_buff *skb, unsigned char *pbMPDU, un
 
     return;
 }
-
-

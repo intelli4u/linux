@@ -423,7 +423,6 @@ static int tt_no_collision (
 
 					mask = hc32_to_cpu(ehci, here.sitd
 								->hw_uframe);
-					/* FIXME assumes no gap for IN! */
 					mask |= mask >> 8;
 					if (mask & uf_mask)
 						break;
@@ -593,7 +592,6 @@ static int qh_unlink_periodic(struct ehci_hcd *ehci, struct ehci_qh *qh)
 	unsigned	i;
 	unsigned	period;
 
-	// FIXME:
 	// IF this isn't high speed
 	//   and this qh is active in the current uframe
 	//   (and overlay token SplitXstate is false?)
@@ -669,12 +667,6 @@ static void intr_deschedule (struct ehci_hcd *ehci, struct ehci_qh *qh)
 			HC_IS_RUNNING(ehci_to_hcd(ehci)->state)) {
 		rc = qh_schedule(ehci, qh);
 
-		/* An error here likely indicates handshake failure
-		 * or no space left in the schedule.  Neither fault
-		 * should happen often ...
-		 *
-		 * FIXME kill the now-dysfunctional queued urbs
-		 */
 		if (rc != 0)
 			ehci_err(ehci, "can't reschedule qh %p, err %d\n",
 					qh, rc);
@@ -1414,11 +1406,6 @@ iso_stream_schedule (
 	if (likely (!list_empty (&stream->td_list))) {
 		u32	excess;
 
-		/* For high speed devices, allow scheduling within the
-		 * isochronous scheduling threshold.  For full speed devices
-		 * and Intel PCI-based controllers, don't (work around for
-		 * Intel ICH9 bug).
-		 */
 		if (!stream->highspeed && ehci->fs_i_thresh)
 			next = now + ehci->i_thresh;
 		else
@@ -2479,13 +2466,11 @@ restart:
 			break;
 		}
 
-		// FIXME:  this assumes we won't get lapped when
 		// latencies climb; that should be rare, but...
 		// detect it, and just go all the way around.
 		// FLR might help detect this case, so long as latencies
 		// don't exceed periodic_size msec (default 1.024 sec).
 
-		// FIXME:  likewise assumes HC doesn't halt mid-scan
 
 		if (now_uframe == clock) {
 			unsigned	now;

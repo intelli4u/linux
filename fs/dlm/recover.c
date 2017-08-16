@@ -786,4 +786,3 @@ void dlm_clear_toss_list(struct dlm_ls *ls)
 		spin_unlock(&ls->ls_rsbtbl[i].lock);
 	}
 }
-

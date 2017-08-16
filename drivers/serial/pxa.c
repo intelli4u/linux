@@ -312,30 +312,6 @@ static void serial_pxa_break_ctl(struct uart_port *port, int break_state)
 	spin_unlock_irqrestore(&up->port.lock, flags);
 }
 
-#if 0
-static void serial_pxa_dma_init(struct pxa_uart *up)
-{
-	up->rxdma =
-		pxa_request_dma(up->name, DMA_PRIO_LOW, pxa_receive_dma, up);
-	if (up->rxdma < 0)
-		goto out;
-	up->txdma =
-		pxa_request_dma(up->name, DMA_PRIO_LOW, pxa_transmit_dma, up);
-	if (up->txdma < 0)
-		goto err_txdma;
-	up->dmadesc = kmalloc(4 * sizeof(pxa_dma_desc), GFP_KERNEL);
-	if (!up->dmadesc)
-		goto err_alloc;
-
-	/* ... */
-err_alloc:
-	pxa_free_dma(up->txdma);
-err_rxdma:
-	pxa_free_dma(up->rxdma);
-out:
-	return;
-}
-#endif
 
 static int serial_pxa_startup(struct uart_port *port)
 {
@@ -539,10 +515,6 @@ serial_pxa_set_termios(struct uart_port *port, struct ktermios *termios,
 	serial_out(up, UART_LCR, cval | UART_LCR_DLAB);	/* set DLAB */
 	serial_out(up, UART_DLL, quot & 0xff);		/* LS of divisor */
 
-	/*
-	 * work around Errata #75 according to Intel(R) PXA27x Processor Family
-	 * Specification Update (Nov 2005)
-	 */
 	dll = serial_in(up, UART_DLL);
 	WARN_ON(dll != (quot & 0xff));
 

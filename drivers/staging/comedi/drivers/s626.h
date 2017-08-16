@@ -523,7 +523,7 @@
 #define DEBI_CFG_INTEL		0x00020000	/*  Intel style local bus. */
 #define DEBI_CFG_TIMEROFF	0x00010000	/*  Disable timer. */
 
-#if PLATFORM == INTEL
+#if PLATFORM ==0
 
 #define DEBI_TOUT		7	/*  Wait 7 PCI clocks */
 						/*  (212 ns) before */

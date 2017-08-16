@@ -691,19 +691,10 @@ static int ipg_io_config(struct net_device *dev)
 	ipg_w16(IPG_FLOWONTHRESH_VALUE,  FLOW_ON_THRESH);
 	ipg_w16(IPG_FLOWOFFTHRESH_VALUE, FLOW_OFF_THRESH);
 
-	/* IPG multi-frag frame bug workaround.
-	 * Per silicon revision B3 eratta.
-	 */
 	ipg_w16(ipg_r16(DEBUG_CTRL) | 0x0200, DEBUG_CTRL);
 
-	/* IPG TX poll now bug workaround.
-	 * Per silicon revision B3 eratta.
-	 */
 	ipg_w16(ipg_r16(DEBUG_CTRL) | 0x0010, DEBUG_CTRL);
 
-	/* IPG RX poll now bug workaround.
-	 * Per silicon revision B3 eratta.
-	 */
 	ipg_w16(ipg_r16(DEBUG_CTRL) | 0x0020, DEBUG_CTRL);
 
 	/* Now restore MACCTRL to original setting. */

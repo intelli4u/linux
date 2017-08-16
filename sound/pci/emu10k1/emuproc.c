@@ -81,7 +81,6 @@ static void snd_emu10k1_proc_spdif_status(struct snd_emu10k1 * emu,
 static void snd_emu10k1_proc_read(struct snd_info_entry *entry, 
 				  struct snd_info_buffer *buffer)
 {
-	/* FIXME - output names are in emufx.c too */
 	static char *creative_outs[32] = {
 		/* 00 */ "AC97 Left",
 		/* 01 */ "AC97 Right",
@@ -275,12 +274,6 @@ static void snd_emu10k1_proc_spdif_read(struct snd_info_entry *entry,
 		snd_emu10k1_proc_spdif_status(emu, buffer, "CD-ROM S/PDIF In", CDCS, CDSRCS);
 		snd_emu10k1_proc_spdif_status(emu, buffer, "Optical or Coax S/PDIF In", GPSCS, GPSRCS);
 	}
-#if 0
-	val = snd_emu10k1_ptr_read(emu, ZVSRCS, 0);
-	snd_iprintf(buffer, "\nZoomed Video\n");
-	snd_iprintf(buffer, "Rate Locked           : %s\n", val & SRCS_RATELOCKED ? "on" : "off");
-	snd_iprintf(buffer, "Estimated Sample Rate : 0x%x\n", val & SRCS_ESTSAMPLERATE);
-#endif
 }
 
 static void snd_emu10k1_proc_rates_read(struct snd_info_entry *entry, 

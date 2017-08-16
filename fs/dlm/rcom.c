@@ -328,8 +328,6 @@ static void pack_rcom_lock(struct dlm_rsb *r, struct dlm_lkb *lkb,
 	rl->rl_namelen = cpu_to_le16(r->res_length);
 	memcpy(rl->rl_name, r->res_name, r->res_length);
 
-	/* FIXME: might we have an lvb without DLM_LKF_VALBLK set ?
-	   If so, receive_rcom_lock_args() won't take this copy. */
 
 	if (lkb->lkb_lvbptr)
 		memcpy(rl->rl_lvb, lkb->lkb_lvbptr, r->res_ls->ls_lvblen);
@@ -508,4 +506,3 @@ Eshort:
 	log_error(ls, "recovery message %x from %d is too short",
 			  rc->rc_type, nodeid);
 }
-

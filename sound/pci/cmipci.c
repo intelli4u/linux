@@ -669,13 +669,10 @@ static void snd_cmipci_set_pll(struct cmipci *cm, unsigned int rate, unsigned in
 	 * for DSFC/ASFC (000 upto 111).
 	 */
 
-	/* FIXME: Init (Do we've to set an other register first before programming?) */
 
-	/* FIXME: Is this correct? Or shouldn't the m/n/r values be used for that? */
 	snd_cmipci_write_b(cm, reg, rate>>8);
 	snd_cmipci_write_b(cm, reg, rate&0xff);
 
-	/* FIXME: Setup (Do we've to set an other register first to enable this?) */
 }
 #endif /* USE_VAR48KRATE */
 
@@ -945,7 +942,6 @@ static snd_pcm_uframes_t snd_cmipci_pcm_pointer(struct cmipci *cm, struct cmipci
 
 	if (!rec->running)
 		return 0;
-#if 1 // this seems better..
 	reg = rec->ch ? CM_REG_CH1_FRAME2 : CM_REG_CH0_FRAME2;
 	for (tries = 0; tries < 3; tries++) {
 		rem = snd_cmipci_read_w(cm, reg);
@@ -956,11 +952,6 @@ static snd_pcm_uframes_t snd_cmipci_pcm_pointer(struct cmipci *cm, struct cmipci
 	return SNDRV_PCM_POS_XRUN;
 ok:
 	ptr = (rec->dma_size - (rem + 1)) >> rec->shift;
-#else
-	reg = rec->ch ? CM_REG_CH1_FRAME1 : CM_REG_CH0_FRAME1;
-	ptr = snd_cmipci_read(cm, reg) - rec->offset;
-	ptr = bytes_to_frames(substream->runtime, ptr);
-#endif
 	if (substream->runtime->channels > 2)
 		ptr = (ptr * 2) / substream->runtime->channels;
 	return ptr;
@@ -1612,11 +1603,6 @@ static int open_device_check(struct cmipci *cm, int mode, struct snd_pcm_substre
 {
 	int ch = mode & CM_OPEN_CH_MASK;
 
-	/* FIXME: a file should wait until the device becomes free
-	 * when it's opened on blocking mode.  however, since the current
-	 * pcm framework doesn't pass file pointer before actually opened,
-	 * we can't know whether blocking mode or not in open callback..
-	 */
 	mutex_lock(&cm->open_mutex);
 	if (cm->opened[ch]) {
 		mutex_unlock(&cm->open_mutex);
@@ -2427,10 +2413,6 @@ static struct cmipci_switch_args cmipci_switch_arg_##sname = { \
 #define DEFINE_BIT_SWITCH_ARG(sname, xreg, xmask, xis_byte, xac3) \
 	DEFINE_SWITCH_ARG(sname, xreg, xmask, xmask, xis_byte, xac3)
 
-#if 0 /* these will be controlled in pcm device */
-DEFINE_BIT_SWITCH_ARG(spdif_in, CM_REG_FUNCTRL1, CM_SPDF_1, 0, 0);
-DEFINE_BIT_SWITCH_ARG(spdif_out, CM_REG_FUNCTRL1, CM_SPDF_0, 0, 0);
-#endif
 DEFINE_BIT_SWITCH_ARG(spdif_in_sel1, CM_REG_CHFORMAT, CM_SPDIF_SELECT1, 0, 0);
 DEFINE_BIT_SWITCH_ARG(spdif_in_sel2, CM_REG_MISC_CTRL, CM_SPDIF_SELECT2, 0, 0);
 DEFINE_BIT_SWITCH_ARG(spdif_enable, CM_REG_LEGACY_CTRL, CM_ENSPDOUT, 0, 0);
@@ -2619,11 +2601,6 @@ DEFINE_MIXER_SWITCH("Exchange DAC", exchange_dac);
 
 /* only for CM8738 */
 static struct snd_kcontrol_new snd_cmipci_8738_mixer_switches[] __devinitdata = {
-#if 0 /* controlled in pcm device */
-	DEFINE_MIXER_SWITCH("IEC958 In Record", spdif_in),
-	DEFINE_MIXER_SWITCH("IEC958 Out", spdif_out),
-	DEFINE_MIXER_SWITCH("IEC958 Out To DAC", spdo2dac),
-#endif
 	// DEFINE_MIXER_SWITCH("IEC958 Output Switch", spdif_enable),
 	{ .name = "IEC958 Output Switch",
 	  .iface = SNDRV_CTL_ELEM_IFACE_MIXER,
@@ -2869,7 +2846,7 @@ static void __devinit query_chip(struct cmipci *cm)
 #ifdef SUPPORT_JOYSTICK
 static int __devinit snd_cmipci_create_gameport(struct cmipci *cm, int dev)
 {
-	static int ports[] = { 0x201, 0x200, 0 }; /* FIXME: majority is 0x201? */
+	static int ports[] = { 0x201, 0x200, 0 };
 	struct gameport *gp;
 	struct resource *r = NULL;
 	int i, io_port = 0;

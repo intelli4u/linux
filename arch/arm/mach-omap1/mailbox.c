@@ -117,7 +117,6 @@ static struct omap_mbox_ops omap1_mbox_ops = {
 	.is_irq		= omap1_mbox_is_irq,
 };
 
-/* FIXME: the following struct should be created automatically by the user id */
 
 /* DSP */
 static struct omap_mbox1_priv omap1_mbox_dsp_priv = {

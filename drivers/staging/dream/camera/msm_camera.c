@@ -2,13 +2,6 @@
  * Copyright (C) 2008-2009 QUALCOMM Incorporated.
  */
 
-/* FIXME: most allocations need not be GFP_ATOMIC */
-/* FIXME: management of mutexes */
-/* FIXME: msm_pmem_region_lookup return values */
-/* FIXME: way too many copy to/from user */
-/* FIXME: does region->active mean free */
-/* FIXME: check limits on command lenghts passed from userspace */
-/* FIXME: __msm_release: which queues should we flush when opencnt != 0 */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -483,18 +476,6 @@ static struct msm_queue_cmd *__msm_control(struct msm_sync *sync,
 			rc = -ETIMEDOUT;
 		if (rc < 0) {
 			pr_err("msm_control: wait_event error %d\n", rc);
-#if 0
-			/* This is a bit scary.  If we time out too early, we
-			 * will free qcmd at the end of this function, and the
-			 * dsp may do the same when it does respond, so we
-			 * remove the message from the source queue.
-			 */
-			pr_err("%s: error waiting for ctrl_status_q: %d\n",
-				__func__, rc);
-			spin_lock_irqsave(&sync->msg_event_q_lock, flags);
-			list_del_init(&qcmd->list);
-			spin_unlock_irqrestore(&sync->msg_event_q_lock, flags);
-#endif
 			return ERR_PTR(rc);
 		}
 	}
@@ -1926,7 +1907,6 @@ static int __msm_v4l2_control(struct msm_sync *sync,
 	}
 
 	ctrl = (struct msm_ctrl_cmd *)(rcmd->command);
-	/* FIXME: we should just set out->length = ctrl->length; */
 	BUG_ON(out->length < ctrl->length);
 	memcpy(out->value, ctrl->value, ctrl->length);
 
@@ -1999,7 +1979,6 @@ static int msm_tear_down_cdev(struct msm_device *msm, dev_t devno)
 
 int msm_v4l2_register(struct msm_v4l2_driver *drv)
 {
-	/* FIXME: support multiple sensors */
 	if (list_empty(&msm_sensors))
 		return -ENODEV;
 

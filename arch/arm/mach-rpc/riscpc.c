@@ -51,12 +51,6 @@ static int __init parse_tag_acorn(const struct tag *tag)
 	default:
 		break;
 	}
-#if 0
-	if (vram_size) {
-		desc->video_start = 0x02000000;
-		desc->video_end   = 0x02000000 + vram_size;
-	}
-#endif
 	return 0;
 }
 

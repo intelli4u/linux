@@ -83,7 +83,6 @@ static int jffs2_do_readpage_nolock (struct inode *inode, struct page *pg)
 	BUG_ON(!PageLocked(pg));
 
 	pg_buf = kmap(pg);
-	/* FIXME: Can kmap fail? */
 
 	ret = jffs2_read_inode_range(c, f, pg_buf, pg->index << PAGE_CACHE_SHIFT, PAGE_CACHE_SIZE);
 

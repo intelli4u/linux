@@ -269,7 +269,6 @@ static int init_chipset_cmd64x(struct pci_dev *dev)
 
 	/* Set a good latency timer and cache line size value. */
 	(void) pci_write_config_byte(dev, PCI_LATENCY_TIMER, 64);
-	/* FIXME: pci_set_master() to ensure a good latency timer value */
 
 	/*
 	 * Enable interrupts, select MEMORY READ LINE for reads.

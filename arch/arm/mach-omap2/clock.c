@@ -407,21 +407,6 @@ void omap2_clk_disable_unused(struct clk *clk)
 }
 #endif
 
-/**
- * omap2_clk_switch_mpurate_at_boot - switch ARM MPU rate by boot-time argument
- * @mpurate_ck_name: clk name of the clock to change rate
- *
- * Change the ARM MPU clock rate to the rate specified on the command
- * line, if one was specified.  @mpurate_ck_name should be
- * "virt_prcm_set" on OMAP2xxx and "dpll1_ck" on OMAP34xx/OMAP36xx.
- * XXX Does not handle voltage scaling - on OMAP2xxx this is currently
- * handled by the virt_prcm_set clock, but this should be handled by
- * the OPP layer.  XXX This is intended to be handled by the OPP layer
- * code in the near future and should be removed from the clock code.
- * Returns -EINVAL if 'mpurate' is zero or if clk_set_rate() rejects
- * the rate, -ENOENT if the struct clk referred to by @mpurate_ck_name
- * cannot be found, or 0 upon success.
- */
 int __init omap2_clk_switch_mpurate_at_boot(const char *mpurate_ck_name)
 {
 	struct clk *mpurate_ck;
@@ -449,18 +434,6 @@ int __init omap2_clk_switch_mpurate_at_boot(const char *mpurate_ck_name)
 	return 0;
 }
 
-/**
- * omap2_clk_print_new_rates - print summary of current clock tree rates
- * @hfclkin_ck_name: clk name for the off-chip HF oscillator
- * @core_ck_name: clk name for the on-chip CORE_CLK
- * @mpu_ck_name: clk name for the ARM MPU clock
- *
- * Prints a short message to the console with the HFCLKIN oscillator
- * rate, the rate of the CORE clock, and the rate of the ARM MPU clock.
- * Called by the boot-time MPU rate switching code.   XXX This is intended
- * to be handled by the OPP layer code in the near future and should be
- * removed from the clock code.  No return value.
- */
 void __init omap2_clk_print_new_rates(const char *hfclkin_ck_name,
 				      const char *core_ck_name,
 				      const char *mpu_ck_name)
@@ -505,4 +478,3 @@ struct clk_functions omap2_clk_functions = {
 	.clk_exit_cpufreq_table	= omap2_clk_exit_cpufreq_table,
 #endif
 };
-

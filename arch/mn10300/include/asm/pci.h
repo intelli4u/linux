@@ -14,24 +14,8 @@
 #ifdef __KERNEL__
 #include <linux/mm.h>		/* for struct page */
 
-#if 0
-#define __pcbdebug(FMT, ADDR, ...) \
-	printk(KERN_DEBUG "PCIBRIDGE[%08x]: "FMT"\n", \
-	       (u32)(ADDR), ##__VA_ARGS__)
-
-#define __pcidebug(FMT, BUS, DEVFN, WHERE,...)		\
-do {							\
-	printk(KERN_DEBUG "PCI[%02x:%02x.%x + %02x]: "FMT"\n",	\
-	       (BUS)->number,					\
-	       PCI_SLOT(DEVFN),					\
-	       PCI_FUNC(DEVFN),					\
-	       (u32)(WHERE), ##__VA_ARGS__);			\
-} while (0)
-
-#else
 #define __pcbdebug(FMT, ADDR, ...)		do {} while (0)
 #define __pcidebug(FMT, BUS, DEVFN, WHERE, ...)	do {} while (0)
-#endif
 
 /* Can be used to override the logic in pci_scan_bus for skipping
  * already-configured bus numbers - to be used for buggy BIOSes or

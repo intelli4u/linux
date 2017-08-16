@@ -179,7 +179,6 @@ static struct reg_dmn_pair_mapping regDomainPairs[] = {
 	{ETSI5_WORLD, CTL_ETSI, CTL_ETSI},
 	{ETSI6_WORLD, CTL_ETSI, CTL_ETSI},
 
-	/* XXX: For ETSI3_ETSIA, Was NO_CTL meant for the 2 GHz band ? */
 	{ETSI3_ETSIA, CTL_ETSI, CTL_ETSI},
 	{FRANCE_RES, CTL_ETSI, CTL_ETSI},
 

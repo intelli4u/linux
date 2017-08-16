@@ -1,7 +1,7 @@
 /*
  * linux/drivers/char/synclink.c
  *
- * $Id: synclink.c,v 4.38 2005/11/07 16:30:34 paulkf Exp $
+ * $Id: synclink.c,v 4.38 2005/11/07 16:30:34 Exp $
  *
  * Device driver for Microgate SyncLink ISA and PCI
  * high speed multiprotocol serial adapters.
@@ -99,7 +99,8 @@
 #include <linux/hdlc.h>
 #include <linux/dma-mapping.h>
 
-#if defined(CONFIG_HDLC) || (defined(CONFIG_HDLC_MODULE) && defined(CONFIG_SYNCLINK_MODULE))
+#if defined(CONFIG_HDLC) || (defined(CONFIG_HDLC_MODULE) && \
+	defined(CONFIG_SYNCLINK_MODULE))
 #define SYNCLINK_GENERIC_HDLC 1
 #else
 #define SYNCLINK_GENERIC_HDLC 0
@@ -3357,7 +3358,6 @@ static int block_til_ready(struct tty_struct *tty, struct file * filp,
 	set_current_state(TASK_RUNNING);
 	remove_wait_queue(&port->open_wait, &wait);
 	
-	/* FIXME: Racy on hangup during close wait */
 	if (extra_count)
 		port->count++;
 	port->blocked_open--;
@@ -4698,18 +4698,6 @@ static void usc_set_sdlc_mode( struct mgsl_struct *info )
 			usc_OutReg( info, IOCR,		/* Set IOCR DCD is RxSync Detect Input */
 				(unsigned short)((usc_InReg(info, IOCR) & ~(BIT13|BIT12)) | BIT12));
 
-			/*
-			 * TxSubMode:
-			 * 	CMR <15>		0	Don't send CRC on Tx Underrun
-			 * 	CMR <14>		x	undefined
-			 * 	CMR <13>		0	Send preamble before openning sync
-			 * 	CMR <12>		0	Send 8-bit syncs, 1=send Syncs per TxLength
-			 *
-			 * TxMode:
-			 * 	CMR <11-8)	0100	MonoSync
-			 *
-			 * 	0x00 0100 xxxx xxxx  04xx
-			 */
 			RegValue |= 0x0400;
 		}
 		else {
@@ -4903,18 +4891,6 @@ static void usc_set_sdlc_mode( struct mgsl_struct *info )
 		
 	usc_OutReg( info, TCSR, info->tcsr_value );
 
-	/* Clock mode Control Register (CMCR)
-	 *
-	 * <15..14>	00	counter 1 Source = Disabled
-	 * <13..12> 	00	counter 0 Source = Disabled
-	 * <11..10> 	11	BRG1 Input is TxC Pin
-	 * <9..8>	11	BRG0 Input is TxC Pin
-	 * <7..6>	01	DPLL Input is BRG1 Output
-	 * <5..3>	XXX	TxCLK comes from Port 0
-	 * <2..0>   	XXX	RxCLK comes from Port 1
-	 *
-	 *	0000 1111 0111 0111 = 0x0f77
-	 */
 
 	RegValue = 0x0f40;
 
@@ -8122,4 +8098,3 @@ static int __devinit synclink_init_one (struct pci_dev *dev,
 static void __devexit synclink_remove_one (struct pci_dev *dev)
 {
 }
-

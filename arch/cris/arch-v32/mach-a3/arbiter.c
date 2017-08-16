@@ -631,4 +631,3 @@ crisv32_bar_arbiter_irq(int irq, void *dev_id)
 
 	return IRQ_HANDLED;
 }
-

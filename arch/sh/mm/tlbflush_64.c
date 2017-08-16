@@ -247,9 +247,6 @@ bad_area:
 			printk("user mode bad_area address=%08lx pid=%d (%s) pc=%08lx\n",
 				address, task_pid_nr(current), current->comm,
 				(unsigned long) regs->pc);
-#if 0
-			show_regs(regs);
-#endif
 		}
 		if (is_global_init(tsk)) {
 			panic("INIT had user mode bad_area\n");
@@ -451,7 +448,6 @@ void local_flush_tlb_all(void)
 
 void local_flush_tlb_kernel_range(unsigned long start, unsigned long end)
 {
-        /* FIXME: Optimize this later.. */
         flush_tlb_all();
 }
 

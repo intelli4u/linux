@@ -2584,7 +2584,6 @@ done:
 		break;
 	}
 
-	/* FIXME: Need actual value of the flush timeout */
 	//if (flush_to != L2CAP_DEFAULT_FLUSH_TO)
 	//   l2cap_add_conf_opt(&ptr, L2CAP_CONF_FLUSH_TO, 2, pi->flush_to);
 
@@ -3457,7 +3456,6 @@ static inline void l2cap_sig_channel(struct l2cap_conn *conn, struct sk_buff *sk
 			struct l2cap_cmd_rej rej;
 			BT_DBG("error %d", err);
 
-			/* FIXME: Map err to a valid reason */
 			rej.reason = cpu_to_le16(0);
 			l2cap_send_cmd(conn, cmd.ident, L2CAP_COMMAND_REJ, sizeof(rej), &rej);
 		}

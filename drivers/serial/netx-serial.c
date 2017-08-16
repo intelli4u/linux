@@ -285,7 +285,6 @@ static void netx_set_mctrl(struct uart_port *port, unsigned int mctrl)
 {
 	unsigned int val;
 
-	/* FIXME: Locking needed ? */
 	if (mctrl & TIOCM_RTS) {
 		val = readl(port->membase + UART_RTS_CR);
 		writel(val | RTS_CR_RTS, port->membase + UART_RTS_CR);

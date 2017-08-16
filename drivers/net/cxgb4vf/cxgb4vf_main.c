@@ -1105,10 +1105,6 @@ static int cxgb4vf_set_mac_addr(struct net_device *dev, void *_addr)
  */
 static u16 cxgb4vf_select_queue(struct net_device *dev, struct sk_buff *skb)
 {
-	/*
-	 * XXX For now just use the default hash but we probably want to
-	 * XXX look at other possibilities ...
-	 */
 	return skb_tx_hash(dev, skb);
 }
 

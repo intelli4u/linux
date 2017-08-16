@@ -52,7 +52,7 @@ bvme6000_probe(struct platform_device *dev)
 
 	/* Fill in the required pieces of hostdata */
 	hostdata->base = (void __iomem *)BVME_NCR53C710_BASE;
-	hostdata->clock = 40;	/* XXX - depends on the CPU clock! */
+	hostdata->clock = 40;
 	hostdata->chip710 = 1;
 	hostdata->dmode_extra = DMODE_FC2;
 	hostdata->dcntl_extra = EA_710;

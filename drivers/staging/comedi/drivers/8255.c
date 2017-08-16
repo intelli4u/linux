@@ -318,7 +318,6 @@ static int subdev_8255_cmdtest(struct comedi_device *dev,
 static int subdev_8255_cmd(struct comedi_device *dev,
 			   struct comedi_subdevice *s)
 {
-	/* FIXME */
 
 	return 0;
 }
@@ -326,7 +325,6 @@ static int subdev_8255_cmd(struct comedi_device *dev,
 static int subdev_8255_cancel(struct comedi_device *dev,
 			      struct comedi_subdevice *s)
 {
-	/* FIXME */
 
 	return 0;
 }
@@ -422,8 +420,6 @@ static int dev_8255_attach(struct comedi_device *dev,
 
 	ret = alloc_subdevices(dev, i);
 	if (ret < 0) {
-		/* FIXME this printk call should give a proper message, the
-		 * below line just maintains previous functionality */
 		printk("comedi%d: 8255:", dev->minor);
 		return ret;
 	}

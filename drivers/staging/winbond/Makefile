@@ -11,6 +11,3 @@ w35und-objs :=			\
 
 
 obj-$(CONFIG_W35UND) += w35und.o
-
-
-

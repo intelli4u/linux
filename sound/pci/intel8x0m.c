@@ -235,10 +235,6 @@ static DEFINE_PCI_DEVICE_TABLE(snd_intel8x0m_ids) = {
 	{ PCI_VDEVICE(NVIDIA, 0x0069), DEVICE_NFORCE }, /* NFORCE2 */
 	{ PCI_VDEVICE(NVIDIA, 0x0089), DEVICE_NFORCE }, /* NFORCE2s */
 	{ PCI_VDEVICE(NVIDIA, 0x00d9), DEVICE_NFORCE }, /* NFORCE3 */
-#if 0
-	{ PCI_VDEVICE(AMD, 0x746d), DEVICE_INTEL },	/* AMD8111 */
-	{ PCI_VDEVICE(AL, 0x5455), DEVICE_ALI },   /* Ali5455 */
-#endif
 	{ 0, }
 };
 
@@ -423,12 +419,6 @@ static void snd_intel8x0_setup_periods(struct intel8x0m *chip, struct ichdev *ic
 	iputbyte(chip, port + ICH_REG_OFF_CIV, 0);
 	ichdev->lvi_frag = ICH_REG_LVI_MASK % ichdev->frags;
 	ichdev->position = 0;
-#if 0
-	printk(KERN_DEBUG "lvi_frag = %i, frags = %i, period_size = 0x%x, "
-	       "period_size1 = 0x%x\n",
-	       ichdev->lvi_frag, ichdev->frags, ichdev->fragsize,
-	       ichdev->fragsize1);
-#endif
 	/* clear interrupts */
 	iputbyte(chip, port + ichdev->roff_sr, ICH_FIFOE | ICH_BCIS | ICH_LVBCI);
 }
@@ -469,13 +459,6 @@ static inline void snd_intel8x0_update(struct intel8x0m *chip, struct ichdev *ic
 		ichdev->bdbar[ichdev->lvi * 2] = cpu_to_le32(ichdev->physbuf +
 							     ichdev->lvi_frag *
 							     ichdev->fragsize1);
-#if 0
-		printk(KERN_DEBUG "new: bdbar[%i] = 0x%x [0x%x], "
-		       "prefetch = %i, all = 0x%x, 0x%x\n",
-		       ichdev->lvi * 2, ichdev->bdbar[ichdev->lvi * 2],
-		       ichdev->bdbar[ichdev->lvi * 2 + 1], inb(ICH_REG_OFF_PIV + port),
-		       inl(port + 4), inb(port + ICH_REG_OFF_CR));
-#endif
 		if (--ichdev->ack == 0) {
 			ichdev->ack = ichdev->ack_reload;
 			ack = 1;
@@ -764,25 +747,8 @@ static int __devinit snd_intel8x0_pcm(struct intel8x0m *chip)
 	int i, tblsize, device, err;
 	struct ich_pcm_table *tbl, *rec;
 
-#if 1
 	tbl = intel_pcms;
 	tblsize = 1;
-#else
-	switch (chip->device_type) {
-	case DEVICE_NFORCE:
-		tbl = nforce_pcms;
-		tblsize = ARRAY_SIZE(nforce_pcms);
-		break;
-	case DEVICE_ALI:
-		tbl = ali_pcms;
-		tblsize = ARRAY_SIZE(ali_pcms);
-		break;
-	default:
-		tbl = intel_pcms;
-		tblsize = 2;
-		break;
-	}
-#endif
 	device = 0;
 	for (i = 0; i < tblsize; i++) {
 		rec = tbl + i;
@@ -1260,10 +1226,6 @@ static struct shortname_table {
 	{ PCI_DEVICE_ID_NVIDIA_MCP2_MODEM, "NVidia nForce2" },
 	{ PCI_DEVICE_ID_NVIDIA_MCP2S_MODEM, "NVidia nForce2s" },
 	{ PCI_DEVICE_ID_NVIDIA_MCP3_MODEM, "NVidia nForce3" },
-#if 0
-	{ 0x5455, "ALi M5455" },
-	{ 0x746d, "AMD AMD8111" },
-#endif
 	{ 0 },
 };
 

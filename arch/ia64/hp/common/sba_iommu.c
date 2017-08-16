@@ -795,16 +795,8 @@ sba_free_range(struct ioc *ioc, dma_addr_t iova, size_t size)
  * on the vba.
  */
 
-#if 1
 #define sba_io_pdir_entry(pdir_ptr, vba) *pdir_ptr = ((vba & ~0xE000000000000FFFULL)	\
 						      | 0x8000000000000000ULL)
-#else
-void SBA_INLINE
-sba_io_pdir_entry(u64 *pdir_ptr, unsigned long vba)
-{
-	*pdir_ptr = ((vba & ~0xE000000000000FFFULL) | 0x80000000000000FFULL);
-}
-#endif
 
 #ifdef ENABLE_MARK_CLEAN
 /**
@@ -1866,14 +1858,6 @@ ioc_init(unsigned long hpa, void *handle)
 
 
 
-/**************************************************************************
-**
-**   SBA initialization code (HW and SW)
-**
-**   o identify SBA chip itself
-**   o FIXME: initialize DMA hints for reasonable defaults
-**
-**************************************************************************/
 
 #ifdef CONFIG_PROC_FS
 static void *

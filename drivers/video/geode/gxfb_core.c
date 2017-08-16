@@ -165,7 +165,6 @@ static int gxfb_check_var(struct fb_var_screeninfo *var, struct fb_info *info)
 	if (gx_line_delta(var->xres, var->bits_per_pixel) * var->yres > info->fix.smem_len)
 		return -EINVAL;
 
-	/* FIXME: Check timing parameters here? */
 
 	return 0;
 }

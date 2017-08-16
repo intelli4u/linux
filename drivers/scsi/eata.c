@@ -1806,10 +1806,6 @@ static int eata2x_queuecommand(struct scsi_cmnd *SCpnt,
 
 	cpp->reqsen = 1;
 	cpp->dispri = 1;
-#if 0
-	if (SCpnt->device->type == TYPE_TAPE)
-		cpp->hbaci = 1;
-#endif
 	cpp->one = 1;
 	cpp->channel = SCpnt->device->channel;
 	cpp->target = SCpnt->device->id;
@@ -2003,7 +1999,6 @@ static int eata2x_eh_host_reset(struct scsi_cmnd *SCarg)
 
 	spin_unlock_irq(shost->host_lock);
 
-	/* FIXME: use a sleep instead */
 	time = jiffies;
 	while ((jiffies - time) < (10 * HZ) && limit++ < 200000)
 		udelay(100L);
@@ -2071,7 +2066,7 @@ int eata2x_bios_param(struct scsi_device *sdev, struct block_device *bdev,
 		dkinfo[1] = 63;
 		dkinfo[2] = size / (dkinfo[0] * dkinfo[1]);
 	}
-#if defined (DEBUG_GEOMETRY)
+#if defined(DEBUG_GEOMETRY)
 	printk("%s: bios_param, head=%d, sec=%d, cyl=%d.\n", driver_name,
 	       dkinfo[0], dkinfo[1], dkinfo[2]);
 #endif
@@ -2335,7 +2330,7 @@ static irqreturn_t ihdlr(struct Scsi_Host *shost)
 	/* Read the status register to clear the interrupt indication */
 	reg = inb(shost->io_port + REG_STATUS);
 
-#if defined (DEBUG_INTERRUPT)
+#if defined(DEBUG_INTERRUPT)
 	{
 		unsigned char *bytesp;
 		int cnt;

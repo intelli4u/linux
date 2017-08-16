@@ -1,4 +1,4 @@
-// $Id: strcop.h,v 1.3 2003/10/22 13:27:12 henriken Exp $
+// $Id: strcop.h,v 1.3 2003/10/22 13:27:12 Exp $
 
 // Streamcop meta-data configuration structs
 
@@ -53,5 +53,3 @@ enum {
 	hash_noiv = 0,
 	hash_iv = 1
 };
-
-

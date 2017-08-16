@@ -36,7 +36,6 @@ struct cpu_task cpu_tasks[NR_CPUS] = { [0 ... NR_CPUS - 1] = { -1, NULL } };
 
 static inline int external_pid(void)
 {
-	/* FIXME: Need to look up userspace_pid by cpu */
 	return userspace_pid[0];
 }
 
@@ -166,11 +165,6 @@ void fork_handler(void)
 
 	schedule_tail(current->thread.prev_sched);
 
-	/*
-	 * XXX: if interrupt_end() calls schedule, this call to
-	 * arch_switch_to isn't needed. We could want to apply this to
-	 * improve performance. -bb
-	 */
 	arch_switch_to(current);
 
 	current->thread.prev_sched = NULL;
@@ -461,4 +455,3 @@ int elf_core_copy_fpregs(struct task_struct *t, elf_fpregset_t *fpu)
 
 	return save_fp_registers(userspace_pid[cpu], (unsigned long *) fpu);
 }
-

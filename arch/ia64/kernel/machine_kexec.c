@@ -166,4 +166,3 @@ unsigned long paddr_vmcoreinfo_note(void)
 {
 	return ia64_tpa((unsigned long)(char *)&vmcoreinfo_note);
 }
-

@@ -16,18 +16,6 @@
 
 #include <asm/io.h>
 
-/**
- *	ide_setup_pci_baseregs	-	place a PCI IDE controller native
- *	@dev: PCI device of interface to switch native
- *	@name: Name of interface
- *
- *	We attempt to place the PCI interface into PCI native mode. If
- *	we succeed the BARs are ok and the controller is in PCI mode.
- *	Returns 0 on success or an errno code.
- *
- *	FIXME: if we program the interface and then fail to set the BARS
- *	we don't switch it back to legacy mode. Do we actually care ??
- */
 
 static int ide_setup_pci_baseregs(struct pci_dev *dev, const char *name)
 {
@@ -120,16 +108,6 @@ int ide_pci_check_simplex(ide_hwif_t *hwif, const struct ide_port_info *d)
 		goto out;
 	}
 
-	/*
-	 * If the device claims "simplex" DMA, this means that only one of
-	 * the two interfaces can be trusted with DMA at any point in time
-	 * (so we should enable DMA only on one of the two interfaces).
-	 *
-	 * FIXME: At this point we haven't probed the drives so we can't make
-	 * the appropriate decision.  Really we should defer this problem until
-	 * we tune the drive then try to grab DMA ownership if we want to be
-	 * the DMA end.  This has to be become dynamic to handle hot-plug.
-	 */
 	dma_stat = hwif->dma_ops->dma_sff_read_status(hwif);
 	if ((dma_stat & 0x80) && hwif->mate && hwif->mate->dma_base) {
 		printk(KERN_INFO "%s %s: simplex device: DMA disabled\n",
@@ -570,10 +548,6 @@ int ide_pci_init_two(struct pci_dev *dev1, struct pci_dev *dev2,
 	for (i = 0; i < n_ports / 2; i++) {
 		ret = do_ide_setup_pci_device(pdev[i], d, !i);
 
-		/*
-		 * FIXME: Mom, mom, they stole me the helper function to undo
-		 * do_ide_setup_pci_device() on the first device!
-		 */
 		if (ret < 0)
 			goto out;
 

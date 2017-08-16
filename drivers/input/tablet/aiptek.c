@@ -1018,11 +1018,6 @@ static int aiptek_program_tablet(struct aiptek *aiptek)
 	/* Enable the macro keys */
 	if ((ret = aiptek_command(aiptek, 0x11, 0x02)) < 0)
 		return ret;
-#if 0
-	/* Execute FilterOn */
-	if ((ret = aiptek_command(aiptek, 0x17, 0x00)) < 0)
-		return ret;
-#endif
 
 	/* Execute AutoGainOn */
 	if ((ret = aiptek_command(aiptek, 0x12, 0xff)) < 0)

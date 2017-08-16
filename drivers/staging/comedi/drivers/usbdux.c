@@ -1295,7 +1295,6 @@ static int usbdux_ai_cmd(struct comedi_device *dev, struct comedi_subdevice *s)
 		ret = usbduxsub_submit_InURBs(this_usbduxsub);
 		if (ret < 0) {
 			this_usbduxsub->ai_cmd_running = 0;
-			/* fixme: unlink here?? */
 			up(&this_usbduxsub->sem);
 			return ret;
 		}
@@ -1719,7 +1718,6 @@ static int usbdux_ao_cmd(struct comedi_device *dev, struct comedi_subdevice *s)
 		ret = usbduxsub_submit_OutURBs(this_usbduxsub);
 		if (ret < 0) {
 			this_usbduxsub->ao_cmd_running = 0;
-			/* fixme: unlink here?? */
 			up(&this_usbduxsub->sem);
 			return ret;
 		}

@@ -696,8 +696,6 @@ static int device_close(struct inode *inode, struct file *file)
 	dlm_put_lockspace(ls);
 	dlm_put_lockspace(ls);  /* for the find in device_open() */
 
-	/* FIXME: AUTOFREE: if this ls is no longer used do
-	   device_remove_lockspace() */
 
 	sigprocmask(SIG_SETMASK, &tmpsig, NULL);
 	recalc_sigpending();
@@ -724,11 +722,6 @@ static int copy_result_to_user(struct dlm_user_args *ua, int compat, int type,
 	memcpy(&result.lksb, &ua->lksb, sizeof(struct dlm_lksb));
 	result.user_lksb = ua->user_lksb;
 
-	/* FIXME: dlm1 provides for the user's bastparam/addr to not be updated
-	   in a conversion unless the conversion is successful.  See code
-	   in dlm_user_convert() for updating ua from ua_tmp.  OpenVMS, though,
-	   notes that a new blocking AST address and parameter are set even if
-	   the conversion fails, so maybe we should just do that. */
 
 	if (type == AST_BAST) {
 		result.user_astaddr = ua->bastaddr;
@@ -1063,4 +1056,3 @@ void dlm_user_exit(void)
 	misc_deregister(&ctl_device);
 	misc_deregister(&monitor_device);
 }
-

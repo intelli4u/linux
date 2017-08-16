@@ -310,7 +310,6 @@ ENTRY(ei_handler)
 	srli	r0, #24			; r0(irq_num<<2)
 	;; IRQ exist check
 #if defined(CONFIG_CHIP_M32700)
-	/* WORKAROUND: IMASK bug M32700-TS1, TS2 chip. */
 	bnez	r0, 0f
 	ld24	r14, #0x00070000
 	seth	r0, #shigh(M32R_ICU_IMASK_ADDR)

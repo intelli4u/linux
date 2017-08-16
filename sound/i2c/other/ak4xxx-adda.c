@@ -112,7 +112,6 @@ void snd_akm4xxx_reset(struct snd_akm4xxx *ak, int state)
 		ak4524_reset(ak, state);
 		break;
 	case SND_AK4529:
-		/* FIXME: needed for ak4529? */
 		break;
 	case SND_AK4355:
 		ak435X_reset(ak, state);
@@ -315,7 +314,6 @@ void snd_akm4xxx_init(struct snd_akm4xxx *ak)
 		ak->total_regs = 0x05;
 		break;
 	case SND_AK5365:
-		/* FIXME: any init sequence? */
 		ak->num_chips = 1;
 		ak->name = "ak5365";
 		ak->total_regs = 0x08;

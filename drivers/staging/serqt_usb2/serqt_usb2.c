@@ -318,7 +318,6 @@ static void qt_write_bulk_callback(struct urb *urb)
 
 static void qt_interrupt_callback(struct urb *urb)
 {
-	/* FIXME */
 }
 
 static void qt_read_bulk_callback(struct urb *urb)
@@ -913,7 +912,6 @@ static int qt_open(struct tty_struct *tty,
 	}
 	dbg(__FILE__ "qt_open_channel completed.\n");
 
-/* FIXME: are these needed?  Does it even do anything useful? */
 	quatech_port->shadowLSR = ChannelData.line_status &
 	    (SERIAL_LSR_OE | SERIAL_LSR_PE | SERIAL_LSR_FE | SERIAL_LSR_BI);
 
@@ -932,7 +930,6 @@ static int qt_open(struct tty_struct *tty,
 	 * Put this here to make it responsive to stty and defaults set by
 	 * the tty layer
 	 */
-	/* FIXME: is this needed? */
 	/* qt_set_termios(tty, port, NULL); */
 
 	/*  Check to see if we've set up our endpoint info yet */
@@ -1349,7 +1346,6 @@ static void qt_set_termios(struct tty_struct *tty,
 
 	}
 	tty->termios->c_cflag &= ~CMSPAR;
-	/* FIXME: Error cases should be returning the actual bits changed only */
 }
 
 static void qt_break(struct tty_struct *tty, int break_state)

@@ -105,4 +105,3 @@ int zorro_create_sysfs_dev_files(struct zorro_dev *z)
 
 	return 0;
 }
-

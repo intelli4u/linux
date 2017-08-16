@@ -549,11 +549,6 @@ static void omap24xxcam_vbq_queue(struct videobuf_queue *vbq,
 	unsigned long flags;
 	int err;
 
-	/*
-	 * FIXME: We're marking the buffer active since we have no
-	 * pretty way of marking it active exactly when the
-	 * scatter-gather transfer starts.
-	 */
 	vb->state = VIDEOBUF_ACTIVE;
 
 	err = omap24xxcam_sgdma_queue(&fh->cam->sgdma,
@@ -859,7 +854,6 @@ static int omap24xxcam_sensor_if_enable(struct omap24xxcam_device *cam)
 		omap24xxcam_core_xclk_set(cam, cam->if_u.bt656.xclk);
 		break;
 	default:
-		/* FIXME: how about other interfaces? */
 		dev_err(cam->dev, "interface type %d not supported\n",
 			p.if_type);
 		return -EINVAL;
@@ -1481,7 +1475,6 @@ static int omap24xxcam_open(struct file *file)
 	mutex_lock(&cam->mutex);
 	vidioc_int_g_fmt_cap(cam->sdev, &format);
 	mutex_unlock(&cam->mutex);
-	/* FIXME: how about fh->pix when there are more users? */
 	fh->pix = format.fmt.pix;
 
 	file->private_data = fh;

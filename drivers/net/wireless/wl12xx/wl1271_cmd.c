@@ -395,7 +395,6 @@ int wl1271_cmd_ps_mode(struct wl1271 *wl, u8 ps_mode, bool send)
 	struct wl1271_cmd_ps_params *ps_params = NULL;
 	int ret = 0;
 
-	/* FIXME: this should be in ps.c */
 	ret = wl1271_acx_wake_up_conditions(wl);
 	if (ret < 0) {
 		wl1271_error("couldn't set wake up conditions");
@@ -618,7 +617,6 @@ int wl1271_build_qos_null_data(struct wl1271 *wl)
 					     IEEE80211_STYPE_QOS_NULLFUNC |
 					     IEEE80211_FCTL_TODS);
 
-	/* FIXME: not sure what priority to use here */
 	template.qos_ctrl = cpu_to_le16(0);
 
 	return wl1271_cmd_template_set(wl, CMD_TEMPL_QOS_NULL_DATA, &template,

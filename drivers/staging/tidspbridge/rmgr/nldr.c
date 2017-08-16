@@ -586,7 +586,6 @@ int nldr_create(struct nldr_object **nldr,
 
 		*nldr = NULL;
 	}
-	/* FIXME:Temp. Fix. Must be removed */
 	DBC_ENSURE((!status && *nldr) || (status && *nldr == NULL));
 	return status;
 }

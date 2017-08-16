@@ -308,7 +308,6 @@ void b43_tx_resume(struct b43_wldev *dev);
  * We need to account for that here. */
 static inline int b43_new_kidx_api(struct b43_wldev *dev)
 {
-	/* FIXME: Not sure the change was at rev 351 */
 	return (dev->fw.rev >= 351);
 }
 static inline u8 b43_kidx_to_fw(struct b43_wldev *dev, u8 raw_kidx)

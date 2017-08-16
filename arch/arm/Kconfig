@@ -99,6 +99,27 @@ config STACKTRACE_SUPPORT
 	bool
 	default y
 
+config BUZZZ
+	bool "Enable BUZZZ kernel tools framework"
+	default n
+	help
+		Enable kernel tools framework: event/performance/function call tracing
+
+config BUZZZ_FUNC
+    bool "Enable kernel tool function call tracing"
+    default n
+    select KALLSYMS
+    select STACKTRACE
+    help
+        Enable kernel tool function call tracing
+
+config BUZZZ_KEVT
+	bool "Enable BUZZZ kernel event tracing"
+	default n
+	select KALLSYMS
+	help
+		Enable kernel event tracing
+
 config HAVE_LATENCYTOP_SUPPORT
 	bool
 	depends on !SMP
@@ -824,6 +845,11 @@ config PLAT_SPEAR
 	help
 	  Support for ST's SPEAr platform (SPEAr3xx, SPEAr6xx and SPEAr13xx).
 
+config ARCH_BRCM
+	bool "Broadcom ARM"
+	help
+	  Support for Broadcom ARM-based devices and boards.
+
 endchoice
 
 #
@@ -953,6 +979,9 @@ source "arch/arm/mach-versatile/Kconfig"
 source "arch/arm/mach-vexpress/Kconfig"
 
 source "arch/arm/mach-w90x900/Kconfig"
+
+source "arch/arm/mach-brcm-hnd/Kconfig"
+source "arch/arm/plat-brcm/Kconfig"
 
 # Definitions to make life easier
 config ARCH_ACORN
@@ -1119,6 +1148,51 @@ endmenu
 
 source "arch/arm/common/Kconfig"
 
+menu "Support for Broadcom ARM based boards"
+
+config BCM947XX
+        bool "Support for Broadcom BCM947XX"
+        depends on ARCH_BRCM
+
+config BCM47XX
+        bool "Support for Broadcom BCM47XX processors"
+        depends on BCM947XX
+
+config FAILSAFE_UPGRADE
+        bool "Failsafe Upgrades"
+        depends on BCM947XX
+        default n
+
+config BCM_RECVFILE
+	bool "Recvfile Support"
+	depends on BCM947XX
+	default y
+
+config GENERIC_GPIO
+	bool "Generic GPIO"
+	default n
+
+config CRASHLOG
+	bool "Store Crashlog in nvram"
+	depends on BCM947XX
+	default n
+
+config DUMP_PREV_OOPS_MSG
+	bool "Dump previous kernel oops message"
+	default n if PRINTK
+
+config DUMP_PREV_OOPS_MSG_BUF_ADDR
+	hex "Buffer start address to store previous kernel oops message."
+	depends on DUMP_PREV_OOPS_MSG
+	default "0xC000000" if BRCMCHIP
+
+config DUMP_PREV_OOPS_MSG_BUF_LEN
+	hex "Buffer length to store previous kernel oops message."
+	depends on DUMP_PREV_OOPS_MSG
+	default "0x2000" if BRCMCHIP
+
+endmenu
+
 menu "Bus support"
 
 config ARM_AMBA
@@ -1169,6 +1243,8 @@ config PCI_HOST_ITE8152
 	default y
 	select DMABOUNCE
 
+source "drivers/pci/pcie/Kconfig"
+
 source "drivers/pci/Kconfig"
 
 source "drivers/pcmcia/Kconfig"
@@ -1183,11 +1259,12 @@ config SMP
 	bool "Symmetric Multi-Processing (EXPERIMENTAL)"
 	depends on EXPERIMENTAL && (REALVIEW_EB_ARM11MP || REALVIEW_EB_A9MP ||\
 		 MACH_REALVIEW_PB11MP || MACH_REALVIEW_PBX || ARCH_OMAP4 ||\
-		 ARCH_S5PV310 || ARCH_TEGRA || ARCH_U8500 || ARCH_VEXPRESS_CA9X4)
+		 ARCH_S5PV310 || ARCH_TEGRA || ARCH_U8500 || ARCH_VEXPRESS_CA9X4 ||\
+		 PLAT_MPCORE )
 	depends on GENERIC_CLOCKEVENTS
 	select USE_GENERIC_SMP_HELPERS
 	select HAVE_ARM_SCU if ARCH_REALVIEW || ARCH_OMAP4 || ARCH_S5PV310 ||\
-		 ARCH_TEGRA || ARCH_U8500 || ARCH_VEXPRESS_CA9X4
+		 ARCH_TEGRA || ARCH_U8500 || ARCH_VEXPRESS_CA9X4 || PLAT_MPCORE
 	help
 	  This enables support for systems with more than one CPU. If you have
 	  a system with only one CPU, like most personal computers, say N. If

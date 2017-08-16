@@ -31,12 +31,6 @@ struct flexcop_usb {
 	int tmp_buffer_length;
 };
 
-#if 0
-/* request types TODO What is its use?*/
-typedef enum {
-
-} flexcop_usb_request_type_t;
-#endif
 
 /* request */
 typedef enum {

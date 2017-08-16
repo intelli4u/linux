@@ -368,10 +368,6 @@ static void do_write_regs(struct fb_info *info, struct banshee_reg *reg)
 	banshee_make_room(par, 3);
 	tdfx_outl(par, VGAINIT1, reg->vgainit1 & 0x001FFFFF);
 	tdfx_outl(par, VIDPROCCFG, reg->vidcfg & ~0x00000001);
-#if 0
-	tdfx_outl(par, PLLCTRL1, reg->mempll);
-	tdfx_outl(par, PLLCTRL2, reg->gfxpll);
-#endif
 	tdfx_outl(par, PLLCTRL0, reg->vidpll);
 
 	vga_outb(par, MISC_W, reg->misc[0x00] | 0x01);
@@ -653,7 +649,7 @@ static int tdfxfb_set_par(struct fb_info *info)
 	reg.att[0x12] = 0x0f;
 
 	reg.seq[0x00] = 0x03;
-	reg.seq[0x01] = 0x01; /* fixme: clkdiv2? */
+	reg.seq[0x01] = 0x01;
 	reg.seq[0x02] = 0x0f;
 	reg.seq[0x03] = 0x00;
 	reg.seq[0x04] = 0x0e;
@@ -714,10 +710,6 @@ static int tdfxfb_set_par(struct fb_info *info)
 			+ info->var.xoffset * cpp;
 
 	reg.vidpll = do_calc_pll(freq, &fout);
-#if 0
-	reg.mempll = do_calc_pll(..., &fout);
-	reg.gfxpll = do_calc_pll(..., &fout);
-#endif
 
 	if ((info->var.vmode & FB_VMODE_MASK) == FB_VMODE_INTERLACED)
 		reg.vidcfg |= VIDCFG_INTERLACE;

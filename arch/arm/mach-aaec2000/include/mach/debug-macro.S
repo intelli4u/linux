@@ -29,9 +29,4 @@
 		.endm
 
 		.macro	waituart,rd,rx
-#if 0
-1001:		ldr	\rd, [\rx, #0x10]
-		tst	\rd, #(1 << 5)
-		beq	1001b
-#endif
 		.endm

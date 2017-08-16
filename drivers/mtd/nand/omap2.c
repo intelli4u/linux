@@ -220,7 +220,6 @@ static void omap_write_buf16(struct mtd_info *mtd, const u_char * buf, int len)
 						struct omap_nand_info, mtd);
 	u16 *p = (u16 *) buf;
 	u32	status = 0;
-	/* FIXME try bursts of writesw() or DMA ... */
 	len >>= 1;
 
 	while (len--) {

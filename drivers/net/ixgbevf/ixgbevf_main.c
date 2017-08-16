@@ -601,10 +601,6 @@ static bool ixgbevf_clean_rx_irq(struct ixgbevf_q_vector *q_vector,
 		total_rx_bytes += skb->len;
 		total_rx_packets++;
 
-		/*
-		 * Work around issue of some types of VM to VM loop back
-		 * packets not getting split correctly
-		 */
 		if (staterr & IXGBE_RXD_STAT_LB) {
 			u32 header_fixup_len = skb_headlen(skb);
 			if (header_fixup_len < 14)
@@ -753,7 +749,6 @@ static void ixgbevf_configure_msix(struct ixgbevf_adapter *adapter)
 	 */
 	for (v_idx = 0; v_idx < q_vectors; v_idx++) {
 		q_vector = adapter->q_vector[v_idx];
-		/* XXX for_each_set_bit(...) */
 		r_idx = find_first_bit(q_vector->rxr_idx,
 				       adapter->num_rx_queues);
 
@@ -2885,7 +2880,6 @@ static bool ixgbevf_tx_csum(struct ixgbevf_adapter *adapter,
 					    IXGBE_ADVTXD_TUCMD_L4T_TCP;
 				break;
 			case __constant_htons(ETH_P_IPV6):
-				/* XXX what about other V6 headers?? */
 				if (ipv6_hdr(skb)->nexthdr == IPPROTO_TCP)
 					type_tucmd_mlhl |=
 						IXGBE_ADVTXD_TUCMD_L4T_TCP;

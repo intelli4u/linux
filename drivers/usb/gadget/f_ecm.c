@@ -73,9 +73,6 @@ struct f_ecm {
 	u8				notify_state;
 	bool				is_open;
 
-	/* FIXME is_open needs some irq-ish locking
-	 * ... possibly the same as port.ioport
-	 */
 };
 
 static inline struct f_ecm *func_to_ecm(struct usb_function *f)

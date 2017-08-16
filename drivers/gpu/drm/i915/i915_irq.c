@@ -1404,7 +1404,6 @@ static void ironlake_irq_preinstall(struct drm_device *dev)
 
 	I915_WRITE(HWSTAM, 0xeffe);
 
-	/* XXX hotplug from PCH */
 
 	I915_WRITE(DEIMR, 0xffffffff);
 	I915_WRITE(DEIER, 0x0);

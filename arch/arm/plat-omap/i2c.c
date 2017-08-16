@@ -138,11 +138,6 @@ static inline int omap1_i2c_add_bus(struct platform_device *pdev, int bus_id)
 	return platform_device_register(pdev);
 }
 
-/*
- * XXX This function is a temporary compatibility wrapper - only
- * needed until the I2C driver can be converted to call
- * omap_pm_set_max_dev_wakeup_lat() and handle a return code.
- */
 static void omap_pm_set_max_mpu_wakeup_lat_compat(struct device *dev, long t)
 {
 	omap_pm_set_max_mpu_wakeup_lat(dev, t);

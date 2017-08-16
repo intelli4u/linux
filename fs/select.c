@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  * This file contains the procedures for the handling of select and poll
  *
@@ -29,6 +30,8 @@
 
 #include <asm/uaccess.h>
 
+#include <typedefs.h>
+#include <bcmdefs.h>
 
 /*
  * Estimate expected accuracy in ns from a timeval.
@@ -393,7 +396,7 @@ static inline void wait_key_set(poll_table *wait, unsigned long in,
 	}
 }
 
-int do_select(int n, fd_set_bits *fds, struct timespec *end_time)
+int BCMFASTPATH_HOST do_select(int n, fd_set_bits *fds, struct timespec *end_time)
 {
 	ktime_t expire, *to = NULL;
 	struct poll_wqueues table;
@@ -636,7 +639,6 @@ static long do_pselect(int n, fd_set __user *inp, fd_set __user *outp,
 	}
 
 	if (sigmask) {
-		/* XXX: Don't preclude handling different sized sigset_t's.  */
 		if (sigsetsize != sizeof(sigset_t))
 			return -EINVAL;
 		if (copy_from_user(&ksigmask, sigmask, sizeof(ksigmask)))
@@ -965,7 +967,6 @@ SYSCALL_DEFINE5(ppoll, struct pollfd __user *, ufds, unsigned int, nfds,
 	}
 
 	if (sigmask) {
-		/* XXX: Don't preclude handling different sized sigset_t's.  */
 		if (sigsetsize != sizeof(sigset_t))
 			return -EINVAL;
 		if (copy_from_user(&ksigmask, sigmask, sizeof(ksigmask)))

@@ -1110,19 +1110,6 @@ static irqreturn_t imx_udc_irq(int irq, void *dev)
 	}
 
 	if (intr & INTR_CFG_CHG) {
-		/* A workaround of serious IMX UDC bug.
-		   Handling of CFG_CHG should be delayed for some time, because
-		   IMX does not NACK the host when CFG_CHG interrupt is pending.
-		   There is no time to handle current CFG_CHG
-		   if next CFG_CHG or SETUP packed is send immediately.
-		   We have to clear CFG_CHG, start the timer and
-		   NACK the host by setting CTRL_CMDOVER
-		   if it sends any SETUP packet.
-		   When timer expires, handler is called to handle configuration
-		   changes. While CFG_CHG is not handled (set_config=1),
-		   we must NACK the host to every SETUP packed.
-		   This delay prevents from going out of sync with host.
-		 */
 		__raw_writel(INTR_CFG_CHG, imx_usb->base + USB_INTR);
 		imx_usb->set_config = 1;
 		mod_timer(&imx_usb->timer, jiffies + 5);

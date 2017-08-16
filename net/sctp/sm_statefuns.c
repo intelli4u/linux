@@ -687,16 +687,7 @@ sctp_disposition_t sctp_sf_do_5_1D_ce(const struct sctp_endpoint *ep,
 	new_asoc = sctp_unpack_cookie(ep, asoc, chunk, GFP_ATOMIC, &error,
 				      &err_chk_p);
 
-	/* FIXME:
-	 * If the re-build failed, what is the proper error path
-	 * from here?
-	 *
-	 * [We should abort the association. --piggy]
-	 */
 	if (!new_asoc) {
-		/* FIXME: Several errors are possible.  A bad cookie should
-		 * be silently discarded, but think about logging it too.
-		 */
 		switch (error) {
 		case -SCTP_IERROR_NOMEM:
 			goto nomem;
@@ -1445,13 +1436,6 @@ static sctp_disposition_t sctp_sf_do_unexpected_init(
 		}
 	}
 
-	/*
-	 * Other parameters for the endpoint SHOULD be copied from the
-	 * existing parameters of the association (e.g. number of
-	 * outbound streams) into the INIT ACK and cookie.
-	 * FIXME:  We are copying parameters from the endpoint not the
-	 * association.
-	 */
 	new_asoc = sctp_make_temp_asoc(ep, chunk, GFP_ATOMIC);
 	if (!new_asoc)
 		goto nomem;
@@ -1991,16 +1975,7 @@ sctp_disposition_t sctp_sf_do_5_2_4_dupcook(const struct sctp_endpoint *ep,
 	new_asoc = sctp_unpack_cookie(ep, asoc, chunk, GFP_ATOMIC, &error,
 				      &err_chk_p);
 
-	/* FIXME:
-	 * If the re-build failed, what is the proper error path
-	 * from here?
-	 *
-	 * [We should abort the association. --piggy]
-	 */
 	if (!new_asoc) {
-		/* FIXME: Several errors are possible.  A bad cookie should
-		 * be silently discarded, but think about logging it too.
-		 */
 		switch (error) {
 		case -SCTP_IERROR_NOMEM:
 			goto nomem;
@@ -2199,10 +2174,6 @@ sctp_disposition_t sctp_sf_cookie_echoed_err(const struct sctp_endpoint *ep,
 						  commands);
 
 	/* Process the error here */
-	/* FUTURE FIXME:  When PR-SCTP related and other optional
-	 * parms are emitted, this will have to change to handle multiple
-	 * errors.
-	 */
 	sctp_walk_errors(err, chunk->chunk_hdr) {
 		if (SCTP_ERROR_STALE_COOKIE == err->cause)
 			return sctp_sf_do_5_2_6_stale(ep, asoc, type,
@@ -3571,15 +3542,6 @@ sctp_disposition_t sctp_sf_do_asconf(const struct sctp_endpoint *ep,
 		return SCTP_DISPOSITION_DISCARD;
 	}
 
-	/* ADDIP 5.2 E6)  The destination address of the SCTP packet
-	 * containing the ASCONF-ACK Chunks MUST be the source address of
-	 * the SCTP packet that held the ASCONF Chunks.
-	 *
-	 * To do this properly, we'll set the destination address of the chunk
-	 * and at the transmit time, will try look up the transport to use.
-	 * Since ASCONFs may be bundled, the correct transport may not be
-	 * created until we process the entire packet, thus this workaround.
-	 */
 	asconf_ack->dest = chunk->source;
 	sctp_add_cmd_sf(commands, SCTP_CMD_REPLY, SCTP_CHUNK(asconf_ack));
 
@@ -3777,9 +3739,6 @@ sctp_disposition_t sctp_sf_eat_fwd_tsn(const struct sctp_endpoint *ep,
 				SCTP_TO(SCTP_EVENT_TIMEOUT_AUTOCLOSE));
 	}
 
-	/* FIXME: For now send a SACK, but DATA processing may
-	 * send another.
-	 */
 	sctp_add_cmd_sf(commands, SCTP_CMD_GEN_SACK, SCTP_NOFORCE());
 
 	return SCTP_DISPOSITION_CONSUME;

@@ -1,4 +1,4 @@
-/* $Id: l3_1tr6.c,v 2.15.2.3 2004/01/13 14:31:25 keil Exp $
+/* $Id: l3_1tr6.c,v 2.15.2.3 2004/01/13 14:31:25 Exp $
  *
  * German 1TR6 D-channel protocol
  *

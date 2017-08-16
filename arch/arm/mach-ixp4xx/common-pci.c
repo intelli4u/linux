@@ -105,10 +105,6 @@ int ixp4xx_pci_read_errata(u32 addr, u32 cmd, u32* data)
 
 	*PCI_NP_AD = addr;
 
-	/* 
-	 * PCI workaround  - only works if NP PCI space reads have 
-	 * no side effects!!! Read 8 times. last one will be good.
-	 */
 	for (i = 0; i < 8; i++) {
 		*PCI_NP_CBE = cmd;
 		*data = *PCI_NP_RDATA;
@@ -369,10 +365,6 @@ void __init ixp4xx_pci_preinit(void)
 {
 	unsigned long cpuid = read_cpuid_id();
 
-	/*
-	 * Determine which PCI read method to use.
-	 * Rev 0 IXP425 requires workaround.
-	 */
 	if (!(cpuid & 0xf) && cpu_is_ixp42x()) {
 		printk("PCI: IXP42x A0 silicon detected - "
 			"PCI Non-Prefetch Workaround Enabled\n");
@@ -513,4 +505,3 @@ int dma_set_coherent_mask(struct device *dev, u64 mask)
 
 EXPORT_SYMBOL(ixp4xx_pci_read);
 EXPORT_SYMBOL(ixp4xx_pci_write);
-

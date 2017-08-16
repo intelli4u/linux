@@ -1,5 +1,5 @@
 /*
- * $Id: synclinkmp.c,v 4.38 2005/07/15 13:29:44 paulkf Exp $
+ * $Id: synclinkmp.c,v 4.38 2005/07/15 13:29:44 Exp $
  *
  * Device driver for Microgate SyncLink Multiport
  * high speed multiprotocol serial adapter.
@@ -69,7 +69,8 @@
 #include <linux/hdlc.h>
 #include <linux/synclink.h>
 
-#if defined(CONFIG_HDLC) || (defined(CONFIG_HDLC_MODULE) && defined(CONFIG_SYNCLINKMP_MODULE))
+#if defined(CONFIG_HDLC) || (defined(CONFIG_HDLC_MODULE) && \
+	defined(CONFIG_SYNCLINKMP_MODULE))
 #define SYNCLINK_GENERIC_HDLC 1
 #else
 #define SYNCLINK_GENERIC_HDLC 0
@@ -4583,11 +4584,6 @@ static void hdlc_mode(SLMP_INFO *info)
 	case HDLC_ENCODING_BIPHASE_MARK:  RegValue |= BIT7 + BIT5; break; /* aka FM1 */
 	case HDLC_ENCODING_BIPHASE_SPACE: RegValue |= BIT7 + BIT6; break; /* aka FM0 */
 	case HDLC_ENCODING_BIPHASE_LEVEL: RegValue |= BIT7; break; 	/* aka Manchester */
-#if 0
-	case HDLC_ENCODING_NRZB:	       				/* not supported */
-	case HDLC_ENCODING_NRZI_MARK:          				/* not supported */
-	case HDLC_ENCODING_DIFF_BIPHASE_LEVEL: 				/* not supported */
-#endif
 	}
 	if ( info->params.flags & HDLC_FLAG_DPLL_DIV16 ) {
 		DpllDivisor = 16;

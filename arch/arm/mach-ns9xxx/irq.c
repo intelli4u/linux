@@ -24,7 +24,6 @@
 
 static void ns9xxx_mask_irq(unsigned int irq)
 {
-	/* XXX: better use cpp symbols */
 	int prio = irq2prio(irq);
 	u32 ic = __raw_readl(SYS_IC(prio / 4));
 	ic &= ~(1 << (7 + 8 * (3 - (prio & 3))));
@@ -44,7 +43,6 @@ static void ns9xxx_maskack_irq(unsigned int irq)
 
 static void ns9xxx_unmask_irq(unsigned int irq)
 {
-	/* XXX: better use cpp symbols */
 	int prio = irq2prio(irq);
 	u32 ic = __raw_readl(SYS_IC(prio / 4));
 	ic |= 1 << (7 + 8 * (3 - (prio & 3)));
@@ -58,9 +56,6 @@ static struct irq_chip ns9xxx_chip = {
 	.unmask		= ns9xxx_unmask_irq,
 };
 
-#if 0
-#define handle_irq handle_level_irq
-#else
 static void handle_prio_irq(unsigned int irq, struct irq_desc *desc)
 {
 	struct irqaction *action;
@@ -82,9 +77,6 @@ static void handle_prio_irq(unsigned int irq, struct irq_desc *desc)
 
 	action_ret = handle_IRQ_event(irq, action);
 
-	/* XXX: There is no direct way to access noirqdebug, so check
-	 * unconditionally for spurious irqs...
-	 * Maybe this function should go to kernel/irq/chip.c? */
 	note_interrupt(irq, desc, action_ret);
 
 	raw_spin_lock(&desc->lock);
@@ -100,7 +92,6 @@ out_mask:
 	raw_spin_unlock(&desc->lock);
 }
 #define handle_irq handle_prio_irq
-#endif
 
 void __init ns9xxx_init_irq(void)
 {

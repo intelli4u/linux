@@ -65,23 +65,3 @@ GLOBAL(copy_to_fs)
 	popw	%es
 	ret
 ENDPROC(copy_to_fs)
-
-#if 0 /* Not currently used, but can be enabled as needed */
-GLOBAL(copy_from_gs)
-	pushw	%ds
-	pushw	%gs
-	popw	%ds
-	call	memcpy
-	popw	%ds
-	ret
-ENDPROC(copy_from_gs)
-
-GLOBAL(copy_to_gs)
-	pushw	%es
-	pushw	%gs
-	popw	%es
-	call	memcpy
-	popw	%es
-	ret
-ENDPROC(copy_to_gs)
-#endif

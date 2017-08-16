@@ -434,7 +434,6 @@ enum {
 /* A generic null function pointer value.  */
 #define NULLFUNC	0
 
-/* Current CPU.  XXX should this be hard_smp_processor_id()? */
 #define THISCPU		smp_processor_id()
 
 /* State flags for atomic bit operations */
@@ -1286,20 +1285,6 @@ static int pci230_ao_cmdtest(struct comedi_device *dev,
 
 	tmp = cmd->scan_begin_src;
 	if ((thisboard->min_hwver > 0) && (devpriv->hwver >= 2)) {
-		/*
-		 * For PCI230+ hardware version 2 onwards, allow external
-		 * trigger from EXTTRIG/EXTCONVCLK input (PCI230+ pin 25).
-		 *
-		 * FIXME: The permitted scan_begin_src values shouldn't depend
-		 * on devpriv->hwver (the detected card's actual hardware
-		 * version).  They should only depend on thisboard->min_hwver
-		 * (the static capabilities of the configured card).  To fix
-		 * it, a new card model, e.g. "pci230+2" would have to be
-		 * defined with min_hwver set to 2.  It doesn't seem worth it
-		 * for this alone.  At the moment, please consider
-		 * scan_begin_src==TRIG_EXT support to be a bonus rather than a
-		 * guarantee!
-		 */
 		cmd->scan_begin_src &= TRIG_TIMER | TRIG_INT | TRIG_EXT;
 	} else {
 		cmd->scan_begin_src &= TRIG_TIMER | TRIG_INT;
@@ -1500,7 +1485,6 @@ static int pci230_ao_inttrig_scan_begin(struct comedi_device *dev,
 					       irqflags);
 		}
 		/* Delay.  Should driver be responsible for this? */
-		/* XXX TODO: See if DAC busy bit can be used. */
 		udelay(8);
 	}
 

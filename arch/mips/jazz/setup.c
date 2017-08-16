@@ -88,8 +88,6 @@ void __init plat_mem_setup(void)
 #ifdef CONFIG_OLIVETTI_M700
 #define UART_CLK  1843200
 #else
-/* Some Jazz machines seem to have an 8MHz crystal clock but I don't know
-   exactly which ones ... XXX */
 #define UART_CLK (8000000 / 16) /* ( 3072000 / 16) */
 #endif
 

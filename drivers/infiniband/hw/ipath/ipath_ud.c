@@ -79,7 +79,6 @@ static void ipath_ud_loopback(struct ipath_qp *sqp, struct ipath_swqe *swqe)
 	if (unlikely(qp->ibqp.qp_num &&
 		     ((int) swqe->wr.wr.ud.remote_qkey < 0 ?
 		      sqp->qkey : swqe->wr.wr.ud.remote_qkey) != qp->qkey)) {
-		/* XXX OK to lose a count once in a while. */
 		dev->qkey_violations++;
 		dev->n_pkt_drops++;
 		goto drop;
@@ -214,7 +213,6 @@ static void ipath_ud_loopback(struct ipath_qp *sqp, struct ipath_swqe *swqe)
 	wc.opcode = IB_WC_RECV;
 	wc.qp = &qp->ibqp;
 	wc.src_qp = sqp->ibqp.qp_num;
-	/* XXX do we know which pkey matched? Only needed for GSI. */
 	wc.pkey_index = 0;
 	wc.slid = dev->dd->ipath_lid |
 		(ah_attr->src_path_bits &
@@ -290,13 +288,6 @@ int ipath_make_ud_req(struct ipath_qp *qp)
 		dev->n_unicast_xmit++;
 		lid = ah_attr->dlid & ~((1 << dev->dd->ipath_lmc) - 1);
 		if (unlikely(lid == dev->dd->ipath_lid)) {
-			/*
-			 * If DMAs are in progress, we can't generate
-			 * a completion for the loopback packet since
-			 * it would be out of order.
-			 * XXX Instead of waiting, we could queue a
-			 * zero length descriptor so we get a callback.
-			 */
 			if (atomic_read(&qp->s_dma_busy)) {
 				qp->s_flags |= IPATH_S_WAIT_DMA;
 				goto bail;
@@ -457,7 +448,6 @@ void ipath_ud_rcv(struct ipath_ibdev *dev, struct ipath_ib_header *hdr,
 			goto bail;
 		}
 		if (unlikely(qkey != qp->qkey)) {
-			/* XXX OK to lose a count once in a while. */
 			dev->qkey_violations++;
 			dev->n_pkt_drops++;
 			goto bail;
@@ -560,7 +550,6 @@ void ipath_ud_rcv(struct ipath_ibdev *dev, struct ipath_ib_header *hdr,
 	wc.vendor_err = 0;
 	wc.qp = &qp->ibqp;
 	wc.src_qp = src_qp;
-	/* XXX do we know which pkey matched? Only needed for GSI. */
 	wc.pkey_index = 0;
 	wc.slid = be16_to_cpu(hdr->lrh[3]);
 	wc.sl = (be16_to_cpu(hdr->lrh[0]) >> 4) & 0xF;

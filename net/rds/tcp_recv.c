@@ -200,10 +200,6 @@ static int rds_tcp_data_recv(read_descriptor_t *desc, struct sk_buff *skb,
 			tc->t_tinc = tinc;
 			rdsdebug("alloced tinc %p\n", tinc);
 			rds_inc_init(&tinc->ti_inc, conn, conn->c_faddr);
-			/*
-			 * XXX * we might be able to use the __ variants when
-			 * we've already serialized at a higher level.
-			 */
 			skb_queue_head_init(&tinc->ti_skb_list);
 		}
 

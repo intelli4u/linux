@@ -34,7 +34,6 @@
 
 #include <asm/types.h>
 
-/* FIXME: Is it needed to optimize this a la pxa ?? */
 #define __REG(x)    (*((volatile u32 *)io_p2v(x)))
 #define __PREG(x)   (io_v2p((u32)&(x)))
 

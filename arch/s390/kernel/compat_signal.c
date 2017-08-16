@@ -205,7 +205,6 @@ sys32_rt_sigaction(int sig, const struct sigaction32 __user *act,
 	int ret;
 	compat_sigset_t set32;
 
-	/* XXX: Don't preclude handling different sized sigset_t's.  */
 	if (sigsetsize != sizeof(compat_sigset_t))
 		return -EINVAL;
 
@@ -627,4 +626,3 @@ handle_signal32(unsigned long sig, struct k_sigaction *ka,
 	}
 	return ret;
 }
-

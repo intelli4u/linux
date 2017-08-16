@@ -460,7 +460,6 @@ extern int io_remap_pfn_range(struct vm_area_struct *vma,
 #endif /* !(__ASSEMBLY__) */
 
 #define VMALLOC_START           0xfe600000
-/* XXX Alter this when I get around to fixing sun4c - Anton */
 #define VMALLOC_END             0xffc00000
 
 

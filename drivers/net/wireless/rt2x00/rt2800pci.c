@@ -87,7 +87,7 @@ static void rt2800pci_mcu_status(struct rt2x00_dev *rt2x00dev, const u8 token)
 #ifdef CONFIG_RT2800PCI_SOC
 static void rt2800pci_read_eeprom_soc(struct rt2x00_dev *rt2x00dev)
 {
-	u32 *base_addr = (u32 *) KSEG1ADDR(0x1F040000); /* XXX for RT3052 */
+	u32 *base_addr = (u32 *) KSEG1ADDR(0x1F040000);
 
 	memcpy_fromio(rt2x00dev->eeprom, base_addr, EEPROM_SIZE);
 }

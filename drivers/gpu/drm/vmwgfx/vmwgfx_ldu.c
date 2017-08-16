@@ -597,15 +597,7 @@ int vmw_kms_ldu_update_layout(struct vmw_private *dev_priv, unsigned num,
 
 	mutex_lock(&dev->mode_config.mutex);
 
-#if 0
-	DRM_INFO("%s: new layout ", __func__);
-	for (i = 0; i < (int)num; i++)
-		DRM_INFO("(%i, %i %ux%u) ", rects[i].x, rects[i].y,
-			 rects[i].w, rects[i].h);
-	DRM_INFO("\n");
-#else
 	(void)i;
-#endif
 
 	list_for_each_entry(con, &dev->mode_config.connector_list, head) {
 		ldu = vmw_connector_to_ldu(con);

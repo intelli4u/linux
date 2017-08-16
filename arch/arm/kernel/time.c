@@ -162,4 +162,3 @@ void __init time_init(void)
 {
 	system_timer->init();
 }
-

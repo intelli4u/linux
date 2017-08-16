@@ -217,14 +217,6 @@ static void ti_zoom_video(struct pcmcia_socket *sock, int onoff)
 	config_writeb(socket, TI113X_CARD_CONTROL, reg);
 }
 
-/*
- *	The 145x series can also use this. They have an additional
- *	ZV autodetect mode we don't use but don't actually need.
- *	FIXME: manual says its in func0 and func1 but disagrees with
- *	itself about this - do we need to force func0, if so we need
- *	to know a lot more about socket pairings in pcmcia_socket than
- *	we do now.. uggh.
- */
  
 static void ti1250_zoom_video(struct pcmcia_socket *sock, int onoff)
 {	
@@ -981,4 +973,3 @@ static int ene_override(struct yenta_socket *socket)
 #endif /* !CONFIG_YENTA_ENE_TUNE */
 
 #endif /* _LINUX_TI113X_H */
-

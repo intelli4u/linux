@@ -279,10 +279,6 @@ static void mv_process_current_q(int first_block)
 	/* GO */
 	writel(SEC_CMD_EN_SEC_ACCL0, cpg->reg + SEC_ACCEL_CMD);
 
-	/*
-	 * XXX: add timer if the interrupt does not occur for some mystery
-	 * reason
-	 */
 }
 
 static void mv_crypto_algo_completion(void)
@@ -353,10 +349,6 @@ static void mv_process_hash_current(int first_block)
 	/* GO */
 	writel(SEC_CMD_EN_SEC_ACCL0, cpg->reg + SEC_ACCEL_CMD);
 
-	/*
-	* XXX: add timer if the interrupt does not occur for some mystery
-	* reason
-	*/
 }
 
 static inline int mv_hash_import_sha1_ctx(const struct mv_req_hash_ctx *ctx,

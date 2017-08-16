@@ -497,8 +497,6 @@ static void i5100_read_log(struct mem_ctl_info *mci, int chan,
 		cas = i5100_recmemb_cas(dw2);
 		ras = i5100_recmemb_ras(dw2);
 
-		/* FIXME:  not really sure if this is what merr is...
-		 */
 		if (!merr)
 			msg = i5100_err_msg(ferr);
 		else
@@ -519,8 +517,6 @@ static void i5100_read_log(struct mem_ctl_info *mci, int chan,
 		cas = i5100_nrecmemb_cas(dw2);
 		ras = i5100_nrecmemb_ras(dw2);
 
-		/* FIXME:  not really sure if this is what merr is...
-		 */
 		if (!merr)
 			msg = i5100_err_msg(ferr);
 		else
@@ -696,10 +692,6 @@ static void __devinit i5100_init_mtr(struct mem_ctl_info *mci)
 	}
 }
 
-/*
- * FIXME: make this into a real i2c adapter (so that dimm-decode
- * will work)?
- */
 static int i5100_read_spd_byte(const struct mem_ctl_info *mci,
 			       u8 ch, u8 slot, u8 addr, u8 *byte)
 {
@@ -733,13 +725,6 @@ static int i5100_read_spd_byte(const struct mem_ctl_info *mci,
 	return 0;
 }
 
-/*
- * fill dimm chip select map
- *
- * FIXME:
- *   o not the only way to may chip selects to dimm slots
- *   o investigate if there is some way to obtain this map from the bios
- */
 static void __devinit i5100_init_dimm_csmap(struct mem_ctl_info *mci)
 {
 	struct i5100_priv *priv = mci->pvt_info;
@@ -852,10 +837,6 @@ static void __devinit i5100_init_csrows(struct mem_ctl_info *mci)
 		if (!npages)
 			continue;
 
-		/*
-		 * FIXME: these two are totally bogus -- I don't see how to
-		 * map them correctly to this structure...
-		 */
 		mci->csrows[i].first_page = total_pages;
 		mci->csrows[i].last_page = total_pages + npages - 1;
 		mci->csrows[i].page_mask = 0UL;

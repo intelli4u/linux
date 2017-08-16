@@ -245,22 +245,6 @@ static void __devinit quirk_usb_disable_ehci(struct pci_dev *pdev)
 			if ((cap & EHCI_USBLEGSUP_BIOS)) {
 				dev_dbg(&pdev->dev, "EHCI: BIOS handoff\n");
 
-#if 0
-/* aleksey_gorelov@phoenix.com reports that some systems need SMI forced on,
- * but that seems dubious in general (the BIOS left it off intentionally)
- * and is known to prevent some systems from booting.  so we won't do this
- * unless maybe we can determine when we're on a system that needs SMI forced.
- */
-				/* BIOS workaround (?): be sure the
-				 * pre-Linux code receives the SMI
-				 */
-				pci_read_config_dword(pdev,
-						offset + EHCI_USBLEGCTLSTS,
-						&val);
-				pci_write_config_dword(pdev,
-						offset + EHCI_USBLEGCTLSTS,
-						val | EHCI_USBLEGCTLSTS_SOOE);
-#endif
 
 				/* some systems get upset if this semaphore is
 				 * set for any other reason than forcing a BIOS

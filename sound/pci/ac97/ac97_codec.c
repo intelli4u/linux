@@ -143,7 +143,7 @@ static const struct ac97_codec_id snd_ac97_codec_ids[] = {
 { 0x43525960, 0xfffffff8, "CS4291",		NULL,		NULL },
 { 0x43525970, 0xfffffff8, "CS4202",		NULL,		NULL },
 { 0x43585421, 0xffffffff, "HSD11246",		NULL,		NULL },	// SmartMC II
-{ 0x43585428, 0xfffffff8, "Cx20468",		patch_conexant,	NULL }, // SmartAMC fixme: the mask might be different
+{ 0x43585428, 0xfffffff8, "Cx20468",		patch_conexant,	NULL },
 { 0x43585430, 0xffffffff, "Cx20468-31",		patch_conexant, NULL },
 { 0x43585431, 0xffffffff, "Cx20551",           patch_cx20551,  NULL },
 { 0x44543031, 0xfffffff0, "DT0398",		NULL,		NULL },
@@ -716,7 +716,6 @@ static int snd_ac97_spdif_cmask_get(struct snd_kcontrol *kcontrol, struct snd_ct
                         
 static int snd_ac97_spdif_pmask_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
 {
-	/* FIXME: AC'97 spec doesn't say which bits are used for what */
 	ucontrol->value.iec958.status[0] = IEC958_AES0_PROFESSIONAL |
 					   IEC958_AES0_NONAUDIO |
 					   IEC958_AES0_PRO_FS |
@@ -2118,10 +2117,9 @@ int snd_ac97_mixer(struct snd_ac97_bus *bus, struct snd_ac97_template *template,
 		return -EACCES;
 	}
 
-	if (bus->ops->reset) // FIXME: always skipping?
+	if (bus->ops->reset)
 		goto __ready_ok;
 
-	/* FIXME: add powerdown control */
 	if (ac97_is_audio(ac97)) {
 		/* nothing should be in powerdown mode */
 		snd_ac97_write_cache(ac97, AC97_POWERDOWN, 0);
@@ -2141,7 +2139,6 @@ int snd_ac97_mixer(struct snd_ac97_bus *bus, struct snd_ac97_template *template,
 		snd_printk(KERN_WARNING "AC'97 %d analog subsections not ready\n", ac97->num);
 	}
 
-	/* FIXME: add powerdown control */
 	if (ac97_is_modem(ac97)) {
 		unsigned char tmp;
 
@@ -2322,7 +2319,6 @@ static void snd_ac97_powerdown(struct snd_ac97 *ac97)
 		snd_ac97_write(ac97, AC97_POWERDOWN, power);
 		udelay(100);
 		/* AC-link powerdown, internal Clk disable */
-		/* FIXME: this may cause click noises on some boards */
 		power |= AC97_PD_PR4 | AC97_PD_PR5;
 		snd_ac97_write(ac97, AC97_POWERDOWN, power);
 	}
@@ -2543,7 +2539,6 @@ void snd_ac97_resume(struct snd_ac97 *ac97)
 				break;
 			schedule_timeout_uninterruptible(1);
 		} while (time_after_eq(end_time, jiffies));
-		/* FIXME: extra delay */
 		ac97->bus->ops->write(ac97, AC97_MASTER, 0x8000);
 		if (snd_ac97_read(ac97, AC97_MASTER) != 0x8000)
 			msleep(250);
@@ -2639,7 +2634,6 @@ static int snd_ac97_swap_ctl(struct snd_ac97 *ac97, const char *s1,
 	return -ENOENT;
 }
 
-#if 1
 /* bind hp and master controls instead of using only hp control */
 static int bind_hp_volsw_put(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
 {
@@ -2666,19 +2660,6 @@ static int tune_hp_only(struct snd_ac97 *ac97)
 	snd_ac97_remove_ctl(ac97, "Headphone Playback", "Volume");
 	return 0;
 }
-
-#else
-/* ac97 tune: use Headphone control as master */
-static int tune_hp_only(struct snd_ac97 *ac97)
-{
-	if (ctl_find(ac97, "Headphone Playback Switch", NULL) == NULL)
-		return -ENOENT;
-	snd_ac97_remove_ctl(ac97, "Master Playback", "Switch");
-	snd_ac97_remove_ctl(ac97, "Master Playback", "Volume");
-	snd_ac97_rename_vol_ctl(ac97, "Headphone Playback", "Master Playback");
-	return 0;
-}
-#endif
 
 /* ac97 tune: swap Headphone and Master controls */
 static int tune_swap_hp(struct snd_ac97 *ac97)
@@ -2853,18 +2834,6 @@ static int apply_quirk_str(struct snd_ac97 *ac97, const char *typestr)
 	return -EINVAL;
 }
 
-/**
- * snd_ac97_tune_hardware - tune up the hardware
- * @ac97: the ac97 instance
- * @quirk: quirk list
- * @override: explicit quirk value (overrides the list if non-NULL)
- *
- * Do some workaround for each pci device, such as renaming of the
- * headphone (true line-out) control as "Master".
- * The quirk-list must be terminated with a zero-filled entry.
- *
- * Returns zero if successful, or a negative error code on failure.
- */
 
 int snd_ac97_tune_hardware(struct snd_ac97 *ac97, struct ac97_quirk *quirk, const char *override)
 {

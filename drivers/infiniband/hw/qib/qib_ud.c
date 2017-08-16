@@ -284,13 +284,6 @@ int qib_make_ud_req(struct qib_qp *qp)
 		ibp->n_unicast_xmit++;
 		lid = ah_attr->dlid & ~((1 << ppd->lmc) - 1);
 		if (unlikely(lid == ppd->lid)) {
-			/*
-			 * If DMAs are in progress, we can't generate
-			 * a completion for the loopback packet since
-			 * it would be out of order.
-			 * XXX Instead of waiting, we could queue a
-			 * zero length descriptor so we get a callback.
-			 */
 			if (atomic_read(&qp->s_dma_busy)) {
 				qp->s_flags |= QIB_S_WAIT_DMA;
 				goto bail;

@@ -640,4 +640,3 @@ void *__kprobes text_poke_smp(void *addr, const void *opcode, size_t len)
 	stop_machine(stop_machine_text_poke, (void *)&tpp, NULL);
 	return addr;
 }
-

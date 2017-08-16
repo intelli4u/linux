@@ -373,7 +373,6 @@ static void nsp32_build_identify(struct scsi_cmnd *SCpnt)
 	int pos             = data->msgout_len;
 	int mode            = FALSE;
 
-	/* XXX: Auto DiscPriv detection is progressing... */
 	if (disc_priv == 0) {
 		/* mode = TRUE; */
 	}
@@ -435,20 +434,6 @@ static void nsp32_build_reject(struct scsi_cmnd *SCpnt)
 /*
  * timer
  */
-#if 0
-static void nsp32_start_timer(struct scsi_cmnd *SCpnt, int time)
-{
-	unsigned int base = SCpnt->host->io_port;
-
-	nsp32_dbg(NSP32_DEBUG_INTR, "timer=%d", time);
-
-	if (time & (~TIMER_CNT_MASK)) {
-		nsp32_dbg(NSP32_DEBUG_INTR, "timer set overflow");
-	}
-
-	nsp32_write2(base, TIMER_SET, time & TIMER_CNT_MASK);
-}
-#endif
 
 
 /*
@@ -1423,11 +1408,6 @@ static irqreturn_t do_nsp32_isr(int irq, void *dev_id)
 		 */
 	}
 
-#if 0
-	nsp32_dbg(NSP32_DEBUG_INTR,
-		  "irq_stat=0x%x trans_stat=0x%x", irq_stat, trans_stat);
-	show_busphase(busphase);
-#endif
 
  out:
 	/* disable IRQ mask */
@@ -1779,7 +1759,6 @@ static void nsp32_adjust_busfree(struct scsi_cmnd *SCpnt, unsigned int s_sacklen
 	}
 
 	if (sentlen == s_sacklen) {
-		/* XXX: confirm it's ok or not */
 		/* In this case, it's ok because we are at 
 		   the head element of the sg. restlen is correctly calculated. */
 	}

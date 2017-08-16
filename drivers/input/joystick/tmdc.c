@@ -124,17 +124,6 @@ struct tmdc_port {
 struct tmdc {
 	struct gameport *gameport;
 	struct tmdc_port *port[2];
-#if 0
-	struct input_dev *dev[2];
-	char name[2][64];
-	char phys[2][32];
-	int mode[2];
-	signed char *abs[2];
-	short *btn[2];
-	unsigned char absc[2];
-	unsigned char btnc[2][4];
-	unsigned char btno[2][4];
-#endif
 	int reads;
 	int bads;
 	unsigned char exists;

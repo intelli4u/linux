@@ -237,7 +237,7 @@ static struct mtd_info *cfi_staa_setup(struct map_info *map)
 	mtd->suspend = cfi_staa_suspend;
 	mtd->resume = cfi_staa_resume;
 	mtd->flags = MTD_CAP_NORFLASH & ~MTD_BIT_WRITEABLE;
-	mtd->writesize = 8; /* FIXME: Should be 0 for STMicro flashes w/out ECC */
+	mtd->writesize = 8;
 	map->fldrv = &cfi_staa_chipdrv;
 	__module_get(THIS_MODULE);
 	mtd->name = map->name;
@@ -311,10 +311,6 @@ static inline int do_read_onechip(struct map_info *map, struct flchip *chip, lof
 		chip->state = FL_READY;
 		break;
 
-#if 0
-	case FL_WRITING:
-		/* Not quite yet */
-#endif
 
 	case FL_READY:
 		break;
@@ -545,7 +541,7 @@ static inline int do_write_buffer(struct map_info *map, struct flchip *chip,
 			mutex_unlock(&chip->mutex);
 			schedule();
 			remove_wait_queue(&chip->wq, &wait);
-			timeo = jiffies + (HZ / 2); /* FIXME */
+			timeo = jiffies + (HZ / 2);
 			mutex_lock(&chip->mutex);
 			continue;
 		}
@@ -656,11 +652,6 @@ static int cfi_staa_write_buffers (struct mtd_info *mtd, loff_t to,
 	return 0;
 }
 
-/*
- * Writev for ECC-Flashes is a little more complicated. We need to maintain
- * a small buffer for this.
- * XXX: If the buffer size is not a multiple of 2, this will break
- */
 #define ECCBUF_SIZE (mtd->writesize)
 #define ECCBUF_DIV(x) ((x) & ~(ECCBUF_SIZE - 1))
 #define ECCBUF_MOD(x) ((x) &  (ECCBUF_SIZE - 1))
@@ -687,7 +678,7 @@ cfi_staa_writev(struct mtd_info *mtd, const struct kvec *vecs,
 	for (i=0; i<count; i++) {
 		size_t elem_len = vecs[i].iov_len;
 		void *elem_base = vecs[i].iov_base;
-		if (!elem_len) /* FIXME: Might be unnecessary. Check that */
+		if (!elem_len)
 			continue;
 		if (buflen) { /* cut off head */
 			if (buflen + elem_len < ECCBUF_SIZE) { /* just accumulate */
@@ -800,7 +791,6 @@ retry:
 	msleep(1000);
 	mutex_lock(&chip->mutex);
 
-	/* FIXME. Use a timer to check this, and return immediately. */
 	/* Once the state machine's known to be working I'll do that */
 
 	timeo = jiffies + (HZ*20);
@@ -812,7 +802,7 @@ retry:
 			mutex_unlock(&chip->mutex);
 			schedule();
 			remove_wait_queue(&chip->wq, &wait);
-			timeo = jiffies + (HZ*20); /* FIXME */
+			timeo = jiffies + (HZ*20);
 			mutex_lock(&chip->mutex);
 			continue;
 		}
@@ -1101,7 +1091,6 @@ retry:
 	msleep(1000);
 	mutex_lock(&chip->mutex);
 
-	/* FIXME. Use a timer to check this, and return immediately. */
 	/* Once the state machine's known to be working I'll do that */
 
 	timeo = jiffies + (HZ*2);
@@ -1250,7 +1239,6 @@ retry:
 	msleep(1000);
 	mutex_lock(&chip->mutex);
 
-	/* FIXME. Use a timer to check this, and return immediately. */
 	/* Once the state machine's known to be working I'll do that */
 
 	timeo = jiffies + (HZ*2);

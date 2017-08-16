@@ -232,4 +232,3 @@ int drm_proc_cleanup(struct drm_minor *minor, struct proc_dir_entry *root)
 
 	return 0;
 }
-

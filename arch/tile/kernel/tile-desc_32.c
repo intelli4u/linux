@@ -6,7 +6,6 @@
 #define TREG_SN 56
 #define TREG_ZERO 63
 
-/* FIXME: Rename this. */
 #include <asm/opcode-tile.h>
 
 #include <linux/stddef.h>

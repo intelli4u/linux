@@ -149,11 +149,6 @@ static int pcie_port_enable_msix(struct pci_dev *dev, int *vectors, int mask)
 		idx[PCIE_PORT_SERVICE_AER_SHIFT] = i;
 	}
 
-	/*
-	 * If nvec is equal to the allocated number of entries, we can just use
-	 * what we have.  Otherwise, the port has some extra entries not for the
-	 * services we know and we need to work around that.
-	 */
 	if (nvec == nr_entries) {
 		status = 0;
 	} else {

@@ -35,11 +35,6 @@ struct bb_info {
 	u32 mdc_msk;
 };
 
-/* FIXME: If any other users of GPIO crop up, then these will have to
- * have some sort of global synchronization to avoid races with other
- * pins on the same port.  The ideal solution would probably be to
- * bind the ports to a GPIO driver, and have this be a client of it.
- */
 static inline void bb_set(u32 __iomem *p, u32 m)
 {
 	out_be32(p, in_be32(p) | m);

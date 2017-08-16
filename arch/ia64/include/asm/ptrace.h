@@ -242,7 +242,6 @@ struct switch_stack {
 
 static inline unsigned long user_stack_pointer(struct pt_regs *regs)
 {
-	/* FIXME: should this be bspstore + nr_dirty regs? */
 	return regs->ar_bspstore;
 }
 

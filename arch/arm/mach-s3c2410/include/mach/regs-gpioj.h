@@ -67,4 +67,3 @@
 #define S3C2440_GPJ12_CAMRESET  (0x02 << 24)
 
 #endif	/* __ASM_ARCH_REGS_GPIOJ_H */
-

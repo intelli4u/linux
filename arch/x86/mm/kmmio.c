@@ -436,11 +436,6 @@ int register_kmmio_probe(struct kmmio_probe *p)
 	}
 out:
 	spin_unlock_irqrestore(&kmmio_lock, flags);
-	/*
-	 * XXX: What should I do here?
-	 * Here was a call to global_flush_tlb(), but it does not exist
-	 * anymore. It seems it's not needed after all.
-	 */
 	return ret;
 }
 EXPORT_SYMBOL(register_kmmio_probe);

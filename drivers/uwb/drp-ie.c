@@ -244,7 +244,6 @@ int uwb_drp_ie_update(struct uwb_rsv *rsv)
 		memcpy(drp_ie, rsv->drp_ie, sizeof(struct uwb_ie_drp));
 		
 
-		/* FIXME: handle properly the unsafe bit */
 		uwb_ie_drp_set_unsafe(drp_ie,       1);
 		uwb_ie_drp_set_status(drp_ie,       uwb_rsv_companion_status(rsv));
 		uwb_ie_drp_set_reason_code(drp_ie,  uwb_rsv_companion_reason_code(rsv));
@@ -315,4 +314,3 @@ void uwb_drp_ie_to_bm(struct uwb_mas_bm *bm, const struct uwb_ie_drp *drp_ie)
 		}
 	}
 }
-

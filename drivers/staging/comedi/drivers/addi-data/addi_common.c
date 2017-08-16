@@ -96,7 +96,7 @@ void fpu_end(void)
 #endif
 
 #include "addi_eeprom.c"
-#if (defined (CONFIG_APCI_3120) || defined (CONFIG_APCI_3001))
+#if (defined(CONFIG_APCI_3120) || defined(CONFIG_APCI_3001))
 #include "hwdrv_apci3120.c"
 #endif
 #ifdef CONFIG_APCI_1032
@@ -126,7 +126,7 @@ void fpu_end(void)
 #ifdef CONFIG_APCI_035
 #include "hwdrv_apci035.c"
 #endif
-#if (defined (CONFIG_APCI_3200) || defined (CONFIG_APCI_3300))
+#if (defined(CONFIG_APCI_3200) || defined(CONFIG_APCI_3300))
 #include "hwdrv_apci3200.c"
 #endif
 #ifdef CONFIG_APCI_1710

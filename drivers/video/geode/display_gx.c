@@ -95,7 +95,6 @@ void gx_set_mode(struct fb_info *info)
 	dcfg = 0;
 
 	/* Set FIFO priority (default 6/5) and enable. */
-	/* FIXME: increase fifo priority for 1280x1024 and higher modes? */
 	gcfg |= (6 << DC_GENERAL_CFG_DFHPEL_SHIFT) |
 		(5 << DC_GENERAL_CFG_DFHPSL_SHIFT) | DC_GENERAL_CFG_DFLE;
 

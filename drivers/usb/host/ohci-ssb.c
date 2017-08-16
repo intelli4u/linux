@@ -142,7 +142,6 @@ static int ssb_ohci_attach(struct ssb_device *dev)
 
 		udelay(1);
 
-		/* Work around for 5354 failures */
 		if (dev->id.revision == 2 && dev->bus->chip_id == 0x5354) {
 			/* Change syn01 reg */
 			tmp = 0x00fe00fe;

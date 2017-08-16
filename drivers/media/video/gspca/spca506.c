@@ -198,7 +198,6 @@ static void spca506_SetNormeInput(struct gspca_dev *gspca_dev,
 				 __u16 channel)
 {
 	struct sd *sd = (struct sd *) gspca_dev;
-/* fixme: check if channel == 0..3 and 6..9 (8 values) */
 	__u8 setbit0 = 0x00;
 	__u8 setbit1 = 0x00;
 	__u8 videomask = 0x00;
@@ -687,8 +686,6 @@ static const struct sd_desc sd_desc = {
 /* -- module initialisation -- */
 static const struct usb_device_id device_table[] __devinitconst = {
 	{USB_DEVICE(0x06e1, 0xa190)},
-/*fixme: may be IntelPCCameraPro BRIDGE_SPCA505
-	{USB_DEVICE(0x0733, 0x0430)}, */
 	{USB_DEVICE(0x0734, 0x043b)},
 	{USB_DEVICE(0x99fa, 0x8988)},
 	{}

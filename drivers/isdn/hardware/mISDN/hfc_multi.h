@@ -1230,4 +1230,3 @@ struct hfc_register_names {
 	{"R_IRQ_FIFO_BL7",	0xCF},
 };
 #endif /* HFC_REGISTER_DEBUG */
-

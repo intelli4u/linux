@@ -181,8 +181,8 @@ static struct devprobe2 isa_probes[] __initdata = {
 #ifdef CONFIG_E2100		/* Cabletron E21xx series. */
 	{e2100_probe, 0},
 #endif
-#if defined(CONFIG_NE2000) || \
-    defined(CONFIG_NE_H8300)  /* ISA (use ne2k-pci for PCI cards) */
+#if defined(CONFIG_NE2000) || defined(CONFIG_NE_H8300)  /* ISA (use ne2k-pci for PCI \
+	cards) */
 	{ne_probe, 0},
 #endif
 #ifdef CONFIG_LANCE		/* ISA/VLB (use pcnet32 for PCI cards) */
@@ -212,7 +212,8 @@ static struct devprobe2 isa_probes[] __initdata = {
 #ifdef CONFIG_EWRK3             /* DEC EtherWORKS 3 */
     	{ewrk3_probe, 0},
 #endif
-#if defined(CONFIG_APRICOT) || defined(CONFIG_MVME16x_NET) || defined(CONFIG_BVME6000_NET)	/* Intel I82596 */
+#if defined(CONFIG_APRICOT) || defined(CONFIG_MVME16x_NET) || \
+	defined(CONFIG_BVME6000_NET)	/* Intel I82596 */
 	{i82596_probe, 0},
 #endif
 #ifdef CONFIG_EL1		/* 3c501 */

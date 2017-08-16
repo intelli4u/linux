@@ -258,17 +258,6 @@ static void h3600ts_process_packet(struct h3600_dev *ts)
 static int h3600ts_event(struct input_dev *dev, unsigned int type,
 			 unsigned int code, int value)
 {
-#if 0
-	struct h3600_dev *ts = input_get_drvdata(dev);
-
-	switch (type) {
-		case EV_LED: {
-		//	serio_write(ts->serio, SOME_CMD);
-			return 0;
-		}
-	}
-	return -1;
-#endif
 	return 0;
 }
 
@@ -364,7 +353,7 @@ static int h3600ts_connect(struct serio *serio, struct serio_driver *drv)
 	input_dev->phys = ts->phys;
 	input_dev->id.bustype = BUS_RS232;
 	input_dev->id.vendor = SERIO_H3600;
-	input_dev->id.product = 0x0666;  /* FIXME !!! We can ask the hardware */
+	input_dev->id.product = 0x0666;
 	input_dev->id.version = 0x0100;
 	input_dev->dev.parent = &serio->dev;
 

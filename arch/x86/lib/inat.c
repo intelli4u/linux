@@ -87,4 +87,3 @@ insn_attr_t inat_get_avx_attribute(insn_byte_t opcode, insn_byte_t vex_m,
 		return 0;
 	return table[opcode];
 }
-

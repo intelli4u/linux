@@ -32,6 +32,18 @@
 #include <net/netfilter/nf_conntrack_l3proto.h>
 #include <net/netfilter/nf_conntrack_l4proto.h>
 #include <net/netfilter/nf_conntrack_zones.h>
+#ifdef CONFIG_IP_NF_TARGET_CONE
+#include <linux/netfilter_ipv4/ipt_cone.h>
+#endif /* CONFIG_IP_NF_TARGET_CONE */
+#ifdef HNDCTF
+#include <linux/if.h>
+#include <linux/if_vlan.h>
+#include <typedefs.h>
+#include <osl.h>
+#include <ctf/hndctf.h>
+
+#define NFC_CTF_ENABLED	(1 << 31)
+#endif /* HNDCTF */
 
 static DEFINE_SPINLOCK(nf_nat_lock);
 
@@ -82,6 +94,12 @@ hash_by_src(const struct net *net, u16 zone,
 			    tuple->dst.protonum, 0);
 	return ((u64)hash * net->ipv4.nat_htable_size) >> 32;
 }
+
+#ifdef HNDCTF
+extern void ip_conntrack_ipct_add(struct sk_buff *skb, u_int32_t hooknum,
+	struct nf_conn *ct, enum ip_conntrack_info ci,
+	struct nf_conntrack_tuple *manip);
+#endif /* HNDCTF */
 
 /* Is this tuple already taken? (not by us) */
 int
@@ -382,6 +400,66 @@ manip_pkt(u_int16_t proto,
 	return true;
 }
 
+#if defined(CTF_PPTP) || defined(CTF_L2TP)
+
+/* Do packet manipulations according to nf_nat_setup_info. */
+unsigned int nf_nat_packet(struct nf_conn *ct,
+			   enum ip_conntrack_info ctinfo,
+			   unsigned int hooknum,
+			   struct sk_buff *skb)
+{
+	enum ip_conntrack_dir dir = CTINFO2DIR(ctinfo);
+	unsigned long statusbit;
+	enum nf_nat_manip_type mtype = HOOK2MANIP(hooknum);
+	unsigned int do_nat=0;
+
+	if (mtype == IP_NAT_MANIP_SRC)
+		statusbit = IPS_SRC_NAT;
+	else
+		statusbit = IPS_DST_NAT;
+
+	/* Invert if this is reply dir. */
+	if (dir == IP_CT_DIR_REPLY)
+		statusbit ^= IPS_NAT_MASK;
+
+
+	/* Non-atomic: these bits don't change. */
+	if (ct->status & statusbit) do_nat = 1;
+
+#if (defined HNDCTF)
+	else {
+		struct iphdr *iph = (struct iphdr *)((skb)->data + 0 /*iphdroff*/ );
+
+		if ((skb->dev!=0) && (skb->dev->flags & IFF_POINTOPOINT) ) {
+			if ((iph->protocol == IPPROTO_UDP) || (iph->protocol == IPPROTO_TCP)) {
+				do_nat=1;
+			}
+		}
+	} /* else */
+#endif /* HNDCTF */
+
+	if (do_nat ==1) {
+		struct nf_conntrack_tuple target;
+
+		/* We are aiming to look like inverse of other direction. */
+		nf_ct_invert_tuplepr(&target, &ct->tuplehash[!dir].tuple);
+#ifdef HNDCTF
+		ip_conntrack_ipct_add(skb, hooknum, ct, ctinfo, &target);
+#endif /* HNDCTF */
+		if (!manip_pkt(target.dst.protonum, skb, 0, &target, mtype))
+			return NF_DROP;
+	} else {
+#ifdef HNDCTF
+		ip_conntrack_ipct_add(skb, hooknum, ct, ctinfo, NULL);
+#endif /* HNDCTF */
+	}
+
+	return NF_ACCEPT;
+}
+EXPORT_SYMBOL_GPL(nf_nat_packet);
+
+#else /*****************/
+
 /* Do packet manipulations according to nf_nat_setup_info. */
 unsigned int nf_nat_packet(struct nf_conn *ct,
 			   enum ip_conntrack_info ctinfo,
@@ -407,13 +485,21 @@ unsigned int nf_nat_packet(struct nf_conn *ct,
 
 		/* We are aiming to look like inverse of other direction. */
 		nf_ct_invert_tuplepr(&target, &ct->tuplehash[!dir].tuple);
-
+#ifdef HNDCTF
+		ip_conntrack_ipct_add(skb, hooknum, ct, ctinfo, &target);
+#endif /* HNDCTF */
 		if (!manip_pkt(target.dst.protonum, skb, 0, &target, mtype))
 			return NF_DROP;
+	} else {
+#ifdef HNDCTF
+		ip_conntrack_ipct_add(skb, hooknum, ct, ctinfo, NULL);
+#endif /* HNDCTF */
 	}
+
 	return NF_ACCEPT;
 }
 EXPORT_SYMBOL_GPL(nf_nat_packet);
+#endif /********************/
 
 /* Dir is direction ICMP is coming from (opposite to packet it contains) */
 int nf_nat_icmp_reply_translation(struct nf_conn *ct,
@@ -552,6 +638,10 @@ static void nf_nat_cleanup_conntrack(struct nf_conn *ct)
 	spin_lock_bh(&nf_nat_lock);
 	hlist_del_rcu(&nat->bysource);
 	spin_unlock_bh(&nf_nat_lock);
+#ifdef CONFIG_IP_NF_TARGET_CONE
+	/* Detach from cone list */
+	ipt_cone_cleanup_conntrack(nat);
+#endif /* CONFIG_IP_NF_TARGET_CONE */
 }
 
 static void nf_nat_move_storage(void *new, void *old)

@@ -895,12 +895,6 @@ static int o2hb_thread(void *data)
 	for(i = 0; !reg->hr_unclean_stop && i < reg->hr_blocks; i++)
 		o2hb_shutdown_slot(&reg->hr_slots[i]);
 
-	/* Explicit down notification - avoid forcing the other nodes
-	 * to timeout on this region when we could just as easily
-	 * write a clear generation - thus indicating to them that
-	 * this node has left this region.
-	 *
-	 * XXX: Should we skip this on unclean_stop? */
 	o2hb_prepare_block(reg, 0);
 	ret = o2hb_issue_node_write(reg, &write_wc);
 	if (ret == 0) {
@@ -1881,7 +1875,6 @@ void o2hb_unregister_callback(const char *region_uuid,
 	mlog(ML_HEARTBEAT, "on behalf of %p for funcs %p\n",
 	     __builtin_return_address(0), hc);
 
-	/* XXX Can this happen _with_ a region reference? */
 	if (list_empty(&hc->hc_item))
 		return;
 

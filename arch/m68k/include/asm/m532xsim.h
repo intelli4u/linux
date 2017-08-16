@@ -1977,7 +1977,6 @@
 #define MCF_SDRAMC_SDCFG2_BWT2RW(x)	(((x)&0x0000000F)<<24)
 #define MCF_SDRAMC_SDCFG2_BRD2PRE(x)	(((x)&0x0000000F)<<28)
 
-/* Device Errata - LIMP mode work around */
 #define MCF_SDRAMC_REFRESH		(0x40000000)
 
 /* Bit definitions and macros for MCF_SDRAMC_SDDS */

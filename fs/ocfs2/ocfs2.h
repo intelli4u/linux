@@ -801,4 +801,3 @@ static inline void _ocfs2_clear_bit(unsigned int bit, unsigned long *bitmap)
 #define ocfs2_find_next_zero_bit ext2_find_next_zero_bit
 #define ocfs2_find_next_bit ext2_find_next_bit
 #endif  /* OCFS2_H */
-

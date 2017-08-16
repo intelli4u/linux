@@ -297,14 +297,6 @@ void DAC1064_global_init(struct matrox_fb_info *minfo)
 				hw->DACreg[POS1064_XOUTPUTCONN] |= 0x40;
 				break;
 			case MATROXFB_SRC_NONE:
-#if 0
-				/* HELP! If we boot without DFP connected to DVI, we can
-				   poweroff TMDS. But if we boot with DFP connected,
-				   TMDS generated clocks are used instead of ALL pixclocks
-				   available... If someone knows which register
-				   handles it, please reveal this secret to me... */			
-				hw->DACreg[POS1064_XPWRCTRL] &= ~0x04;		/* Poweroff TMDS */
-#endif				
 				break;
 		}
 		/* Now set timming related variables... */
@@ -602,9 +594,6 @@ static void MGA1064_ramdac_init(struct matrox_fb_info *minfo)
 /* BIOS environ */
 static int x7AF4 = 0x10;	/* flags, maybe 0x10 = SDRAM, 0x00 = SGRAM??? */
 				/* G100 wants 0x10, G200 SGRAM does not care... */
-#if 0
-static int def50 = 0;	/* reg50, & 0x0F, & 0x3000 (only 0x0000, 0x1000, 0x2000 (0x3000 disallowed and treated as 0) */
-#endif
 
 static void MGAG100_progPixClock(const struct matrox_fb_info *minfo, int flags,
 				 int m, int n, int p)
@@ -842,9 +831,6 @@ static int MGAG100_preinit(struct matrox_fb_info *minfo)
 	struct matrox_hw_state *hw = &minfo->hw;
 
         u_int32_t reg50;
-#if 0
-	u_int32_t q;
-#endif
 
 	DBG(__func__)
 
@@ -929,11 +915,6 @@ static int MGAG100_preinit(struct matrox_fb_info *minfo)
 		mga_writeb(minfo->video.vbase, 0x0000, 0xAA);
 		mga_writeb(minfo->video.vbase, 0x0800, 0x55);
 		mga_writeb(minfo->video.vbase, 0x4000, 0x55);
-#if 0
-		if (mga_readb(minfo->video.vbase, 0x0000) != 0xAA) {
-			hw->MXoptionReg &= ~0x1000;
-		}
-#endif
 		hw->MXoptionReg |= 0x00078020;
 	} else if (minfo->devflags.accelerator == FB_ACCEL_MATROX_MGAG200) {
 		pci_read_config_dword(minfo->pcidev, PCI_OPTION2_REG, &reg50);
@@ -1001,7 +982,7 @@ static void MGAG100_reset(struct matrox_fb_info *minfo)
 #endif
 		if (!minfo->devflags.noinit) {
 			if (x7AF4 & 8) {
-				hw->MXoptionReg |= 0x40;	/* FIXME... */
+				hw->MXoptionReg |= 0x40;
 				pci_write_config_dword(minfo->pcidev, PCI_OPTION_REG, hw->MXoptionReg);
 			}
 			mga_setr(M_EXTVGA_INDEX, 0x06, 0x00);

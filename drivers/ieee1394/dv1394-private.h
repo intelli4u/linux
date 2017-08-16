@@ -584,4 +584,3 @@ static void do_dv1394_shutdown(struct video_card *video, int free_user_buf);
 #define CIP_D_PAL 16
 
 #endif /* _DV_1394_PRIVATE_H */
-

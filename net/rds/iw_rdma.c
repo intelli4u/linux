@@ -121,12 +121,6 @@ static int rds_iw_get_device(struct rds_sock *rs, struct rds_iw_device **rds_iwd
 			    dst_addr->sin_addr.s_addr == rs->rs_conn_addr &&
 			    dst_addr->sin_port == rs->rs_conn_port) {
 #else
-			/* FIXME - needs to compare the local and remote
-			 * ipaddr/port tuple, but the ipaddr is the only
-			 * available infomation in the rds_sock (as the rest are
-			 * zero'ed.  It doesn't appear to be properly populated
-			 * during connection setup...
-			 */
 			if (src_addr->sin_addr.s_addr == rs->rs_bound_addr) {
 #endif
 				spin_unlock_irq(&iwdev->spinlock);
@@ -680,9 +674,6 @@ static int rds_iw_init_fastreg(struct rds_iw_mr_pool *pool,
 		return err;
 	}
 
-	/* FIXME - this is overkill, but mapping->m_sg.dma_len/mapping->m_sg.dma_npages
-	 * is not filled in.
-	 */
 	page_list = ib_alloc_fast_reg_page_list(rds_iwdev->dev, pool->max_message_size);
 	if (IS_ERR(page_list)) {
 		err = PTR_ERR(page_list);

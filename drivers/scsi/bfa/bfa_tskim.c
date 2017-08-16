@@ -686,5 +686,3 @@ bfa_tskim_start(struct bfa_tskim_s *tskim, struct bfa_itnim_s *itnim, lun_t lun,
 	list_add_tail(&tskim->qe, &itnim->tsk_q);
 	bfa_sm_send_event(tskim, BFA_TSKIM_SM_START);
 }
-
-

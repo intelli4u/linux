@@ -952,7 +952,6 @@ static int esp_check_gross_error(struct esp *esp)
 		 */
 		printk(KERN_ERR PFX "esp%d: Gross error sreg[%02x]\n",
 		       esp->host->unique_id, esp->sreg);
-		/* XXX Reset the chip. XXX */
 		return 1;
 	}
 	return 0;
@@ -988,7 +987,6 @@ static int esp_check_spur_intr(struct esp *esp)
 			printk(KERN_ERR PFX "esp%d: DMA error\n",
 			       esp->host->unique_id);
 
-			/* XXX Reset the chip. XXX */
 			return -1;
 		}
 		break;
@@ -1737,7 +1735,6 @@ again:
 		}
 
 		if (ent->flags & ESP_CMD_FLAG_WRITE) {
-			/* XXX parity errors, etc. XXX */
 
 			esp->ops->dma_drain(esp);
 		}
@@ -1758,7 +1755,6 @@ again:
 				 ent->flags, bytes_sent);
 
 		if (bytes_sent < 0) {
-			/* XXX force sync mode for this target XXX */
 			esp_schedule_reset(esp);
 			return 0;
 		}
@@ -2405,7 +2401,6 @@ static int esp_slave_configure(struct scsi_device *dev)
 	goal_tags = 0;
 
 	if (dev->tagged_supported) {
-		/* XXX make this configurable somehow XXX */
 		goal_tags = ESP_DEFAULT_TAGS;
 
 		if (goal_tags > ESP_MAX_TAG)
@@ -2445,9 +2440,6 @@ static int esp_eh_abort_handler(struct scsi_cmnd *cmd)
 	struct completion eh_done;
 	unsigned long flags;
 
-	/* XXX This helps a lot with debugging but might be a bit
-	 * XXX much for the final driver.
-	 */
 	spin_lock_irqsave(esp->host->host_lock, flags);
 	printk(KERN_ERR PFX "esp%d: Aborting command [%p:%02x]\n",
 	       esp->host->unique_id, cmd, cmd->cmnd[0]);
@@ -2546,10 +2538,6 @@ out_success:
 	return SUCCESS;
 
 out_failure:
-	/* XXX This might be a good location to set ESP_TGT_BROKEN
-	 * XXX since we know which target/lun in particular is
-	 * XXX causing trouble.
-	 */
 	spin_unlock_irqrestore(esp->host->host_lock, flags);
 	return FAILED;
 }
@@ -2566,11 +2554,6 @@ static int esp_eh_bus_reset_handler(struct scsi_cmnd *cmd)
 
 	esp->eh_reset = &eh_reset;
 
-	/* XXX This is too simple... We should add lots of
-	 * XXX checks here so that if we find that the chip is
-	 * XXX very wedged we return failure immediately so
-	 * XXX that we can perform a full chip reset.
-	 */
 	esp->flags |= ESP_FLAG_RESETTING;
 	scsi_esp_cmd(esp, ESP_CMD_RS);
 

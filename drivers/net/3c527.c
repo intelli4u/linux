@@ -138,9 +138,6 @@ static unsigned int mc32_debug = NET_DEBUG;
  * Setting to > 1512 effectively disables this feature.	*/
 #define RX_COPYBREAK    200      /* Value from 3c59x.c */
 
-/* Issue the 82586 workaround command - this is for "busy lans", but
- * basically means for all lans now days - has a performance (latency)
- * cost, but best set. */
 static const int WORKAROUND_82586=1;
 
 /* Pointers to buffers and their on-card records */
@@ -880,22 +877,6 @@ static void mc32_flush_tx_ring(struct net_device *dev)
 }
 
 
-/**
- *	mc32_open	-	handle 'up' of card
- *	@dev: device to open
- *
- *	The user is trying to bring the card into ready state. This requires
- *	a brief dialogue with the card. Firstly we enable interrupts and then
- *	'indications'. Without these enabled the card doesn't bother telling
- *	us what it has done. This had me puzzled for a week.
- *
- *	We configure the number of card descriptors, then load the network
- *	address and multicast filters. Turn on the workaround mode. This
- *	works around a bug in the 82586 - it asks the firmware to do
- *	so. It has a performance (latency) hit but is needed on busy
- *	[read most] lans. We load the ring with buffers then we kick it
- *	all off.
- */
 
 static int mc32_open(struct net_device *dev)
 {
@@ -960,7 +941,7 @@ static int mc32_open(struct net_device *dev)
 
 	if (WORKAROUND_82586) {
 		u16 zero_word=0;
-		mc32_command(dev, 0x0D, &zero_word, 2);   /* 82586 bug workaround on  */
+		mc32_command(dev, 0x0D, &zero_word, 2);
 	}
 
 	mc32_load_tx_ring(dev);

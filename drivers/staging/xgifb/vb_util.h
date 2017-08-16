@@ -12,4 +12,3 @@ extern   void     XGINew_SetRegOR(unsigned long Port,unsigned short Index,unsign
 extern   void     XGINew_SetRegAND(unsigned long Port,unsigned short Index,unsigned short DataAND);
 extern   void     XGINew_SetRegANDOR(unsigned long Port,unsigned short Index,unsigned short DataAND,unsigned short DataOR);
 #endif
-

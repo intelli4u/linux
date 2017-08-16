@@ -1162,4 +1162,3 @@ const struct iwl_channel_info *iwl_get_channel_info(const struct iwl_priv *priv,
 	return NULL;
 }
 EXPORT_SYMBOL(iwl_get_channel_info);
-

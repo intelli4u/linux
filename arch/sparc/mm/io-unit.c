@@ -152,7 +152,6 @@ static void iounit_get_scsi_sgl(struct device *dev, struct scatterlist *sg, int 
 	struct iounit_struct *iounit = dev->archdata.iommu;
 	unsigned long flags;
 
-	/* FIXME: Cache some resolved pages - often several sg entries are to the same page */
 	spin_lock_irqsave(&iounit->lock, flags);
 	while (sz != 0) {
 		--sz;
@@ -238,19 +237,16 @@ static int iounit_map_dma_area(struct device *dev, dma_addr_t *pba, unsigned lon
 
 static void iounit_unmap_dma_area(struct device *dev, unsigned long addr, int len)
 {
-	/* XXX Somebody please fill this in */
 }
 #endif
 
 static char *iounit_lockarea(char *vaddr, unsigned long len)
 {
-/* FIXME: Write this */
 	return vaddr;
 }
 
 static void iounit_unlockarea(char *vaddr, unsigned long len)
 {
-/* FIXME: Write this */
 }
 
 void __init ld_mmu_iounit(void)

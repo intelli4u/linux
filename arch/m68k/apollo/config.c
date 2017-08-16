@@ -195,10 +195,6 @@ void dn_sched_init(irq_handler_t timer_routine)
 	/* enable IRQ of PIC B */
 	*(volatile unsigned char *)(pica+1)&=(~8);
 
-#if 0
-	printk("*(0x10803) %02x\n",*(volatile unsigned char *)(timer+0x3));
-	printk("*(0x10803) %02x\n",*(volatile unsigned char *)(timer+0x3));
-#endif
 
 	if (request_irq(IRQ_APOLLO, dn_timer_int, 0, "time", timer_routine))
 		pr_err("Couldn't register timer interrupt\n");
@@ -281,4 +277,3 @@ static void dn_heartbeat(int on) {
 	}
 }
 #endif
-

@@ -34,7 +34,6 @@ static int csum = 1, gso = 1;
 module_param(csum, bool, 0444);
 module_param(gso, bool, 0444);
 
-/* FIXME: MTU in config. */
 #define MAX_PACKET_LEN (ETH_HLEN + VLAN_HLEN + ETH_DATA_LEN)
 #define GOOD_COPY_LEN	128
 

@@ -42,7 +42,6 @@ unsigned long usbip_debug_flag;
 EXPORT_SYMBOL_GPL(usbip_debug_flag);
 
 
-/* FIXME */
 struct device_attribute dev_attr_usbip_debug;
 EXPORT_SYMBOL_GPL(dev_attr_usbip_debug);
 

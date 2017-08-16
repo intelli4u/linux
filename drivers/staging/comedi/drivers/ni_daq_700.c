@@ -285,7 +285,6 @@ static int subdev_700_cmdtest(struct comedi_device *dev,
 
 static int subdev_700_cmd(struct comedi_device *dev, struct comedi_subdevice *s)
 {
-	/* FIXME */
 
 	return 0;
 }
@@ -293,7 +292,6 @@ static int subdev_700_cmd(struct comedi_device *dev, struct comedi_subdevice *s)
 static int subdev_700_cancel(struct comedi_device *dev,
 			     struct comedi_subdevice *s)
 {
-	/* FIXME */
 
 	return 0;
 }
@@ -373,7 +371,7 @@ static int dio700_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	/*  get base address, irq etc. based on bustype */
 	switch (thisboard->bustype) {
 	case pcmcia_bustype:
-		link = pcmcia_cur_dev;	/* XXX hack */
+		link = pcmcia_cur_dev;
 		if (!link)
 			return -EIO;
 		iobase = link->resource[0]->start;

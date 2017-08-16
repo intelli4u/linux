@@ -134,4 +134,3 @@ int dlm_process_incoming_buffer(int nodeid, const void *base,
 
 	return err ? err : ret;
 }
-

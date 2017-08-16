@@ -791,7 +791,6 @@ static int copy_entries_to_user(unsigned int total_size,
 		goto free_counters;
 	}
 
-	/* FIXME: use iterator macros --RR */
 	/* ... then go back and fix counters and names */
 	for (off = 0, num = 0; off < total_size; off += e->next_offset, num++){
 		const struct arpt_entry_target *t;

@@ -1058,7 +1058,6 @@ static int parse_options (char *options, struct super_block *sb,
 			clear_opt(sbi->s_mount_opt, RESERVATION);
 			break;
 		case Opt_journal_update:
-			/* @@@ FIXME */
 			/* Eventually we will want to be able to create
 			   a journal file here.  For now, only allow the
 			   user to specify an existing inode to be the
@@ -1318,13 +1317,6 @@ static int ext3_setup_super(struct super_block *sb, struct ext3_super_block *es,
 		ext3_msg(sb, KERN_WARNING,
 			"warning: checktime reached, "
 			"running e2fsck is recommended");
-#if 0
-		/* @@@ We _will_ want to clear the valid bit if we find
-                   inconsistencies, to force a fsck at reboot.  But for
-                   a plain journaled filesystem we can keep it set as
-                   valid forever! :) */
-	es->s_state &= cpu_to_le16(~EXT3_VALID_FS);
-#endif
 	if (!(__s16) le16_to_cpu(es->s_max_mnt_count))
 		es->s_max_mnt_count = cpu_to_le16(EXT3_DFL_MAX_MNT_COUNT);
 	le16_add_cpu(&es->s_mnt_count, 1);

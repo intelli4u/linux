@@ -102,11 +102,6 @@
 #define SRMMU_SWP_OFF_MASK	0x7ffff
 #define SRMMU_SWP_OFF_SHIFT	(SRMMU_PTE_FILE_SHIFT + 5)
 
-/* Some day I will implement true fine grained access bits for
- * user pages because the SRMMU gives us the capabilities to
- * enforce all the protection levels that vma's can have.
- * XXX But for now...
- */
 #define SRMMU_PAGE_NONE    __pgprot(SRMMU_CACHE | \
 				    SRMMU_PRIV | SRMMU_REF)
 #define SRMMU_PAGE_SHARED  __pgprot(SRMMU_VALID | SRMMU_CACHE | \
@@ -141,7 +136,6 @@
 #ifndef __ASSEMBLY__
 
 /* This makes sense. Honest it does - Anton */
-/* XXX Yes but it's ugly as sin.  FIXME. -KMW */
 extern void *srmmu_nocache_pool;
 #define __nocache_pa(VADDR) (((unsigned long)VADDR) - SRMMU_NOCACHE_VADDR + __pa((unsigned long)srmmu_nocache_pool))
 #define __nocache_va(PADDR) (__va((unsigned long)PADDR) - (unsigned long)srmmu_nocache_pool + SRMMU_NOCACHE_VADDR)

@@ -314,11 +314,6 @@ static inline void dz_transmit_chars(struct dz_mux *mux)
  */
 static inline void check_modem_status(struct dz_port *dport)
 {
-	/*
-	 * FIXME:
-	 * 1. No status change interrupt; use a timer.
-	 * 2. Handle the 3100/5000 as appropriate. --macro
-	 */
 	u16 status;
 
 	/* If not the modem line just return.  */
@@ -366,9 +361,6 @@ static irqreturn_t dz_interrupt(int irq, void *dev_id)
 
 static unsigned int dz_get_mctrl(struct uart_port *uport)
 {
-	/*
-	 * FIXME: Handle the 3100/5000 as appropriate. --macro
-	 */
 	struct dz_port *dport = to_dport(uport);
 	unsigned int mctrl = TIOCM_CAR | TIOCM_DSR | TIOCM_CTS;
 
@@ -382,9 +374,6 @@ static unsigned int dz_get_mctrl(struct uart_port *uport)
 
 static void dz_set_mctrl(struct uart_port *uport, unsigned int mctrl)
 {
-	/*
-	 * FIXME: Handle the 3100/5000 as appropriate. --macro
-	 */
 	struct dz_port *dport = to_dport(uport);
 	u16 tmp;
 
@@ -494,10 +483,6 @@ static unsigned int dz_tx_empty(struct uart_port *uport)
 
 static void dz_break_ctl(struct uart_port *uport, int break_state)
 {
-	/*
-	 * FIXME: Can't access BREAK bits in TDR easily;
-	 * reuse the code for polled TX. --macro
-	 */
 	struct dz_port *dport = to_dport(uport);
 	unsigned long flags;
 	unsigned short tmp, mask = 1 << dport->port.line;

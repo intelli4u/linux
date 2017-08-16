@@ -771,5 +771,3 @@ int ixgbe_fcoe_get_wwn(struct net_device *netdev, u64 *wwn, int type)
 	}
 	return rc;
 }
-
-

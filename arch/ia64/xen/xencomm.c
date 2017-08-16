@@ -91,7 +91,6 @@ xencomm_vtop(unsigned long vaddr)
 		return __pa(vaddr);
 	}
 
-	/* XXX double-check (lack of) locking */
 	vma = find_extend_vma(current->mm, vaddr);
 	if (!vma)
 		return ~0UL;

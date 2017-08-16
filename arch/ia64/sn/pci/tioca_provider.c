@@ -294,32 +294,6 @@ tioca_dma_d64(unsigned long paddr)
 	return bus_addr;
 }
 
-/**
- * tioca_dma_d48 - create a DMA mapping using 48-bit direct mode
- * @pdev: linux pci_dev representing the function
- * @paddr: system physical address
- *
- * Map @paddr into 64-bit bus space of the CA associated with @pcidev_info.
- *
- * The CA agp 48 bit direct address falls out as follows:
- *
- * When direct mapping AGP addresses, the 48 bit AGP address is
- * constructed as follows:
- *
- * [47:40] - Low 8 bits of the page Node ID extracted from coretalk
- *              address [47:40].  The upper 8 node bits are fixed
- *              and come from the xxx register bits [5:0]
- * [39:38] - Chiplet ID extracted from coretalk address [39:38]
- * [37:00] - node offset extracted from coretalk address [37:00]
- * 
- * Since the node id in general will be non-zero, and the chiplet id
- * will always be non-zero, it follows that the device must support
- * a dma mask of at least 0xffffffffff (40 bits) to target node 0
- * and in general should be 0xffffffffffff (48 bits) to target nodes
- * up to 255.  Nodes above 255 need the support of the xxx register,
- * and so a given CA can only directly target nodes in the range
- * xxx - xxx+255.
- */
 static u64
 tioca_dma_d48(struct pci_dev *pdev, u64 paddr)
 {

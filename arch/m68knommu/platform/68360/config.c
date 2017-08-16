@@ -67,16 +67,6 @@ void hw_timer_init(void)
   unsigned char prescaler;
   unsigned short tgcr_save;
 
-#if 0
-  /* Restart mode, Enable int, 32KHz, Enable timer */
-  TCTL = TCTL_OM | TCTL_IRQEN | TCTL_CLKSOURCE_32KHZ | TCTL_TEN;
-  /* Set prescaler (Divide 32KHz by 32)*/
-  TPRER = 31;
-  /* Set compare register  32Khz / 32 / 10 = 100 */
-  TCMP = 10;                                                              
-
-  request_irq(IRQ_MACHSPEC | 1, timer_routine, IRQ_FLG_LOCK, "timer", NULL);
-#endif
 
   /* General purpose quicc timers: MC68360UM p7-20 */
 
@@ -110,14 +100,6 @@ void BSP_gettod (int *yearp, int *monp, int *dayp,
 
 int BSP_set_clock_mmss(unsigned long nowtime)
 {
-#if 0
-  short real_seconds = nowtime % 60, real_minutes = (nowtime / 60) % 60;
-
-  tod->second1 = real_seconds / 10;
-  tod->second2 = real_seconds % 10;
-  tod->minute1 = real_minutes / 10;
-  tod->minute2 = real_minutes % 10;
-#endif
   return 0;
 }
 
@@ -136,7 +118,7 @@ void BSP_reset (void)
 unsigned char *scc1_hwaddr;
 static int errno;
 
-#if defined (CONFIG_UCQUICC)
+#if defined(CONFIG_UCQUICC)
 _bsc0(char *, getserialnum)
 _bsc1(unsigned char *, gethwaddr, int, a)
 _bsc1(char *, getbenv, char *, a)
@@ -166,20 +148,7 @@ void config_BSP(char *command, int len)
 
   printk(KERN_INFO "\n68360 QUICC support (C) 2000 Lineo Inc.\n");
 
-#if defined(CONFIG_UCQUICC) && 0
-  printk(KERN_INFO "uCquicc serial string [%s]\n",getserialnum());
-  p = scc1_hwaddr = gethwaddr(0);
-  printk(KERN_INFO "uCquicc hwaddr %.2x:%.2x:%.2x:%.2x:%.2x:%.2x\n",
-         p[0], p[1], p[2], p[3], p[4], p[5]);
-
-  p = getbenv("APPEND");
-  if (p)
-    strcpy(p,command);
-  else
-    command[0] = 0;
-#else
   scc1_hwaddr = "\00\01\02\03\04\05";
-#endif
  
   mach_gettod          = BSP_gettod;
   mach_reset           = BSP_reset;

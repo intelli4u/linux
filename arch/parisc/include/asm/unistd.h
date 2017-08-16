@@ -869,7 +869,7 @@
 	{								\
 		register unsigned long __res __asm__("r28");		\
 		K_LOAD_ARGS_##nr(args)					\
-		/* FIXME: HACK stw/ldw r19 around syscall */		\
+		\
 		__asm__ volatile(					\
 			K_STW_ASM_PIC					\
 			"	ble  0x100(%%sr2, %%r0)\n"		\

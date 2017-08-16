@@ -248,4 +248,3 @@ int		sup_endian;					//supplier endian flag
 #endif // HCF_ASSERT
 	return (CFG_RANGE_SPEC_STRCT*)actq;
 } // mmd_check_comp
-

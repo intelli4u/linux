@@ -304,7 +304,6 @@ int musb_hub_control(
 		desc->bPwrOn2PwrGood = 5;	/* msec/2 */
 		desc->bHubContrCurrent = 0;
 
-		/* workaround bogus struct definition */
 		desc->DeviceRemovable[0] = 0x02;	/* port 1 */
 		desc->DeviceRemovable[1] = 0xff;
 		}

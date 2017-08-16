@@ -741,11 +741,6 @@ int elantech_init(struct psmouse *psmouse)
 		param[0], param[1], param[2]);
 	etd->capabilities = param[0];
 
-	/*
-	 * This firmware suffers from misreporting coordinates when
-	 * a touch action starts causing the mouse cursor or scrolled page
-	 * to jump. Enable a workaround.
-	 */
 	if (etd->fw_version == 0x020022 || etd->fw_version == 0x020600) {
 		pr_info("firmware version 2.0.34/2.6.0 detected, enabling jumpy cursor workaround\n");
 		etd->jumpy_cursor = true;

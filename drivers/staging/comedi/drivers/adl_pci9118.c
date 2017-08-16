@@ -1357,21 +1357,6 @@ static int Compute_and_setup_dma(struct comedi_device *dev)
 	devpriv->dmabuf_use_size[1] = dmalen1;
 
 	DPRINTK("5 dmalen0=%d dmalen1=%d \n", dmalen0, dmalen1);
-#if 0
-	if (devpriv->ai_n_scanlen < this_board->half_fifo_size) {
-		devpriv->dmabuf_panic_size[0] =
-		    (this_board->half_fifo_size / devpriv->ai_n_scanlen +
-		     1) * devpriv->ai_n_scanlen * sizeof(short);
-		devpriv->dmabuf_panic_size[1] =
-		    (this_board->half_fifo_size / devpriv->ai_n_scanlen +
-		     1) * devpriv->ai_n_scanlen * sizeof(short);
-	} else {
-		devpriv->dmabuf_panic_size[0] =
-		    (devpriv->ai_n_scanlen << 1) % devpriv->dmabuf_size[0];
-		devpriv->dmabuf_panic_size[1] =
-		    (devpriv->ai_n_scanlen << 1) % devpriv->dmabuf_size[1];
-	}
-#endif
 
 	outl(inl(devpriv->iobase_a + AMCC_OP_REG_MCSR) & (~EN_A2P_TRANSFERS),
 			devpriv->iobase_a + AMCC_OP_REG_MCSR);	/* stop DMA */
@@ -1560,12 +1545,6 @@ static int pci9118_ai_cmd(struct comedi_device *dev, struct comedi_subdevice *s)
 		devpriv->ai_inttrig_start = cmd->start_arg;
 		s->async->inttrig = pci9118_ai_inttrig;
 	}
-#if 0
-	if (cmd->stop_src == TRIG_INT) {
-		devpriv->ai_neverending = 1;
-		devpriv->ai12_startstop |= STOP_AI_INT;
-	}
-#endif
 	if (cmd->stop_src == TRIG_NONE)
 		devpriv->ai_neverending = 1;
 	if (cmd->stop_src == TRIG_COUNT) {
@@ -1618,9 +1597,6 @@ static int pci9118_ai_cmd(struct comedi_device *dev, struct comedi_subdevice *s)
 				 * block to fit EOS on every second call
 				 */
 				devpriv->usedma = 0;
-				/*
-				 * XXX maybe can be corrected to use 16 bit DMA
-				 */
 			} else {	/*
 					 * well, we must insert one sample
 					 * to end of EOS to meet 32 bit transfer

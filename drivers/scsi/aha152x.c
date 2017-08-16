@@ -13,7 +13,7 @@
  * General Public License for more details.
  *
  *
- * $Id: aha152x.c,v 2.7 2004/01/24 11:42:59 fischer Exp $
+ * $Id: aha152x.c,v 2.7 2004/01/24 11:42:59 Exp $
  *
  * $Log: aha152x.c,v $
  * Revision 2.7  2004/01/24 11:42:59  fischer
@@ -1058,14 +1058,6 @@ static int aha152x_internal_queue(Scsi_Cmnd *SCpnt, struct completion *complete,
  */
 static int aha152x_queue(Scsi_Cmnd *SCpnt, void (*done)(Scsi_Cmnd *))
 {
-#if 0
-	if(*SCpnt->cmnd == REQUEST_SENSE) {
-		SCpnt->result = 0;
-		done(SCpnt);
-
-		return 0;
-	}
-#endif
 
 	return aha152x_internal_queue(SCpnt, NULL, 0, done);
 }
@@ -1077,10 +1069,6 @@ static int aha152x_queue(Scsi_Cmnd *SCpnt, void (*done)(Scsi_Cmnd *))
  */
 static void reset_done(Scsi_Cmnd *SCpnt)
 {
-#if 0
-	struct Scsi_Host *shpnt = SCpnt->host;
-	DPRINTK(debug_eh, INFO_LEAD "reset_done called\n", CMDINFO(SCpnt));
-#endif
 	if(SCSEM(SCpnt)) {
 		complete(SCSEM(SCpnt));
 	} else {
@@ -1125,12 +1113,6 @@ static int aha152x_abort(Scsi_Cmnd *SCpnt)
 
 	DO_UNLOCK(flags);
 
-	/*
-	 * FIXME:
-	 * for current command: queue ABORT for message out and raise ATN
-	 * for disconnected command: pseudo SC with ABORT message or ABORT on reselection?
-	 *
-	 */
 
 	printk(ERR_LEAD "cannot abort running or disconnected command\n", CMDINFO(SCpnt));
 
@@ -1543,12 +1525,6 @@ static void busfree_run(struct Scsi_Host *shpnt)
 			struct scsi_cmnd *cmd = HOSTDATA(shpnt)->done_SC;
 			struct aha152x_scdata *sc = SCDATA(cmd);
 
-#if 0
-			if(HOSTDATA(shpnt)->debug & debug_eh) {
-				printk(ERR_LEAD "received sense: ", CMDINFO(DONE_SC));
-				scsi_print_sense("bh", DONE_SC);
-			}
-#endif
 
 			scsi_eh_restore_cmnd(cmd, &sc->ses);
 
@@ -1561,17 +1537,11 @@ static void busfree_run(struct Scsi_Host *shpnt)
 #if defined(AHA152X_STAT)
 			HOSTDATA(shpnt)->busfree_with_check_condition++;
 #endif
-#if 0
-			DPRINTK(debug_eh, ERR_LEAD "CHECK CONDITION found\n", CMDINFO(DONE_SC));
-#endif
 
 			if(!(DONE_SC->SCp.phase & not_issued)) {
 				struct aha152x_scdata *sc;
 				Scsi_Cmnd *ptr = DONE_SC;
 				DONE_SC=NULL;
-#if 0
-				DPRINTK(debug_eh, ERR_LEAD "requesting sense\n", CMDINFO(ptr));
-#endif
 
 				sc = SCDATA(ptr);
 				/* It was allocated in aha152x_internal_queue? */
@@ -1581,10 +1551,6 @@ static void busfree_run(struct Scsi_Host *shpnt)
 				DO_UNLOCK(flags);
 				aha152x_internal_queue(ptr, NULL, check_condition, ptr->scsi_done);
 				DO_LOCK(flags);
-#if 0
-			} else {
-				DPRINTK(debug_eh, ERR_LEAD "command not issued - CHECK CONDITION ignored\n", CMDINFO(DONE_SC));
-#endif
 			}
 		}
 
@@ -1786,19 +1752,6 @@ static void seldi_run(struct Scsi_Host *shpnt)
 	DPRINTK(debug_selection, DEBUG_LEAD "target %d reselected (%02x).\n", CMDINFO(CURRENT_SC), target, selid);
 }
 
-/*
- * message in phase
- * - handle initial message after reconnection to identify
- *   reconnecting nexus
- * - queue command on DISCONNECTED_SC on DISCONNECT message
- * - set completed flag on COMMAND COMPLETE
- *   (other completition code moved to busfree_run)
- * - handle response to SDTR
- * - clear synchronous transfer agreements on BUS RESET
- *
- * FIXME: what about SAVE POINTERS, RESTORE POINTERS?
- *
- */
 static void msgi_run(struct Scsi_Host *shpnt)
 {
 	for(;;) {
@@ -2167,10 +2120,6 @@ static void datai_run(struct Scsi_Host *shpnt)
 	 *
 	 */
 	while(TESTLO(DMASTAT, INTSTAT) || TESTLO(DMASTAT, DFIFOEMP) || TESTLO(SSTAT2, SEMPTY)) {
-		/* FIXME: maybe this should be done by setting up
-		 * STCNT to trigger ENSWRAP interrupt, instead of
-		 * polling for DFIFOFULL
-		 */
 		the_time=jiffies + 100*HZ;
 		while(TESTLO(DMASTAT, DFIFOFULL|INTSTAT) && time_before(jiffies,the_time))
 			barrier();
@@ -2446,12 +2395,6 @@ static int update_state(struct Scsi_Host *shpnt)
 	return dataphase;
 }
 
-/*
- * handle parity error
- *
- * FIXME: in which phase?
- *
- */
 static void parerr_run(struct Scsi_Host *shpnt)
 {
 	printk(ERR_LEAD "parity error\n", CMDINFO(CURRENT_SC));

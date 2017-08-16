@@ -979,10 +979,6 @@ int sctp_cmp_addr_exact(const union sctp_addr *ss1,
 	return af->cmp_addr(ss1, ss2);
 }
 
-/* Return an ecne chunk to get prepended to a packet.
- * Note:  We are sly and return a shared, prealloced chunk.  FIXME:
- * No we don't, but we could/should.
- */
 struct sctp_chunk *sctp_get_ecne_prepend(struct sctp_association *asoc)
 {
 	struct sctp_chunk *chunk;
@@ -1012,10 +1008,6 @@ struct sctp_transport *sctp_assoc_lookup_tsn(struct sctp_association *asoc,
 
 	match = NULL;
 
-	/*
-	 * FIXME: In general, find a more efficient data structure for
-	 * searching.
-	 */
 
 	/*
 	 * The general strategy is to search each transport's transmitted

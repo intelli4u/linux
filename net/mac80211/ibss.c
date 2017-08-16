@@ -409,10 +409,6 @@ struct sta_info *ieee80211_ibss_add_sta(struct ieee80211_sub_if_data *sdata,
 	struct sta_info *sta;
 	int band = local->hw.conf.channel->band;
 
-	/*
-	 * XXX: Consider removing the least recently used entry and
-	 * 	allow new one to be added.
-	 */
 	if (local->num_sta >= IEEE80211_IBSS_MAX_STA_ENTRIES) {
 		if (net_ratelimit())
 			printk(KERN_DEBUG "%s: No room for a new IBSS STA entry %pM\n",

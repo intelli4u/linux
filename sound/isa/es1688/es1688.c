@@ -221,10 +221,6 @@ static struct isa_driver snd_es1688_driver = {
 	.match		= snd_es1688_match,
 	.probe		= snd_es1688_isa_probe,
 	.remove		= __devexit_p(snd_es1688_isa_remove),
-#if 0	/* FIXME */
-	.suspend	= snd_es1688_suspend,
-	.resume		= snd_es1688_resume,
-#endif
 	.driver		= {
 		.name	= DEV_NAME
 	}

@@ -430,7 +430,6 @@ static int srp_send_req(struct srp_target_port *target)
 
 static void srp_disconnect_target(struct srp_target_port *target)
 {
-	/* XXX should send SRP_I_LOGOUT request */
 
 	init_completion(&target->done);
 	if (ib_send_cm_dreq(target->cm_id, NULL, 0)) {
@@ -924,7 +923,6 @@ static void srp_handle_recv(struct srp_target_port *target, struct ib_wc *wc)
 		break;
 
 	case SRP_T_LOGOUT:
-		/* XXX Handle target logout */
 		shost_printk(KERN_WARNING, target->scsi_host,
 			     PFX "Got target logout request\n");
 		break;

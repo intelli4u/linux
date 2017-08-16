@@ -1193,7 +1193,6 @@ static int usbduxfast_ai_cmd(struct comedi_device *dev,
 		ret = usbduxfastsub_submit_InURBs(udfs);
 		if (ret < 0) {
 			udfs->ai_cmd_running = 0;
-			/* fixme: unlink here?? */
 			up(&udfs->sem);
 			return ret;
 		}

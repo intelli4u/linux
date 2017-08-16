@@ -257,7 +257,6 @@ static int vdc_ack(struct vdc_port *port, void *msgbuf)
 
 static int vdc_nack(struct vdc_port *port, void *msgbuf)
 {
-	/* XXX Implement me XXX */
 	return 0;
 }
 
@@ -538,9 +537,6 @@ static int generic_request(struct vdc_port *port, u8 op, void *buf, int len)
 
 	dr = &port->vio.drings[VIO_DRIVER_TX_RING];
 
-	/* XXX If we want to use this code generically we have to
-	 * XXX handle TX ring exhaustion etc.
-	 */
 	desc = vio_dring_cur(dr);
 
 	err = ldc_map_single(port->vio.lp, req_buf, op_len,

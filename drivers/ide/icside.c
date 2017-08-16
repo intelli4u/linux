@@ -611,14 +611,12 @@ static void __devexit icside_remove(struct expansion_card *ec)
 
 	switch (state->type) {
 	case ICS_TYPE_V5:
-		/* FIXME: tell IDE to stop using the interface */
 
 		/* Disable interrupts */
 		icside_irqdisable_arcin_v5(ec, 0);
 		break;
 
 	case ICS_TYPE_V6:
-		/* FIXME: tell IDE to stop using the interface */
 		if (ec->dma != NO_DMA)
 			free_dma(ec->dma);
 

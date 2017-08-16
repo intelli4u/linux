@@ -4355,7 +4355,6 @@ static sector_t reshape_request(mddev_t *mddev, sector_t sector_nr, int *skipped
 	return reshape_sectors;
 }
 
-/* FIXME go_faster isn't used */
 static inline sector_t sync_request(mddev_t *mddev, sector_t sector_nr, int *skipped, int go_faster)
 {
 	raid5_conf_t *conf = mddev->private;

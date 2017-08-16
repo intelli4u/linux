@@ -680,7 +680,6 @@ static void sil_init_controller(struct ata_host *host)
 		dev_printk(KERN_WARNING, &pdev->dev,
 			   "cache line size not set.  Driver may not function\n");
 
-	/* Apply R_ERR on DMA activate FIS errata workaround */
 	if (host->ports[0]->flags & SIL_FLAG_RERR_ON_DMA_ACT) {
 		int cnt;
 

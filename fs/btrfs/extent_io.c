@@ -2840,7 +2840,6 @@ int extent_prepare_write(struct extent_io_tree *tree,
 	}
 	check_page_uptodate(tree, page);
 err:
-	/* FIXME, zero out newly allocated blocks on error */
 	return err;
 }
 

@@ -712,7 +712,6 @@ static int udf_find_fileset(struct super_block *sb,
 		/* Search backwards through the partitions */
 		struct kernel_lb_addr newfileset;
 
-/* --> cvg: FIXME - is it reasonable? */
 		return 1;
 
 		for (newfileset.partitionReferenceNum = sbi->s_partitions - 1;

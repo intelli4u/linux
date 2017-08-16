@@ -439,12 +439,6 @@ static int pdc2027x_check_atapi_dma(struct ata_queued_cmd *qc)
 	u8 *scsicmd = cmd->cmnd;
 	int rc = 1; /* atapi dma off by default */
 
-	/*
-	 * This workaround is from Promise's GPL driver.
-	 * If ATAPI DMA is used for commands not in the
-	 * following white list, say MODE_SENSE and REQUEST_SENSE,
-	 * pdc2027x might hit the irq lost problem.
-	 */
 	switch (scsicmd[0]) {
 	case READ_10:
 	case WRITE_10:

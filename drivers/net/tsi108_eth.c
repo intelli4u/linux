@@ -1254,9 +1254,6 @@ static void tsi108_init_phy(struct net_device *dev)
 
 	tsi108_write_tbi(data, 0x11, 0x30);
 
-	/* FIXME: It seems to take more than 2 back-to-back reads to the
-	 * PHY_STAT register before the link up status bit is set.
-	 */
 
 	data->link_up = 0;
 

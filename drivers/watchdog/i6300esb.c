@@ -152,7 +152,6 @@ static void esb_timer_keepalive(void)
 	spin_lock(&esb_lock);
 	esb_unlock_registers();
 	writew(ESB_WDT_RELOAD, ESB_RELOAD_REG);
-	/* FIXME: Do we need to flush anything here? */
 	spin_unlock(&esb_lock);
 }
 
@@ -183,7 +182,6 @@ static int esb_timer_set_heartbeat(int time)
 	esb_unlock_registers();
 	writew(ESB_WDT_RELOAD, ESB_RELOAD_REG);
 
-	/* FIXME: Do we need to flush everything out? */
 
 	/* Done */
 	heartbeat = time;

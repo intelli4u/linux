@@ -22,7 +22,6 @@ static int logfs_mark_segment_bad(struct super_block *sb, u32 segno)
 	if (err)
 		return err;
 	logfs_super(sb)->s_bad_segments++;
-	/* FIXME: write to journal */
 	return 0;
 }
 
@@ -83,7 +82,7 @@ int __logfs_buf_write(struct logfs_area *area, u64 ofs, void *buf, size_t len,
 		page = get_mapping_page(area->a_sb, index, use_filler);
 		if (IS_ERR(page))
 			return PTR_ERR(page);
-		BUG_ON(!page); /* FIXME: reserve a pool */
+		BUG_ON(!page);
 		SetPageUptodate(page);
 		memcpy(page_address(page) + offset, buf, copylen);
 		SetPagePrivate(page);
@@ -108,7 +107,7 @@ static void pad_partial_page(struct logfs_area *area)
 
 	if (len % PAGE_SIZE) {
 		page = get_mapping_page(sb, index, 0);
-		BUG_ON(!page); /* FIXME: reserve a pool */
+		BUG_ON(!page);
 		memset(page_address(page) + offset, 0xff, len);
 		SetPagePrivate(page);
 		page_cache_release(page);
@@ -127,7 +126,7 @@ static void pad_full_pages(struct logfs_area *area)
 
 	while (no_indizes) {
 		page = get_mapping_page(sb, index, 0);
-		BUG_ON(!page); /* FIXME: reserve a pool */
+		BUG_ON(!page);
 		SetPageUptodate(page);
 		memset(page_address(page), 0xff, PAGE_CACHE_SIZE);
 		SetPagePrivate(page);
@@ -421,26 +420,6 @@ static int check_pos(struct super_block *sb, u64 pos1, u64 pos2, level_t level)
 		(pos2 & logfs_block_mask(sb, level));
 }
 
-#if 0
-static int read_seg_header(struct super_block *sb, u64 ofs,
-		struct logfs_segment_header *sh)
-{
-	__be32 crc;
-	int err;
-
-	err = wbuf_read(sb, ofs, sizeof(*sh), sh);
-	if (err)
-		return err;
-	crc = logfs_crc32(sh, sizeof(*sh), 4);
-	if (crc != sh->crc) {
-		printk(KERN_ERR"LOGFS: header crc error at %llx: expected %x, "
-				"got %x\n", ofs, be32_to_cpu(sh->crc),
-				be32_to_cpu(crc));
-		return -EIO;
-	}
-	return 0;
-}
-#endif
 
 static int read_obj_header(struct super_block *sb, u64 ofs,
 		struct logfs_object_header *oh)

@@ -129,7 +129,7 @@ static int __devinit ps3_ehci_probe(struct ps3_system_bus_device *dev)
 		goto fail_irq;
 	}
 
-	dev->core.dma_mask = &dummy_mask; /* FIXME: for improper usb code */
+	dev->core.dma_mask = &dummy_mask;
 
 	hcd = usb_create_hcd(&ps3_ehci_hc_driver, &dev->core, dev_name(&dev->core));
 

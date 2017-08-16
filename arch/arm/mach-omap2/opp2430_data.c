@@ -1,30 +1,4 @@
-/*
- * opp2430_data.c - old-style "OPP" table for OMAP2430
- *
- * Copyright (C) 2005-2009 Texas Instruments, Inc.
- * Copyright (C) 2004-2009 Nokia Corporation
- *
- * Richard Woodruff <r-woodruff2@ti.com>
- *
- * The OMAP2 processor can be run at several discrete 'PRCM configurations'.
- * These configurations are characterized by voltage and speed for clocks.
- * The device is only validated for certain combinations. One way to express
- * these combinations is via the 'ratios' which the clocks operate with
- * respect to each other. These ratio sets are for a given voltage/DPLL
- * setting. All configurations can be described by a DPLL setting and a ratio.
- *
- * 2430 differs from 2420 in that there are no more phase synchronizers used.
- * They both have a slightly different clock domain setup. 2420(iva1,dsp) vs
- * 2430 (iva2.1, NOdsp, mdm)
- *
- * XXX Missing voltage data.
- * XXX Missing 19.2MHz sys_clk rate sets.
- *
- * THe format described in this file is deprecated.  Once a reasonable
- * OPP API exists, the data in this file should be converted to use it.
- *
- * This is technically part of the OMAP2xxx clock code.
- */
+
 
 #include "opp2xxx.h"
 #include "sdrc.h"

@@ -109,13 +109,6 @@ static irqreturn_t i2sbus_bus_intr(int irq, void *devid)
 }
 
 
-/*
- * XXX FIXME: We test the layout_id's here to get the proper way of
- * mapping in various registers, thanks to bugs in Apple device-trees.
- * We could instead key off the machine model and the name of the i2s
- * node (i2s-a). This we'll do when we move it all to macio_asic.c
- * and have that export items for each sub-node too.
- */
 static int i2sbus_get_and_fixup_rsrc(struct device_node *np, int index,
 				     int layout, struct resource *res)
 {
@@ -152,7 +145,6 @@ static int i2sbus_get_and_fixup_rsrc(struct device_node *np, int index,
 	return rc;
 }
 
-/* FIXME: look at device node refcounting */
 static int i2sbus_add_dev(struct macio_dev *macio,
 			  struct i2sbus_control *control,
 			  struct device_node *np)
@@ -247,12 +239,6 @@ static int i2sbus_add_dev(struct macio_dev *macio,
 	}
 
 
-	/* Resource handling is problematic as some device-trees contain
-	 * useless crap (ugh ugh ugh). We work around that here by calling
-	 * specific functions for calculating the appropriate resources.
-	 *
-	 * This will all be moved to macio_asic.c at one point
-	 */
 	for (i = aoa_resource_i2smmio; i <= aoa_resource_rxdbdma; i++) {
 		if (i2sbus_get_and_fixup_rsrc(np,i,layout,&dev->resources[i]))
 			goto err;

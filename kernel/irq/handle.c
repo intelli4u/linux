@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  * linux/kernel/irq/handle.c
  *
@@ -22,7 +23,14 @@
 #include <linux/radix-tree.h>
 #include <trace/events/irq.h>
 
+#if defined(CONFIG_BUZZZ)
+#include <asm/buzzz.h>
+#endif	/*  CONFIG_BUZZZ */
+
 #include "internals.h"
+
+#include <typedefs.h>
+#include <bcmdefs.h>
 
 /*
  * lockdep: we want to handle all irq_desc locks as a single lock-class:
@@ -38,6 +46,10 @@ struct lock_class_key irq_desc_lock_class;
  */
 void handle_bad_irq(unsigned int irq, struct irq_desc *desc)
 {
+#if defined(BUZZZ_KEVT_LVL) && (BUZZZ_KEVT_LVL >= 1)
+	buzzz_kevt_log1(BUZZZ_KEVT_ID_IRQ_BAD, irq);
+#endif	/* BUZZZ_KEVT_LVL */
+
 	print_irq_desc(irq, desc);
 	kstat_incr_irqs_this_cpu(irq, desc);
 	ack_bad_irq(irq);
@@ -296,6 +308,10 @@ static void ack_bad(unsigned int irq)
 {
 	struct irq_desc *desc = irq_to_desc(irq);
 
+#if defined(BUZZZ_KEVT_LVL) && (BUZZZ_KEVT_LVL >= 1)
+	buzzz_kevt_log1(BUZZZ_KEVT_ID_IRQ_ACK_BAD, irq);
+#endif	/* BUZZZ_KEVT_LVL */
+
 	print_irq_desc(irq, desc);
 	ack_bad_irq(irq);
 }
@@ -365,14 +381,24 @@ static void warn_no_thread(unsigned int irq, struct irqaction *action)
  *
  * Handles the action chain of an irq event
  */
-irqreturn_t handle_IRQ_event(unsigned int irq, struct irqaction *action)
+irqreturn_t BCMFASTPATH handle_IRQ_event(unsigned int irq, struct irqaction *action)
 {
 	irqreturn_t ret, retval = IRQ_NONE;
 	unsigned int status = 0;
 
 	do {
 		trace_irq_handler_entry(irq, action);
+
+#if defined(BUZZZ_KEVT_LVL) && (BUZZZ_KEVT_LVL >= 1)
+		buzzz_kevt_log2(BUZZZ_KEVT_ID_IRQ_ENTRY, irq, (int)(action->handler));
+#endif	/* BUZZZ_KEVT_LVL */
+
 		ret = action->handler(irq, action->dev_id);
+
+#if defined(BUZZZ_KEVT_LVL) && (BUZZZ_KEVT_LVL >= 1)
+		buzzz_kevt_log2(BUZZZ_KEVT_ID_IRQ_EXIT, irq, (int)(action->handler));
+#endif	/* BUZZZ_KEVT_LVL */
+
 		trace_irq_handler_exit(irq, action, ret);
 
 		switch (ret) {
@@ -443,7 +469,7 @@ irqreturn_t handle_IRQ_event(unsigned int irq, struct irqaction *action)
  * This is the original x86 implementation which is used for every
  * interrupt type.
  */
-unsigned int __do_IRQ(unsigned int irq)
+unsigned int BCMFASTPATH __do_IRQ(unsigned int irq)
 {
 	struct irq_desc *desc = irq_to_desc(irq);
 	struct irqaction *action;
@@ -553,4 +579,3 @@ unsigned int kstat_irqs_cpu(unsigned int irq, int cpu)
 	return desc ? desc->kstat_irqs[cpu] : 0;
 }
 EXPORT_SYMBOL(kstat_irqs_cpu);
-

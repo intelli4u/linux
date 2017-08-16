@@ -752,17 +752,6 @@ out:
 
 device_initcall(hdmi_init_pm_clock);
 
-/*
- * FIXME !!
- *
- * gpio_no_direction
- * gpio_pull_up
- * are quick_hack.
- *
- * current gpio frame work doesn't have
- * the method to control only pull up/down/free.
- * this function should be replaced by correct gpio function
- */
 static void __init gpio_no_direction(u32 addr)
 {
 	__raw_writeb(0x00, addr);

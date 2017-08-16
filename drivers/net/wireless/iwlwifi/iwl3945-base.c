@@ -1295,12 +1295,6 @@ static void iwl3945_rx_handle(struct iwl_priv *priv)
 				pkt->hdr.cmd);
 		}
 
-		/*
-		 * XXX: After here, we should always check rxb->page
-		 * against NULL before touching it or its virtual
-		 * memory (pkt). Because some rx_handler might have
-		 * already taken or freed the pages.
-		 */
 
 		if (reclaim) {
 			/* Invoke any callbacks, transfer the buffer to caller,
@@ -2020,11 +2014,6 @@ static int iwl3945_verify_inst_sparse(struct iwl_priv *priv, __le32 *image, u32 
 			i + IWL39_RTC_INST_LOWER_BOUND);
 		val = _iwl_read_direct32(priv, HBUS_TARG_MEM_RDAT);
 		if (val != le32_to_cpu(*image)) {
-#if 0 /* Enable this if you want to see details */
-			IWL_ERR(priv, "uCode INST section is invalid at "
-				  "offset 0x%x, is 0x%x, s/b 0x%x\n",
-				  i, val, *image);
-#endif
 			rc = -EIO;
 			errcnt++;
 			if (errcnt >= 3)
@@ -3295,9 +3284,6 @@ void iwl3945_config_ap(struct iwl_priv *priv, struct ieee80211_vif *vif)
 	}
 	iwl3945_send_beacon_cmd(priv);
 
-	/* FIXME - we need to add code here to detect a totally new
-	 * configuration, reset the AP, unassoc, rxon timing, assoc,
-	 * clear sta table, add BCAST sta... */
 }
 
 static int iwl3945_mac_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,

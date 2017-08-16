@@ -349,19 +349,6 @@ static int pvr2_encoder_prep_config(struct pvr2_hdw *hdw)
 	int ret = 0;
 	int encMisc3Arg = 0;
 
-#if 0
-	/* This inexplicable bit happens in the Hauppauge windows
-	   driver (for both 24xxx and 29xxx devices).  However I
-	   currently see no difference in behavior with or without
-	   this stuff.  Leave this here as a note of its existence,
-	   but don't use it. */
-	LOCK_TAKE(hdw->ctl_lock); do {
-		u32 dat[1];
-		dat[0] = 0x80000640;
-		pvr2_encoder_write_words(hdw,0x01fe,dat,1);
-		pvr2_encoder_write_words(hdw,0x023e,dat,1);
-	} while(0); LOCK_GIVE(hdw->ctl_lock);
-#endif
 
 	/* Mike Isely <isely@pobox.com> 26-Jan-2006 The windows driver
 	   sends the following list of ENC_MISC commands (for both
@@ -371,12 +358,6 @@ static int pvr2_encoder_prep_config(struct pvr2_hdw *hdw)
 	   breaks up for a moment (like when switching channels). */
 
 
-#if 0
-	/* This ENC_MISC(5,0) command seems to hurt 29xxx sync
-	   performance on channel changes, but is not a problem on
-	   24xxx devices. */
-	ret |= pvr2_encoder_vcmd(hdw, CX2341X_ENC_MISC,4, 5,0,0,0);
-#endif
 
 	/* This ENC_MISC(3,encMisc3Arg) command is critical - without
 	   it there will eventually be video corruption.  Also, the
@@ -393,14 +374,6 @@ static int pvr2_encoder_prep_config(struct pvr2_hdw *hdw)
 
 	ret |= pvr2_encoder_vcmd(hdw, CX2341X_ENC_MISC,4, 8,0,0,0);
 
-#if 0
-	/* This ENC_MISC(4,1) command is poisonous, so it is commented
-	   out.  But I'm leaving it here anyway to document its
-	   existence in the Windows driver.  The effect of this
-	   command is that apps displaying the stream become sluggish
-	   with stuttering video. */
-	ret |= pvr2_encoder_vcmd(hdw, CX2341X_ENC_MISC,4, 4,1,0,0);
-#endif
 
 	ret |= pvr2_encoder_vcmd(hdw, CX2341X_ENC_MISC,4, 0,3,0,0);
 	ret |= pvr2_encoder_vcmd(hdw, CX2341X_ENC_MISC,4,15,0,0,0);

@@ -763,7 +763,7 @@ static int rtd_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 
 	printk("comedi%d: rtd520 attaching.\n", dev->minor);
 
-#if defined (CONFIG_COMEDI_DEBUG) && defined (USE_DMA)
+#if defined(CONFIG_COMEDI_DEBUG) && defined(USE_DMA)
 	/* You can set this a load time: modprobe comedi comedi_debug=1 */
 	if (0 == comedi_debug)	/* force DMA debug printks */
 		comedi_debug = 1;
@@ -1041,51 +1041,6 @@ static int rtd_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 
 	return 1;
 
-#if 0
-	/* hit an error, clean up memory and return ret */
-/* rtd_attach_die_error: */
-#ifdef USE_DMA
-	for (index = 0; index < DMA_CHAIN_COUNT; index++) {
-		if (NULL != devpriv->dma0Buff[index]) {	/* free buffer memory */
-			pci_free_consistent(devpriv->pci_dev,
-					    sizeof(u16) * devpriv->fifoLen / 2,
-					    devpriv->dma0Buff[index],
-					    devpriv->dma0BuffPhysAddr[index]);
-			devpriv->dma0Buff[index] = NULL;
-		}
-	}
-	if (NULL != devpriv->dma0Chain) {
-		pci_free_consistent(devpriv->pci_dev,
-				    sizeof(struct plx_dma_desc)
-				    * DMA_CHAIN_COUNT,
-				    devpriv->dma0Chain,
-				    devpriv->dma0ChainPhysAddr);
-		devpriv->dma0Chain = NULL;
-	}
-#endif /* USE_DMA */
-	/* subdevices and priv are freed by the core */
-	if (dev->irq) {
-		/* disable interrupt controller */
-		RtdPlxInterruptWrite(dev, RtdPlxInterruptRead(dev)
-				     & ~(ICS_PLIE | ICS_DMA0_E | ICS_DMA1_E));
-		free_irq(dev->irq, dev);
-	}
-
-	/* release all regions that were allocated */
-	if (devpriv->las0) {
-		iounmap(devpriv->las0);
-	}
-	if (devpriv->las1) {
-		iounmap(devpriv->las1);
-	}
-	if (devpriv->lcfg) {
-		iounmap(devpriv->lcfg);
-	}
-	if (devpriv->pci_dev) {
-		pci_dev_put(devpriv->pci_dev);
-	}
-	return ret;
-#endif
 }
 
 /*
@@ -1366,13 +1321,6 @@ static int ai_read_n(struct comedi_device *dev, struct comedi_subdevice *s,
 			d = RtdAdcFifoGet(dev);	/* Read N and discard */
 			continue;
 		}
-#if 0
-		if (0 == (RtdFifoStatus(dev) & FS_ADC_NOT_EMPTY)) {	/* DEBUG */
-			DPRINTK("comedi: READ OOPS on %d of %d\n", ii + 1,
-				count);
-			break;
-		}
-#endif
 		d = RtdAdcFifoGet(dev);	/* get 2s comp value */
 
 		d = d >> 3;	/* low 3 bits are marker lines */
@@ -1704,17 +1652,6 @@ transferDone:
 	return IRQ_HANDLED;
 }
 
-#if 0
-/*
-  return the number of samples available
-*/
-static int rtd_ai_poll(struct comedi_device *dev, struct comedi_subdevice *s)
-{
-	/* TODO: This needs to mask interrupts, read_dregs, and then re-enable */
-	/* Not sure what to do if DMA is active */
-	return s->async->buf_write_count - s->async->buf_read_count;
-}
-#endif
 
 /*
   cmdtest tests a particular command to see if it is valid.
@@ -1866,12 +1803,6 @@ static int rtd_ai_cmdtest(struct comedi_device *dev,
 		}
 	}
 
-#if 0
-	if (cmd->scan_end_arg != cmd->chanlist_len) {
-		cmd->scan_end_arg = cmd->chanlist_len;
-		err++;
-	}
-#endif
 	if (cmd->stop_src == TRIG_COUNT) {
 		/* TODO check for rounding error due to counter wrap */
 

@@ -47,7 +47,7 @@
 #define MPA_KEY_REP "MPA ID Rep Frame"
 
 #define MPA_MAX_PRIVATE_DATA	256
-#define MPA_REV		0	/* XXX - amso1100 uses rev 0 ! */
+#define MPA_REV		0
 #define MPA_REJECT		0x20
 #define MPA_CRC			0x40
 #define MPA_MARKERS		0x80

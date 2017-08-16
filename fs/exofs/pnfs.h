@@ -10,12 +10,11 @@
  *
  */
 
-/* FIXME: Remove this file once pnfs hits mainline */
 
 #ifndef __EXOFS_PNFS_H__
 #define __EXOFS_PNFS_H__
 
-#if ! defined(__PNFS_OSD_XDR_H__)
+#if !defined(__PNFS_OSD_XDR_H__)
 
 enum pnfs_iomode {
 	IOMODE_READ = 1,

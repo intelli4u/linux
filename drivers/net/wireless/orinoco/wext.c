@@ -95,7 +95,7 @@ static struct iw_statistics *orinoco_get_wireless_stats(struct net_device *dev)
 	if (!netif_device_present(dev)) {
 		printk(KERN_WARNING "%s: get_wireless_stats() called while device not present\n",
 		       dev->name);
-		return NULL; /* FIXME: Can we do better than this? */
+		return NULL;
 	}
 
 	/* If busy, return the old stats.  Returning NULL may cause
@@ -106,12 +106,6 @@ static struct iw_statistics *orinoco_get_wireless_stats(struct net_device *dev)
 	/* We can't really wait for the tallies inquiry command to
 	 * complete, so we just use the previous results and trigger
 	 * a new tallies inquiry command for next time - Jean II */
-	/* FIXME: Really we should wait for the inquiry to come back -
-	 * as it is the stats we give don't make a whole lot of sense.
-	 * Unfortunately, it's not clear how to do that within the
-	 * wireless extensions framework: I think we're in user
-	 * context, but a lock seems to be held by the time we get in
-	 * here so we're not safe to sleep here. */
 	hermes_inquire(hw, HERMES_INQ_TALLIES);
 
 	if (priv->iw_mode == NL80211_IFTYPE_ADHOC) {

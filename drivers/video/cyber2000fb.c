@@ -623,7 +623,6 @@ cyber2000fb_decode_crtc(struct par_info *hw, struct cfb_info *cfb,
 		EXT_CRT_VRTOFL_LINECOMP10;
 
 	/* woody: set the interlaced bit... */
-	/* FIXME: what about doublescan? */
 	if ((var->vmode & FB_VMODE_MASK) == FB_VMODE_INTERLACED)
 		hw->crtc_ofl |= EXT_CRT_VRTOFL_INTERLACE;
 
@@ -1604,9 +1603,6 @@ cyberpro_pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
 	if (err)
 		goto failed;
 
-	/*
-	 * Use MCLK from BIOS. FIXME: what about hotplug?
-	 */
 	cfb->mclk_mult = cyber2000_grphr(EXT_MCLK_MULT, cfb);
 	cfb->mclk_div  = cyber2000_grphr(EXT_MCLK_DIV, cfb);
 

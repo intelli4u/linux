@@ -118,25 +118,6 @@ parisc_acctyp(unsigned long code, unsigned int inst)
 #undef BITSSET
 
 
-#if 0
-/* This is the treewalk to find a vma which is the highest that has
- * a start < addr.  We're using find_vma_prev instead right now, but
- * we might want to use this at some point in the future.  Probably
- * not, but I want it committed to CVS so I don't lose it :-)
- */
-			while (tree != vm_avl_empty) {
-				if (tree->vm_start > addr) {
-					tree = tree->vm_avl_left;
-				} else {
-					prev = tree;
-					if (prev->vm_next == NULL)
-						break;
-					if (prev->vm_next->vm_start > addr)
-						break;
-					tree = tree->vm_avl_right;
-				}
-			}
-#endif
 
 int fixup_exception(struct pt_regs *regs)
 {
@@ -245,7 +226,6 @@ bad_area:
 		}
 		show_regs(regs);
 #endif
-		/* FIXME: actually we need to get the signo and code correct */
 		si.si_signo = SIGSEGV;
 		si.si_errno = 0;
 		si.si_code = SEGV_MAPERR;

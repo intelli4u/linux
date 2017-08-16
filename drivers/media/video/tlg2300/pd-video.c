@@ -817,7 +817,7 @@ static int vidioc_g_fmt_vbi(struct file *file, void *fh,
 	vbi_fmt->samples_per_line	= 720 * 2;
 	vbi_fmt->sampling_rate		= 6750000 * 4;
 	vbi_fmt->sample_format		= V4L2_PIX_FMT_GREY;
-	vbi_fmt->offset			= 64 * 4;  /*FIXME: why offset */
+	vbi_fmt->offset			= 64 * 4;
 	if (pd->video_data.context.tvnormid & V4L2_STD_525_60) {
 		vbi_fmt->start[0] = 10;
 		vbi_fmt->start[1] = 264;
@@ -1667,4 +1667,3 @@ out:
 	pd_video_exit(pd);
 	return ret;
 }
-

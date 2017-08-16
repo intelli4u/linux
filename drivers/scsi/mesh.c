@@ -49,10 +49,8 @@
 
 #include "mesh.h"
 
-#if 1
 #undef KERN_DEBUG
 #define KERN_DEBUG KERN_WARNING
-#endif
 
 MODULE_AUTHOR("Paul Mackerras (paulus@samba.org)");
 MODULE_DESCRIPTION("PowerMac MESH SCSI driver");
@@ -412,7 +410,6 @@ static void mesh_start_cmd(struct mesh_state *ms, struct scsi_cmnd *cmd)
 	ms->tgts[id].data_goes_out = cmd->sc_data_direction == DMA_TO_DEVICE;
 	ms->tgts[id].current_req = cmd;
 
-#if 1
 	if (DEBUG_TARGET(cmd)) {
 		int i;
 		printk(KERN_DEBUG "mesh_start: %p ser=%lu tgt=%d cmd=",
@@ -422,7 +419,6 @@ static void mesh_start_cmd(struct mesh_state *ms, struct scsi_cmnd *cmd)
 		printk(" use_sg=%d buffer=%p bufflen=%u\n",
 		       scsi_sg_count(cmd), scsi_sglist(cmd), scsi_bufflen(cmd));
 	}
-#endif
 	if (ms->dma_started)
 		panic("mesh: double DMA start !\n");
 
@@ -472,7 +468,6 @@ static void mesh_start_cmd(struct mesh_state *ms, struct scsi_cmnd *cmd)
 			udelay(1);
 		}
 		if (in_8(&mr->bus_status1) & (BS1_BSY | BS1_SEL)) {
-			/* XXX should try again in a little while */
 			ms->stat = DID_BUS_BUSY;
 			ms->phase = idle;
 			mesh_done(ms, 0);
@@ -602,15 +597,6 @@ static void mesh_done(struct mesh_state *ms, int start_next)
 		if (DEBUG_TARGET(cmd)) {
 			printk(KERN_DEBUG "mesh_done: result = %x, data_ptr=%d, buflen=%d\n",
 			       cmd->result, ms->data_ptr, scsi_bufflen(cmd));
-#if 0
-			/* needs to use sg? */
-			if ((cmd->cmnd[0] == 0 || cmd->cmnd[0] == 0x12 || cmd->cmnd[0] == 3)
-			    && cmd->request_buffer != 0) {
-				unsigned char *b = cmd->request_buffer;
-				printk(KERN_DEBUG "buffer = %x %x %x %x %x %x %x %x\n",
-				       b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7]);
-			}
-#endif
 		}
 		cmd->SCp.this_residual -= ms->data_ptr;
 		mesh_completed(ms, cmd);
@@ -1658,13 +1644,6 @@ static void mesh_interrupt(struct mesh_state *ms)
 	volatile struct mesh_regs __iomem *mr = ms->mesh;
 	int intr;
 
-#if 0
-	if (ALLOW_DEBUG(ms->conn_tgt))
-		printk(KERN_DEBUG "mesh_intr, bs0=%x int=%x exc=%x err=%x "
-		       "phase=%d msgphase=%d\n", mr->bus_status0,
-		       mr->interrupt, mr->exception, mr->error,
-		       ms->phase, ms->msgphase);
-#endif
 	while ((intr = in_8(&mr->interrupt)) != 0) {
 		dlog(ms, "interrupt intr/err/exc/seq=%.8x", 
 		     MKWORD(intr, mr->error, mr->exception, mr->sequence));

@@ -51,16 +51,6 @@ int ath5k_hw_set_capabilities(struct ath5k_hw *ah)
 		__set_bit(AR5K_MODE_11A, ah->ah_capabilities.cap_mode);
 		__set_bit(AR5K_MODE_11A_TURBO, ah->ah_capabilities.cap_mode);
 	} else {
-		/*
-		 * XXX The tranceiver supports frequencies from 4920 to 6100GHz
-		 * XXX and from 2312 to 2732GHz. There are problems with the
-		 * XXX current ieee80211 implementation because the IEEE
-		 * XXX channel mapping does not support negative channel
-		 * XXX numbers (2312MHz is channel -19). Of course, this
-		 * XXX doesn't matter because these channels are out of range
-		 * XXX but some regulation domains like MKK (Japan) will
-		 * XXX support frequencies somewhere around 4.8GHz.
-		 */
 
 		/*
 		 * Set radio capabilities

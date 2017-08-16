@@ -372,6 +372,3 @@ void STAvUpdate802_11Counter(
 void STAvClear802_11Counter(PSDot11Counters p802_11Counter);
 
 #endif // __MIB_H__
-
-
-

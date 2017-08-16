@@ -837,7 +837,6 @@ static void __init mac_identify(void)
 	int model = mac_bi_data.id;
 	if (!model) {
 		/* no bootinfo model id -> NetBSD booter was used! */
-		/* XXX FIXME: breaks for model > 31 */
 		model = (mac_bi_data.cpuid >> 2) & 63;
 		printk(KERN_WARNING "No bootinfo model ID, using cpuid instead "
 		       "(obsolete bootloader?)\n");

@@ -116,10 +116,10 @@ static __inline__ void set_pte(pte_t *pteptr, pte_t pteval)
 #define _PAGE_SIZE0	0x008  /* SZ0-bit : size of page */
 #define _PAGE_SIZE1	0x010  /* SZ1-bit : size of page */
 #define _PAGE_SHARED	0x020  /* software: reflects PTEH's SH */
-#define _PAGE_READ	0x040  /* PR0-bit : read access allowed */
-#define _PAGE_EXECUTE	0x080  /* PR1-bit : execute access allowed */
-#define _PAGE_WRITE	0x100  /* PR2-bit : write access allowed */
-#define _PAGE_USER	0x200  /* PR3-bit : user space access allowed */
+#define _PAGE_READ	0x040
+#define _PAGE_EXECUTE	0x080
+#define _PAGE_WRITE	0x100
+#define _PAGE_USER	0x200
 #define _PAGE_DIRTY	0x400  /* software: page accessed in write */
 #define _PAGE_ACCESSED	0x800  /* software: page referenced */
 

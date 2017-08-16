@@ -191,16 +191,6 @@ int vcc_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 }
 
 #ifdef CONFIG_COMPAT
-/*
- * FIXME:
- * The compat_ioctl handling is duplicated, using both these conversion
- * routines and the compat argument to the actual handlers. Both
- * versions are somewhat incomplete and should be merged, e.g. by
- * moving the ioctl number translation into the actual handlers and
- * killing the conversion code.
- *
- * -arnd, November 2009
- */
 #define ATM_GETLINKRATE32 _IOW('a', ATMIOC_ITF+1, struct compat_atmif_sioc)
 #define ATM_GETNAMES32    _IOW('a', ATMIOC_ITF+3, struct compat_atm_iobuf)
 #define ATM_GETTYPE32     _IOW('a', ATMIOC_ITF+4, struct compat_atmif_sioc)

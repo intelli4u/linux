@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /* -*- linux-c -*-
  * INET		802.1Q VLAN
  *		Ethernet-type device handling.
@@ -31,6 +32,9 @@
 #include "vlan.h"
 #include "vlanproc.h"
 #include <linux/if_vlan.h>
+
+#include <typedefs.h>
+#include <bcmdefs.h>
 
 /*
  *	Rebuild the Ethernet MAC header. This is called after an ARP
@@ -115,6 +119,35 @@ static inline void vlan_set_encap_proto(struct sk_buff *skb,
 		skb->protocol = htons(ETH_P_802_2);
 }
 
+#ifdef HNDCTF
+void BCMFASTPATH vlan_rxstats_upd(struct net_device *vldev,
+	struct sk_buff *skb, int packets, int bytes)
+{
+	struct vlan_rx_stats *rx_stats;
+
+	rcu_read_lock();
+	rx_stats = per_cpu_ptr(vlan_dev_info(vldev)->vlan_rx_stats,
+					smp_processor_id());
+	u64_stats_update_begin(&rx_stats->syncp);
+	rx_stats->rx_packets += packets;
+	rx_stats->rx_bytes += bytes;
+	u64_stats_update_end(&rx_stats->syncp);
+	rcu_read_unlock();
+}
+EXPORT_SYMBOL(vlan_rxstats_upd);
+
+void BCMFASTPATH vlan_txstats_upd(struct net_device *vldev,
+	struct sk_buff *skb, int packets, int bytes)
+{
+	int i = skb_get_queue_mapping(skb);
+	struct netdev_queue *txq = netdev_get_tx_queue(vldev, i);
+
+	txq->tx_packets += packets;
+	txq->tx_bytes += bytes;
+}
+EXPORT_SYMBOL(vlan_txstats_upd);
+#endif /* HNDCTF */
+
 /*
  *	Determine the packet's protocol ID. The rule here is that we
  *	assume 802.3 if the type field is short enough to be a length.
@@ -137,7 +170,7 @@ static inline void vlan_set_encap_proto(struct sk_buff *skb,
  *  		    stuff.  It has been commented out now...  --Ben
  *
  */
-int vlan_skb_recv(struct sk_buff *skb, struct net_device *dev,
+int BCMFASTPATH_HOST vlan_skb_recv(struct sk_buff *skb, struct net_device *dev,
 		  struct packet_type *ptype, struct net_device *orig_dev)
 {
 	struct vlan_hdr *vhdr;
@@ -308,7 +341,7 @@ static int vlan_dev_hard_header(struct sk_buff *skb, struct net_device *dev,
 	return rc;
 }
 
-static netdev_tx_t vlan_dev_hard_start_xmit(struct sk_buff *skb,
+static netdev_tx_t BCMFASTPATH_HOST vlan_dev_hard_start_xmit(struct sk_buff *skb,
 					    struct net_device *dev)
 {
 	int i = skb_get_queue_mapping(skb);

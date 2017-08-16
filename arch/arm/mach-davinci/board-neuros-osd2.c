@@ -208,8 +208,7 @@ static struct davinci_mmc_config davinci_ntosd2_mmc_config = {
 #define HAS_ATA 0
 #endif
 
-#if defined(CONFIG_MTD_NAND_DAVINCI) || \
-	defined(CONFIG_MTD_NAND_DAVINCI_MODULE)
+#if defined(CONFIG_MTD_NAND_DAVINCI) || defined(CONFIG_MTD_NAND_DAVINCI_MODULE)
 #define HAS_NAND 1
 #else
 #define HAS_NAND 0

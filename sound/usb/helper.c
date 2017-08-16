@@ -110,4 +110,3 @@ unsigned char snd_usb_parse_datainterval(struct snd_usb_audio *chip,
 	else
 		return 0;
 }
-

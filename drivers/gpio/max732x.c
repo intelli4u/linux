@@ -23,39 +23,6 @@
 #include <linux/i2c/max732x.h>
 
 
-/*
- * Each port of MAX732x (including MAX7319) falls into one of the
- * following three types:
- *
- *   - Push Pull Output
- *   - Input
- *   - Open Drain I/O
- *
- * designated by 'O', 'I' and 'P' individually according to MAXIM's
- * datasheets. 'I' and 'P' ports are interrupt capables, some with
- * a dedicated interrupt mask.
- *
- * There are two groups of I/O ports, each group usually includes
- * up to 8 I/O ports, and is accessed by a specific I2C address:
- *
- *   - Group A : by I2C address 0b'110xxxx
- *   - Group B : by I2C address 0b'101xxxx
- *
- * where 'xxxx' is decided by the connections of pin AD2/AD0.  The
- * address used also affects the initial state of output signals.
- *
- * Within each group of ports, there are five known combinations of
- * I/O ports: 4I4O, 4P4O, 8I, 8P, 8O, see the definitions below for
- * the detailed organization of these ports. Only Goup A is interrupt
- * capable.
- *
- * GPIO numbers start from 'gpio_base + 0' to 'gpio_base + 8/16',
- * and GPIOs from GROUP_A are numbered before those from GROUP_B
- * (if there are two groups).
- *
- * NOTE: MAX7328/MAX7329 are drop-in replacements for PCF8574/a, so
- * they are not supported by this driver.
- */
 
 #define PORT_NONE	0x0	/* '/' No Port */
 #define PORT_OUTPUT	0x1	/* 'O' Push-Pull, Output Only */

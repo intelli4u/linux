@@ -670,8 +670,7 @@ void __init txx9_physmap_flash_init(int no, unsigned long addr,
 void __init txx9_ndfmc_init(unsigned long baseaddr,
 			    const struct txx9ndfmc_platform_data *pdata)
 {
-#if defined(CONFIG_MTD_NAND_TXX9NDFMC) || \
-	defined(CONFIG_MTD_NAND_TXX9NDFMC_MODULE)
+#if defined(CONFIG_MTD_NAND_TXX9NDFMC) || defined(CONFIG_MTD_NAND_TXX9NDFMC_MODULE)
 	struct resource res = {
 		.start = baseaddr,
 		.end = baseaddr + 0x1000 - 1,
@@ -866,8 +865,7 @@ void __init txx9_aclc_init(unsigned long baseaddr, int irq,
 			   unsigned int dma_chan_out,
 			   unsigned int dma_chan_in)
 {
-#if defined(CONFIG_SND_SOC_TXX9ACLC) || \
-	defined(CONFIG_SND_SOC_TXX9ACLC_MODULE)
+#if defined(CONFIG_SND_SOC_TXX9ACLC) || defined(CONFIG_SND_SOC_TXX9ACLC_MODULE)
 	unsigned int dma_base = dmac_id * TXX9_DMA_MAX_NR_CHANNELS;
 	struct resource res[] = {
 		{

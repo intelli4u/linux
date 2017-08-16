@@ -299,7 +299,6 @@ static struct fb_fix_screeninfo chipsfb_fix __devinitdata = {
 	.accel =	FB_ACCEL_NONE,
 	.line_length =	800,
 
-// FIXME: Assumes 1MB frame buffer, but 65550 supports 1MB or 2MB.
 // * "3500" PowerBook G3 (the original PB G3) has 2MB.
 // * 2400 has 1MB composed of 2 Mitsubishi M5M4V4265CTP DRAM chips.
 //   Motherboard actually supports 2MB -- there are two blank locations

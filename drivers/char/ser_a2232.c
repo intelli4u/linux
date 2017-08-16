@@ -1,6 +1,6 @@
 /* drivers/char/ser_a2232.c */
 
-/* $Id: ser_a2232.c,v 0.4 2000/01/25 12:00:00 ehaase Exp $ */
+/* $Id: ser_a2232.c,v 0.4 2000/01/25 12:00:00 Exp $ */
 
 /* Linux serial driver for the Amiga A2232 board */
 
@@ -194,18 +194,6 @@ static inline void a2232_receive_char(struct a2232_port *port, int ch, int err)
 */
 	struct tty_struct *tty = port->gs.port.tty;
 
-#if 0
-	switch(err) {
-	case TTY_BREAK:
-		break;
-	case TTY_PARITY:
-		break;
-	case TTY_OVERRUN:
-		break;
-	case TTY_FRAME:
-		break;
-	}
-#endif
 
 	tty_insert_flip_char(tty, ch, err);
 	tty_flip_buffer_push(tty);

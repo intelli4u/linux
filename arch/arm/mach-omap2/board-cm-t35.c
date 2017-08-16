@@ -233,8 +233,7 @@ static void __init cm_t35_init_nand(void)
 static inline void cm_t35_init_nand(void) {}
 #endif
 
-#if defined(CONFIG_TOUCHSCREEN_ADS7846) || \
-	defined(CONFIG_TOUCHSCREEN_ADS7846_MODULE)
+#if defined(CONFIG_TOUCHSCREEN_ADS7846) || defined(CONFIG_TOUCHSCREEN_ADS7846_MODULE)
 #include <linux/spi/ads7846.h>
 
 #include <plat/mcspi.h>

@@ -15,4 +15,3 @@ struct orion_wdt_platform_data {
 
 
 #endif
-

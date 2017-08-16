@@ -83,11 +83,6 @@ void udbg_puts(const char *s)
 		if (udbg_flush)
 			udbg_flush();
 	}
-#if 0
-	else {
-		printk("%s", s);
-	}
-#endif
 }
 
 int udbg_write(const char *s, int n)
@@ -188,7 +183,3 @@ void __init register_early_udbg_console(void)
 	early_console_initialized = 1;
 	register_console(&udbg_console);
 }
-
-#if 0   /* if you want to use this as a regular output console */
-console_initcall(register_udbg_console);
-#endif

@@ -1045,7 +1045,6 @@ static int vidioc_s_std (struct file *file, void *priv, v4l2_std_id *id)
 	return 0;
 }
 
-/* FIXME: cx88_ioctl_hook not implemented */
 
 static int mpeg_open(struct file *file)
 {
@@ -1096,7 +1095,6 @@ static int mpeg_open(struct file *file)
 			    sizeof(struct cx88_buffer),
 			    fh);
 
-	/* FIXME: locking against other video device */
 	cx88_set_scale(dev->core, dev->width, dev->height,
 			fh->mpegq.field);
 	unlock_kernel();

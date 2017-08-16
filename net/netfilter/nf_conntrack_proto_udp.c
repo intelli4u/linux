@@ -121,10 +121,6 @@ static int udp_error(struct net *net, struct nf_conn *tmpl, struct sk_buff *skb,
 	if (!hdr->check)
 		return NF_ACCEPT;
 
-	/* Checksum invalid? Ignore.
-	 * We skip checking packets on the outgoing path
-	 * because the checksum is assumed to be correct.
-	 * FIXME: Source route IP option packets --RR */
 	if (net->ct.sysctl_checksum && hooknum == NF_INET_PRE_ROUTING &&
 	    nf_checksum(skb, hooknum, dataoff, IPPROTO_UDP, pf)) {
 		if (LOG_INVALID(net, IPPROTO_UDP))

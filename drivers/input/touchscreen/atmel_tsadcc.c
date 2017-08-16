@@ -369,4 +369,3 @@ module_exit(atmel_tsadcc_exit);
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Atmel TouchScreen Driver");
 MODULE_AUTHOR("Dan Liang <dan.liang@atmel.com>");
-

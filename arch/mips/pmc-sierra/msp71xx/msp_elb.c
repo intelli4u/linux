@@ -32,8 +32,7 @@
 
 static int __init msp_elb_setup(void)
 {
-#if defined(CONFIG_PMC_MSP7120_GW) \
- || defined(CONFIG_PMC_MSP7120_EVAL)
+#if defined(CONFIG_PMC_MSP7120_GW) || defined(CONFIG_PMC_MSP7120_EVAL)
 	/*
 	 * Force all CNFG to be identical and equal to CS0,
 	 * according to OPS doc

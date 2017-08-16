@@ -247,7 +247,6 @@ int rds_ib_recv_refill(struct rds_connection *conn, gfp_t kptr_gfp,
 			break;
 		}
 
-		/* XXX when can this fail? */
 		ret = ib_post_recv(ic->i_cm_id->qp, &recv->r_wr, &failed_wr);
 		rdsdebug("recv %p ibinc %p page %p addr %lu ret %d\n", recv,
 			 recv->r_ibinc, recv->r_frag->f_page,
@@ -340,7 +339,6 @@ int rds_ib_inc_copy_to_user(struct rds_incoming *inc, struct iovec *first_iov,
 			 to_copy, iov->iov_base, iov->iov_len, iov_off,
 			 frag->f_page, frag->f_offset, frag_off);
 
-		/* XXX needs + offset for multiple recvs per page */
 		ret = rds_page_copy_to_user(frag->f_page,
 					    frag->f_offset + frag_off,
 					    iov->iov_base + iov_off,
@@ -695,7 +693,6 @@ static void rds_ib_process_recv(struct rds_connection *conn,
 	struct rds_ib_incoming *ibinc = ic->i_ibinc;
 	struct rds_header *ihdr, *hdr;
 
-	/* XXX shut down the connection if port 0,0 are seen? */
 
 	rdsdebug("ic %p ibinc %p recv %p byte len %u\n", ic, ibinc, recv,
 		 data_len);
@@ -737,16 +734,6 @@ static void rds_ib_process_recv(struct rds_connection *conn,
 		 */
 		rds_ib_stats_inc(s_ib_ack_received);
 
-		/*
-		 * Usually the frags make their way on to incs and are then freed as
-		 * the inc is freed.  We don't go that route, so we have to drop the
-		 * page ref ourselves.  We can't just leave the page on the recv
-		 * because that confuses the dma mapping of pages and each recv's use
-		 * of a partial page.  We can leave the frag, though, it will be
-		 * reused.
-		 *
-		 * FIXME: Fold this into the code path below.
-		 */
 		rds_ib_frag_drop_page(recv->r_frag);
 		return;
 	}

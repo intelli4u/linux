@@ -261,7 +261,6 @@ int dma_region_mmap(struct dma_region *dma, struct file *file,
 	if (!dma->kvirt)
 		return -EINVAL;
 
-	/* must be page-aligned (XXX: comment is wrong, we could allow pgoff) */
 	if (vma->vm_pgoff != 0)
 		return -EINVAL;
 

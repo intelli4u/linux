@@ -990,15 +990,6 @@ static void __ipw_led_activity_on(struct ipw_priv *priv)
 	}
 }
 
-#if 0
-void ipw_led_activity_on(struct ipw_priv *priv)
-{
-	unsigned long flags;
-	spin_lock_irqsave(&priv->lock, flags);
-	__ipw_led_activity_on(priv);
-	spin_unlock_irqrestore(&priv->lock, flags);
-}
-#endif  /*  0  */
 
 static void ipw_led_activity_off(struct ipw_priv *priv)
 {
@@ -2081,8 +2072,6 @@ static void ipw_irq_tasklet(struct ipw_priv *priv)
 				ipw_dump_error_log(priv, priv->error);
 		}
 
-		/* XXX: If hardware encryption is for WPA/WPA2,
-		 * we have to notify the supplicant. */
 		if (priv->ieee->sec.encrypt) {
 			priv->status &= ~STATUS_ASSOCIATED;
 			notify_wx_assoc_event(priv);
@@ -7880,7 +7869,6 @@ static void ipw_handle_data_packet_monitor(struct ipw_priv *priv,
 	/* Libpcap 0.9.3+ can handle variable length radiotap, so we'll use
 	 * that now */
 	if (len > IPW_RX_BUF_SIZE - sizeof(struct ipw_rt_hdr)) {
-		/* FIXME: Should alloc bigger skb instead */
 		dev->stats.rx_dropped++;
 		priv->wstats.discard.misc++;
 		IPW_DEBUG_DROP("Dropping too large packet in monitor\n");
@@ -8060,7 +8048,6 @@ static void ipw_handle_promiscuous_rx(struct ipw_priv *priv,
 	/* Libpcap 0.9.3+ can handle variable length radiotap, so we'll use
 	 * that now */
 	if (len > IPW_RX_BUF_SIZE - sizeof(struct ipw_rt_hdr)) {
-		/* FIXME: Should alloc bigger skb instead */
 		dev->stats.rx_dropped++;
 		IPW_DEBUG_DROP("Dropping too large packet in monitor\n");
 		return;
@@ -8949,7 +8936,7 @@ static int ipw_wx_get_range(struct net_device *dev,
 
 	range->avg_qual.qual = 70;
 	/* TODO: Find real 'good' to 'bad' threshold value for RSSI */
-	range->avg_qual.level = 0;	/* FIXME to real average level */
+	range->avg_qual.level = 0;
 	range->avg_qual.noise = 0;
 	range->avg_qual.updated = 7;	/* Updated all three */
 	mutex_lock(&priv->mutex);
@@ -10288,10 +10275,6 @@ static int ipw_tx_skb(struct ipw_priv *priv, struct libipw_txb *txb,
 		case SEC_LEVEL_3:
 			tfd->u.data.tfd.tfd_24.mchdr.frame_ctl |=
 			    cpu_to_le16(IEEE80211_FCTL_PROTECTED);
-			/* XXX: ACK flag must be set for CCMP even if it
-			 * is a multicast/broadcast packet, because CCMP
-			 * group communication encrypted by GTK is
-			 * actually done by the AP. */
 			if (!unicast)
 				tfd->u.data.tx_flags |= DCT_FLAG_ACK_REQD;
 
@@ -10880,17 +10863,6 @@ static void shim__set_security(struct net_device *dev,
 	/* To match current functionality of ipw2100 (which works well w/
 	 * various supplicants, we don't force a disassociate if the
 	 * privacy capability changes ... */
-#if 0
-	if ((priv->status & (STATUS_ASSOCIATED | STATUS_ASSOCIATING)) &&
-	    (((priv->assoc_request.capability &
-	       cpu_to_le16(WLAN_CAPABILITY_PRIVACY)) && !sec->enabled) ||
-	     (!(priv->assoc_request.capability &
-		cpu_to_le16(WLAN_CAPABILITY_PRIVACY)) && sec->enabled))) {
-		IPW_DEBUG_ASSOC("Disassociating due to capability "
-				"change.\n");
-		ipw_disassociate(priv);
-	}
-#endif
 }
 
 static int init_supported_rates(struct ipw_priv *priv,

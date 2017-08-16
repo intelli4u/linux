@@ -542,13 +542,6 @@ static void fsl_elbc_write_buf(struct mtd_info *mtd, const u8 *buf, int len)
 	}
 
 	memcpy_toio(&ctrl->addr[ctrl->index], buf, len);
-	/*
-	 * This is workaround for the weird elbc hangs during nand write,
-	 * Scott Wood says: "...perhaps difference in how long it takes a
-	 * write to make it through the localbus compared to a write to IMMR
-	 * is causing problems, and sync isn't helping for some reason."
-	 * Reading back the last byte helps though.
-	 */
 	in_8(&ctrl->addr[ctrl->index] + len - 1);
 
 	ctrl->index += len;

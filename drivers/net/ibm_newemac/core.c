@@ -91,14 +91,6 @@ MODULE_LICENSE("GPL");
  */
 #define EMAC_RX_COPY_THRESH		CONFIG_IBM_NEW_EMAC_RX_COPY_THRESHOLD
 
-/* Since multiple EMACs share MDIO lines in various ways, we need
- * to avoid re-using the same PHY ID in cases where the arch didn't
- * setup precise phy_map entries
- *
- * XXX This is something that needs to be reworked as we can have multiple
- * EMAC "sets" (multiple ASICs containing several EMACs) though we can
- * probably require in that case to have explicit PHY IDs in the device-tree
- */
 static u32 busy_phy_map;
 static DEFINE_MUTEX(emac_phy_map_lock);
 
@@ -140,10 +132,6 @@ static inline void emac_report_timeout_error(struct emac_instance *dev,
 			error);
 }
 
-/* EMAC PHY clock workaround:
- * 440EP/440GR has more sane SDR0_MFR register implementation than 440GX,
- * which allows controlling each EMAC clock
- */
 static inline void emac_rx_clk_tx(struct emac_instance *dev)
 {
 #ifdef CONFIG_PPC_DCR_NATIVE
@@ -1201,37 +1189,6 @@ static int emac_open(struct net_device *ndev)
 }
 
 /* BHs disabled */
-#if 0
-static int emac_link_differs(struct emac_instance *dev)
-{
-	u32 r = in_be32(&dev->emacp->mr1);
-
-	int duplex = r & EMAC_MR1_FDE ? DUPLEX_FULL : DUPLEX_HALF;
-	int speed, pause, asym_pause;
-
-	if (r & EMAC_MR1_MF_1000)
-		speed = SPEED_1000;
-	else if (r & EMAC_MR1_MF_100)
-		speed = SPEED_100;
-	else
-		speed = SPEED_10;
-
-	switch (r & (EMAC_MR1_EIFC | EMAC_MR1_APP)) {
-	case (EMAC_MR1_EIFC | EMAC_MR1_APP):
-		pause = 1;
-		asym_pause = 0;
-		break;
-	case EMAC_MR1_APP:
-		pause = 0;
-		asym_pause = 1;
-		break;
-	default:
-		pause = asym_pause = 0;
-	}
-	return speed != dev->phy.speed || duplex != dev->phy.duplex ||
-	    pause != dev->phy.pause || asym_pause != dev->phy.asym_pause;
-}
-#endif
 
 static void emac_link_timer(struct work_struct *work)
 {
@@ -2388,15 +2345,9 @@ static int __devinit emac_init_phy(struct emac_instance *dev)
 	dev->phy.dev = ndev;
 	dev->phy.mode = dev->phy_mode;
 
-	/* PHY-less configuration.
-	 * XXX I probably should move these settings to the dev tree
-	 */
 	if (dev->phy_address == 0xffffffff && dev->phy_map == 0xffffffff) {
 		emac_reset(dev);
 
-		/* PHY-less configuration.
-		 * XXX I probably should move these settings to the dev tree
-		 */
 		dev->phy.address = -1;
 		dev->phy.features = SUPPORTED_MII;
 		if (emac_phy_supports_gige(dev->phy_mode))
@@ -2421,7 +2372,6 @@ static int __devinit emac_init_phy(struct emac_instance *dev)
 	if (emac_has_feature(dev, EMAC_FTR_440GX_PHY_CLK_FIX))
 		dcri_clrset(SDR0, SDR0_MFR, 0, SDR0_MFR_ECS);
 #endif
-	/* PHY clock workaround */
 	emac_rx_clk_tx(dev);
 
 	/* Enable internal clock source on 440GX*/
@@ -2433,14 +2383,6 @@ static int __devinit emac_init_phy(struct emac_instance *dev)
 	 * This is needed mostly for 440GX
 	 */
 	if (emac_phy_gpcs(dev->phy.mode)) {
-		/* XXX
-		 * Make GPCS PHY address equal to EMAC index.
-		 * We probably should take into account busy_phy_map
-		 * and/or phy_map here.
-		 *
-		 * Note that the busy_phy_map is currently global
-		 * while it should probably be per-ASIC...
-		 */
 		dev->phy.gpcs_address = dev->gpcs_address;
 		if (dev->phy.gpcs_address == 0xffffffff)
 			dev->phy.address = dev->cell_index;
@@ -2976,7 +2918,6 @@ static int __devexit emac_remove(struct platform_device *ofdev)
 	return 0;
 }
 
-/* XXX Features in here should be replaced by properties... */
 static struct of_device_id emac_match[] =
 {
 	{

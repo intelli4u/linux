@@ -39,7 +39,7 @@
 #endif
 
 #if defined(CONFIG_M523x) || defined(CONFIG_M527x) || defined(CONFIG_M528x) || \
-    defined(CONFIG_M520x)
+	defined(CONFIG_M520x)
 #undef MCF_MBAR
 #define	MCF_MBAR	MCF_IPSBAR
 #elif defined(CONFIG_M532x)

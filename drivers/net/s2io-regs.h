@@ -558,10 +558,6 @@ struct XENA_dev_config {
 
 	/* Per-ring controller regs */
 #define RX_MAX_RINGS                8
-#if 0
-#define RX_MAX_RINGS_SZ             0xFFFF	/* 65536 */
-#define RX_MIN_RINGS_SZ             0x3F	/* 63 */
-#endif
 	u64 prc_rxd0_n[RX_MAX_RINGS];
 	u64 prc_ctrl_n[RX_MAX_RINGS];
 #define PRC_CTRL_RC_ENABLED                    s2BIT(7)

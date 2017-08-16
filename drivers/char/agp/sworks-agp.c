@@ -566,4 +566,3 @@ module_init(agp_serverworks_init);
 module_exit(agp_serverworks_cleanup);
 
 MODULE_LICENSE("GPL and additional rights");
-

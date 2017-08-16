@@ -136,9 +136,6 @@
 #define PCIINTE   0x010
 #define PCIINTF   0x020
 #define GSCEXTINT 0x040
-/* #define xxx       0x080 - bit 7 is "default" */
-/* #define xxx    0x100 - bit 8 not used */
-/* #define xxx    0x200 - bit 9 not used */
 #define RS232INT  0x400
 
 struct dino_device
@@ -716,14 +713,12 @@ dino_card_init(struct dino_device *dino_dev)
 	__raw_writel(0x00000001, dino_dev->hba.base_addr+DINO_IO_FBB_EN);
 	__raw_writel(0x00000000, dino_dev->hba.base_addr+DINO_ICR);
 
-#if 1
 /* REVISIT - should be a runtime check (eg if (CPU_IS_PCX_L) ...) */
 	/*
 	** PCX-L processors don't support XQL like Dino wants it.
 	** PCX-L2 ignore XQL signal and it doesn't matter.
 	*/
 	brdg_feat &= ~0x4;	/* UXQL */
-#endif
 	__raw_writel( brdg_feat, dino_dev->hba.base_addr+DINO_BRDG_FEAT);
 
 	/*
@@ -1049,7 +1044,7 @@ static int __init dino_probe(struct parisc_device *dev)
  */
 static struct parisc_device_id dino_tbl[] = {
 	{ HPHW_A_DMA, HVERSION_REV_ANY_ID, 0x004, 0x0009D },/* Card-mode Dino */
-	{ HPHW_A_DMA, HVERSION_REV_ANY_ID, HVERSION_ANY_ID, 0x08080 }, /* XXX */
+	{ HPHW_A_DMA, HVERSION_REV_ANY_ID, HVERSION_ANY_ID, 0x08080 },
 	{ HPHW_BRIDGE, HVERSION_REV_ANY_ID, 0x680, 0xa }, /* Bridge-mode Dino */
 	{ HPHW_BRIDGE, HVERSION_REV_ANY_ID, 0x682, 0xa }, /* Bridge-mode Cujo */
 	{ HPHW_BRIDGE, HVERSION_REV_ANY_ID, 0x05d, 0xa }, /* Dino in a J2240 */
@@ -1072,4 +1067,3 @@ int __init dino_init(void)
 	register_parisc_driver(&dino_driver);
 	return 0;
 }
-

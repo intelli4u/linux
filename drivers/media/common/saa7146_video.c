@@ -690,7 +690,6 @@ static int vidioc_s_ctrl(struct file *file, void *fh, struct v4l2_control *c)
 		break;
 	}
 	case V4L2_CID_HFLIP:
-		/* fixme: we can support changing VFLIP and HFLIP here... */
 		if (IS_CAPTURE_ACTIVE(fh) != 0) {
 			DEB_D(("V4L2_CID_HFLIP while active capture.\n"));
 			mutex_unlock(&dev->lock);
@@ -1136,7 +1135,6 @@ static int vidiocgmbuf(struct file *file, void *__fh, struct video_mbuf *mbuf)
 	struct videobuf_queue *q = &fh->video_q;
 	int err, i;
 
-	/* fixme: number of capture buffers and sizes for v4l apps */
 	int gbuffers = 2;
 	int gbufsize = 768 * 576 * 4;
 
@@ -1362,7 +1360,6 @@ static void video_init(struct saa7146_dev *dev, struct saa7146_vv *vv)
 	/* set some default values */
 	vv->standard = &dev->ext_vv_data->stds[0];
 
-	/* FIXME: what's this? */
 	vv->current_hps_source = SAA7146_HPS_SOURCE_PORT_A;
 	vv->current_hps_sync = SAA7146_HPS_SYNC_PORT_A;
 }
@@ -1439,7 +1436,6 @@ static ssize_t video_read(struct file *file, char __user *data, size_t count, lo
 	DEB_EE(("called.\n"));
 
 	if ((vv->video_status & STATUS_CAPTURE) != 0) {
-		/* fixme: should we allow read() captures while streaming capture? */
 		if (vv->video_fh == fh) {
 			DEB_S(("already capturing.\n"));
 			return -EBUSY;

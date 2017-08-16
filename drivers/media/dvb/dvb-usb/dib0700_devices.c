@@ -459,7 +459,6 @@ static int stk7700ph_tuner_attach(struct dvb_usb_adapter *adap)
 
 	stk7700ph_xc3028_config.i2c_adap = tun_i2c;
 
-	/* FIXME: generalize & move to common area */
 	adap->fe->callback = stk7700ph_xc3028_callback;
 
 	return dvb_attach(xc2028_attach, adap->fe, &stk7700ph_xc3028_config)
@@ -1691,7 +1690,6 @@ static struct xc5000_config s5h1411_xc5000_tunerconfig = {
 
 static int xc5000_tuner_attach(struct dvb_usb_adapter *adap)
 {
-	/* FIXME: generalize & move to common area */
 	adap->fe->callback = dib0700_xc5000_tuner_callback;
 
 	return dvb_attach(xc5000_attach, adap->fe, &adap->dev->i2c_adap,

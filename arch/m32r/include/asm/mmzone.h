@@ -29,11 +29,7 @@ extern struct pglist_data *node_data[];
  * be something like this - mbligh:
  * ( pfn_to_pgdat(pfn) && ((pfn) < node_end_pfn(pfn_to_nid(pfn))) )
  */
-#if 1	/* M32R_FIXME */
 #define pfn_valid(pfn)	(1)
-#else
-#define pfn_valid(pfn)	((pfn) < num_physpages)
-#endif
 
 /*
  * generic node memory support, the following assumptions apply:

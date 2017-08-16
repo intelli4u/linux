@@ -58,7 +58,7 @@ mvme16x_probe(struct platform_device *dev)
 
 	/* Fill in the required pieces of hostdata */
 	hostdata->base = (void __iomem *)0xfff47000UL;
-	hostdata->clock = 50;	/* XXX - depends on the CPU clock! */
+	hostdata->clock = 50;
 	hostdata->chip710 = 1;
 	hostdata->dmode_extra = DMODE_FC2;
 	hostdata->dcntl_extra = EA_710;

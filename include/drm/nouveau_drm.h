@@ -67,7 +67,6 @@ struct drm_nouveau_gpuobj_free {
 	uint32_t handle;
 };
 
-/* FIXME : maybe unify {GET,SET}PARAMs */
 #define NOUVEAU_GETPARAM_PCI_VENDOR      3
 #define NOUVEAU_GETPARAM_PCI_DEVICE      4
 #define NOUVEAU_GETPARAM_BUS_TYPE        5

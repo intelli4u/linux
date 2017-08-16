@@ -951,13 +951,6 @@ static int mga_dma_iload(struct drm_device *dev, void *data, struct drm_file *fi
 
 	LOCK_TEST_WITH_RETURN(dev, file_priv);
 
-#if 0
-	if (mga_do_wait_for_idle(dev_priv) < 0) {
-		if (MGA_DMA_DEBUG)
-			DRM_INFO("-EBUSY\n");
-		return -EBUSY;
-	}
-#endif
 	if (iload->idx < 0 || iload->idx > dma->buf_count)
 		return -EINVAL;
 

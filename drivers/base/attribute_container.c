@@ -177,9 +177,6 @@ attribute_container_add_device(struct device *dev,
 	mutex_unlock(&attribute_container_mutex);
 }
 
-/* FIXME: can't break out of this unless klist_iter_exit is also
- * called before doing the break
- */
 #define klist_for_each_entry(pos, head, member, iter) \
 	for (klist_iter_init(head, iter); (pos = ({ \
 		struct klist_node *n = klist_next(iter); \
@@ -430,7 +427,6 @@ attribute_container_find_class_device(struct attribute_container *cont,
 	klist_for_each_entry(ic, &cont->containers, node, &iter) {
 		if (ic->classdev.parent == dev) {
 			cdev = &ic->classdev;
-			/* FIXME: must exit iterator then break */
 			klist_iter_exit(&iter);
 			break;
 		}

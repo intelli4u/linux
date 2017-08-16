@@ -1,43 +1,4 @@
-/*
- * WUSB Wire Adapter: WLP interface
- * Driver for the Linux Network stack.
- *
- * Copyright (C) 2005-2006 Intel Corporation
- * Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
- *
- *
- * FIXME: docs
- *
- * Implementation of the netdevice linkage (except tx and rx related stuff).
- *
- * ROADMAP:
- *
- *   ENTRY POINTS (Net device):
- *
- *     i1480u_open(): Called when we ifconfig up the interface;
- *                    associates to a UWB host controller, reserves
- *                    bandwidth (MAS), sets up RX USB URB and starts
- *                    the queue.
- *
- *     i1480u_stop(): Called when we ifconfig down a interface;
- *                    reverses _open().
- *
- *     i1480u_set_config():
- */
+
 
 #include <linux/slab.h>
 #include <linux/if_arp.h>
@@ -103,7 +64,6 @@ error_kzalloc:
  *
  * @rc is assumed refcnted.
  */
-/* FIXME: detect if remote device is WLP capable? */
 static int i1480u_mas_set_dev(struct uwb_dev *uwb_dev, struct uwb_rc *rc,
 			      u8 stream, u8 owner, u8 type, unsigned long *mas)
 {
@@ -294,15 +254,6 @@ int i1480u_change_mtu(struct net_device *net_dev, int mtu)
 	return 0;
 }
 
-/**
- * Stop the network queue
- *
- * Enable WLP substack to stop network queue. We also set the flow control
- * threshold at this time to prevent the flow control from restarting the
- * queue.
- *
- * we are loosing the current threshold value here ... FIXME?
- */
 void i1480u_stop_queue(struct wlp *wlp)
 {
 	struct i1480u *i1480u = container_of(wlp, struct i1480u, wlp);
@@ -311,17 +262,6 @@ void i1480u_stop_queue(struct wlp *wlp)
 	netif_stop_queue(net_dev);
 }
 
-/**
- * Start the network queue
- *
- * Enable WLP substack to start network queue. Also re-enable the flow
- * control to manage the queue again.
- *
- * We re-enable the flow control by storing the default threshold in the
- * flow control threshold. This means that if the user modified the
- * threshold before the queue was stopped and restarted that information
- * will be lost. FIXME?
- */
 void i1480u_start_queue(struct wlp *wlp)
 {
 	struct i1480u *i1480u = container_of(wlp, struct i1480u, wlp);

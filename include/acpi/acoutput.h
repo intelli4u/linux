@@ -181,7 +181,7 @@
 #define ACPI_NORMAL_DEFAULT         (ACPI_LV_INIT | ACPI_LV_DEBUG_OBJECT | ACPI_LV_REPAIR)
 #define ACPI_DEBUG_ALL              (ACPI_LV_AML_DISASSEMBLE | ACPI_LV_ALL_EXCEPTIONS | ACPI_LV_ALL)
 
-#if defined (ACPI_DEBUG_OUTPUT) || !defined (ACPI_NO_ERROR_MESSAGES)
+#if defined(ACPI_DEBUG_OUTPUT) || !defined(ACPI_NO_ERROR_MESSAGES)
 /*
  * Module name is included in both debug and non-debug versions primarily for
  * error messages. The __FILE__ macro is not very useful for this, because it

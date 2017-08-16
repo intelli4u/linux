@@ -48,7 +48,6 @@ int ath5k_hw_set_tx_queueprops(struct ath5k_hw *ah, int queue,
 
 	memcpy(&ah->ah_txq[queue], queue_info, sizeof(struct ath5k_txq_info));
 
-	/*XXX: Is this supported on 5210 ?*/
 	if ((queue_info->tqi_type == AR5K_TX_QUEUE_DATA &&
 			((queue_info->tqi_subtype == AR5K_WME_AC_VI) ||
 			(queue_info->tqi_subtype == AR5K_WME_AC_VO))) ||
@@ -151,7 +150,6 @@ u32 ath5k_hw_num_tx_pending(struct ath5k_hw *ah, unsigned int queue)
 	if (ah->ah_txq[queue].tqi_type == AR5K_TX_QUEUE_INACTIVE)
 		return false;
 
-	/* XXX: How about AR5K_CFG_TXCNT ? */
 	if (ah->ah_version == AR5K_AR5210)
 		return false;
 
@@ -280,7 +278,6 @@ int ath5k_hw_reset_tx_queue(struct ath5k_hw *ah, unsigned int queue)
 	 * Calculate and set retry limits
 	 */
 	if (ah->ah_software_retry) {
-		/* XXX Need to test this */
 		retry_lg = ah->ah_limit_tx_retries;
 		retry_sh = retry_lg = retry_lg > AR5K_DCU_RETRY_LMT_SH_RETRY ?
 			AR5K_DCU_RETRY_LMT_SH_RETRY : retry_lg;
@@ -401,7 +398,6 @@ int ath5k_hw_reset_tx_queue(struct ath5k_hw *ah, unsigned int queue)
 			break;
 
 		case AR5K_TX_QUEUE_CAB:
-			/* XXX: use BCN_SENT_GT, if we can figure out how */
 			AR5K_REG_ENABLE_BITS(ah, AR5K_QUEUE_MISC(queue),
 				AR5K_QCU_MISC_FRSHED_DBA_GT |
 				AR5K_QCU_MISC_CBREXP_DIS |
@@ -526,4 +522,3 @@ int ath5k_hw_set_slot_time(struct ath5k_hw *ah, unsigned int slot_time)
 
 	return 0;
 }
-

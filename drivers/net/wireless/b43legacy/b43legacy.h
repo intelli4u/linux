@@ -163,7 +163,7 @@
 #define B43legacy_MMIO_RADIO_HWENABLED_LO_MASK (1 << 4)
 
 /* HostFlags. See b43legacy_hf_read/write() */
-#define B43legacy_HF_SYMW		0x00000002 /* G-PHY SYM workaround */
+#define B43legacy_HF_SYMW		0x00000002
 #define B43legacy_HF_GDCW		0x00000020 /* G-PHY DV cancel filter */
 #define B43legacy_HF_OFDMPABOOST	0x00000040 /* Enable PA boost OFDM */
 #define B43legacy_HF_EDCF		0x00000100 /* on if WME/MAC suspended */

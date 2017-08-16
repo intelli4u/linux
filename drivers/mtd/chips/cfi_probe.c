@@ -123,7 +123,6 @@ static int __xipram cfi_probe_chip(struct map_info *map, __u32 base,
 			/* Yes, it's actually got QRY for data. Most
 			 * unfortunate. Stick the new chip in read mode
 			 * too and if it's the same, assume it's an alias. */
-			/* FIXME: Use other modes to do a proper check */
 			cfi_qry_mode_off(base, map, cfi);
 
 			if (cfi_qry_present(map, base, cfi)) {
@@ -296,12 +295,6 @@ static char *vendorname(__u16 vendor)
 
 static void print_cfi_ident(struct cfi_ident *cfip)
 {
-#if 0
-	if (cfip->qry[0] != 'Q' || cfip->qry[1] != 'R' || cfip->qry[2] != 'Y') {
-		printk("Invalid CFI ident structure.\n");
-		return;
-	}
-#endif
 	printk("Primary Vendor Command Set: %4.4X (%s)\n", cfip->P_ID, vendorname(cfip->P_ID));
 	if (cfip->P_ADR)
 		printk("Primary Algorithm Table at %4.4X\n", cfip->P_ADR);

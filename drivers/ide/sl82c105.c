@@ -120,14 +120,6 @@ static int sl82c105_test_irq(ide_hwif_t *hwif)
 	return (val & mask) ? 1 : 0;
 }
 
-/*
- * The SL82C105 holds off all IDE interrupts while in DMA mode until
- * all DMA activity is completed.  Sometimes this causes problems (eg,
- * when the drive wants to report an error condition).
- *
- * 0x7e is a "chip testing" register.  Bit 2 resets the DMA controller
- * state machine.  We need to kick this to work around various bugs.
- */
 static inline void sl82c105_reset_host(struct pci_dev *dev)
 {
 	u16 val;

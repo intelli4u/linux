@@ -1,4 +1,4 @@
-/* $Id: telespci.c,v 2.23.2.3 2004/01/13 14:31:26 keil Exp $
+/* $Id: telespci.c,v 2.23.2.3 2004/01/13 14:31:26 Exp $
  *
  * low level stuff for Teles PCI isdn cards
  *

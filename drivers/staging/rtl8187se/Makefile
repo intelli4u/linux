@@ -35,4 +35,3 @@ r8187se-objs :=			\
 		ieee80211/ieee80211_crypt_wep.o
 
 obj-$(CONFIG_R8187SE)	+= r8187se.o
-

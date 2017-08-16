@@ -70,7 +70,6 @@ static void cs5520_set_pio_mode(ide_hwif_t *hwif, ide_drive_t *drive)
 
 	/* 0x64 - 16bit Primary, 0x68 - 16bit Secondary */
 
-	/* FIXME: should these use address ? */
 	/* Data read timing */
 	pci_write_config_byte(pdev, 0x64 + 4*controller + (drive->dn&1),
 		(cs5520_pio_clocks[pio].recovery << 4) |

@@ -707,7 +707,6 @@ int btrfs_scan_one_device(const char *path, fmode_t flags, void *holder,
 	if (disk_super->label[0])
 		printk(KERN_INFO "device label %s ", disk_super->label);
 	else {
-		/* FIXME, make a readl uuid parser */
 		printk(KERN_INFO "device fsid %llx-%llx ",
 		       *(unsigned long long *)disk_super->fsid,
 		       *(unsigned long long *)(disk_super->fsid + 8));
@@ -752,7 +751,6 @@ int find_free_dev_extent(struct btrfs_trans_handle *trans,
 	path->reada = 2;
 	start_found = 0;
 
-	/* FIXME use last free of some kind */
 
 	/* we don't want to overwrite the superblock on the drive,
 	 * so we make sure to start at an offset of at least 1MB

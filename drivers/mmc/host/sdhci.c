@@ -671,10 +671,6 @@ static void sdhci_prepare_data(struct sdhci_host *host, struct mmc_data *data)
 	if (host->flags & (SDHCI_USE_SDMA | SDHCI_USE_ADMA))
 		host->flags |= SDHCI_REQ_USE_DMA;
 
-	/*
-	 * FIXME: This doesn't account for merging when mapping the
-	 * scatterlist.
-	 */
 	if (host->flags & SDHCI_REQ_USE_DMA) {
 		int broken, i;
 		struct scatterlist *sg;
@@ -711,11 +707,6 @@ static void sdhci_prepare_data(struct sdhci_host *host, struct mmc_data *data)
 
 		broken = 0;
 		if (host->flags & SDHCI_USE_ADMA) {
-			/*
-			 * As we use 3 byte chunks to work around
-			 * alignment problems, we need to check this
-			 * quirk.
-			 */
 			if (host->quirks & SDHCI_QUIRK_32BIT_ADMA_SIZE)
 				broken = 1;
 		} else {

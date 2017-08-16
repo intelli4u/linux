@@ -215,7 +215,6 @@ static void atlx_vlan_rx_register(struct net_device *netdev,
 	u32 ctrl;
 
 	spin_lock_irqsave(&adapter->lock, flags);
-	/* atlx_irq_disable(adapter); FIXME: confirm/remove */
 	adapter->vlgrp = grp;
 
 	if (grp) {
@@ -230,7 +229,6 @@ static void atlx_vlan_rx_register(struct net_device *netdev,
 		iowrite32(ctrl, adapter->hw.hw_addr + REG_MAC_CTRL);
 	}
 
-	/* atlx_irq_enable(adapter); FIXME */
 	spin_unlock_irqrestore(&adapter->lock, flags);
 }
 

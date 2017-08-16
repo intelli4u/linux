@@ -30,17 +30,6 @@
 #define TAPEBLOCK_MAX_SEC	100
 #define TAPEBLOCK_MIN_REQUEUE	3
 
-/*
- * 2003/11/25  Stefan Bader <shbader@de.ibm.com>
- *
- * In 2.5/2.6 the block device request function is very likely to be called
- * with disabled interrupts (e.g. generic_unplug_device). So the driver can't
- * just call any function that tries to allocate CCW requests from that con-
- * text since it might sleep. There are two choices to work around this:
- *	a) do not allocate with kmalloc but use its own memory pool
- *      b) take requests from the queue outside that context, knowing that
- *         allocation might sleep
- */
 
 /*
  * file operation structure for tape block frontend
@@ -284,10 +273,6 @@ cleanup_queue:
 	device->blk_data.request_queue = NULL;
 }
 
-/*
- * Detect number of blocks of the tape.
- * FIXME: can we extent this to detect the blocks size as well ?
- */
 static int
 tapeblock_revalidate_disk(struct gendisk *disk)
 {

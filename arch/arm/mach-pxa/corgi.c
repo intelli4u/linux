@@ -753,4 +753,3 @@ MACHINE_START(HUSKY, "SHARP Husky")
 	.timer		= &pxa_timer,
 MACHINE_END
 #endif
-

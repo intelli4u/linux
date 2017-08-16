@@ -186,20 +186,6 @@ static void kexec_prepare_cpus_wait(int wait_state)
 
 	hw_breakpoint_disable();
 	my_cpu = get_cpu();
-	/* Make sure each CPU has at least made it to the state we need.
-	 *
-	 * FIXME: There is a (slim) chance of a problem if not all of the CPUs
-	 * are correctly onlined.  If somehow we start a CPU on boot with RTAS
-	 * start-cpu, but somehow that CPU doesn't write callin_cpu_map[] in
-	 * time, the boot CPU will timeout.  If it does eventually execute
-	 * stuff, the secondary will start up (paca[].cpu_start was written) and
-	 * get into a peculiar state.  If the platform supports
-	 * smp_ops->take_timebase(), the secondary CPU will probably be spinning
-	 * in there.  If not (i.e. pseries), the secondary will continue on and
-	 * try to online itself/idle/etc. If it survives that, we need to find
-	 * these possible-but-not-online-but-should-be CPUs and chaperone them
-	 * into kexec_smp_wait().
-	 */
 	for_each_online_cpu(i) {
 		if (i == my_cpu)
 			continue;
@@ -330,9 +316,6 @@ void default_machine_kexec(struct kimage *image)
 
 	pr_debug("kexec: Starting switchover sequence.\n");
 
-	/* switch to a staticly allocated stack.  Based on irq stack code.
-	 * XXX: the task struct will likely be invalid once we do the copy!
-	 */
 	kexec_stack.thread_info.task = current_thread_info()->task;
 	kexec_stack.thread_info.flags = 0;
 
@@ -346,9 +329,6 @@ void default_machine_kexec(struct kimage *image)
 		kexec_paca.paca_index;
 	setup_paca(&kexec_paca);
 
-	/* XXX: If anyone does 'dynamic lppacas' this will also need to be
-	 * switched to a static version!
-	 */
 
 	/* Some things are best done in assembly.  Finding globals with
 	 * a toc is easier in C, so pass in what we can.

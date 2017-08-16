@@ -76,7 +76,6 @@ asmlinkage unsigned int do_IRQ(int irq, struct pt_regs *regs)
 	irq_enter();
 
 #ifdef CONFIG_DEBUG_STACKOVERFLOW
-	/* FIXME M32R */
 #endif
 	__do_IRQ(irq);
 	irq_exit();

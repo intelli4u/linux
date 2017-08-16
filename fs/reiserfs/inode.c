@@ -137,7 +137,6 @@ inline void make_le_item_head(struct item_head *ih, const struct cpu_key *key,
 }
 
 //
-// FIXME: we might cache recently accessed indirect item
 
 // Ugh.  Not too eager for that....
 //  I cut the code until such time as I see a convincing argument (benchmark).
@@ -298,9 +297,6 @@ static int _get_block_create_0(struct inode *inode, sector_t block,
 	if (is_indirect_le_ih(ih)) {
 		__le32 *ind_item = (__le32 *) B_I_PITEM(bh, ih);
 
-		/* FIXME: here we could cache indirect item or part of it in
-		   the inode to avoid search_by_key in case of subsequent
-		   access to file */
 		blocknr = get_block_num(ind_item, path.pos_in_item);
 		ret = 0;
 		if (blocknr) {
@@ -324,7 +320,6 @@ static int _get_block_create_0(struct inode *inode, sector_t block,
 	}
 	// requested data are in direct item(s)
 	if (!(args & GET_BLOCK_READ_DIRECT)) {
-		// we are called by bmap. FIXME: we can not map block of file
 		// when it is stored in direct item(s)
 		pathrelse(&path);
 		if (p)
@@ -391,7 +386,6 @@ static int _get_block_create_0(struct inode *inode, sector_t block,
 
 		if (PATH_LAST_POSITION(&path) != (B_NR_ITEMS(bh) - 1))
 			// we done, if read direct item is not the last item of
-			// node FIXME: we could try to check right delimiting key
 			// to see whether direct item continues in the right
 			// neighbor or rely on i_size
 			break;
@@ -613,12 +607,6 @@ int reiserfs_get_block(struct inode *inode, sector_t block,
 	int fs_gen;
 	int lock_depth;
 	struct reiserfs_transaction_handle *th = NULL;
-	/* space reserved in transaction batch:
-	   . 3 balancings in direct->indirect conversion
-	   . 1 block involved into reiserfs_update_sd()
-	   XXX in practically impossible worst case direct2indirect()
-	   can incur (much) more than 3 balancings.
-	   quota update for user, group */
 	int jbegin_count =
 	    JOURNAL_PER_BALANCE_CNT * 3 + 1 +
 	    2 * REISERFS_QUOTA_TRANS_BLOCKS(inode->i_sb);
@@ -827,9 +815,6 @@ int reiserfs_get_block(struct inode *inode, sector_t block,
 				unbh = bh_result;
 				done = 1;
 			} else {
-				/* we have to padd file tail stored in direct item(s)
-				   up to block size and convert it to unformatted
-				   node. FIXME: this should also get into page cache */
 
 				pathrelse(&path);
 				/*
@@ -1816,7 +1801,7 @@ int reiserfs_new_inode(struct reiserfs_transaction_handle *th,
 		 */
 		inode->i_generation = le32_to_cpu(INODE_PKEY(dir)->k_objectid);
 	else
-#if defined( USE_INODE_GENERATION_COUNTER )
+#if defined(USE_INODE_GENERATION_COUNTER)
 		inode->i_generation =
 		    le32_to_cpu(REISERFS_SB(sb)->s_rs->s_inode_generation);
 #else

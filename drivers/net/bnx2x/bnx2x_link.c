@@ -2427,7 +2427,6 @@ static u8 bnx2x_8073_is_snr_needed(struct link_params *params)
 		      MDIO_PMA_REG_8073_CHIP_REV, &val);
 
 	if (val != 1) {
-		/* No need to workaround in 8073 A1 */
 		return 0;
 	}
 
@@ -2457,10 +2456,8 @@ static u8 bnx2x_bcm8073_xaui_wa(struct link_params *params)
 		      MDIO_PMA_REG_8073_CHIP_REV, &val);
 
 	if (val > 0) {
-		/* No need to workaround in 8073 A1 */
 		return 0;
 	}
-	/* XAUI workaround in 8073 A0: */
 
 	/* After loading the boot ROM and restarting Autoneg,
 	poll Dev1, Reg $C820: */
@@ -2472,18 +2469,11 @@ static u8 bnx2x_bcm8073_xaui_wa(struct link_params *params)
 			      MDIO_PMA_DEVAD,
 			      MDIO_PMA_REG_8073_SPEED_LINK_STATUS,
 			      &val);
-		  /* If bit [14] = 0 or bit [13] = 0, continue on with
-		   system initialization (XAUI work-around not required,
-		    as these bits indicate 2.5G or 1G link up). */
 		if (!(val & (1<<14)) || !(val & (1<<13))) {
 			DP(NETIF_MSG_LINK, "XAUI work-around not required\n");
 			return 0;
 		} else if (!(val & (1<<15))) {
 			DP(NETIF_MSG_LINK, "clc bit 15 went off\n");
-			 /* If bit 15 is 0, then poll Dev1, Reg $C841 until
-			  it's MSB (bit 15) goes to 1 (indicating that the
-			  XAUI workaround has completed),
-			  then continue on with system initialization.*/
 			for (cnt1 = 0; cnt1 < 1000; cnt1++) {
 				bnx2x_cl45_read(bp, params->port,
 					PORT_HW_CFG_XGXS_EXT_PHY_TYPE_BCM8073,

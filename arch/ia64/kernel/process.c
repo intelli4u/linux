@@ -483,22 +483,6 @@ copy_thread(unsigned long clone_flags,
 	child_ptregs->cr_ipsr = ((child_ptregs->cr_ipsr | IA64_PSR_BITS_TO_SET)
 				 & ~(IA64_PSR_BITS_TO_CLEAR | IA64_PSR_PP | IA64_PSR_UP));
 
-	/*
-	 * NOTE: The calling convention considers all floating point
-	 * registers in the high partition (fph) to be scratch.  Since
-	 * the only way to get to this point is through a system call,
-	 * we know that the values in fph are all dead.  Hence, there
-	 * is no need to inherit the fph state from the parent to the
-	 * child and all we have to do is to make sure that
-	 * IA64_THREAD_FPH_VALID is cleared in the child.
-	 *
-	 * XXX We could push this optimization a bit further by
-	 * clearing IA64_THREAD_FPH_VALID on ANY system call.
-	 * However, it's not clear this is worth doing.  Also, it
-	 * would be a slight deviation from the normal Linux system
-	 * call behavior where scratch registers are preserved across
-	 * system calls (unless used by the system call itself).
-	 */
 #	define THREAD_FLAGS_TO_CLEAR	(IA64_THREAD_FPH_VALID | IA64_THREAD_DBG_VALID \
 					 | IA64_THREAD_PM_VALID)
 #	define THREAD_FLAGS_TO_SET	0
@@ -804,4 +788,3 @@ machine_power_off (void)
 		pm_power_off();
 	machine_halt();
 }
-

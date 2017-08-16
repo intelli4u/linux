@@ -1202,7 +1202,6 @@ typedef struct hfa484x_metacmd {
 #define WLAN_ACCESS_ALLOW	2   /* Authenticate only "allowed" stations. */
 #define WLAN_ACCESS_DENY	3   /* Do not authenticate "denied" stations. */
 
-/* XXX These are going away ASAP */
 typedef struct prism2sta_authlist {
 	unsigned int cnt;
 	u8 addr[WLAN_AUTH_MAX][ETH_ALEN];

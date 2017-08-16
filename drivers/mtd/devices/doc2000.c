@@ -211,8 +211,6 @@ static int DoC_Address(struct DiskOnChip *doc, int numbytes, unsigned long ofs,
 
 	DoC_Delay(doc, 2);	/* Needed for some slow flash chips. mf. */
 
-	/* FIXME: The SlowIO's for millennium could be replaced by
-	   a single WritePipeTerm here. mf. */
 
 	/* Lower the ALE line */
 	WriteDOC(xtraflags1 | xtraflags2 | CDSN_CTRL_CE, docptr,
@@ -1123,7 +1121,6 @@ static int doc_erase(struct mtd_info *mtd, struct erase_info *instr)
 
 	instr->state = MTD_ERASING;
 
-	/* FIXME: Do this in the background. Use timers or schedule_task() */
 	while(len) {
 		mychip = &this->chips[ofs >> this->chipshift];
 
@@ -1198,4 +1195,3 @@ module_exit(cleanup_doc2000);
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("David Woodhouse <dwmw2@infradead.org> et al.");
 MODULE_DESCRIPTION("MTD driver for DiskOnChip 2000 and Millennium");
-

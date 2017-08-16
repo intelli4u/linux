@@ -223,7 +223,6 @@ void parisc_pdc_chassis_init(void);
 #define PDC_CHASSIS_ACT_STATUS_UNSPEC	(0ULL << 0)
 
 /* Caller subactivity - implementation dependent */
-/* FIXME: other subactivities ? */
 #define PDC_CHASSIS_CALL_SACT_UNSPEC	(0ULL << 4)	/* implementation dependent */
 
 /* Reporting entity type */
@@ -347,7 +346,6 @@ void parisc_pdc_chassis_init(void);
 					 PDC_CHASSIS_MSG_ID		| \
 					 PDC_CHASSIS_EOM_SET		)
 
-// FIXME: extrapolated data
 /* HPMC */
 #define PDC_CHASSIS_PMSG_HPMC		(PDC_CHASSIS_ALERT_CONF_CHG /*?*/	| \
 					 PDC_CHASSIS_SRC_PROC		| \

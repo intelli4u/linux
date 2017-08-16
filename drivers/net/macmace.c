@@ -50,7 +50,6 @@ static char mac_mace_string[] = "macmace";
 
 #define MACE_BUFF_SIZE	0x800
 
-/* Chip rev needs workaround on HW & multicast addr change */
 #define BROKEN_ADDRCHG_REV	0x0941
 
 /* The MACE is simply wired down on a Mac68K box */
@@ -583,10 +582,6 @@ static irqreturn_t mace_interrupt(int irq, void *dev_id)
 		if ((fs & XMTSV) == 0) {
 			printk(KERN_ERR "macmace: xmtfs not valid! (fs=%x)\n", fs);
 			mace_reset(dev);
-			/*
-			 * XXX mace likes to hang the machine after a xmtfs error.
-			 * This is hard to reproduce, reseting *may* help
-			 */
 		}
 		/* dma should have finished */
 		if (!mp->tx_count) {

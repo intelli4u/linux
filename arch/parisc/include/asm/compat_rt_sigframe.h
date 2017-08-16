@@ -25,10 +25,6 @@ struct compat_regfile {
 #define COMPAT_TRAMP_SIZE (COMPAT_SIGRETURN_TRAMP + COMPAT_SIGRESTARTBLOCK_TRAMP)
 
 struct compat_rt_sigframe {
-	/* XXX: Must match trampoline size in arch/parisc/kernel/signal.c 
-	        Secondary to that it must protect the ERESTART_RESTARTBLOCK
-		trampoline we left on the stack (we were bad and didn't 
-		change sp so we could run really fast.) */
 	compat_uint_t tramp[COMPAT_TRAMP_SIZE];
 	compat_siginfo_t info;
 	struct compat_ucontext uc;

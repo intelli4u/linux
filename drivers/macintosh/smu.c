@@ -281,7 +281,6 @@ int smu_queue_cmd(struct smu_cmd *cmd)
 		smu_start_cmd();
 	spin_unlock_irqrestore(&smu->lock, flags);
 
-	/* Workaround for early calls when irq isn't available */
 	if (!smu_irq_inited || smu->db_irq == NO_IRQ)
 		smu_spinwait_cmd(cmd);
 

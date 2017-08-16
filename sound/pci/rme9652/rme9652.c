@@ -709,7 +709,6 @@ static int rme9652_spdif_read_codec (struct snd_rme9652 *rme9652, const int addr
 
 static void rme9652_initialize_spdif_receiver (struct snd_rme9652 *rme9652)
 {
-	/* XXX what unsets this ? */
 
 	rme9652->control_register |= RME9652_SPDIF_RESET;
 
@@ -904,7 +903,6 @@ static int rme9652_set_adat1_input(struct snd_rme9652 *rme9652, int internal)
 		rme9652->control_register &= ~RME9652_ADAT1_INTERNAL;
 	}
 
-	/* XXX do we actually need to stop the card when we do this ? */
 
 	if ((restart = rme9652->running)) {
 		rme9652_stop(rme9652);
@@ -1440,7 +1438,6 @@ static int snd_rme9652_get_tc_valid(struct snd_kcontrol *kcontrol, struct snd_ct
 
 #ifdef ALSA_HAS_STANDARD_WAY_OF_RETURNING_TIMECODE
 
-/* FIXME: this routine needs a port to the new control API --jk */
 
 static int snd_rme9652_get_tc_value(void *private_data,
 				    snd_kswitch_t *kswitch,
@@ -1462,7 +1459,6 @@ static int snd_rme9652_get_tc_value(void *private_data,
 
 	rme9652_write(s, RME9652_time_code, 0);
 
-	/* XXX bug alert: loop-based timing !!!! */
 
 	for (i = 0; i < 50; i++) {
 		if (!(rme9652_read(s, i * 4) & RME9652_tc_busy))

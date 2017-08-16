@@ -72,10 +72,6 @@ SYSCALL_DEFINE4(osf_set_program_attributes, unsigned long, text_start,
 	mm->end_code = bss_start + bss_len;
 	mm->start_brk = bss_start + bss_len;
 	mm->brk = bss_start + bss_len;
-#if 0
-	printk("set_program_attributes(%lx %lx %lx %lx)\n",
-		text_start, text_len, bss_start, bss_len);
-#endif
 	return 0;
 }
 
@@ -177,11 +173,6 @@ SYSCALL_DEFINE6(osf_mmap, unsigned long, addr, unsigned long, len,
 {
 	unsigned long ret = -EINVAL;
 
-#if 0
-	if (flags & (_MAP_HASSEMAPHORE | _MAP_INHERIT | _MAP_UNALIGNED))
-		printk("%s: unimplemented OSF mmap flags %04lx\n", 
-			current->comm, flags);
-#endif
 	if ((off + PAGE_ALIGN(len)) < off)
 		goto out;
 	if (off & ~PAGE_MASK)
@@ -747,7 +738,7 @@ SYSCALL_DEFINE5(osf_setsysinfo, unsigned long, op, void __user *, buffer,
 			info.si_signo = SIGFPE;
 			info.si_errno = 0;
 			info.si_code = si_code;
-			info.si_addr = NULL;  /* FIXME */
+			info.si_addr = NULL;
  			send_sig_info(SIGFPE, &info, current);
  		}
 		return 0;

@@ -284,6 +284,3 @@ void fbcon_XGI_copyarea(struct fb_info *info, const struct fb_copyarea *area)
       XGI310Sync();
 
 }
-
-
-

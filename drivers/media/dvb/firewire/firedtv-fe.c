@@ -25,7 +25,6 @@ static int fdtv_dvb_init(struct dvb_frontend *fe)
 	struct firedtv *fdtv = fe->sec_priv;
 	int err;
 
-	/* FIXME - allocate free channel at IRM */
 	fdtv->isochannel = fdtv->adapter.num;
 
 	err = cmp_establish_pp_connection(fdtv, fdtv->subunit,

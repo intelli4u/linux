@@ -106,10 +106,6 @@ static void register_page_bootmem_info_section(unsigned long start_pfn)
 	/* Get section's memmap address */
 	memmap = sparse_decode_mem_map(ms->section_mem_map, section_nr);
 
-	/*
-	 * Get page for the memmap's phys address
-	 * XXX: need more consideration for sparse_vmemmap...
-	 */
 	page = virt_to_page(memmap);
 	mapsize = sizeof(struct page) * PAGES_PER_SECTION;
 	mapsize = PAGE_ALIGN(mapsize) >> PAGE_SHIFT;
@@ -246,10 +242,6 @@ static int __meminit __add_section(int nid, struct zone *zone,
 #ifdef CONFIG_SPARSEMEM_VMEMMAP
 static int __remove_section(struct zone *zone, struct mem_section *ms)
 {
-	/*
-	 * XXX: Freeing memmap with vmemmap is not implement yet.
-	 *      This should be removed later.
-	 */
 	return -EBUSY;
 }
 #else

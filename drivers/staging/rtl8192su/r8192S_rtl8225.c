@@ -210,7 +210,6 @@ bool phy_RF8225_Config_ParaFile(struct net_device* dev)
 	BB_REGISTER_DEFINITION_T	*pPhyReg;
 	//u8						eCheckItem;
 
-#if	1
 	//3//-----------------------------------------------------------------
 	//3// <2> Initialize RF
 	//3//-----------------------------------------------------------------
@@ -285,8 +284,5 @@ bool phy_RF8225_Config_ParaFile(struct net_device* dev)
 	return rtStatus;
 
 phy_RF8225_Config_ParaFile_Fail:
-#endif
 	return rtStatus;
 }
-
-

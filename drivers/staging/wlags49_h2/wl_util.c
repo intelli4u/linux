@@ -1500,4 +1500,3 @@ int wl_get_tallies(struct wl_private *lp,
 
     return ret;
 }
-

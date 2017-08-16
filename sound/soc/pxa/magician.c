@@ -401,7 +401,6 @@ static int magician_uda1380_init(struct snd_soc_codec *codec)
 	snd_soc_dapm_nc_pin(codec, "VOUTLHP");
 	snd_soc_dapm_nc_pin(codec, "VOUTRHP");
 
-	/* FIXME: is anything connected here? */
 	snd_soc_dapm_nc_pin(codec, "VINL");
 	snd_soc_dapm_nc_pin(codec, "VINR");
 
@@ -457,9 +456,6 @@ static struct snd_soc_device magician_snd_devdata = {
 
 static struct platform_device *magician_snd_device;
 
-/*
- * FIXME: move into magician board file once merged into the pxa tree
- */
 static struct uda1380_platform_data uda1380_info = {
 	.gpio_power = EGPIO_MAGICIAN_CODEC_POWER,
 	.gpio_reset = EGPIO_MAGICIAN_CODEC_RESET,

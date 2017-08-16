@@ -517,11 +517,6 @@
 #define M1920X1440_R75_HSP      NEGATIVE
 #define M1920X1440_R75_VSP      POSITIVE
 
-#if 0
-/* 1400x1050@60 Sync Polarity (VESA Mode) */
-#define M1400X1050_R60_HSP      NEGATIVE
-#define M1400X1050_R60_VSP      NEGATIVE
-#endif
 
 /* 1400x1050@60 Sync Polarity (CVT Mode) */
 #define M1400X1050_R60_HSP      NEGATIVE

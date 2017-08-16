@@ -139,11 +139,6 @@ linux_gateway_entry:
 	LDREGM	-FRAME_SIZE(%r30), %r2		/* get users sp back */
 #ifdef CONFIG_64BIT
 	extrd,u	%r2,63,1,%r19			/* W hidden in bottom bit */
-#if 0
-	xor	%r19,%r2,%r2			/* clear bottom bit */
-	depd,z	%r19,1,1,%r19
-	std	%r19,TASK_PT_PSW(%r1)
-#endif
 #endif
 	STREG	%r2,  TASK_PT_GR30(%r1)		/* ... and save it */
 	
@@ -424,9 +419,6 @@ tracesys_sigexit:
 lws_start:
 
 #ifdef CONFIG_64BIT
-	/* FIXME: If we are a 64-bit kernel just
-	 *        turn this on unconditionally.
-	 */
 	ssm	PSW_SM_W, %r1
 	extrd,u	%r1,PSW_W_BIT,1,%r1
 	/* sp must be aligned on 4, so deposit the W bit setting into
@@ -684,5 +676,3 @@ END(lws_lock_start)
 	.previous
 
 .end
-
-

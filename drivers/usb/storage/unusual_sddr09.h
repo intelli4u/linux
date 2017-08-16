@@ -15,8 +15,7 @@
  * 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#if defined(CONFIG_USB_STORAGE_SDDR09) || \
-		defined(CONFIG_USB_STORAGE_SDDR09_MODULE)
+#if defined(CONFIG_USB_STORAGE_SDDR09) || defined(CONFIG_USB_STORAGE_SDDR09_MODULE)
 
 UNUSUAL_DEV(  0x0436, 0x0005, 0x0100, 0x0100,
 		"Microtech",

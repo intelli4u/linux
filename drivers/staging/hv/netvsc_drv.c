@@ -50,7 +50,6 @@ struct net_device_context {
 
 struct netvsc_driver_context {
 	/* !! These must be the first 2 fields !! */
-	/* Which is a bug FIXME! */
 	struct driver_context drv_ctx;
 	struct netvsc_driver drv_obj;
 };
@@ -377,10 +376,6 @@ static int netvsc_probe(struct device *device)
 	/*
 	 * If carrier is still off ie we did not get a link status callback,
 	 * update it if necessary
-	 */
-	/*
-	 * FIXME: We should use a atomic or test/set instead to avoid getting
-	 * out of sync with the device's link status
 	 */
 	if (!netif_carrier_ok(net))
 		if (!device_info.LinkState)

@@ -444,7 +444,7 @@ static int atao_calib_insn_read(struct comedi_device *dev,
 {
 	int i;
 	for (i = 0; i < insn->n; i++)
-		data[i] = 0;	/* XXX */
+		data[i] = 0;
 	return insn->n;
 }
 

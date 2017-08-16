@@ -478,7 +478,7 @@ void vcpu_set_gr(struct kvm_vcpu *vcpu, unsigned long reg, u64 value, int nat)
 		return;
 	if (reg >= sof + 32)
 		return;
-	setreg(reg, value, nat, regs);	/* FIXME: handle NATs later*/
+	setreg(reg, value, nat, regs);
 }
 
 void getfpreg(unsigned long regnum, struct ia64_fpreg *fpval,
@@ -776,7 +776,7 @@ void vcpu_get_fpreg(struct kvm_vcpu *vcpu, unsigned long reg,
 {
 	struct kvm_pt_regs *regs = vcpu_regs(vcpu);
 
-	getfpreg(reg, val, regs);   /* FIXME: handle NATs later*/
+	getfpreg(reg, val, regs);
 }
 
 void vcpu_set_fpreg(struct kvm_vcpu *vcpu, unsigned long reg,
@@ -785,7 +785,7 @@ void vcpu_set_fpreg(struct kvm_vcpu *vcpu, unsigned long reg,
 	struct kvm_pt_regs *regs = vcpu_regs(vcpu);
 
 	if (reg > 1)
-		setfpreg(reg, val, regs);   /* FIXME: handle NATs later*/
+		setfpreg(reg, val, regs);
 }
 
 /*
@@ -1551,7 +1551,6 @@ void kvm_mov_from_pmc(struct kvm_vcpu *vcpu, INST64 inst)
 
 unsigned long vcpu_get_cpuid(struct kvm_vcpu *vcpu, unsigned long reg)
 {
-	/* FIXME: This could get called as a result of a rsvd-reg fault */
 	if (reg > (ia64_get_cpuid(3) & 0xff))
 		return 0;
 	else

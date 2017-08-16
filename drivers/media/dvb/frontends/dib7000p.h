@@ -43,7 +43,7 @@ struct dib7000p_config {
 #define DEFAULT_DIB7000P_I2C_ADDRESS 18
 
 #if defined(CONFIG_DVB_DIB7000P) || (defined(CONFIG_DVB_DIB7000P_MODULE) && \
-				     defined(MODULE))
+	defined(MODULE))
 extern struct dvb_frontend *dib7000p_attach(struct i2c_adapter *i2c_adap,
 					    u8 i2c_addr,
 					    struct dib7000p_config *cfg);

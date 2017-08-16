@@ -1,27 +1,4 @@
-/*
- * Ultra Wide Band
- * UWB API
- *
- * Copyright (C) 2005-2006 Intel Corporation
- * Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
- *
- *
- * FIXME: doc: overview of the API, different parts and pointers
- */
+
 
 #ifndef __LINUX__UWB_H__
 #define __LINUX__UWB_H__
@@ -115,28 +92,6 @@ struct uwb_mas_bm {
 	int unsafe;
 };
 
-/**
- * uwb_rsv_state - UWB Reservation state.
- *
- * NONE - reservation is not active (no DRP IE being transmitted).
- *
- * Owner reservation states:
- *
- * INITIATED - owner has sent an initial DRP request.
- * PENDING - target responded with pending Reason Code.
- * MODIFIED - reservation manager is modifying an established
- * reservation with a different MAS allocation.
- * ESTABLISHED - the reservation has been successfully negotiated.
- *
- * Target reservation states:
- *
- * DENIED - request is denied.
- * ACCEPTED - request is accepted.
- * PENDING - PAL has yet to make a decision to whether to accept or
- * deny.
- *
- * FIXME: further target states TBD.
- */
 enum uwb_rsv_state {
 	UWB_RSV_STATE_NONE = 0,
 	UWB_RSV_STATE_O_INITIATED,
@@ -734,33 +689,6 @@ struct uwb_ie_hdr *uwb_ie_next(void **ptr, size_t *len);
 int uwb_rc_ie_add(struct uwb_rc *uwb_rc, const struct uwb_ie_hdr *ies, size_t size);
 int uwb_rc_ie_rm(struct uwb_rc *uwb_rc, enum uwb_ie element_id);
 
-/*
- * Transmission statistics
- *
- * UWB uses LQI and RSSI (one byte values) for reporting radio signal
- * strength and line quality indication. We do quick and dirty
- * averages of those. They are signed values, btw.
- *
- * For 8 bit quantities, we keep the min, the max, an accumulator
- * (@sigma) and a # of samples. When @samples gets to 255, we compute
- * the average (@sigma / @samples), place it in @sigma and reset
- * @samples to 1 (so we use it as the first sample).
- *
- * Now, statistically speaking, probably I am kicking the kidneys of
- * some books I have in my shelves collecting dust, but I just want to
- * get an approx, not the Nobel.
- *
- * LOCKING: there is no locking per se, but we try to keep a lockless
- * schema. Only _add_samples() modifies the values--as long as you
- * have other locking on top that makes sure that no two calls of
- * _add_sample() happen at the same time, then we are fine. Now, for
- * resetting the values we just set @samples to 0 and that makes the
- * next _add_sample() to start with defaults. Reading the values in
- * _show() currently can race, so you need to make sure the calls are
- * under the same lock that protects calls to _add_sample(). FIXME:
- * currently unlocked (It is not ultraprecise but does the trick. Bite
- * me).
- */
 struct stats {
 	s8 min, max;
 	s16 sigma;

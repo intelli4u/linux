@@ -277,7 +277,6 @@ nv50_instmem_init(struct drm_device *dev)
 		NV_ERROR(dev, "Failed to init RAMIN heap\n");
 	}
 
-	/*XXX: incorrect, but needed to make hash func "work" */
 	dev_priv->ramht_offset = 0x10000;
 	dev_priv->ramht_bits   = 9;
 	dev_priv->ramht_size   = (1 << dev_priv->ramht_bits) * 8;
@@ -508,4 +507,3 @@ nv50_vm_flush(struct drm_device *dev, int engine)
 	if (!nv_wait(0x100c80, 0x00000001, 0x00000000))
 		NV_ERROR(dev, "vm flush timeout: engine %d\n", engine);
 }
-

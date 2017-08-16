@@ -92,7 +92,6 @@ enum mt9t013_setting {
 #define MT9T013_DEFAULT_MAX_FPS     26
 
 
-/* FIXME: Changes from here */
 struct mt9t013_work {
 	struct work_struct work;
 };
@@ -515,14 +514,6 @@ static int32_t mt9t013_setting(enum mt9t013_reg_update rupdate,
 	case UPDATE_PERIODIC: {
 
 	if (rt == RES_PREVIEW || rt == RES_CAPTURE) {
-#if 0
-		rc =
-			mt9t013_i2c_write_w(mt9t013_client->addr,
-				MT9T013_REG_RESET_REGISTER,
-				MT9T013_RESET_REGISTER_PWOFF);
-		if (rc < 0)
-			return rc;
-#endif
 
 		rc =
 			mt9t013_i2c_write_w(mt9t013_client->addr,
@@ -1131,14 +1122,6 @@ static int mt9t013_probe_init_sensor(const struct msm_camera_sensor_info *data)
 	goto init_probe_done;
 
 	/* sensor: output enable */
-#if 0
-	rc = mt9t013_i2c_write_w(mt9t013_client->addr,
-		MT9T013_REG_RESET_REGISTER,
-		MT9T013_RESET_REGISTER_PWON);
-
-	/* if this fails, the sensor is not the MT9T013 */
-	rc = mt9t013_set_default_focus(0);
-#endif
 
 init_probe_fail:
 	gpio_direction_output(data->sensor_reset, 0);
@@ -1254,7 +1237,6 @@ static int32_t mt9t013_set_sensor_mode(int mode, int res)
 		return -EINVAL;
 	}
 
-	/* FIXME: what should we do if rc < 0? */
 	if (rc >= 0)
 		return mt9t013_i2c_write_w(mt9t013_client->addr,
 				REG_GROUPED_PARAMETER_HOLD,

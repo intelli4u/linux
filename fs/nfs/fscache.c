@@ -56,14 +56,6 @@ void nfs_fscache_release_client_cookie(struct nfs_client *clp)
 	clp->fscache = NULL;
 }
 
-/*
- * Get the cache cookie for an NFS superblock.  We have to handle
- * uniquification here because the cache doesn't do it for us.
- *
- * The default uniquifier is just an empty string, but it may be overridden
- * either by the 'fsc=xxx' option to mount, or by inheriting it from the parent
- * superblock across an automount point of some nature.
- */
 void nfs_fscache_get_super_cookie(struct super_block *sb, const char *uniq,
 				  struct nfs_clone_mount *mntdata)
 {

@@ -403,7 +403,6 @@ dm355evm_msp_probe(struct i2c_client *client, const struct i2c_device_id *id)
 	return 0;
 
 fail:
-	/* FIXME remove children ... */
 	dm355evm_msp_remove(client);
 	return status;
 }

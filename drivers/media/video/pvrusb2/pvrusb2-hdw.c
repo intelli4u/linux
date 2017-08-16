@@ -2006,15 +2006,6 @@ static unsigned int pvr2_copy_i2c_addr_list(
 
 static void pvr2_hdw_cx25840_vbi_hack(struct pvr2_hdw *hdw)
 {
-	/*
-	  Mike Isely <isely@pobox.com> 19-Nov-2006 - This bit of nuttiness
-	  for cx25840 causes that module to correctly set up its video
-	  scaling.  This is really a problem in the cx25840 module itself,
-	  but we work around it here.  The problem has not been seen in
-	  ivtv because there VBI is supported and set up.  We don't do VBI
-	  here (at least not yet) and thus we never attempted to even set
-	  it up.
-	*/
 	struct v4l2_format fmt;
 	if (hdw->decoder_client_id != PVR2_CLIENT_ID_CX25840) {
 		/* We're not using a cx25840 so don't enable the hack */

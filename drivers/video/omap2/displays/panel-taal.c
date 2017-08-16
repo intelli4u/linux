@@ -103,7 +103,6 @@ static int init_regulators(struct omap_dss_device *dssdev,
 			goto err;
 		}
 
-		/* FIXME: better handling of fixed vs. variable regulators */
 		v = regulator_get_voltage(reg);
 		if (v < regulators[i].min_uV || v > regulators[i].max_uV) {
 			r = regulator_set_voltage(reg, regulators[i].min_uV,

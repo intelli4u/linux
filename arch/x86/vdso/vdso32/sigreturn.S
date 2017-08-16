@@ -20,7 +20,7 @@
 	ALIGN
 __kernel_sigreturn:
 .LSTART_sigreturn:
-	popl %eax		/* XXX does this mean it needs unwind info? */
+	popl %eax
 	movl $__NR_sigreturn, %eax
 	SYSCALL_ENTER_KERNEL
 .LEND_sigreturn:

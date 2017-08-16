@@ -1059,45 +1059,16 @@ static int command_resume(struct gspca_dev *gspca_dev)
 			  0, sd->params.streamStartLine, 0, 0);
 }
 
-#if 0 /* Currently unused */
-static int command_setlights(struct gspca_dev *gspca_dev)
-{
-	struct sd *sd = (struct sd *) gspca_dev;
-	int ret, p1, p2;
-
-	if (!sd->params.qx3.qx3_detected)
-		return 0;
-
-	p1 = (sd->params.qx3.bottomlight == 0) << 1;
-	p2 = (sd->params.qx3.toplight == 0) << 3;
-
-	ret = do_command(gspca_dev, CPIA_COMMAND_WriteVCReg,
-			 0x90, 0x8F, 0x50, 0);
-	if (ret)
-		return ret;
-
-	return do_command(gspca_dev, CPIA_COMMAND_WriteMCPort, 2, 0,
-			  p1 | p2 | 0xE0, 0);
-}
-#endif
 
 static int set_flicker(struct gspca_dev *gspca_dev, int on, int apply)
 {
 	/* Everything in here is from the Windows driver */
 /* define for compgain calculation */
-#if 0
-#define COMPGAIN(base, curexp, newexp) \
-    (u8) ((((float) base - 128.0) * ((float) curexp / (float) newexp)) + 128.5)
-#define EXP_FROM_COMP(basecomp, curcomp, curexp) \
-    (u16)((float)curexp * (float)(u8)(curcomp + 128) / \
-    (float)(u8)(basecomp - 128))
-#else
   /* equivalent functions without floating point math */
 #define COMPGAIN(base, curexp, newexp) \
     (u8)(128 + (((u32)(2*(base-128)*curexp + newexp)) / (2 * newexp)))
 #define EXP_FROM_COMP(basecomp, curcomp, curexp) \
     (u16)(((u32)(curexp * (u8)(curcomp + 128)) / (u8)(basecomp - 128)))
-#endif
 
 	struct sd *sd = (struct sd *) gspca_dev;
 	int currentexp = sd->params.exposure.coarseExpLo +
@@ -1540,7 +1511,6 @@ static int sd_start(struct gspca_dev *gspca_dev)
 			return -ENODEV;
 		}
 
-		/* FIXME: this is just dirty trial and error */
 		ret = goto_high_power(gspca_dev);
 		if (ret)
 			return ret;

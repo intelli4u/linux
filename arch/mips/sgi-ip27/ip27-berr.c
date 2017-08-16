@@ -78,7 +78,6 @@ int ip27_be_handler(struct pt_regs *regs, int is_fixup)
 
 void __init ip27_be_init(void)
 {
-	/* XXX Initialize all the Hub & Bridge error handling here.  */
 	int cpu = LOCAL_HUB_L(PI_CPU_NUM);
 	int cpuoff = cpu << 8;
 

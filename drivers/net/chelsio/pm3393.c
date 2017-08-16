@@ -150,7 +150,6 @@ static int pm3393_interrupt_enable(struct cmac *cmac)
 
 	/* PM3393 - Global interrupt enable
 	 */
-	/* TBD XXX Disable for now until we figure out why error interrupts keep asserting. */
 	pmwrite(cmac, SUNI1x10GEXP_REG_GLOBAL_INTERRUPT_ENABLE,
 		0 /*SUNI1x10GEXP_BITMSK_TOP_INTE */ );
 
@@ -256,7 +255,6 @@ static int pm3393_interrupt_handler(struct cmac *cmac)
 		dev_dbg(&cmac->adapter->pdev->dev, "PM3393 intr cause 0x%x\n",
 			master_intr_status);
 
-	/* TBD XXX Lets just clear everything for now */
 	pm3393_interrupt_clear(cmac);
 
 	return 0;
@@ -292,11 +290,6 @@ static int pm3393_enable_port(struct cmac *cmac, int which)
 
 	pm3393_enable(cmac, which);
 
-	/*
-	 * XXX This should be done by the PHY and preferrably not at all.
-	 * The PHY doesn't give us link status indication on its own so have
-	 * the link management code query it instead.
-	 */
 	t1_link_changed(cmac->adapter, 0);
 	return 0;
 }
@@ -759,8 +752,6 @@ static int pm3393_mac_reset(adapter_t * adapter)
 		t1_tpi_read(adapter, OFFSET(SUNI1x10GEXP_REG_DEVICE_STATUS), &val);
 		is_pl4_reset_finished = (val & SUNI1x10GEXP_BITMSK_TOP_EXPIRED);
 
-		/* TBD XXX SUNI1x10GEXP_BITMSK_TOP_PL4_IS_DOOL gets locked later in the init sequence
-		 *         figure out why? */
 
 		/* Have all PL4 block clocks locked? */
 		x = (SUNI1x10GEXP_BITMSK_TOP_PL4_ID_DOOL

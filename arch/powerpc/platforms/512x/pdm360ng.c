@@ -21,8 +21,7 @@
 
 #include "mpc512x.h"
 
-#if defined(CONFIG_TOUCHSCREEN_ADS7846) || \
-    defined(CONFIG_TOUCHSCREEN_ADS7846_MODULE)
+#if defined(CONFIG_TOUCHSCREEN_ADS7846) || defined(CONFIG_TOUCHSCREEN_ADS7846_MODULE)
 #include <linux/interrupt.h>
 #include <linux/spi/ads7846.h>
 #include <linux/spi/spi.h>

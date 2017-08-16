@@ -170,7 +170,6 @@ static inline int tlbe_is_host_safe(const struct kvm_vcpu *vcpu,
 		return 0;
 
 	/* Does it match current guest AS? */
-	/* XXX what about IS != DS? */
 	if (get_tlb_ts(tlbe) != !!(vcpu->arch.msr & MSR_IS))
 		return 0;
 

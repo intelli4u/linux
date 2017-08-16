@@ -227,7 +227,7 @@ int put_cmsg(struct msghdr * msg, int level, int type, int len, void *data)
 
 	if (cm==NULL || msg->msg_controllen < sizeof(*cm)) {
 		msg->msg_flags |= MSG_CTRUNC;
-		return 0; /* XXX: return error? check spec. */
+		return 0;
 	}
 	if (msg->msg_controllen < cmlen) {
 		msg->msg_flags |= MSG_CTRUNC;

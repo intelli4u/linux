@@ -28,9 +28,6 @@ struct itd1000_state {
 
 	u32 frequency; /* contains the value resulting from the LO-setting */
 
-	/* ugly workaround for flexcop's incapable i2c-controller
-	 * FIXME, if possible
-	 */
 	u8 shadow[256];
 };
 

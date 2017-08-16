@@ -1291,7 +1291,6 @@ static void mirror_presuspend(struct dm_target *ti)
 		   !dm_rh_recovery_in_flight(ms->rh));
 
 	if (log->type->presuspend && log->type->presuspend(log))
-		/* FIXME: need better error handling */
 		DMWARN("log presuspend failed");
 
 	/*
@@ -1309,7 +1308,6 @@ static void mirror_postsuspend(struct dm_target *ti)
 	struct dm_dirty_log *log = dm_rh_dirty_log(ms->rh);
 
 	if (log->type->postsuspend && log->type->postsuspend(log))
-		/* FIXME: need better error handling */
 		DMWARN("log postsuspend failed");
 }
 
@@ -1320,7 +1318,6 @@ static void mirror_resume(struct dm_target *ti)
 
 	atomic_set(&ms->suspend, 0);
 	if (log->type->resume && log->type->resume(log))
-		/* FIXME: need better error handling */
 		DMWARN("log resume failed");
 	dm_rh_start_recovery(ms->rh);
 }

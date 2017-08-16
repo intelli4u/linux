@@ -372,7 +372,6 @@ static ssize_t nfs_direct_read_schedule_segment(struct nfs_direct_req *dreq,
 		started += bytes;
 		user_addr += bytes;
 		pos += bytes;
-		/* FIXME: Remove this unnecessary math from final patch */
 		pgbase += bytes;
 		pgbase &= ~PAGE_MASK;
 		BUG_ON(pgbase != (user_addr & ~PAGE_MASK));
@@ -808,7 +807,6 @@ static ssize_t nfs_direct_write_schedule_segment(struct nfs_direct_req *dreq,
 		user_addr += bytes;
 		pos += bytes;
 
-		/* FIXME: Remove this useless math from the final patch */
 		pgbase += bytes;
 		pgbase &= ~PAGE_MASK;
 		BUG_ON(pgbase != (user_addr & ~PAGE_MASK));

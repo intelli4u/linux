@@ -530,50 +530,6 @@ W6692_fill_Bfifo(struct w6692_ch *wch)
 	}
 }
 
-#if 0
-static int
-setvolume(struct w6692_ch *wch, int mic, struct sk_buff *skb)
-{
-	struct w6692_hw *card = wch->bch.hw;
-	u16 *vol = (u16 *)skb->data;
-	u8 val;
-
-	if ((!(card->fmask & pots)) ||
-	    !test_bit(FLG_TRANSPARENT, &wch->bch.Flags))
-		return -ENODEV;
-	if (skb->len < 2)
-		return -EINVAL;
-	if (*vol > 7)
-		return -EINVAL;
-	val = *vol & 7;
-	val = 7 - val;
-	if (mic) {
-		val <<= 3;
-		card->xaddr &= 0xc7;
-	} else {
-		card->xaddr &= 0xf8;
-	}
-	card->xaddr |= val;
-	WriteW6692(card, W_XADDR, card->xaddr);
-	return 0;
-}
-
-static int
-enable_pots(struct w6692_ch *wch)
-{
-	struct w6692_hw *card = wch->bch.hw;
-
-	if ((!(card->fmask & pots)) ||
-	    !test_bit(FLG_TRANSPARENT, &wch->bch.Flags))
-		return -ENODEV;
-	wch->b_mode |= W_B_MODE_EPCM | W_B_MODE_BSW0;
-	WriteW6692B(wch, W_B_MODE, wch->b_mode);
-	WriteW6692B(wch, W_B_CMDR, W_B_CMDR_RRST | W_B_CMDR_XRST);
-	card->pctl |= ((wch->bch.nr & 2) ? W_PCTL_PCX : 0);
-	WriteW6692(card, W_PCTL, card->pctl);
-	return 0;
-}
-#endif
 
 static int
 disable_pots(struct w6692_ch *wch)

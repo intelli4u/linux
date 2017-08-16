@@ -1006,12 +1006,6 @@ ahd_aic790X_setup(struct ahd_softc *ahd)
 		AHD_SET_SLEWRATE(ahd, AHD_SLEWRATE_DEF_REVB);
 		AHD_SET_AMPLITUDE(ahd, AHD_AMPLITUDE_DEF);
 
-		/*
-		 * Set the PREQDIS bit for H2B which disables some workaround
-		 * that doesn't work on regular PCI busses.
-		 * XXX - Find out exactly what this does from the hardware
-		 * 	 folks!
-		 */
 		devconfig1 = ahd_pci_read_config(pci, DEVCONFIG1, /*bytes*/1);
 		ahd_pci_write_config(pci, DEVCONFIG1,
 				     devconfig1|PREQDIS, /*bytes*/1);

@@ -1104,9 +1104,3 @@ CARDbChannelSwitch (
     }
     return (bResult);
 }
-
-
-
-
-
-

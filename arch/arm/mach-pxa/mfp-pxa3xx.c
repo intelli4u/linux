@@ -24,13 +24,6 @@
 #include <mach/pxa3xx-regs.h>
 
 #ifdef CONFIG_PM
-/*
- * Configure the MFPs appropriately for suspend/resume.
- * FIXME: this should probably depend on which system state we're
- * entering - for instance, we might not want to place MFP pins in
- * a pull-down mode if they're an active low chip select, and we're
- * just entering standby.
- */
 static int pxa3xx_mfp_suspend(struct sys_device *d, pm_message_t state)
 {
 	mfp_config_lpm();

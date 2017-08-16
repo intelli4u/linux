@@ -53,7 +53,6 @@
 #ifdef CONFIG_USB_DYNAMIC_MINORS
 #define USB_ALPHATRACK_MINOR_BASE	0
 #else
-/* FIXME 176 - is another driver's minor - apply for that */
 #define USB_ALPHATRACK_MINOR_BASE	176
 #endif
 
@@ -210,7 +209,7 @@ static void usb_alphatrack_delete(struct usb_alphatrack *dev)
 	kfree(dev->ring_buffer);
 	kfree(dev->interrupt_in_buffer);
 	kfree(dev->interrupt_out_buffer);
-	kfree(dev);		/* fixme oldi_buffer */
+	kfree(dev);
 }
 
 /**
@@ -582,7 +581,6 @@ static ssize_t usb_alphatrack_write(struct file *file,
 	}
 
 	/* write the data into interrupt_out_buffer from userspace */
-	/* FIXME - if you write more than 12 bytes this breaks */
 	bytes_to_write =
 	    min(count, write_buffer_size * dev->interrupt_out_endpoint_size);
 	if (bytes_to_write < count)
@@ -715,8 +713,6 @@ static int usb_alphatrack_probe(struct usb_interface *intf,
 
 	true_size = min(ring_buffer_size, RING_BUFFER_SIZE);
 
-	/* FIXME - there are more usb_alloc routines for dma correctness.
-	   Needed? */
 	dev->ring_buffer =
 	    kmalloc((true_size * sizeof(struct alphatrack_icmd)), GFP_KERNEL);
 

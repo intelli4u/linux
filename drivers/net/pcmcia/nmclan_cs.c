@@ -900,7 +900,7 @@ static netdev_tx_t mace_start_xmit(struct sk_buff *skb,
   pr_debug("%s: mace_start_xmit(length = %ld) called.\n",
 	dev->name, (long)skb->len);
 
-#if (!TX_INTERRUPTABLE)
+#if !TX_INTERRUPTABLE
   /* Disable MACE TX interrupts. */
   outb(MACE_IMR_DEFAULT | MACE_IR_XMTINT,
     ioaddr + AM2150_MACE_BASE + MACE_IMR);
@@ -933,7 +933,7 @@ static netdev_tx_t mace_start_xmit(struct sk_buff *skb,
 #endif /* #if MULTI_TX */
   }
 
-#if (!TX_INTERRUPTABLE)
+#if !TX_INTERRUPTABLE
   /* Re-enable MACE TX interrupts. */
   lp->tx_irq_disabled=0;
   outb(MACE_IMR_DEFAULT, ioaddr + AM2150_MACE_BASE + MACE_IMR);

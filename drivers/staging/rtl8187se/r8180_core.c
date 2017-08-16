@@ -373,10 +373,6 @@ void rtl8180_proc_init_one(struct net_device *dev)
 	}
 }
 
-/*
-  FIXME: check if we can use some standard already-existent
-  data type+functions in kernel
-*/
 
 short buffer_add(struct buffer **buffer, u32 *buf, dma_addr_t dma,
 		struct buffer **bufferhead)
@@ -1491,13 +1487,6 @@ void rtl8180_rx(struct net_device *dev)
 		if (last) {
 			lastlen = ((*priv->rxringtail) & 0xfff);
 
-			/* if the last descriptor (that should
-			 * tell us the total packet len) tell
-			 * us something less than the descriptors
-			 * len we had until now, then there is some
-			 * problem..
-			 * workaround to prevent kernel panic
-			 */
 			if (lastlen < priv->rx_prevlen)
 				len = 0;
 			else
@@ -2087,7 +2076,6 @@ short rtl8180_tx(struct net_device *dev, u8* txbuf, int len, int priority,
 		*(tail+6) = 0;
 		*(tail+7) = 0;
 
-		/* FIXME: this should be triggered by HW encryption parameters.*/
 		*tail |= (1<<15); /* no encrypt */
 
 		if (remain == len && !descfrag) {
@@ -2128,7 +2116,6 @@ short rtl8180_tx(struct net_device *dev, u8* txbuf, int len, int priority,
 		*tail = *tail | ((rate&0xf) << 24);
 
 		/* hw_plcp_len is not used for rtl8180 chip */
-		/* FIXME */
 		if (!priv->hw_plcp_len) {
 			duration = rtl8180_len2duration(len, rate, &ext);
 			*(tail+1) = *(tail+1) | ((duration & 0x7fff)<<16);
@@ -2269,7 +2256,6 @@ short rtl8180_is_tx_queue_empty(struct net_device *dev)
 				return 0;
 	return 1;
 }
-/* FIXME FIXME 5msecs is random */
 #define HW_WAKE_DELAY 5
 
 void rtl8180_hw_wakeup(struct net_device *dev)
@@ -2613,7 +2599,6 @@ short rtl8180_init(struct net_device *dev)
 	DMESG("Channel plan is %d\n", priv->channel_plan);
 	rtl8180_set_channel_map(priv->channel_plan, priv->ieee80211);
 
-	/* FIXME: these constants are placed in a bad pleace. */
 	priv->txbuffsize = 2048;	/* 1024; */
 	priv->txringcount = 32;		/* 32; */
 	priv->rxbuffersize = 2048;	/* 1024; */
@@ -3152,7 +3137,6 @@ void rtl8180_adapter_start(struct net_device *dev)
 
 	write_nic_byte(dev, GP_ENABLE, read_nic_byte(dev, GP_ENABLE) & ~(1<<6));
 
-	/* FIXME cfg 3 ClkRun enable - isn't it ReadOnly ? */
 	rtl8180_set_mode(dev, EPROM_CMD_CONFIG);
 	write_nic_byte(dev, CONFIG3, read_nic_byte(dev, CONFIG3)
 		       | (1 << CONFIG3_CLKRUN_SHIFT));
@@ -3186,10 +3170,7 @@ void rtl8180_start_tx_beacon(struct net_device *dev)
 
 	word  = read_nic_word(dev, BintrItv);
 	word &= ~BintrItv_BintrItv;
-	word |= 1000; /* priv->ieee80211->current_network.beacon_interval *
-		((priv->txbeaconcount > 1)?(priv->txbeaconcount-1):1);
-	// FIXME: check if correct ^^ worked with 0x3e8;
-	*/
+	word |= 1000;
 	write_nic_word(dev, BintrItv, word);
 
 	rtl8180_set_mode(dev, EPROM_CMD_NORMAL);
@@ -3415,7 +3396,6 @@ int rtl8180_down(struct net_device *dev)
 	priv->up = 0;
 
 	ieee80211_softmac_stop_protocol(priv->ieee80211);
-	/* FIXME */
 	if (!netif_queue_stopped(dev))
 		netif_stop_queue(dev);
 	rtl8180_rtx_disable(dev);

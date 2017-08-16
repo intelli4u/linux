@@ -334,17 +334,6 @@ static int vidioc_s_ctrl(struct file *file, void *priv,
 	zol->stereo = 1;
 	if (zol_setfreq(zol, zol->curfreq) != 0)
 		return -EINVAL;
-#if 0
-/* FIXME: Implement stereo/mono switch on V4L2 */
-	if (v->mode & VIDEO_SOUND_STEREO) {
-		zol->stereo = 1;
-		zol_setfreq(zol, zol->curfreq);
-	}
-	if (v->mode & VIDEO_SOUND_MONO) {
-		zol->stereo = 0;
-		zol_setfreq(zol, zol->curfreq);
-	}
-#endif
 	return -EINVAL;
 }
 
@@ -466,4 +455,3 @@ static void __exit zoltrix_exit(void)
 
 module_init(zoltrix_init);
 module_exit(zoltrix_exit);
-

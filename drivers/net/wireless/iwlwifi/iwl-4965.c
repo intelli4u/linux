@@ -1908,7 +1908,6 @@ static int iwl4965_tx_status_reply_tx(struct iwl_priv *priv,
 		status = le16_to_cpu(frame_status[0].status);
 		idx = start_idx;
 
-		/* FIXME: code repetition */
 		IWL_DEBUG_TX_REPLY(priv, "FrameCnt = %d, StartIdx=%d idx=%d\n",
 				   agg->frame_count, agg->start_idx, idx);
 
@@ -1917,7 +1916,6 @@ static int iwl4965_tx_status_reply_tx(struct iwl_priv *priv,
 		info->flags &= ~IEEE80211_TX_CTL_AMPDU;
 		info->flags |= iwl_tx_status_to_mac80211(status);
 		iwlagn_hwrate_to_tx_control(priv, rate_n_flags, info);
-		/* FIXME: code repetition end */
 
 		IWL_DEBUG_TX_REPLY(priv, "1 Frame 0x%x failure :%d\n",
 				    status & 0xff, tx_resp->failure_frame);
@@ -2338,4 +2336,3 @@ struct iwl_cfg iwl4965_agn_cfg = {
 
 /* Module firmware */
 MODULE_FIRMWARE(IWL4965_MODULE_FIRMWARE(IWL4965_UCODE_API_MAX));
-

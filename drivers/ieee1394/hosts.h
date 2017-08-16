@@ -87,8 +87,6 @@ enum devctl_cmd {
 	/* Arg is void, return value is the hardware cycle counter value. */
 	GET_CYCLE_COUNTER,
 
-	/* Set the hardware cycle counter to the value in arg, return void.
-	 * FIXME - setting is probably not required. */
 	SET_CYCLE_COUNTER,
 
 	/* Configure hardware for new bus ID in arg, return void. */

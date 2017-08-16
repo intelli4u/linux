@@ -635,8 +635,6 @@ static void __init phyp_dump_reserve_mem(void)
 		base = variable_reserve_size;
 		size = memblock_end_of_DRAM() - base;
 
-		/* XXX crashed_ram_end is wrong, since it may be beyond
-		 * the memory_limit, it will need to be adjusted. */
 		memblock_reserve(base, size);
 
 		phyp_dump_info->init_reserve_start = base;
@@ -718,8 +716,6 @@ void __init early_init_devtree(void *params)
 
 	DBG("Phys. mem: %llx\n", memblock_phys_mem_size());
 
-	/* We may need to relocate the flat tree, do it now.
-	 * FIXME .. and the initrd too? */
 	move_device_tree();
 
 	allocate_pacas();

@@ -624,9 +624,6 @@ static void at91_mci_process_next(struct at91mci_host *host)
 		at91_mci_send_command(host, host->request->stop);
 	} else {
 		del_timer(&host->timer);
-		/* the at91rm9200 mci controller hangs after some transfers,
-		 * and the workaround is to reset it after each transfer.
-		 */
 		if (cpu_is_at91rm9200())
 			at91_reset_host(host);
 		mmc_request_done(host->mmc, host->request);

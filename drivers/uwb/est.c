@@ -1,44 +1,4 @@
-/*
- * Ultra Wide Band Radio Control
- * Event Size Tables management
- *
- * Copyright (C) 2005-2006 Intel Corporation
- * Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
- *
- *
- * FIXME: docs
- *
- * Infrastructure, code and data tables for guessing the size of
- * events received on the notification endpoints of UWB radio
- * controllers.
- *
- * You define a table of events and for each, its size and how to get
- * the extra size.
- *
- * ENTRY POINTS:
- *
- * uwb_est_{init/destroy}(): To initialize/release the EST subsystem.
- *
- * uwb_est_[u]register(): To un/register event size tables
- *   uwb_est_grow()
- *
- * uwb_est_find_size(): Get the size of an event
- *   uwb_est_get_size()
- */
+
 #include <linux/spinlock.h>
 #include <linux/slab.h>
 
@@ -170,13 +130,6 @@ struct uwb_est_entry uwb_est_01_00xx[] = {
 	},
 };
 
-/**
- * Initialize the EST subsystem
- *
- * Register the standard tables also.
- *
- * FIXME: tag init
- */
 int uwb_est_create(void)
 {
 	int result;
@@ -251,7 +204,6 @@ int uwb_est_grow(void)
  *
  * @returns 0 if ok, < 0 errno on error (-ENOENT if not found).
  */
-/* FIXME: add bus type to vendor/product code */
 int uwb_est_register(u8 type, u8 event_high, u16 vendor, u16 product,
 		     const struct uwb_est_entry *entry, size_t entries)
 {
@@ -429,7 +381,6 @@ out:
 ssize_t uwb_est_find_size(struct uwb_rc *rc, const struct uwb_rceb *rceb,
 			  size_t rceb_size)
 {
-	/* FIXME: add vendor/product data */
 	ssize_t size;
 	struct device *dev = &rc->uwb_dev.dev;
 	unsigned long flags;

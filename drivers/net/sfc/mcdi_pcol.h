@@ -532,14 +532,6 @@
 #define MC_CMD_PORT_WRITE128_OUT_LEN 4
 #define MC_CMD_PORT_WRITE128_OUT_STATUS_OFST 0
 
-/* MC_CMD_GET_BOARD_CFG:
- * Returns the MC firmware configuration structure
- *
- * The FW_SUBTYPE_LIST contains a 16-bit value for each of the 12 types of
- * NVRAM area.  The values are defined in the firmware/mc/platform/<xxx>.c file
- * for a specific board type, but otherwise have no meaning to the MC; they
- * are used by the driver to manage selection of appropriate firmware updates.
- */
 #define MC_CMD_GET_BOARD_CFG 0x18
 #define MC_CMD_GET_BOARD_CFG_IN_LEN 0
 #define MC_CMD_GET_BOARD_CFG_OUT_LEN 96
@@ -1658,18 +1650,6 @@
 #define MC_CMD_TESTASSERT_IN_LEN 0
 #define MC_CMD_TESTASSERT_OUT_LEN 0
 
-/* MC_CMD_WORKAROUND 0x4a
- *
- * Enable/Disable a given workaround. The mcfw will return EINVAL if it
- * doesn't understand the given workaround number - which should not
- * be treated as a hard error by client code.
- *
- * This op does not imply any semantics about each workaround, that's between
- * the driver and the mcfw on a per-workaround basis.
- *
- * Locks required: None
- * Returns: 0, EINVAL
- */
 #define MC_CMD_WORKAROUND 0x4a
 #define MC_CMD_WORKAROUND_IN_LEN 8
 #define MC_CMD_WORKAROUND_IN_TYPE_OFST 0

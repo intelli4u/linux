@@ -1032,40 +1032,6 @@ static const char *fdomain_16x0_info( struct Scsi_Host *ignore )
    return buffer;
 }
 
-#if 0
-static int fdomain_arbitrate( void )
-{
-   int           status = 0;
-   unsigned long timeout;
-
-#if EVERY_ACCESS
-   printk( "fdomain_arbitrate()\n" );
-#endif
-   
-   outb(0x00, port_base + SCSI_Cntl);              /* Disable data drivers */
-   outb(adapter_mask, port_base + SCSI_Data_NoACK); /* Set our id bit */
-   outb(0x04 | PARITY_MASK, port_base + TMC_Cntl); /* Start arbitration */
-
-   timeout = 500;
-   do {
-      status = inb(port_base + TMC_Status);        /* Read adapter status */
-      if (status & 0x02)		      /* Arbitration complete */
-	    return 0;
-      mdelay(1);			/* Wait one millisecond */
-   } while (--timeout);
-
-   /* Make bus idle */
-   fdomain_make_bus_idle();
-
-#if EVERY_ACCESS
-   printk( "Arbitration failed, status = %x\n", status );
-#endif
-#if ERRORS_ONLY
-   printk( "scsi: <fdomain> Arbitration failed, status = %x\n", status );
-#endif
-   return 1;
-}
-#endif
 
 static int fdomain_select( int target )
 {

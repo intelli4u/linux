@@ -92,7 +92,6 @@ static void ath_rx_buf_link(struct ath_softc *sc, struct ath_buf *bf)
 
 static void ath_setdefantenna(struct ath_softc *sc, u32 antenna)
 {
-	/* XXX block beacon interrupts */
 	ath9k_hw_setantenna(sc->sc_ah, antenna);
 	sc->rx.defant = antenna;
 	sc->rx.rxotherant = 0;
@@ -961,13 +960,6 @@ static void ath9k_process_rssi(struct ath_common *common,
 	fc = hdr->frame_control;
 
 	rcu_read_lock();
-	/*
-	 * XXX: use ieee80211_find_sta! This requires quite a bit of work
-	 * under the current ath9k virtual wiphy implementation as we have
-	 * no way of tying a vif to wiphy. Typically vifs are attached to
-	 * at least one sdata of a wiphy on mac80211 but with ath9k virtual
-	 * wiphy you'd have to iterate over every wiphy and each sdata.
-	 */
 	sta = ieee80211_find_sta_by_hw(hw, hdr->addr2);
 	if (sta) {
 		an = (struct ath_node *) sta->drv_priv;

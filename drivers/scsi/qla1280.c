@@ -2027,9 +2027,7 @@ qla1280_set_target_defaults(struct scsi_qla_host *ha, int bus, int target)
 	nv->bus[bus].target[target].parameter.auto_request_sense = 1;
 	nv->bus[bus].target[target].parameter.tag_queuing = 1;
 	nv->bus[bus].target[target].parameter.enable_sync = 1;
-#if 1	/* Some SCSI Processors do not seem to like this */
 	nv->bus[bus].target[target].parameter.enable_wide = 1;
-#endif
 	nv->bus[bus].target[target].execution_throttle =
 		nv->bus[bus].max_queue_depth - 1;
 	nv->bus[bus].target[target].parameter.parity_checking = 1;
@@ -2277,11 +2275,11 @@ qla1280_nvram_config(struct scsi_qla_host *ha)
 	mb[1] = nv->firmware_feature.f.enable_fast_posting;
 	mb[1] |= nv->firmware_feature.f.report_lvd_bus_transition << 1;
 	mb[1] |= nv->firmware_feature.f.disable_synchronous_backoff << 5;
-#if defined(CONFIG_IA64_GENERIC) || defined (CONFIG_IA64_SGI_SN2)
+#if defined(CONFIG_IA64_GENERIC) || defined(CONFIG_IA64_SGI_SN2)
 	if (ia64_platform_is("sn2")) {
 		printk(KERN_INFO "scsi(%li): Enabling SN2 PCI DMA "
 		       "workaround\n", ha->host_no);
-		mb[1] |= nv->firmware_feature.f.unused_9 << 9; /* XXX */
+		mb[1] |= nv->firmware_feature.f.unused_9 << 9;
 	}
 #endif
 	status |= qla1280_mailbox_command(ha, BIT_1 | BIT_0, mb);

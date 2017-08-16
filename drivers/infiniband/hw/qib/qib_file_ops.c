@@ -1745,11 +1745,6 @@ static int qib_close(struct inode *in, struct file *fp)
 		__clear_bit(fd->rec_cpu_num, qib_cpulist);
 
 	if (--rcd->cnt) {
-		/*
-		 * XXX If the master closes the context before the slave(s),
-		 * revoke the mmap for the eager receive queue so
-		 * the slave(s) don't wait for receive data forever.
-		 */
 		rcd->active_slaves &= ~(1 << fd->subctxt);
 		rcd->subpid[fd->subctxt] = 0;
 		mutex_unlock(&qib_mutex);

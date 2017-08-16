@@ -442,13 +442,6 @@ xfs_setattr(
 	if (code)
 		return code;
 
-	/*
-	 * XXX(hch): Updating the ACL entries is not atomic vs the i_mode
-	 * 	     update.  We could avoid this with linked transactions
-	 * 	     and passing down the transaction pointer all the way
-	 *	     to attr_set.  No previous user of the generic
-	 * 	     Posix ACL code seems to care about this issue either.
-	 */
 	if ((mask & ATTR_MODE) && !(flags & XFS_ATTR_NOACL)) {
 		code = -xfs_acl_chmod(inode);
 		if (code)

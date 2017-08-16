@@ -111,7 +111,6 @@
 #define ia64_st4_rel		__st4_rel
 #define ia64_st8_rel		__st8_rel
 
-/* FIXME: need st4.rel.nta intrinsic */
 #define ia64_st4_rel_nta	__st4_rel
 
 #define ia64_ld1_acq		__ld1_acq

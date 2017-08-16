@@ -110,7 +110,6 @@ struct saa7146_vv
 {
 	/* vbi capture */
 	struct saa7146_dmaqueue		vbi_q;
-	/* vbi workaround interrupt queue */
 	wait_queue_head_t		vbi_wq;
 	int				vbi_fieldcount;
 	struct saa7146_fh		*vbi_streaming;
@@ -128,12 +127,6 @@ struct saa7146_vv
 	struct saa7146_dmaqueue		video_q;
 	enum v4l2_field			last_field;
 
-	/* common: fixme? shouldn't this be in saa7146_fh?
-	   (this leads to a more complicated question: shall the driver
-	   store the different settings (for example S_INPUT) for every open
-	   and restore it appropriately, or should all settings be common for
-	   all opens? currently, we do the latter, like all other
-	   drivers do... */
 	struct saa7146_standard	*standard;
 
 	int	vflip;
@@ -147,7 +140,7 @@ struct saa7146_vv
 };
 
 /* flags */
-#define SAA7146_USE_PORT_B_FOR_VBI	0x2     /* use input port b for vbi hardware bug workaround */
+#define SAA7146_USE_PORT_B_FOR_VBI	0x2
 
 struct saa7146_ext_vv
 {

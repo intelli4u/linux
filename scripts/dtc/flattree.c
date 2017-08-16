@@ -140,7 +140,6 @@ static void asm_emit_string(void *e, char *str, int len)
 	char c = 0;
 
 	if (len != 0) {
-		/* XXX: ewww */
 		c = str[len];
 		str[len] = '\0';
 	}
@@ -229,7 +228,6 @@ static int stringtable_insert(struct data *d, const char *str)
 {
 	int i;
 
-	/* FIXME: do this more efficiently? */
 
 	for (i = 0; i < d->len; i++) {
 		if (streq(str, d->val + i))

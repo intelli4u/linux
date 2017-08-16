@@ -149,38 +149,6 @@ nc_register_write(struct usbnet *dev, u8 regnum, u16 value)
 }
 
 
-#if 0
-static void nc_dump_registers(struct usbnet *dev)
-{
-	u8	reg;
-	u16	*vp = kmalloc(sizeof (u16));
-
-	if (!vp) {
-		dbg("no memory?");
-		return;
-	}
-
-	dbg("%s registers:", dev->net->name);
-	for (reg = 0; reg < 0x20; reg++) {
-		int retval;
-
-		// reading some registers is trouble
-		if (reg >= 0x08 && reg <= 0xf)
-			continue;
-		if (reg >= 0x12 && reg <= 0x1e)
-			continue;
-
-		retval = nc_register_read(dev, reg, vp);
-		if (retval < 0)
-			dbg("%s reg [0x%x] ==> error %d",
-				dev->net->name, reg, retval);
-		else
-			dbg("%s reg [0x%x] = 0x%x",
-				dev->net->name, reg, *vp);
-	}
-	kfree(vp);
-}
-#endif
 
 
 /*-------------------------------------------------------------------------*/
@@ -252,7 +220,6 @@ static inline void nc_dump_status(struct usbnet *dev, u16 status)
 		  dev->udev->bus->bus_name, dev->udev->devpath,
 		  status,
 
-		  // XXX the packet counts don't seem right
 		  // (1 at reset, not 0); maybe UNSPEC too
 
 		  (status & STATUS_PORT_A) ? 'A' : 'B',
@@ -477,10 +444,6 @@ static int net1080_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 			le16_to_cpu(trailer->packet_id));
 		return 0;
 	}
-#if 0
-	netdev_dbg(dev->net, "frame <rx h %d p %d id %d\n", header->hdr_len,
-		   header->packet_len, header->packet_id);
-#endif
 	dev->frame_errors = 0;
 	return 1;
 }
@@ -538,11 +501,6 @@ encapsulate:
 		*skb_put(skb, 1) = PAD_BYTE;
 	trailer = (struct nc_trailer *) skb_put(skb, sizeof *trailer);
 	put_unaligned(header->packet_id, &trailer->packet_id);
-#if 0
-	netdev_dbg(dev->net, "frame >tx h %d p %d id %d\n",
-		   header->hdr_len, header->packet_len,
-		   header->packet_id);
-#endif
 	return skb;
 }
 

@@ -59,7 +59,6 @@ static unsigned int disable_vbi;
 module_param(disable_vbi, int, 0644);
 MODULE_PARM_DESC(disable_vbi, "disable vbi support");
 
-/* FIXME */
 #define em28xx_isocdbg(fmt, arg...) do {\
 	if (core_debug) \
 		printk(KERN_INFO "%s %s :"fmt, \
@@ -631,7 +630,6 @@ int em28xx_capture_start(struct em28xx *dev, int start)
 	}
 
 
-	/* FIXME: which is the best order? */
 	/* video registers are sampled by VREF */
 	rc = em28xx_write_reg_bits(dev, EM28XX_R0C_USBSUSP,
 				   start ? 0x10 : 0x00, 0x10);
@@ -760,7 +758,6 @@ static int em28xx_scaler_set(struct em28xx *dev, u16 h, u16 v)
 	return em28xx_write_reg_bits(dev, EM28XX_R26_COMPR, mode, 0x30);
 }
 
-/* FIXME: this only function read values from dev */
 int em28xx_resolution_set(struct em28xx *dev)
 {
 	int width, height;
@@ -892,7 +889,6 @@ int em28xx_set_mode(struct em28xx *dev, enum em28xx_mode set_mode)
 	if (set_mode == EM28XX_SUSPEND) {
 		dev->mode = set_mode;
 
-		/* FIXME: add suspend support for ac97 */
 
 		return em28xx_gpio_set(dev, dev->board.suspend_gpio);
 	}
@@ -1057,10 +1053,6 @@ int em28xx_init_isoc(struct em28xx *dev, int max_packets,
 		}
 		memset(dev->isoc_ctl.transfer_buffer[i], 0, sb_size);
 
-		/* FIXME: this is a hack - should be
-			'desc.bEndpointAddress & USB_ENDPOINT_NUMBER_MASK'
-			should also be using 'desc.bInterval'
-		 */
 		pipe = usb_rcvisocpipe(dev->udev,
 			dev->mode == EM28XX_ANALOG_MODE ? 0x82 : 0x84);
 
@@ -1108,8 +1100,6 @@ int em28xx_isoc_dvb_max_packetsize(struct em28xx *dev)
 	unsigned int packet_size = 564;
 
 	if (dev->chip_id == CHIP_ID_EM2874) {
-		/* FIXME - for now assume 564 like it was before, but the
-		   em2874 code should be added to return the proper value... */
 		packet_size = 564;
 	} else {
 		/* TS max packet size stored in bits 1-0 of R01 */

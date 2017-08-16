@@ -240,13 +240,6 @@ flush_etrax_cacherange(void *startadr, int length)
 	}
 }
 
-/* Due to a bug in Etrax100(LX) all versions, receiving DMA buffers
- * will occationally corrupt certain CPU writes if the DMA buffers
- * happen to be hot in the cache.
- * 
- * As a workaround, we have to flush the relevant parts of the cache
- * before (re) inserting any receiving descriptor into the DMA HW.
- */
 
 void
 prepare_rx_descriptor(struct etrax_dma_descr *desc)

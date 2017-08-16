@@ -864,16 +864,6 @@ static ssize_t do_sendfile(int out_fd, int in_fd, loff_t *ppos,
 	}
 
 	fl = 0;
-#if 0
-	/*
-	 * We need to debate whether we can enable this or not. The
-	 * man page documents EAGAIN return for the output at least,
-	 * and the application is arguably buggy if it doesn't expect
-	 * EAGAIN on a non-blocking file descriptor.
-	 */
-	if (in_file->f_flags & O_NONBLOCK)
-		fl = SPLICE_F_NONBLOCK;
-#endif
 	retval = do_splice_direct(in_file, ppos, out_file, count, fl);
 
 	if (retval > 0) {

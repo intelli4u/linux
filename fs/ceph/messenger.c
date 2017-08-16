@@ -1685,11 +1685,6 @@ more:
 	}
 
 	if (con->in_base_pos < 0) {
-		/*
-		 * skipping + discarding content.
-		 *
-		 * FIXME: there must be a better way to do this!
-		 */
 		static char buf[1024];
 		int skip = min(1024, -con->in_base_pos);
 		dout("skipping %d / %d bytes\n", skip, -con->in_base_pos);
@@ -1716,7 +1711,7 @@ more:
 			prepare_read_ack(con);
 			break;
 		case CEPH_MSGR_TAG_CLOSE:
-			set_bit(CLOSED, &con->state);   /* fixme */
+			set_bit(CLOSED, &con->state);
 			goto done;
 		default:
 			goto bad_tag;

@@ -176,4 +176,3 @@ struct mmci_host {
 	unsigned int		size;
 	struct regulator	*vcc;
 };
-

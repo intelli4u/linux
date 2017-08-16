@@ -229,7 +229,6 @@ static int xip_file_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
 	struct page *page;
 	int error;
 
-	/* XXX: are VM_FAULT_ codes OK? */
 again:
 	size = (i_size_read(inode) + PAGE_CACHE_SIZE - 1) >> PAGE_CACHE_SHIFT;
 	if (vmf->pgoff >= size)

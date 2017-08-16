@@ -68,4 +68,3 @@ static int __init sram_init(void)
 	return status;
 }
 core_initcall(sram_init);
-

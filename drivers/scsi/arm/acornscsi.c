@@ -1199,24 +1199,6 @@ void acornscsi_dma_intr(AS_Host *host)
 #endif
     } else {
 	host->dma.xfer_setup = 0;
-#if 0
-	/*
-	 * If the interface still wants more, then this is an error.
-	 * We give it another byte, but we also attempt to raise an
-	 * attention condition.  We continue giving one byte until
-	 * the device recognises the attention.
-	 */
-	if (dmac_read(host, DMAC_STATUS) & STATUS_RQ0) {
-	    acornscsi_abortcmd(host, host->SCpnt->tag);
-
-	    dmac_write(host, DMAC_TXCNTLO, 0);
-	    dmac_write(host, DMAC_TXCNTHI, 0);
-	    dmac_write(host, DMAC_TXADRLO, 0);
-	    dmac_write(host, DMAC_TXADRMD, 0);
-	    dmac_write(host, DMAC_TXADRHI, 0);
-	    dmac_write(host, DMAC_MASKREG, MASK_OFF);
-	}
-#endif
     }
 }
 
@@ -1557,16 +1539,6 @@ void acornscsi_message(AS_Host *host)
 	break;
 
     case MESSAGE_REJECT:
-#if 0 /* this isn't needed any more */
-	/*
-	 * If we were negociating sync transfer, we don't yet know if
-	 * this REJECT is for the sync transfer or for the tagged queue/wide
-	 * transfer.  Re-initiate sync transfer negociation now, and if
-	 * we got a REJECT in response to SDTR, then it'll be set to DONE.
-	 */
-	if (host->device[host->SCpnt->device->id].sync_state == SYNC_SENT_REQUEST)
-	    host->device[host->SCpnt->device->id].sync_state = SYNC_NEGOCIATE;
-#endif
 
 	/*
 	 * If we have any messages waiting to go out, then assert ATN now
@@ -1726,25 +1698,11 @@ void acornscsi_message(AS_Host *host)
 static
 void acornscsi_buildmessages(AS_Host *host)
 {
-#if 0
-    /* does the device need resetting? */
-    if (cmd_reset) {
-	msgqueue_addmsg(&host->scsi.msgs, 1, BUS_DEVICE_RESET);
-	return;
-    }
-#endif
 
     msgqueue_addmsg(&host->scsi.msgs, 1,
 		     IDENTIFY(host->device[host->SCpnt->device->id].disconnect_ok,
 			     host->SCpnt->device->lun));
 
-#if 0
-    /* does the device need the current command aborted */
-    if (cmd_aborted) {
-	acornscsi_abortcmd(host->SCpnt->tag);
-	return;
-    }
-#endif
 
 #ifdef CONFIG_SCSI_ACORNSCSI_TAGGED_QUEUE
     if (host->SCpnt->tag) {

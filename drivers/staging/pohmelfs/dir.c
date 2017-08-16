@@ -392,11 +392,6 @@ static int pohmelfs_readdir(struct file *file, void *dirent, filldir_t filldir)
 	dprintk("%s: parent: %llu, fpos: %llu, hash: %08lx.\n",
 			__func__, pi->ino, (u64)file->f_pos,
 			(unsigned long)file->private_data);
-#if 0
-	err = pohmelfs_data_lock(pi, 0, ~0, POHMELFS_READ_LOCK);
-	if (err)
-		return err;
-#endif
 	err = pohmelfs_sync_remote_dir(pi);
 	if (err)
 		return err;

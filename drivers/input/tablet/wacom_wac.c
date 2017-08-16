@@ -682,12 +682,6 @@ static void wacom_tpc_finger_in(struct wacom_wac *wacom, char *data, int idx)
 	int x = le16_to_cpup((__le16 *)&data[finger * 2]) & 0x7fff;
 	int y = le16_to_cpup((__le16 *)&data[4 + finger * 2]) & 0x7fff;
 
-	/*
-	 * Work around input core suppressing "duplicate" events since
-	 * we are abusing ABS_X/ABS_Y to transmit multi-finger data.
-	 * This should go away once we switch to true multitouch
-	 * protocol.
-	 */
 	if (wacom->last_finger != finger) {
 		if (x == input_abs_get_val(input, ABS_X))
 			x++;

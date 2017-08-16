@@ -219,7 +219,6 @@ static int saa7134_go7007_read_interrupt(struct go7007 *go)
 	struct saa7134_go7007 *saa = go->hpi_context;
 	struct saa7134_dev *dev = saa->dev;
 
-	/* XXX we need to wait if there is no interrupt available */
 	go->interrupt_available = 1;
 	gpio_read(dev, HPI_ADDR_INTR_RET_VALUE, &go->interrupt_value);
 	gpio_read(dev, HPI_ADDR_INTR_RET_DATA, &go->interrupt_data);

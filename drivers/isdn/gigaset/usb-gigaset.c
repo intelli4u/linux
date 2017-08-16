@@ -54,52 +54,6 @@ static const struct usb_device_id gigaset_table[] = {
 
 MODULE_DEVICE_TABLE(usb, gigaset_table);
 
-/*
- * Control requests (empty fields: 00)
- *
- *       RT|RQ|VALUE|INDEX|LEN  |DATA
- * In:
- *       C1 08             01
- *            Get flags (1 byte). Bits: 0=dtr,1=rts,3-7:?
- *       C1 0F             ll ll
- *            Get device information/status (llll: 0x200 and 0x40 seen).
- *            Real size: I only saw MIN(llll,0x64).
- *            Contents: seems to be always the same...
- *              offset 0x00: Length of this structure (0x64) (len: 1,2,3 bytes)
- *              offset 0x3c: String (16 bit chars): "MCCI USB Serial V2.0"
- *              rest:        ?
- * Out:
- *       41 11
- *            Initialize/reset device ?
- *       41 00 xx 00
- *            ? (xx=00 or 01; 01 on start, 00 on close)
- *       41 07 vv mm
- *            Set/clear flags vv=value, mm=mask (see RQ 08)
- *       41 12 xx
- *            Used before the following configuration requests are issued
- *            (with xx=0x0f). I've seen other values<0xf, though.
- *       41 01 xx xx
- *            Set baud rate. xxxx=ceil(0x384000/rate)=trunc(0x383fff/rate)+1.
- *       41 03 ps bb
- *            Set byte size and parity. p:  0x20=even,0x10=odd,0x00=no parity
- *                                     [    0x30: m, 0x40: s           ]
- *                                     [s:  0: 1 stop bit; 1: 1.5; 2: 2]
- *                                      bb: bits/byte (seen 7 and 8)
- *       41 13 -- -- -- -- 10 00 ww 00 00 00 xx 00 00 00 yy 00 00 00 zz 00 00 00
- *            ??
- *            Initialization: 01, 40, 00, 00
- *            Open device:    00  40, 00, 00
- *            yy and zz seem to be equal, either 0x00 or 0x0a
- *            (ww,xx) pairs seen: (00,00), (00,40), (01,40), (09,80), (19,80)
- *       41 19 -- -- -- -- 06 00 00 00 00 xx 11 13
- *            Used after every "configuration sequence" (RQ 12, RQs 01/03/13).
- *            xx is usually 0x00 but was 0x7e before starting data transfer
- *            in unimodem mode. So, this might be an array of characters that
- *            need special treatment ("commit all bufferd data"?), 11=^Q, 13=^S.
- *
- * Unimodem mode: use "modprobe ppp_async flag_time=0" as the device _needs_ two
- * flags per packet.
- */
 
 /* functions called if a device of this driver is connected/disconnected */
 static int gigaset_probe(struct usb_interface *interface,

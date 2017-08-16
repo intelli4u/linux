@@ -1822,7 +1822,7 @@ int cpia2_set_fps(struct camera_data *cam, int framerate)
 
 	if (cam->params.pnp_id.device_type == DEVICE_STV_672 &&
 	    framerate == CPIA2_VP_FRAMERATE_15)
-		framerate = 0; /* Work around bug in VP4 */
+		framerate = 0;
 
 	retval = cpia2_do_command(cam,
 				 CPIA2_CMD_FRAMERATE_REQ,
@@ -2546,4 +2546,3 @@ int cpia2_remap_buffer(struct camera_data *cam, struct vm_area_struct *vma)
 	mutex_unlock(&cam->busy_lock);
 	return 0;
 }
-

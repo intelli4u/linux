@@ -198,8 +198,7 @@ static void __init da850_evm_init_nor(void)
 
 static u32 ui_card_detected;
 
-#if defined(CONFIG_MMC_DAVINCI) || \
-    defined(CONFIG_MMC_DAVINCI_MODULE)
+#if defined(CONFIG_MMC_DAVINCI) || defined(CONFIG_MMC_DAVINCI_MODULE)
 #define HAS_MMC 1
 #else
 #define HAS_MMC 0

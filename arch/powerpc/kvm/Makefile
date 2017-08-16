@@ -69,4 +69,3 @@ obj-$(CONFIG_KVM_440) += kvm.o
 obj-$(CONFIG_KVM_E500) += kvm.o
 obj-$(CONFIG_KVM_BOOK3S_64) += kvm.o
 obj-$(CONFIG_KVM_BOOK3S_32) += kvm.o
-

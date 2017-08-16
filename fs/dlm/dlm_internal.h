@@ -42,9 +42,6 @@
 #include <linux/dlm.h>
 #include "config.h"
 
-/* Size of the temp buffer midcomms allocates on the stack.
-   We try to make this large enough so most messages fit.
-   FIXME: should sctp make this unnecessary? */
 
 #define DLM_INBUF_LEN		148
 
@@ -605,4 +602,3 @@ static inline void dlm_delete_debug_file(struct dlm_ls *ls) { }
 #endif
 
 #endif				/* __DLM_INTERNAL_DOT_H__ */
-

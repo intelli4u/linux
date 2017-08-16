@@ -787,9 +787,6 @@ static bool intel_PLL_is_valid(struct drm_crtc *crtc, intel_clock_t *clock)
 		INTELPllInvalid ("n out of range\n");
 	if (clock->vco < limit->vco.min || limit->vco.max < clock->vco)
 		INTELPllInvalid ("vco out of range\n");
-	/* XXX: We may need to be checking "Dot clock" depending on the multiplier,
-	 * connector, etc., rather than just a single range.
-	 */
 	if (clock->dot < limit->dot.min || limit->dot.max < clock->dot)
 		INTELPllInvalid ("dot out of range\n");
 
@@ -1427,7 +1424,6 @@ intel_pin_and_fence_fb_obj(struct drm_device *dev, struct drm_gem_object *obj)
 		alignment = 0;
 		break;
 	case I915_TILING_Y:
-		/* FIXME: Is this true? */
 		DRM_ERROR("Y tiled not allowed for scan out buffers\n");
 		return -EINVAL;
 	default:
@@ -1639,12 +1635,6 @@ static void ironlake_set_pll_edp (struct drm_crtc *crtc, int clock)
 	if (clock < 200000) {
 		u32 temp;
 		dpa_ctl |= DP_PLL_FREQ_160MHZ;
-		/* workaround for 160Mhz:
-		   1) program 0x4600c bits 15:0 = 0x8124
-		   2) program 0x46010 bit 0 = 1
-		   3) program 0x46034 bit 24 = 1
-		   4) program 0x64000 bit 14 = 1
-		   */
 		temp = I915_READ(0x4600c);
 		temp &= 0xffff0000;
 		I915_WRITE(0x4600c, temp | 0x8124);
@@ -1898,9 +1888,6 @@ static void ironlake_crtc_dpms(struct drm_crtc *crtc, int mode)
 	temp = I915_READ(pipeconf_reg);
 	pipe_bpc = temp & PIPE_BPC_MASK;
 
-	/* XXX: When our outputs are all unaware of DPMS modes other than off
-	 * and on, we should map those modes to DRM_MODE_DPMS_OFF in the CRTC.
-	 */
 	switch (mode) {
 	case DRM_MODE_DPMS_ON:
 	case DRM_MODE_DPMS_STANDBY:
@@ -2281,9 +2268,6 @@ static void i9xx_crtc_dpms(struct drm_crtc *crtc, int mode)
 	int pipeconf_reg = (pipe == 0) ? PIPEACONF : PIPEBCONF;
 	u32 temp;
 
-	/* XXX: When our outputs are all unaware of DPMS modes other than off
-	 * and on, we should map those modes to DRM_MODE_DPMS_OFF in the CRTC.
-	 */
 	switch (mode) {
 	case DRM_MODE_DPMS_ON:
 	case DRM_MODE_DPMS_STANDBY:
@@ -2486,9 +2470,6 @@ static bool intel_crtc_mode_fixup(struct drm_crtc *crtc,
 			return false;
 	}
 
-	/* XXX some encoders set the crtcinfo, others don't.
-	 * Obviously we need some form of conflict resolution here...
-	 */
 	if (adjusted_mode->crtc_htotal == 0)
 		drm_mode_set_crtcinfo(adjusted_mode, 0);
 
@@ -3844,7 +3825,6 @@ static int intel_crtc_mode_set(struct drm_crtc *crtc,
 	if (is_sdvo && is_tv)
 		dpll |= PLL_REF_INPUT_TVCLKINBC;
 	else if (is_tv)
-		/* XXX: just matching BIOS for now */
 		/*	dpll |= PLL_REF_INPUT_TVCLKINBC; */
 		dpll |= 3;
 	else if (is_lvds && dev_priv->lvds_use_ssc && num_connectors < 2)
@@ -3868,12 +3848,6 @@ static int intel_crtc_mode_set(struct drm_crtc *crtc,
 	}
 
 	if (pipe == 0 && !IS_I965G(dev)) {
-		/* Enable pixel doubling when the dot clock is > 90% of the (display)
-		 * core speed.
-		 *
-		 * XXX: No double-wide on 915GM pipe B. Is that the only reason for the
-		 * pipe == 0 check?
-		 */
 		if (mode->clock >
 		    dev_priv->display.get_display_clock_speed(dev) * 9 / 10)
 			pipeconf |= PIPEACONF_DOUBLE_WIDE;
@@ -4163,7 +4137,6 @@ static void i845_update_cursor(struct drm_crtc *crtc, u32 base)
 		I915_WRITE(CURABASE, base);
 
 		cntl &= ~(CURSOR_FORMAT_MASK);
-		/* XXX width must be 64, stride 256 => 0x00 << 28 */
 		cntl |= CURSOR_ENABLE |
 			CURSOR_GAMMA_ENABLE |
 			CURSOR_FORMAT_ARGB;
@@ -4584,7 +4557,6 @@ static int intel_crtc_clock_get(struct drm_device *dev, struct drm_crtc *crtc)
 			return 0;
 		}
 
-		/* XXX: Handle the 100Mhz refclk */
 		intel_clock(dev, 96000, &clock);
 	} else {
 		bool is_lvds = (pipe == 1) && (I915_READ(LVDS) & LVDS_PORT_EN);
@@ -4596,7 +4568,6 @@ static int intel_crtc_clock_get(struct drm_device *dev, struct drm_crtc *crtc)
 
 			if ((dpll & PLL_REF_INPUT_MASK) ==
 			    PLLB_REF_INPUT_SPREADSPECTRUMIN) {
-				/* XXX: might not be 66MHz */
 				intel_clock(dev, 66000, &clock);
 			} else
 				intel_clock(dev, 48000, &clock);
@@ -4616,10 +4587,6 @@ static int intel_crtc_clock_get(struct drm_device *dev, struct drm_crtc *crtc)
 		}
 	}
 
-	/* XXX: It would be nice to validate the clocks, but we can't reuse
-	 * i830PllIsValid() because it relies on the xf86_config connector
-	 * configuration being accurate, which it isn't necessarily.
-	 */
 
 	return clock.dot;
 }
@@ -5085,10 +5052,6 @@ static int intel_crtc_page_flip(struct drm_crtc *crtc,
 		OUT_RING(fb->pitch);
 		OUT_RING(obj_priv->gtt_offset | obj_priv->tiling_mode);
 
-		/* XXX Enabling the panel-fitter across page-flip is so far
-		 * untested on non-native modes, so ignore it for now.
-		 * pf = I915_READ(pipe == 0 ? PFA_CTL_1 : PFB_CTL_1) & PF_ENABLE;
-		 */
 		pf = 0;
 		pipesrc = I915_READ(pipe == 0 ? PIPEASRC : PIPEBSRC) & 0x0fff0fff;
 		OUT_RING(pf | pipesrc);

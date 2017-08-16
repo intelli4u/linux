@@ -189,7 +189,6 @@ struct mwl8k_priv {
 	bool sniffer_enabled;
 	bool wmm_enabled;
 
-	/* XXX need to convert this to handle multiple interfaces */
 	bool capture_beacon;
 	u8 capture_bssid[ETH_ALEN];
 	struct sk_buff *beacon_skb;

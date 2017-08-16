@@ -162,9 +162,6 @@ static int tr_rebuild_header(struct sk_buff *skb)
 	struct trllc *trllc=(struct trllc *)(skb->data+sizeof(struct trh_hdr));
 	struct net_device *dev = skb->dev;
 
-	/*
-	 *	FIXME: We don't yet support IPv6 over token rings
-	 */
 
 	if(trllc->ethertype != htons(ETH_P_IP)) {
 		printk("tr_rebuild_header: Don't know how to resolve type %04X addresses ?\n", ntohs(trllc->ethertype));
@@ -371,13 +368,6 @@ static void tr_add_rif_info(struct trh_hdr *trh, struct net_device *dev)
 		printk("adding rif_entry: addr:%pM rcf:%04X\n",
 		       trh->saddr, ntohs(trh->rcf));
 #endif
-		/*
-		 *	Allocate our new entry. A failure to allocate loses
-		 *	use the information. This is harmless.
-		 *
-		 *	FIXME: We ought to keep some kind of cache size
-		 *	limiting and adjust the timers to suit.
-		 */
 		entry=kmalloc(sizeof(struct rif_cache),GFP_ATOMIC);
 
 		if(!entry)

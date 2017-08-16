@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  *  linux/arch/arm/lib/memcpy.S
  *
@@ -53,6 +54,7 @@
 	.endm
 
 	.text
+	.section .text.fastpath, "a"
 
 /* Prototype: void *memcpy(void *dest, const void *src, size_t n); */
 

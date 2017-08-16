@@ -1,32 +1,4 @@
-/*======================================================================
 
-  This driver provides a method to access memory not used by the kernel
-  itself (i.e. if the kernel commandline mem=xxx is used). To actually
-  use slram at least mtdblock or mtdchar is required (for block or
-  character device access).
-
-  Usage:
-
-  if compiled as loadable module:
-    modprobe slram map=<name>,<start>,<end/offset>
-  if statically linked into the kernel use the following kernel cmd.line
-    slram=<name>,<start>,<end/offset>
-
-  <name>: name of the device that will be listed in /proc/mtd
-  <start>: start of the memory region, decimal or hex (0xabcdef)
-  <end/offset>: end of the memory region. It's possible to use +0x1234
-                to specify the offset instead of the absolute address
-
-  NOTE:
-  With slram it's only possible to map a contiguous memory region. Therefore
-  if there's a device mapped somewhere in the region specified slram will
-  fail to load (see kernel log if modprobe fails).
-
-  -
-
-  Jochen Schaeuble <psionic@psionic.de>
-
-======================================================================*/
 
 
 #include <linux/module.h>

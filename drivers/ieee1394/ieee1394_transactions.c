@@ -477,10 +477,6 @@ struct hpsb_packet *hpsb_make_phypacket(struct hpsb_host *host, quadlet_t data)
 	return p;
 }
 
-/*
- * FIXME - these functions should probably read from / write to user space to
- * avoid in kernel buffers for user space callers
- */
 
 /**
  * hpsb_read - generic read function

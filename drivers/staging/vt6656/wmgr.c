@@ -4892,5 +4892,3 @@ s_bCipherMatch (
     }
     return TRUE;
 }
-
-

@@ -661,13 +661,6 @@ static int sctp_bindx_rem(struct sock *sk, struct sockaddr *addrs, int addrcnt)
 			goto err_bindx_rem;
 		}
 
-		/* FIXME - There is probably a need to check if sk->sk_saddr and
-		 * sk->sk_rcv_addr are currently set to one of the addresses to
-		 * be removed. This is something which needs to be looked into
-		 * when we are fixing the outstanding issues with multi-homing
-		 * socket routing and failover schemes. Refer to comments in
-		 * sctp_do_bind(). -daisy
-		 */
 		retval = sctp_del_bind_addr(bp, sa_addr);
 
 		addr_buf += af->sockaddr_len;
@@ -1323,56 +1316,6 @@ SCTP_STATIC int sctp_getsockopt_connectx3(struct sock* sk, int len,
 	return err;
 }
 
-/* API 3.1.4 close() - UDP Style Syntax
- * Applications use close() to perform graceful shutdown (as described in
- * Section 10.1 of [SCTP]) on ALL the associations currently represented
- * by a UDP-style socket.
- *
- * The syntax is
- *
- *   ret = close(int sd);
- *
- *   sd      - the socket descriptor of the associations to be closed.
- *
- * To gracefully shutdown a specific association represented by the
- * UDP-style socket, an application should use the sendmsg() call,
- * passing no user data, but including the appropriate flag in the
- * ancillary data (see Section xxxx).
- *
- * If sd in the close() call is a branched-off socket representing only
- * one association, the shutdown is performed on that association only.
- *
- * 4.1.6 close() - TCP Style Syntax
- *
- * Applications use close() to gracefully close down an association.
- *
- * The syntax is:
- *
- *    int close(int sd);
- *
- *      sd      - the socket descriptor of the association to be closed.
- *
- * After an application calls close() on a socket descriptor, no further
- * socket operations will succeed on that descriptor.
- *
- * API 7.1.4 SO_LINGER
- *
- * An application using the TCP-style socket can use this option to
- * perform the SCTP ABORT primitive.  The linger option structure is:
- *
- *  struct  linger {
- *     int     l_onoff;                // option on/off
- *     int     l_linger;               // linger time
- * };
- *
- * To enable the option, set l_onoff to 1.  If the l_linger value is set
- * to 0, calling close() is the same as the ABORT primitive.  If the
- * value is set to a negative value, the setsockopt() call will return
- * an error.  If the value is set to a positive value linger_time, the
- * close() can be blocked for at most linger_time ms.  If the graceful
- * shutdown phase does not finish during this period, close() will
- * return but the graceful shutdown phase continues in the system.
- */
 SCTP_STATIC void sctp_close(struct sock *sk, long timeout)
 {
 	struct sctp_endpoint *ep;
@@ -1871,19 +1814,6 @@ out_unlock:
 out_nounlock:
 	return sctp_error(sk, msg_flags, err);
 
-#if 0
-do_sock_err:
-	if (msg_len)
-		err = msg_len;
-	else
-		err = sock_error(sk);
-	goto out;
-
-do_interrupted:
-	if (msg_len)
-		err = msg_len;
-	goto out;
-#endif /* 0 */
 }
 
 /* This is an extended version of skb_pull() that removes the data from the
@@ -1991,11 +1921,6 @@ SCTP_STATIC int sctp_recvmsg(struct kiocb *iocb, struct sock *sk,
 	/* Check if we allow SCTP_SNDRCVINFO. */
 	if (sp->subscribe.sctp_data_io_event)
 		sctp_ulpevent_read_sndrcvinfo(event, msg);
-#if 0
-	/* FIXME: we should be calling IP/IPv6 layers.  */
-	if (sk->sk_protinfo.af_inet.cmsg_flags)
-		ip_cmsg_recv(msg, skb);
-#endif
 
 	err = copied;
 
@@ -3538,7 +3463,6 @@ SCTP_STATIC int sctp_connect(struct sock *sk, struct sockaddr *addr,
 	return err;
 }
 
-/* FIXME: Write comments. */
 SCTP_STATIC int sctp_disconnect(struct sock *sk, int flags)
 {
 	return -EOPNOTSUPP; /* STUB */
@@ -4531,7 +4455,7 @@ static int sctp_getsockopt_local_addrs(struct sock *sk, int len,
 		sctp_get_pf_specific(sk->sk_family)->addr_v4map(sp, &temp);
 		addrlen = sctp_get_af_specific(temp.sa.sa_family)->sockaddr_len;
 		if (space_left < addrlen) {
-			err =  -ENOMEM; /*fixme: right error?*/
+			err =  -ENOMEM;
 			goto out;
 		}
 		memcpy(buf, &temp, addrlen);
@@ -5403,18 +5327,6 @@ static void sctp_unhash(struct sock *sk)
 	/* STUB */
 }
 
-/* Check if port is acceptable.  Possibly find first available port.
- *
- * The port hash table (contained in the 'global' SCTP protocol storage
- * returned by struct sctp_protocol *sctp_get_protocol()). The hash
- * table is an array of 4096 lists (sctp_bind_hashbucket). Each
- * list (the list number is the port number hashed out, so as you
- * would expect from a hash function, all the ports in a given list have
- * such a number that hashes out to the same list number; you were
- * expecting that, right?); so each list has a set of ports, with a
- * link to the socket (struct sock) that uses it, the port number and
- * a fastreuse flag (FIXME: NPI ipg).
- */
 static struct sctp_bind_bucket *sctp_bucket_create(
 	struct sctp_bind_hashbucket *head, unsigned short snum);
 
@@ -5544,10 +5456,6 @@ pp_not_found:
 		(!sk->sk_reuse || sk->sk_state == SCTP_SS_LISTENING))
 		pp->fastreuse = 0;
 
-	/* We are set, so fill up all the data in the hash table
-	 * entry, tie the socket list information with the rest of the
-	 * sockets FIXME: Blurry, NPI (ipg).
-	 */
 success:
 	if (!sctp_sk(sk)->bind_hash) {
 		inet_sk(sk)->inet_num = snum;

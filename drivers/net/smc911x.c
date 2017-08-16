@@ -1123,7 +1123,6 @@ static irqreturn_t smc911x_interrupt(int irq, void *dev_id)
 			SMC_ACK_INT(lp, INT_STS_TDFA_);
 		}
 		/* Handle transmit done condition */
-#if 1
 		if (status & (INT_STS_TSFL_ | INT_STS_GPT_INT_)) {
 			DBG(SMC_DEBUG_TX | SMC_DEBUG_MISC,
 				"%s: Tx stat FIFO limit (%d) /GPT irq\n",
@@ -1133,29 +1132,6 @@ static irqreturn_t smc911x_interrupt(int irq, void *dev_id)
 			SMC_ACK_INT(lp, INT_STS_TSFL_);
 			SMC_ACK_INT(lp, INT_STS_TSFL_ | INT_STS_GPT_INT_);
 		}
-#else
-		if (status & INT_STS_TSFL_) {
-			DBG(SMC_DEBUG_TX, "%s: TX status FIFO limit (%d) irq\n", dev->name, );
-			smc911x_tx(dev);
-			SMC_ACK_INT(lp, INT_STS_TSFL_);
-		}
-
-		if (status & INT_STS_GPT_INT_) {
-			DBG(SMC_DEBUG_RX, "%s: IRQ_CFG 0x%08x FIFO_INT 0x%08x RX_CFG 0x%08x\n",
-				dev->name,
-				SMC_GET_IRQ_CFG(lp),
-				SMC_GET_FIFO_INT(lp),
-				SMC_GET_RX_CFG(lp));
-			DBG(SMC_DEBUG_RX, "%s: Rx Stat FIFO Used 0x%02x "
-				"Data FIFO Used 0x%04x Stat FIFO 0x%08x\n",
-				dev->name,
-				(SMC_GET_RX_FIFO_INF(lp) & 0x00ff0000) >> 16,
-				SMC_GET_RX_FIFO_INF(lp) & 0xffff,
-				SMC_GET_RX_STS_FIFO_PEEK(lp));
-			SMC_SET_GPT_CFG(lp, GPT_CFG_TIMER_EN_ | 10000);
-			SMC_ACK_INT(lp, INT_STS_GPT_INT_);
-		}
-#endif
 
 		/* Handle PHY interrupt condition */
 		if (status & INT_STS_PHY_INT_) {

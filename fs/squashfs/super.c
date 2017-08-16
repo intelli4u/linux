@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  * Squashfs - a compressed read only filesystem for Linux
  *
@@ -30,7 +31,6 @@
 #include <linux/fs.h>
 #include <linux/vfs.h>
 #include <linux/slab.h>
-#include <linux/smp_lock.h>
 #include <linux/mutex.h>
 #include <linux/pagemap.h>
 #include <linux/init.h>
@@ -200,10 +200,6 @@ static int squashfs_fill_super(struct super_block *sb, void *data, int silent)
 
 	err = -ENOMEM;
 
-	msblk->stream = squashfs_decompressor_init(msblk);
-	if (msblk->stream == NULL)
-		goto failed_mount;
-
 	msblk->block_cache = squashfs_cache_init("metadata",
 			SQUASHFS_CACHED_BLKS, SQUASHFS_METADATA_SIZE);
 	if (msblk->block_cache == NULL)
@@ -213,6 +209,13 @@ static int squashfs_fill_super(struct super_block *sb, void *data, int silent)
 	msblk->read_page = squashfs_cache_init("data", 1, msblk->block_size);
 	if (msblk->read_page == NULL) {
 		ERROR("Failed to allocate read_page block\n");
+		goto failed_mount;
+	}
+
+	msblk->stream = squashfs_decompressor_init(sb, flags);
+	if (IS_ERR(msblk->stream)) {
+		err = PTR_ERR(msblk->stream);
+		msblk->stream = NULL;
 		goto failed_mount;
 	}
 
@@ -354,8 +357,6 @@ static int squashfs_remount(struct super_block *sb, int *flags, char *data)
 
 static void squashfs_put_super(struct super_block *sb)
 {
-	lock_kernel();
-
 	if (sb->s_fs_info) {
 		struct squashfs_sb_info *sbi = sb->s_fs_info;
 		squashfs_cache_delete(sbi->block_cache);
@@ -370,8 +371,6 @@ static void squashfs_put_super(struct super_block *sb)
 		kfree(sb->s_fs_info);
 		sb->s_fs_info = NULL;
 	}
-
-	unlock_kernel();
 }
 
 

@@ -312,10 +312,6 @@ secondary_cpu_start(int cpuid, struct task_struct *idle)
 	hwpcb->flags = ipcb->flags;
 	hwpcb->res1 = hwpcb->res2 = 0;
 
-#if 0
-	DBGS(("KSP 0x%lx PTBR 0x%lx VPTBR 0x%lx UNIQUE 0x%lx\n",
-	      hwpcb->ksp, hwpcb->ptbr, hwrpb->vptb, hwpcb->unique));
-#endif
 	DBGS(("Starting secondary cpu %d: state 0x%lx pal_flags 0x%lx\n",
 	      cpuid, idle->state, ipcb->flags));
 
@@ -568,10 +564,6 @@ handle_ipi(struct pt_regs *regs)
 	unsigned long *pending_ipis = &ipi_data[this_cpu].bits;
 	unsigned long ops;
 
-#if 0
-	DBGS(("handle_ipi: on CPU %d ops 0x%lx PC 0x%lx\n",
-	      this_cpu, *pending_ipis, regs->pc));
-#endif
 
 	mb();	/* Order interrupt and bit testing. */
 	while ((ops = xchg(pending_ipis, 0)) != 0) {

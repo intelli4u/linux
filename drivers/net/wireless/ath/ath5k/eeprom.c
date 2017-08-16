@@ -124,11 +124,6 @@ ath5k_eeprom_init_header(struct ath5k_hw *ah)
 		AR5K_EEPROM_READ(AR5K_EEPROM_SIZE_LOWER, val);
 		eep_max = (eep_max | val) - AR5K_EEPROM_INFO_BASE;
 
-		/*
-		 * Fail safe check to prevent stupid loops due
-		 * to busted EEPROMs. XXX: This value is likely too
-		 * big still, waiting on a better value.
-		 */
 		if (eep_max > (3 * AR5K_EEPROM_INFO_MAX)) {
 			ATH5K_ERR(ah->ah_sc, "Invalid max custom EEPROM size: "
 				  "%d (0x%04x) max expected: %d (0x%04x)\n",
@@ -159,7 +154,6 @@ ath5k_eeprom_init_header(struct ath5k_hw *ah)
 		AR5K_EEPROM_READ_HDR(AR5K_EEPROM_MISC0, ee_misc0);
 		AR5K_EEPROM_READ_HDR(AR5K_EEPROM_MISC1, ee_misc1);
 
-		/* XXX: Don't know which versions include these two */
 		AR5K_EEPROM_READ_HDR(AR5K_EEPROM_MISC2, ee_misc2);
 
 		if (ee->ee_version >= AR5K_EEPROM_VERSION_4_3)
@@ -193,12 +187,6 @@ ath5k_eeprom_init_header(struct ath5k_hw *ah)
 	ee->ee_rfkill_pin = (u8) AR5K_REG_MS(val, AR5K_EEPROM_RFKILL_GPIO_SEL);
 	ee->ee_rfkill_pol = val & AR5K_EEPROM_RFKILL_POLARITY ? true : false;
 
-	/* Check if PCIE_OFFSET points to PCIE_SERDES_SECTION
-	 * and enable serdes programming if needed.
-	 *
-	 * XXX: Serdes values seem to be fixed so
-	 * no need to read them here, we write them
-	 * during ath5k_hw_attach */
 	AR5K_EEPROM_READ(AR5K_EEPROM_PCIE_OFFSET, val);
 	ee->ee_serdes = (val == AR5K_EEPROM_PCIE_SERDES_SECTION) ?
 							true : false;

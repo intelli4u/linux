@@ -600,4 +600,3 @@ int saa7164_dvb_register(struct saa7164_tsport *port)
 
 	return 0;
 }
-

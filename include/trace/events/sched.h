@@ -274,10 +274,6 @@ TRACE_EVENT(sched_process_fork,
 		__entry->child_comm, __entry->child_pid)
 );
 
-/*
- * XXX the below sched_stat tracepoints only apply to SCHED_OTHER/BATCH/IDLE
- *     adding sched_stat support to SCHED_FIFO/RR would be welcome.
- */
 DECLARE_EVENT_CLASS(sched_stat_template,
 
 	TP_PROTO(struct task_struct *tsk, u64 delay),

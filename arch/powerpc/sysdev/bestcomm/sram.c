@@ -96,13 +96,8 @@ int bcom_sram_init(struct device_node *sram_node, char *owner)
 	bcom_sram->rh = rh_create(4);
 
 	/* Attach the free zones */
-#if 0
-	/* Currently disabled ... for future use only */
-	reg_addr_p = of_get_property(sram_node, "available", &psize);
-#else
 	regaddr_p = NULL;
 	psize = 0;
-#endif
 
 	if (!regaddr_p || !psize) {
 		/* Attach the whole zone */
@@ -175,4 +170,3 @@ void bcom_sram_free(void *ptr)
 	spin_unlock(&bcom_sram->lock);
 }
 EXPORT_SYMBOL_GPL(bcom_sram_free);
-

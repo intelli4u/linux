@@ -1,4 +1,4 @@
-/* $Id: saphir.c,v 1.10.2.4 2004/01/13 23:48:39 keil Exp $
+/* $Id: saphir.c,v 1.10.2.4 2004/01/13 23:48:39 Exp $
  *
  * low level stuff for HST Saphir 1
  *

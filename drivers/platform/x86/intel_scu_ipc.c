@@ -212,7 +212,6 @@ static int pwr_reg_rdwr(u16 *addr, u8 *data, u32 count, u32 op, u32 id)
 
 	err = busy_loop();
 	if (id == IPC_CMD_PCNTRL_R) { /* Read rbuf */
-		/* Workaround: values are read as 0 without memcpy_fromio */
 		memcpy_fromio(cbuf, ipcdev.ipc_base + 0x90, 16);
 		if (platform != MRST_CPU_CHIP_PENWELL) {
 			for (nc = 0, offset = 2; nc < count; nc++, offset += 3)

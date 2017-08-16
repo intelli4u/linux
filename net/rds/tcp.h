@@ -21,7 +21,6 @@ struct rds_tcp_connection {
 	size_t			t_tinc_hdr_rem;
 	size_t			t_tinc_data_rem;
 
-	/* XXX error report? */
 	struct work_struct	t_conn_w;
 	struct work_struct	t_send_w;
 	struct work_struct	t_down_w;

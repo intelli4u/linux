@@ -208,9 +208,6 @@ static const u32 cx231xx_user_ctrls[] = {
 	V4L2_CID_SATURATION,
 	V4L2_CID_HUE,
 	V4L2_CID_AUDIO_VOLUME,
-#if 0
-	V4L2_CID_AUDIO_BALANCE,
-#endif
 	V4L2_CID_AUDIO_MUTE,
 	0
 };
@@ -1306,11 +1303,6 @@ static int vidioc_s_tuner(struct file *file, void *priv, struct v4l2_tuner *t)
 
 	if (0 != t->index)
 		return -EINVAL;
-#if 0
-	mutex_lock(&dev->lock);
-	call_all(dev, tuner, s_tuner, t);
-	mutex_unlock(&dev->lock);
-#endif
 	return 0;
 }
 
@@ -1558,7 +1550,7 @@ static int vidioc_cropcap(struct file *file, void *priv,
 	cc->bounds.width = dev->width;
 	cc->bounds.height = dev->height;
 	cc->defrect = cc->bounds;
-	cc->pixelaspect.numerator = 54;	/* 4:3 FIXME: remove magic numbers */
+	cc->pixelaspect.numerator = 54;
 	cc->pixelaspect.denominator = 59;
 
 	return 0;
@@ -1630,9 +1622,6 @@ static int vidioc_querycap(struct file *file, void *priv,
 	cap->version = CX231XX_VERSION_CODE;
 
 	cap->capabilities = V4L2_CAP_VBI_CAPTURE |
-#if 0
-		V4L2_CAP_SLICED_VBI_CAPTURE |
-#endif
 		V4L2_CAP_VIDEO_CAPTURE	|
 		V4L2_CAP_AUDIO		|
 		V4L2_CAP_READWRITE	|
@@ -1947,15 +1936,6 @@ static int cx231xx_v4l2_open(struct file *filp)
 			 video_device_node_name(vdev), v4l2_type_names[fh_type],
 			 dev->users);
 
-#if 0
-	errCode = cx231xx_set_mode(dev, CX231XX_ANALOG_MODE);
-	if (errCode < 0) {
-		cx231xx_errdev
-		    ("Device locked on digital mode. Can't open analog\n");
-		mutex_unlock(&dev->lock);
-		return -EBUSY;
-	}
-#endif
 
 	fh = kzalloc(sizeof(struct cx231xx_fh), GFP_KERNEL);
 	if (!fh) {
@@ -1977,9 +1957,6 @@ static int cx231xx_v4l2_open(struct file *filp)
 		/* Power up in Analog TV mode */
 		cx231xx_set_power_mode(dev, POLARIS_AVMODE_ANALOGT_TV);
 
-#if 0
-		cx231xx_set_mode(dev, CX231XX_ANALOG_MODE);
-#endif
 		cx231xx_resolution_set(dev);
 
 		/* set video alternate setting */
@@ -2033,7 +2010,6 @@ static int cx231xx_v4l2_open(struct file *filp)
 void cx231xx_release_analog_resources(struct cx231xx *dev)
 {
 
-	/*FIXME: I2C IR should be disconnected */
 
 	if (dev->radio_dev) {
 		if (video_is_registered(dev->radio_dev))

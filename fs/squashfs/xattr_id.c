@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  * Squashfs - a compressed read only filesystem for Linux
  *
@@ -32,8 +33,8 @@
 
 #include "squashfs_fs.h"
 #include "squashfs_fs_sb.h"
-#include "squashfs_fs_i.h"
 #include "squashfs.h"
+#include "xattr.h"
 
 /*
  * Map xattr id using the xattr id look up table

@@ -726,10 +726,6 @@ static int __devexit wf_smu_remove(struct platform_device *ddev)
 {
 	wf_unregister_client(&wf_smu_events);
 
-	/* XXX We don't have yet a guarantee that our callback isn't
-	 * in progress when returning from wf_unregister_client, so
-	 * we add an arbitrary delay. I'll have to fix that in the core
-	 */
 	msleep(1000);
 
 	/* Release all sensors */

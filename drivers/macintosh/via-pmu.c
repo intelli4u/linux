@@ -1395,12 +1395,6 @@ next:
 				}
 			}
 #ifdef CONFIG_ADB
-			/*
-			 * XXX On the [23]400 the PMU gives us an up
-			 * event for keycodes 0x74 or 0x75 when the PC
-			 * card eject buttons are released, so we
-			 * ignore those events.
-			 */
 			if (!(pmu_kind == PMU_OHARE_BASED && len == 4
 			      && data[1] == 0x2c && data[3] == 0xff
 			      && (data[2] & ~1) == 0xf4))
@@ -2619,4 +2613,3 @@ EXPORT_SYMBOL(pmu_battery_count);
 EXPORT_SYMBOL(pmu_batteries);
 EXPORT_SYMBOL(pmu_power_flags);
 #endif /* CONFIG_SUSPEND && CONFIG_PPC32 */
-

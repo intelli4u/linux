@@ -84,11 +84,6 @@ static int ttm_bo_vm_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
 	unsigned long address = (unsigned long)vmf->virtual_address;
 	int retval = VM_FAULT_NOPAGE;
 
-	/*
-	 * Work around locking order reversal in fault / nopfn
-	 * between mmap_sem and bo_reserve: Perform a trylock operation
-	 * for reserve, and if it fails, retry the fault after scheduling.
-	 */
 
 	ret = ttm_bo_reserve(bo, true, true, false, 0);
 	if (unlikely(ret != 0)) {

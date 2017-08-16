@@ -544,20 +544,6 @@ void drm_mode_list_concat(struct list_head *head, struct list_head *new)
 }
 EXPORT_SYMBOL(drm_mode_list_concat);
 
-/**
- * drm_mode_width - get the width of a mode
- * @mode: mode
- *
- * LOCKING:
- * None.
- *
- * Return @mode's width (hdisplay) value.
- *
- * FIXME: is this needed?
- *
- * RETURNS:
- * @mode->hdisplay
- */
 int drm_mode_width(struct drm_display_mode *mode)
 {
 	return mode->hdisplay;
@@ -565,20 +551,6 @@ int drm_mode_width(struct drm_display_mode *mode)
 }
 EXPORT_SYMBOL(drm_mode_width);
 
-/**
- * drm_mode_height - get the height of a mode
- * @mode: mode
- *
- * LOCKING:
- * None.
- *
- * Return @mode's height (vdisplay) value.
- *
- * FIXME: is this needed?
- *
- * RETURNS:
- * @mode->vdisplay
- */
 int drm_mode_height(struct drm_display_mode *mode)
 {
 	return mode->vdisplay;
@@ -611,22 +583,6 @@ int drm_mode_hsync(struct drm_display_mode *mode)
 }
 EXPORT_SYMBOL(drm_mode_hsync);
 
-/**
- * drm_mode_vrefresh - get the vrefresh of a mode
- * @mode: mode
- *
- * LOCKING:
- * None.
- *
- * Return @mode's vrefresh rate in Hz or calculate it if necessary.
- *
- * FIXME: why is this needed?  shouldn't vrefresh be set already?
- *
- * RETURNS:
- * Vertical refresh rate. It will be the result of actual value plus 0.5.
- * If it is 70.288, it will return 70Hz.
- * If it is 59.6, it will return 60Hz.
- */
 int drm_mode_vrefresh(struct drm_display_mode *mode)
 {
 	int refresh = 0;
@@ -653,16 +609,6 @@ int drm_mode_vrefresh(struct drm_display_mode *mode)
 }
 EXPORT_SYMBOL(drm_mode_vrefresh);
 
-/**
- * drm_mode_set_crtcinfo - set CRTC modesetting parameters
- * @p: mode
- * @adjust_flags: unused? (FIXME)
- *
- * LOCKING:
- * None.
- *
- * Setup the CRTC modesetting parameters for @p, adjusting if necessary.
- */
 void drm_mode_set_crtcinfo(struct drm_display_mode *p, int adjust_flags)
 {
 	if ((p == NULL) || ((p->type & DRM_MODE_TYPE_CRTC_C) == DRM_MODE_TYPE_BUILTIN))

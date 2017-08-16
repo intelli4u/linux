@@ -131,7 +131,6 @@ static void create_virtual_node(struct tree_balance *tb, int h)
 		vi->vi_item = B_I_PITEM(Sh, ih + j);
 		vi->vi_uarea = vn->vn_free_ptr;
 
-		// FIXME: there is no check, that item operation did not
 		// consume too much memory
 		vn->vn_free_ptr +=
 		    op_create_vi(vn, vi, is_affected, tb->insert_size[0]);
@@ -2406,7 +2405,6 @@ int fix_nodes(int op_mode, struct tree_balance *tb,
 #endif
 
 	if (get_mem_for_virtual_node(tb) == REPEAT_SEARCH)
-		// FIXME: maybe -ENOMEM when tb->vn_buf == 0? Now just repeat
 		return REPEAT_SEARCH;
 
 	/* Starting from the leaf level; for all levels h of the tree. */

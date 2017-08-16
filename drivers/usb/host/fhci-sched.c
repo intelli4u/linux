@@ -608,7 +608,6 @@ irqreturn_t fhci_irq(struct usb_hcd *hcd)
 			fhci_device_connected_interrupt(fhci);
 		} else if (usb->port_status ==
 				FHCI_PORT_DISCONNECTING) {
-			/* XXX usb->port_status = FHCI_PORT_WAITING; */
 			/* Disable IDLE */
 			usb->saved_msk &= ~USB_E_IDLE_MASK;
 			out_be16(&usb->fhci->regs->usb_mask,
@@ -829,11 +828,6 @@ void fhci_queue_urb(struct fhci_hcd *fhci, struct urb *urb)
 		for (cnt = 0; cnt < urb->number_of_packets; cnt++) {
 			u16 frame = urb->start_frame;
 
-			/*
-			 * FIXME scheduling should handle frame counter
-			 * roll-around ... exotic case (and OHCI has
-			 * a 2^16 iso range, vs other HCs max of 2^10)
-			 */
 			frame += cnt * urb->interval;
 			frame &= 0x07ff;
 			td = fhci_td_fill(fhci, urb, urb_priv, ed, cnt,

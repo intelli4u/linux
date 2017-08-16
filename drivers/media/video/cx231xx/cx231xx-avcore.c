@@ -251,10 +251,6 @@ int cx231xx_afe_set_mode(struct cx231xx *dev, enum AFE_MODE mode)
 {
 	int status = 0;
 
-	/*
-	* FIXME: We need to implement the AFE code for LOW IF and for HI IF.
-	* Currently, only baseband works.
-	*/
 
 	switch (mode) {
 	case AFE_MODE_LOW_IF:

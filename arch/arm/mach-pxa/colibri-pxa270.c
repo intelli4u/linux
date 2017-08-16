@@ -145,8 +145,7 @@ static inline void colibri_pxa270_eth_init(void) {}
 /******************************************************************************
  * Audio and Touchscreen
  ******************************************************************************/
-#if	defined(CONFIG_TOUCHSCREEN_UCB1400) || \
-	defined(CONFIG_TOUCHSCREEN_UCB1400_MODULE)
+#if	defined(CONFIG_TOUCHSCREEN_UCB1400) || defined(CONFIG_TOUCHSCREEN_UCB1400_MODULE)
 static pxa2xx_audio_ops_t colibri_pxa270_ac97_pdata = {
 	.reset_gpio	= 95,
 };
@@ -225,4 +224,3 @@ MACHINE_START(INCOME, "Income s.r.o. SH-Dmaster PXA270 SBC")
 	.init_irq	= pxa27x_init_irq,
 	.timer		= &pxa_timer,
 MACHINE_END
-

@@ -1379,7 +1379,6 @@ static bool e1000_clean_jumbo_rx_irq(struct e1000_adapter *adapter,
 			}
 		}
 
-		/* Receive Checksum Offload XXX recompute due to CRC strip? */
 		e1000_rx_checksum(adapter,
 		                  (u32)(status) |
 		                  ((u32)(rx_desc->errors) << 24),
@@ -1521,19 +1520,10 @@ static irqreturn_t e1000_intr_msi(int irq, void *data)
 
 	if (icr & E1000_ICR_LSC) {
 		hw->mac.get_link_status = 1;
-		/*
-		 * ICH8 workaround-- Call gig speed drop workaround on cable
-		 * disconnect (LSC) before accessing any PHY registers
-		 */
 		if ((adapter->flags & FLAG_LSC_GIG_SPEED_DROP) &&
 		    (!(er32(STATUS) & E1000_STATUS_LU)))
 			schedule_work(&adapter->downshift_task);
 
-		/*
-		 * 80003ES2LAN workaround-- For packet buffer work-around on
-		 * link down event; disable receives here in the ISR and reset
-		 * adapter in watchdog
-		 */
 		if (netif_carrier_ok(netdev) &&
 		    adapter->flags & FLAG_RX_NEEDS_RESTART) {
 			/* disable receives */
@@ -1587,20 +1577,10 @@ static irqreturn_t e1000_intr(int irq, void *data)
 
 	if (icr & E1000_ICR_LSC) {
 		hw->mac.get_link_status = 1;
-		/*
-		 * ICH8 workaround-- Call gig speed drop workaround on cable
-		 * disconnect (LSC) before accessing any PHY registers
-		 */
 		if ((adapter->flags & FLAG_LSC_GIG_SPEED_DROP) &&
 		    (!(er32(STATUS) & E1000_STATUS_LU)))
 			schedule_work(&adapter->downshift_task);
 
-		/*
-		 * 80003ES2LAN workaround--
-		 * For packet buffer work-around on link down event;
-		 * disable receives here in the ISR and
-		 * reset adapter in watchdog
-		 */
 		if (netif_carrier_ok(netdev) &&
 		    (adapter->flags & FLAG_RX_NEEDS_RESTART)) {
 			/* disable receives */
@@ -1713,7 +1693,6 @@ static void e1000_configure_msix(struct e1000_adapter *adapter)
 
 	adapter->eiac_mask = 0;
 
-	/* Workaround issue with spurious interrupts on 82574 in MSI-X mode */
 	if (hw->mac.type == e1000_82574) {
 		u32 rfctl = er32(RFCTL);
 		rfctl |= E1000_RFCTL_ACK_DIS;
@@ -2704,7 +2683,6 @@ static void e1000_setup_rctl(struct e1000_adapter *adapter)
 	u32 psrctl = 0;
 	u32 pages = 0;
 
-	/* Workaround Si errata on 82579 - configure jumbo frame flow */
 	if (hw->mac.type == e1000_pch2lan) {
 		s32 ret_val;
 
@@ -2737,7 +2715,6 @@ static void e1000_setup_rctl(struct e1000_adapter *adapter)
 	if (adapter->flags2 & FLAG2_CRC_STRIPPING)
 		rctl |= E1000_RCTL_SECRC;
 
-	/* Workaround Si errata on 82577 PHY - configure IPG for jumbos */
 	if ((hw->phy.type == e1000_phy_82577) && (rctl & E1000_RCTL_LPE)) {
 		u16 phy_data;
 
@@ -3170,10 +3147,6 @@ void e1000e_reset(struct e1000_adapter *adapter)
 		fc->low_water = fc->high_water - 8;
 		break;
 	case e1000_pchlan:
-		/*
-		 * Workaround PCH LOM adapter hangs with certain network
-		 * loads.  If hangs persist, try disabling Tx flow control.
-		 */
 		if (adapter->netdev->mtu > ETH_DATA_LEN) {
 			fc->high_water = 0x3500;
 			fc->low_water  = 0x1500;
@@ -3529,7 +3502,6 @@ static int e1000_open(struct net_device *netdev)
 	     E1000_MNG_DHCP_COOKIE_STATUS_VLAN))
 		e1000_update_mng_vlan(adapter);
 
-	/* DMA latency requirement to workaround early-receive/jumbo issue */
 	if (adapter->flags & FLAG_HAS_ERT)
 		pm_qos_add_request(&adapter->netdev->pm_qos_req,
 				   PM_QOS_CPU_DMA_LATENCY,
@@ -3547,11 +3519,6 @@ static int e1000_open(struct net_device *netdev)
 	if (err)
 		goto err_req_irq;
 
-	/*
-	 * Work around PCIe errata with MSI interrupts causing some chipsets to
-	 * ignore e1000e MSI messages, which means we need to test our MSI
-	 * interrupt now
-	 */
 	if (adapter->int_mode != E1000E_INT_MODE_LEGACY) {
 		err = e1000_test_msi(adapter);
 		if (err) {
@@ -3667,7 +3634,6 @@ static int e1000_set_mac(struct net_device *netdev, void *p)
 	e1000e_rar_set(&adapter->hw, adapter->hw.mac.addr, 0);
 
 	if (adapter->flags & FLAG_RESET_OVERWRITES_LAA) {
-		/* activate the work around */
 		e1000e_set_laa_state_82571(&adapter->hw, 1);
 
 		/*
@@ -4123,10 +4089,6 @@ static void e1000_watchdog_task(struct work_struct *work)
 				break;
 			}
 
-			/*
-			 * workaround: re-program speed mode bit after
-			 * link-up event
-			 */
 			if ((adapter->flags & FLAG_TARC_SPEED_MODE_BIT) &&
 			    !txb2b) {
 				u32 tarc0;
@@ -4371,7 +4333,6 @@ static bool e1000_tx_csum(struct e1000_adapter *adapter, struct sk_buff *skb)
 			cmd_len |= E1000_TXD_CMD_TCP;
 		break;
 	case cpu_to_be16(ETH_P_IPV6):
-		/* XXX not handling all IPV6 headers */
 		if (ipv6_hdr(skb)->nexthdr == IPPROTO_TCP)
 			cmd_len |= E1000_TXD_CMD_TCP;
 		break;
@@ -4684,16 +4645,7 @@ static netdev_tx_t e1000_xmit_frame(struct sk_buff *skb,
 		max_per_txd = min(mss << 2, max_per_txd);
 		max_txd_pwr = fls(max_per_txd) - 1;
 
-		/*
-		 * TSO Workaround for 82571/2/3 Controllers -- if skb->data
-		 * points to just header, pull a few bytes of payload from
-		 * frags into skb->data
-		 */
 		hdr_len = skb_transport_offset(skb) + tcp_hdrlen(skb);
-		/*
-		 * we do this workaround for ES2LAN, but it is un-necessary,
-		 * avoiding it could save a lot of cycles
-		 */
 		if (skb->data_len && (hdr_len == len)) {
 			unsigned int pull_size;
 
@@ -4833,7 +4785,6 @@ static int e1000_change_mtu(struct net_device *netdev, int new_mtu)
 		return -EINVAL;
 	}
 
-	/* Jumbo frame workaround on 82579 requires CRC be stripped */
 	if ((adapter->hw.mac.type == e1000_pch2lan) &&
 	    !(adapter->flags2 & FLAG2_CRC_STRIPPING) &&
 	    (new_mtu > ETH_DATA_LEN)) {

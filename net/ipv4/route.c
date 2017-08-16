@@ -1231,7 +1231,7 @@ restart:
 			}
 
 			if (net_ratelimit())
-				printk(KERN_WARNING "ipv4: Neighbour table overflow.\n");
+				printk(KERN_DEBUG "ipv4: Neighbour table overflow.\n");
 			rt_drop(rt);
 			return -ENOBUFS;
 		}
@@ -2549,20 +2549,6 @@ static int ip_route_output_slow(struct net *net, struct rtable **rp,
 			if (dev_out == NULL)
 				goto out;
 
-			/* Special hack: user can direct multicasts
-			   and limited broadcast via necessary interface
-			   without fiddling with IP_MULTICAST_IF or IP_PKTINFO.
-			   This hack is not just for fun, it allows
-			   vic,vat and friends to work.
-			   They bind socket to loopback, set ttl to zero
-			   and expect that it will work.
-			   From the viewpoint of routing cache they are broken,
-			   because we are not allowed to build multicast path
-			   with loopback source addr (look, routing cache
-			   cannot know, that ttl is zero, so that packet
-			   will not leave this host and route is valid).
-			   Luckily, this hack is good workaround.
-			 */
 
 			fl.oif = dev_out->ifindex;
 			goto make_route;

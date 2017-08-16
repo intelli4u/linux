@@ -734,11 +734,6 @@ static int process_eb(struct ubi_device *ubi, struct ubi_scan_info *si,
 	if (err < 0)
 		return err;
 	else if (err) {
-		/*
-		 * FIXME: this is actually duty of the I/O sub-system to
-		 * initialize this, but MTD does not provide enough
-		 * information.
-		 */
 		si->bad_peb_count += 1;
 		return 0;
 	}

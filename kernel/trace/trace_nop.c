@@ -98,4 +98,3 @@ struct tracer nop_trace __read_mostly =
 	.flags		= &nop_flags,
 	.set_flag	= nop_set_flag
 };
-

@@ -62,11 +62,7 @@
  */
 
 
-#if 0
-#define DPRINTK(format,args...) printk(KERN_DEBUG format,##args)
-#else
 #define DPRINTK(format,args...)
-#endif
 
 
 #ifndef CONFIG_ATM_ENI_TUNE_BURST
@@ -937,12 +933,6 @@ static inline void put_dma(int chan,u32 *dma,int *j,dma_addr_t paddr,
 
 	DPRINTK("put_dma: 0x%lx+0x%x\n",(unsigned long) paddr,size);
 	EVENT("put_dma: 0x%lx+0x%lx\n",(unsigned long) paddr,size);
-#if 0 /* don't complain anymore */
-	if (paddr & 3)
-		printk(KERN_ERR "put_dma: unaligned addr (0x%lx)\n",paddr);
-	if (size & 3)
-		printk(KERN_ERR "put_dma: unaligned size (0x%lx)\n",size);
-#endif
 	if (paddr & 3) {
 		init = 4-(paddr & 3);
 		if (init > size || size < 7) init = size;
@@ -1050,21 +1040,6 @@ static enum enq_res do_tx(struct sk_buff *skb)
 	eni_vcc = ENI_VCC(vcc);
 	tx = eni_vcc->tx;
 	NULLCHECK(tx);
-#if 0 /* Enable this for testing with the "align" program */
-	{
-		unsigned int hack = *((char *) skb->data)-'0';
-
-		if (hack < 8) {
-			skb->data += hack;
-			skb->len -= hack;
-		}
-	}
-#endif
-#if 0 /* should work now */
-	if ((unsigned long) skb->data & 3)
-		printk(KERN_ERR DEV_LABEL "(itf %d): VCI %d has mis-aligned "
-		    "TX data\n",vcc->dev->number,vcc->vci);
-#endif
 	/*
 	 * Potential future IP speedup: make hard_header big enough to put
 	 * segmentation descriptor directly into PDU. Saves: 4 slave writes,
@@ -1452,19 +1427,6 @@ static int start_tx(struct atm_dev *dev)
 /*--------------------------------- common ----------------------------------*/
 
 
-#if 0 /* may become useful again when tuning things */
-
-static void foo(void)
-{
-printk(KERN_INFO
-  "tx_complete=%d,dma_complete=%d,queued=%d,requeued=%d,sub=%d,\n"
-  "backlogged=%d,rx_enqueued=%d,rx_dequeued=%d,putting=%d,pushed=%d\n",
-  tx_complete,dma_complete,queued,requeued,submitted,backlogged,
-  rx_enqueued,rx_dequeued,putting,pushed);
-if (eni_boards) printk(KERN_INFO "loss: %ld\n",ENI_DEV(eni_boards)->lost);
-}
-
-#endif
 
 
 static void bug_int(struct atm_dev *dev,unsigned long reason)
@@ -1512,9 +1474,6 @@ static irqreturn_t eni_int(int irq,void *dev_id)
 	if (reason & MID_SUNI_INT) {
 		EVENT("SUNI int\n",0,0);
 		dev->phy->interrupt(dev);
-#if 0
-		foo();
-#endif
 	}
 	spin_lock(&eni_dev->lock);
 	eni_dev->events |= reason;
@@ -2103,10 +2062,8 @@ static int eni_proc_read(struct atm_dev *dev,loff_t *pos,char *page)
 		    eni_dev->mem >> 10,eni_dev->tx_bw);
 	if (!--left)
 		return sprintf(page,"%4sBursts: TX"
-#if !defined(CONFIG_ATM_ENI_BURST_TX_16W) && \
-    !defined(CONFIG_ATM_ENI_BURST_TX_8W) && \
-    !defined(CONFIG_ATM_ENI_BURST_TX_4W) && \
-    !defined(CONFIG_ATM_ENI_BURST_TX_2W)
+#if !defined(CONFIG_ATM_ENI_BURST_TX_16W) && !defined(CONFIG_ATM_ENI_BURST_TX_8W) && \
+	!defined(CONFIG_ATM_ENI_BURST_TX_4W) && !defined(CONFIG_ATM_ENI_BURST_TX_2W)
 		    " none"
 #endif
 #ifdef CONFIG_ATM_ENI_BURST_TX_16W
@@ -2122,10 +2079,8 @@ static int eni_proc_read(struct atm_dev *dev,loff_t *pos,char *page)
 		    " 2W"
 #endif
 		    ", RX"
-#if !defined(CONFIG_ATM_ENI_BURST_RX_16W) && \
-    !defined(CONFIG_ATM_ENI_BURST_RX_8W) && \
-    !defined(CONFIG_ATM_ENI_BURST_RX_4W) && \
-    !defined(CONFIG_ATM_ENI_BURST_RX_2W)
+#if !defined(CONFIG_ATM_ENI_BURST_RX_16W) && !defined(CONFIG_ATM_ENI_BURST_RX_8W) && \
+	!defined(CONFIG_ATM_ENI_BURST_RX_4W) && !defined(CONFIG_ATM_ENI_BURST_RX_2W)
 		    " none"
 #endif
 #ifdef CONFIG_ATM_ENI_BURST_RX_16W

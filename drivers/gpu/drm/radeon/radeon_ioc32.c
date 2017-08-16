@@ -341,7 +341,7 @@ static int compat_radeon_irq_emit(struct file *file, unsigned int cmd,
 }
 
 /* The two 64-bit arches where alignof(u64)==4 in 32-bit code */
-#if defined (CONFIG_X86_64) || defined(CONFIG_IA64)
+#if defined(CONFIG_X86_64) || defined(CONFIG_IA64)
 typedef struct drm_radeon_setparam32 {
 	int param;
 	u64 value;

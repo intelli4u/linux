@@ -1,4 +1,4 @@
-/* $Id: hfcscard.c,v 1.10.2.4 2004/01/14 16:04:48 keil Exp $
+/* $Id: hfcscard.c,v 1.10.2.4 2004/01/14 16:04:48 Exp $
  *
  * low level stuff for hfcs based cards (Teles3c, ACER P10)
  *

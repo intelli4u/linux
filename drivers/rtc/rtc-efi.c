@@ -132,14 +132,6 @@ static int efi_set_alarm(struct device *dev, struct rtc_wkalrm *wkalrm)
 
 	convert_to_efi_time(&wkalrm->time, &eft);
 
-	/*
-	 * XXX Fixme:
-	 * As of EFI 0.92 with the firmware I have on my
-	 * machine this call does not seem to work quite
-	 * right
-	 *
-	 * As of v1.10, this call always returns an unsupported status
-	 */
 	status = efi.set_wakeup_time((efi_bool_t)wkalrm->enabled, &eft);
 
 	printk(KERN_WARNING "write status is %d\n", (int)status);

@@ -193,13 +193,11 @@ void free_ieee80211(struct net_device *dev)
 {
 	struct ieee80211_device *ieee = netdev_priv(dev);
 	int i;
-#if 1
 	if (ieee->pHTInfo != NULL)
 	{
 		kfree(ieee->pHTInfo);
 		ieee->pHTInfo = NULL;
 	}
-#endif
 	RemoveAllTS(ieee);
 	ieee80211_softmac_free(ieee);
 	del_timer_sync(&ieee->crypt_deinit_timer);

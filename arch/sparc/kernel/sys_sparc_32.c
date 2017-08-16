@@ -27,9 +27,6 @@
 
 /* #define DEBUG_UNIMP_SYSCALL */
 
-/* XXX Make this per-binary type, this way we can detect the type of
- * XXX a binary.  Every Sparc executable calls this very early on.
- */
 asmlinkage unsigned long sys_getpagesize(void)
 {
 	return PAGE_SIZE; /* Possibly older binaries want 8192 on sun4's? */
@@ -233,7 +230,6 @@ sys_rt_sigaction(int sig,
 	struct k_sigaction new_ka, old_ka;
 	int ret;
 
-	/* XXX: Don't preclude handling different sized sigset_t's.  */
 	if (sigsetsize != sizeof(sigset_t))
 		return -EINVAL;
 

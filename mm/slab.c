@@ -633,13 +633,6 @@ static void init_node_lock_keys(int q)
 			continue;
 		lockdep_set_class(&l3->list_lock, &on_slab_l3_key);
 		alc = l3->alien;
-		/*
-		 * FIXME: This check for BAD_ALIEN_MAGIC
-		 * should go away when common slab code is taught to
-		 * work even without alien caches.
-		 * Currently, non NUMA code returns BAD_ALIEN_MAGIC
-		 * for alloc_alien_cache,
-		 */
 		if (!alc || (unsigned long)alc == BAD_ALIEN_MAGIC)
 			continue;
 		for_each_node(r) {

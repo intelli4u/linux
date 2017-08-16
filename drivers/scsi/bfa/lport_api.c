@@ -299,5 +299,3 @@ bfa_fcs_port_disable_ipfc_roles(struct bfa_fcs_port_s *fcs_port)
 	fcs_port->port_cfg.roles &= ~BFA_PORT_ROLE_FCP_IPFC;
 	return;
 }
-
-

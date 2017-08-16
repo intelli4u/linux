@@ -36,7 +36,8 @@ static void __init rcu_bootup_announce_oddness(void)
 #ifdef CONFIG_RCU_TRACE
 	printk(KERN_INFO "\tRCU debugfs-based tracing is enabled.\n");
 #endif
-#if (defined(CONFIG_64BIT) && CONFIG_RCU_FANOUT != 64) || (!defined(CONFIG_64BIT) && CONFIG_RCU_FANOUT != 32)
+#if (defined(CONFIG_64BIT) && CONFIG_RCU_FANOUT != 64) || (!defined(CONFIG_64BIT) && \
+	CONFIG_RCU_FANOUT != 32)
 	printk(KERN_INFO "\tCONFIG_RCU_FANOUT set to non-default value of %d\n",
 	       CONFIG_RCU_FANOUT);
 #endif

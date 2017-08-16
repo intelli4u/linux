@@ -344,11 +344,6 @@ ENTRY(startup_32_smp)
 	/* Set up the stack pointer */
 	lss stack_start,%esp
 
-/*
- * Initialize eflags.  Some BIOS's leave bits like NT set.  This would
- * confuse the debugger if this code is traced.
- * XXX - best to initialize before switching to protected mode.
- */
 	pushl $0
 	popfl
 
@@ -370,11 +365,6 @@ checkCPUtype:
 	movl $-1,X86_CPUID		#  -1 for no CPUID initially
 
 /* check if it is 486 or 386. */
-/*
- * XXX - this does a lot of unnecessary setup.  Alignment checks don't
- * apply at our cpl of 0 and the stack ought to be aligned already, and
- * we don't need to preserve eflags.
- */
 
 	movb $3,X86		# at least 386
 	pushfl			# push EFLAGS

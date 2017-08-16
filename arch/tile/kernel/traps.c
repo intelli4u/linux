@@ -218,7 +218,7 @@ void __kprobes do_trap(struct pt_regs *regs, int fault_num,
 		if (fault_num == INT_GPV)
 			pr_alert("GPV_REASON is %#lx\n", reason);
 		show_regs(regs);
-		do_exit(SIGKILL);  /* FIXME: implement i386 die() */
+		do_exit(SIGKILL);
 		return;
 	}
 
@@ -260,7 +260,7 @@ void __kprobes do_trap(struct pt_regs *regs, int fault_num,
 		address = regs->pc;
 		break;
 	case INT_UNALIGN_DATA:
-#ifndef __tilegx__  /* FIXME: GX: no single-step yet */
+#ifndef __tilegx__
 		if (unaligned_fixup >= 0) {
 			struct single_step_state *state =
 				current_thread_info()->step_state;
@@ -295,7 +295,7 @@ void __kprobes do_trap(struct pt_regs *regs, int fault_num,
 		if (reason & SPR_ILL_TRANS_REASON__I_STREAM_VA_RMASK)
 			address = regs->pc;
 		else
-			address = 0;  /* FIXME: GX: single-step for address */
+			address = 0;
 		break;
 #endif
 	default:

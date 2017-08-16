@@ -34,9 +34,6 @@ static const unsigned max_num_devices = 32;
  * object. This is required to support memory defragmentation.
  */
 struct zobj_header {
-#if 0
-	u32 table_idx;
-#endif
 };
 
 /*-- Configurable parameters */

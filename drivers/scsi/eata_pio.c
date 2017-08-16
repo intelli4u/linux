@@ -423,7 +423,6 @@ static int eata_pio_queue(struct scsi_cmnd *cmd,
 		cp->status = FREE;
 		return 0;
 	}
-	/* FIXME: timeout */
 	while (!(inb(base + HA_RSTATUS) & HA_SDRQ))
 		cpu_relax();
 	outsw(base + HA_RDATA, cp, hd->cplen);

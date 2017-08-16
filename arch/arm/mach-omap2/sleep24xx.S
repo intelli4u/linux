@@ -56,32 +56,6 @@ ENTRY(omap24xx_idle_loop_suspend)
 ENTRY(omap24xx_idle_loop_suspend_sz)
 	.word	. - omap24xx_idle_loop_suspend
 
-/*
- * omap24xx_cpu_suspend() - Forces OMAP into deep sleep state by completing
- * SDRC shutdown then ARM shutdown.  Upon wake MPU is back on so just restore
- * SDRC.
- *
- * Input:
- * R0 :	DLL ctrl value pre-Sleep
- * R1 : SDRC_DLLA_CTRL
- * R2 : SDRC_POWER
- *
- * The if the DPLL is going to AutoIdle. It seems like the DPLL may be back on
- * when we get called, but the DLL probably isn't.  We will wait a bit more in
- * case the DPLL isn't quite there yet. The code will wait on DLL for DDR even
- * if in unlocked mode.
- *
- * For less than 242x-ES2.2 upon wake from a sleep mode where the external
- * oscillator was stopped, a timing bug exists where a non-stabilized 12MHz
- * clock can pass into the PRCM can cause problems at DSP and IVA.
- * To work around this the code will switch to the 32kHz source prior to sleep.
- * Post sleep we will shift back to using the DPLL.  Apparently,
- * CM_IDLEST_CLKGEN does not reflect the full clock change so you need to wait
- * 3x12MHz + 3x32kHz clocks for a full switch.
- *
- * The DLL load value is not kept in RETENTION or OFF.	It needs to be restored
- * at wake
- */
 ENTRY(omap24xx_cpu_suspend)
 	stmfd	sp!, {r0 - r12, lr}	@ save registers on stack
 	mov	r3, #0x0		@ clear for mcr call

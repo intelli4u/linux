@@ -52,17 +52,10 @@ static unsigned long pushbutton_pending;	/* = 0 */
 /* delay is in jiffies to wait for */
 static void long_delay(int delay)
 {
-	/*
-	 * XXX(hch): if someone is bored please convert all callers
-	 * to call msleep_interruptible directly.  They really want
-	 * to specify timeouts in natural units and spend a lot of
-	 * effort converting them to jiffies..
-	 */
 	msleep_interruptible(jiffies_to_msecs(delay));
 }
 
 
-/* FIXME: The following line needs to be somewhere else... */
 #define WRONG_BUS_FREQUENCY 0x07
 static u8 handle_switch_change(u8 change, struct controller * ctrl)
 {
@@ -284,14 +277,10 @@ static u8 handle_power_fault(u8 change, struct controller * ctrl)
 					 * to crash the machine to protect from
 					 * data corruption. simulated_NMI
 					 * shouldn't ever return */
-					/* FIXME
-					simulated_NMI(hp_slot, ctrl); */
 
 					/* The following code causes a software
 					 * crash just in case simulated_NMI did
 					 * return */
-					/*FIXME
-					panic(msg_power_fault); */
 				} else {
 					/* set power fault status for this board */
 					func->status = 0xFF;
@@ -1106,8 +1095,6 @@ struct pci_func *cpqhp_slot_find(u8 bus, u8 device, u8 index)
 }
 
 
-/* DJZ: I don't think is_bridge will work as is.
- * FIXME */
 static int is_bridge(struct pci_func * func)
 {
 	/* Check the header type */
@@ -1299,8 +1286,6 @@ static u32 board_replaced(struct pci_func *func, struct controller *ctrl)
 		/* Wait for SOBS to be unset */
 		wait_for_ctrl_irq (ctrl);
 
-		/* Change bits in slot power register to force another shift out
-		 * NOTE: this is to work around the timer bug */
 		temp_byte = readb(ctrl->hpc_reg + SLOT_POWER);
 		writeb(0x00, ctrl->hpc_reg + SLOT_POWER);
 		writeb(temp_byte, ctrl->hpc_reg + SLOT_POWER);
@@ -1446,9 +1431,6 @@ static u32 board_added(struct pci_func *func, struct controller *ctrl)
 	/* Wait for SOBS to be unset */
 	wait_for_ctrl_irq (ctrl);
 
-	/* Change bits in slot power register to force another shift out
-	 * NOTE: this is to work around the timer bug
-	 */
 	temp_byte = readb(ctrl->hpc_reg + SLOT_POWER);
 	writeb(0x00, ctrl->hpc_reg + SLOT_POWER);
 	writeb(temp_byte, ctrl->hpc_reg + SLOT_POWER);
@@ -2136,7 +2118,6 @@ int cpqhp_process_SS(struct controller *ctrl, struct pci_func *func)
 
 	func = cpqhp_slot_find(ctrl->bus, device, 0);
 	if ((func != NULL) && !rc) {
-		/* FIXME: Replace flag should be passed into process_SS */
 		replace_flag = !(ctrl->add_support);
 		rc = remove_board(func, replace_flag, ctrl);
 	} else if (!rc) {
@@ -2922,8 +2903,6 @@ static int configure_new_function(struct controller *ctrl, struct pci_func *func
 
 					/* Upper 32 bits of address always zero
 					 * on today's systems */
-					/* FIXME this is probably not true on
-					 * Alpha and ia64??? */
 					base = 0;
 					rc = pci_bus_write_config_dword(pci_bus, devfn, cloop, base);
 				}

@@ -1746,7 +1746,6 @@ irqreturn_t floppy_interrupt(int irq, void *dev_id)
 	schedule_bh(handler);
 	is_alive(__func__, "normal interrupt end");
 
-	/* FIXME! Was it really for us? */
 	return IRQ_HANDLED;
 }
 
@@ -2497,13 +2496,6 @@ static void copy_buffer(int ssize, int max_sector, int max_sector_2)
 	}
 }
 
-/* work around a bug in pseudo DMA
- * (on some FDCs) pseudo DMA does not stop when the CPU stops
- * sending data.  Hence we need a different way to signal the
- * transfer length:  We use SECT_PER_TRACK.  Unfortunately, this
- * does not work with MT, hence we can only transfer one head at
- * a time
- */
 static void virtualdmabug_workaround(void)
 {
 	int hard_sectors;
@@ -2632,7 +2624,6 @@ static int make_raw_rw_request(void)
 	} else if (!TRACK && !HEAD && !(_floppy->rate & FD_2M) && probing) {
 		max_sector = _floppy->sect;
 	} else if (!HEAD && CT(COMMAND) == FD_WRITE) {
-		/* for virtual DMA bug workaround */
 		max_sector = _floppy->sect;
 	}
 
@@ -3573,7 +3564,6 @@ static void __init config_types(void)
 	if (!UDP->cmos && FLOPPY1_TYPE)
 		UDP->cmos = FLOPPY1_TYPE;
 
-	/* FIXME: additional physical CMOS drive detection should go here */
 
 	for (drive = 0; drive < N_DRIVE; drive++) {
 		unsigned int type = UDP->cmos;

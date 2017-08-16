@@ -443,7 +443,6 @@ int ssb_chipco_serial_init(struct ssb_chipcommon *cc,
 			/* Fixed ALP clock */
 			baud_base = 20000000;
 			if (cc->capabilities & SSB_CHIPCO_CAP_PMU) {
-				/* FIXME: baud_base is different for devices with a PMU */
 				SSB_WARN_ON(1);
 			}
 			div = 1;

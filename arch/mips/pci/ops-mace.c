@@ -12,11 +12,7 @@
 #include <asm/pci.h>
 #include <asm/ip32/mace.h>
 
-#if 0
-# define DPRINTK(args...) printk(args);
-#else
 # define DPRINTK(args...)
-#endif
 
 /*
  * O2 has up to 5 PCI devices connected into the MACE bridge.  The device

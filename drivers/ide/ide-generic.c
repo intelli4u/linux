@@ -13,7 +13,6 @@
 #include <linux/ide.h>
 #include <linux/pci_ids.h>
 
-/* FIXME: convert arm and m32r to use ide_platform host driver */
 #ifdef CONFIG_ARM
 #include <asm/irq.h>
 #endif

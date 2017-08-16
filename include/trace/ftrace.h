@@ -744,4 +744,3 @@ static inline void perf_test_probe_##call(void)				\
 #endif /* CONFIG_PERF_EVENTS */
 
 #undef _TRACE_PROFILE_INIT
-

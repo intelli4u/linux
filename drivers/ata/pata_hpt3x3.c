@@ -88,13 +88,6 @@ static void hpt3x3_set_dmamode(struct ata_port *ap, struct ata_device *adev)
 	pci_write_config_dword(pdev, 0x48, r2);
 }
 
-/**
- *	hpt3x3_freeze		-	DMA workaround
- *	@ap: port to freeze
- *
- *	When freezing an HPT3x3 we must stop any pending DMA before
- *	writing to the control register or the chip will hang
- */
 
 static void hpt3x3_freeze(struct ata_port *ap)
 {
@@ -106,13 +99,6 @@ static void hpt3x3_freeze(struct ata_port *ap)
 	ata_sff_freeze(ap);
 }
 
-/**
- *	hpt3x3_bmdma_setup	-	DMA workaround
- *	@qc: Queued command
- *
- *	When issuing BMDMA we must clean up the error/active bits in
- *	software on this device
- */
 
 static void hpt3x3_bmdma_setup(struct ata_queued_cmd *qc)
 {
@@ -174,14 +160,6 @@ static void hpt3x3_init_chipset(struct pci_dev *dev)
 		pci_write_config_byte(dev, PCI_LATENCY_TIMER, 0x20);
 }
 
-/**
- *	hpt3x3_init_one		-	Initialise an HPT343/363
- *	@pdev: PCI device
- *	@id: Entry in match table
- *
- *	Perform basic initialisation. We set the device up so we access all
- *	ports via BAR4. This is necessary to work around errata.
- */
 
 static int hpt3x3_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
 {

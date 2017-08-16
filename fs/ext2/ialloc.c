@@ -152,18 +152,6 @@ void ext2_free_inode (struct inode * inode)
 	brelse(bitmap_bh);
 }
 
-/*
- * We perform asynchronous prereading of the new inode's inode block when
- * we create the inode, in the expectation that the inode will be written
- * back soon.  There are two reasons:
- *
- * - When creating a large number of files, the async prereads will be
- *   nicely merged into large reads
- * - When writing out a large number of inodes, we don't need to keep on
- *   stalling the writes while we read the inode block.
- *
- * FIXME: ext2_get_group_desc() needs to be simplified.
- */
 static void ext2_preread_inode(struct inode *inode)
 {
 	unsigned long block_group;
@@ -670,4 +658,3 @@ unsigned long ext2_count_dirs (struct super_block * sb)
 	}
 	return count;
 }
-

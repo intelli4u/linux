@@ -377,13 +377,6 @@ static long do_fcntl(int fd, unsigned int cmd, unsigned long arg,
 		err = fcntl_setlk(fd, filp, cmd, (struct flock __user *) arg);
 		break;
 	case F_GETOWN:
-		/*
-		 * XXX If f_owner is a process group, the
-		 * negative return value will get converted
-		 * into an error.  Oops.  If we keep the
-		 * current syscall conventions, the only way
-		 * to fix this will be in libc.
-		 */
 		err = f_getown(filp);
 		force_successful_syscall_return();
 		break;

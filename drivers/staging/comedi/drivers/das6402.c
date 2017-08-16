@@ -199,15 +199,6 @@ static irqreturn_t intr_handler(int irq, void *d)
 	return IRQ_HANDLED;
 }
 
-#if 0
-static void das6402_ai_fifo_read(struct comedi_device *dev, short *data, int n)
-{
-	int i;
-
-	for (i = 0; i < n; i++)
-		data[i] = inw(dev->iobase);
-}
-#endif
 
 static void das6402_ai_fifo_dregs(struct comedi_device *dev,
 				  struct comedi_subdevice *s)

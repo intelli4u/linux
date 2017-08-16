@@ -58,25 +58,6 @@ static unsigned int cx23885_devcount;
 
 #define NO_SYNC_LINE (-1U)
 
-/* FIXME, these allocations will change when
- * analog arrives. The be reviewed.
- * CX23887 Assumptions
- * 1 line = 16 bytes of CDT
- * cmds size = 80
- * cdt size = 16 * linesize
- * iqsize = 64
- * maxlines = 6
- *
- * Address Space:
- * 0x00000000 0x00008fff FIFO clusters
- * 0x00010000 0x000104af Channel Management Data Structures
- * 0x000104b0 0x000104ff Free
- * 0x00010500 0x000108bf 15 channels * iqsize
- * 0x000108c0 0x000108ff Free
- * 0x00010900 0x00010e9f IQ's + Cluster Descriptor Tables
- *                       15 channels * (iqsize + (maxlines * linesize))
- * 0x00010ea0 0x00010xxx Free
- */
 
 static struct sram_channel cx23885_sram_channels[] = {
 	[SRAM_CH01] = {
@@ -1355,12 +1336,10 @@ static int cx23885_start_dma(struct cx23885_tsport *port,
 		reg = cx_read(PAD_CTRL);
 		reg = reg & ~0x1;    /* Clear TS1_OE */
 
-		/* FIXME, bit 2 writing here is questionable */
 		/* set TS1_SOP_OE and TS1_OE_HI */
 		reg = reg | 0xa;
 		cx_write(PAD_CTRL, reg);
 
-		/* FIXME and these two registers should be documented. */
 		cx_write(CLK_DELAY, cx_read(CLK_DELAY) | 0x80000011);
 		cx_write(ALT_PIN_OUT_SEL, 0x10100045);
 	}
@@ -1604,7 +1583,6 @@ static void cx23885_timeout(unsigned long data)
 
 int cx23885_irq_417(struct cx23885_dev *dev, u32 status)
 {
-	/* FIXME: port1 assumption here. */
 	struct cx23885_tsport *port = &dev->ts1;
 	int count = 0;
 	int handled = 0;

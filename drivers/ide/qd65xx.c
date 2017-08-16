@@ -195,7 +195,6 @@ static void qd6500_set_pio_mode(ide_hwif_t *hwif, ide_drive_t *drive)
 	int active_time   = 175;
 	int recovery_time = 415; /* worst case values from the dos driver */
 
-	/* FIXME: use drive->pio_mode value */
 	if (!qd_find_disk_type(drive, &active_time, &recovery_time) &&
 	    (id[ATA_ID_OLD_PIO_MODES] & 0xff) && (id[ATA_ID_FIELD_VALID] & 2) &&
 	    id[ATA_ID_EIDE_PIO] >= 240) {

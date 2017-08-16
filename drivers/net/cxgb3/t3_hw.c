@@ -3747,10 +3747,6 @@ int t3_reset_adapter(struct adapter *adapter)
 		pci_save_state(adapter->pdev);
 	t3_write_reg(adapter, A_PL_RST, F_CRSTWRM | F_CRSTWRMMODE);
 
-	/*
-	 * Delay. Give Some time to device to reset fully.
-	 * XXX The delay time should be modified.
-	 */
 	for (i = 0; i < 10; i++) {
 		msleep(50);
 		pci_read_config_word(adapter->pdev, 0x00, &devid);
@@ -3959,4 +3955,3 @@ int t3_replay_prep_adapter(struct adapter *adapter)
 
 return 0;
 }
-

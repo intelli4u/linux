@@ -451,7 +451,6 @@ static int simple_post_tune(struct dvb_frontend *fe, u8 *buffer,
 		break;
 	case TUNER_MICROTUNE_4042FI5:
 	{
-		/* FIXME - this may also work for other tuners */
 		unsigned long timeout = jiffies + msecs_to_jiffies(1);
 		u8 status_byte = 0;
 

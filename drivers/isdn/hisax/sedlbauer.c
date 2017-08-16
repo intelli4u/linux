@@ -1,4 +1,4 @@
-/* $Id: sedlbauer.c,v 1.34.2.6 2004/01/24 20:47:24 keil Exp $
+/* $Id: sedlbauer.c,v 1.34.2.6 2004/01/24 20:47:24 Exp $
  *
  * low level stuff for Sedlbauer cards
  * includes support for the Sedlbauer speed star (speed star II),

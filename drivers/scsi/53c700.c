@@ -1194,7 +1194,6 @@ process_script_interrupt(__u32 dsps, __u32 dsp, struct scsi_cmnd *SCp,
 		       host->host_no, reselection_id, lun, dsp, dsp - hostdata->pScript, hostdata->state, hostdata->command_slot_count);
 
 		{
-			/* FIXME: DEBUGGING CODE */
 			__u32 SG = (__u32)bS_to_cpu(hostdata->script[A_SGScriptStartAddress_used[0]]);
 			int i;
 
@@ -1686,20 +1685,6 @@ NCR_700_intr(int irq, void *dev_id)
 		 * then get reselected before we process the
 		 * disconnection */
 		if(sstat0 & SELECTED) {
-			/* FIXME: It currently takes at least FOUR
-			 * interrupts to complete a command that
-			 * disconnects: one for the disconnect, one
-			 * for the reselection, one to get the
-			 * reselection data and one to complete the
-			 * command.  If we guess the reselected
-			 * command here and prepare it, we only need
-			 * to get a reselection data interrupt if we
-			 * guessed wrongly.  Since the interrupt
-			 * overhead is much greater than the command
-			 * setup, this would be an efficient
-			 * optimisation particularly as we probably
-			 * only have one outstanding command on a
-			 * target most of the time */
 
 			resume_offset = process_selection(host, dsp);
 
@@ -1808,12 +1793,6 @@ NCR_700_queuecommand(struct scsi_cmnd *SCp, void (*done)(struct scsi_cmnd *))
 		NCR_700_set_tag_neg_state(SCp->device, NCR_700_DURING_TAG_NEGOTIATION);
 	}
 
-	/* here we may have to process an untagged command.  The gate
-	 * above ensures that this will be the only one outstanding,
-	 * so clear the tag negotiated bit.
-	 *
-	 * FIXME: This will royally screw up on multiple LUN devices
-	 * */
 	if(!blk_rq_tagged(SCp->request)
 	   && (hostdata->tag_negotiated &(1<<scmd_id(SCp)))) {
 		scmd_printk(KERN_INFO, SCp, "Disabling Tag Command Queuing\n");
@@ -1919,16 +1898,6 @@ NCR_700_abort(struct scsi_cmnd * SCp)
 		/* no outstanding command to abort */
 		return SUCCESS;
 	if(SCp->cmnd[0] == TEST_UNIT_READY) {
-		/* FIXME: This is because of a problem in the new
-		 * error handler.  When it is in error recovery, it
-		 * will send a TUR to a device it thinks may still be
-		 * showing a problem.  If the TUR isn't responded to,
-		 * it will abort it and mark the device off line.
-		 * Unfortunately, it does no other error recovery, so
-		 * this would leave us with an outstanding command
-		 * occupying a slot.  Rather than allow this to
-		 * happen, we issue a bus reset to force all
-		 * outstanding commands to terminate here. */
 		NCR_700_internal_bus_reset(SCp->device->host);
 		/* still drop through and return failed */
 	}
@@ -2173,4 +2142,3 @@ static void __exit NCR_700_exit(void)
 
 module_init(NCR_700_init);
 module_exit(NCR_700_exit);
-

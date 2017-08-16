@@ -264,11 +264,6 @@ static int sh_sir_set_baudrate(struct sh_sir_self *self, u32 baudrate)
 		7500, 8125, 8750, 9375,
 	};
 
-	/*
-	 * FIXME
-	 *
-	 * it support 9600 only now
-	 */
 	switch (baudrate) {
 	case 9600:
 		break;
@@ -617,12 +612,6 @@ static int sh_sir_hard_xmit(struct sk_buff *skb, struct net_device *ndev)
 
 static int sh_sir_ioctl(struct net_device *ndev, struct ifreq *ifreq, int cmd)
 {
-	/*
-	 * FIXME
-	 *
-	 * This function is needed for irda framework.
-	 * But nothing to do now
-	 */
 	return 0;
 }
 
@@ -748,7 +737,7 @@ static int __devinit sh_sir_probe(struct platform_device *pdev)
 	ndev->irq		= irq;
 
 	self->ndev			= ndev;
-	self->qos.baud_rate.bits	&= IR_9600; /* FIXME */
+	self->qos.baud_rate.bits	&= IR_9600;
 	self->qos.min_turn_time.bits	= 1; /* 10 ms or more */
 
 	irda_qos_bits_to_value(&self->qos);

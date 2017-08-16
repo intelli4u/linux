@@ -137,7 +137,7 @@ static void omap_irq_set_cfg(int irq, int fiq, int priority, int trigger)
 	irq_bank_writel(val, bank, offset);
 }
 
-#if defined (CONFIG_ARCH_OMAP730) || defined (CONFIG_ARCH_OMAP850)
+#if defined(CONFIG_ARCH_OMAP730) || defined(CONFIG_ARCH_OMAP850)
 static struct omap_irq_bank omap7xx_irq_banks[] = {
 	{ .base_reg = OMAP_IH1_BASE,		.trigger_map = 0xb3f8e22f },
 	{ .base_reg = OMAP_IH2_BASE,		.trigger_map = 0xfdb9c1f2 },

@@ -6,16 +6,6 @@
 
 #define BIOS_LOWMEM_KILOBYTES 0x413
 
-/*
- * The BIOS places the EBDA/XBDA at the top of conventional
- * memory, and usually decreases the reported amount of
- * conventional memory (int 0x12) too. This also contains a
- * workaround for Dell systems that neglect to reserve EBDA.
- * The same workaround also avoids a problem with the AMD768MPX
- * chipset: reserve a page before VGA to prevent PCI prefetch
- * into it (errata #56). Usually the page is reserved anyways,
- * unless you have no PS/2 mouse plugged in.
- */
 void __init reserve_ebda_region(void)
 {
 	unsigned int lowmem, ebda_addr;

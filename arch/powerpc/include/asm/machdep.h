@@ -199,7 +199,7 @@ struct machdep_calls {
 	/* Set DABR for this platform, leave empty for default implemenation */
 	int		(*set_dabr)(unsigned long dabr);
 
-#ifdef CONFIG_PPC32	/* XXX for now */
+#ifdef CONFIG_PPC32
 	/* A general init function, called by ppc_init in init/main.c.
 	   May be NULL. */
 	void		(*init)(void);
@@ -234,10 +234,6 @@ struct machdep_calls {
 	void (*machine_shutdown)(void);
 
 #ifdef CONFIG_KEXEC
-	/* Called to do the minimal shutdown needed to run a kexec'd kernel
-	 * to run successfully.
-	 * XXX Should we move this one out of kexec scope?
-	 */
 	void (*machine_crash_shutdown)(struct pt_regs *regs);
 
 	/* Called to do what every setup is needed on image and the

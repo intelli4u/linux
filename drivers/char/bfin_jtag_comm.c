@@ -169,7 +169,6 @@ bfin_jc_close(struct tty_struct *tty, struct file *filp)
 	mutex_unlock(&bfin_jc_tty_mutex);
 }
 
-/* XXX: we dont handle the put_char() case where we must handle count = 1 */
 static int
 bfin_jc_circ_write(const unsigned char *buf, int count)
 {

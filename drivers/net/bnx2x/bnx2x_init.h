@@ -149,4 +149,3 @@ union init_op {
 };
 
 #endif /* BNX2X_INIT_H */
-

@@ -261,9 +261,7 @@ static int try_set_cm(int new_cm)
 	determine_clocks(0);
 	time_divisor_init();
 
-#if 1 //def DEBUG
 	determine_clocks(1);
-#endif
 
 	frv_dma_resume_all();
 	local_irq_restore(flags);

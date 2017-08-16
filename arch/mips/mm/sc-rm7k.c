@@ -36,10 +36,6 @@ static unsigned long tcache_size;
 
 static int rm7k_tcache_init;
 
-/*
- * Writeback and invalidate the primary cache dcache before DMA.
- * (XXX These need to be fixed ...)
- */
 static void rm7k_sc_wback_inv(unsigned long addr, unsigned long size)
 {
 	unsigned long end, a;

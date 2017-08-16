@@ -1520,7 +1520,6 @@ static struct isa_driver snd_miro_driver = {
 	.match		= snd_miro_isa_match,
 	.probe		= snd_miro_isa_probe,
 	.remove		= __devexit_p(snd_miro_isa_remove),
-	/* FIXME: suspend/resume */
 	.driver		= {
 		.name	= DEV_NAME
 	},

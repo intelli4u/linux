@@ -6,7 +6,7 @@
 
 #define __SWAB_64_THRU_32__
 
-#if defined (__mcfisaaplus__) || defined (__mcfisac__)
+#if defined(__mcfisaaplus__) || defined(__mcfisac__)
 static inline __attribute_const__ __u32 __arch_swab32(__u32 val)
 {
 	__asm__("byterev %0" : "=d" (val) : "0" (val));

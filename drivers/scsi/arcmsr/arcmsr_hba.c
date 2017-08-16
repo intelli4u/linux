@@ -1034,7 +1034,7 @@ static void arcmsr_remove(struct pci_dev *pdev)
 	for (poll_count = 0; poll_count < ARCMSR_MAX_OUTSTANDING_CMD; poll_count++){
 		if (!atomic_read(&acb->ccboutstandingcount))
 			break;
-		arcmsr_interrupt(acb);/* FIXME: need spinlock */
+		arcmsr_interrupt(acb);
 		msleep(25);
 	}
 

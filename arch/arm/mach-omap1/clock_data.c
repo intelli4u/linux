@@ -83,10 +83,6 @@ static struct clk ck_dpll1 = {
 	.parent		= &ck_ref,
 };
 
-/*
- * FIXME: This clock seems to be necessary but no-one has asked for its
- * activation.  [ FIX: SoSSI, SSR ]
- */
 static struct arm_idlect1_clk ck_dpll1out = {
 	.clk = {
 		.name		= "ck_dpll1out",
@@ -138,10 +134,6 @@ static struct arm_idlect1_clk armper_ck = {
 	.idlect_shift	= IDLPER_ARM_SHIFT,
 };
 
-/*
- * FIXME: This clock seems to be necessary but no-one has asked for its
- * activation.  [ GPIO code for 1510 ]
- */
 static struct clk arm_gpio_ck = {
 	.name		= "arm_gpio_ck",
 	.ops		= &clkops_generic,
@@ -308,10 +300,6 @@ static struct clk tc1_ck = {
 	.recalc		= &followparent_recalc,
 };
 
-/*
- * FIXME: This clock seems to be necessary but no-one has asked for its
- * activation.  [ pm.c (SRAM), CCP, Camera ]
- */
 static struct clk tc2_ck = {
 	.name		= "tc2_ck",
 	.ops		= &clkops_generic,
@@ -405,12 +393,6 @@ static struct arm_idlect1_clk lcd_ck_1510 = {
 	.idlect_shift	= OMAP1510_IDLLCD_ARM_SHIFT,
 };
 
-/*
- * XXX The enable_bit here is misused - it simply switches between 12MHz
- * and 48MHz.  Reimplement with clksel.
- *
- * XXX does this need SYSC register handling?
- */
 static struct clk uart1_1510 = {
 	.name		= "uart1_ck",
 	.ops		= &clkops_null,
@@ -424,12 +406,6 @@ static struct clk uart1_1510 = {
 	.recalc		= &omap1_uart_recalc,
 };
 
-/*
- * XXX The enable_bit here is misused - it simply switches between 12MHz
- * and 48MHz.  Reimplement with clksel.
- *
- * XXX SYSC register handling does not belong in the clock framework
- */
 static struct uart_clk uart1_16xx = {
 	.clk	= {
 		.name		= "uart1_ck",
@@ -444,12 +420,6 @@ static struct uart_clk uart1_16xx = {
 	.sysc_addr	= 0xfffb0054,
 };
 
-/*
- * XXX The enable_bit here is misused - it simply switches between 12MHz
- * and 48MHz.  Reimplement with clksel.
- *
- * XXX does this need SYSC register handling?
- */
 static struct clk uart2_ck = {
 	.name		= "uart2_ck",
 	.ops		= &clkops_null,
@@ -463,12 +433,6 @@ static struct clk uart2_ck = {
 	.recalc		= &omap1_uart_recalc,
 };
 
-/*
- * XXX The enable_bit here is misused - it simply switches between 12MHz
- * and 48MHz.  Reimplement with clksel.
- *
- * XXX does this need SYSC register handling?
- */
 static struct clk uart3_1510 = {
 	.name		= "uart3_ck",
 	.ops		= &clkops_null,
@@ -482,12 +446,6 @@ static struct clk uart3_1510 = {
 	.recalc		= &omap1_uart_recalc,
 };
 
-/*
- * XXX The enable_bit here is misused - it simply switches between 12MHz
- * and 48MHz.  Reimplement with clksel.
- *
- * XXX SYSC register handling does not belong in the clock framework
- */
 static struct uart_clk uart3_16xx = {
 	.clk	= {
 		.name		= "uart3_ck",
@@ -618,10 +576,6 @@ static struct clk mmc1_ck = {
 	.enable_bit	= CONF_MOD_MMC_SD_CLK_REQ_R,
 };
 
-/*
- * XXX MOD_CONF_CTRL_0 bit 20 is defined in the 1510 TRM as
- * CONF_MOD_MCBSP3_AUXON ??
- */
 static struct clk mmc2_ck = {
 	.name		= "mmc2_ck",
 	.ops		= &clkops_generic,

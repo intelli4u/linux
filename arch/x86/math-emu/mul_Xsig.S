@@ -173,4 +173,3 @@ ENTRY(mul_Xsig_Xsig)
 	popl %esi
 	leave
 	ret
-

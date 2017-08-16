@@ -235,7 +235,7 @@ reenable_mmu:				/* re-enable mmu so we can */
 	RFI				/* jump to handler, enable MMU */
 #endif /* CONFIG_TRACE_IRQFLAGS */
 
-#if defined (CONFIG_6xx) || defined(CONFIG_E500)
+#if defined(CONFIG_6xx) || defined(CONFIG_E500)
 4:	rlwinm	r12,r12,0,~_TLF_NAPPING
 	stw	r12,TI_LOCAL_FLAGS(r9)
 	b	power_save_ppc32_restore
@@ -1278,7 +1278,6 @@ _GLOBAL(enter_rtas)
 	.globl	machine_check_in_rtas
 machine_check_in_rtas:
 	twi	31,0,0
-	/* XXX load up BATs and panic */
 
 #endif /* CONFIG_PPC_RTAS */
 

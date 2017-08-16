@@ -252,32 +252,6 @@ static u64 pulse_width_count_to_ns(u16 count, u16 divider)
 	return n;
 }
 
-#if 0
-/* Keep as we will need this for Transmit functionality */
-static u16 ns_to_pulse_width_count(u32 ns, u16 divider)
-{
-	u64 n;
-	u32 d;
-	u32 rem;
-
-	/*
-	 * The 2 lsb's of the pulse width timer count are not accessable, hence
-	 * the (1 << 2)
-	 */
-	n = ((u64) ns) * CX25840_IR_REFCLK_FREQ / 1000000; /* millicycles */
-	d = (1 << 2) * ((u32) divider + 1) * 1000; /* millicycles/count */
-	rem = do_div(n, d);
-	if (rem >= d / 2)
-		n++;
-
-	if (n > FIFO_RXTX)
-		n = FIFO_RXTX;
-	else if (n == 0)
-		n = 1;
-	return (u16) n;
-}
-
-#endif
 static unsigned int pulse_width_count_to_us(u16 count, u16 divider)
 {
 	u64 n;
@@ -824,7 +798,6 @@ static int cx25840_ir_rx_s_parameters(struct v4l2_subdev *sd,
 	p->resolution = clock_divider_to_resolution(rxclk_divider);
 	o->resolution = p->resolution;
 
-	/* FIXME - make this dependent on resolution for better performance */
 	control_rx_irq_watermark(c, RX_FIFO_HALF_FULL);
 
 	control_rx_s_edge_detection(c, CNTRL_EDG_BOTH);
@@ -860,50 +833,9 @@ static int cx25840_ir_tx_write(struct v4l2_subdev *sd, u8 *buf, size_t count,
 		return -ENODEV;
 
 	c = ir_state->c;
-#if 0
-	/*
-	 * FIXME - the code below is an incomplete and untested sketch of what
-	 * may need to be done.  The critical part is to get 4 (or 8) pulses
-	 * from the tx_kfifo, or converted from ns to the proper units from the
-	 * input, and push them off to the hardware Tx FIFO right away, if the
-	 * HW TX fifo needs service.  The rest can be pushed to the tx_kfifo in
-	 * a less critical timeframe.  Also watch out for overruning the
-	 * tx_kfifo - don't let it happen and let the caller know not all his
-	 * pulses were written.
-	 */
-	u32 *ns_pulse = (u32 *) buf;
-	unsigned int n;
-	u32 fifo_pulse[FIFO_TX_DEPTH];
-	u32 mark;
-
-	/* Compute how much we can fit in the tx kfifo */
-	n = CX25840_IR_TX_KFIFO_SIZE - kfifo_len(ir_state->tx_kfifo);
-	n = min(n, (unsigned int) count);
-	n /= sizeof(u32);
-
-	/* FIXME - turn on Tx Fifo service interrupt
-	 * check hardware fifo level, and other stuff
-	 */
-	for (i = 0; i < n; ) {
-		for (j = 0; j < FIFO_TX_DEPTH / 2 && i < n; j++) {
-			mark = ns_pulse[i] & LEVEL_MASK;
-			fifo_pulse[j] = ns_to_pulse_width_count(
-					 ns_pulse[i] &
-					       ~LEVEL_MASK,
-					 ir_state->txclk_divider);
-			if (mark)
-				fifo_pulse[j] &= FIFO_RXTX_LVL;
-			i++;
-		}
-		kfifo_put(ir_state->tx_kfifo, (u8 *) fifo_pulse,
-							       j * sizeof(u32));
-	}
-	*num = n * sizeof(u32);
-#else
 	/* For now enable the Tx FIFO Service interrupt & pretend we did work */
 	irqenable_tx(sd, IRQEN_TSE);
 	*num = count;
-#endif
 	return 0;
 }
 
@@ -1002,18 +934,11 @@ static int cx25840_ir_tx_s_parameters(struct v4l2_subdev *sd,
 	p->resolution = clock_divider_to_resolution(txclk_divider);
 	o->resolution = p->resolution;
 
-	/* FIXME - make this dependent on resolution for better performance */
 	control_tx_irq_watermark(c, TX_FIFO_HALF_EMPTY);
 
 	control_tx_polarity_invert(c, p->invert_carrier_sense);
 	o->invert_carrier_sense = p->invert_carrier_sense;
 
-	/*
-	 * FIXME: we don't have hardware help for IO pin level inversion
-	 * here like we have on the CX23888.
-	 * Act on this with some mix of logical inversion of data levels,
-	 * carrier polarity, and carrier duty cycle.
-	 */
 	o->invert_level = p->invert_level;
 
 	o->interrupt_enable = p->interrupt_enable;

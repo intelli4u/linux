@@ -1321,7 +1321,6 @@ static int e1000_integrated_phy_loopback(struct e1000_adapter *adapter)
 		break;
 	case e1000_phy_82577:
 	case e1000_phy_82578:
-		/* Workaround: K1 must be disabled for stable 1Gbps operation */
 		e1000_configure_k1_ich8lan(hw, false);
 		break;
 	case e1000_phy_82579:

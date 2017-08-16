@@ -1003,20 +1003,6 @@ static int mt9p012_sensor_open_init(const struct msm_camera_sensor_info *data)
 	}
 
 	/* TODO: enable AF actuator */
-#if 0
-	CDBG("enable AF actuator, gpio = %d\n",
-		mt9p012_ctrl->sensordata->vcm_pwd);
-	rc = gpio_request(mt9p012_ctrl->sensordata->vcm_pwd, "mt9p012");
-	if (!rc)
-		gpio_direction_output(mt9p012_ctrl->sensordata->vcm_pwd, 1);
-	else {
-		CDBG("mt9p012_ctrl gpio request failed!\n");
-		goto init_fail1;
-	}
-	mdelay(20);
-
-	rc = mt9p012_set_default_focus();
-#endif
 	if (rc >= 0)
 		goto init_done;
 

@@ -39,13 +39,6 @@ copy_page:
 	pta 3f, tr3
 	ptabs r18, tr0
 
-#if 0
-	/* TAKum03020 */
-	ld.q r3, 0x00, r63
-	ld.q r3, 0x20, r63
-	ld.q r3, 0x40, r63
-	ld.q r3, 0x60, r63
-#endif
 	alloco r2, 0x00
 	synco		! TAKum03020
 	alloco r2, 0x20
@@ -65,11 +58,6 @@ copy_page:
    because they overlap with the time spent waiting for prefetches to
    complete. */
 1:
-#if 0
-	/* TAKum03020 */
-	bge/u r2, r6, tr2  ! skip prefetch for last 4 lines
-	ldx.q r2, r22, r63 ! prefetch 4 lines hence
-#endif
 2:
 	bge/u r2, r7, tr3  ! skip alloco for last 2 lines
 	alloco r2, 0x40    ! alloc destination line 2 lines ahead

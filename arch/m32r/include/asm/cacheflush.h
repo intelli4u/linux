@@ -6,7 +6,8 @@
 extern void _flush_cache_all(void);
 extern void _flush_cache_copyback_all(void);
 
-#if defined(CONFIG_CHIP_M32700) || defined(CONFIG_CHIP_OPSP) || defined(CONFIG_CHIP_M32104)
+#if defined(CONFIG_CHIP_M32700) || defined(CONFIG_CHIP_OPSP) || \
+	defined(CONFIG_CHIP_M32104)
 #define flush_cache_all()			do { } while (0)
 #define flush_cache_mm(mm)			do { } while (0)
 #define flush_cache_dup_mm(mm)			do { } while (0)

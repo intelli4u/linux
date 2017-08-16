@@ -257,10 +257,6 @@ static int tx4939ide_build_dmatable(ide_drive_t *drive, struct ide_cmd *cmd)
 			bcount = 0x10000 - (cur_addr & 0xffff);
 			if (bcount > cur_len)
 				bcount = cur_len;
-			/*
-			 * This workaround for zero count seems required.
-			 * (standard ide_build_dmatable does it too)
-			 */
 			if (bcount == 0x10000)
 				bcount = 0x8000;
 			*table++ = bcount & 0xffff;

@@ -353,11 +353,6 @@ static void iwl3945_rx_reply_tx(struct iwl_priv *priv,
  *
  *****************************************************************************/
 #ifdef CONFIG_IWLWIFI_DEBUGFS
-/*
- *  based on the assumption of all statistics counter are in DWORD
- *  FIXME: This function is for debugging, do not deal with
- *  the case of counters roll-over.
- */
 static void iwl3945_accumulative_statistics(struct iwl_priv *priv,
 					    __le32 *stats)
 {
@@ -1394,9 +1389,6 @@ static void iwl3945_hw_reg_set_scan_power(struct iwl_priv *priv, u32 scan_tbl_in
 	 *   based on eeprom channel data) for this channel.  */
 	power = min(ch_info->scan_power, clip_pwrs[IWL_RATE_6M_INDEX_TABLE]);
 
-	/* further limit to user's max power preference.
-	 * FIXME:  Other spectrum management power limitations do not
-	 *   seem to apply?? */
 	power = min(power, priv->tx_power_user_lmt);
 	scan_power_info->requested_power = power;
 
@@ -1577,15 +1569,6 @@ static int iwl3945_hw_reg_get_ch_txpower_limit(struct iwl_channel_info *ch_info)
 {
 	s8 max_power;
 
-#if 0
-	/* if we're using TGd limits, use lower of TGd or EEPROM */
-	if (ch_info->tgd_data.max_power != 0)
-		max_power = min(ch_info->tgd_data.max_power,
-				ch_info->eeprom.max_power_avg);
-
-	/* else just use EEPROM limits */
-	else
-#endif
 		max_power = ch_info->eeprom.max_power_avg;
 
 	return min(max_power, ch_info->max_power_avg);

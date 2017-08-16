@@ -741,7 +741,7 @@ static struct clk nandif_clk = {
 static struct clk semi_clk = {
 	.name       = "SEMI",
 	.parent	    = &amba_clk,
-	.rate       = 0, /* FIXME */
+	.rate       = 0,
 	/* It is not possible to reset SEMI */
 	.hw_ctrld   = false,
 	.reset	    = false,
@@ -755,7 +755,7 @@ static struct clk semi_clk = {
 static struct clk isp_clk = {
 	.name	    = "ISP",
 	.parent	    = &amba_clk,
-	.rate	    = 0, /* FIXME */
+	.rate	    = 0,
 	.hw_ctrld   = false,
 	.reset	    = true,
 	.res_reg    = U300_SYSCON_VBASE + U300_SYSCON_RRR,
@@ -769,7 +769,7 @@ static struct clk isp_clk = {
 static struct clk cds_clk = {
 	.name	    = "CDS",
 	.parent	    = &amba_clk,
-	.rate	    = 0, /* FIXME */
+	.rate	    = 0,
 	.hw_ctrld   = false,
 	.reset	    = true,
 	.res_reg    = U300_SYSCON_VBASE + U300_SYSCON_RRR,
@@ -812,7 +812,7 @@ static struct clk aaif_clk = {
 static struct clk apex_clk = {
 	.name       = "APEX",
 	.parent	    = &amba_clk,
-	.rate       = 0, /* FIXME */
+	.rate       = 0,
 	.hw_ctrld   = true,
 	.reset	    = true,
 	.res_reg    = U300_SYSCON_VBASE + U300_SYSCON_RRR,
@@ -903,7 +903,7 @@ static struct clk intcon_clk = {
 static struct clk mspro_clk = {
 	.name       = "MSPRO",
 	.parent	    = &ahb_subsys_clk,
-	.rate       = 0, /* FIXME */
+	.rate       = 0,
 	.hw_ctrld   = false,
 	.reset	    = true,
 	.res_reg    = U300_SYSCON_VBASE + U300_SYSCON_RRR,
@@ -1226,7 +1226,7 @@ static struct clk app_timer_clk = {
 static struct clk ppm_clk = {
 	.name	    = "PPM",
 	.parent	    = &slow_clk,
-	.rate	    = 0, /* FIXME */
+	.rate	    = 0,
 	.hw_ctrld   = true, /* TODO: Look up if it is hw ctrld or not */
 	.reset	    = true,
 	.res_reg    = U300_SYSCON_VBASE + U300_SYSCON_RSR,
@@ -1464,9 +1464,6 @@ int __init u300_clock_init(void)
 {
 	u16 val;
 
-	/*
-	 * FIXME: shall all this powermanagement stuff really live here???
-	 */
 
 	/* Set system to run at PLL208, max performance, a known state. */
 	val = readw(U300_SYSCON_VBASE + U300_SYSCON_CCR);

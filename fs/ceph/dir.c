@@ -440,7 +440,7 @@ static loff_t ceph_dir_llseek(struct file *file, loff_t offset, int origin)
 	mutex_lock(&inode->i_mutex);
 	switch (origin) {
 	case SEEK_END:
-		offset += inode->i_size + 2;   /* FIXME */
+		offset += inode->i_size + 2;
 		break;
 	case SEEK_CUR:
 		offset += file->f_pos;
@@ -1164,11 +1164,6 @@ out:
 	return ret;
 }
 
-/*
- * We maintain a private dentry LRU.
- *
- * FIXME: this needs to be changed to a per-mds lru to be useful.
- */
 void ceph_dentry_lru_add(struct dentry *dn)
 {
 	struct ceph_dentry_info *di = ceph_dentry(dn);

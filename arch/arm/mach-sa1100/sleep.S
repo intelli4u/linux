@@ -77,24 +77,6 @@ ENTRY(sa1100_cpu_suspend)
 	mov	r0, #90
 	bl	__udelay
 
-	/*
-	 * SA1110 SDRAM controller workaround.  register values:
-	 *
-	 * r0  = &MSC0
-	 * r1  = &MSC1
-	 * r2  = &MSC2
-	 * r3  = MSC0 value
-	 * r4  = MSC1 value
-	 * r5  = MSC2 value
-	 * r6  = &MDREFR
-	 * r7  = first MDREFR value
-	 * r8  = second MDREFR value
-	 * r9  = &MDCNFG
-	 * r10 = MDCNFG value
-	 * r11 = third MDREFR value
-	 * r12 = &PMCR
-	 * r13 = PMCR value (1)
-	 */
 
 	ldr	r0, =MSC0
 	ldr	r1, =MSC1
@@ -211,5 +193,3 @@ sleep_save_sp:
 resume_after_mmu:
 	mcr	p15, 0, r1, c15, c1, 2		@ enable clock switching
 	ldmfd	sp!, {r4 - r12, pc}		@ return to caller
-
-

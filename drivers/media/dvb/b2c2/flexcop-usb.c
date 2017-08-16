@@ -196,28 +196,6 @@ static int flexcop_usb_get_mac_addr(struct flexcop_device *fc, int extended)
 		fc->dvb_adapter.proposed_mac, 6);
 }
 
-#if 0
-static int flexcop_usb_utility_req(struct flexcop_usb *fc_usb, int set,
-		flexcop_usb_utility_function_t func, u8 extra, u16 wIndex,
-		u16 buflen, u8 *pvBuffer)
-{
-	u16 wValue;
-	u8 request_type = (set ? USB_DIR_OUT : USB_DIR_IN) | USB_TYPE_VENDOR;
-	int nWaitTime = 2,
-	    pipe = set ? B2C2_USB_CTRL_PIPE_OUT : B2C2_USB_CTRL_PIPE_IN, len;
-	wValue = (func << 8) | extra;
-
-	len = usb_control_msg(fc_usb->udev,pipe,
-			B2C2_USB_UTILITY,
-			request_type,
-			wValue,
-			wIndex,
-			pvBuffer,
-			buflen,
-			nWaitTime * HZ);
-	return len == buflen ? 0 : -EIO;
-}
-#endif
 
 /* usb i2c stuff */
 static int flexcop_usb_i2c_req(struct flexcop_i2c_adapter *i2c,

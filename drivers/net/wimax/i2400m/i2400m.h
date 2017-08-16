@@ -979,10 +979,6 @@ unsigned i2400m_ge_v1_4(struct i2400m *i2400m)
 static inline
 void __i2400m_msleep(unsigned ms)
 {
-#if 1
-#else
-	msleep(ms);
-#endif
 }
 
 

@@ -230,7 +230,7 @@ struct vmbus_channel {
 
 	struct hv_device *DeviceObject;
 
-	struct timer_list poll_timer; /* SA-111 workaround */
+	struct timer_list poll_timer;
 
 	enum vmbus_channel_state State;
 

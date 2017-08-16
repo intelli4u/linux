@@ -802,7 +802,6 @@ static void ipoib_timeout(struct net_device *dev)
 	ipoib_warn(priv, "queue stopped %d, tx_head %u, tx_tail %u\n",
 		   netif_queue_stopped(dev),
 		   priv->tx_head, priv->tx_tail);
-	/* XXX reset QP, etc. */
 }
 
 static int ipoib_hard_header(struct sk_buff *skb,

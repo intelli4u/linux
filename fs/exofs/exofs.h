@@ -38,9 +38,6 @@
 #include <linux/backing-dev.h>
 #include "common.h"
 
-/* FIXME: Remove once pnfs hits mainline
- * #include <linux/exportfs/pnfs_osd_xdr.h>
- */
 #include "pnfs.h"
 
 #define EXOFS_ERR(fmt, a...) printk(KERN_ERR "exofs: " fmt, ##a)
@@ -87,9 +84,7 @@ struct exofs_sb_info {
 	uint8_t		s_cred[OSD_CAP_LEN];	/* credential for the fscb    */
 	struct 		backing_dev_info bdi;	/* register our bdi with VFS  */
 
-	struct pnfs_osd_data_map data_map;	/* Default raid to use
-						 * FIXME: Needed ?
-						 */
+	struct pnfs_osd_data_map data_map;
 /*	struct exofs_layout	dir_layout;*/	/* Default dir layout */
 	struct exofs_layout	layout;		/* Default files layout,
 						 * contains the variable osd_dev

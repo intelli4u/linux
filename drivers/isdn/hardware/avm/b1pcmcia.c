@@ -1,4 +1,4 @@
-/* $Id: b1pcmcia.c,v 1.1.2.2 2004/01/16 21:09:27 keil Exp $
+/* $Id: b1pcmcia.c,v 1.1.2.2 2004/01/16 21:09:27 Exp $
  * 
  * Module for AVM B1/M1/M2 PCMCIA-card.
  * 

@@ -108,4 +108,3 @@ void __init colibri_pxa270_evalboard_init(void)
 	colibri_pxa270_mmc_init();
 	colibri_pxa270_uhc_init();
 }
-

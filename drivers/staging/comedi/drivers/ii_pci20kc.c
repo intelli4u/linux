@@ -77,8 +77,6 @@ options for PCI-20341M:
 	     3  200
 */
 
-/* XXX needs to use ioremap() for compatibility with 2.4 kernels.  Should also
- * check_mem_region() etc. - fmhess */
 
 #include "../comedidev.h"
 
@@ -261,7 +259,7 @@ static int pci20xxx_attach(struct comedi_device *dev,
 		default:
 			printk(KERN_WARNING "ii_pci20kc: unknown module "
 			       "code 0x%02x in slot %d: module disabled\n",
-			       id, i); /* XXX this looks like a bug! i + 1 ?? */
+			       id, i);
 			/* fall through */
 		case PCI20xxx_EMPTY_ID:
 			s->type = COMEDI_SUBD_UNUSED;
@@ -611,34 +609,6 @@ static void pci20xxx_dio_config(struct comedi_device *dev,
 	writeb(buffer, devpriv->ioaddr + PCI20000_DIO_BUFFER);
 }
 
-#if 0
-static void pci20xxx_do(struct comedi_device *dev, struct comedi_subdevice *s)
-{
-	/* XXX if the channel is configured for input, does this
-	   do bad things? */
-	/* XXX it would be a good idea to only update the registers
-	   that _need_ to be updated.  This requires changes to
-	   comedi, however. */
-	writeb((s->state >> 0) & 0xff, devpriv->ioaddr + PCI20000_DIO_0);
-	writeb((s->state >> 8) & 0xff, devpriv->ioaddr + PCI20000_DIO_1);
-	writeb((s->state >> 16) & 0xff, devpriv->ioaddr + PCI20000_DIO_2);
-	writeb((s->state >> 24) & 0xff, devpriv->ioaddr + PCI20000_DIO_3);
-}
-
-static unsigned int pci20xxx_di(struct comedi_device *dev,
-				struct comedi_subdevice *s)
-{
-	/* XXX same note as above */
-	unsigned int bits;
-
-	bits = readb(devpriv->ioaddr + PCI20000_DIO_0);
-	bits |= readb(devpriv->ioaddr + PCI20000_DIO_1) << 8;
-	bits |= readb(devpriv->ioaddr + PCI20000_DIO_2) << 16;
-	bits |= readb(devpriv->ioaddr + PCI20000_DIO_3) << 24;
-
-	return bits;
-}
-#endif
 
 static int __init driver_pci20xxx_init_module(void)
 {

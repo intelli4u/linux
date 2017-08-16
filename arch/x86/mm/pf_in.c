@@ -496,7 +496,6 @@ do_work:
 	switch (mod) {
 	case 0:
 		/* if r/m is 5 we have a 32 disp (IA32 Manual 3, Table 2-2)  */
-		/* AMD64: XXX Check for address size prefix? */
 		if ((mod_rm & 0x7) == 0x5)
 			p += 4;
 		break;

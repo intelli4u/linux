@@ -121,7 +121,6 @@ void        musycc_update_timeslots (mpi_t *);
 
 /*******************************************************************/
 
-#if 1
 STATIC int
 musycc_dump_rxbuffer_ring (mch_t * ch, int lockit)
 {
@@ -161,12 +160,7 @@ musycc_dump_rxbuffer_ring (mch_t * ch, int lockit)
                     u_int32_t  *dp;
                     int         len = status & LENGTH_MASK;
 
-#if 1
                     if (m->data && (status & HOST_RX_OWNED))
-#else
-                    if (m->data)    /* always dump regardless of valid RX
-                                     * data */
-#endif
                     {
                         dp = (u_int32_t *) OS_phystov ((void *) (le32_to_cpu (m->data)));
                         if (len >= 0x10)
@@ -192,9 +186,7 @@ musycc_dump_rxbuffer_ring (mch_t * ch, int lockit)
     }
     return 0;
 }
-#endif
 
-#if 1
 STATIC int
 musycc_dump_txbuffer_ring (mch_t * ch, int lockit)
 {
@@ -260,7 +252,6 @@ musycc_dump_txbuffer_ring (mch_t * ch, int lockit)
     }
     return 0;
 }
-#endif
 
 
 /*
@@ -420,9 +411,6 @@ musycc_wq_chan_restart (void *arg)      /* channel private structure */
     mch_t      *ch;
     mpi_t      *pi;
     struct mdesc *md;
-#if 0
-    unsigned long flags;
-#endif
 
     ch = container_of(arg, struct c4_chan_info, ch_work);
     pi = ch->up;
@@ -474,24 +462,15 @@ musycc_wq_chan_restart (void *arg)      /* channel private structure */
         /* find next unprocessed message, then set TX thp to it */
         musycc_update_tx_thp (ch);
 
-#if 0
-        spin_lock_irqsave (&ch->ch_txlock, flags);
-#endif
         md = ch->txd_irq_srv;
         if (!md)
         {
 #ifdef RLD_TRANS_DEBUG
             pr_info("-- musycc_wq_chan_restart[%d]: WARNING, starting NULL md\n", ch->channum);
 #endif
-#if 0
-            spin_unlock_irqrestore (&ch->ch_txlock, flags);
-#endif
         } else if (md->data && ((le32_to_cpu (md->status)) & MUSYCC_TX_OWNED))
         {
             ch->ch_start_tx = 0;
-#if 0
-            spin_unlock_irqrestore (&ch->ch_txlock, flags);   /* allow interrupts for service request */
-#endif
 #ifdef RLD_TRANS_DEBUG
             pr_info("++ musycc_wq_chan_restart() CHAN TX ACTIVATE: chan %d txd_irq_srv %p = sts %x, txpkt %lu\n",
                     ch->channum, ch->txd_irq_srv, ch->txd_irq_srv->status, ch->s.tx_packets);
@@ -507,9 +486,6 @@ musycc_wq_chan_restart (void *arg)      /* channel private structure */
                     le32_to_cpu (md->status),
                     le32_to_cpu (md->data), ch->ch_start_tx);
             musycc_dump_txbuffer_ring (ch, 0);
-#if 0
-            spin_unlock_irqrestore (&ch->ch_txlock, flags);   /* allow interrupts for service request */
-#endif
         }
 #endif
     }
@@ -644,13 +620,6 @@ rewrite:
     }
     if (req == SR_CHIP_RESET)
     {
-        /*
-         * PORT NOTE: the CHIP_RESET command is NOT ack'd by the MUSYCC, thus
-         * the upcoming delay is used.  Though the MUSYCC documentation
-         * suggests a read-after-write would supply the required delay, it's
-         * unclear what CPU/BUS clock speeds might have been assumed when
-         * suggesting this 'lack of ACK' workaround.  Thus the use of uwait.
-         */
         OS_uwait (100000, "icard"); /* 100ms */
     } else
     {
@@ -940,12 +909,6 @@ musycc_bh_tx_eom (mpi_t * pi, int gchan)
     mch_t      *ch;
     struct mdesc *md;
 
-#if 0
-#ifndef SBE_ISR_INLINE
-    unsigned long flags;
-
-#endif
-#endif
     volatile u_int32_t status;
 
     ch = pi->chan[gchan];
@@ -959,13 +922,6 @@ musycc_bh_tx_eom (mpi_t * pi, int gchan)
         return;                     /* note: mdt==0 implies a malloc()
                                      * failure w/in chan_up() routine */
 
-#if 0
-#ifdef SBE_ISR_INLINE
-    spin_lock_irq (&ch->ch_txlock);
-#else
-    spin_lock_irqsave (&ch->ch_txlock, flags);
-#endif
-#endif
     do
     {
         FLUSH_MEM_READ ();
@@ -1116,13 +1072,6 @@ musycc_bh_tx_eom (mpi_t * pi, int gchan)
 #endif
 
     FLUSH_MEM_WRITE ();
-#if 0
-#ifdef SBE_ISR_INLINE
-    spin_unlock_irq (&ch->ch_txlock);
-#else
-    spin_unlock_irqrestore (&ch->ch_txlock, flags);
-#endif
-#endif
 }
 
 
@@ -1323,11 +1272,6 @@ musycc_intr_th_handler (void *devp)
          * walking the chain.  As the chain is walked, the interrupt will
          * eventually be serviced by the correct driver/handler.
          */
-#if 0
-        /* chained interrupt = not ours */
-        pr_info(">> %s: intCnt NULL, sts %x, possibly a chained interrupt!\n",
-                ci->devname, status);
-#endif
         return IRQ_NONE;
     }
 
@@ -1518,15 +1462,11 @@ musycc_intr_bh_tasklet (ci_t * ci)
             {
                 musycc_bh_rx_eom (pi, gchan);
             }
-#if 0
-            break;
-#else
             /*
              * MUSYCC Interrupt Descriptor section states that EOB and EOM
              * can be combined with the NONE error (as well as others).  So
              * drop thru to catch this...
              */
-#endif
         case EVE_NONE:
             if (err == ERR_SHT)
             {
@@ -1681,33 +1621,6 @@ musycc_intr_bh_tasklet (ci_t * ci)
     /* else, nothing returned */
 }
 
-#if 0
-int         __init
-musycc_new_chan (ci_t * ci, int channum, void *user)
-{
-    mch_t      *ch;
-
-    ch = ci->port[channum / MUSYCC_NCHANS].chan[channum % MUSYCC_NCHANS];
-
-    if (ch->state != UNASSIGNED)
-        return EEXIST;
-    /* NOTE: mch_t already cleared during OS_kmalloc() */
-    ch->state = DOWN;
-    ch->user = user;
-#if 0
-    ch->status = 0;
-    ch->p.status = 0;
-    ch->p.intr_mask = 0;
-#endif
-    ch->p.chan_mode = CFG_CH_PROTO_HDLC_FCS16;
-    ch->p.idlecode = CFG_CH_FLAG_7E;
-    ch->p.pad_fill_count = 2;
-    spin_lock_init (&ch->ch_rxlock);
-    spin_lock_init (&ch->ch_txlock);
-
-    return 0;
-}
-#endif
 
 
 #ifdef SBE_PMCC4_ENABLE
@@ -1803,9 +1716,6 @@ musycc_start_xmit (ci_t * ci, int channum, void *mem_token)
     mch_t      *ch;
     struct mdesc *md;
     void       *m2;
-#if 0
-    unsigned long flags;
-#endif
     int         txd_need_cnt;
     u_int32_t   len;
 
@@ -1866,9 +1776,6 @@ musycc_start_xmit (ci_t * ci, int channum, void *mem_token)
         OS_mem_token_free (mem_token);
         return 0;
     }
-#if 0
-    spin_lock_irqsave (&ch->ch_txlock, flags);
-#endif
     /************************************************************/
     /** flow control the line if not enough descriptors remain **/
     /************************************************************/
@@ -1882,9 +1789,6 @@ musycc_start_xmit (ci_t * ci, int channum, void *mem_token)
         ch->tx_full = 1;
         ch->txd_required = txd_need_cnt;
         sd_disable_xmit (ch->user);
-#if 0
-        spin_unlock_irqrestore (&ch->ch_txlock, flags);
-#endif
         return EBUSY;               /* tell user to try again later */
     }
     /**************************************************/
@@ -1926,12 +1830,6 @@ musycc_start_xmit (ci_t * ci, int channum, void *mem_token)
         u |= (ch->p.idlecode << IDLE_CODE);
         if (ch->p.pad_fill_count)
         {
-#if 0
-            /* NOOP NOTE: u_int8_t cannot be > 0xFF */
-            /* sanitize pad_fill_count for maximums allowed by hardware */
-            if (ch->p.pad_fill_count > EXTRA_FLAGS_MASK)
-                ch->p.pad_fill_count = EXTRA_FLAGS_MASK;
-#endif
             u |= (PADFILL_ENABLE | (ch->p.pad_fill_count << EXTRA_FLAGS));
         }
         md->mem_token = len ? 0 : mem_token;    /* Fill in mds on last

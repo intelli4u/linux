@@ -540,14 +540,6 @@ static void dt282x_ai_dma_interrupt(struct comedi_device *dev)
 		s->async->events |= COMEDI_CB_EOA;
 		return;
 	}
-#if 0
-	/* clear the dual dma flag, making this the last dma segment */
-	/* XXX probably wrong */
-	if (!devpriv->ntrig) {
-		devpriv->supcsr &= ~(DT2821_DDMA);
-		update_supcsr(0);
-	}
-#endif
 	/* restart the channel */
 	prep_ai_dma(dev, i, 0);
 }
@@ -639,43 +631,11 @@ static irqreturn_t dt282x_interrupt(int irq, void *d)
 		handled = 1;
 	}
 	if (dacsr & DT2821_DAERR) {
-#if 0
-		static int warn = 5;
-		if (--warn <= 0) {
-			disable_irq(dev->irq);
-			printk(KERN_INFO "disabling irq\n");
-		}
-#endif
 		comedi_error(dev, "D/A error");
 		dt282x_ao_cancel(dev, s_ao);
 		s->async->events |= COMEDI_CB_ERROR;
 		handled = 1;
 	}
-#if 0
-	if (adcsr & DT2821_ADDONE) {
-		int ret;
-		short data;
-
-		data = (short)inw(dev->iobase + DT2821_ADDAT);
-		data &= (1 << boardtype.adbits) - 1;
-
-		if (devpriv->ad_2scomp)
-			data ^= 1 << (boardtype.adbits - 1);
-		ret = comedi_buf_put(s->async, data);
-
-		if (ret == 0)
-			s->async->events |= COMEDI_CB_OVERFLOW;
-
-		devpriv->nread--;
-		if (!devpriv->nread) {
-			s->async->events |= COMEDI_CB_EOA;
-		} else {
-			if (supcsr & DT2821_SCDN)
-				update_supcsr(DT2821_STRIG);
-		}
-		handled = 1;
-	}
-#endif
 	comedi_event(dev, s);
 	/* printk("adcsr=0x%02x dacsr-0x%02x supcsr=0x%02x\n",
 		adcsr, dacsr, supcsr); */
@@ -709,7 +669,6 @@ static int dt282x_ai_insn_read(struct comedi_device *dev,
 {
 	int i;
 
-	/* XXX should we really be enabling the ad clock here? */
 	devpriv->adcsr = DT2821_ADCLK;
 	update_adcsr(0);
 
@@ -805,7 +764,6 @@ static int dt282x_ai_cmdtest(struct comedi_device *dev,
 		}
 	}
 	if (cmd->convert_arg < 4000) {
-		/* XXX board dependent */
 		cmd->convert_arg = 4000;
 		err++;
 	}
@@ -1064,7 +1022,7 @@ static int dt282x_ao_cmdtest(struct comedi_device *dev,
 		cmd->start_arg = 0;
 		err++;
 	}
-	if (cmd->scan_begin_arg < 5000 /* XXX unknown */) {
+	if (cmd->scan_begin_arg < 5000) {
 		cmd->scan_begin_arg = 5000;
 		err++;
 	}
@@ -1073,7 +1031,6 @@ static int dt282x_ao_cmdtest(struct comedi_device *dev,
 		err++;
 	}
 	if (cmd->scan_end_arg > 2) {
-		/* XXX chanlist stuff? */
 		cmd->scan_end_arg = 2;
 		err++;
 	}
@@ -1331,25 +1288,6 @@ static int dt282x_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	/* should do board test */
 
 	irq = it->options[opt_irq];
-#if 0
-	if (irq < 0) {
-		unsigned long flags;
-		int irqs;
-
-		save_flags(flags);
-		sti();
-		irqs = probe_irq_on();
-
-		/* trigger interrupt */
-
-		udelay(100);
-
-		irq = probe_irq_off(irqs);
-		restore_flags(flags);
-		if (0 /* error */)
-			printk(KERN_ERR " error probing irq (bad)");
-	}
-#endif
 	if (irq > 0) {
 		printk(KERN_INFO " ( irq = %d )", irq);
 		ret = request_irq(irq, dt282x_interrupt, 0, "dt282x", dev);
@@ -1361,11 +1299,7 @@ static int dt282x_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	} else if (irq == 0) {
 		printk(KERN_INFO " (no irq)");
 	} else {
-#if 0
-		printk(KERN_INFO " (probe returned multiple irqs--bad)");
-#else
 		printk(KERN_INFO " (irq probe not implemented)");
-#endif
 	}
 
 	ret = alloc_private(dev, sizeof(struct dt282x_private));

@@ -313,8 +313,6 @@ static int calc_ntlmv2_hash(struct cifsSesInfo *ses,
 calc_exit_1:
 	kfree(user);
 calc_exit_2:
-	/* BB FIXME what about bytes 24 through 40 of the signing key?
-	   compare with the NTLM example */
 	hmac_md5_final(ses->server->ntlmv2_hash, pctxt);
 
 	kfree(pctxt);

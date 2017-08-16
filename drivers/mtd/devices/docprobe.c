@@ -61,7 +61,7 @@ module_param(doc_config_location, ulong, 0);
 MODULE_PARM_DESC(doc_config_location, "Physical memory address at which to probe for DiskOnChip");
 
 static unsigned long __initdata doc_locations[] = {
-#if defined (__alpha__) || defined(__i386__) || defined(__x86_64__)
+#if defined(__alpha__) || defined(__i386__) || defined(__x86_64__)
 #ifdef CONFIG_MTD_DOCPROBE_HIGH
 	0xfffc8000, 0xfffca000, 0xfffcc000, 0xfffce000,
 	0xfffd0000, 0xfffd2000, 0xfffd4000, 0xfffd6000,
@@ -334,4 +334,3 @@ module_init(init_doc);
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("David Woodhouse <dwmw2@infradead.org>");
 MODULE_DESCRIPTION("Probe code for DiskOnChip 2000 and Millennium devices");
-

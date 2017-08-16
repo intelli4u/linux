@@ -1391,7 +1391,6 @@ static unsigned long __init bootmem_init(unsigned long phys_base)
 	if (bootmem_init_numa() < 0)
 		bootmem_init_nonnuma();
 
-	/* XXX cpu notifier XXX */
 
 	for_each_online_node(nid)
 		bootmem_init_one_node(nid);
@@ -1736,14 +1735,6 @@ void __init paging_init(void)
 
 	memblock_init();
 
-	/* Find available physical memory...
-	 *
-	 * Read it twice in order to work around a bug in openfirmware.
-	 * The call to grab this table itself can cause openfirmware to
-	 * allocate memory, which in turn can take away some space from
-	 * the list of available memory.  Reading it twice makes sure
-	 * we really do get the final value.
-	 */
 	read_obp_translations();
 	read_obp_memory("reg", &pall[0], &pall_ents);
 	read_obp_memory("available", &pavail[0], &pavail_ents);
@@ -1815,7 +1806,6 @@ void __init paging_init(void)
 	 * IRQ stacks.
 	 */
 	for_each_possible_cpu(i) {
-		/* XXX Use node local allocations... XXX */
 		softirq_stack[i] = __va(memblock_alloc(THREAD_SIZE, THREAD_SIZE));
 		hardirq_stack[i] = __va(memblock_alloc(THREAD_SIZE, THREAD_SIZE));
 	}
@@ -2182,7 +2172,6 @@ static void __init sun4u_pgprot_init(void)
 	kern_linear_pte_xor[0] |= (_PAGE_CP_4U | _PAGE_CV_4U |
 				   _PAGE_P_4U | _PAGE_W_4U);
 
-	/* XXX Should use 256MB on Panther. XXX */
 	kern_linear_pte_xor[1] = kern_linear_pte_xor[0];
 
 	_PAGE_SZBITS = _PAGE_SZBITS_4U;
@@ -2333,7 +2322,6 @@ void __flush_tlb_all(void)
 		sun4v_mmu_demap_all();
 	} else if (tlb_type == spitfire) {
 		for (i = 0; i < 64; i++) {
-			/* Spitfire Errata #32 workaround */
 			/* NOTE: Always runs on spitfire, so no
 			 *       cheetah+ page size encodings.
 			 */
@@ -2351,7 +2339,6 @@ void __flush_tlb_all(void)
 				spitfire_put_dtlb_data(i, 0x0UL);
 			}
 
-			/* Spitfire Errata #32 workaround */
 			/* NOTE: Always runs on spitfire, so no
 			 *       cheetah+ page size encodings.
 			 */

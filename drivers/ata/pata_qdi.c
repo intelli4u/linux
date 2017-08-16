@@ -363,4 +363,3 @@ module_init(qdi_init);
 module_exit(qdi_exit);
 
 module_param(probe_qdi, int, 0);
-

@@ -92,7 +92,8 @@
       #define min(x,y) ((x) < (y) ? x : y)
    #endif
 
-   #ifndef __iomem       /* For clean compiles in earlier kernels without __iomem annotations */
+   #ifndef __iomem       /* For clean compiles in earlier kernels without __iomem \
+	annotations */
       #define __iomem
    #endif
 

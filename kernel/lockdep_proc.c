@@ -442,7 +442,7 @@ static void seq_stats(struct seq_file *m, struct lock_stat_data *data)
 
 	namelen = 38;
 	if (class->name_version > 1)
-		namelen -= 2; /* XXX truncates versions > 9 */
+		namelen -= 2;
 	if (class->subclass)
 		namelen -= 2;
 
@@ -688,4 +688,3 @@ static int __init lockdep_proc_init(void)
 }
 
 __initcall(lockdep_proc_init);
-

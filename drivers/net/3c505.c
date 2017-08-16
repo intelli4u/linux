@@ -10,7 +10,7 @@
  *              be here without 3C505 technical reference provided by
  *              3Com.
  *
- * $Id: 3c505.c,v 1.10 1996/04/16 13:06:27 phil Exp $
+ * $Id: 3c505.c,v 1.10 1996/04/16 13:06:27 Exp $
  *
  * Authors:     Linux 3c505 device driver by
  *                      Craig Southeren, <craigs@ineluki.apana.org.au>
@@ -591,7 +591,6 @@ static void receive_packet(struct net_device *dev, int len)
 		pr_warning("%s: memory squeeze, dropping packet\n", dev->name);
 		target = adapter->dma_buffer;
 		adapter->current_dma.target = NULL;
-		/* FIXME: stats */
 		return;
 	}
 

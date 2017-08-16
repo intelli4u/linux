@@ -169,13 +169,6 @@ static void hangcheck_fire(unsigned long data)
 			printk(KERN_CRIT "Hangcheck: hangcheck value past margin!\n");
 		}
 	}
-#if 0
-	/*
-	 * Enable to investigate delays in detail
-	 */
-	printk("Hangcheck: called %Ld ns since last time (%Ld ns overshoot)\n",
-			tsc_diff, tsc_diff - hangcheck_tick*TIMER_FREQ);
-#endif
 	mod_timer(&hangcheck_ticktock, jiffies + (hangcheck_tick*HZ));
 	hangcheck_tsc = monotonic_clock();
 }
@@ -185,7 +178,7 @@ static int __init hangcheck_init(void)
 {
 	printk("Hangcheck: starting hangcheck timer %s (tick is %d seconds, margin is %d seconds).\n",
 	       VERSION_STR, hangcheck_tick, hangcheck_margin);
-#if defined (HAVE_MONOTONIC)
+#if defined(HAVE_MONOTONIC)
 	printk("Hangcheck: Using monotonic_clock().\n");
 #else
 	printk("Hangcheck: Using getrawmonotonic().\n");

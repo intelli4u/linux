@@ -417,7 +417,6 @@ __tapechar_ioctl(struct tape_device *device,
 		get.mt_type = MT_ISUNKNOWN;
 		get.mt_resid = 0 /* device->devstat.rescnt */;
 		get.mt_dsreg = device->tape_state;
-		/* FIXME: mt_gstat, mt_erreg, mt_fileno */
 		get.mt_gstat = 0;
 		get.mt_erreg = 0;
 		get.mt_fileno = 0;

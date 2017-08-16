@@ -2080,7 +2080,6 @@ void radeon_atombios_get_power_modes(struct radeon_device *rdev)
 							VOLTAGE_SW;
 						rdev->pm.power_state[state_index].clock_info[mode_index].voltage.voltage =
 							clock_info->usVDDC;
-						/* XXX usVDDCI */
 						mode_index++;
 					} else {
 						struct _ATOM_PPLIB_R600_CLOCK_INFO *clock_info =

@@ -1911,12 +1911,6 @@ static int FlashPoint_HandleInterrupt(unsigned long pCurrCard)
 			     0x3f) < (unsigned char)SELCHK) {
 				FPT_phaseDecode(ioport, thisCard);
 			} else {
-				/* Harpoon problem some SCSI target device respond to selection
-				   with short BUSY pulse (<400ns) this will make the Harpoon is not able
-				   to latch the correct Target ID into reg. x53.
-				   The work around require to correct this reg. But when write to this
-				   reg. (0x53) also increment the FIFO write addr reg (0x6f), thus we
-				   need to read this reg first then restore it later. After update to 0x53 */
 
 				i = (unsigned
 				     char)(RD_HARPOON(ioport + hp_fifowrite));

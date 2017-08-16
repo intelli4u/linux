@@ -112,28 +112,6 @@ static int wis_tw9903_command(struct i2c_client *client,
 		i2c_smbus_write_byte_data(client, 0x02, 0x40 | (*input << 1));
 		break;
 	}
-#if 0
-	/* The scaler on this thing seems to be horribly broken */
-	case DECODER_SET_RESOLUTION:
-	{
-		struct video_decoder_resolution *res = arg;
-		/*int hscale = 256 * 720 / res->width;*/
-		int hscale = 256 * 720 / (res->width - (res->width > 704 ? 0 : 8));
-		int vscale = 256 * (dec->norm & V4L2_STD_NTSC ?  240 : 288)
-				/ res->height;
-		u8 regs[] = {
-			0x0d, vscale & 0xff,
-			0x0f, hscale & 0xff,
-			0x0e, ((vscale & 0xf00) >> 4) | ((hscale & 0xf00) >> 8),
-			0x06, 0xc0, /* reset device */
-			0,	0,
-		};
-		printk(KERN_DEBUG "vscale is %04x, hscale is %04x\n",
-				vscale, hscale);
-		/*write_regs(client, regs);*/
-		break;
-	}
-#endif
 	case VIDIOC_S_STD:
 	{
 		v4l2_std_id *input = arg;
@@ -171,18 +149,6 @@ static int wis_tw9903_command(struct i2c_client *client,
 			ctrl->default_value = 0x60;
 			ctrl->flags = 0;
 			break;
-#if 0
-		/* I don't understand how the Chroma Gain registers work... */
-		case V4L2_CID_SATURATION:
-			ctrl->type = V4L2_CTRL_TYPE_INTEGER;
-			strncpy(ctrl->name, "Saturation", sizeof(ctrl->name));
-			ctrl->minimum = 0;
-			ctrl->maximum = 127;
-			ctrl->step = 1;
-			ctrl->default_value = 64;
-			ctrl->flags = 0;
-			break;
-#endif
 		case V4L2_CID_HUE:
 			ctrl->type = V4L2_CTRL_TYPE_INTEGER;
 			strncpy(ctrl->name, "Hue", sizeof(ctrl->name));
@@ -218,17 +184,6 @@ static int wis_tw9903_command(struct i2c_client *client,
 				dec->contrast = ctrl->value;
 			write_reg(client, 0x11, dec->contrast);
 			break;
-#if 0
-		case V4L2_CID_SATURATION:
-			if (ctrl->value > 127)
-				dec->saturation = 127;
-			else if (ctrl->value < 0)
-				dec->saturation = 0;
-			else
-				dec->saturation = ctrl->value;
-			/*write_reg(client, 0x0c, dec->saturation);*/
-			break;
-#endif
 		case V4L2_CID_HUE:
 			if (ctrl->value > 127)
 				dec->hue = 127;
@@ -252,11 +207,6 @@ static int wis_tw9903_command(struct i2c_client *client,
 		case V4L2_CID_CONTRAST:
 			ctrl->value = dec->contrast;
 			break;
-#if 0
-		case V4L2_CID_SATURATION:
-			ctrl->value = dec->saturation;
-			break;
-#endif
 		case V4L2_CID_HUE:
 			ctrl->value = dec->hue;
 			break;

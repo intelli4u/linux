@@ -493,9 +493,6 @@ static void spitfire_ue_log(unsigned long afsr, unsigned long afar, unsigned lon
 	       "AFAR[%lx] UDBL[%lx] UDBH[%ld] TT[%lx] TL>1[%d]\n",
 	       smp_processor_id(), afsr, afar, udbl, udbh, tt, tl1);
 
-	/* XXX add more human friendly logging of the error status
-	 * XXX as is implemented for cheetah
-	 */
 
 	spitfire_log_udb_syndrome(afar, udbh, udbl, UDBE_UE);
 
@@ -511,10 +508,6 @@ static void spitfire_ue_log(unsigned long afsr, unsigned long afar, unsigned lon
 		die_if_kernel("UE", regs);
 	}
 
-	/* XXX need more intelligent processing here, such as is implemented
-	 * XXX for cheetah errors, in fact if the E-cache still holds the
-	 * XXX line with bad parity this will loop
-	 */
 
 	spitfire_clean_and_reenable_l1_caches();
 	spitfire_enable_estate_errors();
@@ -1462,9 +1455,6 @@ void cheetah_cee_handler(struct pt_regs *regs, unsigned long afsr, unsigned long
 	is_memory = cheetah_check_main_memory(afar);
 
 	if (is_memory && (afsr & CHAFSR_CE) != 0UL) {
-		/* XXX Might want to log the results of this operation
-		 * XXX somewhere... -DaveM
-		 */
 		cheetah_fix_ce(afar);
 	}
 
@@ -1945,9 +1935,6 @@ void sun4v_nonresum_error(struct pt_regs *regs, unsigned long offset)
  */
 void sun4v_nonresum_overflow(struct pt_regs *regs)
 {
-	/* XXX Actually even this can make not that much sense.  Perhaps
-	 * XXX we should just pull the plug and panic directly from here?
-	 */
 	atomic_inc(&sun4v_nonresum_oflow_cnt);
 }
 
@@ -2309,9 +2296,6 @@ void do_illegal_instruction(struct pt_regs *regs)
 			} else {
 				struct fpustate *f = FPUSTATE;
 
-				/* XXX maybe verify XFSR bits like
-				 * XXX do_fpother() does?
-				 */
 				if (do_mathemu(regs, f))
 					return;
 			}

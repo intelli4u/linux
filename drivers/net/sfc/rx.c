@@ -735,4 +735,3 @@ MODULE_PARM_DESC(rx_alloc_method, "Allocation method used for RX buffers");
 module_param(rx_refill_threshold, uint, 0444);
 MODULE_PARM_DESC(rx_refill_threshold,
 		 "RX descriptor ring fast/slow fill threshold (%)");
-

@@ -64,11 +64,6 @@ sbecom_proc_get_sbe_info (char *buffer, char **start, off_t offset,
     {
         return -ENOMEM;
     }
-#if 0
-    /** RLD DEBUG **/
-    pr_info(">> sbecom_proc_get_sbe_info: entered, offset %d. length %d.\n",
-            (int) offset, (int) length);
-#endif
 
     {
         hdw_info_t *hi = &hdw_info[ci->brdno];
@@ -88,12 +83,6 @@ sbecom_proc_get_sbe_info (char *buffer, char **start, off_t offset,
         sbecom_get_brdinfo (ci, bip, bsn);
     }
 
-#if 0
-    /** RLD DEBUG **/
-    pr_info(">> sbecom_get_brdinfo: returned, first_if %p <%s> last_if %p <%s>\n",
-            (char *) &bip->first_iname, (char *) &bip->first_iname,
-            (char *) &bip->last_iname, (char *) &bip->last_iname);
-#endif
     len += sprintf (buffer + len, "Board Type:    ");
     switch (bip->brd_id)
     {
@@ -147,13 +136,8 @@ sbecom_proc_get_sbe_info (char *buffer, char **start, off_t offset,
           bip->brd_mac_addr[3], bip->brd_mac_addr[4], bip->brd_mac_addr[5]);
     len += sprintf (buffer + len, "Ports:         %d\n", ci->max_port);
     len += sprintf (buffer + len, "Channels:      %d\n", bip->brd_chan_cnt);
-#if 1
     len += sprintf (buffer + len, "Interface:     %s -> %s\n",
                     (char *) &bip->first_iname, (char *) &bip->last_iname);
-#else
-    len += sprintf (buffer + len, "Interface:     <not available> 1st %p lst %p\n",
-                    (char *) &bip->first_iname, (char *) &bip->last_iname);
-#endif
 
     switch (bip->brd_pci_speed)
     {
@@ -173,17 +157,9 @@ sbecom_proc_get_sbe_info (char *buffer, char **start, off_t offset,
 #ifdef SBE_PMCC4_ENABLE
     {
         extern int max_mru;
-#if 0
-        extern int max_chans_used;
-        extern int max_mtu;
-#endif
         extern int max_rxdesc_used, max_txdesc_used;
 
         len += sprintf (buffer + len, "\nmax_mru:         %d\n", max_mru);
-#if 0
-        len += sprintf (buffer + len, "\nmax_chans_used:  %d\n", max_chans_used);
-        len += sprintf (buffer + len, "max_mtu:         %d\n", max_mtu);
-#endif
         len += sprintf (buffer + len, "max_rxdesc_used: %d\n", max_rxdesc_used);
         len += sprintf (buffer + len, "max_txdesc_used: %d\n", max_txdesc_used);
     }
@@ -239,27 +215,9 @@ sbecom_proc_get_sbe_info (char *buffer, char **start, off_t offset,
      *    absorbed.
      */
 
-#if 1
     /* #4 - intepretation of above = set EOF, return len */
     *eof = 1;
-#endif
 
-#if 0
-    /*
-     * #1 - from net/wireless/atmel.c RLD NOTE -there's something wrong with
-     * this plagarized code which results in this routine being called TWICE.
-     * The second call returns ZERO, resulting in hidden failure, but at
-     * least only a single message set is being displayed.
-     */
-    if (len <= offset + length)
-        *eof = 1;
-    *start = buffer + offset;
-    len -= offset;
-    if (len > length)
-        len = length;
-    if (len < 0)
-        len = 0;
-#endif
 
 #if 0                               /* #2 from net/tokenring/olympic.c +
                                      * lanstreamer.c */
@@ -292,9 +250,6 @@ sbecom_proc_get_sbe_info (char *buffer, char **start, off_t offset,
         *eof = 0;
 #endif
 
-#if 0
-    pr_info(">> proc_fs: returned len = %d., start %p\n", len, start);  /* RLD DEBUG */
-#endif
 
 /***
    using NONE: returns = 314.314.314.

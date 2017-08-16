@@ -443,27 +443,6 @@ struct pdc_cache_info {		/* main-PDC_CACHE-structure (caches & TLB's) */
 	unsigned long	dt_loop;
 };
 
-#if 0
-/* If you start using the next struct, you'll have to adjust it to
- * work with 64-bit firmware I think -PB
- */
-struct pdc_iodc {     /* PDC_IODC */
-	unsigned char   hversion_model;
-	unsigned char 	hversion;
-	unsigned char 	spa;
-	unsigned char 	type;
-	unsigned int	sversion_rev:4;
-	unsigned int	sversion_model:19;
-	unsigned int	sversion_opt:8;
-	unsigned char	rev;
-	unsigned char	dep;
-	unsigned char	features;
-	unsigned char	pad1;
-	unsigned int	checksum:16;
-	unsigned int	length:16;
-	unsigned int    pad[15];
-} __attribute__((aligned(8))) ;
-#endif
 
 #ifndef CONFIG_PA20
 /* no BLTBs in pa2.0 processors */

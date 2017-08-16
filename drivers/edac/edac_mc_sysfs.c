@@ -1050,4 +1050,3 @@ void edac_sysfs_teardown_mc_kset(void)
 {
 	kset_unregister(mc_kset);
 }
-

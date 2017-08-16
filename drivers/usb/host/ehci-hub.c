@@ -671,7 +671,6 @@ ehci_hub_status_data (struct usb_hcd *hcd, char *buf)
 			status = STS_PCD;
 		}
 	}
-	/* FIXME autosuspend idle root hubs */
 	spin_unlock_irqrestore (&ehci->lock, flags);
 	return status ? retval : 0;
 }
@@ -703,11 +702,6 @@ ehci_hub_descriptor (
 		temp |= 0x0001;		/* per-port power control */
 	else
 		temp |= 0x0002;		/* no power switching */
-#if 0
-// re-enable when we support USB_PORT_FEAT_INDICATOR below.
-	if (HCS_INDICATOR (ehci->hcs_params))
-		temp |= 0x0080;		/* per-port indicators (LEDs) */
-#endif
 	desc->wHubCharacteristics = cpu_to_le16(temp);
 }
 
@@ -731,12 +725,6 @@ static int ehci_hub_control (
 	int		retval = 0;
 	unsigned	selector;
 
-	/*
-	 * FIXME:  support SetPortFeatures USB_PORT_FEAT_INDICATOR.
-	 * HCS_INDICATOR may say we can change LEDs to off/amber/green.
-	 * (track current state ourselves) ... blink for diagnostics,
-	 * power, "this is the one", etc.  EHCI spec supports this.
-	 */
 
 	if (ehci->has_hostpc)
 		hostpc_reg = (u32 __iomem *)((u8 *)ehci->regs

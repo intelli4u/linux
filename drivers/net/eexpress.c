@@ -364,13 +364,6 @@ static int __init do_express_probe(struct net_device *dev)
 
 			dev->irq = mca_irqmap[(pos1>>4)&0x7];
 
-			/*
-			 * XXX: Transciever selection is done
-			 * differently on the MCA version.
-			 * How to get it to select something
-			 * other than external/AUI is currently
-			 * unknown.  This code is just for looks. -- ASF
-			 */
 			if ((pos0 & 0x7) == 0x1)
 				dev->if_port = AUI;
 			else if ((pos0 & 0x7) == 0x5) {
@@ -819,23 +812,8 @@ static irqreturn_t eexp_irq(int dummy, void *dev_info)
 		{
 			printk(KERN_WARNING "%s: RU stopped: status %04x\n",
 			       dev->name,status);
-#if 0
-			printk(KERN_WARNING "%s: cur_rfd=%04x, cur_rbd=%04x\n", dev->name, lp->cur_rfd, lp->cur_rbd);
-			outw(lp->cur_rfd, ioaddr+READ_PTR);
-			printk(KERN_WARNING "%s: [%04x]\n", dev->name, inw(ioaddr+DATAPORT));
-			outw(lp->cur_rfd+6, ioaddr+READ_PTR);
-			printk(KERN_WARNING "%s: rbd is %04x\n", dev->name, rbd= inw(ioaddr+DATAPORT));
-			outw(rbd, ioaddr+READ_PTR);
-			printk(KERN_WARNING "%s: [%04x %04x] ", dev->name, inw(ioaddr+DATAPORT), inw(ioaddr+DATAPORT));
-			outw(rbd+8, ioaddr+READ_PTR);
-			printk("[%04x]\n", inw(ioaddr+DATAPORT));
-#endif
 			dev->stats.rx_errors++;
-#if 1
 		        eexp_hw_rxinit(dev);
-#else
-			lp->cur_rfd = lp->first_rfd;
-#endif
 			scb_wrrfa(dev, lp->rx_buf_start);
 			scb_command(dev, SCB_RUstart);
 			outb(0,ioaddr+SIGNAL_CA);
@@ -1491,9 +1469,6 @@ static void eexp_hw_init586(struct net_device *dev)
 	outw((dev->flags & IFF_PROMISC)?(i|1):(i & ~1),
 	     ioaddr+SHADOW(CONF_PROMISC));
 	lp->was_promisc = dev->flags & IFF_PROMISC;
-#if 0
-	eexp_setup_filter(dev);
-#endif
 
 	/* Write our hardware address */
 	outw(CONF_HWADDR & ~31, ioaddr+SM_PTR);
@@ -1631,9 +1606,6 @@ eexp_set_multicast(struct net_device *dev)
                 scb_command(dev, SCB_CUsuspend);
                 outb(0, ioaddr+SIGNAL_CA);
                 outb(0, ioaddr+SIGNAL_CA);
-#if 0
-                printk("%s: waiting for CU to go suspended\n", dev->name);
-#endif
                 oj = jiffies;
                 while ((SCB_CUstat(scb_status(dev)) == 2) &&
                        (time_before(jiffies, oj + 2000)));

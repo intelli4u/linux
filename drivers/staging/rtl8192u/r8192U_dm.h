@@ -251,4 +251,3 @@ extern void dm_initialize_txpower_tracking(struct net_device *dev);
 
 
 /* End of r8192U_dm.h */
-

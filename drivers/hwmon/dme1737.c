@@ -302,10 +302,6 @@ static int TEMP_RANGE_TO_REG(int val, int reg)
 	return (reg & 0x0f) | (i << 4);
 }
 
-/* Temperature hysteresis
- * Register layout:
- *    reg[0] = [H1-3, H1-2, H1-1, H1-0, H2-3, H2-2, H2-1, H2-0]
- *    reg[1] = [H3-3, H3-2, H3-1, H3-0, xxxx, xxxx, xxxx, xxxx] */
 static inline int TEMP_HYST_FROM_REG(int reg, int ix)
 {
 	return (((ix == 1) ? reg : reg >> 4) & 0x0f) * 1000;

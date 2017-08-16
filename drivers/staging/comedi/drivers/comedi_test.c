@@ -369,10 +369,6 @@ static int waveform_ai_cmdtest(struct comedi_device *dev,
 			err++;
 		}
 	}
-	/*
-	 * XXX these checks are generic and should go in core if not there
-	 * already
-	 */
 	if (!cmd->chanlist_len) {
 		cmd->chanlist_len = 1;
 		err++;

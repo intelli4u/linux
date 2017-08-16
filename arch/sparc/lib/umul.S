@@ -103,23 +103,12 @@ _Umul:	/* needed for export */
 	 * high order bit is one, we end up with xy - (y << 32).  To fix it
 	 * we add y << 32.
 	 */
-#if 0
-	tst	%o1
-	bl,a	1f		! if %o1 < 0 (high order bit = 1),
-	 add	%o4, %o0, %o4	! %o4 += %o0 (add y to upper half)
-
-1:
-	rd	%y, %o0		! get lower half of product
-	retl
-	 addcc	%o4, %g0, %o1	! put upper half in place and set Z for %o1==0
-#else
 	/* Faster code from tege@sics.se.  */
 	sra	%o1, 31, %o2	! make mask from sign bit
 	and	%o0, %o2, %o2	! %o2 = 0 or %o0, depending on sign of %o1
 	rd	%y, %o0		! get lower half of product
 	retl
 	 addcc	%o4, %o2, %o1	! add compensation and put upper half in place
-#endif
 
 Lmul_shortway:
 	/*

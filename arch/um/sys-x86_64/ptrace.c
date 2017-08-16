@@ -120,7 +120,6 @@ int peek_user(struct task_struct *child, long addr, long data)
 	return put_user(tmp, (unsigned long *) data);
 }
 
-/* XXX Mostly copied from sys-i386 */
 int is_syscall(unsigned long addr)
 {
 	unsigned short instr;

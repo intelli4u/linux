@@ -1734,4 +1734,3 @@ void s_vCheckPreEDThreshold(
     }
     return;
 }
-

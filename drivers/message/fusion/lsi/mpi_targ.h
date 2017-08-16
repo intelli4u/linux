@@ -647,4 +647,3 @@ typedef struct _MSG_TARGET_MODE_ABORT_REPLY
 
 
 #endif
-

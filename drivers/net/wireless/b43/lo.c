@@ -88,9 +88,6 @@ static u16 lo_measure_feedthrough(struct b43_wldev *dev,
 
 		B43_WARN_ON(lna & ~B43_PHY_RFOVERVAL_LNA);
 		B43_WARN_ON(pga & ~B43_PHY_RFOVERVAL_PGA);
-/*FIXME This assertion fails		B43_WARN_ON(trsw_rx & ~(B43_PHY_RFOVERVAL_TRSWRX |
-				    B43_PHY_RFOVERVAL_BW));
-*/
 		trsw_rx &= (B43_PHY_RFOVERVAL_TRSWRX | B43_PHY_RFOVERVAL_BW);
 
 		/* Construct the RF Override Value */
@@ -861,7 +858,6 @@ void b43_gphy_dc_lt_init(struct b43_wldev *dev, bool update_all)
 				"calibrate DC table entry\n");
 			continue;
 		}
-		/*FIXME: Is Q really in the low nibble? */
 		val = (u8)(cal->ctl.q);
 		val |= ((u8)(cal->ctl.i)) << 4;
 		kfree(cal);
@@ -955,7 +951,6 @@ void b43_lo_g_maintanance_work(struct b43_wldev *dev)
 			lo_read_power_vector(dev);
 			b43_gphy_dc_lt_init(dev, 0);
 		}
-		//FIXME Recalc the whole DC table from time to time?
 	}
 
 	if (hwpctl)

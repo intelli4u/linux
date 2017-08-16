@@ -51,7 +51,7 @@
 
 #define UDF_INVALID_MODE		((mode_t)-1)
 
-#pragma pack(1) /* XXX(hch): Why?  This file just defines in-core structures */
+#pragma pack(1)
 
 struct udf_meta_data {
 	__u32	s_meta_file_loc;

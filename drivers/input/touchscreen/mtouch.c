@@ -80,7 +80,6 @@ static void mtouch_process_format_tablet(struct mtouch *mtouch)
 static void mtouch_process_response(struct mtouch *mtouch)
 {
 	if (MTOUCH_RESPONSE_END_BYTE == mtouch->data[mtouch->idx++]) {
-		/* FIXME - process response */
 		mtouch->idx = 0;
 	} else if (MTOUCH_MAX_LENGTH == mtouch->idx) {
 		printk(KERN_ERR "mtouch.c: too many response bytes\n");

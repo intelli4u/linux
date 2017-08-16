@@ -308,10 +308,6 @@ __hypervisor_flush_tlb_kernel_range: /* 16 insns */
 	 nop
 
 #ifdef DCACHE_ALIASING_POSSIBLE
-	/* XXX Niagara and friends have an 8K cache, so no aliasing is
-	 * XXX possible, but nothing explicit in the Hypervisor API
-	 * XXX guarantees this.
-	 */
 __hypervisor_flush_dcache_page:	/* 2 insns */
 	retl
 	 nop

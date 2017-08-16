@@ -860,4 +860,3 @@ int coda_downcall(int opcode, union outputArgs * out, struct super_block *sb)
 
 	return 0;
 }
-

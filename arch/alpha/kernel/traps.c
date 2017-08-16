@@ -27,7 +27,6 @@
 
 #include "proto.h"
 
-/* Work-around for some SRMs which mishandle opDEC faults.  */
 
 static int opDEC_fix;
 
@@ -91,17 +90,8 @@ dik_show_regs(struct pt_regs *regs, unsigned long *r9_15)
 	printk("t11= %016lx  pv = %016lx  at = %016lx\n",
 	       regs->r25, regs->r27, regs->r28);
 	printk("gp = %016lx  sp = %p\n", regs->gp, regs+1);
-#if 0
-__halt();
-#endif
 }
 
-#if 0
-static char * ireg_name[] = {"v0", "t0", "t1", "t2", "t3", "t4", "t5", "t6",
-			   "t7", "s0", "s1", "s2", "s3", "s4", "s5", "s6",
-			   "a0", "a1", "a2", "a3", "a4", "a5", "t8", "t9",
-			   "t10", "t11", "ra", "pv", "at", "gp", "sp", "zero"};
-#endif
 
 static void
 dik_show_code(unsigned int *pc)

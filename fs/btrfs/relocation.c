@@ -3101,7 +3101,6 @@ static int add_tree_block(struct reloc_control *rc,
 					  &ref_owner, NULL);
 		BUG_ON(ref_owner >= BTRFS_MAX_LEVEL);
 		level = (int)ref_owner;
-		/* FIXME: get real generation */
 		generation = 0;
 #else
 		BUG();

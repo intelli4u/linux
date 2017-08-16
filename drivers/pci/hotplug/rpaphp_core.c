@@ -344,7 +344,6 @@ int rpaphp_add_slot(struct device_node *dn)
 	}
 	dbg("%s - Exit: rc[%d]\n", __func__, retval);
 
-	/* XXX FIXME: reports a failure only if last entry in loop failed */
 	return retval;
 }
 

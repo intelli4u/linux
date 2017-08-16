@@ -50,25 +50,6 @@
 #include <scsi/scsi.h>
 #include <scsi/scsi_host.h>
 
-/* FIXME:
- *
- *  1. Although all of the necessary command mapping places have the
- *     appropriate dma_map.. APIs, the driver still processes its internal
- *     queue using bus_to_virt() and virt_to_bus() which are illegal under
- *     the API.  The entire queue processing structure will need to be
- *     altered to fix this.
- *  2. Need to add memory mapping workaround. Test the memory mapping.
- *     If it doesn't work revert to I/O port access. Can a test be done
- *     safely?
- *  3. Handle an interrupt not working. Keep an interrupt counter in
- *     the interrupt handler. In the timeout function if the interrupt
- *     has not occurred then print a message and run in polled mode.
- *  4. Need to add support for target mode commands, cf. CAM XPT.
- *  5. check DMA mapping functions for failure
- *  6. Use scsi_transport_spi
- *  7. advansys_info is not safe against multiple simultaneous callers
- *  8. Add module_param to override ISA/VLB ioport array
- */
 #warning this driver is still not properly converted to the DMA API
 
 /* Enable driver /proc statistics. */
@@ -1308,13 +1289,6 @@ typedef struct adveep_38C1600_config {
 
 #define ADV_38C0800_MEMSIZE  0x4000	/* 16 KB Internal Memory */
 
-/*
- * XXX - Since ASC38C1600 Rev.3 has a local RAM failure issue, there is
- * a special 16K Adv Library and Microcode version. After the issue is
- * resolved, should restore 32K support.
- *
- * #define ADV_38C1600_MEMSIZE  0x8000L   * 32 KB Internal Memory *
- */
 #define ADV_38C1600_MEMSIZE  0x4000	/* 16 KB Internal Memory */
 
 /*
@@ -1729,7 +1703,7 @@ typedef struct adveep_38C1600_config {
 #define ASC_QC_DATA_OUT    0x02	/* Data out DMA transfer. */
 #define ASC_QC_START_MOTOR 0x04	/* Send auto-start motor before request. */
 #define ASC_QC_NO_OVERRUN  0x08	/* Don't report overrun. */
-#define ASC_QC_FREEZE_TIDQ 0x10	/* Freeze TID queue after request. XXX TBD */
+#define ASC_QC_FREEZE_TIDQ 0x10
 
 #define ASC_QSC_NO_DISC     0x01	/* Don't allow disconnect for request. */
 #define ASC_QSC_NO_TAGMSG   0x02	/* Don't allow tag queuing for request. */
@@ -2720,13 +2694,6 @@ static void asc_prt_adv_scsi_req_q(ADV_SCSI_REQ_Q *q)
 	if (q->sg_list_ptr != NULL) {
 		sg_blk_cnt = 0;
 		while (1) {
-			/*
-			 * 'sg_ptr' is a physical address. Convert it to a virtual
-			 * address by indexing 'sg_blk_cnt' into the virtual address
-			 * array 'sg_list_ptr'.
-			 *
-			 * XXX - Assumes all SG physical blocks are virtually contiguous.
-			 */
 			sg_ptr =
 			    &(((ADV_SG_BLOCK *)(q->sg_list_ptr))[sg_blk_cnt]);
 			asc_prt_adv_sgblock(sg_blk_cnt, sg_ptr);
@@ -4776,7 +4743,7 @@ static ushort AscInitAsc1000Driver(ASC_DVC_VAR *asc_dvc)
 	if ((asc_dvc->dvc_cntl & ASC_CNTL_RESET_SCSI) &&
 	    !(asc_dvc->init_state & ASC_INIT_RESET_SCSI_DONE)) {
 		AscResetChipAndScsiBus(asc_dvc);
-		mdelay(asc_dvc->scsi_reset_wait * 1000); /* XXX: msleep? */
+		mdelay(asc_dvc->scsi_reset_wait * 1000);
 	}
 	asc_dvc->init_state |= ASC_INIT_STATE_BEG_LOAD_MC;
 	if (asc_dvc->err_code != 0)
@@ -5037,7 +5004,7 @@ static int AdvResetSB(ADV_DVC_VAR *asc_dvc)
 		return status;
 	}
 
-	mdelay(asc_dvc->scsi_reset_wait * 1000);	/* XXX: msleep? */
+	mdelay(asc_dvc->scsi_reset_wait * 1000);
 
 	return status;
 }
@@ -6385,25 +6352,6 @@ static int AdvInitAsc38C1600Driver(ADV_DVC_VAR *asc_dvc)
 	 */
 	AdvWriteWordLram(iop_base, ASC_MC_DEFAULT_SCSI_CFG1, scsi_cfg1);
 
-	/*
-	 * Set MEM_CFG Microcode Default Value
-	 *
-	 * The microcode will set the MEM_CFG register using this value
-	 * after it is started below.
-	 *
-	 * MEM_CFG may be accessed as a word or byte, but only bits 0-7
-	 * are defined.
-	 *
-	 * ASC-38C1600 has 32KB internal memory.
-	 *
-	 * XXX - Since ASC38C1600 Rev.3 has a Local RAM failure issue, we come
-	 * out a special 16K Adv Library and Microcode version. After the issue
-	 * resolved, we should turn back to the 32K support. Both a_condor.h and
-	 * mcode.sas files also need to be updated.
-	 *
-	 * AdvWriteWordLram(iop_base, ASC_MC_DEFAULT_MEM_CFG,
-	 *  BIOS_EN | RAM_SZ_32KB);
-	 */
 	AdvWriteWordLram(iop_base, ASC_MC_DEFAULT_MEM_CFG,
 			 BIOS_EN | RAM_SZ_16KB);
 
@@ -10068,7 +10016,7 @@ static ushort __devinit AscInitFromEEP(ASC_DVC_VAR *asc_dvc)
 	    (AscGetChipScsiCtrl(iop_base) != 0)) {
 		asc_dvc->init_state |= ASC_INIT_RESET_SCSI_DONE;
 		AscResetChipAndScsiBus(asc_dvc);
-		mdelay(asc_dvc->scsi_reset_wait * 1000); /* XXX: msleep? */
+		mdelay(asc_dvc->scsi_reset_wait * 1000);
 	}
 	if (AscIsChipHalted(iop_base) == FALSE) {
 		asc_dvc->err_code |= ASC_IERR_START_STOP_CHIP;

@@ -2031,4 +2031,3 @@ enum fe_stv0900_signal_type stv0900_algo(struct dvb_frontend *fe)
 
 	return signal_type;
 }
-

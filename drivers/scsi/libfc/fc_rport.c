@@ -1548,17 +1548,6 @@ static void fc_rport_recv_plogi_req(struct fc_lport *lport,
 	rdata->ids.port_name = get_unaligned_be64(&pl->fl_wwpn);
 	rdata->ids.node_name = get_unaligned_be64(&pl->fl_wwnn);
 
-	/*
-	 * If the rport was just created, possibly due to the incoming PLOGI,
-	 * set the state appropriately and accept the PLOGI.
-	 *
-	 * If we had also sent a PLOGI, and if the received PLOGI is from a
-	 * higher WWPN, we accept it, otherwise an LS_RJT is sent with reason
-	 * "command already in progress".
-	 *
-	 * XXX TBD: If the session was ready before, the PLOGI should result in
-	 * all outstanding exchanges being reset.
-	 */
 	switch (rdata->rp_state) {
 	case RPORT_ST_INIT:
 		FC_RPORT_DBG(rdata, "Received PLOGI in INIT state\n");
@@ -1581,7 +1570,6 @@ static void fc_rport_recv_plogi_req(struct fc_lport *lport,
 	case RPORT_ST_ADISC:
 		FC_RPORT_DBG(rdata, "Received PLOGI in logged-in state %d "
 			     "- ignored for now\n", rdata->rp_state);
-		/* XXX TBD - should reset */
 		break;
 	case RPORT_ST_FLOGI:
 	case RPORT_ST_DELETE:

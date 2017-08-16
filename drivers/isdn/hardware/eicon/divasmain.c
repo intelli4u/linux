@@ -1,4 +1,4 @@
-/* $Id: divasmain.c,v 1.55.4.6 2005/02/09 19:28:20 armin Exp $
+/* $Id: divasmain.c,v 1.55.4.6 2005/02/09 19:28:20 Exp $
  *
  * Low level driver for Eicon DIVA Server ISDN cards.
  *

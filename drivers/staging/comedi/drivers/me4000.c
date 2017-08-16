@@ -60,10 +60,6 @@ broken.
 
 #include "comedi_pci.h"
 #include "me4000.h"
-#if 0
-/* file removed due to GPL incompatibility */
-#include "me4000_fw.h"
-#endif
 
 /*=============================================================================
   PCI device table.

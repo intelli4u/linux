@@ -642,4 +642,3 @@ int ocfs2_validate_meta_ecc_bhs(struct super_block *sb,
 
 	return rc;
 }
-

@@ -2402,18 +2402,11 @@ static void set_flicker(struct cam_params *params, volatile u32 *command_flags,
 #define FIRMWARE_VERSION(x,y) (params->version.firmwareVersion == (x) && \
 			       params->version.firmwareRevision == (y))
 /* define for compgain calculation */
-#if 0
-#define COMPGAIN(base, curexp, newexp) \
-    (u8) ((((float) base - 128.0) * ((float) curexp / (float) newexp)) + 128.5)
-#define EXP_FROM_COMP(basecomp, curcomp, curexp) \
-    (u16)((float)curexp * (float)(u8)(curcomp + 128) / (float)(u8)(basecomp - 128))
-#else
   /* equivalent functions without floating point math */
 #define COMPGAIN(base, curexp, newexp) \
     (u8)(128 + (((u32)(2*(base-128)*curexp + newexp)) / (2* newexp)) )
 #define EXP_FROM_COMP(basecomp, curcomp, curexp) \
      (u16)(((u32)(curexp * (u8)(curcomp + 128)) / (u8)(basecomp - 128)))
-#endif
 
 
 	int currentexp = params->exposure.coarseExpLo +
@@ -2790,7 +2783,6 @@ static void restart_flicker(struct cam_data *cam)
 
 static int clear_stall(struct cam_data *cam)
 {
-	/* FIXME: Does this actually work? */
 	LOG("Clearing stall\n");
 
 	cam->ops->streamRead(cam->lowlevel_data, cam->raw_image, 0);
@@ -2908,8 +2900,6 @@ static int fetch_frame(void *data)
 				cam->first_frame = 1;
 				do_command(cam, CPIA_COMMAND_SetGrabMode,
 					   CPIA_GRAB_SINGLE, 0, 0, 0);
-				/* FIXME: Trial & error - need up to 70ms for
-				   the grab mode change to complete ? */
 				msleep_interruptible(70);
 				if (signal_pending(current))
 					return -EINTR;
@@ -2919,7 +2909,6 @@ static int fetch_frame(void *data)
 	}
 
 	if (retry < 3) {
-		/* FIXME: this only works for double buffering */
 		if (cam->frame[cam->curframe].state == FRAME_READY) {
 			memcpy(cam->frame[cam->curframe].data,
 			       cam->decompressed_frame.data,
@@ -3060,7 +3049,6 @@ static int reset_camera(struct cam_data *cam)
 		if (cam->params.status.systemState != WARM_BOOT_STATE)
 			return -ENODEV;
 
-		/* FIXME: this is just dirty trial and error */
 		err = goto_high_power(cam);
 		if(err)
 			return err;
@@ -3606,7 +3594,6 @@ static long cpia_do_ioctl(struct file *file, unsigned int cmd, void *arg)
 			break;
 		}
 		if (retval == -EINTR) {
-			/* FIXME - xawtv does not handle this nice */
 			retval = 0;
 		}
 		break;
@@ -3719,7 +3706,6 @@ static long cpia_ioctl(struct file *file,
 }
 
 
-/* FIXME */
 static int cpia_mmap(struct file *file, struct vm_area_struct *vma)
 {
 	struct video_device *dev = file->private_data;

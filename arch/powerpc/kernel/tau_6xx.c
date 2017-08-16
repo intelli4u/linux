@@ -157,11 +157,9 @@ static void tau_timeout(void * info)
 			tau[cpu].high -= shrink;
 		} else { /* size must have been min_window + 1 */
 			tau[cpu].low += 1;
-#if 1 /* debug */
 			if ((tau[cpu].high - tau[cpu].low) != min_window){
 				printk(KERN_ERR "temp.c: line %d, logic error\n", __LINE__);
 			}
-#endif
 		}
 	}
 

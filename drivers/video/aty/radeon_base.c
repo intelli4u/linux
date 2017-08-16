@@ -732,10 +732,6 @@ static int radeonfb_check_var (struct fb_var_screeninfo *var, struct fb_info *in
 			v.bits_per_pixel = 16;
 			break;
 		case 17 ... 24:
-#if 0 /* Doesn't seem to work */
-			v.bits_per_pixel = 24;
-			break;
-#endif			
 			return -EINVAL;
 		case 25 ... 32:
 			v.bits_per_pixel = 32;
@@ -802,9 +798,6 @@ static int radeonfb_check_var (struct fb_var_screeninfo *var, struct fb_info *in
 		v.xres_virtual = v.xres;
                 
 
-	/* XXX I'm adjusting xres_virtual to the pitch, that may help XFree
-	 * with some panels, though I don't quite like this solution
-	 */
   	if (rinfo->info->flags & FBINFO_HWACCEL_DISABLED) {
 		v.xres_virtual = v.xres_virtual & ~7ul;
 	} else {
@@ -1246,15 +1239,7 @@ static void radeon_write_pll_regs(struct radeonfb_info *rinfo, struct radeon_reg
 
 	radeon_fifo_wait(20);
 
-	/* Workaround from XFree */
 	if (rinfo->is_mobility) {
-	        /* A temporal workaround for the occational blanking on certain laptop
-		 * panels. This appears to related to the PLL divider registers
-		 * (fail to lock?). It occurs even when all dividers are the same
-		 * with their old settings. In this case we really don't need to
-		 * fiddle with PLL registers. By doing this we can avoid the blanking
-		 * problem with some panels.
-	         */
 		if ((mode->ppll_ref_div == (INPLL(PPLL_REF_DIV) & PPLL_REF_DIV_MASK)) &&
 		    (mode->ppll_div_3 == (INPLL(PPLL_DIV_3) &
 					  (PPLL_POST3_DIV_MASK | PPLL_FB3_DIV_MASK)))) {
@@ -1314,10 +1299,6 @@ static void radeon_write_pll_regs(struct radeonfb_info *rinfo, struct radeon_reg
 	OUTPLLP(PPLL_REF_DIV, PPLL_ATOMIC_UPDATE_W, ~PPLL_ATOMIC_UPDATE_W);
 
 	/* Wait read update complete */
-	/* FIXME: Certain revisions of R300 can't recover here.  Not sure of
-	   the cause yet, but this workaround will mask the problem for now.
-	   Other chips usually will pass at the very first test, so the
-	   workaround shouldn't have any effect on them. */
 	for (i = 0; (i < 10000 && INPLL(PPLL_REF_DIV) & PPLL_ATOMIC_UPDATE_R); i++)
 		;
 	
@@ -1439,16 +1420,6 @@ static void radeon_calc_pll_regs(struct radeonfb_info *rinfo, struct radeon_regs
 	 * not sure which model starts having FP2_GEN_CNTL, I assume anything more
 	 * recent than an r(v)100...
 	 */
-#if 1
-	/* XXX I had reports of flicker happening with the cinema display
-	 * on TMDS1 that seem to be fixed if I also forbit odd dividers in
-	 * this case. This could just be a bandwidth calculation issue, I
-	 * haven't implemented the bandwidth code yet, but in the meantime,
-	 * forcing uses_dvo to 1 fixes it and shouln't have bad side effects,
-	 * I haven't seen a case were were absolutely needed an odd PLL
-	 * divider. I'll find a better fix once I have more infos on the
-	 * real cause of the problem.
-	 */
 	while (rinfo->has_CRTC2) {
 		u32 fp2_gen_cntl = INREG(FP2_GEN_CNTL);
 		u32 disp_output_cntl;
@@ -1479,9 +1450,6 @@ static void radeon_calc_pll_regs(struct radeonfb_info *rinfo, struct radeon_regs
 		uses_dvo = 1;
 		break;
 	}
-#else
-	uses_dvo = 1;
-#endif
 	if (freq > rinfo->pll.ppll_max)
 		freq = rinfo->pll.ppll_max;
 	if (freq*12 < rinfo->pll.ppll_min)
@@ -2017,9 +1985,6 @@ static void radeon_identify_vram(struct radeonfb_info *rinfo)
 
           if ((rinfo->family == CHIP_FAMILY_RS100) ||
               (rinfo->family == CHIP_FAMILY_RS200)) {
-             /* This is to workaround the asic bug for RMX, some versions
-                of BIOS dosen't have this register initialized correctly.
-             */
              OUTREGP(CRTC_MORE_CNTL, CRTC_H_CUTOFF_ACTIVE_EN,
                      ~CRTC_H_CUTOFF_ACTIVE_EN);
           }
@@ -2422,15 +2387,6 @@ static void __devexit radeonfb_pci_unregister (struct pci_dev *pdev)
 	if (rinfo->mon2_EDID)
 		sysfs_remove_bin_file(&rinfo->pdev->dev.kobj, &edid2_attr);
 
-#if 0
-	/* restore original state
-	 * 
-	 * Doesn't quite work yet, I suspect if we come from a legacy
-	 * VGA mode (or worse, text mode), we need to do some VGA black
-	 * magic here that I know nothing about. --BenH
-	 */
-        radeon_write_mode (rinfo, &rinfo->init_state, 1);
- #endif
 
 	del_timer_sync(&rinfo->lvds_timer);
 

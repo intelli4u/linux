@@ -27,4 +27,3 @@ extern void bcom_ata_reset_bd(struct bcom_task *tsk);
 extern void bcom_ata_release(struct bcom_task *tsk);
 
 #endif /* __BESTCOMM_ATA_H__ */
-

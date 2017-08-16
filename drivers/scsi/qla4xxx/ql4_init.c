@@ -1163,15 +1163,6 @@ static int qla4xxx_start_firmware_from_flash(struct scsi_qla_host *ha)
 
 	ql4_printk(KERN_INFO, ha, "Starting firmware ...\n");
 
-	/*
-	 * Start firmware from flash ROM
-	 *
-	 * WORKAROUND: Stuff a non-constant value that the firmware can
-	 * use as a seed for a random number generator in MB7 prior to
-	 * setting BOOT_ENABLE.	 Fixes problem where the TCP
-	 * connections use the same TCP ports after each reboot,
-	 * causing some connections to not get re-established.
-	 */
 	DEBUG(printk("scsi%d: %s: Start firmware from flash ROM\n",
 		     ha->host_no, __func__));
 

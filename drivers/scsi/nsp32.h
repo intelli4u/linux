@@ -509,7 +509,7 @@ typedef struct _nsp32_lunt {
  */
 #define NSP32_HOST_SCSIID    7  /* SCSI initiator is everytime defined as 7 */
 #define MAX_TARGET	     8
-#define MAX_LUN		     8	/* XXX: In SPI3, max number of LUN is 64. */
+#define MAX_LUN		     8
 
 
 typedef struct _nsp32_sync_table {

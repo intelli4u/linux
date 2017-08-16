@@ -20,7 +20,6 @@
 #include <linux/percpu_counter.h>
 #include <linux/rbtree.h>
 
-/* XXX Here for now... not interested in restructing headers JUST now */
 
 /* data type for block offset of block group */
 typedef int ext2_grpblk_t;

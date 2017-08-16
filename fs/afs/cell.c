@@ -319,23 +319,6 @@ create_cell:
 	return cell;
 }
 
-#if 0
-/*
- * try and get a cell record
- */
-struct afs_cell *afs_get_cell_maybe(struct afs_cell *cell)
-{
-	write_lock(&afs_cells_lock);
-
-	if (cell && !list_empty(&cell->link))
-		afs_get_cell(cell);
-	else
-		cell = NULL;
-
-	write_unlock(&afs_cells_lock);
-	return cell;
-}
-#endif  /*  0  */
 
 /*
  * destroy a cell record

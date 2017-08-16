@@ -1140,24 +1140,6 @@ static int __devinit ace_init(struct net_device *dev)
 #endif
 	writel(tmp, &regs->PciState);
 
-#if 0
-	/*
-	 * The Host PCI bus controller driver has to set FBB.
-	 * If all devices on that PCI bus support FBB, then the controller
-	 * can enable FBB support in the Host PCI Bus controller (or on
-	 * the PCI-PCI bridge if that applies).
-	 * -ggg
-	 */
-	/*
-	 * I have received reports from people having problems when this
-	 * bit is enabled.
-	 */
-	if (!(ap->pci_command & PCI_COMMAND_FAST_BACK)) {
-		printk(KERN_INFO "  Enabling PCI Fast Back to Back\n");
-		ap->pci_command |= PCI_COMMAND_FAST_BACK;
-		pci_write_config_word(pdev, PCI_COMMAND, ap->pci_command);
-	}
-#endif
 
 	/*
 	 * Configure DMA attributes.
@@ -1348,23 +1330,11 @@ static int __devinit ace_init(struct net_device *dev)
 	/*
 	 * Potential item for tuning parameter
 	 */
-#if 0 /* NO */
-	writel(DMA_THRESH_16W, &regs->DmaReadCfg);
-	writel(DMA_THRESH_16W, &regs->DmaWriteCfg);
-#else
 	writel(DMA_THRESH_8W, &regs->DmaReadCfg);
 	writel(DMA_THRESH_8W, &regs->DmaWriteCfg);
-#endif
 
 	writel(0, &regs->MaskInt);
 	writel(1, &regs->IfIdx);
-#if 0
-	/*
-	 * McKinley boxes do not like us fiddling with AssistState
-	 * this early
-	 */
-	writel(1, &regs->AssistState);
-#endif
 
 	writel(DEF_STAT, &regs->TuneStatTicks);
 	writel(DEF_TRACE, &regs->TuneTrace);
@@ -1593,9 +1563,6 @@ static void ace_watchdog(struct net_device *data)
 	} else {
 		printk(KERN_DEBUG "%s: BUG... transmitter died. Kicking it.\n",
 		       dev->name);
-#if 0
-		netif_wake_queue(dev);
-#endif
 	}
 }
 
@@ -1643,11 +1610,6 @@ static void ace_tasklet(unsigned long dev)
  */
 static void ace_dump_trace(struct ace_private *ap)
 {
-#if 0
-	if (!ap->trace_buf)
-		if (!(ap->trace_buf = kmalloc(ACE_TRACE_SIZE, GFP_KERNEL)))
-		    return;
-#endif
 }
 
 
@@ -2106,33 +2068,6 @@ static inline void ace_tx_int(struct net_device *dev,
 	wmb();
 	ap->tx_ret_csm = txcsm;
 
-	/* So... tx_ret_csm is advanced _after_ check for device wakeup.
-	 *
-	 * We could try to make it before. In this case we would get
-	 * the following race condition: hard_start_xmit on other cpu
-	 * enters after we advanced tx_ret_csm and fills space,
-	 * which we have just freed, so that we make illegal device wakeup.
-	 * There is no good way to workaround this (at entry
-	 * to ace_start_xmit detects this condition and prevents
-	 * ring corruption, but it is not a good workaround.)
-	 *
-	 * When tx_ret_csm is advanced after, we wake up device _only_
-	 * if we really have some space in ring (though the core doing
-	 * hard_start_xmit can see full ring for some period and has to
-	 * synchronize.) Superb.
-	 * BUT! We get another subtle race condition. hard_start_xmit
-	 * may think that ring is full between wakeup and advancing
-	 * tx_ret_csm and will stop device instantly! It is not so bad.
-	 * We are guaranteed that there is something in ring, so that
-	 * the next irq will resume transmission. To speedup this we could
-	 * mark descriptor, which closes ring with BD_FLG_COAL_NOW
-	 * (see ace_start_xmit).
-	 *
-	 * Well, this dilemma exists in all lock-free devices.
-	 * We, following scheme used in drivers by Donald Becker,
-	 * select the least dangerous.
-	 *							--ANK
-	 */
 }
 
 
@@ -2317,12 +2252,6 @@ static int ace_open(struct net_device *dev)
 		ap->promisc = 0;
 	ap->mcast_all = 0;
 
-#if 0
-	cmd.evt = C_LNK_NEGOTIATION;
-	cmd.code = 0;
-	cmd.idx = 0;
-	ace_issue_cmd(regs, &cmd);
-#endif
 
 	netif_start_queue(dev);
 
@@ -2678,15 +2607,6 @@ static int ace_get_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
 	else
 		ecmd->autoneg = AUTONEG_DISABLE;
 
-#if 0
-	/*
-	 * Current struct ethtool_cmd is insufficient
-	 */
-	ecmd->trace = readl(&regs->TuneTrace);
-
-	ecmd->txcoal = readl(&regs->TuneTxCoalTicks);
-	ecmd->rxcoal = readl(&regs->TuneRxCoalTicks);
-#endif
 	ecmd->maxtxpkt = readl(&regs->TuneMaxTxDesc);
 	ecmd->maxrxpkt = readl(&regs->TuneMaxRxDesc);
 

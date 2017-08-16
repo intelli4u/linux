@@ -64,17 +64,11 @@ struct dma_cmd {
         u32 status;
 };
 
-/*
- * FIXME:
- * It is important that a single at_dma_prg does not cross a page boundary
- * The proper way to do it would be to do the check dynamically as the
- * programs are inserted into the AT fifo.
- */
 struct at_dma_prg {
 	struct dma_cmd begin;
 	quadlet_t data[4];
 	struct dma_cmd end;
-	quadlet_t pad[4]; /* FIXME: quick hack for memory alignment */
+	quadlet_t pad[4];
 };
 
 /* identify whether a DMA context is asynchronous or isochronous */

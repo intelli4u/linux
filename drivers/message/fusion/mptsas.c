@@ -1992,7 +1992,6 @@ static int mptsas_get_linkerrors(struct sas_phy *phy)
 	dma_addr_t dma_handle;
 	int error;
 
-	/* FIXME: only have link errors on local phys */
 	if (!scsi_is_sas_phy_local(phy))
 		return -EINVAL;
 
@@ -2073,7 +2072,6 @@ static int mptsas_phy_reset(struct sas_phy *phy, int hard_reset)
 	unsigned long timeleft;
 	int error = -ERESTARTSYS;
 
-	/* FIXME: fusion doesn't allow non-local phy reset */
 	if (!scsi_is_sas_phy_local(phy))
 		return -EINVAL;
 

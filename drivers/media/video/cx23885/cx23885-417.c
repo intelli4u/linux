@@ -1228,8 +1228,6 @@ static int vidioc_enum_input(struct file *file, void *priv,
 	if (input->type == 0)
 		return -EINVAL;
 
-	/* FIXME
-	 * strcpy(i->name, input->name); */
 	strcpy(i->name, "unset");
 
 	if (input->type == CX23885_VMUX_TELEVISION ||
@@ -1604,7 +1602,6 @@ static int mpeg_release(struct file *file)
 
 	dprintk(2, "%s()\n", __func__);
 
-	/* FIXME: Review this crap */
 	/* Shut device down on last close */
 	if (atomic_cmpxchg(&fh->v4l_reading, 1, 0) == 1) {
 		if (atomic_dec_return(&dev->v4l_reader_count) == 0) {
@@ -1763,7 +1760,6 @@ static struct video_device *cx23885_video_dev_alloc(
 
 int cx23885_417_register(struct cx23885_dev *dev)
 {
-	/* FIXME: Port1 hardcoded here */
 	int err = -ENODEV;
 	struct cx23885_tsport *tsport = &dev->ts1;
 

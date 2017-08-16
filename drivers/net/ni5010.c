@@ -184,7 +184,7 @@ static void __init trigger_irq(int ioaddr)
 		outb(XMD_IG_PAR | XMD_T_MODE | XMD_LBC, EDLC_XMODE);
 		outb(RMD_BROADCAST, EDLC_RMODE); /* Receive normal&broadcast */
 		outb(XM_ALL, EDLC_XMASK);	/* Enable all Xmt interrupts */
-		udelay(50);			/* FIXME: Necessary? */
+		udelay(50);
 		outb(MM_EN_XMT|MM_MUX, IE_MMODE); /* Start transmission */
 }
 
@@ -442,7 +442,6 @@ static void ni5010_timeout(struct net_device *dev)
 	printk(KERN_WARNING "%s: transmit timed out, %s?\n", dev->name,
 		   tx_done(dev) ? "IRQ conflict" : "network cable problem");
 	/* Try to restart the adaptor. */
-	/* FIXME: Give it a real kick here */
 	chipset_init(dev, 1);
 	dev->trans_start = jiffies; /* prevent tx timeout */
 	netif_wake_queue(dev);
@@ -596,14 +595,13 @@ static int process_xmt_interrupt(struct net_device *dev)
 		PRINTK((KERN_DEBUG "%s: collision detected, retransmitting\n",
 			dev->name));
 		outw(NI5010_BUFSIZE - lp->o_pkt_size, IE_GP);
-		/* outb(0, IE_MMODE); */ /* xmt buf on sysbus FIXME: needed ? */
+		/* outb(0, IE_MMODE); */
 		outb(MM_EN_XMT | MM_MUX, IE_MMODE);
 		outb(XM_ALL, EDLC_XMASK); /* Enable xmt IRQ's */
 		dev->stats.collisions++;
 		return 1;
 	}
 
-	/* FIXME: handle other xmt error conditions */
 
 	dev->stats.tx_packets++;
 	dev->stats.tx_bytes += lp->o_pkt_size;
@@ -712,7 +710,6 @@ static void hardware_send_packet(struct net_device *dev, char *buf, int length, 
 
 static void chipset_init(struct net_device *dev, int startp)
 {
-	/* FIXME: Move some stuff here */
 	PRINTK3((KERN_DEBUG "%s: doing NOTHING in chipset_init\n", dev->name));
 }
 

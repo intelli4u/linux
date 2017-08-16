@@ -120,11 +120,6 @@ static int gpiomux_s_radio(struct v4l2_subdev *sd)
 {
 	struct cx18 *cx = v4l2_get_subdevdata(sd);
 
-	/*
-	 * FIXME - work out the cx->active/audio_input mess - this is
-	 * intended to handle the switch to radio mode and set the
-	 * audio routing, but we need to update the state in cx
-	 */
 	gpio_update(cx, cx->card->gpio_audio_input.mask,
 			cx->card->gpio_audio_input.radio);
 	return 0;
@@ -143,11 +138,6 @@ static int gpiomux_s_std(struct v4l2_subdev *sd, v4l2_std_id norm)
 		data = cx->card->gpio_audio_input.tuner;
 		break;
 	default:
-		/*
-		 * FIXME - work out the cx->active/audio_input mess - this is
-		 * intended to handle the switch from radio mode and set the
-		 * audio routing, but we need to update the state in cx
-		 */
 		data = cx->card->gpio_audio_input.tuner;
 		break;
 	}

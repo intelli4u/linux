@@ -479,7 +479,7 @@ static int ceph_x_handle_reply(struct ceph_auth_client *ac, int result,
 	int ret;
 
 	if (result)
-		return result;  /* XXX hmm? */
+		return result;
 
 	if (xi->starting) {
 		/* it's a hello */
@@ -683,5 +683,3 @@ out_nomem:
 out:
 	return ret;
 }
-
-

@@ -367,15 +367,6 @@ static int get_key_pinnacle(struct IR_i2c *ir, u32 *ir_key, u32 *ir_raw,
 	return 1;
 }
 
-/* The grey pinnacle PCTV remote
- *
- *  There are one issue with this remote:
- *   - I2c packet does not change when the same key is pressed quickly. The workaround
- *     is to hold down each key for about half a second, so that another code is generated
- *     in the i2c packet, and the function can distinguish key presses.
- *
- * Sylvain Pasche <sylvain.pasche@gmail.com>
- */
 static int get_key_pinnacle_grey(struct IR_i2c *ir, u32 *ir_key, u32 *ir_raw)
 {
 
@@ -1181,7 +1172,6 @@ static void nec_task(unsigned long data)
 	} while (ngap < 32);
 
 	if (ngap == 32) {
-		/* FIXME: should check if not_code == ~ircode */
 		ir->code = ir_extract_bits(ircode, ir->mask_keycode);
 
 		dprintk("scancode = 0x%02x (code = 0x%02x, notcode= 0x%02x)\n",

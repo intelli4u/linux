@@ -487,7 +487,6 @@ static void __discard_prealloc(struct reiserfs_transaction_handle *th,
 	list_del_init(&(ei->i_prealloc_list));
 }
 
-/* FIXME: It should be inline function */
 void reiserfs_discard_prealloc(struct reiserfs_transaction_handle *th,
 			       struct inode *inode)
 {
@@ -988,8 +987,6 @@ static int determine_prealloc_size(reiserfs_blocknr_hint_t * hint)
 	return CARRY_ON;
 }
 
-/* XXX I know it could be merged with upper-level function;
-   but may be result function would be too complex. */
 static inline int allocate_without_wrapping_disk(reiserfs_blocknr_hint_t * hint,
 						 b_blocknr_t * new_blocknrs,
 						 b_blocknr_t start,

@@ -906,8 +906,7 @@ void vxge_hw_device_debug_set(struct __vxge_hw_device *hldev,
 	if (hldev == NULL)
 		return;
 
-#if defined(VXGE_DEBUG_TRACE_MASK) || \
-	defined(VXGE_DEBUG_ERR_MASK)
+#if defined(VXGE_DEBUG_TRACE_MASK) || defined(VXGE_DEBUG_ERR_MASK)
 	hldev->debug_module_mask = mask;
 	hldev->debug_level = level;
 #endif

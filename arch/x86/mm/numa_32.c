@@ -137,10 +137,6 @@ static void __init propagate_e820_map_node(int nid)
 {
 	if (node_end_pfn[nid] > max_pfn)
 		node_end_pfn[nid] = max_pfn;
-	/*
-	 * if a user has given mem=XXXX, then we need to make sure 
-	 * that the node _starts_ before that, too, not just ends
-	 */
 	if (node_start_pfn[nid] > max_pfn)
 		node_start_pfn[nid] = max_pfn;
 	BUG_ON(node_start_pfn[nid] > node_end_pfn[nid]);
@@ -454,4 +450,3 @@ int memory_add_physaddr_to_nid(u64 addr)
 
 EXPORT_SYMBOL_GPL(memory_add_physaddr_to_nid);
 #endif
-

@@ -494,10 +494,6 @@ static int mt9t112_init_pll(const struct i2c_client *client)
 
 	mdelay(50);
 
-	/*
-	 * Standby Workaround
-	 * Disable Secondary I2C Pads
-	 */
 	mt9t112_reg_write(ret, client, 0x0614, 0x0001);
 	mdelay(1);
 	mt9t112_reg_write(ret, client, 0x0614, 0x0001);
@@ -863,15 +859,6 @@ static int mt9t112_s_stream(struct v4l2_subdev *sd, int enable)
 	int ret = 0;
 
 	if (!enable) {
-		/* FIXME
-		 *
-		 * If user selected large output size,
-		 * and used it long time,
-		 * mt9t112 camera will be very warm.
-		 *
-		 * But current driver can not stop mt9t112 camera.
-		 * So, set small size here to solve this problem.
-		 */
 		mt9t112_set_a_frame_size(client, VGA_WIDTH, VGA_HEIGHT);
 		return ret;
 	}

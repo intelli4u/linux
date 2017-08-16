@@ -34,21 +34,6 @@
  *	for preventing entry into deep C-stats
  */
 
-/*
- * Known limitations
- *
- * The driver currently initializes for_each_online_cpu() upon modprobe.
- * It it unaware of subsequent processors hot-added to the system.
- * This means that if you boot with maxcpus=n and later online
- * processors above n, those processors will use C1 only.
- *
- * ACPI has a .suspend hack to turn off deep c-statees during suspend
- * to avoid complications with the lapic timer workaround.
- * Have not seen issues with suspend, but may need same workaround here.
- *
- * There is currently no kernel-based automatic probing/loading mechanism
- * if the driver is built as a module.
- */
 
 /* un-comment DEBUG to enable pr_debug() statements */
 #define DEBUG

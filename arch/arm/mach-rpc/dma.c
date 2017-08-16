@@ -35,14 +35,6 @@ struct iomd_dma {
 	unsigned int		dma_len;
 };
 
-#if 0
-typedef enum {
-	dma_size_8	= 1,
-	dma_size_16	= 2,
-	dma_size_32	= 4,
-	dma_size_128	= 16
-} dma_size_t;
-#endif
 
 #define TRANSFER_SIZE	2
 

@@ -176,16 +176,8 @@ MODULE_DEVICE_TABLE(pnp_card, snd_opl3sa2_pnpids);
 static unsigned char __snd_opl3sa2_read(struct snd_opl3sa2 *chip, unsigned char reg)
 {
 	unsigned char result;
-#if 0
-	outb(0x1d, port);	/* password */
-	printk(KERN_DEBUG "read [0x%lx] = 0x%x\n", port, inb(port));
-#endif
 	outb(reg, chip->port);	/* register */
 	result = inb(chip->port + 1);
-#if 0
-	printk(KERN_DEBUG "read [0x%lx] = 0x%x [0x%x]\n",
-	       port, result, inb(port));
-#endif
 	return result;
 }
 
@@ -204,9 +196,6 @@ static unsigned char snd_opl3sa2_read(struct snd_opl3sa2 *chip, unsigned char re
 /* write control port (w/o spinlock) */
 static void __snd_opl3sa2_write(struct snd_opl3sa2 *chip, unsigned char reg, unsigned char value)
 {
-#if 0
-	outb(0x1d, port);	/* password */
-#endif
 	outb(reg, chip->port);	/* register */
 	outb(value, chip->port + 1);
 	chip->ctlregs[reg] = value;

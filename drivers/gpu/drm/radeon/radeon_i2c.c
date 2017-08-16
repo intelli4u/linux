@@ -819,7 +819,6 @@ static int radeon_hw_i2c_xfer(struct i2c_adapter *i2c_adap,
 	case CHIP_RS600:
 	case CHIP_RS690:
 	case CHIP_RS740:
-		/* XXX fill in hw i2c implementation */
 		break;
 	case CHIP_RV515:
 	case CHIP_R520:
@@ -836,7 +835,6 @@ static int radeon_hw_i2c_xfer(struct i2c_adapter *i2c_adap,
 	case CHIP_RV610:
 	case CHIP_RV630:
 	case CHIP_RV670:
-		/* XXX fill in hw i2c implementation */
 		break;
 	case CHIP_RV620:
 	case CHIP_RV635:
@@ -846,14 +844,12 @@ static int radeon_hw_i2c_xfer(struct i2c_adapter *i2c_adap,
 	case CHIP_RV730:
 	case CHIP_RV710:
 	case CHIP_RV740:
-		/* XXX fill in hw i2c implementation */
 		break;
 	case CHIP_CEDAR:
 	case CHIP_REDWOOD:
 	case CHIP_JUNIPER:
 	case CHIP_CYPRESS:
 	case CHIP_HEMLOCK:
-		/* XXX fill in hw i2c implementation */
 		break;
 	default:
 		DRM_ERROR("i2c: unhandled radeon chip\n");
@@ -1109,4 +1105,3 @@ void radeon_router_select_port(struct radeon_connector *radeon_connector)
 			    radeon_connector->router.i2c_addr,
 			    0x1, val);
 }
-

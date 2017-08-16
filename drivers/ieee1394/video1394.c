@@ -66,7 +66,7 @@ struct it_dma_prg {
 	struct dma_cmd begin;
 	quadlet_t data[4];
 	struct dma_cmd end;
-	quadlet_t pad[4]; /* FIXME: quick hack for memory alignment */
+	quadlet_t pad[4];
 };
 
 struct dma_iso_ctx {
@@ -547,10 +547,6 @@ static inline void put_timestamp(struct ti_ohci *ohci, struct dma_iso_ctx * d,
 	    buf[7] = timeStamp & 0xff;
 	}
 
-#if 0
-	printk("curr: %d, next: %d, cycleTimer: %08x timeStamp: %08x\n",
-	       curr, n, cycleTimer, timeStamp);
-#endif
 }
 
 static void wakeup_dma_it_ctx(unsigned long l)
@@ -650,11 +646,6 @@ static void initialize_dma_it_prg_var_packet_queue(
 	struct dma_prog_region *it_reg = &d->prg_reg[n];
 	int i;
 
-#if 0
-	if (n != -1) {
-		put_timestamp(ohci, d, n);
-	}
-#endif
 	d->last_used_cmd[n] = d->nb_cmd - 1;
 
 	for (i = 0; i < d->nb_cmd; i++) {
@@ -836,7 +827,6 @@ static long video1394_ioctl(struct file *file,
 		}
 
 		if (copy_to_user(argp, &v, sizeof(v))) {
-			/* FIXME : free allocated dma resources */
 			return -EFAULT;
 		}
 		
@@ -1161,14 +1151,6 @@ static long video1394_ioctl(struct file *file,
 	}
 }
 
-/*
- *	This maps the vmalloced and reserved buffer to user space.
- *
- *  FIXME:
- *  - PAGE_READONLY should suffice!?
- *  - remap_pfn_range is kind of inefficient for page by page remapping.
- *    But e.g. pte_alloc() does not work in modules ... :-(
- */
 
 static int video1394_mmap(struct file *file, struct vm_area_struct *vma)
 {

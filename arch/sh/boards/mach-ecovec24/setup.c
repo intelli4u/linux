@@ -1109,12 +1109,6 @@ static int __init arch_setup(void)
 
 		gpio_set_value(GPIO_PTR1, 1);
 
-		/* FIXME
-		 *
-		 * LCDDON control is needed for Panel,
-		 * but current sh_mobile_lcdc driver doesn't control it.
-		 * It is temporary correspondence
-		 */
 		gpio_request(GPIO_PTF4, NULL);
 		gpio_direction_output(GPIO_PTF4, 1);
 

@@ -576,17 +576,6 @@ unlock_and_drop:
 	}
 }
 
-/*
- * Transports call here when they've determined that the receiver queued
- * messages up to, and including, the given sequence number.  Messages are
- * moved to the retrans queue when rds_send_xmit picks them off the send
- * queue. This means that in the TCP case, the message may not have been
- * assigned the m_ack_seq yet - but that's fine as long as tcp_is_acked
- * checks the RDS_MSG_HAS_ACK_SEQ bit.
- *
- * XXX It's not clear to me how this is safely serialized with socket
- * destruction.  Maybe it should bail if it sees SOCK_DEAD.
- */
 void rds_send_drop_acked(struct rds_connection *conn, u64 ack,
 			 is_acked_func is_acked)
 {
@@ -821,7 +810,6 @@ int rds_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg,
 	long timeo = sock_sndtimeo(sk, nonblock);
 
 	/* Mirror Linux UDP mirror of BSD error message compatibility */
-	/* XXX: Perhaps MSG_MORE someday */
 	if (msg->msg_flags & ~(MSG_DONTWAIT | MSG_CMSG_COMPAT)) {
 		printk(KERN_INFO "msg_flags 0x%08X\n", msg->msg_flags);
 		ret = -EOPNOTSUPP;
@@ -829,7 +817,6 @@ int rds_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg,
 	}
 
 	if (msg->msg_namelen) {
-		/* XXX fail non-unicast destination IPs? */
 		if (msg->msg_namelen < sizeof(*usin) || usin->sin_family != AF_INET) {
 			ret = -EINVAL;
 			goto out;
@@ -846,7 +833,7 @@ int rds_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg,
 
 	/* racing with another thread binding seems ok here */
 	if (daddr == 0 || rs->rs_bound_addr == 0) {
-		ret = -ENOTCONN; /* XXX not a great errno */
+		ret = -ENOTCONN;
 		goto out;
 	}
 
@@ -905,7 +892,6 @@ int rds_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg,
 	while (!rds_send_queue_rm(rs, conn, rm, rs->rs_bound_port,
 				  dport, &queued)) {
 		rds_stats_inc(s_send_queue_full);
-		/* XXX make sure this is reasonable */
 		if (payload_len > rds_sk_sndbuf(rs)) {
 			ret = -EMSGSIZE;
 			goto out;

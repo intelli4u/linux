@@ -375,7 +375,6 @@ static void get_toshiba_nand_para(struct denali_nand_info *denali)
 {
 	uint32_t tmp;
 
-	/* Workaround to fix a controller bug which reports a wrong */
 	/* spare area size for some kind of Toshiba NAND device */
 	if ((ioread32(denali->flash_reg + DEVICE_MAIN_AREA_SIZE) == 4096) &&
 		(ioread32(denali->flash_reg + DEVICE_SPARE_AREA_SIZE) == 64)) {

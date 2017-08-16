@@ -646,7 +646,6 @@ static void read_bulk_callback(struct urb *urb)
 		pegasus->flags &= ~PEGASUS_RX_BUSY;
 		break;
 	case -EPIPE:		/* stall, or disconnect from TT */
-		/* FIXME schedule work to clear the halt */
 		netif_warn(pegasus, rx_err, net, "no rx stall recovery\n");
 		return;
 	case -ENOENT:
@@ -789,7 +788,6 @@ static void write_bulk_callback(struct urb *urb)
 
 	switch (status) {
 	case -EPIPE:
-		/* FIXME schedule_work() to clear the tx halt */
 		netif_stop_queue(net);
 		netif_warn(pegasus, tx_err, net, "no tx stall recovery\n");
 		return;
@@ -1104,7 +1102,6 @@ pegasus_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 		reg78 |= 0x80;
 	if (wol->wolopts & WAKE_PHY)
 		reg78 |= 0x40;
-	/* FIXME this 0x10 bit still needs to get set in the chip... */
 	if (wol->wolopts)
 		pegasus->eth_regs[0] |= 0x10;
 	else

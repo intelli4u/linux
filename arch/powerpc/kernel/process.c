@@ -148,23 +148,6 @@ void flush_altivec_to_thread(struct task_struct *tsk)
 #endif /* CONFIG_ALTIVEC */
 
 #ifdef CONFIG_VSX
-#if 0
-/* not currently used, but some crazy RAID module might want to later */
-void enable_kernel_vsx(void)
-{
-	WARN_ON(preemptible());
-
-#ifdef CONFIG_SMP
-	if (current->thread.regs && (current->thread.regs->msr & MSR_VSX))
-		giveup_vsx(current);
-	else
-		giveup_vsx(NULL);	/* just enable vsx for kernel - force */
-#else
-	giveup_vsx(last_task_used_vsx);
-#endif /* CONFIG_SMP */
-}
-EXPORT_SYMBOL(enable_kernel_vsx);
-#endif
 
 void giveup_vsx(struct task_struct *tsk)
 {
@@ -369,7 +352,6 @@ int set_dabr(unsigned long dabr)
 	if (ppc_md.set_dabr)
 		return ppc_md.set_dabr(dabr);
 
-	/* XXX should we have a CPU_FTR_HAS_DABR ? */
 #ifdef CONFIG_PPC_ADV_DEBUG_REGS
 	mtspr(SPRN_DAC1, dabr);
 #ifdef CONFIG_PPC_47x
@@ -478,16 +460,6 @@ struct task_struct *__switch_to(struct task_struct *prev,
 	old_thread = &current->thread;
 
 #if defined(CONFIG_PPC_BOOK3E_64)
-	/* XXX Current Book3E code doesn't deal with kernel side DBCR0,
-	 * we always hold the user values, so we set it now.
-	 *
-	 * However, we ensure the kernel MSR:DE is appropriately cleared too
-	 * to avoid spurrious single step exceptions in the kernel.
-	 *
-	 * This will have to change to merge with the ppc32 code at some point,
-	 * but I don't like much what ppc32 is doing today so there's some
-	 * thinking needed there
-	 */
 	if ((new_thread->dbcr0 | old_thread->dbcr0) & DBCR0_IDM) {
 		u32 dbcr0;
 

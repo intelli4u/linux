@@ -74,12 +74,6 @@ struct mipsnet_regs {
 	 * Readonly core-specific interrupt info for the device to signal
 	 * the core. The meaning of the contents of this field might change.
 	 */
-	/* XXX: the whole memIntf interrupt scheme is messy: the device
-	 * should have no control what so ever of what VPE/register set is
-	 * being used.
-	 * The MemIntf should only expose interrupt lines, and something in
-	 * the config should be responsible for the line<->core/vpe bindings.
-	 */
 	u32 interruptInfo;	/*0x18 */
 
 	/*

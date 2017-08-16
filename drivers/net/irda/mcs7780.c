@@ -989,4 +989,3 @@ static void __exit mcs_exit(void)
 	usb_deregister(&mcs_driver);
 }
 module_exit(mcs_exit);
-

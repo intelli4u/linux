@@ -840,4 +840,3 @@
 #define S3C2412_SLPCON_ALL_PULL	(0x33333333)
 
 #endif	/* __ASM_ARCH_REGS_GPIO_H */
-

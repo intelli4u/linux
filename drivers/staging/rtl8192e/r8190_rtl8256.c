@@ -60,12 +60,6 @@ void PHY_SetRF8256Bandwidth(struct net_device* dev , HT_CHANNEL_WIDTH Bandwidth)
 					rtl8192_phy_SetRFReg(dev, (RF90_RADIO_PATH_E)eRFPath, 0x0e, bMask12Bits, 0x0e1);
 
 					//cosa add for sd3's request 01/23/2008
-					#if 0
-					if(priv->chan == 3 || priv->chan == 9) //I need to set priv->chan whenever current channel changes
-						rtl8192_phy_SetRFReg(dev, (RF90_RADIO_PATH_E)eRFPath, 0x14, bMask12Bits, 0x59b);
-					else
-						rtl8192_phy_SetRFReg(dev, (RF90_RADIO_PATH_E)eRFPath, 0x14, bMask12Bits, 0x5ab);
-					#endif
 				}
 				else
 				{
@@ -1179,5 +1173,3 @@ MgntActSet_RF_State(
 	RT_TRACE(COMP_POWER, "<===MgntActSet_RF_State()\n");
 	return bActionAllowed;
 }
-
-

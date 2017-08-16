@@ -156,7 +156,6 @@ static void rds_ib_cm_fill_conn_param(struct rds_connection *conn,
 			u32 protocol_version)
 {
 	memset(conn_param, 0, sizeof(struct rdma_conn_param));
-	/* XXX tune these? */
 	conn_param->responder_resources = 1;
 	conn_param->initiator_depth = 1;
 	conn_param->retry_count = min_t(unsigned int, rds_ib_retry_count, 7);
@@ -278,7 +277,6 @@ static int rds_ib_setup_qp(struct rds_connection *conn)
 		goto out;
 	}
 
-	/* XXX negotiate max send/recv with remote? */
 	memset(&attr, 0, sizeof(attr));
 	attr.event_handler = rds_ib_qp_event_handler;
 	attr.qp_context = conn;
@@ -292,10 +290,6 @@ static int rds_ib_setup_qp(struct rds_connection *conn)
 	attr.send_cq = ic->i_send_cq;
 	attr.recv_cq = ic->i_recv_cq;
 
-	/*
-	 * XXX this can fail if max_*_wr is too large?  Are we supposed
-	 * to back off until we get a value that the hardware can support?
-	 */
 	ret = rdma_create_qp(ic->i_cm_id, ic->i_pd, &attr);
 	if (ret) {
 		rdsdebug("rdma_create_qp failed: %d\n", ret);
@@ -539,7 +533,6 @@ int rds_ib_conn_connect(struct rds_connection *conn)
 	struct sockaddr_in src, dest;
 	int ret;
 
-	/* XXX I wonder what affect the port space has */
 	/* delegate cm event handler to rdma_transport */
 	ic->i_cm_id = rdma_create_id(rds_rdma_cm_event_handler, conn,
 				     RDMA_PS_TCP);
@@ -691,7 +684,6 @@ int rds_ib_conn_alloc(struct rds_connection *conn, gfp_t gfp)
 	struct rds_ib_connection *ic;
 	unsigned long flags;
 
-	/* XXX too lazy? */
 	ic = kzalloc(sizeof(struct rds_ib_connection), GFP_KERNEL);
 	if (ic == NULL)
 		return -ENOMEM;

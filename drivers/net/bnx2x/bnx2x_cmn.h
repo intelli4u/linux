@@ -1,19 +1,4 @@
-/* bnx2x_cmn.h: Broadcom Everest network driver.
- *
- * Copyright (c) 2007-2010 Broadcom Corporation
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- *
- * Maintained by: Eilon Greenstein <eilong@broadcom.com>
- * Written by: Eliezer Tamir
- * Based on code from Michael Chan's bnx2 driver
- * UDP CSUM errata workaround by Arik Gendelman
- * Slowpath and fastpath rework by Vladislav Zolotarov
- * Statistics and Link management by Yitchak Gertner
- *
- */
+
 #ifndef BNX2X_CMN_H
 #define BNX2X_CMN_H
 

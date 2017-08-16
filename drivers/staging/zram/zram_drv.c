@@ -384,14 +384,6 @@ memstore:
 		cmem = kmap_atomic(zram->table[index].page, KM_USER1) +
 				zram->table[index].offset;
 
-#if 0
-		/* Back-reference needed for memory defragmentation */
-		if (!zram_test_flag(zram, index, ZRAM_UNCOMPRESSED)) {
-			zheader = (struct zobj_header *)cmem;
-			zheader->table_idx = index;
-			cmem += sizeof(*zheader);
-		}
-#endif
 
 		memcpy(cmem, src, clen);
 

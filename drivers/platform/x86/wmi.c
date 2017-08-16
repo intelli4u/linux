@@ -839,13 +839,6 @@ static acpi_status parse_wdg(acpi_handle handle)
 	}
 
 	for (i = 0; i < total; i++) {
-		/*
-		  Some WMI devices, like those for nVidia hooks, have a
-		  duplicate GUID. It's not clear what we should do in this
-		  case yet, so for now, we'll just ignore the duplicate.
-		  Anyone who wants to add support for that device can come
-		  up with a better workaround for the mess then.
-		*/
 		if (guid_already_parsed(gblock[i].guid) == true) {
 			wmi_gtoa(gblock[i].guid, guid_string);
 			printk(KERN_INFO PREFIX "Skipping duplicate GUID %s\n",

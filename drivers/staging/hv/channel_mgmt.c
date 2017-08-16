@@ -551,7 +551,6 @@ static void VmbusChannelOnOpenResult(struct vmbus_channel_message_header *hdr)
 	spin_lock_irqsave(&gVmbusConnection.channelmsg_lock, flags);
 
 	list_for_each(curr, &gVmbusConnection.ChannelMsgList) {
-/* FIXME: this should probably use list_entry() instead */
 		msgInfo = (struct vmbus_channel_msginfo *)curr;
 		requestHeader = (struct vmbus_channel_message_header *)msgInfo->Msg;
 
@@ -597,7 +596,6 @@ static void VmbusChannelOnGpadlCreated(struct vmbus_channel_message_header *hdr)
 	spin_lock_irqsave(&gVmbusConnection.channelmsg_lock, flags);
 
 	list_for_each(curr, &gVmbusConnection.ChannelMsgList) {
-/* FIXME: this should probably use list_entry() instead */
 		msgInfo = (struct vmbus_channel_msginfo *)curr;
 		requestHeader = (struct vmbus_channel_message_header *)msgInfo->Msg;
 
@@ -643,7 +641,6 @@ static void VmbusChannelOnGpadlTorndown(
 	spin_lock_irqsave(&gVmbusConnection.channelmsg_lock, flags);
 
 	list_for_each(curr, &gVmbusConnection.ChannelMsgList) {
-/* FIXME: this should probably use list_entry() instead */
 		msgInfo = (struct vmbus_channel_msginfo *)curr;
 		requestHeader = (struct vmbus_channel_message_header *)msgInfo->Msg;
 
@@ -683,7 +680,6 @@ static void VmbusChannelOnVersionResponse(
 	spin_lock_irqsave(&gVmbusConnection.channelmsg_lock, flags);
 
 	list_for_each(curr, &gVmbusConnection.ChannelMsgList) {
-/* FIXME: this should probably use list_entry() instead */
 		msgInfo = (struct vmbus_channel_msginfo *)curr;
 		requestHeader = (struct vmbus_channel_message_header *)msgInfo->Msg;
 

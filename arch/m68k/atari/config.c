@@ -304,13 +304,7 @@ void __init config_atari(void)
 		printk("DSP56K ");
 	}
 	if (hwreg_present(&tt_scc_dma.dma_ctrl) &&
-#if 0
-	    /* This test sucks! Who knows some better? */
-	    (tt_scc_dma.dma_ctrl = 0x01, (tt_scc_dma.dma_ctrl & 1) == 1) &&
-	    (tt_scc_dma.dma_ctrl = 0x00, (tt_scc_dma.dma_ctrl & 1) == 0)
-#else
 	    !MACH_IS_MEDUSA
-#endif
 	    ) {
 		ATARIHW_SET(SCC_DMA);
 		printk("SCC_DMA ");
@@ -341,7 +335,6 @@ void __init config_atari(void)
 		ATARIHW_SET(IDE);
 		printk("IDE ");
 	}
-#if 1 /* This maybe wrong */
 	if (!MACH_IS_MEDUSA && hwreg_present(&tt_microwire.data) &&
 	    hwreg_present(&tt_microwire.mask) &&
 	    (tt_microwire.mask = 0x7ff,
@@ -354,7 +347,6 @@ void __init config_atari(void)
 			;
 		printk("MICROWIRE ");
 	}
-#endif
 	if (hwreg_present(&tt_rtc.regsel)) {
 		ATARIHW_SET(TT_CLK);
 		printk("TT_CLK ");

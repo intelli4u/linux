@@ -1,58 +1,4 @@
-/*
- * WUSB Wire Adapter: WLP interface
- * Deal with TX (massaging data to transmit, handling it)
- *
- * Copyright (C) 2005-2006 Intel Corporation
- * Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
- *
- *
- * Transmission engine. Get an skb, create from that a WLP transmit
- * context, add a WLP TX header (which we keep prefilled in the
- * device's instance), fill out the target-specific fields and
- * fire it.
- *
- * ROADMAP:
- *
- *   Entry points:
- *
- *     i1480u_tx_release(): called by i1480u_disconnect() to release
- *                          pending tx contexts.
- *
- *     i1480u_tx_cb(): callback for TX contexts (USB URBs)
- *       i1480u_tx_destroy():
- *
- *     i1480u_tx_timeout(): called for timeout handling from the
- *                          network stack.
- *
- *     i1480u_hard_start_xmit(): called for transmitting an skb from
- *                               the network stack. Will interact with WLP
- *                               substack to verify and prepare frame.
- *       i1480u_xmit_frame(): actual transmission on hardware
- *
- *         i1480u_tx_create()	    Creates TX context
- *            i1480u_tx_create_1()    For packets in 1 fragment
- *            i1480u_tx_create_n()    For packets in >1 fragments
- *
- * TODO:
- *
- * - FIXME: rewrite using usb_sg_*(), add asynch support to
- *          usb_sg_*(). It might not make too much sense as most of
- *          the times the MTU will be smaller than one page...
- */
+
 
 #include <linux/slab.h>
 #include "i1480u-wlp.h"
@@ -98,14 +44,6 @@ void i1480u_tx_unlink_urbs(struct i1480u *i1480u)
 }
 
 
-/*
- * Callback for a completed tx USB URB.
- *
- * TODO:
- *
- * - FIXME: recover errors more gracefully
- * - FIXME: handle NAKs (I dont think they come here) for flow ctl
- */
 static
 void i1480u_tx_cb(struct urb *urb)
 {

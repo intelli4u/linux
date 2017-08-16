@@ -273,4 +273,3 @@ FTRACE_ENTRY(branch, trace_branch,
 		 __entry->line,
 		 __entry->func, __entry->file, __entry->correct)
 );
-

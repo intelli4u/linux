@@ -100,11 +100,6 @@ extern struct ia64_boot_param {
 # define smp_read_barrier_depends()	do { } while(0)
 #endif
 
-/*
- * XXX check on this ---I suspect what Linus really wants here is
- * acquire vs release semantics but we can't discuss this stuff with
- * Linus just yet.  Grrr...
- */
 #define set_mb(var, value)	do { (var) = (value); mb(); } while (0)
 
 #define safe_halt()         ia64_pal_halt_light()    /* PAL_HALT_LIGHT */

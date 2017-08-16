@@ -32,13 +32,6 @@ void zfiHeartBeat(zdev_t* dev)
 
     wd->tick++;
 
-#if 0
-    /* => every 1.28 seconds */
-    if (wd->cwm.cw_enable && ((wd->tick & 0x7f) == 0x3f))
-    {
-        zfHpCwmUpdate(dev);
-    }
-#endif
     /* => every 2.56 seconds */
     if ((wd->tick & 0xff) == 0)
     {
@@ -197,4 +190,3 @@ void zfDumpBssList(zdev_t* dev)
 
     zm_debug_msg0("***************************");
 }
-

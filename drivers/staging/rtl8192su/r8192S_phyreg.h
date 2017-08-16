@@ -1030,4 +1030,3 @@
 
 
 #endif	//__INC_HAL8192SPHYREG_H
-

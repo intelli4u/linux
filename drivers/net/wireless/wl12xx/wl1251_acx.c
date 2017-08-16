@@ -285,7 +285,6 @@ int wl1251_acx_data_path_params(struct wl1251 *wl,
 	if (ret < 0)
 		goto out;
 
-	/* FIXME: shouldn't this be ACX_DATA_PATH_RESP_PARAMS? */
 	ret = wl1251_cmd_interrogate(wl, ACX_DATA_PATH_PARAMS,
 				     resp, sizeof(*resp));
 
@@ -370,7 +369,6 @@ int wl1251_acx_pd_threshold(struct wl1251 *wl)
 		goto out;
 	}
 
-	/* FIXME: threshold value not set */
 
 	ret = wl1251_cmd_configure(wl, ACX_PD_THRESHOLD, pd, sizeof(*pd));
 	if (ret < 0) {

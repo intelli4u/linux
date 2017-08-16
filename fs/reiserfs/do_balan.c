@@ -1028,10 +1028,6 @@ static int balance_leaf(struct tree_balance *tb, struct item_head *ih,	/* item h
 						if (is_indirect_le_ih
 						    (B_N_PITEM_HEAD
 						     (tb->R[0], 0))) {
-#if 0
-							RFALSE(n_rem,
-							       "PAP-12160: paste more than one unformatted node pointer");
-#endif
 							set_ih_free_space
 							    (B_N_PITEM_HEAD
 							     (tb->R[0], 0), 0);
@@ -1602,15 +1598,6 @@ static int balance_leaf(struct tree_balance *tb, struct item_head *ih,	/* item h
 								     zeros_num);
 
 						if (is_indirect_le_ih(pasted)) {
-#if 0
-							RFALSE(tb->
-							       insert_size[0] !=
-							       UNFM_P_SIZE,
-							       "PAP-12280: insert_size for indirect item must be %d, not %d",
-							       UNFM_P_SIZE,
-							       tb->
-							       insert_size[0]);
-#endif
 							set_ih_free_space
 							    (pasted, 0);
 						}

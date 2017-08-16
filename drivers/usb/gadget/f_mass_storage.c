@@ -1216,12 +1216,6 @@ static int do_request_sense(struct fsg_common *common, struct fsg_buffhd *bh)
 	 *
 	 * FSG normally uses option a); enable this code to use option b).
 	 */
-#if 0
-	if (curlun && curlun->unit_attention_data != SS_NO_SENSE) {
-		curlun->sense_data = curlun->unit_attention_data;
-		curlun->unit_attention_data = SS_NO_SENSE;
-	}
-#endif
 
 	if (!curlun) {		/* Unsupported LUNs are okay */
 		common->bad_lun_okay = 1;
@@ -1726,14 +1720,6 @@ static int finish_reply(struct fsg_common *common)
 		 * bulk-out packets, in which case the host wouldn't see a
 		 * STALL.  Not realizing the endpoint was halted, it wouldn't
 		 * clear the halt -- leading to problems later on. */
-#if 0
-		} else if (common->can_stall) {
-			if (fsg_is_set(common))
-				fsg_set_halt(common->fsg,
-					     common->fsg->bulk_out);
-			raise_exception(common, FSG_STATE_ABORT_BULK_OUT);
-			rc = -EINTR;
-#endif
 
 		/* We can't stall.  Read in the excess data and throw it
 		 * all away. */
@@ -1849,18 +1835,6 @@ static int check_command(struct fsg_common *common, int cmnd_size,
 	/* Verify the length of the command itself */
 	if (cmnd_size != common->cmnd_size) {
 
-		/* Special case workaround: There are plenty of buggy SCSI
-		 * implementations. Many have issues with cbw->Length
-		 * field passing a wrong command size. For those cases we
-		 * always try to work around the problem by using the length
-		 * sent by the host side provided it is at least as large
-		 * as the correct command length.
-		 * Examples of such cases would be MS-Windows, which issues
-		 * REQUEST SENSE with cbw->Length == 12 where it should
-		 * be 6, and xbox360 issuing INQUIRY, TEST UNIT READY and
-		 * REQUEST SENSE with cbw->Length == 10 where it should
-		 * be 6 as well.
-		 */
 		if (cmnd_size <= common->cmnd_size) {
 			DBG(common, "%s is buggy! Expected length %d "
 			    "but we got %d\n", name,
@@ -2747,7 +2721,6 @@ static struct fsg_common *fsg_common_init(struct fsg_common *common,
 		curlun->removable = lcfg->removable;
 		curlun->dev.release = fsg_lun_release;
 		curlun->dev.parent = &gadget->dev;
-		/* curlun->dev.driver = &fsg_driver.driver; XXX */
 		dev_set_drvdata(&curlun->dev, &common->filesem);
 		dev_set_name(&curlun->dev,
 			     cfg->lun_name_format
@@ -2945,7 +2918,6 @@ static void fsg_unbind(struct usb_configuration *c, struct usb_function *f)
 	if (fsg->common->fsg == fsg) {
 		fsg->common->new_fsg = NULL;
 		raise_exception(fsg->common, FSG_STATE_CONFIG_CHANGE);
-		/* FIXME: make interruptible or killable somehow? */
 		wait_event(common->fsg_wait, common->fsg != fsg);
 	}
 
@@ -3152,4 +3124,3 @@ fsg_common_from_params(struct fsg_common *common,
 	fsg_config_from_params(&cfg, params);
 	return fsg_common_init(common, cdev, &cfg);
 }
-

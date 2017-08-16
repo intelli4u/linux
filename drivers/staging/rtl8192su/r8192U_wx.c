@@ -480,7 +480,6 @@ static int rtl8180_wx_get_range(struct net_device *dev,
 			range->freq[val].e = 1;
 			val++;
 		} else {
-			// FIXME: do we need to set anything for channels
 			// we don't use ?
 		}
 
@@ -817,11 +816,6 @@ static int r8192_wx_set_retry(struct net_device *dev,
 		DMESG("Setting retry for non RTS/CTS data to %d", wrqu->retry.value);
 	}
 
-	/* FIXME !
-	 * We might try to write directly the TX config register
-	 * or to restart just the (R)TX process.
-	 * I'm unsure if whole reset is really needed
-	 */
 
  	rtl8192_commit(dev);
 	/*
@@ -1085,9 +1079,7 @@ static int r8192_wx_set_gen_ie(struct net_device *dev,
 	int ret=0;
         struct r8192_priv *priv = ieee80211_priv(dev);
         down(&priv->wx_sem);
-#if 1
         ret = ieee80211_wx_set_gen_ie(priv->ieee80211, extra, data->data.length);
-#endif
         up(&priv->wx_sem);
 	//printk("<======%s(), ret:%d\n", __FUNCTION__, ret);
         return ret;

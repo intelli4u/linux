@@ -27,9 +27,8 @@
 extern void msp_serial_setup(void);
 extern void pmctwiled_setup(void);
 
-#if defined(CONFIG_PMC_MSP7120_EVAL) || \
-    defined(CONFIG_PMC_MSP7120_GW) || \
-    defined(CONFIG_PMC_MSP7120_FPGA)
+#if defined(CONFIG_PMC_MSP7120_EVAL) || defined(CONFIG_PMC_MSP7120_GW) || \
+	defined(CONFIG_PMC_MSP7120_FPGA)
 /*
  * Performs the reset for MSP7120-based boards
  */
@@ -108,9 +107,8 @@ void msp_restart(char *command)
 {
 	printk(KERN_WARNING "Now rebooting .......\n");
 
-#if defined(CONFIG_PMC_MSP7120_EVAL) || \
-    defined(CONFIG_PMC_MSP7120_GW) || \
-    defined(CONFIG_PMC_MSP7120_FPGA)
+#if defined(CONFIG_PMC_MSP7120_EVAL) || defined(CONFIG_PMC_MSP7120_GW) || \
+	defined(CONFIG_PMC_MSP7120_FPGA)
 	msp7120_reset();
 #else
 	/* No chip-specific reset code, just jump to the ROM reset vector */

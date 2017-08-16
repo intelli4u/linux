@@ -233,9 +233,6 @@ void zfIdlRsp(zdev_t* dev, u32_t* rsp, u16_t rspLen)
     zmw_enter_critical_section(dev);
 
     ret = zfGetCmd(dev, cmd, &cmdLen, &src, &buf);
-    #if 0
-    zm_assert(ret == 0);
-    #else
     if (ret != 0)
     {
         zm_debug_msg0("Error IdlRsp because none cmd!!\n");
@@ -244,7 +241,6 @@ void zfIdlRsp(zdev_t* dev, u32_t* rsp, u16_t rspLen)
         return;
         #endif
     }
-    #endif
 #ifdef ZM_XP_USB_MULTCMD
     zmw_leave_critical_section(dev);
 #else
@@ -316,69 +312,6 @@ void zfIdlRsp(zdev_t* dev, u32_t* rsp, u16_t rspLen)
     {
 
 //#ifdef ZM_OTUS_ENABLE_RETRY_FREQ_CHANGE
-#if 0
-    zm_debug_msg1("Retry Set Frequency = ", rsp[1]);
-
-    #if 1
-    // Read the Noise Floor value !
-    nf = ((rsp[2]>>19) & 0x1ff);
-    if ((nf & 0x100) != 0x0)
-    {
-        noisefloor[0] = 0 - ((nf ^ 0x1ff) + 1);
-    }
-    else
-    {
-        noisefloor[0] = nf;
-    }
-
-    zm_debug_msg1("Noise Floor[1] = ", noisefloor[0]);
-
-    nf = ((rsp[3]>>19) & 0x1ff);
-    if ((nf & 0x100) != 0x0)
-    {
-        noisefloor[1] = 0 - ((nf ^ 0x1ff) + 1);
-    }
-    else
-    {
-        noisefloor[1] = nf;
-    }
-
-    zm_debug_msg1("Noise Floor[2] = ", noisefloor[1]);
-    zm_debug_msg1("Is Site Survey = ", hpPriv->isSiteSurvey);
-    #endif
-
-        if ( (rsp[1] && hpPriv->freqRetryCounter == 0) ||
-             (((noisefloor[0]>-60)||(noisefloor[1]>-60)) && hpPriv->freqRetryCounter==0) ||
-             ((abs(noisefloor[0]-noisefloor[1])>=9) && hpPriv->freqRetryCounter==0) )
-        {
-            zm_debug_msg0("Retry to issue the frequency change command");
-
-            if ( hpPriv->recordFreqRetryCounter == 1 )
-            {
-                zm_debug_msg0("Cold Reset");
-
-                zfHpSetFrequencyEx(dev, hpPriv->latestFrequency,
-                                        hpPriv->latestBw40,
-                                        hpPriv->latestExtOffset,
-                                        2);
-
-                if ( hpPriv->isSiteSurvey != 2 )
-                {
-                    hpPriv->freqRetryCounter++;
-                }
-                hpPriv->recordFreqRetryCounter = 0;
-            }
-            else
-            {
-                zfHpSetFrequencyEx(dev, hpPriv->latestFrequency,
-                                        hpPriv->latestBw40,
-                                        hpPriv->latestExtOffset,
-                                        0);
-            }
-            hpPriv->recordFreqRetryCounter++;
-        }
-        else
-#endif
 
 /* ret: Bit0: AGC calibration   0=>finish  1=>unfinish               */
 /*      Bit1: Noise calibration 0=>finish  1=>unfinish               */
@@ -485,7 +418,6 @@ void zfIdlRsp(zdev_t* dev, u32_t* rsp, u16_t rspLen)
     	    zfCoreSetFrequencyComplete(dev);
     	}
 
-        #if 1
         // Read the Noise Floor value !
         nf = ((rsp[2]>>19) & 0x1ff);
         if ((nf & 0x100) != 0x0)
@@ -536,7 +468,6 @@ void zfIdlRsp(zdev_t* dev, u32_t* rsp, u16_t rspLen)
         //zm_debug_msg1("Noise Floor ext[2] = ", noisefloor[3]);
 
         //zm_debug_msg1("Is Site Survey = ", hpPriv->isSiteSurvey);
-        #endif
     }
     else if (src == ZM_CMD_SET_KEY)
     {
@@ -563,16 +494,6 @@ void zfIdlRsp(zdev_t* dev, u32_t* rsp, u16_t rspLen)
         /* BB heavy clip */
         //hpPriv->eepromHeavyClipFlag = (u8_t)((rsp[6]>>24) & 0xff); // force enable 8107
         //zm_msg2_mm(ZM_LV_0, "eepromHeavyClipFlag", hpPriv->eepromHeavyClipFlag);
-        #if 0
-        if (hpPriv->hwBBHeavyClip)
-        {
-            zm_msg0_mm(ZM_LV_0, "enable BB Heavy Clip");
-        }
-        else
-        {
-            zm_msg0_mm(ZM_LV_0, "Not enable BB Heavy Clip");
-        }
-        #endif
         zm_msg2_mm(ZM_LV_0, "MAC rsp[1]=", rsp[1]);
         zm_msg2_mm(ZM_LV_0, "MAC rsp[2]=", rsp[2]);
 
@@ -658,10 +579,6 @@ void zfIdlRsp(zdev_t* dev, u32_t* rsp, u16_t rspLen)
     }
     else if (src == ZM_EEPROM_READ)
     {
-#if 0
-        u8_t addr[6], CCS, WWR;
-        u16_t CountryDomainCode;
-#endif
         for (i=0; i<ZM_HAL_MAX_EEPROM_PRQ; i++)
         {
             if (hpPriv->eepromImageIndex < 1024)
@@ -672,55 +589,8 @@ void zfIdlRsp(zdev_t* dev, u32_t* rsp, u16_t rspLen)
 
         if (hpPriv->eepromImageIndex == (ZM_HAL_MAX_EEPROM_REQ*ZM_HAL_MAX_EEPROM_PRQ))
         {
-            #if 0
-            for (i=0; i<1024; i++)
-            {
-                zm_msg2_mm(ZM_LV_0, "index=", i);
-                zm_msg2_mm(ZM_LV_0, "eepromImage=", hpPriv->eepromImage[i]);
-            }
-            #endif
             zm_msg2_mm(ZM_LV_0, "MAC [1]=", hpPriv->eepromImage[0x20c/4]);
             zm_msg2_mm(ZM_LV_0, "MAC [2]=", hpPriv->eepromImage[0x210/4]);
-#if 0
-            addr[0] = (u8_t)(hpPriv->eepromImage[0x20c/4] & 0xff);
-            addr[1] = (u8_t)((hpPriv->eepromImage[0x20c/4]>>8) & 0xff);
-            addr[2] = (u8_t)((hpPriv->eepromImage[0x20c/4]>>16) & 0xff);
-            addr[3] = (u8_t)((hpPriv->eepromImage[0x20c/4]>>24) & 0xff);
-            addr[4] = (u8_t)(hpPriv->eepromImage[0x210/4] & 0xff);
-            addr[5] = (u8_t)((hpPriv->eepromImage[0x210/4]>>8) & 0xff);
-
-            zfCoreMacAddressNotify(dev, addr);
-
-            zfDelayWriteInternalReg(dev, ZM_MAC_REG_MAC_ADDR_L,
-                    ((((u32_t)addr[3])<<24) | (((u32_t)addr[2])<<16) | (((u32_t)addr[1])<<8) | addr[0]));
-            zfDelayWriteInternalReg(dev, ZM_MAC_REG_MAC_ADDR_H,
-                    ((((u32_t)addr[5])<<8) | addr[4]));
-            zfFlushDelayWrite(dev);
-
-            /* Regulatory Related Setting */
-            zm_msg2_mm(ZM_LV_0, "RegDomain =", hpPriv->eepromImage[0x208/4]);
-            CCS = (u8_t)((hpPriv->eepromImage[0x208/4] & 0x8000) >> 15);
-            WWR = (u8_t)((hpPriv->eepromImage[0x208/4] & 0x4000) >> 14);
-            /* below line shall be unmarked after A band is ready */
-            //CountryDomainCode = (u16_t)(hpPriv->eepromImage[0x208/4] & 0x3FFF);
-            CountryDomainCode = 8;
-            if (CCS)
-            {
-                //zm_debug_msg0("CWY - Get Regulation Table from Country Code");
-                zfHpGetRegulationTablefromCountry(dev, CountryDomainCode);
-            }
-            else
-            {
-                //zm_debug_msg0("CWY - Get Regulation Table from Reg Domain");
-                zfHpGetRegulationTablefromRegionCode(dev, CountryDomainCode);
-            }
-            if (WWR)
-            {
-                //zm_debug_msg0("CWY - Enable 802.11d");
-                /* below line shall be unmarked after A band is ready */
-                //zfiWlanSetDot11DMode(dev, 1);
-            }
-#endif
             zfCoreHalInitComplete(dev);
         }
         else
@@ -1169,151 +1039,6 @@ void zfDbgCloseEeprom(zdev_t* dev)
     //zfDelayWriteInternalReg(dev, 0x1D1414, 0x100);
     zfFlushDelayWrite(dev);
 }
-#if 0
-/************************************************************************/
-/*                                                                      */
-/*    FUNCTION DESCRIPTION                  zfiSeriallyWriteEeprom      */
-/*      Write EEPROM Serially.                                          */
-/*                                                                      */
-/*    INPUTS                                                            */
-/*      dev : device pointer                                            */
-/*      addr : start address of writing EEPROM                          */
-/*      buf : input data buffer                                         */
-/*      buflen : size of input data buffer                              */
-/*               (length of data write into EEPROM)                     */
-/*                                                                      */
-/*    OUTPUTS                                                           */
-/*                                                                      */
-/*                                                                      */
-/*                                                                      */
-/*    AUTHOR                                                            */
-/*      Paul                ZyDAS Technology Corporation    2007.06     */
-/*                                                                      */
-/************************************************************************/
-u32_t zfiSeriallyWriteEeprom(zdev_t* dev, u32_t addr, u32_t* buf, u32_t buflen)
-{
-    u32_t count;
-    u16_t i,ret,blocksize;
-    u8_t  temp[2];
-
-    // per 4 bytes = 1 count
-    count = buflen/4;
-
-    // Open EEPROM
-    zfDbgOpenEeprom(dev);
-
-    // Write EEPROM
-    for (i=0; i<count; i++)
-    {
-        if (zfwWriteEeprom(dev, (addr+(4*i)), *(buf+i), 0) != 0)
-        {
-            // Update failed, Close EEPROM
-            zm_debug_msg0("zfwWriteEeprom failed \n");
-            zfDbgCloseEeprom(dev);
-            return 1;
-        }
-    }
-
-    // Close EEPROM
-    zfDbgCloseEeprom(dev);
-    return 0;
-}
-#endif
-#if 0
-/************************************************************************/
-/*                                                                      */
-/*    FUNCTION DESCRIPTION                  zfiSeriallyBlockWriteEeprom */
-/*       Block Write EEPROM Serially.                                   */
-/*      (BlockWrite: per 16bytes write EEPROM once)                     */
-/*                                                                      */
-/*    INPUTS                                                            */
-/*      dev : device pointer                                            */
-/*      addr : register address                                         */
-/*      buf : input data buffer                                         */
-/*      buflen : access data size of buf                                */
-/*                                                                      */
-/*    OUTPUTS                                                           */
-/*      0 : success                                                     */
-/*      other : fail                                                    */
-/*                                                                      */
-/*    AUTHOR                                                            */
-/*      Paul                ZyDAS Technology Corporation    2007.05     */
-/*                                                                      */
-/************************************************************************/
-u32_t zfiSeriallyBlockWriteEeprom(zdev_t* dev, u32_t addr, u32_t* buf, u32_t buflen)
-{
-    u32_t count;
-    u16_t i,ret,blocksize;
-    u8_t  temp[2];
-
-    // per 4 bytes = 1 count
-    count = buflen/4;
-
-    // Open EEPROM
-    zfDbgOpenEeprom(dev);
-
-    // Write EEPROM
-    // EEPROM Write start address from: 0x1000!?
-    // per 16bytes(N=4) block write EEPROM once
-    for (i=0; i<(count/4); i++)   // count/N
-    {
-        //zfiDbgBlockWriteEeprom(dev, (addr+(4*N*i)), buf+(N*i));
-        //zfiDbgBlockWriteEeprom(dev, (addr+(16*i)), buf+(4*i));
-        if (zfwBlockWriteEeprom(dev, (addr+(16*i)), buf+(4*i), 0) != 0)
-        {
-            zm_debug_msg0("zfiDbgBlockWriteEeprom failed \n");
-            // Close EEPROM
-            zfDbgCloseEeprom(dev);
-            return 1;
-        }
-    }
-
-    // Close EEPROM
-    zfDbgCloseEeprom(dev);
-    return 0;
-}
-#endif
-#if 0
-/************************************************************************/
-/*                                                                      */
-/*    FUNCTION DESCRIPTION                  zfiDbgDumpEeprom            */
-/*      Dump EEPROM.                                                    */
-/*                                                                      */
-/*    INPUTS                                                            */
-/*      dev : device pointer                                            */
-/*      addr : start address of dumping EEPROM                          */
-/*      datalen :  length of access EEPROM data                           */
-/*      buf :  point of buffer, the buffer saved dump data              */
-/*                                                                      */
-/*    OUTPUTS                                                           */
-/*      0 : success                                                     */
-/*      other : fail                                                    */
-/*                                                                      */
-/*    AUTHOR                                                            */
-/*      Paul                ZyDAS Technology Corporation    2007.06     */
-/*                                                                      */
-/************************************************************************/
-u32_t zfiDbgDumpEeprom(zdev_t* dev, u32_t addr, u32_t datalen, u32_t* buf)
-{
-    u32_t count;
-    u16_t i,ret;
-
-    count = datalen/4;
-
-    // over EEPROM length
-    if(datalen > 0x2000)
-    {
-        return 1;
-    }
-
-    for(i=0; i<count; i++)
-    {
-        buf[i] = zfwReadEeprom(dev, addr+(4*i));
-    }
-
-    return 0;
-}
-#endif
 /************************************************************************/
 /*                                                                      */
 /*    FUNCTION DESCRIPTION                  zfiDbgReadReg               */
@@ -1409,42 +1134,7 @@ u32_t zfiDbgQueryHwTxBusy(zdev_t* dev)
 }
 
 //Paul++
-#if 0
-u16_t zfHpBlockEraseFlash(zdev_t *dev, u32_t addr)
-{
-    u32_t cmd[(ZM_MAX_CMD_SIZE/4)];
-    u16_t ret;
 
-    cmd[0] = 0x00000004 | (ZM_CMD_FLASH_ERASE << 8);
-    cmd[1] = addr;
-
-    ret = zfIssueCmd(dev, cmd, 8, ZM_OID_INTERNAL_WRITE, NULL);
-    return ret;
-}
-#endif
-
-#if 0
-u16_t zfiDbgProgramFlash(zdev_t *dev, u32_t offset, u32_t len, u32_t *data)
-{
-    u32_t cmd[(ZM_MAX_CMD_SIZE/4)];
-    u16_t ret;
-    u16_t i;
-
-
-    cmd[0] = (ZM_CMD_FLASH_PROG << 8) | ((len+8) & 0xff);
-    cmd[1] = offset;
-    cmd[2] = len;
-
-    for (i = 0; i < (len >> 2); i++)
-    {
-         cmd[3+i] = data[i];
-    }
-
-    ret = zfIssueCmd(dev, cmd, 12, ZM_OID_FLASH_PROGRAM, NULL);
-
-    return ret;
-}
-#endif
 
 /************************************************************************/
 /*                                                                      */

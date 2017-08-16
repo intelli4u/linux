@@ -273,35 +273,6 @@ static int scsi_dma_is_ignored_buserr(unsigned char dma_stat)
 }
 
 
-#if 0
-/* Dead code... wasn't called anyway :-) and causes some trouble, because at
- * end-of-DMA, both SCSI ints are triggered simultaneously, so the NCR int has
- * to clear the DMA int pending bit before it allows other level 6 interrupts.
- */
-static void scsi_dma_buserr(int irq, void *dummy)
-{
-	unsigned char dma_stat = tt_scsi_dma.dma_ctrl;
-
-	/* Don't do anything if a NCR interrupt is pending. Probably it's just
-	 * masked... */
-	if (atari_irq_pending(IRQ_TT_MFP_SCSI))
-		return;
-
-	printk("Bad SCSI DMA interrupt! dma_addr=0x%08lx dma_stat=%02x dma_cnt=%08lx\n",
-	       SCSI_DMA_READ_P(dma_addr), dma_stat, SCSI_DMA_READ_P(dma_cnt));
-	if (dma_stat & 0x80) {
-		if (!scsi_dma_is_ignored_buserr(dma_stat))
-			printk("SCSI DMA bus error -- bad DMA programming!\n");
-	} else {
-		/* Under normal circumstances we never should get to this point,
-		 * since both interrupts are triggered simultaneously and the 5380
-		 * int has higher priority. When this irq is handled, that DMA
-		 * interrupt is cleared. So a warning message is printed here.
-		 */
-		printk("SCSI DMA intr ?? -- this shouldn't happen!\n");
-	}
-}
-#endif
 
 #endif
 
@@ -391,10 +362,6 @@ static irqreturn_t scsi_tt_intr(int irq, void *dummy)
 
 	NCR5380_intr(irq, dummy);
 
-#if 0
-	/* To be sure the int is not masked */
-	atari_enable_irq(IRQ_TT_MFP_SCSI);
-#endif
 	return IRQ_HANDLED;
 }
 
@@ -511,9 +478,6 @@ static void falcon_release_lock_if_possible(struct NCR5380_hostdata *hostdata)
 	    !hostdata->issue_queue && !hostdata->connected) {
 
 		if (falcon_dont_release) {
-#if 0
-			printk("WARNING: Lock release not allowed. Ignored\n");
-#endif
 			local_irq_restore(flags);
 			return;
 		}
@@ -577,16 +541,6 @@ static void falcon_get_lock(void)
  * original function.
  */
 
-#if 0
-int atari_queue_command(Scsi_Cmnd *cmd, void (*done)(Scsi_Cmnd *))
-{
-	/* falcon_get_lock();
-	 * ++guenther: moved to NCR5380_queue_command() to prevent
-	 * race condition, see there for an explanation.
-	 */
-	return NCR5380_queue_command(cmd, done);
-}
-#endif
 
 
 int __init atari_scsi_detect(struct scsi_host_template *host)

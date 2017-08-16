@@ -1310,4 +1310,3 @@ static void set_multicast_list(struct net_device *dev)
 	lance_restart(dev, 0x0142, 0); /*  Resume normal operation */
 
 }
-

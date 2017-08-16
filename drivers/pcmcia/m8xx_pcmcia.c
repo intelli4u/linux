@@ -596,9 +596,6 @@ static irqreturn_t m8xx_interrupt(int irq, void *dev)
 		      (M8XX_PCMCIA_CD2(i) | M8XX_PCMCIA_CD1(i))) == 0) &&
 		    (s->state.Vcc | s->state.Vpp)) {
 			events &= ~SS_DETECT;
-			/*printk( "CD glitch workaround - CD = 0x%08x!\n",
-			   (pipr & (M8XX_PCMCIA_CD2(i)
-			   | M8XX_PCMCIA_CD1(i)))); */
 		}
 #endif
 

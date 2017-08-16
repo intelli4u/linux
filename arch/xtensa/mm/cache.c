@@ -114,9 +114,6 @@ void flush_dcache_page(struct page *page)
 }
 
 
-/*
- * For now, flush the whole cache. FIXME??
- */
 
 void flush_cache_range(struct vm_area_struct* vma, 
 		       unsigned long start, unsigned long end)

@@ -25,11 +25,7 @@
 #include <linux/slab.h>
 #include <linux/ctype.h>
 
-#if 0
-#define DEBUGP printk
-#else
 #define DEBUGP(fmt, a...)
-#endif
 
 /* Protects all parameters, and incidentally kmalloced_param list. */
 static DEFINE_MUTEX(param_lock);

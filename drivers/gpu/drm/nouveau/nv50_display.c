@@ -1136,4 +1136,3 @@ nv50_display_irq_handler(struct drm_device *dev)
 		}
 	}
 }
-

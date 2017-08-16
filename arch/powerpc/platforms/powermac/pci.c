@@ -35,8 +35,6 @@
 #define DBG(x...)
 #endif
 
-/* XXX Could be per-controller, but I don't think we risk anything by
- * assuming we won't have both UniNorth and Bandit */
 static int has_uninorth;
 #ifdef CONFIG_PPC64
 static struct pci_controller *u3_agp;
@@ -613,8 +611,6 @@ static void __init init_p2pbridge(void)
 	u8 bus, devfn;
 	u16 val;
 
-	/* XXX it would be better here to identify the specific
-	   PCI-PCI bridge chip we have. */
 	p2pbridge = of_find_node_by_name(NULL, "pci-bridge");
 	if (p2pbridge == NULL
 	    || p2pbridge->parent == NULL
@@ -944,7 +940,6 @@ static int __init pmac_add_bridge(struct device_node *dev)
 		primary = setup_uninorth(hose, &rsrc);
 		disp_name = "UniNorth";
 	} else if (strcmp(dev->name, "pci") == 0) {
-		/* XXX assume this is a mpc106 (grackle) */
 		setup_grackle(hose);
 		disp_name = "Grackle (MPC106)";
 	} else if (strcmp(dev->name, "bandit") == 0) {

@@ -1,98 +1,4 @@
 #define VERSION "0.23"
-/* ns83820.c by Benjamin LaHaise with contributions.
- *
- * Questions/comments/discussion to linux-ns83820@kvack.org.
- *
- * $Revision: 1.34.2.23 $
- *
- * Copyright 2001 Benjamin LaHaise.
- * Copyright 2001, 2002 Red Hat.
- *
- * Mmmm, chocolate vanilla mocha...
- *
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- *
- * ChangeLog
- * =========
- *	20010414	0.1 - created
- *	20010622	0.2 - basic rx and tx.
- *	20010711	0.3 - added duplex and link state detection support.
- *	20010713	0.4 - zero copy, no hangs.
- *			0.5 - 64 bit dma support (davem will hate me for this)
- *			    - disable jumbo frames to avoid tx hangs
- *			    - work around tx deadlocks on my 1.02 card via
- *			      fiddling with TXCFG
- *	20010810	0.6 - use pci dma api for ringbuffers, work on ia64
- *	20010816	0.7 - misc cleanups
- *	20010826	0.8 - fix critical zero copy bugs
- *			0.9 - internal experiment
- *	20010827	0.10 - fix ia64 unaligned access.
- *	20010906	0.11 - accept all packets with checksum errors as
- *			       otherwise fragments get lost
- *			     - fix >> 32 bugs
- *			0.12 - add statistics counters
- *			     - add allmulti/promisc support
- *	20011009	0.13 - hotplug support, other smaller pci api cleanups
- *	20011204	0.13a - optical transceiver support added
- *				by Michael Clark <michael@metaparadigm.com>
- *	20011205	0.13b - call register_netdev earlier in initialization
- *				suppress duplicate link status messages
- *	20011117 	0.14 - ethtool GDRVINFO, GLINK support from jgarzik
- *	20011204 	0.15	get ppc (big endian) working
- *	20011218	0.16	various cleanups
- *	20020310	0.17	speedups
- *	20020610	0.18 -	actually use the pci dma api for highmem
- *			     -	remove pci latency register fiddling
- *			0.19 -	better bist support
- *			     -	add ihr and reset_phy parameters
- *			     -	gmii bus probing
- *			     -	fix missed txok introduced during performance
- *				tuning
- *			0.20 -	fix stupid RFEN thinko.  i am such a smurf.
- *	20040828	0.21 -	add hardware vlan accleration
- *				by Neil Horman <nhorman@redhat.com>
- *	20050406	0.22 -	improved DAC ifdefs from Andi Kleen
- *			     -	removal of dead code from Adrian Bunk
- *			     -	fix half duplex collision behaviour
- * Driver Overview
- * ===============
- *
- * This driver was originally written for the National Semiconductor
- * 83820 chip, a 10/100/1000 Mbps 64 bit PCI ethernet NIC.  Hopefully
- * this code will turn out to be a) clean, b) correct, and c) fast.
- * With that in mind, I'm aiming to split the code up as much as
- * reasonably possible.  At present there are X major sections that
- * break down into a) packet receive, b) packet transmit, c) link
- * management, d) initialization and configuration.  Where possible,
- * these code paths are designed to run in parallel.
- *
- * This driver has been tested and found to work with the following
- * cards (in no particular order):
- *
- *	Cameo		SOHO-GA2000T	SOHO-GA2500T
- *	D-Link		DGE-500T
- *	PureData	PDP8023Z-TG
- *	SMC		SMC9452TX	SMC9462TX
- *	Netgear		GA621
- *
- * Special thanks to SMC for providing hardware to test this driver on.
- *
- * Reports of success or failure would be greatly appreciated.
- */
 //#define dprintk		printk
 #define dprintk(x...)		do { } while (0)
 
@@ -547,13 +453,6 @@ static inline int ns83820_add_rx_skb(struct ns83820 *dev, struct sk_buff *skb)
 		return 1;
 	}
 
-#if 0
-	dprintk("next_empty[%d] nr_used[%d] next_rx[%d]\n",
-		dev->rx_info.next_empty,
-		dev->rx_info.nr_used,
-		dev->rx_info.next_rx
-		);
-#endif
 
 	sg = dev->rx_info.descs + (next_empty * DESC_SIZE);
 	BUG_ON(NULL != dev->rx_info.skbs[next_empty]);
@@ -1534,10 +1433,6 @@ static void ns83820_do_isr(struct net_device *ndev, u32 isr)
 	if (unlikely(ISR_PHY & isr))
 		phy_intr(ndev);
 
-#if 0	/* Still working on the interrupt mitigation strategy */
-	if (dev->ihr)
-		writel(dev->ihr, dev->base + IHR);
-#endif
 }
 
 static void ns83820_do_reset(struct ns83820 *dev, u32 which)
@@ -1554,7 +1449,6 @@ static int ns83820_stop(struct net_device *ndev)
 {
 	struct ns83820 *dev = PRIV(ndev);
 
-	/* FIXME: protect against interrupt handler? */
 	del_timer_sync(&dev->tx_watchdog);
 
 	/* disable interrupts */
@@ -1673,7 +1567,7 @@ static int ns83820_open(struct net_device *ndev)
 	dev->tx_watchdog.function = ns83820_tx_watch;
 	mod_timer(&dev->tx_watchdog, jiffies + 2*HZ);
 
-	netif_start_queue(ndev);	/* FIXME: wait for phy to come up */
+	netif_start_queue(ndev);
 
 	return 0;
 
@@ -1900,18 +1794,6 @@ static void ns83820_probe_phy(struct net_device *ndev)
 #define MII_PHYIDR1	0x02
 #define MII_PHYIDR2	0x03
 
-#if 0
-	if (!first) {
-		unsigned tmp;
-		ns83820_mii_read_reg(dev, 1, 0x09);
-		ns83820_mii_write_reg(dev, 1, 0x10, 0x0d3e);
-
-		tmp = ns83820_mii_read_reg(dev, 1, 0x00);
-		ns83820_mii_write_reg(dev, 1, 0x00, tmp | 0x8000);
-		udelay(1300);
-		ns83820_mii_read_reg(dev, 1, 0x09);
-	}
-#endif
 	first = 1;
 
 	for (i=1; i<2; i++) {
@@ -2038,13 +1920,6 @@ static int __devinit ns83820_init_one(struct pci_dev *pci_dev,
 		goto out_disable;
 	}
 
-	/*
-	 * FIXME: we are holding rtnl_lock() over obscenely long area only
-	 * because some of the setup code uses dev->name.  It's Wrong(tm) -
-	 * we should be using driver-specific names for all that stuff.
-	 * For now that will do, but we really need to come back and kill
-	 * most of the dev_alloc_name() users later.
-	 */
 	rtnl_lock();
 	err = dev_alloc_name(ndev, ndev->name);
 	if (err < 0) {
@@ -2134,12 +2009,6 @@ static int __devinit ns83820_init_one(struct pci_dev *pci_dev,
 		writel(dev->CFG_cache, dev->base + CFG);
 	}
 
-#if 0	/* Huh?  This sets the PCI latency register.  Should be done via
-	 * the PCI layer.  FIXME.
-	 */
-	if (readl(dev->base + SRR))
-		writel(readl(dev->base+0x20c) | 0xfe00, dev->base + 0x20c);
-#endif
 
 	/* Note!  The DMA burst size interacts with packet
 	 * transmission, such that the largest packet that
@@ -2303,10 +2172,6 @@ static struct pci_driver driver = {
 	.id_table	= ns83820_pci_tbl,
 	.probe		= ns83820_init_one,
 	.remove		= __devexit_p(ns83820_remove_one),
-#if 0	/* FIXME: implement */
-	.suspend	= ,
-	.resume		= ,
-#endif
 };
 
 

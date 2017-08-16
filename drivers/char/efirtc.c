@@ -220,12 +220,6 @@ static long efi_rtc_ioctl(struct file *file, unsigned int cmd,
 			convert_to_efi_time(&wtime, &eft);
 
 			spin_lock_irqsave(&efi_rtc_lock, flags);
-			/*
-			 * XXX Fixme:
-			 * As of EFI 0.92 with the firmware I have on my
-			 * machine this call does not seem to work quite
-			 * right
-			 */
 			status = efi.set_wakeup_time((efi_bool_t)enabled, &eft);
 
 			spin_unlock_irqrestore(&efi_rtc_lock,flags);
@@ -328,7 +322,6 @@ efi_rtc_get_status(char *buf)
 	if (eft.timezone == EFI_UNSPECIFIED_TIMEZONE)
 		p += sprintf(p, "Timezone       : unspecified\n");
 	else
-		/* XXX fixme: convert to string? */
 		p += sprintf(p, "Timezone       : %u\n", eft.timezone);
 		
 
@@ -347,7 +340,6 @@ efi_rtc_get_status(char *buf)
 	if (eft.timezone == EFI_UNSPECIFIED_TIMEZONE)
 		p += sprintf(p, "Timezone       : unspecified\n");
 	else
-		/* XXX fixme: convert to string? */
 		p += sprintf(p, "Timezone       : %u\n", alm.timezone);
 
 	/*

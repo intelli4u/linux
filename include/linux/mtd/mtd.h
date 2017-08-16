@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  * Copyright © 1999-2010 David Woodhouse <dwmw2@infradead.org> et al.
  *
@@ -146,6 +147,9 @@ struct mtd_info {
 	const char *name;
 	int index;
 
+#ifdef CONFIG_BCM47XX
+	spinlock_t *mlock;
+#endif
 	/* ecc layout structure pointer - read only ! */
 	struct nand_ecclayout *ecclayout;
 

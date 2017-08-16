@@ -294,14 +294,6 @@ static ide_startstop_t ide_special_rq(ide_drive_t *drive, struct request *rq)
 	}
 }
 
-/**
- *	start_request	-	start of I/O and command issuing for IDE
- *
- *	start_request() initiates handling of a new I/O request. It
- *	accepts commands and I/O (read/write) requests.
- *
- *	FIXME: this function needs a rename
- */
  
 static ide_startstop_t start_request (ide_drive_t *drive, struct request *rq)
 {

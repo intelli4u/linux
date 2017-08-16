@@ -64,4 +64,3 @@ void clk_put(struct clk *clk)
 {
 }
 EXPORT_SYMBOL_GPL(clk_put);
-

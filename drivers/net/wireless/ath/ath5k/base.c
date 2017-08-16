@@ -503,7 +503,6 @@ ath5k_pci_probe(struct pci_dev *pdev,
 		goto err;
 	}
 
-	/* XXX 32-bit addressing only */
 	ret = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
 	if (ret) {
 		dev_err(&pdev->dev, "32-bit DMA not available\n");
@@ -906,19 +905,6 @@ ath5k_detach(struct pci_dev *pdev, struct ieee80211_hw *hw)
 {
 	struct ath5k_softc *sc = hw->priv;
 
-	/*
-	 * NB: the order of these is important:
-	 * o call the 802.11 layer before detaching ath5k_hw to
-	 *   insure callbacks into the driver to delete global
-	 *   key cache entries can be handled
-	 * o reclaim the tx queue data structures after calling
-	 *   the 802.11 layer as we'll get called back to reclaim
-	 *   node state and potentially want to use them
-	 * o to cleanup the tx queues the hal is called, so detach
-	 *   it last
-	 * XXX: ??? detach ath5k_hw ???
-	 * Other than that, it's straightforward...
-	 */
 	ieee80211_unregister_hw(hw);
 	ath5k_desc_free(sc, pdev);
 	ath5k_txq_release(sc);
@@ -1322,7 +1308,6 @@ ath5k_txbuf_setup(struct ath5k_softc *sc, struct ath5k_buf *bf,
 
 	flags = AR5K_TXDESC_INTREQ | AR5K_TXDESC_CLRDMASK;
 
-	/* XXX endianness */
 	bf->skbaddr = pci_map_single(sc->pdev, skb->data, skb->len,
 			PCI_DMA_TODEVICE);
 
@@ -1341,9 +1326,6 @@ ath5k_txbuf_setup(struct ath5k_softc *sc, struct ath5k_buf *bf,
 
 	pktlen = skb->len;
 
-	/* FIXME: If we are in g mode and rate is a CCK rate
-	 * subtract ah->ah_txpower.txp_cck_ofdm_pwr_delta
-	 * from tx power (value is in dB units already) */
 	if (info->control.hw_key) {
 		keyidx = info->control.hw_key->hw_key_idx;
 		pktlen += info->control.hw_key->icv_len;
@@ -1659,7 +1641,6 @@ ath5k_txq_cleanup(struct ath5k_softc *sc)
 	struct ath5k_hw *ah = sc->ah;
 	unsigned int i;
 
-	/* XXX return value */
 	if (likely(!test_bit(ATH_STAT_INVALID, sc->status))) {
 		/* don't touch the hardware if marked invalid */
 		ath5k_hw_stop_tx_dma(ah, sc->bhalq);
@@ -1797,11 +1778,6 @@ ath5k_check_ibss_tsf(struct ath5k_softc *sc, struct sk_buff *skb,
 	if (ieee80211_is_beacon(mgmt->frame_control) &&
 	    le16_to_cpu(mgmt->u.beacon.capab_info) & WLAN_CAPABILITY_IBSS &&
 	    memcmp(mgmt->bssid, common->curbssid, ETH_ALEN) == 0) {
-		/*
-		 * Received an IBSS beacon with the same BSSID. Hardware *must*
-		 * have updated the local TSF. We have to work around various
-		 * hardware bugs, though...
-		 */
 		tsf = ath5k_hw_get_tsf64(sc->ah);
 		bc_tstamp = le64_to_cpu(mgmt->u.beacon.timestamp);
 		hw_tu = TSF_TO_TU(tsf);
@@ -1945,26 +1921,6 @@ ath5k_receive_frame(struct ath5k_softc *sc, struct sk_buff *skb,
 	if (unlikely(rs->rs_status & AR5K_RXERR_MIC))
 		rxs->flag |= RX_FLAG_MMIC_ERROR;
 
-	/*
-	 * always extend the mac timestamp, since this information is
-	 * also needed for proper IBSS merging.
-	 *
-	 * XXX: it might be too late to do it here, since rs_tstamp is
-	 * 15bit only. that means TSF extension has to be done within
-	 * 32768usec (about 32ms). it might be necessary to move this to
-	 * the interrupt handler, like it is done in madwifi.
-	 *
-	 * Unfortunately we don't know when the hardware takes the rx
-	 * timestamp (beginning of phy frame, data frame, end of rx?).
-	 * The only thing we know is that it is hardware specific...
-	 * On AR5213 it seems the rx timestamp is at the end of the
-	 * frame, but i'm not sure.
-	 *
-	 * NOTE: mac80211 defines mactime at the beginning of the first
-	 * data symbol. Since we don't have any time references it's
-	 * impossible to comply to that. This affects IBSS merge only
-	 * right now, so it's not too bad...
-	 */
 	rxs->mactime = ath5k_extend_tsf(sc->ah, rs->rs_tstamp);
 	rxs->flag |= RX_FLAG_TSFT;
 
@@ -2020,16 +1976,6 @@ ath5k_receive_frame_ok(struct ath5k_softc *sc, struct ath5k_rx_status *rs)
 			return false;
 		}
 		if (rs->rs_status & AR5K_RXERR_DECRYPT) {
-			/*
-			 * Decrypt error.  If the error occurred
-			 * because there was no hardware key, then
-			 * let the frame through so the upper layers
-			 * can process it.  This is necessary for 5210
-			 * parts which have no way to setup a ``clear''
-			 * key cache entry.
-			 *
-			 * XXX do key cache faulting
-			 */
 			sc->stats.rxerr_decrypt++;
 			if (rs->rs_keyix == AR5K_RXKEYIX_INVALID &&
 			    !(rs->rs_status & AR5K_RXERR_CRC))
@@ -2294,9 +2240,6 @@ ath5k_beacon_setup(struct ath5k_softc *sc, struct ath5k_buf *bf)
 		antenna = sc->bsent & 4 ? 2 : 1;
 
 
-	/* FIXME: If we are in g mode and rate is a CCK rate
-	 * subtract ah->ah_txpower.txp_cck_ofdm_pwr_delta
-	 * from tx power (value is in dB units already) */
 	ds->ds_data = bf->skbaddr;
 	ret = ah->ah_setup_tx_desc(ah, ds, skb->len,
 			ieee80211_get_hdrlen_from_skb(skb), padsize,
@@ -2551,7 +2494,6 @@ static void ath5k_tasklet_beacon(unsigned long data)
 	 * automatic TSF updates happened.
 	 */
 	if (sc->opmode == NL80211_IFTYPE_ADHOC) {
-		/* XXX: only if VEOL suppported */
 		u64 tsf = ath5k_hw_get_tsf64(sc->ah);
 		sc->nexttbtt += sc->bintval;
 		ATH5K_DBG(sc, ATH5K_DEBUG_BEACON,
@@ -2993,15 +2935,6 @@ ath5k_reset(struct ath5k_softc *sc, struct ieee80211_channel *chan)
 	ah->ah_cal_next_ani = jiffies;
 	ah->ah_cal_next_nf = jiffies;
 
-	/*
-	 * Change channels and update the h/w rate map if we're switching;
-	 * e.g. 11a to 11b/g.
-	 *
-	 * We may be doing a reset in response to an ioctl that changes the
-	 * channel so update any state that might change as a result.
-	 *
-	 * XXX needed?
-	 */
 /*	ath5k_chan_change(sc, c); */
 
 	ath5k_beacon_config(sc);
@@ -3158,9 +3091,6 @@ static u64 ath5k_prepare_multicast(struct ieee80211_hw *hw,
 		pos ^= (val >> 18) ^ (val >> 12) ^ (val >> 6) ^ val;
 		pos &= 0x3f;
 		mfilt[pos / 32] |= (1 << (pos % 32));
-		/* XXX: we might be able to just do this instead,
-		* but not sure, needs testing, if we do use this we'd
-		* neet to inform below to not reset the mcast */
 		/* ath5k_hw_set_mcast_filterindex(ah,
 		 *      ha->addr[5]); */
 	}
@@ -3208,9 +3138,6 @@ static void ath5k_configure_filter(struct ieee80211_hw *hw,
 	changed_flags &= SUPPORTED_FIF_FLAGS;
 	*new_flags &= SUPPORTED_FIF_FLAGS;
 
-	/* If HW detects any phy or radar errors, leave those filters on.
-	 * Also, always enable Unicast, Broadcasts and Multicast
-	 * XXX: move unicast, bssid broadcasts and multicast to mac80211 */
 	rfilt = (ath5k_hw_get_rx_filter(ah) & (AR5K_RX_FILTER_PHYERR)) |
 		(AR5K_RX_FILTER_UCAST | AR5K_RX_FILTER_BCAST |
 		AR5K_RX_FILTER_MCAST);
@@ -3251,7 +3178,6 @@ static void ath5k_configure_filter(struct ieee80211_hw *hw,
 
 	/* Additional settings per mode -- this is per ath5k */
 
-	/* XXX move these to mac80211, and add a beacon IFF flag to mac80211 */
 
 	switch (sc->opmode) {
 	case NL80211_IFTYPE_MESH_POINT:

@@ -149,8 +149,7 @@ static struct platform_device tmu2_device = {
 };
 
 /* SH7750R, SH7751 and SH7751R all have two extra timer channels */
-#if defined(CONFIG_CPU_SUBTYPE_SH7750R) || \
-	defined(CONFIG_CPU_SUBTYPE_SH7751) || \
+#if defined(CONFIG_CPU_SUBTYPE_SH7750R) || defined(CONFIG_CPU_SUBTYPE_SH7751) || \
 	defined(CONFIG_CPU_SUBTYPE_SH7751R)
 
 static struct sh_timer_config tmu3_platform_data = {
@@ -216,8 +215,7 @@ static struct platform_device *sh7750_devices[] __initdata = {
 	&tmu0_device,
 	&tmu1_device,
 	&tmu2_device,
-#if defined(CONFIG_CPU_SUBTYPE_SH7750R) || \
-	defined(CONFIG_CPU_SUBTYPE_SH7751) || \
+#if defined(CONFIG_CPU_SUBTYPE_SH7750R) || defined(CONFIG_CPU_SUBTYPE_SH7751) || \
 	defined(CONFIG_CPU_SUBTYPE_SH7751R)
 	&tmu3_device,
 	&tmu4_device,
@@ -237,8 +235,7 @@ static struct platform_device *sh7750_early_devices[] __initdata = {
 	&tmu0_device,
 	&tmu1_device,
 	&tmu2_device,
-#if defined(CONFIG_CPU_SUBTYPE_SH7750R) || \
-	defined(CONFIG_CPU_SUBTYPE_SH7751) || \
+#if defined(CONFIG_CPU_SUBTYPE_SH7750R) || defined(CONFIG_CPU_SUBTYPE_SH7751) || \
 	defined(CONFIG_CPU_SUBTYPE_SH7751R)
 	&tmu3_device,
 	&tmu4_device,
@@ -293,10 +290,8 @@ static DECLARE_INTC_DESC(intc_desc, "sh7750", vectors, NULL,
 			 NULL, prio_registers, NULL);
 
 /* SH7750, SH7750S, SH7751 and SH7091 all have 4-channel DMA controllers */
-#if defined(CONFIG_CPU_SUBTYPE_SH7750) || \
-	defined(CONFIG_CPU_SUBTYPE_SH7750S) || \
-	defined(CONFIG_CPU_SUBTYPE_SH7751) || \
-	defined(CONFIG_CPU_SUBTYPE_SH7091)
+#if defined(CONFIG_CPU_SUBTYPE_SH7750) || defined(CONFIG_CPU_SUBTYPE_SH7750S) || \
+	defined(CONFIG_CPU_SUBTYPE_SH7751) || defined(CONFIG_CPU_SUBTYPE_SH7091)
 static struct intc_vect vectors_dma4[] __initdata = {
 	INTC_VECT(DMAC, 0x640), INTC_VECT(DMAC, 0x660),
 	INTC_VECT(DMAC, 0x680), INTC_VECT(DMAC, 0x6a0),
@@ -324,8 +319,7 @@ static DECLARE_INTC_DESC(intc_desc_dma8, "sh7750_dma8",
 #endif
 
 /* SH7750R, SH7751 and SH7751R all have two extra timer channels */
-#if defined(CONFIG_CPU_SUBTYPE_SH7750R) || \
-	defined(CONFIG_CPU_SUBTYPE_SH7751) || \
+#if defined(CONFIG_CPU_SUBTYPE_SH7750R) || defined(CONFIG_CPU_SUBTYPE_SH7751) || \
 	defined(CONFIG_CPU_SUBTYPE_SH7751R)
 static struct intc_vect vectors_tmu34[] __initdata = {
 	INTC_VECT(TMU3, 0xb00), INTC_VECT(TMU4, 0xb80),
@@ -372,8 +366,7 @@ static DECLARE_INTC_DESC(intc_desc_pci, "sh7750_pci", vectors_pci, groups_pci,
 			 mask_registers, prio_registers, NULL);
 #endif
 
-#if defined(CONFIG_CPU_SUBTYPE_SH7750) || \
-	defined(CONFIG_CPU_SUBTYPE_SH7750S) || \
+#if defined(CONFIG_CPU_SUBTYPE_SH7750) || defined(CONFIG_CPU_SUBTYPE_SH7750S) || \
 	defined(CONFIG_CPU_SUBTYPE_SH7091)
 void __init plat_irq_setup(void)
 {

@@ -593,49 +593,6 @@ static const struct ni_board_struct ni_boards[] = {
 	 .num_p0_dio_channels = 8,
 	 .caldac = {ad8804, ad8804},
 	 },
-#if 0
-	/* The 6115 boards probably need their own driver */
-	{
-	 .device_id = 0x2ed0,
-	 .name = "pci-6115",
-	 .n_adchan = 4,
-	 .adbits = 12,
-	 .ai_fifo_depth = 8192,
-	 .alwaysdither = 0,
-	 .gainlkup = ai_gain_611x,
-	 .ai_speed = 100,
-	 .n_aochan = 2,
-	 .aobits = 16,
-	 .ao_671x = 1,
-	 .ao_unipolar = 0,
-	 .ao_fifo_depth = 2048,
-	 .ao_speed = 250,
-	 .num_p0_dio_channels = 8,
-	 .reg_611x = 1,
-	 .caldac = {ad8804_debug, ad8804_debug, ad8804_debug},	/* XXX */
-	 },
-#endif
-#if 0
-	{
-	 .device_id = 0x0000,
-	 .name = "pxi-6115",
-	 .n_adchan = 4,
-	 .adbits = 12,
-	 .ai_fifo_depth = 8192,
-	 .alwaysdither = 0,
-	 .gainlkup = ai_gain_611x,
-	 .ai_speed = 100,
-	 .n_aochan = 2,
-	 .aobits = 16,
-	 .ao_671x = 1,
-	 .ao_unipolar = 0,
-	 .ao_fifo_depth = 2048,
-	 .ao_speed = 250,
-	 .reg_611x = 1,
-	 .num_p0_dio_channels = 8,
-	 caldac = {ad8804_debug, ad8804_debug, ad8804_debug},	/* XXX */
-	 },
-#endif
 	{
 	 .device_id = 0x1880,
 	 .name = "pci-6711",
@@ -707,21 +664,6 @@ static const struct ni_board_struct ni_boards[] = {
 	 .reg_type = ni_reg_6711,
 	 .caldac = {ad8804_debug},
 	 },
-#if 0				/* need device ids */
-	{
-	 .device_id = 0x0,
-	 .name = "pxi-6731",
-	 .n_adchan = 0,		/* no analog input */
-	 .n_aochan = 4,
-	 .aobits = 16,
-	 .ao_unipolar = 0,
-	 .ao_fifo_depth = 8192,
-	 .ao_range_table = &range_bipolar10,
-	 .num_p0_dio_channels = 8,
-	 .reg_type = ni_reg_6711,
-	 .caldac = {ad8804_debug},
-	 },
-#endif
 	{
 	 .device_id = 0x2410,
 	 .name = "pci-6733",
@@ -849,7 +791,6 @@ static const struct ni_board_struct ni_boards[] = {
 	 .n_adchan = 16,
 	 .adbits = 16,
 	 .ai_fifo_depth = 512,
-	 /*      .FIXME = guess */
 	 .gainlkup = ai_gain_622x,
 	 .ai_speed = 4000,
 	 .n_aochan = 0,
@@ -1467,8 +1408,6 @@ static void m_series_stc_writew(struct comedi_device *dev, uint16_t data,
 	case RTSI_Trig_Direction_Register:
 		offset = M_Offset_RTSI_Trig_Direction;
 		break;
-		/* FIXME: DIO_Output_Register (16 bit reg) is replaced by M_Offset_Static_Digital_Output (32 bit)
-		   and M_Offset_SCXI_Serial_Data_Out (8 bit) */
 	default:
 		printk("%s: bug! unhandled register=0x%x in switch.\n",
 		       __func__, reg);

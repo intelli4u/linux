@@ -125,7 +125,6 @@ void sunserial_console_termios(struct console *con, struct device_node *uart_dp)
 	s = strchr(s, ',');
 	stop = simple_strtoul(++s, NULL, 0);
 	s = strchr(s, ',');
-	/* XXX handshake is not handled here. */
 
 	switch (baud) {
 		case 150: cflag |= B150; break;

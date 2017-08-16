@@ -449,7 +449,6 @@ void pci_determine_mem_io_space(struct pci_pbm_info *pbm)
 			break;
 
 		case 3:
-			/* XXX 64-bit MEM handling XXX */
 
 		default:
 			break;

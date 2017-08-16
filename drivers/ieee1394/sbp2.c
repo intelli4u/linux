@@ -21,35 +21,6 @@
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/*
- * Brief Description:
- *
- * This driver implements the Serial Bus Protocol 2 (SBP-2) over IEEE-1394
- * under Linux. The SBP-2 driver is implemented as an IEEE-1394 high-level
- * driver. It also registers as a SCSI lower-level driver in order to accept
- * SCSI commands for transport using SBP-2.
- *
- * You may access any attached SBP-2 (usually storage devices) as regular
- * SCSI devices. E.g. mount /dev/sda1, fdisk, mkfs, etc..
- *
- * See http://www.t10.org/drafts.htm#sbp2 for the final draft of the SBP-2
- * specification and for where to purchase the official standard.
- *
- * TODO:
- *   - look into possible improvements of the SCSI error handlers
- *   - handle Unit_Characteristics.mgt_ORB_timeout and .ORB_size
- *   - handle Logical_Unit_Number.ordered
- *   - handle src == 1 in status blocks
- *   - reimplement the DMA mapping in absence of physical DMA so that
- *     bus_to_virt is no longer required
- *   - debug the handling of absent physical DMA
- *   - replace CONFIG_IEEE1394_SBP2_PHYS_DMA by automatic detection
- *     (this is easy but depends on the previous two TODO items)
- *   - make the parameter serialize_io configurable per device
- *   - move all requests to fetch agent registers into non-atomic context,
- *     replace all usages of sbp2util_node_write_no_wait by true transactions
- * Grep for inline FIXME comments below.
- */
 
 #include <linux/blkdev.h>
 #include <linux/compiler.h>
@@ -393,10 +364,6 @@ static const struct {
 		.model			= SBP2_ROM_VALUE_WILDCARD,
 		.workarounds		= SBP2_WORKAROUND_128K_MAX_TRANS,
 	},
-	/*
-	 * iPod 2nd generation: needs 128k max transfer size workaround
-	 * iPod 3rd generation: needs fix capacity workaround
-	 */
 	{
 		.firmware_revision	= 0x0a2700,
 		.model			= 0x000000,
@@ -1377,12 +1344,7 @@ static void sbp2_parse_unit_directory(struct sbp2_lu *lu,
 			break;
 
 		default:
-			/* FIXME: Check for SBP2_UNIT_CHARACTERISTICS_KEY
-			 * mgt_ORB_timeout and ORB_size, SBP-2 clause 7.4.8. */
 
-			/* FIXME: Check for SBP2_DEVICE_TYPE_AND_LUN_KEY.
-			 * Its "ordered" bit has consequences for command ORB
-			 * list handling. See SBP-2 clauses 4.6, 7.4.11, 10.2 */
 			break;
 		}
 	}
@@ -1465,8 +1427,6 @@ static int sbp2_max_speed_and_size(struct sbp2_lu *lu)
 	payload = min(sbp2_speedto_max_payload[lu->speed_code],
 		      (u8) (hi->host->csr.max_rec - 1));
 
-	/* If physical DMA is off, work around limitation in ohci1394:
-	 * packet size must not exceed PAGE_SIZE */
 	if (lu->ne->host->low_addr_space < (1ULL << 32))
 		while (SBP2_PAYLOAD_TO_BYTES(payload) + 24 > PAGE_SIZE &&
 		       payload)
@@ -1789,10 +1749,6 @@ static int sbp2_handle_status_write(struct hpsb_host *host, int nodeid,
 		cmd = sbp2util_find_command_for_orb(lu, sb->ORB_offset_lo);
 	if (cmd) {
 		/* Grab SCSI command pointers and check status. */
-		/*
-		 * FIXME: If the src field in the status is 1, the ORB DMA must
-		 * not be reused until status for a subsequent ORB is received.
-		 */
 		SCpnt = cmd->Current_SCpnt;
 		spin_lock_irqsave(&lu->cmd_orb_lock, flags);
 		sbp2util_mark_command_completed(lu, cmd);

@@ -1367,7 +1367,7 @@ static int hardware_enable(void *garbage)
 		/* enable and lock */
 		wrmsrl(MSR_IA32_FEATURE_CONTROL, old | test_bits);
 	}
-	write_cr4(read_cr4() | X86_CR4_VMXE); /* FIXME: not cpu hotplug safe */
+	write_cr4(read_cr4() | X86_CR4_VMXE);
 
 	if (vmm_exclusive) {
 		kvm_cpu_vmxon(phys_addr);
@@ -2577,7 +2577,7 @@ static int vmx_vcpu_setup(struct vcpu_vmx *vmx)
 
 	vmcs_writel(HOST_CR0, read_cr0() | X86_CR0_TS);  /* 22.2.3 */
 	vmcs_writel(HOST_CR4, read_cr4());  /* 22.2.3, 22.2.5 */
-	vmcs_writel(HOST_CR3, read_cr3());  /* 22.2.3  FIXME: shadow tables */
+	vmcs_writel(HOST_CR3, read_cr3());
 
 	vmcs_write16(HOST_CS_SELECTOR, __KERNEL_CS);  /* 22.2.4 */
 	vmcs_write16(HOST_DS_SELECTOR, __KERNEL_DS);  /* 22.2.4 */
@@ -2957,11 +2957,6 @@ static int handle_rmode_exception(struct kvm_vcpu *vcpu,
 	if (((vec == GP_VECTOR) || (vec == SS_VECTOR)) && err_code == 0)
 		if (emulate_instruction(vcpu, 0, 0, 0) == EMULATE_DONE)
 			return 1;
-	/*
-	 * Forward all other exceptions that are valid in real mode.
-	 * FIXME: Breaks guest debugging in real mode, needs to be fixed with
-	 *        the required debugging infrastructure rework.
-	 */
 	switch (vec) {
 	case DB_VECTOR:
 		if (vcpu->guest_debug &
@@ -3319,7 +3314,6 @@ static int handle_rdmsr(struct kvm_vcpu *vcpu)
 
 	trace_kvm_msr_read(ecx, data);
 
-	/* FIXME: handling of bits 32:63 of rax, rdx */
 	vcpu->arch.regs[VCPU_REGS_RAX] = data & -1u;
 	vcpu->arch.regs[VCPU_REGS_RDX] = (data >> 32) & -1u;
 	skip_emulated_instruction(vcpu);

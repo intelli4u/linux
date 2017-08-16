@@ -490,8 +490,7 @@ static int node_memory_callback(struct notifier_block *self,
 static int link_mem_sections(int nid) { return 0; }
 #endif	/* CONFIG_MEMORY_HOTPLUG_SPARSE */
 
-#if !defined(CONFIG_MEMORY_HOTPLUG_SPARSE) || \
-    !defined(CONFIG_HUGETLBFS)
+#if !defined(CONFIG_MEMORY_HOTPLUG_SPARSE) || !defined(CONFIG_HUGETLBFS)
 static inline int node_memory_callback(struct notifier_block *self,
 				unsigned long action, void *arg)
 {

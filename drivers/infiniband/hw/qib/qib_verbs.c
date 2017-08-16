@@ -200,11 +200,6 @@ void qib_copy_sge(struct qib_sge_state *ss, void *data, u32 length, int release)
 	}
 }
 
-/**
- * qib_skip_sge - skip over SGE memory - XXX almost dup of prev func
- * @ss: the SGE state
- * @length: the number of bytes to skip
- */
 void qib_skip_sge(struct qib_sge_state *ss, u32 length, int release)
 {
 	struct qib_sge *sge = &ss->sge;

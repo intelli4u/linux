@@ -205,7 +205,6 @@ enum scrub_type {
 #define SCRUB_FLAG_HW_PROG_SRC	BIT(SCRUB_HW_PROG_SRC)
 #define SCRUB_FLAG_HW_TUN	BIT(SCRUB_HW_TUNABLE)
 
-/* FIXME - should have notify capabilities: NMI, LOG, PROC, etc */
 
 /* EDAC internal operation states */
 #define	OP_ALLOC		0x100
@@ -394,17 +393,11 @@ struct mem_ctl_info {
 	 * Remaps memory pages: controller pages to physical pages.
 	 * For most MC's, this will be NULL.
 	 */
-	/* FIXME - why not send the phys page to begin with? */
 	unsigned long (*ctl_page_to_phys) (struct mem_ctl_info * mci,
 					   unsigned long page);
 	int mc_idx;
 	int nr_csrows;
 	struct csrow_info *csrows;
-	/*
-	 * FIXME - what about controllers on other busses? - IDs must be
-	 * unique.  dev pointer should be sufficiently unique, but
-	 * BUS:SLOT.FUNC numbers may not be unique.
-	 */
 	struct device *dev;
 	const char *mod_name;
 	const char *mod_ver;

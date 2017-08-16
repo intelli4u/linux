@@ -430,40 +430,6 @@ static inline int nlmsg_report(const struct nlmsghdr *nlh)
 	nla_for_each_attr(pos, nlmsg_attrdata(nlh, hdrlen), \
 			  nlmsg_attrlen(nlh, hdrlen), rem)
 
-#if 0
-/* FIXME: Enable once all users have been converted */
-
-/**
- * __nlmsg_put - Add a new netlink message to an skb
- * @skb: socket buffer to store message in
- * @pid: netlink process id
- * @seq: sequence number of message
- * @type: message type
- * @payload: length of message payload
- * @flags: message flags
- *
- * The caller is responsible to ensure that the skb provides enough
- * tailroom for both the netlink header and payload.
- */
-static inline struct nlmsghdr *__nlmsg_put(struct sk_buff *skb, u32 pid,
-					   u32 seq, int type, int payload,
-					   int flags)
-{
-	struct nlmsghdr *nlh;
-
-	nlh = (struct nlmsghdr *) skb_put(skb, nlmsg_total_size(payload));
-	nlh->nlmsg_type = type;
-	nlh->nlmsg_len = nlmsg_msg_size(payload);
-	nlh->nlmsg_flags = flags;
-	nlh->nlmsg_pid = pid;
-	nlh->nlmsg_seq = seq;
-
-	memset((unsigned char *) nlmsg_data(nlh) + payload, 0,
-	       nlmsg_padlen(payload));
-
-	return nlh;
-}
-#endif
 
 /**
  * nlmsg_put - Add a new netlink message to an skb
@@ -851,17 +817,26 @@ static inline int nla_put_msecs(struct sk_buff *skb, int attrtype,
 #define NLA_PUT_BE16(skb, attrtype, value) \
 	NLA_PUT_TYPE(skb, __be16, attrtype, value)
 
+#define NLA_PUT_NET16(skb, attrtype, value) \
+	NLA_PUT_BE16(skb, attrtype | NLA_F_NET_BYTEORDER, value)
+
 #define NLA_PUT_U32(skb, attrtype, value) \
 	NLA_PUT_TYPE(skb, u32, attrtype, value)
 
 #define NLA_PUT_BE32(skb, attrtype, value) \
 	NLA_PUT_TYPE(skb, __be32, attrtype, value)
 
+#define NLA_PUT_NET32(skb, attrtype, value) \
+	NLA_PUT_BE32(skb, attrtype | NLA_F_NET_BYTEORDER, value)
+
 #define NLA_PUT_U64(skb, attrtype, value) \
 	NLA_PUT_TYPE(skb, u64, attrtype, value)
 
 #define NLA_PUT_BE64(skb, attrtype, value) \
 	NLA_PUT_TYPE(skb, __be64, attrtype, value)
+
+#define NLA_PUT_NET64(skb, attrtype, value) \
+	NLA_PUT_BE64(skb, attrtype | NLA_F_NET_BYTEORDER, value)
 
 #define NLA_PUT_STRING(skb, attrtype, value) \
 	NLA_PUT(skb, attrtype, strlen(value) + 1, value)

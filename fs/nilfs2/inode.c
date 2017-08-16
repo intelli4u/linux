@@ -355,7 +355,6 @@ void nilfs_free_inode(struct inode *inode)
 	struct super_block *sb = inode->i_sb;
 	struct nilfs_sb_info *sbi = NILFS_SB(sb);
 
-	/* XXX: check error code? Is there any thing I can do? */
 	(void) nilfs_ifile_delete_inode(sbi->s_ifile, inode->i_ino);
 	atomic_dec(&sbi->s_inodes_count);
 }
@@ -404,11 +403,6 @@ int nilfs_read_inode_common(struct inode *inode,
 
 	inode->i_blocks = le64_to_cpu(raw_inode->i_blocks);
 	ii->i_flags = le32_to_cpu(raw_inode->i_flags);
-#if 0
-	ii->i_file_acl = le32_to_cpu(raw_inode->i_file_acl);
-	ii->i_dir_acl = S_ISREG(inode->i_mode) ?
-		0 : le32_to_cpu(raw_inode->i_dir_acl);
-#endif
 	ii->i_dir_start_lookup = 0;
 	ii->i_cno = 0;
 	inode->i_generation = le32_to_cpu(raw_inode->i_generation);
@@ -433,7 +427,7 @@ static int __nilfs_read_inode(struct super_block *sb, unsigned long ino,
 	struct nilfs_inode *raw_inode;
 	int err;
 
-	down_read(&NILFS_MDT(dat)->mi_sem);	/* XXX */
+	down_read(&NILFS_MDT(dat)->mi_sem);
 	err = nilfs_ifile_get_inode_block(sbi->s_ifile, ino, &bh);
 	if (unlikely(err))
 		goto bad_inode;
@@ -463,7 +457,7 @@ static int __nilfs_read_inode(struct super_block *sb, unsigned long ino,
 	}
 	nilfs_ifile_unmap_inode(sbi->s_ifile, ino, bh);
 	brelse(bh);
-	up_read(&NILFS_MDT(dat)->mi_sem);	/* XXX */
+	up_read(&NILFS_MDT(dat)->mi_sem);
 	nilfs_set_inode_flags(inode);
 	return 0;
 
@@ -472,7 +466,7 @@ static int __nilfs_read_inode(struct super_block *sb, unsigned long ino,
 	brelse(bh);
 
  bad_inode:
-	up_read(&NILFS_MDT(dat)->mi_sem);	/* XXX */
+	up_read(&NILFS_MDT(dat)->mi_sem);
 	return err;
 }
 
@@ -539,9 +533,6 @@ void nilfs_update_inode(struct inode *inode, struct buffer_head *ibh)
 	set_bit(NILFS_I_INODE_DIRTY, &ii->i_state);
 
 	nilfs_write_inode_common(inode, raw_inode, 0);
-		/* XXX: call with has_bmap = 0 is a workaround to avoid
-		   deadlock of bmap. This delays update of i_bmap to just
-		   before writing */
 	nilfs_ifile_unmap_inode(sbi->s_ifile, ino, ibh);
 }
 

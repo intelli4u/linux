@@ -218,18 +218,6 @@ static void rt2x00queue_create_tx_descriptor_seq(struct queue_entry *entry,
 	    unlikely(!tx_info->control.vif))
 		return;
 
-	/*
-	 * Hardware should insert sequence counter.
-	 * FIXME: We insert a software sequence counter first for
-	 * hardware that doesn't support hardware sequence counting.
-	 *
-	 * This is wrong because beacons are not getting sequence
-	 * numbers assigned properly.
-	 *
-	 * A secondary problem exists for drivers that cannot toggle
-	 * sequence counting per-frame, since those will override the
-	 * sequence counter given by mac80211.
-	 */
 	spin_lock_irqsave(&intf->seqlock, irqflags);
 
 	if (test_bit(ENTRY_TXD_FIRST_FRAGMENT, &txdesc->flags))

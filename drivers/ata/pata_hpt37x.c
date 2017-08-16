@@ -440,12 +440,6 @@ static void hpt370_set_dmamode(struct ata_port *ap, struct ata_device *adev)
 	hpt370_set_mode(ap, adev, adev->dma_mode);
 }
 
-/**
- *	hpt370_bmdma_end		-	DMA engine stop
- *	@qc: ATA command
- *
- *	Work around the HPT370 DMA engine.
- */
 
 static void hpt370_bmdma_stop(struct ata_queued_cmd *qc)
 {

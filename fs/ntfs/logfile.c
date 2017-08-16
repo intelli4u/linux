@@ -832,14 +832,6 @@ map_vcn:
 		} while (++block < end_block);
 	} while ((++rl)->vcn < end_vcn);
 	up_write(&log_ni->runlist.lock);
-	/*
-	 * Zap the pages again just in case any got instantiated whilst we were
-	 * emptying the blocks by hand.  FIXME: We may not have completed
-	 * writing to all the buffer heads yet so this may happen too early.
-	 * We really should use a kernel thread to do the emptying
-	 * asynchronously and then we can also set the volume dirty and output
-	 * an error message if emptying should fail.
-	 */
 	truncate_inode_pages(log_vi->i_mapping, 0);
 	/* Set the flag so we do not have to do it again on remount. */
 	NVolSetLogFileEmpty(vol);

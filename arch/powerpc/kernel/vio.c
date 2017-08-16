@@ -1184,7 +1184,6 @@ EXPORT_SYMBOL(vio_unregister_driver);
 /* vio_dev refcount hit 0 */
 static void __devinit vio_dev_release(struct device *dev)
 {
-	/* XXX should free TCE table */
 	of_node_put(dev->of_node);
 	kfree(to_vio_dev(dev));
 }
@@ -1254,7 +1253,6 @@ struct vio_dev *vio_register_device_node(struct device_node *of_node)
 	if (device_register(&viodev->dev)) {
 		printk(KERN_ERR "%s: failed to register device %s\n",
 				__func__, dev_name(&viodev->dev));
-		/* XXX free TCE table */
 		kfree(viodev);
 		return NULL;
 	}

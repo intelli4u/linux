@@ -42,7 +42,6 @@
 static DEFINE_SPINLOCK(hose_spinlock);
 LIST_HEAD(hose_list);
 
-/* XXX kill that some day ... */
 static int global_phb_number;		/* Global phb counter */
 
 /* ISA Memory physical address */
@@ -289,17 +288,6 @@ EXPORT_SYMBOL(pci_read_irq_line);
  *  -- paulus.
  */
 
-/*
- * Adjust vm_pgoff of VMA such that it is the physical page offset
- * corresponding to the 32-bit pci bus offset for DEV requested by the user.
- *
- * Basically, the user finds the base address for his device which he wishes
- * to mmap.  They read the 32-bit value from the config space base register,
- * add whatever PAGE_SIZE multiple offset they wish, and feed this into the
- * offset parameter of mmap on /proc/bus/pci/XXX for that device.
- *
- * Returns negative error code on failure, zero on success.
- */
 static struct resource *__pci_mmap_make_offset(struct pci_dev *dev,
 					       resource_size_t *offset,
 					       enum pci_mmap_state mmap_state)
@@ -313,9 +301,6 @@ static struct resource *__pci_mmap_make_offset(struct pci_dev *dev,
 
 	/* If memory, add on the PCI bridge address offset */
 	if (mmap_state == pci_mmap_mem) {
-#if 0 /* See comment in pci_resource_to_user() for why this is disabled */
-		*offset += hose->pci_mem_offset;
-#endif
 		res_bit = IORESOURCE_MEM;
 	} else {
 		io_offset = (unsigned long)hose->io_base_virt - _IO_BASE;
@@ -363,12 +348,6 @@ static pgprot_t __pci_mmap_set_pgprot(struct pci_dev *dev, struct resource *rp,
 {
 	unsigned long prot = pgprot_val(protection);
 
-	/* Write combine is always 0 on non-memory space mappings. On
-	 * memory space, if the user didn't pass 1, we check for a
-	 * "prefetchable" resource. This is a bit hackish, but we use
-	 * this to workaround the inability of /sysfs to provide a write
-	 * combine bit
-	 */
 	if (mmap_state != pci_mmap_mem)
 		write_combine = 0;
 	else if (write_combine == 0) {
@@ -376,7 +355,6 @@ static pgprot_t __pci_mmap_set_pgprot(struct pci_dev *dev, struct resource *rp,
 			write_combine = 1;
 	}
 
-	/* XXX would be nice to have a way to ask for write-through */
 	if (write_combine)
 		return pgprot_noncached_wc(prot);
 	else
@@ -634,10 +612,6 @@ void pci_resource_to_user(const struct pci_dev *dev, int bar,
 	 *
 	 * BenH.
 	 */
-#if 0
-	else if (rsrc->flags & IORESOURCE_MEM)
-		offset = hose->pci_mem_offset;
-#endif
 
 	*start = rsrc->start - offset;
 	*end = rsrc->end - offset;
@@ -1220,38 +1194,6 @@ static int reparent_resources(struct resource *parent,
 	return 0;
 }
 
-/*
- *  Handle resources of PCI devices.  If the world were perfect, we could
- *  just allocate all the resource regions and do nothing more.  It isn't.
- *  On the other hand, we cannot just re-allocate all devices, as it would
- *  require us to know lots of host bridge internals.  So we attempt to
- *  keep as much of the original configuration as possible, but tweak it
- *  when it's found to be wrong.
- *
- *  Known BIOS problems we have to work around:
- *	- I/O or memory regions not configured
- *	- regions configured, but not enabled in the command register
- *	- bogus I/O addresses above 64K used
- *	- expansion ROMs left enabled (this may sound harmless, but given
- *	  the fact the PCI specs explicitly allow address decoders to be
- *	  shared between expansion ROMs and other resource regions, it's
- *	  at least dangerous)
- *
- *  Our solution:
- *	(1) Allocate resources for all buses behind PCI-to-PCI bridges.
- *	    This gives us fixed barriers on where we can allocate.
- *	(2) Allocate resources for all enabled devices.  If there is
- *	    a collision, just mark the resource as unallocated. Also
- *	    disable expansion ROMs during this step.
- *	(3) Try to allocate resources for disabled devices.  If the
- *	    resources were assigned correctly, everything goes well,
- *	    if they weren't, they won't disturb allocation of other
- *	    resources.
- *	(4) Assign new addresses to resources which were either
- *	    not configured at all or misconfigured.  If explicitly
- *	    requested by the user, configure expansion ROM address
- *	    as well.
- */
 
 void pcibios_allocate_bus_resources(struct pci_bus *bus)
 {
@@ -1572,7 +1514,6 @@ void __devinit pcibios_setup_phb_resources(struct pci_controller *hose)
 		       " bridge %s (domain %d)\n",
 		       hose->dn->full_name, hose->global_number);
 #ifdef CONFIG_PPC32
-		/* Workaround for lack of IO resource only on 32-bit */
 		res->start = (unsigned long)hose->io_base_virt - isa_io_base;
 		res->end = res->start + IO_SPACE_LIMIT;
 		res->flags = IORESOURCE_IO;
@@ -1594,7 +1535,6 @@ void __devinit pcibios_setup_phb_resources(struct pci_controller *hose)
 			       "host bridge %s (domain %d)\n",
 			       hose->dn->full_name, hose->global_number);
 #ifdef CONFIG_PPC32
-			/* Workaround for lack of MEM resource only on 32-bit */
 			res->start = hose->pci_mem_offset;
 			res->end = (resource_size_t)-1LL;
 			res->flags = IORESOURCE_MEM;

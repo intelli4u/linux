@@ -9235,29 +9235,6 @@ static s16 tone_table[][19] =
 		 21,		/* 21/32 in-band to broad-band ratio */
 		 0x0FF5		/* shift-mask 0x0FF (look at 16 half-frames) bit count = 5 */
 	},
-#if 0
-	{			/* f425 */
-		30881,		/* A1 = -1.884827 */
-		 -32603,	/* A2 = 0.994965 */
-		 -496,		/* B2 = -0.015144 */
-		 0,		/* B1 = 0.000000 */
-		 496,		/* B0 = 0.015144 */
-		 30880,		/* A1 = -1.884766 */
-		 -32692,	/* A2 = 0.997711 */
-		 24767,		/* B2 = 0.755859 */
-		 -23290,	/* B1 = -1.421509 */
-		 24767,		/* B0 = 0.755859 */
-		 30967,		/* A1 = -1.890076 */
-		 -32694,	/* A2 = 0.997772 */
-		 728,		/* B2 = 0.022232 */
-		 -691,		/* B1 = -0.042194 */
-		 728,		/* B0 = 0.022232 */
-		 5,		/* Internal filter scaling */
-		 159,		/* Minimum in-band energy threshold */
-		 21,		/* 21/32 in-band to broad-band ratio */
-		 0x0FF5		/* shift-mask 0x0FF (look at 16 half-frames) bit count = 5 */
-	},
-#else
 	{
 		30850,
 		-32534,
@@ -9279,7 +9256,6 @@ static s16 tone_table[][19] =
 		17,
 		0xff5
 	},
-#endif
 	{			/* f425_450[] */
 		30646,		/* A1 = 1.870544 */
 		 -32327,	/* A2 = -0.986572 */
@@ -10547,4 +10523,3 @@ static int ixj_init_tone(IXJ *j, IXJ_TONE * ti)
 	}
 	return freq0;
 }
-

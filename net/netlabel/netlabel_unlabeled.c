@@ -767,7 +767,6 @@ static int netlbl_unlhsh_netdev_handler(struct notifier_block *this,
 	if (!net_eq(dev_net(dev), &init_net))
 		return NOTIFY_DONE;
 
-	/* XXX - should this be a check for NETDEV_DOWN or _UNREGISTER? */
 	if (event == NETDEV_DOWN) {
 		spin_lock(&netlbl_unlhsh_lock);
 		iface = netlbl_unlhsh_search_iface(dev->ifindex);

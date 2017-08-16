@@ -560,7 +560,7 @@ void zfHpAniLowerImmunity(zdev_t* dev)
     }
 }
 
-#define CLOCK_RATE 44000    /* XXX use mac_usec or similar */
+#define CLOCK_RATE 44000
 /* convert HW counter values to ms using 11g clock rate, goo9d enough
    for 11a and Turbo */
 
@@ -627,7 +627,7 @@ void zfHpAniArPoll(zdev_t* dev, u32_t listenTime, u32_t phyCnt1, u32_t phyCnt2)
      */
 
     aniState = HpPriv->curani;
-    //HpPriv->stats.ast_nodestats = *stats;       /* XXX optimize? */
+    //HpPriv->stats.ast_nodestats = *stats;
 
     //listenTime = zfHpAniGetListenTime(dev);
     //if (listenTime < 0)
@@ -637,7 +637,6 @@ void zfHpAniArPoll(zdev_t* dev, u32_t listenTime, u32_t phyCnt1, u32_t phyCnt2)
     //    zfHpAniRestart(dev);
     //    return;
     //}
-    /* XXX beware of overflow? */
     aniState->listenTime += listenTime;
 
     if (HpPriv->hasHwPhyCounters)
@@ -648,7 +647,6 @@ void zfHpAniArPoll(zdev_t* dev, u32_t listenTime, u32_t phyCnt1, u32_t phyCnt2)
         /* NB: these are not reset-on-read */
         //phyCnt1 = 0;//OS_REG_READ(ah, AR_PHY_ERR_1);
         //phyCnt2 = 0;//OS_REG_READ(ah, AR_PHY_ERR_2);
-        /* XXX sometimes zero, why? */
         //if (phyCnt1 < aniState->ofdmPhyErrBase ||
         //    phyCnt2 < aniState->cckPhyErrBase)
         //{
@@ -666,7 +664,7 @@ void zfHpAniArPoll(zdev_t* dev, u32_t listenTime, u32_t phyCnt1, u32_t phyCnt2)
         //        //OS_REG_WRITE(ah, AR_PHY_ERR_2, aniState->cckPhyErrBase);
         //        //OS_REG_WRITE(ah, AR_PHY_ERR_MASK_2, AR_PHY_ERR_CCK_TIMING);
         //    }
-        //    return;     /* XXX */
+        //    return;
         //}
         /* NB: only use ast_ani_*errs with AH_PRIVATE_DIAG */
         //ofdmPhyErrCnt = phyCnt1 - aniState->ofdmPhyErrBase;

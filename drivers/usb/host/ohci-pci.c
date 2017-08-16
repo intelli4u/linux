@@ -22,9 +22,6 @@
 #include <linux/io.h>
 
 
-/* constants used to work around PM-related transfer
- * glitches in some AMD 700 series southbridges
- */
 #define AB_REG_BAR	0xf0
 #define AB_INDX(addr)	((addr) + 0x00)
 #define AB_DATA(addr)	((addr) + 0x04)
@@ -48,9 +45,6 @@ static int broken_suspend(struct usb_hcd *hcd)
 	return 0;
 }
 
-/* AMD 756, for most chips (early revs), corrupts register
- * values on read ... so enable the vendor workaround.
- */
 static int ohci_quirk_amd756(struct usb_hcd *hcd)
 {
 	struct ohci_hcd	*ohci = hcd_to_ohci (hcd);
@@ -333,9 +327,6 @@ static const struct pci_device_id ohci_pci_quirks[] = {
 		.driver_data = (unsigned long)ohci_quirk_amd700,
 	},
 
-	/* FIXME for some of the early AMD 760 southbridges, OHCI
-	 * won't work at all.  blacklist them.
-	 */
 
 	{},
 };

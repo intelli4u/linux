@@ -1697,4 +1697,3 @@ void iwm_rx_worker(struct work_struct *work)
 	}
 	spin_unlock(&iwm->ticket_lock);
 }
-

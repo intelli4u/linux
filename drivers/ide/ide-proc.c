@@ -201,23 +201,6 @@ static int ide_read_setting(ide_drive_t *drive,
 	return val;
 }
 
-/**
- *	ide_write_setting	-	read an IDE setting
- *	@drive: drive to read from
- *	@setting: drive setting
- *	@val: value
- *
- *	Write a drive setting if it is possible. The caller
- *	must hold the ide_setting_mtx when making this call.
- *
- *	BUGS: the data return and error are the same return value
- *	so an error -EINVAL and true return of the same value cannot
- *	be told apart
- *
- *	FIXME:  This should be changed to enqueue a special request
- *	to the driver to change settings, and then wait on a sema for completion.
- *	The current scheme of polling is kludgy, though safe enough.
- */
 
 static int ide_write_setting(ide_drive_t *drive,
 			     const struct ide_proc_devset *setting, int val)
@@ -535,7 +518,6 @@ static int ide_replace_subdriver(ide_drive_t *drive, const char *driver)
 	int err;
 
 	device_release_driver(dev);
-	/* FIXME: device can still be in use by previous driver */
 	strlcpy(drive->driver_req, driver, sizeof(drive->driver_req));
 	err = device_attach(dev);
 	if (err < 0)

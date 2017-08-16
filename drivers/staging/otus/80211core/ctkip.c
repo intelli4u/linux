@@ -139,13 +139,6 @@ u8_t zfTkipPhase1KeyMix(u32_t iv32, struct zsTkipSeed* pSeed)
     u16_t   tsc0;
     u16_t   tsc1;
     u16_t   i, j;
-#if 0
-    /* Need not proceed this function with the same iv32 */
-    if ( iv32 == pSeed->iv32 )
-    {
-        return 1;
-    }
-#endif
     tsc0 = (u16_t) ((iv32 >> 16) & 0xffff); /* msb */
     tsc1 = (u16_t) (iv32 & 0xffff);
 

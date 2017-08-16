@@ -106,12 +106,6 @@ extern void arch_refresh_nodedata(int nid, pg_data_t *pgdat);
 #define arch_free_nodedata(pgdat)	generic_free_nodedata(pgdat)
 
 #ifdef CONFIG_NUMA
-/*
- * If ARCH_HAS_NODEDATA_EXTENSION=n, this func is used to allocate pgdat.
- * XXX: kmalloc_node() can't work well to get new node's memory at this time.
- *	Because, pgdat for the new node is not allocated/initialized yet itself.
- *	To use new node's memory, more consideration will be necessary.
- */
 #define generic_alloc_nodedata(nid)				\
 ({								\
 	kzalloc(sizeof(pg_data_t), GFP_KERNEL);			\

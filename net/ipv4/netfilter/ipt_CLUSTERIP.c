@@ -303,9 +303,6 @@ clusterip_tg(struct sk_buff *skb, const struct xt_action_param *par)
 	ct = nf_ct_get(skb, &ctinfo);
 	if (ct == NULL) {
 		pr_info("no conntrack!\n");
-			/* FIXME: need to drop invalid ones, since replies
-			 * to outgoing connections of other nodes will be
-			 * marked as INVALID */
 		return NF_DROP;
 	}
 
@@ -328,9 +325,6 @@ clusterip_tg(struct sk_buff *skb, const struct xt_action_param *par)
 			break;
 		case IP_CT_RELATED:
 		case IP_CT_RELATED+IP_CT_IS_REPLY:
-			/* FIXME: we don't handle expectations at the
-			 * moment.  they can arrive on a different node than
-			 * the master connection (e.g. FTP passive mode) */
 		case IP_CT_ESTABLISHED:
 		case IP_CT_ESTABLISHED+IP_CT_IS_REPLY:
 			break;
@@ -375,7 +369,6 @@ static int clusterip_tg_check(const struct xt_tgchk_param *par)
 		return -EINVAL;
 	}
 
-	/* FIXME: further sanity checks */
 
 	config = clusterip_config_find_get(e->ip.dst.s_addr, 1);
 	if (!config) {
@@ -572,7 +565,6 @@ static void *clusterip_seq_start(struct seq_file *s, loff_t *pos)
 	u_int32_t local_nodes;
 	struct clusterip_seq_position *idx;
 
-	/* FIXME: possible race */
 	local_nodes = c->local_nodes;
 	weight = hweight32(local_nodes);
 	if (*pos >= weight)

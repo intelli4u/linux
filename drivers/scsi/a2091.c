@@ -150,10 +150,7 @@ static int a2091_bus_reset(struct scsi_cmnd *cmd)
 {
 	struct Scsi_Host *instance = cmd->device->host;
 
-	/* FIXME perform bus-specific reset */
 
-	/* FIXME 2: kill this function, and let midlayer fall back
-	   to the same action, calling wd33c93_host_reset() */
 
 	spin_lock_irq(instance->host_lock);
 	wd33c93_host_reset(cmd);

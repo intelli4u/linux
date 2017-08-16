@@ -124,23 +124,6 @@ void umc_driver_unregister(struct umc_driver *umc_drv);
  */
 int umc_match_pci_id(struct umc_driver *umc_drv, struct umc_dev *umc);
 
-/**
- * umc_parent_pci_dev - return the UMC's parent PCI device or NULL if none
- * @umc_dev: UMC device whose parent PCI device we are looking for
- *
- * DIRTY!!! DON'T RELY ON THIS
- *
- * FIXME: This is as dirty as it gets, but we need some way to check
- * the correct type of umc_dev->parent (so that for example, we can
- * cast to pci_dev). Casting to pci_dev is necesary because at some
- * point we need to request resources from the device. Mapping is
- * easily over come (ioremap and stuff are bus agnostic), but hooking
- * up to some error handlers (such as pci error handlers) might need
- * this.
- *
- * THIS might (probably will) be removed in the future, so don't count
- * on it.
- */
 static inline struct pci_dev *umc_parent_pci_dev(struct umc_dev *umc_dev)
 {
 	struct pci_dev *pci_dev = NULL;

@@ -70,29 +70,6 @@ sys32_rt_sigreturn:
 	ba,pt	%xcc, rtrap
 	 nop
 
-	/* This is how fork() was meant to be done, 8 instruction entry.
-	 *
-	 * I questioned the following code briefly, let me clear things
-	 * up so you must not reason on it like I did.
-	 *
-	 * Know the fork_kpsr etc. we use in the sparc32 port?  We don't
-	 * need it here because the only piece of window state we copy to
-	 * the child is the CWP register.  Even if the parent sleeps,
-	 * we are safe because we stuck it into pt_regs of the parent
-	 * so it will not change.
-	 *
-	 * XXX This raises the question, whether we can do the same on
-	 * XXX sparc32 to get rid of fork_kpsr _and_ fork_kwim.  The
-	 * XXX answer is yes.  We stick fork_kpsr in UREG_G0 and
-	 * XXX fork_kwim in UREG_G1 (global registers are considered
-	 * XXX volatile across a system call in the sparc ABI I think
-	 * XXX if it isn't we can use regs->y instead, anyone who depends
-	 * XXX upon the Y register being preserved across a fork deserves
-	 * XXX to lose).
-	 *
-	 * In fact we should take advantage of that fact for other things
-	 * during system calls...
-	 */
 	.align	32
 sys_vfork: /* Under Linux, vfork and fork are just special cases of clone. */
 	sethi	%hi(0x4000 | 0x0100 | SIGCHLD), %o0

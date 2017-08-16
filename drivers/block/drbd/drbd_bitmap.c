@@ -994,13 +994,6 @@ unsigned long drbd_bm_find_next(struct drbd_conf *mdev, unsigned long bm_fo)
 	return bm_find_next(mdev, bm_fo, 0);
 }
 
-#if 0
-/* not yet needed for anything. */
-unsigned long drbd_bm_find_next_zero(struct drbd_conf *mdev, unsigned long bm_fo)
-{
-	return bm_find_next(mdev, bm_fo, 1);
-}
-#endif
 
 /* does not spin_lock_irqsave.
  * you must take drbd_bm_lock() first */

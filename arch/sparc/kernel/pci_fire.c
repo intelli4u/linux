@@ -284,7 +284,6 @@ static int pci_fire_msiq_build_irq(struct pci_pbm_info *pbm,
 	imap_reg = cregs + (0x001000UL + (devino * 0x08UL));
 	iclr_reg = cregs + (0x001400UL + (devino * 0x08UL));
 
-	/* XXX iterate amongst the 4 IRQ controllers XXX */
 	int_ctrlr = (1UL << 6);
 
 	val = upa_readq(imap_reg);
@@ -447,7 +446,6 @@ static int __devinit pci_fire_pbm_init(struct pci_pbm_info *pbm,
 
 	pbm->pci_bus = pci_scan_one_pbm(pbm, &op->dev);
 
-	/* XXX register error interrupt handlers XXX */
 
 	pbm->next = pci_pbm_root;
 	pci_pbm_root = pbm;

@@ -1306,31 +1306,6 @@ no_dma:
 		s->type = COMEDI_SUBD_UNUSED;
 	}
 
-#if 0
-case COMEDI_SUBD_AO:
-	s->subdev_flags = SDF_WRITABLE | SDF_GROUND;
-	s->n_chan = this_board->n_aochan;
-	s->maxdata = this_board->ao_maxdata;
-	s->len_chanlist = this_board->ao_chanlist;
-	s->range_table = this_board->ao_range_type;
-	break;
-
-case COMEDI_SUBD_DI:
-	s->subdev_flags = SDF_READABLE;
-	s->n_chan = this_board->n_dichan;
-	s->maxdata = 1;
-	s->len_chanlist = this_board->n_dichan;
-	s->range_table = &range_digital;
-	break;
-
-case COMEDI_SUBD_DO:
-	s->subdev_flags = SDF_WRITABLE;
-	s->n_chan = this_board->n_dochan;
-	s->maxdata = 1;
-	s->len_chanlist = this_board->n_dochan;
-	s->range_table = &range_digital;
-	break;
-#endif
 
 	pcl816_reset(dev);
 

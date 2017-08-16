@@ -577,11 +577,6 @@ sa1111_configure_smc(struct sa1111 *sachip, int sdram, unsigned int drac,
 
 	sa1111_writel(smcr, sachip->base + SA1111_SMCR);
 
-	/*
-	 * Now clear the bits in the DMA mask to work around the SA1111
-	 * DMA erratum (Intel StrongARM SA-1111 Microprocessor Companion
-	 * Chip Specification Update, June 2000, Erratum #7).
-	 */
 	if (sachip->dev->dma_mask)
 		*sachip->dev->dma_mask &= sa1111_dma_mask[drac >> 2];
 
@@ -948,10 +943,6 @@ static int sa1111_resume(struct platform_device *dev)
 	if (!save)
 		return 0;
 
-	/*
-	 * Ensure that the SA1111 is still here.
-	 * FIXME: shouldn't do this here.
-	 */
 	id = sa1111_readl(sachip->base + SA1111_SKID);
 	if ((id & SKID_ID_MASK) != SKID_SA1111_ID) {
 		__sa1111_remove(sachip);

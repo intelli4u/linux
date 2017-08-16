@@ -135,4 +135,3 @@ extern u8 MTO_GetTxFallbackRate(struct wbsoft_priv *adapter);
 extern void MTO_SetTxCount(struct wbsoft_priv *adapter, u8 t0, u8 index);
 
 #endif /* __MTO_H__ */
-

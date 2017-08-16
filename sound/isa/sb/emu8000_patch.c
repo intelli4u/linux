@@ -214,14 +214,6 @@ snd_emu8000_sample_new(struct snd_emux *rec, struct snd_sf_sample *sp,
 
 	/*snd_emu8000_init_fm(emu);*/
 
-#if 0
-	/* first block - write 48 samples for silence */
-	if (! sp->block->offset) {
-		for (i = 0; i < BLANK_HEAD_SIZE; i++) {
-			write_word(emu, &dram_offset, 0);
-		}
-	}
-#endif
 
 	offset = 0;
 	for (i = 0; i < sp->v.size; i++) {

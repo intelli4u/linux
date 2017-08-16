@@ -1018,7 +1018,6 @@ void ieee80211_send_probe_req(struct ieee80211_sub_if_data *sdata, u8 *dst,
 	size_t buf_len;
 	u8 *buf;
 
-	/* FIXME: come up with a proper value */
 	buf = kmalloc(200 + ie_len, GFP_KERNEL);
 	if (!buf) {
 		printk(KERN_DEBUG "%s: failed to allocate temporary IE "
@@ -1195,16 +1194,6 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 		}
 	}
 
-	/*
-	 * Clear the WLAN_STA_BLOCK_BA flag so new aggregation
-	 * sessions can be established after a resume.
-	 *
-	 * Also tear down aggregation sessions since reconfiguring
-	 * them in a hardware restart scenario is not easily done
-	 * right now, and the hardware will have lost information
-	 * about the sessions, but we and the AP still think they
-	 * are active. This is really a workaround though.
-	 */
 	if (hw->flags & IEEE80211_HW_AMPDU_AGGREGATION) {
 		mutex_lock(&local->sta_mtx);
 

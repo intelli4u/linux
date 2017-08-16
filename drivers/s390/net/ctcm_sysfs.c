@@ -220,4 +220,3 @@ void ctcm_remove_files(struct device *dev)
 {
 	sysfs_remove_group(&dev->kobj, &ctcm_attr_group);
 }
-

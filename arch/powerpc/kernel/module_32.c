@@ -29,11 +29,7 @@
 
 #include "setup.h"
 
-#if 0
-#define DEBUGP printk
-#else
 #define DEBUGP(fmt , ...)
-#endif
 
 /* Count how many different relocations (different symbol, different
    addend) */

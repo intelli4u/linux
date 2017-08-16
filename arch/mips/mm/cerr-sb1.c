@@ -33,7 +33,6 @@
 
 /* SB1 definitions */
 
-/* XXX should come from config1 XXX */
 #define SB1_CACHE_INDEX_MASK   0x1fe0
 
 #define CP0_ERRCTL_RECOVERABLE (1 << 31)

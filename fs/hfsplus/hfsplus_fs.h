@@ -385,13 +385,8 @@ static inline struct hfsplus_inode_info *HFSPLUS_I(struct inode *inode)
 #define HFSPLUS_SB(super)	(*(struct hfsplus_sb_info *)(super)->s_fs_info)
 #define HFSPLUS_I(inode)	(*list_entry(inode, struct hfsplus_inode_info, vfs_inode))
 
-#if 1
 #define hfsplus_kmap(p)		({ struct page *__p = (p); kmap(__p); })
 #define hfsplus_kunmap(p)	({ struct page *__p = (p); kunmap(__p); __p; })
-#else
-#define hfsplus_kmap(p)		kmap(p)
-#define hfsplus_kunmap(p)	kunmap(p)
-#endif
 
 #define sb_bread512(sb, sec, data) ({			\
 	struct buffer_head *__bh;			\

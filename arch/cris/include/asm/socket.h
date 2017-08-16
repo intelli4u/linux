@@ -65,5 +65,3 @@
 #define SO_RXQ_OVFL             40
 
 #endif /* _ASM_SOCKET_H */
-
-

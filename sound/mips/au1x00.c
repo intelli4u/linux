@@ -692,4 +692,3 @@ static void __exit au1000_exit(void)
 
 module_init(au1000_init);
 module_exit(au1000_exit);
-

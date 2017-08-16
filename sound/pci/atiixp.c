@@ -808,12 +808,6 @@ static void atiixp_in_enable_transfer(struct atiixp *chip, int on)
 		unsigned int data = atiixp_read(chip, CMD);
 		if (! (data & ATI_REG_CMD_RECEIVE_EN)) {
 			data |= ATI_REG_CMD_RECEIVE_EN;
-#if 0 /* FIXME: this causes the endless loop */
-			/* wait until slot 3/4 are finished */
-			while ((atiixp_read(chip, COUNTER) &
-				ATI_REG_COUNTER_SLOT) != 5)
-				;
-#endif
 			atiixp_write(chip, CMD, data);
 		}
 	} else
@@ -1297,7 +1291,6 @@ static int __devinit snd_atiixp_pcm_new(struct atiixp *chip)
 	if (chip->pcms[ATI_PCM_SPDIF] && ! chip->pcms[ATI_PCM_SPDIF]->rates)
 		return 0;
 		
-	/* FIXME: non-48k sample rate doesn't work on my test machine with AD1888 */
 	if (chip->pcms[ATI_PCM_SPDIF])
 		chip->pcms[ATI_PCM_SPDIF]->rates = SNDRV_PCM_RATE_48000;
 

@@ -58,11 +58,6 @@
 #include <asm/system.h>
 #include <asm/byteorder.h>
 
-	/* FIXME ohci.h is ONLY for internal use by the OHCI driver.
-	 * If you're going to try stuff like this, you need to split
-	 * out shareable stuff (register declarations?) into its own
-	 * file, maybe name <linux/usb/ohci.h>
-	 */
 
 #include "ohci.h"
 #define OHCI_CONTROL_INIT OHCI_CTRL_CBSR

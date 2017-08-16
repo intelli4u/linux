@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  *  linux/arch/arm/mm/proc-v7.S
  *
@@ -12,6 +13,7 @@
 #include <linux/init.h>
 #include <linux/linkage.h>
 #include <asm/assembler.h>
+#include <asm/memory.h>
 #include <asm/asm-offsets.h>
 #include <asm/hwcap.h>
 #include <asm/pgtable-hwdef.h>
@@ -192,9 +194,39 @@ __v7_ca9mp_setup:
 	tst	r0, #(1 << 6)			@ SMP/nAMP mode enabled?
 	orreq	r0, r0, #(1 << 6) | (1 << 0)	@ Enable SMP/nAMP mode and
 	mcreq	p15, 0, r0, c1, c0, 1		@ TLB ops broadcasting
-#endif
+#else
+	ldr	r8, =ddr_phys_offset_va
+	ldr	r1, =PAGE_OFFSET
+	sub	r8, r8, r1
+	ldr	r1, =CONFIG_DRAM_BASE
+	add	r8, r8, r1
+	ldr	r8, [r8, #0x0]			@ get real PHYS_OFFSET value
+	ldr	r12, =0xC0000000		@ the upper two bits of NS Ax/Bx ACP address
+	and	r12, r12, r8
+	cmp	r12, #0
+	beq	__v7_setup
+
+	/* For NS Ax/Bx ACP on UP mode */
+acp_up:
+	mrc	p15, 0, r0, c1, c0, 1
+	orr	r0, r0, #(1 << 6)		@ Enable SMP bit for ACP on UP
+	mcr	p15, 0, r0, c1, c0, 1		@ TLB ops broadcasting
+#endif /* CONFIG_SMP */
+
 __v7_setup:
-	adr	r12, __v7_setup_stack		@ the local stack
+	@ temporary local stack in RAM, physical address, MMU is off
+	/* The __v7_setup_stack is located at < 128MB address */
+	ldr	r12, =__v7_setup_stack
+	ldr	r8, =PAGE_OFFSET
+	sub	r12, r12, r8		@ get offset
+	ldr	r8, =ddr_phys_offset_va
+	ldr	r1, =PAGE_OFFSET
+	sub	r8, r8, r1
+	ldr	r1, =CONFIG_DRAM_BASE
+	add	r8, r8, r1
+	ldr	r8, [r8, #0x0]		@ get real PHYS_OFFSET value
+	add	r12, r12, r8
+
 	stmia	r12, {r0-r5, r7, r9, r11, lr}
 	bl	v7_flush_dcache_all
 	ldmia	r12, {r0-r5, r7, r9, r11, lr}
@@ -318,19 +350,11 @@ __v7_setup:
  THUMB(	orr	r0, r0, #1 << 30	)	@ Thumb exceptions
 	mov	pc, lr				@ return to head.S:__ret
 ENDPROC(__v7_setup)
+	.ltorg
 
-	/*   AT
-	 *  TFR   EV X F   I D LR    S
-	 * .EEE ..EE PUI. .T.T 4RVI ZWRS BLDP WCAM
-	 * rxxx rrxx xxx0 0101 xxxx xxxx x111 xxxx < forced
-	 *    1    0 110       0011 1100 .111 1101 < we want
-	 */
 	.type	v7_crval, #object
 v7_crval:
 	crval	clear=0x0120c302, mmuset=0x10c03c7d, ucset=0x00c01c7c
-
-__v7_setup_stack:
-	.space	4 * 11				@ 11 registers
 
 	.type	v7_processor_functions, #object
 ENTRY(v7_processor_functions)
@@ -406,3 +430,8 @@ __v7_proc_info:
 	.long	v6_user_fns
 	.long	v7_cache_fns
 	.size	__v7_proc_info, . - __v7_proc_info
+
+	.bss
+	.align
+__v7_setup_stack:
+	.space	4 * 11				@ 11 registers

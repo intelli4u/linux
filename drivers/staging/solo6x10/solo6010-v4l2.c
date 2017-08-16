@@ -355,7 +355,6 @@ static int solo_buf_prepare(struct videobuf_queue *vq,
 	if (vb->baddr != 0 && vb->bsize < vb->size)
 		return -EINVAL;
 
-	/* XXX: These properties only change when queue is idle */
 	vb->width  = solo_dev->video_hsize;
 	vb->height = solo_vlines(solo_dev);
 	vb->bytesperline = solo_bytesperline(solo_dev);

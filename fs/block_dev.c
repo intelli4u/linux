@@ -1466,12 +1466,6 @@ static int blkdev_open(struct inode * inode, struct file * filp)
 	struct block_device *bdev;
 	int res;
 
-	/*
-	 * Preserve backwards compatibility and allow large file access
-	 * even if userspace doesn't ask for it explicitly. Some mkfs
-	 * binary needs it. We might want to drop this workaround
-	 * during an unstable branch.
-	 */
 	filp->f_flags |= O_LARGEFILE;
 
 	if (filp->f_flags & O_NDELAY)

@@ -60,12 +60,6 @@ extern int  kgdb_output_string (const char* s, unsigned int count);
 #endif
 /* #endif */
 
-#if 0
-/* SCC2 for console
- */
-#undef CONFIG_SERIAL_CONSOLE_PORT
-#define CONFIG_SERIAL_CONSOLE_PORT	2
-#endif
 
 
 #define TX_WAKEUP	ASYNC_SHARE_IRQ
@@ -110,7 +104,7 @@ int serial_console_setup(struct console *co, char *options);
 #define PORT_NUM(P)	((P) & 0x0000ffff)
 
 
-#if defined (CONFIG_UCQUICC)
+#if defined(CONFIG_UCQUICC)
 
 volatile extern void *_periph_base;
 /* sipex transceiver
@@ -134,38 +128,7 @@ static uint sipex_mode_bits = 0x00000000;
 /* 2.4 -> 2.0 portability problem: async_icount in 2.4 has a few
  * extras: */
 
-#if 0
-struct async_icount_24 {
-	__u32   cts, dsr, rng, dcd, tx, rx;
-	__u32   frame, parity, overrun, brk;
-	__u32   buf_overrun;
-} icount;
-#endif
 
-#if 0
-
-struct serial_state {
-        int     magic;
-        int     baud_base;
-        unsigned long   port;
-        int     irq;
-        int     flags;
-        int     hub6;
-        int     type;
-        int     line;
-        int     revision;       /* Chip revision (950) */
-        int     xmit_fifo_size;
-        int     custom_divisor;
-        int     count;
-        u8      *iomem_base;
-        u16     iomem_reg_shift;
-        unsigned short  close_delay;
-        unsigned short  closing_wait; /* time to wait before closing */
-        struct async_icount_24     icount; 
-        int     io_type;
-        struct async_struct *info;
-};
-#endif
 
 #define SSTATE_MAGIC 0x5302
 
@@ -177,18 +140,6 @@ struct serial_state {
  */
 #define USE_SMC2 1
 
-#if 0
-/* Define SCC to ttySx mapping. */
-#define SCC_NUM_BASE	(USE_SMC2 + 1)	/* SCC base tty "number" */
-
-/* Define which SCC is the first one to use for a serial port.  These
- * are 0-based numbers, i.e. this assumes the first SCC (SCC1) is used
- * for Ethernet, and the first available SCC for serial UART is SCC2.
- * NOTE:  IF YOU CHANGE THIS, you have to change the PROFF_xxx and
- * interrupt vectors in the table below to match.
- */
-#define SCC_IDX_BASE	1	/* table index */
-#endif
 
 
 /* Processors other than the 860 only get SMCs configured by default.
@@ -517,9 +468,6 @@ static _INLINE_ void receive_break(ser_info_t *info)
 	struct tty_struct *tty = info->port.tty;
 
 	info->state->icount.brk++;
-	/* Check to see if there is room in the tty buffer for
-	 * the break.  If not, we exit now, losing the break.  FIXME
-	 */
 	tty_insert_flip_char(tty, 0, TTY_BREAK);
 	tty_schedule_flip(tty);
 }
@@ -1283,7 +1231,6 @@ static int rs_360_tiocmset(struct tty_struct *tty, struct file *file,
 
 	if (tty->flags & (1 << TTY_IO_ERROR))
 		return -EIO;
-	/* FIXME: locking on info->mcr */
  	if (set & TIOCM_RTS)
  		info->mcr |= UART_MCR_RTS;
  	if (set & TIOCM_DTR)
@@ -1548,17 +1495,6 @@ static void rs_360_set_termios(struct tty_struct *tty, struct ktermios *old_term
 	}
 #endif
 
-#if 0
-	/*
-	 * No need to wake up processes in open wait, since they
-	 * sample the CLOCAL flag once, and don't recheck it.
-	 * XXX  It's not clear whether the current behavior is correct
-	 * or not.  Hence, this may change.....
-	 */
-	if (!(old_termios->c_cflag & CLOCAL) &&
-	    (tty->termios->c_cflag & CLOCAL))
-		wake_up_interruptible(&info->open_wait);
-#endif
 }
 
 /*
@@ -2487,8 +2423,6 @@ static int __init rs_360_init(void)
 	 * as general purpose I/O.  This will assert CTS and CD for the
 	 * SCC ports.
 	 */
-	/* FIXME: see 360um p.7-365 and 860um p.34-12 
-	 * I can't make sense of these bits - mleslie*/
 /* 	immap->im_ioport.iop_pcdir |= 0x03c6; */
 /* 	immap->im_ioport.iop_pcpar &= ~0x03c6; */
 
@@ -2601,7 +2535,7 @@ static int __init rs_360_init(void)
 			idx = PORT_NUM(info->state->smc_scc_num);
 			if (info->state->smc_scc_num & NUM_IS_SCC) {
 
-#if defined (CONFIG_UCQUICC) && 1
+#if defined(CONFIG_UCQUICC)
 				/* set the transceiver mode to RS232 */
 				sipex_mode_bits &= ~(uint)SIPEX_MODE(idx,0x0f); /* clear current mode */
 				sipex_mode_bits |= (uint)SIPEX_MODE(idx,0x02);

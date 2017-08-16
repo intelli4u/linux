@@ -257,9 +257,6 @@ typedef enum {
 	AHC_AIC7899_FE	= AHC_AIC7892_FE|AHC_MULTI_FUNC
 } ahc_feature;
 
-/*
- * Bugs in the silicon that we work around in software.
- */
 typedef enum {
 	AHC_BUGNONE		= 0x00,
 	/*
@@ -1048,11 +1045,6 @@ struct ahc_softc {
 	bus_dmamap_t		  shared_data_dmamap;
 	dma_addr_t		  shared_data_busaddr;
 
-	/*
-	 * Bus address of the one byte buffer used to
-	 * work-around a DMA bug for chips <= aic7880
-	 * in target mode.
-	 */
 	dma_addr_t		  dma_bug_buf;
 
 	/* Number of enabled target mode device on this card */

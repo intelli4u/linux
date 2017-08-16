@@ -383,7 +383,6 @@ static void __init smp_init(void)
 {
 	unsigned int cpu;
 
-	/* FIXME: This should be done in userspace --RR */
 	for_each_present_cpu(cpu) {
 		if (num_online_cpus() >= setup_max_cpus)
 			break;
@@ -590,12 +589,18 @@ asmlinkage void __init start_kernel(void)
 	sort_main_extable();
 	trap_init();
 	mm_init();
+
+#ifdef CONFIG_DUMP_PREV_OOPS_MSG
+        prepare_and_dump_previous_oops();
+#endif
+
 	/*
 	 * Set up the scheduler prior starting any interrupts (such as the
 	 * timer interrupt). Full topology setup happens at smp_init()
 	 * time - but meanwhile we still have a functioning scheduler.
 	 */
 	sched_init();
+
 	/*
 	 * Disable preemption - early bootup scheduling is extremely
 	 * fragile until we cpu_idle() for the first time.
@@ -606,6 +611,7 @@ asmlinkage void __init start_kernel(void)
 				"enabled *very* early, fixing it\n");
 		local_irq_disable();
 	}
+
 	rcu_init();
 	radix_tree_init();
 	/* init some links before init_ISA_irqs() */

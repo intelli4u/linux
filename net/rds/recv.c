@@ -176,26 +176,6 @@ void rds_recv_incoming(struct rds_connection *conn, __be32 saddr, __be32 daddr,
 		 inc->i_hdr.h_flags,
 		 inc->i_rx_jiffies);
 
-	/*
-	 * Sequence numbers should only increase.  Messages get their
-	 * sequence number as they're queued in a sending conn.  They
-	 * can be dropped, though, if the sending socket is closed before
-	 * they hit the wire.  So sequence numbers can skip forward
-	 * under normal operation.  They can also drop back in the conn
-	 * failover case as previously sent messages are resent down the
-	 * new instance of a conn.  We drop those, otherwise we have
-	 * to assume that the next valid seq does not come after a
-	 * hole in the fragment stream.
-	 *
-	 * The headers don't give us a way to realize if fragments of
-	 * a message have been dropped.  We assume that frags that arrive
-	 * to a flow are part of the current message on the flow that is
-	 * being reassembled.  This means that senders can't drop messages
-	 * from the sending conn until all their frags are sent.
-	 *
-	 * XXX we could spend more on the wire to get more robust failure
-	 * detection, arguably worth it to avoid data corruption.
-	 */
 	if (be64_to_cpu(inc->i_hdr.h_sequence) < conn->c_next_rx_seq &&
 	    (inc->i_hdr.h_flags & RDS_FLAG_RETRANSMITTED)) {
 		rds_stats_inc(s_recv_drop_old_seq);
@@ -276,7 +256,6 @@ static int rds_still_queued(struct rds_sock *rs, struct rds_incoming *inc,
 	if (!list_empty(&inc->i_item)) {
 		ret = 1;
 		if (drop) {
-			/* XXX make sure this i_conn is reliable */
 			rds_recv_rcvbuf_delta(rs, sk, inc->i_conn->c_lcong,
 					      -be32_to_cpu(inc->i_hdr.h_len),
 					      inc->i_hdr.h_dport);

@@ -8,7 +8,7 @@
 #include "linux/linkage.h"
 #include "linux/personality.h"
 #include "linux/utsname.h"
-#include "asm/prctl.h" /* XXX This should get the constants from libc */
+#include "asm/prctl.h"
 #include "asm/uaccess.h"
 #include "os.h"
 

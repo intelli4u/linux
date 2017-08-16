@@ -66,11 +66,6 @@ static void __init display_system_type(unsigned char machtype)
 			if (machtype != (SM_SUN4M_OBP | 0x00))
 				printk("TYPE: %s\n", Sun_Machines[i].name);
 			else {
-#if 0
-				prom_getproperty(prom_root_node, "banner-name",
-						 sysname, sizeof(sysname));
-				printk("TYPE: %s\n", sysname);
-#endif
 			}
 			return;
 		}

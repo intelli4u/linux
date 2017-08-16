@@ -351,7 +351,6 @@ SYMBOL_NAME_LABEL(resume)
 	mov.l	sp,@(THREAD_KSP:16,er0)
 
 	/* Skip address space switching if they are the same. */
-	/* FIXME: what did we hack out of here, this does nothing! */
 
 	mov.l	@(THREAD_USP:16,er1),er0
 	mov.l	er0,@SYMBOL_NAME(sw_usp)

@@ -726,7 +726,6 @@ static int dx_make_map(struct ext3_dir_entry_2 *de, unsigned blocksize,
 			count++;
 			cond_resched();
 		}
-		/* XXX: do we need to check rec_len == 0 case? -Chris */
 		de = ext3_next_entry(de);
 	}
 	return count;
@@ -1320,17 +1319,6 @@ static int add_dirent_to_buf(handle_t *handle, struct dentry *dentry,
 		de->inode = 0;
 	de->name_len = namelen;
 	memcpy (de->name, name, namelen);
-	/*
-	 * XXX shouldn't update any times until successful
-	 * completion of syscall, but too many callers depend
-	 * on this.
-	 *
-	 * XXX similarly, too many callers depend on
-	 * ext3_new_inode() setting the times, but error
-	 * recovery deletes the inode, so the worst that can
-	 * happen is that the times are slightly out of date
-	 * and/or different from the directory change time.
-	 */
 	dir->i_mtime = dir->i_ctime = CURRENT_TIME_SEC;
 	ext3_update_dx_flag(dir);
 	dir->i_version++;
@@ -1932,16 +1920,6 @@ int ext3_orphan_add(handle_t *handle, struct inode *inode)
 	/* Orphan handling is only valid for files with data blocks
 	 * being truncated, or files being unlinked. */
 
-	/* @@@ FIXME: Observation from aviro:
-	 * I think I can trigger J_ASSERT in ext3_orphan_add().  We block
-	 * here (on s_orphan_lock), so race with ext3_link() which might bump
-	 * ->i_nlink. For, say it, character device. Not a regular file,
-	 * not a directory, not a symlink and ->i_nlink > 0.
-	 *
-	 * tytso, 4/25/2009: I'm not sure how that could happen;
-	 * shouldn't the fs core protect us from these sort of
-	 * unlink()/link() races?
-	 */
 	J_ASSERT ((S_ISREG(inode->i_mode) || S_ISDIR(inode->i_mode) ||
 		S_ISLNK(inode->i_mode)) || inode->i_nlink == 0);
 

@@ -245,7 +245,6 @@ void emulate_io_inst(struct kvm_vcpu *vcpu, u64 padr, u64 ma)
 		inst_type = SL_FLOATING;
 		dir = IOREQ_WRITE;
 		vcpu_get_fpreg(vcpu, inst.M9.f2, &v);
-		/* Write high word. FIXME: this is a kludge!  */
 		v.u.bits[1] &= 0x3ffff;
 		mmio_access(vcpu, padr + 8, (u64 *)&v.u.bits[1], 8,
 			    ma, IOREQ_WRITE);
@@ -264,7 +263,6 @@ void emulate_io_inst(struct kvm_vcpu *vcpu, u64 padr, u64 ma)
 		temp += imm >> 23;
 		vcpu_set_gr(vcpu, inst.M10.r3, temp, 0);
 
-		/* Write high word.FIXME: this is a kludge!  */
 		v.u.bits[1] &= 0x3ffff;
 		mmio_access(vcpu, padr + 8, (u64 *)&v.u.bits[1],
 			    8, ma, IOREQ_WRITE);

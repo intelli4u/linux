@@ -409,4 +409,3 @@ void snd_usb_mixer_rc_memory_change(struct usb_mixer_interface *mixer,
 		break;
 	}
 }
-

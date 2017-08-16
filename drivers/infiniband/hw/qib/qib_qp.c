@@ -904,11 +904,6 @@ __be32 qib_compute_aeth(struct qib_qp *qp)
 		tail = wq->tail;
 		if (tail >= qp->r_rq.size)
 			tail = 0;
-		/*
-		 * Compute the number of credits available (RWQEs).
-		 * XXX Not holding the r_rq.lock here so there is a small
-		 * chance that the pair of reads are not atomic.
-		 */
 		credits = head - tail;
 		if ((int)credits < 0)
 			credits += qp->r_rq.size;

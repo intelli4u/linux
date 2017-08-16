@@ -735,5 +735,3 @@ void Wb35Reg_phy_calibration(struct hw_data *pHwData)
 		Wb35Reg_WriteSync(pHwData, 0x1054, BB54);
 	}
 }
-
-

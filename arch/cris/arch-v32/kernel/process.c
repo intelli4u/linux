@@ -194,7 +194,6 @@ sys_fork(long r10, long r11, long r12, long r13, long mof, long srp,
 	return do_fork(SIGCHLD, rdusp(), regs, 0, NULL, NULL);
 }
 
-/* FIXME: Is parent_tid/child_tid really third/fourth argument? Update lib? */
 asmlinkage int
 sys_clone(unsigned long newusp, unsigned long flags, int *parent_tid, int *child_tid,
 	unsigned long tls, long srp, struct pt_regs *regs)

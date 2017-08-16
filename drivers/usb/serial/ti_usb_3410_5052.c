@@ -580,8 +580,6 @@ static int ti_open(struct tty_struct *tty, struct usb_serial_port *port)
 		goto unlink_int_urb;
 	}
 
-	/* reset the data toggle on the bulk endpoints to work around bug in
-	 * host controllers where things get out of sync some times */
 	usb_clear_halt(dev, port->write_urb->pipe);
 	usb_clear_halt(dev, port->read_urb->pipe);
 
@@ -947,7 +945,6 @@ static void ti_set_termios(struct tty_struct *tty,
 	else
 		config->wBaudRate = (__u16)((461538 + baud/2) / baud);
 
-	/* FIXME: Should calculate resulting baud here and report it back */
 	if ((cflag & CBAUD) != B0)
 		tty_encode_baud_rate(tty, baud, baud);
 
@@ -1286,7 +1283,7 @@ static void ti_send(struct ti_port *tport)
 {
 	int count, result;
 	struct usb_serial_port *port = tport->tp_port;
-	struct tty_struct *tty = tty_port_tty_get(&port->port);	/* FIXME */
+	struct tty_struct *tty = tty_port_tty_get(&port->port);
 	unsigned long flags;
 
 

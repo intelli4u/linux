@@ -500,7 +500,6 @@ already_mapped:
 
 		/* Copy over the Prom's level 14 clock handler. */
 copy_prom_lvl14:
-#if 1
 		/* DJHR
 		 * preserve our linked/calculated instructions
 		 */
@@ -512,7 +511,6 @@ copy_prom_lvl14:
 		std	%g4, [%g1]
 		ldd	[%g3+8], %g4
 		std	%g4, [%g1+8]
-#endif
 		rd	%tbr, %g1
 		andn	%g1, 0xfff, %g1		! proms trap table base
 		or	%g0, (0x1e<<4), %g2	! offset to lvl14 intr
@@ -902,7 +900,6 @@ sun4d_init:
 	/* Fall through to sun4m_init */
 
 sun4m_init:
-	/* XXX Fucking Cypress... */
 	lda	[%g0] ASI_M_MMUREGS, %g5
 	srl	%g5, 28, %g4
 

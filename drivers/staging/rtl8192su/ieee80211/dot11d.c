@@ -113,13 +113,11 @@ Dot11d_UpdateCountryIe(
 
 		pTriple = (PCHNL_TXPOWER_TRIPLE)((u8*)pTriple + 3);
 	}
-#if 1
 	printk("Channel List:");
 	for(i=1; i<= MAX_CHANNEL_NUMBER; i++)
 		if(pDot11dInfo->channel_map[i] > 0)
 			printk(" %d", i);
 	printk("\n");
-#endif
 
 	UPDATE_CIE_SRC(dev, pTaddr);
 

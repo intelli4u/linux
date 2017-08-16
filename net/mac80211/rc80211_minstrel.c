@@ -382,7 +382,7 @@ minstrel_rate_init(void *priv, struct ieee80211_supported_band *sband,
 	struct ieee80211_local *local = hw_to_local(mp->hw);
 	struct ieee80211_rate *ctl_rate;
 	unsigned int i, n = 0;
-	unsigned int t_slot = 9; /* FIXME: get real slot time */
+	unsigned int t_slot = 9;
 
 	mi->lowest_rix = rate_lowest_index(sband, sta);
 	ctl_rate = &sband->bitrates[mi->lowest_rix];
@@ -567,4 +567,3 @@ rc80211_minstrel_exit(void)
 {
 	ieee80211_rate_control_unregister(&mac80211_minstrel);
 }
-

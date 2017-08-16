@@ -54,12 +54,6 @@ static inline MFT_RECORD *map_mft_record_page(ntfs_inode *ni)
 	unsigned ofs;
 
 	BUG_ON(ni->page);
-	/*
-	 * The index into the page cache and the offset within the page cache
-	 * page of the wanted mft record. FIXME: We need to check for
-	 * overflowing the unsigned long, but I don't think we would ever get
-	 * here if the volume was that big...
-	 */
 	index = (u64)ni->mft_no << vol->mft_record_size_bits >>
 			PAGE_CACHE_SHIFT;
 	ofs = (ni->mft_no << vol->mft_record_size_bits) & ~PAGE_CACHE_MASK;

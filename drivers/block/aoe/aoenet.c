@@ -169,4 +169,3 @@ aoenet_exit(void)
 {
 	dev_remove_pack(&aoe_pt);
 }
-

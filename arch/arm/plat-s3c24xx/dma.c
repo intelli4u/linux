@@ -53,16 +53,7 @@ static struct s3c24xx_dma_selection dma_sel;
 
 #define dma_regaddr(chan, reg) ((chan)->regs + (reg))
 
-#if 1
 #define dma_wrreg(chan, reg, val) writel((val), (chan)->regs + (reg))
-#else
-static inline void
-dma_wrreg(struct s3c2410_dma_chan *chan, int reg, unsigned long val)
-{
-	pr_debug("writing %08x to register %08x\n",(unsigned int)val,reg);
-	writel(val, dma_regaddr(chan, reg));
-}
-#endif
 
 #define dma_rdreg(chan, reg) readl((chan)->regs + (reg))
 
@@ -294,10 +285,6 @@ static inline void
 s3c2410_dma_buffdone(struct s3c2410_dma_chan *chan, struct s3c2410_dma_buf *buf,
 		     enum s3c2410_dma_buffresult result)
 {
-#if 0
-	pr_debug("callback_fn=%p, buf=%p, id=%p, size=%d, result=%d\n",
-		 chan->callback_fn, buf, buf->id, buf->size, result);
-#endif
 
 	if (chan->callback_fn != NULL) {
 		(chan->callback_fn)(chan, buf->id, buf->size, result);
@@ -360,13 +347,6 @@ static int s3c2410_dma_start(struct s3c2410_dma_chan *chan)
 
 	pr_debug("dma%d: %08lx to DMASKTRIG\n", chan->number, tmp);
 
-#if 0
-	/* the dma buffer loads should take care of clearing the AUTO
-	 * reloading feature */
-	tmp = dma_rdreg(chan, S3C2410_DMA_DCON);
-	tmp &= ~S3C2410_DCON_NORELOAD;
-	dma_wrreg(chan, S3C2410_DMA_DCON, tmp);
-#endif
 
 	s3c2410_dma_call_op(chan, S3C2410_DMAOP_START);
 
@@ -538,10 +518,6 @@ s3c2410_dma_freebuf(struct s3c2410_dma_buf *buf)
 static inline void
 s3c2410_dma_lastxfer(struct s3c2410_dma_chan *chan)
 {
-#if 0
-	pr_debug("dma%d: s3c2410_dma_lastxfer: load_state %d\n",
-		 chan->number, chan->load_state);
-#endif
 
 	switch (chan->load_state) {
 	case S3C2410_DMALOAD_NONE:
@@ -844,12 +820,6 @@ static int s3c2410_dma_dostop(struct s3c2410_dma_chan *chan)
 	//tmp &= ~S3C2410_DMASKTRIG_ON;
 	dma_wrreg(chan, S3C2410_DMA_DMASKTRIG, tmp);
 
-#if 0
-	/* should also clear interrupts, according to WinCE BSP */
-	tmp = dma_rdreg(chan, S3C2410_DMA_DCON);
-	tmp |= S3C2410_DCON_NORELOAD;
-	dma_wrreg(chan, S3C2410_DMA_DCON, tmp);
-#endif
 
 	/* should stop do this, or should we wait for flush? */
 	chan->state      = S3C2410_DMA_IDLE;
@@ -919,16 +889,6 @@ static int s3c2410_dma_flush(struct s3c2410_dma_chan *chan)
 
 	s3c2410_dma_waitforstop(chan);
 
-#if 0
-	/* should also clear interrupts, according to WinCE BSP */
-	{
-		unsigned long tmp;
-
-		tmp = dma_rdreg(chan, S3C2410_DMA_DCON);
-		tmp |= S3C2410_DCON_NORELOAD;
-		dma_wrreg(chan, S3C2410_DMA_DCON, tmp);
-	}
-#endif
 
 	dbg_showregs(chan);
 

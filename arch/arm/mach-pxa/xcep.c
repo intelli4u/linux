@@ -189,4 +189,3 @@ MACHINE_START(XCEP, "Iskratel XCEP")
 	.init_irq	= pxa25x_init_irq,
 	.timer		= &pxa_timer,
 MACHINE_END
-

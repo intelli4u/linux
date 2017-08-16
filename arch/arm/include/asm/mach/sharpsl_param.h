@@ -34,4 +34,3 @@ struct sharpsl_param_info {
 
 extern struct sharpsl_param_info sharpsl_param;
 extern void sharpsl_save_param(void);
-

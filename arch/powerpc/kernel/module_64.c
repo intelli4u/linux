@@ -29,18 +29,7 @@
 
 #include "setup.h"
 
-/* FIXME: We don't do .init separately.  To do this, we'd need to have
-   a separate r2 value in the init and core section, and stub between
-   them, too.
-
-   Using a magic allocator which places modules within 32MB solves
-   this, and makes other things simpler.  Anton?
-   --RR.  */
-#if 0
-#define DEBUGP printk
-#else
 #define DEBUGP(fmt , ...)
-#endif
 
 /* Like PPC32, we need little trampolines to do > 24-bit jumps (into
    the kernel itself).  But on PPC64, these need to be used for every
@@ -78,7 +67,6 @@ static unsigned int count_relocs(const Elf64_Rela *rela, unsigned int num)
 {
 	unsigned int i, r_info, r_addend, _count_relocs;
 
-	/* FIXME: Only count external ones --RR */
 	_count_relocs = 0;
 	r_info = 0;
 	r_addend = 0;
@@ -410,7 +398,6 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
 			break;
 
 		case R_PPC_REL24:
-			/* FIXME: Handle weak symbols here --RR */
 			if (sym->st_shndx == SHN_UNDEF) {
 				/* External: go via stub */
 				value = stub_for_addr(sechdrs, value, me);

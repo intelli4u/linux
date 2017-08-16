@@ -183,7 +183,6 @@ static int z2_open(struct block_device *bdev, fmode_t mode)
 		size = m68k_memory[index].size & ~(Z2RAM_CHUNKSIZE-1);
 
 #ifdef __powerpc__
-		/* FIXME: ioremap doesn't build correct memory tables. */
 		{
 			vfree(vmalloc (size));
 		}
@@ -315,9 +314,6 @@ z2_release(struct gendisk *disk, fmode_t mode)
     	return 0;
     }
     unlock_kernel();
-    /*
-     * FIXME: unmap memory
-     */
 
     return 0;
 }

@@ -647,31 +647,11 @@ efi_enter_virtual_mode (void)
 			} else if (md->attribute & EFI_MEMORY_UC) {
 				md->virt_addr = (u64) ioremap(md->phys_addr, 0);
 			} else if (md->attribute & EFI_MEMORY_WC) {
-#if 0
-				md->virt_addr = ia64_remap(md->phys_addr,
-							   (_PAGE_A |
-							    _PAGE_P |
-							    _PAGE_D |
-							    _PAGE_MA_WC |
-							    _PAGE_PL_0 |
-							    _PAGE_AR_RW));
-#else
 				printk(KERN_INFO "EFI_MEMORY_WC mapping\n");
 				md->virt_addr = (u64) ioremap(md->phys_addr, 0);
-#endif
 			} else if (md->attribute & EFI_MEMORY_WT) {
-#if 0
-				md->virt_addr = ia64_remap(md->phys_addr,
-							   (_PAGE_A |
-							    _PAGE_P |
-							    _PAGE_D |
-							    _PAGE_MA_WT |
-							    _PAGE_PL_0 |
-							    _PAGE_AR_RW));
-#else
 				printk(KERN_INFO "EFI_MEMORY_WT mapping\n");
 				md->virt_addr = (u64) ioremap(md->phys_addr, 0);
-#endif
 			}
 		}
 	}

@@ -182,10 +182,6 @@ void dm_dirty_log_destroy(struct dm_dirty_log *log)
 }
 EXPORT_SYMBOL(dm_dirty_log_destroy);
 
-/*-----------------------------------------------------------------
- * Persistent and core logs share a lot of their implementation.
- * FIXME: need a reload method to be called from a resume
- *---------------------------------------------------------------*/
 /*
  * Magic for persistent mirrors: "MiRr"
  */
@@ -220,7 +216,7 @@ struct log_c {
 	unsigned bitset_uint32_count;
 	uint32_t *clean_bits;
 	uint32_t *sync_bits;
-	uint32_t *recovering_bits;	/* FIXME: this seems excessive */
+	uint32_t *recovering_bits;
 
 	int sync_search;
 
@@ -611,11 +607,9 @@ static int disk_resume(struct dm_dirty_log *log)
 	/* set or clear any new bits -- device has grown */
 	if (lc->sync == NOSYNC)
 		for (i = lc->header.nr_regions; i < lc->region_count; i++)
-			/* FIXME: amazingly inefficient */
 			log_set_bit(lc, lc->clean_bits, i);
 	else
 		for (i = lc->header.nr_regions; i < lc->region_count; i++)
-			/* FIXME: amazingly inefficient */
 			log_clear_bit(lc, lc->clean_bits, i);
 
 	/* clear any old bits -- device has shrunk */

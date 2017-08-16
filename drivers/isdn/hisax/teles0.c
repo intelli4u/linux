@@ -1,4 +1,4 @@
-/* $Id: teles0.c,v 2.15.2.4 2004/01/13 23:48:39 keil Exp $
+/* $Id: teles0.c,v 2.15.2.4 2004/01/13 23:48:39 Exp $
  *
  * low level stuff for Teles Memory IO isdn cards
  *

@@ -102,25 +102,6 @@ struct clkctl_acpu_speed {
  * Table stepping up/down is optimized for 256mhz jumps while staying on the
  * same PLL.
  */
-#if (0)
-static struct clkctl_acpu_speed  acpu_freq_tbl[] = {
-	{ 19200, ACPU_PLL_TCXO, 0, 0, 19200, 0, VDD_0, 30720, 0, 0, 8 },
-	{ 61440, ACPU_PLL_0,  4, 3, 61440,  0, VDD_0, 30720,  0, 0, 8 },
-	{ 81920, ACPU_PLL_0,  4, 2, 40960,  1, VDD_0, 61440,  0, 0, 8 },
-	{ 96000, ACPU_PLL_1,  1, 7, 48000,  1, VDD_0, 61440,  0, 0, 9 },
-	{ 122880, ACPU_PLL_0, 4, 1, 61440,  1, VDD_3, 61440,  0, 0, 8 },
-	{ 128000, ACPU_PLL_1, 1, 5, 64000,  1, VDD_3, 61440,  0, 0, 12 },
-	{ 176000, ACPU_PLL_2, 2, 5, 88000,  1, VDD_3, 61440,  0, 0, 11 },
-	{ 192000, ACPU_PLL_1, 1, 3, 64000,  2, VDD_3, 61440,  0, 0, 12 },
-	{ 245760, ACPU_PLL_0, 4, 0, 81920,  2, VDD_4, 61440,  0, 0, 12 },
-	{ 256000, ACPU_PLL_1, 1, 2, 128000, 2, VDD_5, 128000, 0, 0, 12 },
-	{ 264000, ACPU_PLL_2, 2, 3, 88000,  2, VDD_5, 128000, 0, 6, 13 },
-	{ 352000, ACPU_PLL_2, 2, 2, 88000,  3, VDD_5, 128000, 0, 6, 13 },
-	{ 384000, ACPU_PLL_1, 1, 1, 128000, 2, VDD_6, 128000, 0, 5, -1 },
-	{ 528000, ACPU_PLL_2, 2, 1, 132000, 3, VDD_7, 128000, 0, 11, -1 },
-	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-};
-#else /* Table of freq we currently use. */
 static struct clkctl_acpu_speed  acpu_freq_tbl[] = {
 	{ 19200, ACPU_PLL_TCXO, 0, 0, 19200, 0, VDD_0, 30720, 0, 0, 4 },
 	{ 122880, ACPU_PLL_0, 4, 1, 61440, 1, VDD_3, 61440, 0, 0, 4 },
@@ -132,7 +113,6 @@ static struct clkctl_acpu_speed  acpu_freq_tbl[] = {
 	{ 528000, ACPU_PLL_2, 2, 1, 132000, 3, VDD_7, 128000, 0, 5, -1 },
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
-#endif
 
 
 #ifdef CONFIG_CPU_FREQ_TABLE

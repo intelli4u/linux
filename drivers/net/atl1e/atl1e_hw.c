@@ -528,7 +528,6 @@ int atl1e_reset_hw(struct atl1e_hw *hw)
 	u16 pci_cfg_cmd_word = 0;
 	int timeout = 0;
 
-	/* Workaround for PCI problem when BIOS sets MMRBC incorrectly. */
 	pci_read_config_word(pdev, PCI_REG_COMMAND, &pci_cfg_cmd_word);
 	if ((pci_cfg_cmd_word & (CMD_IO_SPACE |
 				CMD_MEMORY_SPACE | CMD_BUS_MASTER))
@@ -656,4 +655,3 @@ int atl1e_restart_autoneg(struct atl1e_hw *hw)
 			MII_CR_RESTART_AUTO_NEG);
 	return err;
 }
-

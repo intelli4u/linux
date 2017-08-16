@@ -441,7 +441,6 @@ asmlinkage long xtensa_rt_sigsuspend(sigset_t __user *unewset,
 {
 	sigset_t saveset, newset;
 
-	/* XXX: Don't preclude handling different sized sigset_t's.  */
 	if (sigsetsize != sizeof(sigset_t))
 		return -EINVAL;
 
@@ -574,4 +573,3 @@ no_signal:
 		task_pt_regs(current)->icountlevel = 1;
 	return 0;
 }
-

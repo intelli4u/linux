@@ -136,4 +136,3 @@ static int __init sh7757_clk_init(void)
 }
 
 arch_initcall(sh7757_clk_init);
-

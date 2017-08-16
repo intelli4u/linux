@@ -708,7 +708,6 @@ static int __devinit macio_pci_probe(struct pci_dev *pdev, const struct pci_devi
 	if (chip == NULL)
 		return -ENODEV;
 
-	/* XXX Need locking ??? */
 	if (chip->lbus.pdev == NULL) {
 		chip->lbus.pdev = pdev;
 		chip->lbus.chip = chip;
@@ -793,4 +792,3 @@ EXPORT_SYMBOL(macio_release_resource);
 EXPORT_SYMBOL(macio_request_resources);
 EXPORT_SYMBOL(macio_release_resources);
 EXPORT_SYMBOL(macio_enable_devres);
-

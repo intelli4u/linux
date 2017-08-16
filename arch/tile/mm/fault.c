@@ -489,7 +489,6 @@ no_context:
 
 	bust_spinlocks(1);
 
-	/* FIXME: no lookup_address() yet */
 #ifdef SUPPORT_LOOKUP_ADDRESS
 	if (fault_num == INT_ITLB_MISS) {
 		pte_t *pte = lookup_address(address);
@@ -514,10 +513,6 @@ no_context:
 		      tsk->pid ? "init" : "the idle task");
 	}
 
-	/*
-	 * More FIXME: we should probably copy the i386 here and
-	 * implement a generic die() routine.  Not today.
-	 */
 #ifdef SUPPORT_DIE
 	die("Oops", regs);
 #endif

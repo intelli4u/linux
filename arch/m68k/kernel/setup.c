@@ -225,11 +225,6 @@ void __init setup_arch(char **cmdline_p)
 	else if (CPU_IS_060)
 		m68k_is040or060 = 6;
 
-	/* FIXME: m68k_fputype is passed in by Penguin booter, which can
-	 * be confused by software FPU emulation. BEWARE.
-	 * We should really do our own FPU check at startup.
-	 * [what do we do with buggy 68LC040s? if we have problems
-	 *  with them, we should add a test to check_bugs() below] */
 #ifndef CONFIG_M68KFPU_EMU_ONLY
 	/* clear the fpu if we have one */
 	if (m68k_fputype & (FPU_68881|FPU_68882|FPU_68040|FPU_68060)) {

@@ -630,4 +630,3 @@ void v4l2_m2m_buf_queue(struct v4l2_m2m_ctx *m2m_ctx, struct videobuf_queue *vq,
 	vb->state = VIDEOBUF_QUEUED;
 }
 EXPORT_SYMBOL_GPL(v4l2_m2m_buf_queue);
-

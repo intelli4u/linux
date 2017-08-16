@@ -343,7 +343,6 @@ static void kobil_close(struct usb_serial_port *port)
 {
 	dbg("%s - port %d", __func__, port->number);
 
-	/* FIXME: Add rts/dtr methods */
 	if (port->write_urb) {
 		usb_poison_urb(port->write_urb);
 		kfree(port->write_urb->transfer_buffer);
@@ -499,7 +498,6 @@ static int kobil_write(struct tty_struct *tty, struct usb_serial_port *port,
 static int kobil_write_room(struct tty_struct *tty)
 {
 	/* dbg("%s - port %d", __func__, port->number); */
-	/* FIXME */
 	return 8;
 }
 
@@ -555,7 +553,6 @@ static int kobil_tiocmset(struct tty_struct *tty, struct file *file,
 	unsigned char *transfer_buffer;
 	int transfer_buffer_length = 8;
 
-	/* FIXME: locking ? */
 	priv = usb_get_serial_port_data(port);
 	if (priv->device_type == KOBIL_USBTWIN_PRODUCT_ID
 		|| priv->device_type == KOBIL_KAAN_SIM_PRODUCT_ID) {

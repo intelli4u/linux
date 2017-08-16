@@ -65,13 +65,6 @@ static int ddr3_dbam[] = { [0]		= -1,
 			   [11]	= 8192,
 };
 
-/*
- * Valid scrub rates for the K8 hardware memory scrubber. We map the scrubbing
- * bandwidth to a valid bit pattern. The 'set' operation finds the 'matching-
- * or higher value'.
- *
- *FIXME: Produce a better mapping/linearisation.
- */
 
 struct scrubrate scrubrates[] = {
 	{ 0x01, 1600000000UL},
@@ -2079,13 +2072,6 @@ void amd64_decode_bus_error(int node_id, struct err_regs *regs)
 
 	__amd64_decode_bus_error(mci, regs);
 
-	/*
-	 * Check the UE bit of the NB status high register, if set generate some
-	 * logs. If NOT a GART error, then process the event as a NO-INFO event.
-	 * If it was a GART error, skip that process.
-	 *
-	 * FIXME: this should go somewhere else, if at all.
-	 */
 	if (regs->nbsh & K8_NBSH_UC_ERR && !report_gart_errors)
 		edac_mc_handle_ue_no_info(mci, "UE bit is set");
 

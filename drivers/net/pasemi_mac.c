@@ -832,7 +832,6 @@ next:
 	}
 
 	if (n > RX_RING_SIZE) {
-		/* Errata 5971 workaround: L2 target of headers */
 		write_iob_reg(PAS_IOB_COM_PKTHDRCNT, 0);
 		n &= (RX_RING_SIZE-1);
 	}

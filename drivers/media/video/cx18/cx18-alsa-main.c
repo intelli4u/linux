@@ -81,7 +81,6 @@ static void snd_cx18_card_free(struct snd_cx18_card *cxsc)
 	if (cxsc->v4l2_dev != NULL)
 		to_cx18(cxsc->v4l2_dev)->alsa = NULL;
 
-	/* FIXME - take any other stopping actions needed */
 
 	kfree(cxsc);
 }
@@ -172,7 +171,6 @@ static int snd_cx18_init(struct v4l2_device *v4l2_dev)
 			      __func__, ret);
 		goto err_exit_free;
 	}
-	/* FIXME - proc files */
 
 	/* (7) Set the driver data and return 0 */
 	/* We do this out of normal order for PCI drivers to avoid races */
@@ -247,7 +245,6 @@ static void __exit snd_cx18_exit(struct snd_cx18_card *cxsc)
 {
 	struct cx18 *cx = to_cx18(cxsc->v4l2_dev);
 
-	/* FIXME - pointer checks & shutdown cxsc */
 
 	snd_card_free(cxsc->sc);
 	cx->alsa = NULL;

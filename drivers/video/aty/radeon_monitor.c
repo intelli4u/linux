@@ -56,12 +56,6 @@ static char *radeon_get_mon_name(int type)
 
 
 #if defined(CONFIG_PPC_OF) || defined(CONFIG_SPARC)
-/*
- * Try to find monitor informations & EDID data out of the Open Firmware
- * device-tree. This also contains some "hacks" to work around a few machine
- * models with broken OF probing by hard-coding known EDIDs for some Mac
- * laptops internal LVDS panel. (XXX: not done yet)
- */
 static int __devinit radeon_parse_montype_prop(struct device_node *dp, u8 **out_EDID,
 					       int hdno)
 {

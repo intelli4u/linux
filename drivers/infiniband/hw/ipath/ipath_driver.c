@@ -1298,14 +1298,6 @@ reloop:
 
 	if (!dd->ipath_rhdrhead_intr_off && !reloop &&
 	    !(dd->ipath_flags & IPATH_NODMA_RTAIL)) {
-		/* IBA6110 workaround; we can have a race clearing chip
-		 * interrupt with another interrupt about to be delivered,
-		 * and can clear it before it is delivered on the GPIO
-		 * workaround.  By doing the extra check here for the
-		 * in-memory tail register updating while we were doing
-		 * earlier packets, we "almost" guarantee we have covered
-		 * that case.
-		 */
 		u32 hqtail = ipath_get_rcvhdrtail(pd);
 		if (hqtail != hdrqtail) {
 			hdrqtail = hqtail;

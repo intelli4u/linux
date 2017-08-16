@@ -50,7 +50,6 @@ struct pismo_data {
 	struct platform_device	*dev[PISMO_NUM_CS];
 };
 
-/* FIXME: set_vpp could do with a better calling convention */
 static struct pismo_data *vpp_pismo;
 static DEFINE_MUTEX(pismo_mutex);
 
@@ -197,11 +196,6 @@ static void __devinit pismo_add_one(struct pismo_data *pismo, int i,
 		return;
 	}
 
-	/*
-	 * FIXME: may need to the platforms memory controller here, but at
-	 * the moment we assume that it has already been correctly setup.
-	 * The memory controller can also tell us the base address as well.
-	 */
 
 	dev_info(dev, "cs%u: %.32s: type %02x access %u00ps size %uK\n",
 		i, cs->device, region.type, region.access, region.size / 1024);
@@ -231,7 +225,6 @@ static int __devexit pismo_remove(struct i2c_client *client)
 	for (i = 0; i < ARRAY_SIZE(pismo->dev); i++)
 		platform_device_unregister(pismo->dev[i]);
 
-	/* FIXME: set_vpp needs saner arguments */
 	pismo_setvpp_remove_fix(pismo);
 
 	kfree(pismo);
@@ -257,7 +250,6 @@ static int __devinit pismo_probe(struct i2c_client *client,
 	if (!pismo)
 		return -ENOMEM;
 
-	/* FIXME: set_vpp needs saner arguments */
 	ret = pismo_setvpp_probe_fix(pismo);
 	if (ret)
 		return ret;

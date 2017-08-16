@@ -419,4 +419,3 @@ void ssi_clk_prepare(bool FLAG)
 	__raw_writel(value, ssi_base + OMAP_SSI_SYSCONFIG_OFFSET);
 	iounmap(ssi_base);
 }
-

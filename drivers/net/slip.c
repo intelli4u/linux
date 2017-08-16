@@ -1359,8 +1359,6 @@ static void __exit slip_exit(void)
 		}
 	} while (busy && time_before(jiffies, timeout));
 
-	/* FIXME: hangup is async so we should wait when doing this second
-	   phase */
 
 	for (i = 0; i < slip_maxdev; i++) {
 		dev = slip_devs[i];

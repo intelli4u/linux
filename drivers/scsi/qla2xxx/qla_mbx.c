@@ -250,7 +250,7 @@ qla2x00_mailbox_command(scsi_qla_host_t *vha, mbx_cmd_t *mcp)
 	} else {
 
 #if defined(QL_DEBUG_LEVEL_2) || defined(QL_DEBUG_LEVEL_3) || \
-		defined(QL_DEBUG_LEVEL_11)
+	defined(QL_DEBUG_LEVEL_11)
 		uint16_t mb0;
 		uint32_t ictrl;
 

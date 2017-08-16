@@ -833,7 +833,6 @@ static int video_release(struct file *file)
 
 	/* turn off overlay */
 	if (res_check(fh, RESOURCE_OVERLAY)) {
-		/* FIXME */
 		res_free(dev, fh, RESOURCE_OVERLAY);
 	}
 
@@ -1567,4 +1566,3 @@ fail_unreg:
 	cx23885_video_unregister(dev);
 	return err;
 }
-

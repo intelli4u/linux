@@ -400,7 +400,6 @@ static int snd_mem_proc_open(struct inode *inode, struct file *file)
 	return single_open(file, snd_mem_proc_read, NULL);
 }
 
-/* FIXME: for pci only - other bus? */
 #ifdef CONFIG_PCI
 #define gettoken(bufp) strsep(bufp, " \t\n")
 
@@ -473,9 +472,6 @@ static ssize_t snd_mem_proc_write(struct file *file, const char __user * buffer,
 			for (i = 0; i < buffers; i++) {
 				struct snd_dma_buffer dmab;
 				memset(&dmab, 0, sizeof(dmab));
-				/* FIXME: We can allocate only in ZONE_DMA
-				 * without a device pointer!
-				 */
 				if (snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV, NULL,
 							size, &dmab) < 0) {
 					printk(KERN_ERR "snd-page-alloc: cannot allocate buffer pages (size = %d)\n", size);
@@ -485,7 +481,6 @@ static ssize_t snd_mem_proc_write(struct file *file, const char __user * buffer,
 			}
 		}
 	} else if (strcmp(token, "erase") == 0)
-		/* FIXME: need for releasing each buffer chunk? */
 		free_all_reserved_pages();
 	else
 		printk(KERN_ERR "snd-page-alloc: invalid proc cmd\n");

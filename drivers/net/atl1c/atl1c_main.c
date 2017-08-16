@@ -118,7 +118,6 @@ static void atl1c_pcie_patch(struct atl1c_hw *hw)
 	}
 }
 
-/* FIXME: no need any more ? */
 /*
  * atl1c_init_pcie - init PCIE module
  */
@@ -2565,11 +2564,6 @@ static int atl1c_resume(struct pci_dev *pdev)
 	atl1c_reset_mac(&adapter->hw);
 	atl1c_phy_init(&adapter->hw);
 
-#if 0
-	AT_READ_REG(&adapter->hw, REG_PM_CTRLSTAT, &pm_data);
-	pm_data &= ~PM_CTRLSTAT_PME_EN;
-	AT_WRITE_REG(&adapter->hw, REG_PM_CTRLSTAT, pm_data);
-#endif
 
 	netif_device_attach(netdev);
 	if (netif_running(netdev))

@@ -1972,7 +1972,6 @@ static inline int ib_bind_mw(struct ib_qp *qp,
 			     struct ib_mw *mw,
 			     struct ib_mw_bind *mw_bind)
 {
-	/* XXX reference counting in corresponding MR? */
 	return mw->device->bind_mw ?
 		mw->device->bind_mw(qp, mw, mw_bind) :
 		-ENOSYS;

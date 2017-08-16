@@ -1,74 +1,4 @@
-/*
- * Wireless USB Host Controller
- * Root Hub operations
- *
- *
- * Copyright (C) 2005-2006 Intel Corporation
- * Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
- *
- *
- * We fake a root hub that has fake ports (as many as simultaneous
- * devices the Wireless USB Host Controller can deal with). For each
- * port we keep an state in @wusbhc->port[index] identical to the one
- * specified in the USB2.0[ch11] spec and some extra device
- * information that complements the one in 'struct usb_device' (as
- * this lacs a hcpriv pointer).
- *
- * Note this is common to WHCI and HWA host controllers.
- *
- * Through here we enable most of the state changes that the USB stack
- * will use to connect or disconnect devices. We need to do some
- * forced adaptation of Wireless USB device states vs. wired:
- *
- *        USB:                 WUSB:
- *
- * Port   Powered-off          port slot n/a
- *        Powered-on           port slot available
- *        Disconnected         port slot available
- *        Connected            port slot assigned device
- *        		       device sent DN_Connect
- *                             device was authenticated
- *        Enabled              device is authenticated, transitioned
- *                             from unauth -> auth -> default address
- *                             -> enabled
- *        Reset                disconnect
- *        Disable              disconnect
- *
- * This maps the standard USB port states with the WUSB device states
- * so we can fake ports without having to modify the USB stack.
- *
- * FIXME: this process will change in the future
- *
- *
- * ENTRY POINTS
- *
- * Our entry points into here are, as in hcd.c, the USB stack root hub
- * ops defined in the usb_hcd struct:
- *
- * wusbhc_rh_status_data()	Provide hub and port status data bitmap
- *
- * wusbhc_rh_control()          Execution of all the major requests
- *                              you can do to a hub (Set|Clear
- *                              features, get descriptors, status, etc).
- *
- * wusbhc_rh_[suspend|resume]() That
- *
- * wusbhc_rh_start_port_reset() ??? unimplemented
- */
+
 #include <linux/slab.h>
 #include "wusbhc.h"
 
@@ -179,7 +109,7 @@ static int wusbhc_rh_get_hub_descr(struct wusbhc *wusbhc, u16 wValue,
 		0x00			/* All ports power at once */
 		| 0x00			/* not part of compound device */
 		| 0x10			/* No overcurrent protection */
-		| 0x00			/* 8 FS think time FIXME ?? */
+		| 0x00
 		| 0x00);		/* No port indicators */
 	descr->bPwrOn2PwrGood = 0;
 	descr->bHubContrCurrent = 0;
@@ -202,9 +132,6 @@ static int wusbhc_rh_clear_hub_feat(struct wusbhc *wusbhc, u16 feature)
 
 	switch (feature) {
 	case C_HUB_LOCAL_POWER:
-		/* FIXME: maybe plug bit 0 to the power input status,
-		 * if any?
-		 * see wusbhc_rh_get_hub_status() */
 	case C_HUB_OVER_CURRENT:
 		result = 0;
 		break;
@@ -224,7 +151,6 @@ static int wusbhc_rh_clear_hub_feat(struct wusbhc *wusbhc, u16 feature)
 static int wusbhc_rh_get_hub_status(struct wusbhc *wusbhc, u32 *buf,
 				    u16 wLength)
 {
-	/* FIXME: maybe plug bit 0 to the power input status (if any)? */
 	*buf = 0;
 	return 0;
 }

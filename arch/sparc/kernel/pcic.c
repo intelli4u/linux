@@ -91,7 +91,6 @@ static struct pcic_ca2irq pcic_i_je1a[] = {	/* 501-4811-03 */
 	{ 0, 0x80, 0,  7, 0 },		/* IGA (unused) */
 };
 
-/* XXX JS-E entry is incomplete - PCI Slot 2 address (pin 7)? */
 static struct pcic_ca2irq pcic_i_jse[] = {
 	{ 0, 0x00, 0, 13, 0 },		/* Ebus - serial and keyboard */
 	{ 0, 0x01, 1,  6, 0 },		/* hme */
@@ -176,19 +175,7 @@ static int pcic_read_config_dword(unsigned int busno, unsigned int devfn,
 	pcic = &pcic0;
 
 	local_irq_save(flags);
-#if 0 /* does not fail here */
-	pcic_speculative = 1;
-	pcic_trapped = 0;
-#endif
 	writel(CONFIG_CMD(busno, devfn, where), pcic->pcic_config_space_addr);
-#if 0 /* does not fail here */
-	nop();
-	if (pcic_trapped) {
-		local_irq_restore(flags);
-		*value = ~0;
-		return 0;
-	}
-#endif
 	pcic_speculative = 2;
 	pcic_trapped = 0;
 	*value = readl(pcic->pcic_config_space_data + (where&4));
@@ -387,12 +374,6 @@ static void __init pcic_pbm_scan_bus(struct linux_pcic *pcic)
 	struct linux_pbm_info *pbm = &pcic->pbm;
 
 	pbm->pci_bus = pci_scan_bus(pbm->pci_first_busno, &pcic_ops, pbm);
-#if 0 /* deadwood transplanted from sparc64 */
-	pci_fill_in_pbm_cookies(pbm->pci_bus, pbm, pbm->prom_node);
-	pci_record_assignments(pbm, pbm->pci_bus);
-	pci_assign_unassigned(pbm, pbm->pci_bus);
-	pci_fixup_irq(pbm, pbm->pci_bus);
-#endif
 }
 
 /*
@@ -416,11 +397,6 @@ static int __init pcic_init(void)
 	writeb(PCI_DVMA_CONTROL_IOTLB_DISABLE, 
 	       pcic->pcic_regs+PCI_DVMA_CONTROL);
 
-	/*
-	 *      Increase mapped size for PCI memory space (DMA access).
-	 *      Should be done in that order (size first, address second).
-	 *      Why we couldn't set up 4GB and forget about it? XXX
-	 */
 	writel(0xF0000000UL, pcic->pcic_regs+PCI_SIZE_0);
 	writel(0+PCI_BASE_ADDRESS_SPACE_MEMORY, 
 	       pcic->pcic_regs+PCI_BASE_ADDRESS_0);
@@ -480,36 +456,12 @@ static void pcic_map_pci_device(struct linux_pcic *pcic,
 		flags = dev->resource[j].flags;
 		if ((flags & IORESOURCE_IO) != 0) {
 			if (address < 0x10000) {
-				/*
-				 * A device responds to I/O cycles on PCI.
-				 * We generate these cycles with memory
-				 * access into the fixed map (phys 0x30000000).
-				 *
-				 * Since a device driver does not want to
-				 * do ioremap() before accessing PC-style I/O,
-				 * we supply virtual, ready to access address.
-				 *
-				 * Note that request_region()
-				 * works for these devices.
-				 *
-				 * XXX Neat trick, but it's a *bad* idea
-				 * to shit into regions like that.
-				 * What if we want to allocate one more
-				 * PCI base address...
-				 */
 				dev->resource[j].start =
 				    pcic->pcic_io + address;
-				dev->resource[j].end = 1;  /* XXX */
+				dev->resource[j].end = 1;
 				dev->resource[j].flags =
 				    (flags & ~IORESOURCE_IO) | IORESOURCE_MEM;
 			} else {
-				/*
-				 * OOPS... PCI Spec allows this. Sun does
-				 * not have any devices getting above 64K
-				 * so it must be user with a weird I/O
-				 * board in a PCI slot. We must remap it
-				 * under 64K but it is not done yet. XXX
-				 */
 				printk("PCIC: Skipping I/O space at 0x%lx, "
 				    "this will Oops if a driver attaches "
 				    "device '%s' at %02x:%02x)\n", address,
@@ -684,7 +636,7 @@ pcic_pin_to_irq(unsigned int pin, const char *name)
 		irq = ivec >> ((pin-4) << 2) & 0xF;
 	} else {					/* Corrupted map */
 		printk("PCIC: BAD PIN %d FOR %s\n", pin, name);
-		for (;;) {}	/* XXX Cannot panic properly in case of PROLL */
+		for (;;) {}
 	}
 /* P3 */ /* printk("PCIC: dev %s pin %d ivec 0x%x irq %x\n", name, pin, ivec, irq); */
 	return irq;
@@ -752,11 +704,6 @@ void __init pci_time_init(void)
 }
 
 
-#if 0
-static void watchdog_reset() {
-	writeb(0, pcic->pcic_regs+PCI_SYS_STATUS);
-}
-#endif
 
 /*
  * Other archs parse arguments here.
@@ -786,10 +733,6 @@ void pcic_nmi(unsigned int pend, struct pt_regs *regs)
 	pend = flip_dword(pend);
 
 	if (!pcic_speculative || (pend & PCI_SYS_INT_PENDING_PIO) == 0) {
-		/*
-		 * XXX On CP-1200 PCI #SERR may happen, we do not know
-		 * what to do about it yet.
-		 */
 		printk("Aiee, NMI pend 0x%x pc 0x%x spec %d, hanging\n",
 		    pend, (int)regs->pc, pcic_speculative);
 		for (;;) { }
@@ -934,9 +877,6 @@ void insl(unsigned long addr, void *dst, unsigned long count)
 {
 	while (count) {
 		count -= 4;
-		/*
-		 * XXX I am sure we are in for an unaligned trap here.
-		 */
 		*(unsigned long *)dst = inl(addr);
 		dst += 4;
 		/* addr += 4; */

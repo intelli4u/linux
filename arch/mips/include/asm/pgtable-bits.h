@@ -41,7 +41,7 @@
 #define _PAGE_MODIFIED              (1<<10) /* implemented in software */
 #define _PAGE_FILE                  (1<<10) /* set:pagecache unset:swap */
 
-#define _PAGE_R4KBUG                (1<<0)  /* workaround for r4k bug  */
+#define _PAGE_R4KBUG                (1<<0)
 #define _PAGE_GLOBAL                (1<<0)
 #define _PAGE_VALID                 (1<<1)
 #define _PAGE_SILENT_READ           (1<<1)  /* synonym                 */

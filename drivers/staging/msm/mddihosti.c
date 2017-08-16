@@ -1035,14 +1035,6 @@ static void mddi_process_rev_packets(void)
 			if ((!mddi_reg_read_successful) &&
 			    (mddi_reg_read_retry < mddi_reg_read_retry_max) &&
 			    (mddi_enable_reg_read_retry)) {
-				/*
-				 * There is a race condition that can happen
-				 * where the reverse encapsulation message is
-				 * sent out by the MDDI host before the register
-				 * read packet is sent. As a work-around for
-				 * that problem we issue the reverse
-				 * encapsulation one more time before giving up.
-				 */
 				if (mddi_enable_reg_read_retry_once)
 					mddi_reg_read_retry =
 					    mddi_reg_read_retry_max;
@@ -1809,41 +1801,6 @@ uint32 mddi_get_client_id(void)
 			mddi_disable(1);
 	}
 
-#if 0
-	switch (mddi_client_capability_pkt.Mfr_Name) {
-	case 0x4474:
-		if ((mddi_client_capability_pkt.Product_Code != 0x8960) &&
-		    (target == DISPLAY_1)) {
-			ret = PRISM_WVGA;
-		}
-		break;
-
-	case 0xD263:
-		if (target == DISPLAY_1)
-			ret = TOSHIBA_VGA_PRIM;
-		else if (target == DISPLAY_2)
-			ret = TOSHIBA_QCIF_SECD;
-		break;
-
-	case 0:
-		if (mddi_client_capability_pkt.Product_Code == 0x8835) {
-			if (target == DISPLAY_1)
-				ret = SHARP_QVGA_PRIM;
-			else if (target == DISPLAY_2)
-				ret = SHARP_128x128_SECD;
-		}
-		break;
-
-	default:
-		break;
-	}
-
-	if ((!client_detection_try) && (ret != TOSHIBA_VGA_PRIM)
-	    && (ret != TOSHIBA_QCIF_SECD)) {
-		/* Not a Toshiba display, so change drive_lo back to default value */
-		mddi_host_reg_out(DRIVE_LO, 0x0032);
-	}
-#endif
 
 #endif
 

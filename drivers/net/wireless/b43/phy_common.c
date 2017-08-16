@@ -295,7 +295,6 @@ int b43_switch_channel(struct b43_wldev *dev, unsigned int new_channel)
 	channelcookie = new_channel;
 	if (b43_current_band(dev->wl) == IEEE80211_BAND_5GHZ)
 		channelcookie |= 0x100;
-	//FIXME set 40Mhz flag if required
 	savedcookie = b43_shm_read16(dev, B43_SHM_SHARED, B43_SHM_SH_CHAN);
 	b43_shm_write16(dev, B43_SHM_SHARED, B43_SHM_SH_CHAN, channelcookie);
 

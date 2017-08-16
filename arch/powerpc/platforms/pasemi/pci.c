@@ -79,10 +79,6 @@ static int workaround_5945(struct pci_bus *bus, unsigned int devfn,
 	addr = pa_pxp_cfg_addr(hose, bus->number, devfn, offset & ~0x3);
 	byte = offset & 0x3;
 
-	/* Workaround bug 5945: write 0 to a dummy register before reading,
-	 * and write back what we read. We must read/write the full 32-bit
-	 * contents so we need to shift and mask by hand.
-	 */
 	dummy = pa_pxp_cfg_addr(hose, bus->number, devfn, 0x10);
 	out_le32(dummy, 0);
 	tmp = in_le32(addr);

@@ -132,12 +132,6 @@ struct ffs_data {
 	 * endpint zero. */
 	spinlock_t			eps_lock;
 
-	/* XXX REVISIT do we need our own request? Since we are not
-	 * handling setup requests immidiatelly user space may be so
-	 * slow that another setup will be sent to the gadget but this
-	 * time not to us but another function and then there could be
-	 * a race.  Is that the case? Or maybe we can use cdev->req
-	 * after all, maybe we just need some spinlock for that? */
 	struct usb_request		*ep0req;		/* P: mutex */
 	struct completion		ep0req_completion;	/* P: mutex */
 	int				ep0req_status;		/* P: mutex */
@@ -169,7 +163,6 @@ struct ffs_data {
 	struct {
 		u8				types[4];
 		unsigned short			count;
-		/* XXX REVISIT need to update it in some places, or do we? */
 		unsigned short			can_stall;
 		struct usb_ctrlrequest		setup;
 
@@ -1320,7 +1313,6 @@ static struct ffs_data *ffs_data_new(void)
 	init_waitqueue_head(&ffs->ev.waitq);
 	init_completion(&ffs->ep0req_completion);
 
-	/* XXX REVISIT need to update it in some places, or do we? */
 	ffs->ev.can_stall = 1;
 
 	return ffs;
@@ -2249,7 +2241,6 @@ static int ffs_func_bind(struct usb_configuration *c,
 	return 0;
 
 error:
-	/* XXX Do we need to release all claimed endpoints here? */
 	return ret;
 }
 

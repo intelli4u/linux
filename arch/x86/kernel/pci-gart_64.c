@@ -836,12 +836,6 @@ int __init gart_iommu_init(void)
 	 */
 	enable_gart_translations();
 
-	/*
-	 * Try to workaround a bug (thanks to BenH):
-	 * Set unmapped entries to a scratch page instead of 0.
-	 * Any prefetches that hit unmapped entries won't get an bus abort
-	 * then. (P2P bridge may be prefetching on DMA reads).
-	 */
 	scratch = get_zeroed_page(GFP_KERNEL);
 	if (!scratch)
 		panic("Cannot allocate iommu scratch page");

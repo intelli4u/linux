@@ -231,15 +231,7 @@ void smp_reschedule_irq(void)
 
 void smp_flush_page_to_ram(unsigned long page)
 {
-	/* Current theory is that those who call this are the one's
-	 * who have just dirtied their cache with the pages contents
-	 * in kernel space, therefore we only run this on local cpu.
-	 *
-	 * XXX This experiment failed, research further... -DaveM
-	 */
-#if 1
 	xc1((smpfunc_t) BTFIXUP_CALL(local_flush_page_to_ram), page);
-#endif
 	local_flush_page_to_ram(page);
 }
 

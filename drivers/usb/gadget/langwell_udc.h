@@ -225,4 +225,3 @@ struct langwell_udc {
 	/* make sure release() is done */
 	struct completion	*done;
 };
-

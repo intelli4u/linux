@@ -1,4 +1,4 @@
-/* $Id: gazel.c,v 2.19.2.4 2004/01/14 16:04:48 keil Exp $
+/* $Id: gazel.c,v 2.19.2.4 2004/01/14 16:04:48 Exp $
  *
  * low level stuff for Gazel isdn cards
  *

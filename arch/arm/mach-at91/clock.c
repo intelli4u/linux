@@ -110,7 +110,6 @@ static void pllb_mode(struct clk *clk, int is_on)
 	} else
 		value = 0;
 
-	// REVISIT: Add work-around for AT91RM9200 Errata #26 ?
 	at91_sys_write(AT91_CKGR_PLLBR, value);
 
 	do {

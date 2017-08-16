@@ -128,7 +128,6 @@ long compat_sys_rt_sigaction(int sig, struct compat_sigaction __user *act,
 	struct k_sigaction new_sa, old_sa;
 	int ret = -EINVAL;
 
-	/* XXX: Don't preclude handling different sized sigset_t's.  */
 	if (sigsetsize != sizeof(sigset_t))
 		goto out;
 

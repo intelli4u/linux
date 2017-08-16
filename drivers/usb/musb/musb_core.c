@@ -884,50 +884,6 @@ b_host:
 		}
 	}
 
-#if 0
-/* REVISIT ... this would be for multiplexing periodic endpoints, or
- * supporting transfer phasing to prevent exceeding ISO bandwidth
- * limits of a given frame or microframe.
- *
- * It's not needed for peripheral side, which dedicates endpoints;
- * though it _might_ use SOF irqs for other purposes.
- *
- * And it's not currently needed for host side, which also dedicates
- * endpoints, relies on TX/RX interval registers, and isn't claimed
- * to support ISO transfers yet.
- */
-	if (int_usb & MUSB_INTR_SOF) {
-		void __iomem *mbase = musb->mregs;
-		struct musb_hw_ep	*ep;
-		u8 epnum;
-		u16 frame;
-
-		DBG(6, "START_OF_FRAME\n");
-		handled = IRQ_HANDLED;
-
-		/* start any periodic Tx transfers waiting for current frame */
-		frame = musb_readw(mbase, MUSB_FRAME);
-		ep = musb->endpoints;
-		for (epnum = 1; (epnum < musb->nr_endpoints)
-					&& (musb->epmask >= (1 << epnum));
-				epnum++, ep++) {
-			/*
-			 * FIXME handle framecounter wraps (12 bits)
-			 * eliminate duplicated StartUrb logic
-			 */
-			if (ep->dwWaitFrame >= frame) {
-				ep->dwWaitFrame = 0;
-				pr_debug("SOF --> periodic TX%s on %d\n",
-					ep->tx_channel ? " DMA" : "",
-					epnum);
-				if (!ep->tx_channel)
-					musb_h_tx_start(musb, epnum);
-				else
-					cppi_hostdma_start(musb, epnum);
-			}
-		}		/* end of for loop */
-	}
-#endif
 
 	schedule_work(&musb->irq_work);
 
@@ -1023,13 +979,6 @@ void musb_stop(struct musb *musb)
 	musb_generic_disable(musb);
 	DBG(3, "HDRC disabled\n");
 
-	/* FIXME
-	 *  - mark host and/or peripheral drivers unusable/inactive
-	 *  - disable DMA (and enable it in HdrcStart)
-	 *  - make sure we can musb_start() after musb_stop(); with
-	 *    OTG mode, gadget driver module rmmod/modprobe cycles that
-	 *  - ...
-	 */
 	musb_platform_try_idle(musb, 0);
 }
 
@@ -1045,7 +994,6 @@ static void musb_shutdown(struct platform_device *pdev)
 		clk_put(musb->clock);
 	spin_unlock_irqrestore(&musb->lock, flags);
 
-	/* FIXME power down */
 }
 
 
@@ -1061,9 +1009,8 @@ static void musb_shutdown(struct platform_device *pdev)
  * We don't currently use dynamic fifo setup capability to do anything
  * more than selecting one of a bunch of predefined configurations.
  */
-#if defined(CONFIG_USB_TUSB6010) || \
-	defined(CONFIG_ARCH_OMAP2430) || defined(CONFIG_ARCH_OMAP3) \
-	|| defined(CONFIG_ARCH_OMAP4)
+#if defined(CONFIG_USB_TUSB6010) || defined(CONFIG_ARCH_OMAP2430) || \
+	defined(CONFIG_ARCH_OMAP3) || defined(CONFIG_ARCH_OMAP4)
 static ushort __initdata fifo_mode = 4;
 #else
 static ushort __initdata fifo_mode = 2;
@@ -1363,7 +1310,6 @@ static int __init ep_config_from_hw(struct musb *musb)
 
 	DBG(2, "<== static silicon ep config\n");
 
-	/* FIXME pick up ep0 maxpacket size */
 
 	for (epnum = 1; epnum < musb->config->num_eps; epnum++) {
 		musb_ep_select(mbase, epnum);
@@ -1373,7 +1319,6 @@ static int __init ep_config_from_hw(struct musb *musb)
 		if (ret < 0)
 			break;
 
-		/* FIXME set up hw_ep->{rx,tx}_double_buffered */
 
 #ifdef CONFIG_USB_MUSB_HDRC_HCD
 		/* pick an RX/TX endpoint for bulk */
@@ -1777,9 +1722,6 @@ musb_vbus_show(struct device *dev, struct device_attribute *attr, char *buf)
 
 	spin_lock_irqsave(&musb->lock, flags);
 	val = musb->a_wait_bcon;
-	/* FIXME get_vbus_status() is normally #defined as false...
-	 * and is effectively TUSB-specific.
-	 */
 	vbus = musb_platform_get_vbus_status(musb);
 	spin_unlock_irqrestore(&musb->lock, flags);
 
@@ -2071,7 +2013,6 @@ bad_config:
 		goto fail3;
 	}
 	musb->nIrq = nIrq;
-/* FIXME this handles wakeup irqs wrong */
 	if (enable_irq_wake(nIrq) == 0) {
 		musb->irq_wake = 1;
 		device_init_wakeup(dev, 1);
@@ -2411,9 +2352,6 @@ static int musb_suspend(struct device *dev)
 	spin_lock_irqsave(&musb->lock, flags);
 
 	if (is_peripheral_active(musb)) {
-		/* FIXME force disconnect unless we know USB will wake
-		 * the system up quickly enough to respond ...
-		 */
 	} else if (is_host_active(musb)) {
 		/* we know all the children are suspended; sometimes
 		 * they will even be wakeup-enabled.

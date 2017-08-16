@@ -183,4 +183,3 @@ int __init trout_init_mmc(unsigned int sys_rev)
 		printk(KERN_INFO "trout: SD-Card interface disabled\n");
 	return 0;
 }
-

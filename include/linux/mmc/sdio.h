@@ -162,4 +162,3 @@
 #define SDIO_FBR_BLKSIZE	0x10	/* block size (2 bytes) */
 
 #endif
-

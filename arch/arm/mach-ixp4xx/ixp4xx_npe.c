@@ -206,7 +206,7 @@ static void npe_start(struct npe *npe)
 static void npe_stop(struct npe *npe)
 {
 	__raw_writel(CMD_NPE_STOP, &npe->regs->exec_status_cmd);
-	__raw_writel(CMD_NPE_CLR_PIPE, &npe->regs->exec_status_cmd); /*FIXME?*/
+	__raw_writel(CMD_NPE_CLR_PIPE, &npe->regs->exec_status_cmd);
 }
 
 static int __must_check npe_debug_instr(struct npe *npe, u32 instr, u32 ctx,
@@ -577,10 +577,6 @@ int npe_load_firmware(struct npe *npe, const char *name, struct device *dev)
 		err = -EBUSY;
 		goto err;
 	}
-#if 0
-	npe_stop(npe);
-	npe_reset(npe);
-#endif
 
 	print_npe(KERN_INFO, npe, "firmware functionality 0x%X, "
 		  "revision 0x%X:%X\n", (image->id >> 16) & 0xFF,

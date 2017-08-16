@@ -209,9 +209,6 @@ static int mosart_probe(struct hid_device *hdev, const struct hid_device_id *id)
 	hid_set_drvdata(hdev, td);
 
 	/* currently, it's better to have one evdev device only */
-#if 0
-	hdev->quirks |= HID_QUIRK_MULTI_INPUT;
-#endif
 
 	ret = hid_parse(hdev);
 	if (ret == 0)
@@ -272,4 +269,3 @@ static void __exit mosart_exit(void)
 
 module_init(mosart_init);
 module_exit(mosart_exit);
-

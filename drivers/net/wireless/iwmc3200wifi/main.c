@@ -162,13 +162,6 @@ static void iwm_reset_worker(struct work_struct *work)
 
 	iwm = container_of(work, struct iwm_priv, reset_worker);
 
-	/*
-	 * XXX: The iwm->mutex is introduced purely for this reset work,
-	 * because the other users for iwm_up and iwm_down are only netdev
-	 * ndo_open and ndo_stop which are already protected by rtnl.
-	 * Please remove iwm->mutex together if iwm_reset_worker() is not
-	 * required in the future.
-	 */
 	if (!mutex_trylock(&iwm->mutex)) {
 		IWM_WARN(iwm, "We are in the middle of interface bringing "
 			 "UP/DOWN. Skip driver resetting.\n");
@@ -376,24 +369,6 @@ void iwm_resetting(struct iwm_priv *iwm)
 	schedule_work(&iwm->reset_worker);
 }
 
-/*
- * Notification code:
- *
- * We're faced with the following issue: Any host command can
- * have an answer or not, and if there's an answer to expect,
- * it can be treated synchronously or asynchronously.
- * To work around the synchronous answer case, we implemented
- * our notification mechanism.
- * When a code path needs to wait for a command response
- * synchronously, it calls notif_handle(), which waits for the
- * right notification to show up, and then process it. Before
- * starting to wait, it registered as a waiter for this specific
- * answer (by toggling a bit in on of the handler_map), so that
- * the rx code knows that it needs to send a notification to the
- * waiting processes. It does so by calling iwm_notif_send(),
- * which adds the notification to the pending notifications list,
- * and then wakes the waiting processes up.
- */
 int iwm_notif_send(struct iwm_priv *iwm, struct iwm_wifi_cmd *cmd,
 		   u8 cmd_id, u8 source, u8 *buf, unsigned long buf_size)
 {

@@ -109,7 +109,6 @@ static unsigned char sun_82077_fd_inb(unsigned long port)
 	case 5: /* FD_DATA */
 		return sbus_readb(&sun_fdc->data_82077);
 	case 7: /* FD_DIR */
-		/* XXX: Is DCL on 0x80 in sun4m? */
 		return sbus_readb(&sun_fdc->dir_82077);
 	};
 	panic("sun_82072_fd_inb: How did I get here?");
@@ -271,7 +270,6 @@ static void sun_fd_free_irq(void)
 
 static unsigned int sun_get_dma_residue(void)
 {
-	/* XXX This isn't really correct. XXX */
 	return 0;
 }
 
@@ -317,13 +315,6 @@ static void sun_pci_fd_outb(unsigned char val, unsigned long port)
 static void sun_pci_fd_broken_outb(unsigned char val, unsigned long port)
 {
 	udelay(5);
-	/*
-	 * XXX: Due to SUN's broken floppy connector on AX and AXi
-	 *      we need to turn on MOTOR_0 also, if the floppy is
-	 *      jumpered to DS1 (like most PC floppies are). I hope
-	 *      this does not hurt correct hardware like the AXmp.
-	 *      (Eddie, Sep 12 1998).
-	 */
 	if (port == ((unsigned long)sun_fdc) + 2) {
 		if (((val & 0x03) == sun_pci_broken_drive) && (val & 0x20)) {
 			val |= 0x10;
@@ -336,13 +327,6 @@ static void sun_pci_fd_broken_outb(unsigned char val, unsigned long port)
 static void sun_pci_fd_lde_broken_outb(unsigned char val, unsigned long port)
 {
 	udelay(5);
-	/*
-	 * XXX: Due to SUN's broken floppy connector on AX and AXi
-	 *      we need to turn on MOTOR_0 also, if the floppy is
-	 *      jumpered to DS1 (like most PC floppies are). I hope
-	 *      this does not hurt correct hardware like the AXmp.
-	 *      (Eddie, Sep 12 1998).
-	 */
 	if (port == ((unsigned long)sun_fdc) + 2) {
 		if (((val & 0x03) == sun_pci_broken_drive) && (val & 0x10)) {
 			val &= ~(0x03);
@@ -605,7 +589,6 @@ static unsigned long __init sun_floppy_init(void)
 
 		spin_lock_init(&sun_pci_fd_ebus_dma.lock);
 
-		/* XXX ioremap */
 		sun_pci_fd_ebus_dma.regs = (void __iomem *)
 			op->resource[1].start;
 		if (!sun_pci_fd_ebus_dma.regs)
@@ -620,7 +603,6 @@ static unsigned long __init sun_floppy_init(void)
 		if (ebus_dma_register(&sun_pci_fd_ebus_dma))
 			return 0;
 
-		/* XXX ioremap */
 		sun_fdc = (struct sun_flpy_controller *) op->resource[0].start;
 
 		sun_fdops.fd_inb = sun_pci_fd_inb;
@@ -641,9 +623,6 @@ static unsigned long __init sun_floppy_init(void)
 
 		fdc_status = (unsigned long) &sun_fdc->status_82077;
 
-		/*
-		 * XXX: Find out on which machines this is really needed.
-		 */
 		if (1) {
 			sun_pci_broken_drive = 1;
 			sun_fdops.fd_outb = sun_pci_fd_broken_outb;

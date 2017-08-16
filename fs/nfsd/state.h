@@ -359,8 +359,6 @@ struct nfs4_file {
 	bool			fi_had_conflict;
 };
 
-/* XXX: for first cut may fall back on returning file that doesn't work
- * at all? */
 static inline struct file *find_writeable_file(struct nfs4_file *f)
 {
 	if (f->fi_fds[O_WRONLY])
@@ -385,22 +383,6 @@ static inline struct file *find_any_file(struct nfs4_file *f)
 		return f->fi_fds[O_RDONLY];
 }
 
-/*
-* nfs4_stateid can either be an open stateid or (eventually) a lock stateid
-*
-* (open)nfs4_stateid: one per (open)nfs4_stateowner, nfs4_file
-*
-* 	st_hash: stateid_hashtbl[] entry or lockstateid_hashtbl entry
-* 	st_perfile: file_hashtbl[] entry.
-* 	st_perfile_state: nfs4_stateowner->so_perfilestate
-*       st_perlockowner: (open stateid) list of lock nfs4_stateowners
-* 	st_access_bmap: used only for open stateid
-* 	st_deny_bmap: used only for open stateid
-*	st_openstp: open stateid lock stateid was derived from
-*
-* XXX: open stateids and lock stateids have diverged sufficiently that
-* we should consider defining separate structs for the two cases.
-*/
 
 struct nfs4_stateid {
 	struct list_head              st_hash; 

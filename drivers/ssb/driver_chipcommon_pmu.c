@@ -599,7 +599,7 @@ void ssb_pmu_set_ldo_paref(struct ssb_chipcommon *cc, bool on)
 		chipco_set32(cc, SSB_CHIPCO_PMU_MINRES_MSK, 1 << ldo);
 	else
 		chipco_mask32(cc, SSB_CHIPCO_PMU_MINRES_MSK, ~(1 << ldo));
-	chipco_read32(cc, SSB_CHIPCO_PMU_MINRES_MSK); //SPEC FIXME found via mmiotrace - dummy read?
+	chipco_read32(cc, SSB_CHIPCO_PMU_MINRES_MSK);
 }
 
 EXPORT_SYMBOL(ssb_pmu_set_ldo_voltage);

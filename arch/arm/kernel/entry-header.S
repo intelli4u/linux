@@ -26,7 +26,7 @@
  * The SWI code relies on the fact that R0 is at the bottom of the stack
  * (due to slow/fast restore user regs).
  */
-#if S_R0 != 0
+#if S_R0
 #error "Please fix"
 #endif
 
@@ -79,7 +79,7 @@
 #if defined(CONFIG_CPU_32v6K)
 	clrex					@ clear the exclusive monitor
 	ldmia	sp, {r0 - pc}^			@ load r0 - pc, cpsr
-#elif defined (CONFIG_CPU_V6)
+#elif defined(CONFIG_CPU_V6)
 	ldr	r0, [sp]
 	strex	r1, r2, [sp]			@ clear the exclusive monitor
 	ldmib	sp, {r1 - pc}^			@ load r1 - pc, cpsr
@@ -94,7 +94,7 @@
 	msr	spsr_cxsf, r1			@ save in spsr_svc
 #if defined(CONFIG_CPU_32v6K)
 	clrex					@ clear the exclusive monitor
-#elif defined (CONFIG_CPU_V6)
+#elif defined(CONFIG_CPU_V6)
 	strex	r1, r2, [sp]			@ clear the exclusive monitor
 #endif
 	.if	\fast

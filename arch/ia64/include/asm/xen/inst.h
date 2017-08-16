@@ -434,7 +434,6 @@
 	st4 [clob0] = r0
 
 
-	/* FIXME: THIS CODE IS NOT NaT SAFE! */
 #define XEN_BSW_1(clob)			\
 	mov clob = ar.unat;		\
 	movl r30 = XSI_B1NAT;		\

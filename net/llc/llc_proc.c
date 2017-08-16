@@ -135,7 +135,6 @@ static int llc_seq_socket_show(struct seq_file *seq, void *v)
 	sk = v;
 	llc = llc_sk(sk);
 
-	/* FIXME: check if the address is multicast */
 	seq_printf(seq, "%2X  %2X ", sk->sk_type, 0);
 
 	if (llc->dev)

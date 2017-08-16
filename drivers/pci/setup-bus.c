@@ -348,9 +348,6 @@ static void pci_bridge_check_ranges(struct pci_bus *bus)
  	}
  	if (io)
 		b_res[0].flags |= IORESOURCE_IO;
-	/*  DECchip 21050 pass 2 errata: the bridge may miss an address
-	    disconnect boundary by one PCI data phase.
-	    Workaround: do not use prefetching on this device. */
 	if (bridge->vendor == PCI_VENDOR_ID_DEC && bridge->device == 0x0001)
 		return;
 	pci_read_config_dword(bridge, PCI_PREF_MEMORY_BASE, &pmem);

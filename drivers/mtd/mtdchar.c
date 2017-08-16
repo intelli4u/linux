@@ -164,9 +164,6 @@ static int mtd_close(struct inode *inode, struct file *file)
 	return 0;
 } /* mtd_close */
 
-/* FIXME: This _really_ needs to die. In 2.5, we should lock the
-   userspace buffer down and use it directly with readv/writev.
-*/
 #define MAX_KMALLOC_SIZE 0x20000
 
 static ssize_t mtd_read(struct file *file, char __user *buf, size_t count,loff_t *ppos)
@@ -187,8 +184,6 @@ static ssize_t mtd_read(struct file *file, char __user *buf, size_t count,loff_t
 	if (!count)
 		return 0;
 
-	/* FIXME: Use kiovec in 2.5 to lock down the user's buffers
-	   and pass them directly to the MTD functions */
 
 	if (count > MAX_KMALLOC_SIZE)
 		kbuf=kmalloc(MAX_KMALLOC_SIZE, GFP_KERNEL);
@@ -579,15 +574,6 @@ static int mtd_ioctl(struct file *file, u_int cmd, u_long arg)
 			erase->callback = mtdchar_erase_callback;
 			erase->priv = (unsigned long)&waitq;
 
-			/*
-			  FIXME: Allow INTERRUPTIBLE. Which means
-			  not having the wait_queue head on the stack.
-
-			  If the wq_head is on the stack, and we
-			  leave because we got interrupted, then the
-			  wq_head is no longer there when the
-			  callback routine tries to wake us up.
-			*/
 			ret = mtd->erase(mtd, erase);
 			if (!ret) {
 				set_current_state(TASK_UNINTERRUPTIBLE);

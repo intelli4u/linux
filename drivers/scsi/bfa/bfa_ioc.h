@@ -311,4 +311,3 @@ mac_t bfa_ioc_get_mfg_mac(struct bfa_ioc_s *ioc);
 u64 bfa_ioc_get_adid(struct bfa_ioc_s *ioc);
 
 #endif /* __BFA_IOC_H__ */
-

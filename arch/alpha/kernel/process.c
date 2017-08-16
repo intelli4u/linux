@@ -52,8 +52,6 @@ cpu_idle(void)
 	set_thread_flag(TIF_POLLING_NRFLAG);
 
 	while (1) {
-		/* FIXME -- EV6 and LCA45 know how to power down
-		   the CPU.  */
 
 		while (!need_resched())
 			cpu_relax();

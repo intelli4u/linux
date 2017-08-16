@@ -15,8 +15,7 @@
  * 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#if defined(CONFIG_USB_STORAGE_DATAFAB) || \
-		defined(CONFIG_USB_STORAGE_DATAFAB_MODULE)
+#if defined(CONFIG_USB_STORAGE_DATAFAB) || defined(CONFIG_USB_STORAGE_DATAFAB_MODULE)
 
 UNUSUAL_DEV(  0x07c4, 0xa000, 0x0000, 0x0015,
 		"Datafab",

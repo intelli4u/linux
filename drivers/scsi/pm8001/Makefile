@@ -9,4 +9,3 @@ pm8001-y += pm8001_init.o \
 		pm8001_sas.o  \
 		pm8001_ctl.o  \
 		pm8001_hwi.o
-

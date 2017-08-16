@@ -399,10 +399,8 @@ start:
 			return -EREMOTEIO;
 	}
 
-	/* FIXME: Read frequency from frontend, take AFC into account */
 	param->frequency = state->current_frequency;
 
-	/* FIXME: How to read inversion setting? Receiver 6 register? */
 	param->inversion = INVERSION_AUTO;
 
 	return 0;

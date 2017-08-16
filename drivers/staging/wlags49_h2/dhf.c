@@ -377,5 +377,3 @@ int					i;
 	MMDASSERT(rc == HCF_SUCCESS, rc)
 	return rc;
 }   /* dhf_download_fw */
-
-

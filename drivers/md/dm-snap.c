@@ -1599,8 +1599,6 @@ static int snapshot_map(struct dm_target *ti, struct bio *bio,
 	if (!s->valid)
 		return -EIO;
 
-	/* FIXME: should only take write lock if we need
-	 * to copy an exception */
 	down_write(&s->lock);
 
 	if (!s->valid) {

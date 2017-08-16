@@ -58,84 +58,7 @@
 //      - 10/09/98 DMC Revised Linux version.
 //------------------------------------------------------------------------------
 
-//************
-//* Includes *
-//************
-
-#include <linux/sched.h>
-#include "i2lib.h"
-
-
-//***********************
-//* Function Prototypes *
-//***********************
-static void i2QueueNeeds(i2eBordStrPtr, i2ChanStrPtr, int);
-static i2ChanStrPtr i2DeQueueNeeds(i2eBordStrPtr, int );
-static void i2StripFifo(i2eBordStrPtr);
-static void i2StuffFifoBypass(i2eBordStrPtr);
-static void i2StuffFifoFlow(i2eBordStrPtr);
-static void i2StuffFifoInline(i2eBordStrPtr);
-static int i2RetryFlushOutput(i2ChanStrPtr);
-
-// Not a documented part of the library routines (careful...) but the Diagnostic
-// i2diag.c finds them useful to help the throughput in certain limited
-// single-threaded operations.
-static void iiSendPendingMail(i2eBordStrPtr);
-static void serviceOutgoingFifo(i2eBordStrPtr);
-
-// Functions defined in ip2.c as part of interrupt handling
-static void do_input(struct work_struct *);
-static void do_status(struct work_struct *);
-
-//***************
-//* Debug  Data *
-//***************
-#ifdef DEBUG_FIFO
-
-unsigned char DBGBuf[0x4000];
-unsigned short I = 0;
-
-static void
-WriteDBGBuf(char *s, unsigned char *src, unsigned short n ) 
-{
-	char *p = src;
-
-	// XXX: We need a spin lock here if we ever use this again
-
-	while (*s) {	// copy label
-		DBGBuf[I] = *s++;
-		I = I++ & 0x3fff;
-	}
-	while (n--) {	// copy data
-		DBGBuf[I] = *p++;
-		I = I++ & 0x3fff;
-	}
-}
-
-static void
-fatality(i2eBordStrPtr pB )
-{
-	int i;
-
-	for (i=0;i<sizeof(DBGBuf);i++) {
-		if ((i%16) == 0)
-			printk("\n%4x:",i);
-		printk("%02x ",DBGBuf[i]);
-	}
-	printk("\n");
-	for (i=0;i<sizeof(DBGBuf);i++) {
-		if ((i%16) == 0)
-			printk("\n%4x:",i);
-		if (DBGBuf[i] >= ' ' && DBGBuf[i] <= '~') {
-			printk(" %c ",DBGBuf[i]);
-		} else {
-			printk(" . ");
-		}
-	}
-	printk("\n");
-	printk("Last index %x\n",I);
-}
-#endif /* DEBUG_FIFO */
+/
 
 //********
 //* Code *
@@ -967,30 +890,6 @@ i2InputFlush(i2ChanStrPtr pCh)
 // returns -1. Otherwise, returns the number of bytes stripped. Otherwise,
 // returns the number of bytes available in the buffer.
 //******************************************************************************
-#if 0
-static int
-i2InputAvailable(i2ChanStrPtr pCh)
-{
-	int count;
-
-	// Ensure channel structure seems real
-	if ( !i2Validate ( pCh ) ) return -1;
-
-
-	// initialize some accelerators and private copies
-	read_lock_irqsave(&pCh->Ibuf_spinlock, flags);
-	count = pCh->Ibuf_stuff - pCh->Ibuf_strip;
-	read_unlock_irqrestore(&pCh->Ibuf_spinlock, flags);
-
-	// Adjust for buffer wrap
-	if (count < 0)
-	{
-		count += IBUF_SIZE;
-	}
-
-	return count;
-}
-#endif 
 
 //******************************************************************************
 // Function:   i2Output(pCh, pSource, count)

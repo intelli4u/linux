@@ -459,7 +459,6 @@ int apparmor_bprm_set_creds(struct linux_binprm *bprm)
 		goto audit;
 
 	if (bprm->unsafe & LSM_UNSAFE_SHARE) {
-		/* FIXME: currently don't mediate shared state */
 		;
 	}
 

@@ -19,12 +19,6 @@
  *
  */
 
-/* Power-Management-Code ( CONFIG_PM )
- * for ens1371 only ( FIXME )
- * derived from cs4281.c, atiixp.c and via82xx.c
- * using http://www.alsa-project.org/~iwai/writing-an-alsa-driver/c1540.htm
- * by Kurt J. Bosch
- */
 
 #include <asm/io.h>
 #include <linux/delay.h>
@@ -583,11 +577,6 @@ static void snd_es1370_codec_write(struct snd_ak4531 *ak4531,
 	struct ensoniq *ensoniq = ak4531->private_data;
 	unsigned long end_time = jiffies + HZ / 10;
 
-#if 0
-	printk(KERN_DEBUG
-	       "CODEC WRITE: reg = 0x%x, val = 0x%x (0x%x), creg = 0x%x\n",
-	       reg, val, ES_1370_CODEC_WRITE(reg, val), ES_REG(ensoniq, 1370_CODEC));
-#endif
 	do {
 		if (!(inl(ES_REG(ensoniq, STATUS)) & ES_1370_CSTAT)) {
 			outw(ES_1370_CODEC_WRITE(reg, val), ES_REG(ensoniq, 1370_CODEC));
@@ -2122,12 +2111,7 @@ static int __devinit snd_ensoniq_create(struct snd_card *card,
 	pci_set_master(pci);
 	ensoniq->rev = pci->revision;
 #ifdef CHIP1370
-#if 0
-	ensoniq->ctrl = ES_1370_CDC_EN | ES_1370_SERR_DISABLE |
-		ES_1370_PCLKDIVO(ES_1370_SRTODIV(8000));
-#else	/* get microphone working */
 	ensoniq->ctrl = ES_1370_CDC_EN | ES_1370_PCLKDIVO(ES_1370_SRTODIV(8000));
-#endif
 	ensoniq->sctrl = 0;
 #else
 	ensoniq->ctrl = 0;

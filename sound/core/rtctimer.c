@@ -50,7 +50,7 @@ static struct snd_timer_hardware rtc_hw = {
 	.flags =	SNDRV_TIMER_HW_AUTO |
 			SNDRV_TIMER_HW_FIRST |
 			SNDRV_TIMER_HW_TASKLET,
-	.ticks =	100000000L,		/* FIXME: XXX */
+	.ticks =	100000000L,
 	.open =		rtctimer_open,
 	.close =	rtctimer_close,
 	.start =	rtctimer_start,

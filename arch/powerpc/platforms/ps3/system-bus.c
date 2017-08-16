@@ -36,7 +36,6 @@ static struct device ps3_system_bus = {
 	.init_name = "ps3_system",
 };
 
-/* FIXME: need device usage counters! */
 struct {
 	struct mutex mutex;
 	int sb_11; /* usb 0 */

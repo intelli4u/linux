@@ -230,7 +230,7 @@ HYPERVISOR_shutdown(
 }
 
 /* for netfront.c, netback.c */
-#define MULTI_UVMFLAGS_INDEX 0 /* XXX any value */
+#define MULTI_UVMFLAGS_INDEX 0
 
 static inline void
 MULTI_update_va_mapping(

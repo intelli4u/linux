@@ -306,7 +306,6 @@ int cfcnfg_add_adaptation_layer(struct cfcnfg *cnfg,
 
 	*proto_tail = 2;
 
-	/* FIXME: ENUMERATE INITIALLY WHEN ACTIVATING PHYSICAL INTERFACE */
 	cfctrl_enum_req(cnfg->ctrl, param->phyid);
 	return cfctrl_linkup_request(cnfg->ctrl, param, adap_layer);
 }

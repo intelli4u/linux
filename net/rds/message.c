@@ -65,7 +65,6 @@ static void rds_message_purge(struct rds_message *rm)
 
 	for (i = 0; i < rm->m_nents; i++) {
 		rdsdebug("putting data page %p\n", (void *)sg_page(&rm->m_sg[i]));
-		/* XXX will have to put_page for page refs */
 		__free_page(sg_page(&rm->m_sg[i]));
 	}
 	rm->m_nents = 0;
@@ -405,4 +404,3 @@ void rds_message_unmapped(struct rds_message *rm)
 		wake_up(&rds_message_flush_waitq);
 }
 EXPORT_SYMBOL_GPL(rds_message_unmapped);
-

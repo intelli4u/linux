@@ -144,4 +144,3 @@ static inline void kunmap_atomic_notypecheck(void *addr, enum km_type idx)
 #endif
 
 #endif /* _PARISC_CACHEFLUSH_H */
-

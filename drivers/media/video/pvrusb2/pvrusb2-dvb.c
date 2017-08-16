@@ -432,4 +432,3 @@ fail1:
 	pvr2_channel_done(&adap->channel);
 	return NULL;
 }
-

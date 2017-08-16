@@ -1957,5 +1957,3 @@ dsp_cmx_hdlc(struct dsp *dsp, struct sk_buff *skb)
 		}
 	}
 }
-
-

@@ -667,12 +667,6 @@ int cap_task_fix_setuid(struct cred *new, const struct cred *old, int flags)
 		break;
 
 	case LSM_SETID_FS:
-		/* juggle the capabilties to follow FSUID changes, unless
-		 * otherwise suppressed
-		 *
-		 * FIXME - is fsuser used for all CAP_FS_MASK capabilities?
-		 *          if not, we might be a bit too harsh here.
-		 */
 		if (!issecure(SECURE_NO_SETUID_FIXUP)) {
 			if (old->fsuid == 0 && new->fsuid != 0)
 				new->cap_effective =

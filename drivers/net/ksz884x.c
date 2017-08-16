@@ -5982,7 +5982,6 @@ static int netdev_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 	cmd->advertising |= SUPPORTED_TP;
 	mutex_unlock(&hw_priv->lock);
 
-	/* Save advertised settings for workaround in next function. */
 	priv->advertising = cmd->advertising;
 	return 0;
 }

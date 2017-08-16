@@ -927,7 +927,6 @@ static void sis190_phy_task(struct work_struct *work)
 
 	val = mdio_read(ioaddr, phy_id, MII_BMCR);
 	if (val & BMCR_RESET) {
-		// FIXME: needlessly high ?  -- FR 02/07/2005
 		mod_timer(&tp->timer, jiffies + HZ/10);
 		goto out_unlock;
 	}

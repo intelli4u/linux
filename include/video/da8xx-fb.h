@@ -102,4 +102,3 @@ struct lcd_sync_arg {
 #define FBIO_WAITFORVSYNC	_IOW('F', 0x20, u_int32_t)
 
 #endif  /* ifndef DA8XX_FB_H */
-

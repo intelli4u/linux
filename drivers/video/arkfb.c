@@ -985,7 +985,6 @@ static int __devinit ark_pci_probe(struct pci_dev *dev, const struct pci_device_
 		goto err_iomap;
 	}
 
-	/* FIXME get memsize */
 	regval = vga_rseq(NULL, 0x10);
 	info->screen_size = (1 << (regval >> 6)) << 20;
 	info->fix.smem_len = info->screen_size;

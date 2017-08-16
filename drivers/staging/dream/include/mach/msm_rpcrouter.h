@@ -61,10 +61,6 @@ struct rpcsvr_platform_device
 };
 
 #define RPC_DATA_IN	0
-/*
- * Structures for sending / receiving direct RPC requests
- * XXX: Any cred/verif lengths > 0 not supported
- */
 
 struct rpc_request_hdr
 {

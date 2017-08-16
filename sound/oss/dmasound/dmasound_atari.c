@@ -1260,16 +1260,6 @@ static void AtaPlay(void)
 
 static irqreturn_t AtaInterrupt(int irq, void *dummy)
 {
-#if 0
-	/* ++TeSche: if you should want to test this... */
-	static int cnt;
-	if (write_sq.active == 2)
-		if (++cnt == 10) {
-			/* simulate losing an interrupt */
-			cnt = 0;
-			return IRQ_HANDLED;
-		}
-#endif
 	spin_lock(&dmasound.lock);
 	if (write_sq_ignore_int && is_falcon) {
 		/* ++TeSche: Falcon only: ignore first irq because it comes

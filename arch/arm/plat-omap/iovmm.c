@@ -127,7 +127,6 @@ static struct sg_table *sgtable_alloc(const size_t bytes, u32 flags)
 	if (!IS_ALIGNED(bytes, PAGE_SIZE))
 		return ERR_PTR(-EINVAL);
 
-	/* FIXME: IOVMF_DA_FIXED should support 'superpages' */
 	if ((flags & IOVMF_LINEAR) && (flags & IOVMF_DA_ANON)) {
 		nr_entries = sgtable_nents(bytes);
 		if (!nr_entries)
@@ -207,7 +206,7 @@ static void *vmap_sg(const struct sg_table *sgt)
 	return new->addr;
 
 err_out:
-	WARN_ON(1); /* FIXME: cleanup some mpu mappings */
+	WARN_ON(1);
 	vunmap(new->addr);
 	return ERR_PTR(-EAGAIN);
 }

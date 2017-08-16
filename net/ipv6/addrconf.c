@@ -614,7 +614,7 @@ ipv6_add_addr(struct inet6_dev *idev, const struct in6_addr *addr, int pfxlen,
 
 	rcu_read_lock_bh();
 	if (idev->dead) {
-		err = -ENODEV;			/*XXX*/
+		err = -ENODEV;
 		goto out2;
 	}
 
@@ -864,7 +864,7 @@ retry:
 	}
 	spin_lock_bh(&ifp->lock);
 	if (ifp->regen_count++ >= idev->cnf.regen_max_retry) {
-		idev->cnf.use_tempaddr = -1;	/*XXX*/
+		idev->cnf.use_tempaddr = -1;
 		spin_unlock_bh(&ifp->lock);
 		write_unlock(&idev->lock);
 		printk(KERN_WARNING
@@ -1479,6 +1479,8 @@ void addrconf_leave_solict(struct inet6_dev *idev, struct in6_addr *addr)
 static void addrconf_join_anycast(struct inet6_ifaddr *ifp)
 {
 	struct in6_addr addr;
+	if (ifp->prefix_len >= 127) /* RFC 6164 */
+		return;
 	ipv6_addr_prefix(&addr, &ifp->addr, ifp->prefix_len);
 	if (ipv6_addr_any(&addr))
 		return;
@@ -1488,6 +1490,8 @@ static void addrconf_join_anycast(struct inet6_ifaddr *ifp)
 static void addrconf_leave_anycast(struct inet6_ifaddr *ifp)
 {
 	struct in6_addr addr;
+	if (ifp->prefix_len >= 127) /* RFC 6164 */
+		return;
 	ipv6_addr_prefix(&addr, &ifp->addr, ifp->prefix_len);
 	if (ipv6_addr_any(&addr))
 		return;
@@ -1527,7 +1531,6 @@ static int addrconf_ifid_eui48(u8 *eui, struct net_device *dev)
 
 static int addrconf_ifid_arcnet(u8 *eui, struct net_device *dev)
 {
-	/* XXX: inherit EUI-64 from other interface -- yoshfuji */
 	if (dev->addr_len != ARCNET_ALEN)
 		return -1;
 	memset(eui, 0, 7);
@@ -1611,17 +1614,6 @@ regen:
 	get_random_bytes(idev->rndid, sizeof(idev->rndid));
 	idev->rndid[0] &= ~0x02;
 
-	/*
-	 * <draft-ietf-ipngwg-temp-addresses-v2-00.txt>:
-	 * check if generated address is not inappropriate
-	 *
-	 *  - Reserved subnet anycast (RFC 2526)
-	 *	11111101 11....11 1xxxxxxx
-	 *  - ISATAP (RFC4214) 6.1
-	 *	00-00-5E-FE-xx-xx-xx-xx
-	 *  - value 0
-	 *  - XXX: already assigned to an address on the device
-	 */
 	if (idev->rndid[0] == 0xfd &&
 	    (idev->rndid[1]&idev->rndid[2]&idev->rndid[3]&idev->rndid[4]&idev->rndid[5]&idev->rndid[6]) == 0xff &&
 	    (idev->rndid[7]&0x80))
@@ -1843,7 +1835,7 @@ void addrconf_prefix_rcv(struct net_device *dev, u8 *opt, int len)
 
 		rt = rt6_lookup(net, &pinfo->prefix, NULL,
 				dev->ifindex, 1);
-
+#if 0
 		if (rt && addrconf_is_prefix_route(rt)) {
 			/* Autoconf prefix route */
 			if (valid_lft == 0) {
@@ -1858,6 +1850,8 @@ void addrconf_prefix_rcv(struct net_device *dev, u8 *opt, int len)
 				rt->rt6i_expires = 0;
 			}
 		} else if (valid_lft) {
+#endif
+		if (valid_lft) {
 			clock_t expires = 0;
 			int flags = RTF_ADDRCONF | RTF_PREFIX_RT;
 			if (addrconf_finite_timeout(rt_expires)) {
@@ -3944,7 +3938,6 @@ static int inet6_fill_ifinfo(struct sk_buff *skb, struct inet6_dev *idev,
 		goto nla_put_failure;
 	ipv6_store_devconf(&idev->cnf, nla_data(nla), nla_len(nla));
 
-	/* XXX - MC not implemented */
 
 	nla = nla_reserve(skb, IFLA_INET6_STATS, IPSTATS_MIB_MAX * sizeof(u64));
 	if (nla == NULL)

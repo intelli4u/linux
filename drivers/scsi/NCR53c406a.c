@@ -671,27 +671,6 @@ static const char *NCR53c406a_info(struct Scsi_Host *SChost)
 	return (info_msg);
 }
 
-#if 0
-static void wait_intr(void)
-{
-	unsigned long i = jiffies + WATCHDOG;
-
-	while (time_after(i, jiffies) && !(inb(STAT_REG) & 0xe0)) {	/* wait for a pseudo-interrupt */
-		cpu_relax();
-		barrier();
-	}
-
-	if (time_before_eq(i, jiffies)) {	/* Timed out */
-		rtrc(0);
-		current_SC->result = DID_TIME_OUT << 16;
-		current_SC->SCp.phase = idle;
-		current_SC->scsi_done(current_SC);
-		return;
-	}
-
-	NCR53c406a_intr(NULL);
-}
-#endif
 
 static int NCR53c406a_queue(Scsi_Cmnd * SCpnt, void (*done) (Scsi_Cmnd *))
 {
@@ -700,11 +679,6 @@ static int NCR53c406a_queue(Scsi_Cmnd * SCpnt, void (*done) (Scsi_Cmnd *))
 	VDEB(printk("NCR53c406a_queue called\n"));
 	DEB(printk("cmd=%02x, cmd_len=%02x, target=%02x, lun=%02x, bufflen=%d\n", SCpnt->cmnd[0], SCpnt->cmd_len, SCpnt->target, SCpnt->lun, scsi_bufflen(SCpnt)));
 
-#if 0
-	VDEB(for (i = 0; i < SCpnt->cmd_len; i++)
-	     printk("cmd[%d]=%02x  ", i, SCpnt->cmnd[i]));
-	VDEB(printk("\n"));
-#endif
 
 	current_SC = SCpnt;
 	current_SC->scsi_done = done;
@@ -803,7 +777,7 @@ static void NCR53c406a_intr(void *dev_id)
 
 #if NCR53C406A_DEBUG
 	printk("status=%02x, seq_reg=%02x, int_reg=%02x, fifo_size=%02x", status, seq_reg, int_reg, fifo_size);
-#if (USE_DMA)
+#if USE_DMA
 	printk("\n");
 #else
 	printk(", pio=%02x\n", pio_status);

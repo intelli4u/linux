@@ -53,8 +53,8 @@
 #include "cvmx-gmxx-defs.h"
 #include "cvmx-smix-defs.h"
 
-#if defined(CONFIG_CAVIUM_OCTEON_NUM_PACKET_BUFFERS) \
-	&& CONFIG_CAVIUM_OCTEON_NUM_PACKET_BUFFERS
+#if defined(CONFIG_CAVIUM_OCTEON_NUM_PACKET_BUFFERS) && \
+	CONFIG_CAVIUM_OCTEON_NUM_PACKET_BUFFERS
 int num_packet_buffers = CONFIG_CAVIUM_OCTEON_NUM_PACKET_BUFFERS;
 #else
 int num_packet_buffers = 1024;

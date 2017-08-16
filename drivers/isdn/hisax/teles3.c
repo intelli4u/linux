@@ -1,4 +1,4 @@
-/* $Id: teles3.c,v 2.19.2.4 2004/01/13 23:48:39 keil Exp $
+/* $Id: teles3.c,v 2.19.2.4 2004/01/13 23:48:39 Exp $
  *
  * low level stuff for Teles 16.3 & PNP isdn cards
  *

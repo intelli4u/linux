@@ -429,4 +429,3 @@ struct genl_ops wimax_gnl_msg_from_user = {
 	.doit = wimax_gnl_doit_msg_from_user,
 	.dumpit = NULL,
 };
-

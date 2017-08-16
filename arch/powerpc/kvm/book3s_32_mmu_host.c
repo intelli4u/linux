@@ -350,14 +350,6 @@ int kvmppc_mmu_init(struct kvm_vcpu *vcpu)
 	vcpu3s->vsid_max = CTX_TO_VSID(vcpu3s->context_id + 1) - 1;
 	vcpu3s->vsid_first = CTX_TO_VSID(vcpu3s->context_id);
 
-#if 0 /* XXX still doesn't guarantee uniqueness */
-	/* We could collide with the Linux vsid space because the vsid
-	 * wraps around at 24 bits. We're safe if we do our own space
-	 * though, so let's always set the highest bit. */
-
-	vcpu3s->vsid_max |= 0x00800000;
-	vcpu3s->vsid_first |= 0x00800000;
-#endif
 	BUG_ON(vcpu3s->vsid_max < vcpu3s->vsid_first);
 
 	vcpu3s->vsid_next = vcpu3s->vsid_first;

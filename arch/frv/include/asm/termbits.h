@@ -200,4 +200,3 @@ struct ktermios {
 #define	TCSAFLUSH	2
 
 #endif /* _ASM_TERMBITS_H__ */
-

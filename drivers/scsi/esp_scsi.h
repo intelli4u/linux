@@ -282,7 +282,6 @@ struct esp_cmd_entry {
 	struct completion	*eh_done;
 };
 
-/* XXX make this configurable somehow XXX */
 #define ESP_DEFAULT_TAGS	16
 
 #define ESP_MAX_TARGET		16

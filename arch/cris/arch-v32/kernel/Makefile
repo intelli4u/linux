@@ -15,4 +15,3 @@ obj-$(CONFIG_ETRAX_FAST_TIMER) += fasttimer.o
 obj-$(CONFIG_MODULES)    += crisksyms.o
 
 clean:
-

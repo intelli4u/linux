@@ -147,33 +147,6 @@ kbd_ascebc(struct kbd_data *kbd, unsigned char *ascebc)
 	}
 }
 
-#if 0
-/*
- * Generate ebcdic -> ascii translation table from kbd_data.
- */
-void
-kbd_ebcasc(struct kbd_data *kbd, unsigned char *ebcasc)
-{
-	unsigned short *keymap, keysym;
-	int i, j, k;
-
-	memset(ebcasc, ' ', 256);
-	for (i = 0; i < ARRAY_SIZE(key_maps); i++) {
-		keymap = kbd->key_maps[i];
-		if (!keymap)
-			continue;
-		for (j = 0; j < NR_KEYS; j++) {
-			keysym = keymap[j];
-			k = ((i & 1) << 7) + j;
-			if (KTYP(keysym) == (KT_LATIN | 0xf0) ||
-			    KTYP(keysym) == (KT_LETTER | 0xf0))
-				ebcasc[k] = KVAL(keysym);
-			else if (KTYP(keysym) == (KT_DEAD | 0xf0))
-				ebcasc[k] = ret_diacr[KVAL(keysym)];
-		}
-	}
-}
-#endif
 
 /*
  * We have a combining character DIACR here, followed by the character CH.

@@ -2374,4 +2374,3 @@ void drbd_nl_send_reply(struct cn_msg *req, int ret_code)
 	if (rr && rr != -ESRCH)
 		printk(KERN_INFO "drbd: cn_netlink_send()=%d\n", rr);
 }
-

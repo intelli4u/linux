@@ -88,4 +88,3 @@ extern int l1oip_alaw_to_ulaw(u8 *data, int len, u8 *result);
 extern int l1oip_ulaw_to_alaw(u8 *data, int len, u8 *result);
 extern void l1oip_4bit_free(void);
 extern int l1oip_4bit_alloc(int ulaw);
-

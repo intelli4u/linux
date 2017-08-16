@@ -210,15 +210,6 @@ static void snd_gf1_pcm_interrupt_wave(struct snd_gus_card * gus,
 	snd_gf1_select_voice(gus, pvoice->number);
 	voice_ctrl = snd_gf1_read8(gus, SNDRV_GF1_VB_ADDRESS_CONTROL) & ~0x8b;
 	ramp_ctrl = (snd_gf1_read8(gus, SNDRV_GF1_VB_VOLUME_CONTROL) & ~0xa4) | 0x03;
-#if 0
-	snd_gf1_select_voice(gus, pvoice->number);
-	printk(KERN_DEBUG "position = 0x%x\n",
-	       (snd_gf1_read_addr(gus, SNDRV_GF1_VA_CURRENT, voice_ctrl & 4) >> 4));
-	snd_gf1_select_voice(gus, pcmp->pvoices[1]->number);
-	printk(KERN_DEBUG "position = 0x%x\n",
-	       (snd_gf1_read_addr(gus, SNDRV_GF1_VA_CURRENT, voice_ctrl & 4) >> 4));
-	snd_gf1_select_voice(gus, pvoice->number);
-#endif
 	pcmp->bpos++;
 	pcmp->bpos %= pcmp->blocks;
 	if (pcmp->bpos + 1 >= pcmp->blocks) {	/* last block? */
@@ -254,18 +245,6 @@ static void snd_gf1_pcm_interrupt_wave(struct snd_gus_card * gus,
 	spin_unlock(&gus->reg_lock);
 
 	snd_pcm_period_elapsed(pcmp->substream);
-#if 0
-	if ((runtime->flags & SNDRV_PCM_FLG_MMAP) &&
-	    *runtime->state == SNDRV_PCM_STATE_RUNNING) {
-		end = pcmp->bpos * pcmp->block_size;
-		if (runtime->channels > 1) {
-			snd_gf1_pcm_block_change(pcmp->substream, end, pcmp->memory + (end / 2), pcmp->block_size / 2);
-			snd_gf1_pcm_block_change(pcmp->substream, end + (pcmp->block_size / 2), pcmp->memory + (pcmp->dma_size / 2) + (end / 2), pcmp->block_size / 2);
-		} else {
-			snd_gf1_pcm_block_change(pcmp->substream, end, pcmp->memory + end, pcmp->block_size);
-		}
-	}
-#endif
 }
 
 static void snd_gf1_pcm_interrupt_volume(struct snd_gus_card * gus,
@@ -692,10 +671,6 @@ static int snd_gf1_pcm_playback_open(struct snd_pcm_substream *substream)
 	runtime->private_data = pcmp;
 	runtime->private_free = snd_gf1_pcm_playback_free;
 
-#if 0
-	printk(KERN_DEBUG "playback.buffer = 0x%lx, gf1.pcm_buffer = 0x%lx\n",
-	       (long) pcm->playback.buffer, (long) gus->gf1.pcm_buffer);
-#endif
 	if ((err = snd_gf1_dma_init(gus)) < 0)
 		return err;
 	pcmp->flags = SNDRV_GF1_PCM_PFLG_NONE;
@@ -907,4 +882,3 @@ int snd_gf1_pcm_new(struct snd_gus_card * gus, int pcm_dev, int control_index, s
 		*rpcm = pcm;
 	return 0;
 }
-

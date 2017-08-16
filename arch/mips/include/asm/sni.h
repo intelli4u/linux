@@ -176,12 +176,6 @@ extern unsigned int sni_brd_type;
 
 #define PCIMT_IRQ_ETHERNET	(MIPS_CPU_IRQ_BASE+6)
 
-#if 0
-#define PCIMT_IRQ_TEMPERATURE	24
-#define PCIMT_IRQ_EISA_NMI	25
-#define PCIMT_IRQ_POWER_OFF	26
-#define PCIMT_IRQ_BUTTON	27
-#endif
 
 /*
  * Base address for the mapped 16mb EISA bus segment.

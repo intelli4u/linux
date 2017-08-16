@@ -652,7 +652,6 @@ static int tegra2_periph_clk_enable(struct clk *c)
 			RST_DEVICES_CLR + PERIPH_CLK_TO_ENB_SET_REG(c));
 	if (c->flags & PERIPH_EMC_ENB) {
 		/* The EMC peripheral clock has 2 extra enable bits */
-		/* FIXME: Do they need to be disabled? */
 		val = clk_readl(c->reg);
 		val |= 0x3 << 24;
 		clk_writel(val, c->reg);
@@ -777,8 +776,8 @@ static struct clk tegra_pll_s = {
 	.input_min = 32768,
 	.input_max = 32768,
 	.parent    = &tegra_clk_32k,
-	.cf_min    = 0, /* FIXME */
-	.cf_max    = 0, /* FIXME */
+	.cf_min    = 0,
+	.cf_max    = 0,
 	.vco_min   = 12000000,
 	.vco_max   = 26000000,
 	.pll_table = tegra_pll_s_table,
@@ -1040,17 +1039,6 @@ static struct clk tegra_clk_d = {
 	.parent    = &tegra_clk_m,
 };
 
-/* FIXME: need tegra_audio
-static struct clk tegra_clk_audio_2x = {
-	.name      = "clk_d",
-	.flags     = PERIPH_NO_RESET,
-	.ops       = &tegra_clk_double_ops,
-	.clk_num   = 89,
-	.reg       = 0x34,
-	.reg_shift = 8,
-	.parent    = &tegra_audio,
-}
-*/
 
 static struct clk_mux_sel mux_cclk[] = {
 	{ .input = &tegra_clk_m,	.value = 0},
@@ -1135,8 +1123,6 @@ static struct clk_mux_sel mux_pllp_pllc_pllm_clkm[] = {
 
 static struct clk_mux_sel mux_plla_audio_pllp_clkm[] = {
 	{.input = &tegra_pll_a, .value = 0},
-	/* FIXME: no mux defined for tegra_audio
-	{.input = &tegra_audio, .value = 1},*/
 	{.input = &tegra_pll_p, .value = 2},
 	{.input = &tegra_clk_m, .value = 3},
 	{ 0, 0},
@@ -1153,8 +1139,6 @@ static struct clk_mux_sel mux_pllp_plld_pllc_clkm[] = {
 static struct clk_mux_sel mux_pllp_pllc_audio_clkm_clk32[] = {
 	{.input = &tegra_pll_p,     .value = 0},
 	{.input = &tegra_pll_c,     .value = 1},
-	/* FIXME: no mux defined for tegra_audio
-	{.input = &tegra_audio,     .value = 2},*/
 	{.input = &tegra_clk_m,     .value = 3},
 	{.input = &tegra_clk_32k,   .value = 4},
 	{ 0, 0},
@@ -1206,7 +1190,6 @@ struct clk tegra_periph_clks[] = {
 	PERIPH_CLK("timer",	"timer",		NULL,	5,	0,	mux_clk_m,			0),
 	PERIPH_CLK("i2s1",	"i2s.0",		NULL,	11,	0x100,	mux_plla_audio_pllp_clkm,	MUX | DIV_U71),
 	PERIPH_CLK("i2s2",	"i2s.1",		NULL,	18,	0x104,	mux_plla_audio_pllp_clkm,	MUX | DIV_U71),
-	/* FIXME: spdif has 2 clocks but 1 enable */
 	PERIPH_CLK("spdif_out",	"spdif_out",		NULL,	10,	0x108,	mux_plla_audio_pllp_clkm,	MUX | DIV_U71),
 	PERIPH_CLK("spdif_in",	"spdif_in",		NULL,	10,	0x10c,	mux_pllp_pllc_pllm,		MUX | DIV_U71),
 	PERIPH_CLK("pwm",	"pwm",			NULL,	17,	0x110,	mux_pllp_pllc_audio_clkm_clk32,	MUX | DIV_U71),
@@ -1219,7 +1202,6 @@ struct clk tegra_periph_clks[] = {
 	PERIPH_CLK("sbc4",	"spi_tegra.3",		NULL,	68,	0x1b4,	mux_pllp_pllc_pllm_clkm,	MUX | DIV_U71),
 	PERIPH_CLK("ide",	"ide",			NULL,	25,	0x144,	mux_pllp_pllc_pllm_clkm,	MUX | DIV_U71),
 	PERIPH_CLK("ndflash",	"tegra_nand",		NULL,	13,	0x160,	mux_pllp_pllc_pllm_clkm,	MUX | DIV_U71),
-	/* FIXME: vfir shares an enable with uartb */
 	PERIPH_CLK("vfir",	"vfir",			NULL,	7,	0x168,	mux_pllp_pllc_pllm_clkm,	MUX | DIV_U71),
 	PERIPH_CLK("sdmmc1",	"sdhci-tegra.0",	NULL,	14,	0x150,	mux_pllp_pllc_pllm_clkm,	MUX | DIV_U71),
 	PERIPH_CLK("sdmmc2",	"sdhci-tegra.1",	NULL,	9,	0x154,	mux_pllp_pllc_pllm_clkm,	MUX | DIV_U71),
@@ -1227,7 +1209,6 @@ struct clk tegra_periph_clks[] = {
 	PERIPH_CLK("sdmmc4",	"sdhci-tegra.3",	NULL,	15,	0x160,	mux_pllp_pllc_pllm_clkm,	MUX | DIV_U71),
 	PERIPH_CLK("vde",	"vde",			NULL,	61,	0x1c8,	mux_pllp_pllc_pllm_clkm,	MUX | DIV_U71),
 	PERIPH_CLK("csite",	"csite",		NULL,	73,	0x1d4,	mux_pllp_pllc_pllm_clkm,	MUX | DIV_U71),
-	/* FIXME: what is la? */
 	PERIPH_CLK("la",	"la",			NULL,	76,	0x1f8,	mux_pllp_pllc_pllm_clkm,	MUX | DIV_U71),
 	PERIPH_CLK("owr",	"owr",			NULL,	71,	0x1cc,	mux_pllp_pllc_pllm_clkm,	MUX | DIV_U71),
 	PERIPH_CLK("nor",	"nor",			NULL,	42,	0x1d0,	mux_pllp_pllc_pllm_clkm,	MUX | DIV_U71),
@@ -1247,13 +1228,11 @@ struct clk tegra_periph_clks[] = {
 	PERIPH_CLK("uarte",	"uart.4",		NULL,	66,	0x1c4,	mux_pllp_pllc_pllm_clkm,	MUX | DIV_U71),
 	PERIPH_CLK("3d",	"3d",			NULL,	24,	0x158,	mux_pllm_pllc_pllp_plla,	MUX | DIV_U71 | PERIPH_MANUAL_RESET),
 	PERIPH_CLK("2d",	"2d",			NULL,	21,	0x15c,	mux_pllm_pllc_pllp_plla,	MUX | DIV_U71),
-	/* FIXME: vi and vi_sensor share an enable */
 	PERIPH_CLK("vi",	"vi",			NULL,	20,	0x148,	mux_pllm_pllc_pllp_plla,	MUX | DIV_U71),
 	PERIPH_CLK("vi_sensor",	"vi_sensor",		NULL,	20,	0x1a8,	mux_pllm_pllc_pllp_plla,	MUX | DIV_U71),
 	PERIPH_CLK("epp",	"epp",			NULL,	19,	0x16c,	mux_pllm_pllc_pllp_plla,	MUX | DIV_U71),
 	PERIPH_CLK("mpe",	"mpe",			NULL,	60,	0x170,	mux_pllm_pllc_pllp_plla,	MUX | DIV_U71),
 	PERIPH_CLK("host1x",	"host1x",		NULL,	28,	0x180,	mux_pllm_pllc_pllp_plla,	MUX | DIV_U71),
-	/* FIXME: cve and tvo share an enable	*/
 	PERIPH_CLK("cve",	"cve",			NULL,	49,	0x140,	mux_pllp_plld_pllc_clkm,	MUX | DIV_U71),
 	PERIPH_CLK("tvo",	"tvo",			NULL,	49,	0x188,	mux_pllp_plld_pllc_clkm,	MUX | DIV_U71),
 	PERIPH_CLK("hdmi",	"hdmi",			NULL,	51,	0x18c,	mux_pllp_plld_pllc_clkm,	MUX | DIV_U71),

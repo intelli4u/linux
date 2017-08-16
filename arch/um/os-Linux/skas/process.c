@@ -635,7 +635,6 @@ void switch_threads(jmp_buf *me, jmp_buf *you)
 
 static jmp_buf initial_jmpbuf;
 
-/* XXX Make these percpu */
 static void (*cb_proc)(void *arg);
 static void *cb_arg;
 static jmp_buf *cb_back;
@@ -714,7 +713,6 @@ void __switch_mm(struct mm_id *mm_idp)
 {
 	int err;
 
-	/* FIXME: need cpu pid in __switch_mm */
 	if (proc_mm) {
 		err = ptrace(PTRACE_SWITCH_MM, userspace_pid[0], 0,
 			     mm_idp->u.mm_fd);

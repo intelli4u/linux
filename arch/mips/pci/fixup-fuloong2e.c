@@ -148,7 +148,6 @@ static void __init loongson2e_686b_func1_fixup(struct pci_dev *pdev)
 	/* legacy mode */
 	pci_write_config_byte(pdev, 0x42, 0x09);
 
-#if 1/* play safe, otherwise we may see notebook's usb keyboard lockup */
 	/* disable read prefetch/write post buffers */
 	pci_write_config_byte(pdev, 0x41, 0x02);
 
@@ -157,13 +156,6 @@ static void __init loongson2e_686b_func1_fixup(struct pci_dev *pdev)
 	pci_write_config_byte(pdev, 0x44, 0x00);
 
 	pci_write_config_byte(pdev, 0x45, 0x00);
-#else
-	pci_write_config_byte(pdev, 0x41, 0xc2);
-	pci_write_config_byte(pdev, 0x43, 0x35);
-	pci_write_config_byte(pdev, 0x44, 0x1c);
-
-	pci_write_config_byte(pdev, 0x45, 0x10);
-#endif
 
 	printk(KERN_INFO"via686b fix: IDE done\n");
 }

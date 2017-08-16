@@ -74,7 +74,7 @@
 #define of_machine_is_compatible(x) (0)
 #endif
 
-#if defined (CONFIG_SERIAL_PMACZILOG_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
+#if defined(CONFIG_SERIAL_PMACZILOG_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
 #define SUPPORT_SYSRQ
 #endif
 
@@ -461,7 +461,6 @@ ack_tx_int:
 	zssync(uap);
 }
 
-/* Hrm... we register that twice, fixme later.... */
 static irqreturn_t pmz_interrupt(int irq, void *dev_id)
 {
 	struct uart_pmac_port *uap = dev_id;
@@ -808,26 +807,6 @@ static int pmz_set_scc_power(struct uart_pmac_port *uap, int state)
 
 #endif /* !CONFIG_PPC_PMAC */
 
-/*
- * FixZeroBug....Works around a bug in the SCC receving channel.
- * Inspired from Darwin code, 15 Sept. 2000  -DanM
- *
- * The following sequence prevents a problem that is seen with O'Hare ASICs
- * (most versions -- also with some Heathrow and Hydra ASICs) where a zero
- * at the input to the receiver becomes 'stuck' and locks up the receiver.
- * This problem can occur as a result of a zero bit at the receiver input
- * coincident with any of the following events:
- *
- *	The SCC is initialized (hardware or software).
- *	A framing error is detected.
- *	The clocking option changes from synchronous or X1 asynchronous
- *		clocking to X16, X32, or X64 asynchronous clocking.
- *	The decoding mode is changed among NRZ, NRZI, FM0, or FM1.
- *
- * This workaround attempts to recover from the lockup condition by placing
- * the SCC in synchronous loopback mode with a fast clock before programming
- * any of the asynchronous modes.
- */
 static void pmz_fix_zero_bug_scc(struct uart_pmac_port *uap)
 {
 	write_zsreg(uap, 9, ZS_IS_CHANNEL_A(uap) ? CHRA : CHRB);
@@ -1307,13 +1286,6 @@ static void __pmz_set_termios(struct uart_port *port, struct ktermios *termios,
 
 	memcpy(&uap->termios_cache, termios, sizeof(struct ktermios));
 
-	/* XXX Check which revs of machines actually allow 1 and 4Mb speeds
-	 * on the IR dongle. Note that the IRTTY driver currently doesn't know
-	 * about the FIR mode and high speed modes. So these are unused. For
-	 * implementing proper support for these, we should probably add some
-	 * DMA as well, at least on the Rx side, which isn't a simple thing
-	 * at this point.
-	 */
 	if (ZS_IS_IRDA(uap)) {
 		/* Calc baud rate */
 		baud = uart_get_baud_rate(port, termios, old, 1200, 4000000);

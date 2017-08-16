@@ -93,19 +93,6 @@ static int __init q40_debug_setup(char *arg)
 
 early_param("debug", q40_debug_setup);
 
-#if 0
-void printq40(char *str)
-{
-	int l = strlen(str);
-	char *p = q40_mem_cptr;
-
-	while (l-- > 0 && _cpleft-- > 0) {
-		*p = *str++;
-		p += 4;
-	}
-	q40_mem_cptr = p;
-}
-#endif
 
 static int halted;
 

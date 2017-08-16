@@ -434,7 +434,6 @@ subsys_initcall(balloon_init);
 
 static void balloon_exit(void)
 {
-    /* XXX - release balloon here */
     return;
 }
 

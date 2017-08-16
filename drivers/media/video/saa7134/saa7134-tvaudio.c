@@ -1027,7 +1027,6 @@ int saa7134_tvaudio_init2(struct saa7134_dev *dev)
 		if (IS_ERR(dev->thread.thread)) {
 			printk(KERN_WARNING "%s: kernel_thread() failed\n",
 			       dev->name);
-			/* XXX: missing error handling here */
 		}
 		saa7134_tvaudio_do_scan(dev);
 	}

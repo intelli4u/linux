@@ -489,7 +489,6 @@ static int ene_irq_status(struct ene_device *dev)
 	if (!(irq_status & ENEC_IRQ_STATUS))
 		return 0;
 
-	/* original driver does that twice - a workaround ? */
 	ene_hw_write_reg(dev, ENEC_IRQ, irq_status & ~ENEC_IRQ_STATUS);
 	ene_hw_write_reg(dev, ENEC_IRQ, irq_status & ~ENEC_IRQ_STATUS);
 
@@ -558,11 +557,6 @@ static irqreturn_t ene_isr(int irq, void *data)
 
 	if (dev->carrier_detect_enabled || debug)
 		carrier = ene_rx_sense_carrier(dev);
-#if 0
-	/* TODO */
-	if (dev->carrier_detect_enabled && carrier)
-		ir_raw_event_report_frequency(dev->idev, carrier);
-#endif
 
 	for (i = 0; i < ENE_SAMPLES_SIZE; i++) {
 		hw_value = ene_hw_read_reg(dev,

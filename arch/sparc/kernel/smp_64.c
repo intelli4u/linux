@@ -275,7 +275,6 @@ static void smp_synchronize_one_tick(int cpu)
 }
 
 #if defined(CONFIG_SUN_LDOMS) && defined(CONFIG_HOTPLUG_CPU)
-/* XXX Put this in some common place. XXX */
 static unsigned long kimage_addr_to_ra(void *p)
 {
 	unsigned long val = (unsigned long) p;

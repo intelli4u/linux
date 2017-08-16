@@ -212,7 +212,6 @@ extern u16_t zfiWlanOpen(zdev_t *dev, struct zsCbFuncTbl *cbFuncTbl)
 	wd->XLinkMode = 0;
 
 	/* jhlee HT 0 */
-#if 1
 	/* AP Mode*/
 	/* Init HT Capability Info */
 	wd->ap.HTCap.Data.ElementID = ZM_WLAN_EID_HT_CAPABILITY;
@@ -271,12 +270,7 @@ extern u16_t zfiWlanOpen(zdev_t *dev, struct zsCbFuncTbl *cbFuncTbl)
 	/* wd->sta.ExtHTCap.Data.RecomTxWidthSet = 1; */
 	/* wd->sta.ExtHTCap.Data.RIFSMode = 1; */
 	wd->sta.ExtHTCap.Data.OperatingInfo |= 1;
-#endif
 
-#if 0
-	/* WME test code */
-	wd->ap.qosMode[0] = 1;
-#endif
 
 	wd->ledStruct.ledMode[0] = 0x2221;
 	wd->ledStruct.ledMode[1] = 0x2221;
@@ -289,17 +283,6 @@ extern u16_t zfiWlanOpen(zdev_t *dev, struct zsCbFuncTbl *cbFuncTbl)
 	zfScanMgrInit(dev);
 	zfPowerSavingMgrInit(dev);
 
-#if 0
-	/* Test code */
-	{
-		u32_t key[4] = {0xffffffff, 0xff, 0, 0};
-		u16_t addr[3] = {0x8000, 0x01ab, 0x0000};
-		/*zfSetKey(dev, 0, 0, ZM_WEP64, addr, key);
-		zfSetKey(dev, 0, 0, ZM_AES, addr, key);
-		zfSetKey(dev, 64, 0, 1, wd->macAddr, key);
-		*/
-	}
-#endif
 
 	/* WME settings */
 	wd->ws.staWmeEnabled = 1;           /* Enable WME by default */
@@ -381,14 +364,6 @@ void zfGetWrapperSetting(zdev_t *dev)
 	zmw_get_wlan_dev(dev);
 
 	zmw_declare_for_critical_section();
-#if 0
-	if ((wd->ws.countryIsoName[0] != 0)
-		|| (wd->ws.countryIsoName[1] != 0)
-		|| (wd->ws.countryIsoName[2] != '\0')) {
-		zfHpGetRegulationTablefromRegionCode(dev,
-		zfHpGetRegionCodeFromIsoName(dev, wd->ws.countryIsoName));
-	}
-#endif
 	zmw_enter_critical_section(dev);
 
 	wd->wlanMode = wd->ws.wlanMode;
@@ -602,19 +577,6 @@ u16_t zfWlanEnable(zdev_t *dev)
 
 			/* wd->ap.vapNumber = 1; //mark by ygwei for Vap Test */
 		} else {
-#if 0
-			/* VAP Test Code */
-			wd->ap.apBitmap = 0x3;
-			wd->ap.capab[1] = 0x401;
-			wd->ap.ssidLen[1] = 4;
-			wd->ap.ssid[1][0] = 'v';
-			wd->ap.ssid[1][1] = 'a';
-			wd->ap.ssid[1][2] = 'p';
-			wd->ap.ssid[1][3] = '1';
-			wd->ap.authAlgo[1] = wd->ws.authMode;
-			wd->ap.encryMode[1] = wd->ws.encryMode;
-			wd->ap.vapNumber = 2;
-#else
 			/* VAP Test Code */
 			wd->ap.apBitmap = 0x1 | (0x01 << (vapId+1));
 
@@ -636,7 +598,6 @@ u16_t zfWlanEnable(zdev_t *dev)
 
 			/* Need to be modified when VAP is used */
 			/* wd->ap.vapNumber = 2; */
-#endif
 		}
 
 		wd->ap.vapNumber++;
@@ -1007,16 +968,7 @@ u16_t zfiWlanScan(zdev_t *dev)
 		/* wd->sta.pUpdateBssList->bssCount = 0; */
 		ret = 0;
 	} else {
-#if 0
-		if (!zfStaBlockWlanScan(dev)) {
-			zm_debug_msg0("scan request");
-			/*zfTimerSchedule(dev, ZM_EVENT_SCAN, ZM_TICK_ZERO);*/
-			ret = 0;
-			goto start_scan;
-		}
-#else
 		goto start_scan;
-#endif
 	}
 
 	zmw_leave_critical_section(dev);
@@ -1185,22 +1137,6 @@ void zfWlanUpdateRxRate(zdev_t *dev, struct zsAdditionInfo *addInfo)
 	}
 }
 
-#if 0
-u16_t zcIndextoRateBG[16] = {1000, 2000, 5500, 11000, 0, 0, 0, 0, 48000,
-			24000, 12000, 6000, 54000, 36000, 18000, 9000};
-u32_t zcIndextoRateN20L[16] = {6500, 13000, 19500, 26000, 39000, 52000, 58500,
-			65000, 13000, 26000, 39000, 52000, 78000, 104000,
-			117000, 130000};
-u32_t zcIndextoRateN20S[16] = {7200, 14400, 21700, 28900, 43300, 57800, 65000,
-			72200, 14400, 28900, 43300, 57800, 86700, 115600,
-			130000, 144400};
-u32_t zcIndextoRateN40L[16] = {13500, 27000, 40500, 54000, 81000, 108000,
-			121500, 135000, 27000, 54000, 81000, 108000,
-			162000, 216000, 243000, 270000};
-u32_t zcIndextoRateN40S[16] = {15000, 30000, 45000, 60000, 90000, 120000,
-			135000, 150000, 30000, 60000, 90000, 120000,
-			180000, 240000, 270000, 300000};
-#endif
 
 extern u16_t zcIndextoRateBG[16];
 extern u32_t zcIndextoRateN20L[16];

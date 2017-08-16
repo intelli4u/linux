@@ -159,7 +159,6 @@ uec_set_pauseparam(struct net_device *netdev,
 
 	if (ugeth->phydev->autoneg) {
 		if (netif_running(netdev)) {
-			/* FIXME: automatically restart */
 			printk(KERN_INFO
 				"Please re-open the interface.\n");
 		}
@@ -259,7 +258,6 @@ uec_set_ringparam(struct net_device *netdev,
 	ug_info->bdRingLenTx[queue] = ring->tx_pending;
 
 	if (netif_running(netdev)) {
-		/* FIXME: restart automatically */
 		printk(KERN_INFO
 			"Please re-open the interface.\n");
 	}

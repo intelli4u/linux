@@ -98,9 +98,6 @@ centaur_set_mcr(unsigned int reg, unsigned long base,
 static int
 centaur_validate_add_page(unsigned long base, unsigned long size, unsigned int type)
 {
-	/*
-	 * FIXME: Winchip2 supports uncached
-	 */
 	if (type != MTRR_TYPE_WRCOMB &&
 	    (centaur_mcr_type == 0 || type != MTRR_TYPE_UNCACHABLE)) {
 		pr_warning("mtrr: only write-combining%s supported\n",

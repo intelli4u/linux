@@ -277,14 +277,6 @@ static __inline__ drm_local_map_t *via_drm_lookup_agp_map(drm_via_state_t *seq,
 	return NULL;
 }
 
-/*
- * Require that all AGP texture levels reside in the same AGP map which should
- * be mappable by the client. This is not a big restriction.
- * FIXME: To actually enforce this security policy strictly, drm_rmmap
- * would have to wait for dma quiescent before removing an AGP map.
- * The via_drm_lookup_agp_map call in reality seems to take
- * very little CPU time.
- */
 
 static __inline__ int finish_current_sequence(drm_via_state_t * cur_seq)
 {

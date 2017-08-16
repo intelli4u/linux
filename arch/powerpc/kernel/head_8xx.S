@@ -531,7 +531,7 @@ DataTLBError:
 	mfspr	r10, SPRN_DAR
 	cmpwi	cr0, r10, 0x00f0
 	beq-	FixupDAR	/* must be a buggy dcbX, icbi insn. */
-DARFixed:/* Return from dcbx instruction bug workaround, r10 holds value of DAR */
+DARFixed:
 	mfspr	r10, SPRN_M_TW	/* Restore registers */
 	lwz	r11, 0(r0)
 	mtcr	r11
@@ -566,7 +566,7 @@ DARFixed:/* Return from dcbx instruction bug workaround, r10 holds value of DAR 
  */
  /* define if you don't want to use self modifying code */
 #define NO_SELF_MODIFYING_CODE
-FixupDAR:/* Entry point for dcbx workaround. */
+FixupDAR:
 	/* fetch instruction from memory. */
 	mfspr	r10, SPRN_SRR0
 	andis.	r11, r10, 0x8000	/* Address >= 0x80000000 */
@@ -982,4 +982,3 @@ abatron_pteptrs:
 cpu6_errata_word:
 	.space	16
 #endif
-

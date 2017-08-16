@@ -33,7 +33,7 @@
 
 #include <asm/page.h>
 
-#define EF_SIZE		3072	/* XXX fix me */
+#define EF_SIZE		3072
 
 struct user {
 	unsigned long	regs[EF_SIZE/8+32];	/* integer and fp regs */

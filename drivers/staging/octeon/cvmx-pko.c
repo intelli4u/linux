@@ -273,11 +273,6 @@ cvmx_pko_status_t cvmx_pko_config_port(uint64_t port, uint64_t base_queue,
 				static_priority_base);
 			return CVMX_PKO_INVALID_PRIORITY;
 		}
-#if 0
-		cvmx_dprintf("Port %d: Static priority queue base: %d, "
-			     "end: %d\n", port,
-			static_priority_base, static_priority_end);
-#endif
 	}
 	/*
 	 * At this point, static_priority_base and static_priority_end

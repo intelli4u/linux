@@ -44,11 +44,7 @@
 #include "lapic.h"
 #include "irq.h"
 
-#if 0
-#define ioapic_debug(fmt,arg...) printk(KERN_WARNING fmt,##arg)
-#else
 #define ioapic_debug(fmt, arg...)
-#endif
 static int ioapic_deliver(struct kvm_ioapic *vioapic, int irq);
 
 static unsigned long ioapic_read_indirect(struct kvm_ioapic *ioapic,

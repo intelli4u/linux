@@ -84,10 +84,6 @@ static int saa7146_i2c_msg_prepare(const struct i2c_msg *m, int num, __le32 *op)
 	return mem;
 }
 
-/* this functions loops through all i2c-messages. normally, it should determine
-   which bytes were read through the adapter and write them back to the corresponding
-   i2c-message. but instead, we simply write back all bytes.
-   fixme: this could be improved. */
 static int saa7146_i2c_msg_cleanup(const struct i2c_msg *m, int num, __le32 *op)
 {
 	int i, j;

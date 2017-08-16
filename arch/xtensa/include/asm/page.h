@@ -43,33 +43,6 @@
 
 #define PGTABLE_START		0x80000000
 
-/*
- * Cache aliasing:
- *
- * If the cache size for one way is greater than the page size, we have to
- * deal with cache aliasing. The cache index is wider than the page size:
- *
- * |    |cache| cache index
- * | pfn  |off|	virtual address
- * |xxxx:X|zzz|
- * |    : |   |
- * | \  / |   |
- * |trans.|   |
- * | /  \ |   |
- * |yyyy:Y|zzz|	physical address
- *
- * When the page number is translated to the physical page address, the lowest
- * bit(s) (X) that are part of the cache index are also translated (Y).
- * If this translation changes bit(s) (X), the cache index is also afected,
- * thus resulting in a different cache line than before.
- * The kernel does not provide a mechanism to ensure that the page color
- * (represented by this bit) remains the same when allocated or when pages
- * are remapped. When user pages are mapped into kernel space, the color of
- * the page might also change.
- *
- * We use the address space VMALLOC_END ... VMALLOC_END + DCACHE_WAY_SIZE * 2
- * to temporarily map a patch so we can match the color.
- */
 
 #if DCACHE_WAY_SIZE > PAGE_SIZE
 # define DCACHE_ALIAS_ORDER	(DCACHE_WAY_SHIFT - PAGE_SHIFT)

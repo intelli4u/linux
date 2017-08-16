@@ -333,7 +333,7 @@ inline struct sk_buff *ieee80211_probe_req(struct ieee80211_device *ieee)
 
 	req = (struct ieee80211_probe_request *) skb_put(skb,sizeof(struct ieee80211_probe_request));
 	req->header.frame_ctl = cpu_to_le16(IEEE80211_STYPE_PROBE_REQ);
-	req->header.duration_id = 0; //FIXME: is this OK ?
+	req->header.duration_id = 0;
 
 	memset(req->header.addr1, 0xff, ETH_ALEN);
 	memcpy(req->header.addr2, ieee->dev->dev_addr, ETH_ALEN);
@@ -706,9 +706,7 @@ void ieee80211_rtl_start_scan(struct ieee80211_device *ieee)
 			//ieee80211_softmac_scan(ieee);
 		//	queue_work(ieee->wq, &ieee->softmac_scan_wq);
 		//care this,1203,2007,by lawrence
-#if 1
 			queue_delayed_work(ieee->wq, &ieee->softmac_scan_wq,0);
-#endif
 		}
 	}else
 		ieee->start_scan(ieee->dev);
@@ -750,7 +748,7 @@ inline struct sk_buff *ieee80211_authentication_req(struct ieee80211_network *be
 	auth->header.frame_ctl = IEEE80211_STYPE_AUTH;
 	if (challengelen) auth->header.frame_ctl |= IEEE80211_FCTL_WEP;
 
-	auth->header.duration_id = 0x013a; //FIXME
+	auth->header.duration_id = 0x013a;
 
 	memcpy(auth->header.addr1, beacon->bssid, ETH_ALEN);
 	memcpy(auth->header.addr2, ieee->dev->dev_addr, ETH_ALEN);
@@ -814,7 +812,7 @@ static struct sk_buff* ieee80211_probe_resp(struct ieee80211_device *ieee, u8 *d
 	memcpy (beacon_buf->header.addr2, ieee->dev->dev_addr, ETH_ALEN);
 	memcpy (beacon_buf->header.addr3, ieee->current_network.bssid, ETH_ALEN);
 
-	beacon_buf->header.duration_id = 0; //FIXME
+	beacon_buf->header.duration_id = 0;
 	beacon_buf->beacon_interval =
 		cpu_to_le16(ieee->current_network.beacon_interval);
 	beacon_buf->capability =
@@ -1042,12 +1040,8 @@ inline struct sk_buff *ieee80211_association_req(struct ieee80211_network *beaco
 	//union iwreq_data wrqu;
 	//u8 *buff;
 	//u8 *p;
-#if 1
 	// for testing purpose
 	unsigned int rsn_len = beacon->rsn_ie_len;
-#else
-	unsigned int rsn_len = beacon->rsn_ie_len - 4;
-#endif
 	unsigned int rate_len = ieee80211_MFIE_rate_len(ieee);
 	unsigned int wmm_info_len = beacon->QoS_Enable?9:0;
 	unsigned int turbo_info_len = beacon->Turbo_Enable?9:0;
@@ -1086,7 +1080,7 @@ inline struct sk_buff *ieee80211_association_req(struct ieee80211_network *beaco
 
 
 	hdr->header.frame_control = IEEE80211_STYPE_ASSOC_REQ;
-	hdr->header.duration_id= 37; //FIXME
+	hdr->header.duration_id= 37;
 	memcpy(hdr->header.addr1, beacon->bssid, ETH_ALEN);
 	memcpy(hdr->header.addr2, ieee->dev->dev_addr, ETH_ALEN);
 	memcpy(hdr->header.addr3, beacon->bssid, ETH_ALEN);
@@ -1101,7 +1095,7 @@ inline struct sk_buff *ieee80211_association_req(struct ieee80211_network *beaco
 	if(ieee->short_slot)
 		hdr->capability |= cpu_to_le16(WLAN_CAPABILITY_SHORT_SLOT);
 
-	hdr->listen_interval = 0xa; //FIXME
+	hdr->listen_interval = 0xa;
 
 	hdr->info_element.id = MFIE_TYPE_SSID;
 
@@ -1926,9 +1920,6 @@ associate_complete:
 
 		case IEEE80211_STYPE_DISASSOC:
 		case IEEE80211_STYPE_DEAUTH:
-			/* FIXME for now repeat all the association procedure
-			* both for disassociation and deauthentication
-			*/
 			if ((ieee->softmac_features & IEEE_SOFTMAC_ASSOCIATE) &&
 				(ieee->state == IEEE80211_LINKED) &&
 				(ieee->iw_mode == IW_MODE_INFRA) &&
@@ -2824,7 +2815,6 @@ static int ieee80211_wpa_set_encryption(struct ieee80211_device *ieee,
 	if (strcmp(param->u.crypt.alg, "none") == 0) {
 		if (crypt) {
 			sec.enabled = 0;
-			// FIXME FIXME
 			//sec.encrypt = 0;
 			sec.level = SEC_LEVEL_0;
 			sec.flags |= SEC_ENABLED | SEC_LEVEL;
@@ -2833,7 +2823,6 @@ static int ieee80211_wpa_set_encryption(struct ieee80211_device *ieee,
 		goto done;
 	}
 	sec.enabled = 1;
-// FIXME FIXME
 //	sec.encrypt = 1;
 	sec.flags |= SEC_ENABLED;
 

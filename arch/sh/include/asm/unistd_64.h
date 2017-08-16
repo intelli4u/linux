@@ -262,9 +262,6 @@
 #define __NR_msgrcv		241
 #define __NR_msgget		242
 #define __NR_msgctl		243
-#if 0
-#define __NR_shmatcall		244
-#endif
 #define __NR_shmdt		245
 #define __NR_shmget		246
 #define __NR_shmctl		247

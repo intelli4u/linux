@@ -350,5 +350,3 @@ struct claw_privbk {
 /************************************************************/
 
 #define CCWBK_SIZE sizeof(struct ccwbk)
-
-

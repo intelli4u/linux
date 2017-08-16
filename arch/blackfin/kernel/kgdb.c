@@ -138,11 +138,6 @@ void gdb_regs_to_pt_regs(unsigned long *gdb_regs, struct pt_regs *regs)
 	regs->rete = gdb_regs[BFIN_RETE];
 	regs->pc = gdb_regs[BFIN_PC];
 
-#if 0				/* can't change these */
-	regs->astat = gdb_regs[BFIN_ASTAT];
-	regs->seqstat = gdb_regs[BFIN_SEQSTAT];
-	regs->ipend = gdb_regs[BFIN_IPEND];
-#endif
 }
 
 static struct hw_breakpoint {

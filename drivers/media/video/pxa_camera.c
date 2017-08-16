@@ -1371,10 +1371,6 @@ static int pxa_camera_set_crop(struct soc_camera_device *icd,
 		return ret;
 
 	if (pxa_camera_check_frame(mf.width, mf.height)) {
-		/*
-		 * Camera cropping produced a frame beyond our capabilities.
-		 * FIXME: just extract a subframe, that we can process.
-		 */
 		v4l_bound_align_image(&mf.width, 48, 2048, 1,
 			&mf.height, 32, 2048, 0,
 			fourcc == V4L2_PIX_FMT_YUV422P ? 4 : 0);

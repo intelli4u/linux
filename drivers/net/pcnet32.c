@@ -2063,7 +2063,6 @@ static int pcnet32_open(struct net_device *dev)
 			if (lp->options == (PCNET32_PORT_FD | PCNET32_PORT_AUI))
 				val |= 2;
 		} else if (lp->options & PCNET32_PORT_ASEL) {
-			/* workaround of xSeries250, turn on for 79C975 only */
 			if (lp->chip_version == 0x2627)
 				val |= 3;
 		}

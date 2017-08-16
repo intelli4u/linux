@@ -219,17 +219,6 @@ static void ecard_init_pgtables(struct mm_struct *mm)
 {
 	struct vm_area_struct vma;
 
-	/* We want to set up the page tables for the following mapping:
-	 *  Virtual	Physical
-	 *  0x03000000	0x03000000
-	 *  0x03010000	unmapped
-	 *  0x03210000	0x03210000
-	 *  0x03400000	unmapped
-	 *  0x08000000	0x08000000
-	 *  0x10000000	unmapped
-	 *
-	 * FIXME: we don't follow this 100% yet.
-	 */
 	pgd_t *src_pgd, *dst_pgd;
 
 	src_pgd = pgd_offset(mm, (unsigned long)IO_BASE);
@@ -289,12 +278,6 @@ ecard_task(void * unused)
 	}
 }
 
-/*
- * Wake the expansion card daemon to action our request.
- *
- * FIXME: The test here is not sufficient to detect if the
- * kcardd is running.
- */
 static void ecard_call(struct ecard_request *req)
 {
 	DECLARE_COMPLETION_ONSTACK(completion);

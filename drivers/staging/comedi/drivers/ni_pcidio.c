@@ -534,7 +534,6 @@ static irqreturn_t nidio_interrupt(int irq, void *d)
 			       mite->mite_io_addr +
 			       MITE_CHOR(devpriv->di_mite_chan->channel));
 			mite_sync_input_dma(devpriv->di_mite_chan, s->async);
-			/* XXX need to byteswap */
 		}
 		if (m_status & ~(CHSR_INT | CHSR_LINKC | CHSR_DONE | CHSR_DRDY |
 				 CHSR_DRQ1 | CHSR_MRDY)) {
@@ -618,15 +617,6 @@ static irqreturn_t nidio_interrupt(int irq, void *d)
 			       Group_1_First_Clear);
 			async->events |= COMEDI_CB_EOA;
 		}
-#if 0
-		else {
-			printk("ni_pcidio: unknown interrupt\n");
-			async->events |= COMEDI_CB_ERROR | COMEDI_CB_EOA;
-			writeb(0x00,
-			       devpriv->mite->daq_io_addr +
-			       Master_DMA_And_Interrupt_Control);
-		}
-#endif
 		flags = readb(devpriv->mite->daq_io_addr + Group_1_Flags);
 		status = readb(devpriv->mite->daq_io_addr +
 			       Interrupt_And_Window_Status);
@@ -638,13 +628,6 @@ static irqreturn_t nidio_interrupt(int irq, void *d)
 
 out:
 	ni_pcidio_event(dev, s);
-#if 0
-	if (!tag) {
-		writeb(0x03,
-		       devpriv->mite->daq_io_addr +
-		       Master_DMA_And_Interrupt_Control);
-	}
-#endif
 	return IRQ_HANDLED;
 }
 
@@ -895,7 +878,6 @@ static int ni_pcidio_cmd(struct comedi_device *dev, struct comedi_subdevice *s)
 {
 	struct comedi_cmd *cmd = &s->async->cmd;
 
-	/* XXX configure ports for input */
 	writel(0x0000, devpriv->mite->daq_io_addr + Port_Pin_Directions(0));
 
 	if (1) {
@@ -957,7 +939,6 @@ static int ni_pcidio_cmd(struct comedi_device *dev, struct comedi_subdevice *s)
 		writel(cmd->stop_arg,
 		       devpriv->mite->daq_io_addr + Transfer_Count);
 	} else {
-		/* XXX */
 	}
 
 #ifdef USE_DMA
@@ -1241,7 +1222,7 @@ static int nidio_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 		s->do_cmd = &ni_pcidio_cmd;
 		s->do_cmdtest = &ni_pcidio_cmdtest;
 		s->cancel = &ni_pcidio_cancel;
-		s->len_chanlist = 32;	/* XXX */
+		s->len_chanlist = 32;
 		s->buf_change = &ni_pcidio_change;
 		s->async_dma_dir = DMA_BIDIRECTIONAL;
 

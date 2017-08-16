@@ -865,10 +865,6 @@ int inet_dccp_listen(struct socket *sock, int backlog)
 	 * we can only allow the backlog to be adjusted.
 	 */
 	if (old_state != DCCP_LISTEN) {
-		/*
-		 * FIXME: here it probably should be sk->sk_prot->listen_start
-		 * see tcp_listen_start
-		 */
 		err = dccp_listen_start(sk, backlog);
 		if (err)
 			goto out;

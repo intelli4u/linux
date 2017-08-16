@@ -129,12 +129,3 @@ struct specialix_port {
 
 #endif /* __KERNEL__ */
 #endif /* __LINUX_SPECIALIX_H */
-
-
-
-
-
-
-
-
-

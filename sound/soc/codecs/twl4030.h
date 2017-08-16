@@ -51,5 +51,3 @@ struct twl4030_setup_data {
 };
 
 #endif	/* End of __TWL4030_AUDIO_H__ */
-
-

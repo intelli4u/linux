@@ -129,62 +129,6 @@ parisc_cache_init(void)
 	if (pdc_cache_info(&cache_info) < 0)
 		panic("parisc_cache_init: pdc_cache_info failed");
 
-#if 0
-	printk("ic_size %lx dc_size %lx it_size %lx\n",
-		cache_info.ic_size,
-		cache_info.dc_size,
-		cache_info.it_size);
-
-	printk("DC  base 0x%lx stride 0x%lx count 0x%lx loop 0x%lx\n",
-		cache_info.dc_base,
-		cache_info.dc_stride,
-		cache_info.dc_count,
-		cache_info.dc_loop);
-
-	printk("dc_conf = 0x%lx  alias %d blk %d line %d shift %d\n",
-		*(unsigned long *) (&cache_info.dc_conf),
-		cache_info.dc_conf.cc_alias,
-		cache_info.dc_conf.cc_block,
-		cache_info.dc_conf.cc_line,
-		cache_info.dc_conf.cc_shift);
-	printk("	wt %d sh %d cst %d hv %d\n",
-		cache_info.dc_conf.cc_wt,
-		cache_info.dc_conf.cc_sh,
-		cache_info.dc_conf.cc_cst,
-		cache_info.dc_conf.cc_hv);
-
-	printk("IC  base 0x%lx stride 0x%lx count 0x%lx loop 0x%lx\n",
-		cache_info.ic_base,
-		cache_info.ic_stride,
-		cache_info.ic_count,
-		cache_info.ic_loop);
-
-	printk("ic_conf = 0x%lx  alias %d blk %d line %d shift %d\n",
-		*(unsigned long *) (&cache_info.ic_conf),
-		cache_info.ic_conf.cc_alias,
-		cache_info.ic_conf.cc_block,
-		cache_info.ic_conf.cc_line,
-		cache_info.ic_conf.cc_shift);
-	printk("	wt %d sh %d cst %d hv %d\n",
-		cache_info.ic_conf.cc_wt,
-		cache_info.ic_conf.cc_sh,
-		cache_info.ic_conf.cc_cst,
-		cache_info.ic_conf.cc_hv);
-
-	printk("D-TLB conf: sh %d page %d cst %d aid %d pad1 %d\n",
-		cache_info.dt_conf.tc_sh,
-		cache_info.dt_conf.tc_page,
-		cache_info.dt_conf.tc_cst,
-		cache_info.dt_conf.tc_aid,
-		cache_info.dt_conf.tc_pad1);
-
-	printk("I-TLB conf: sh %d page %d cst %d aid %d pad1 %d\n",
-		cache_info.it_conf.tc_sh,
-		cache_info.it_conf.tc_page,
-		cache_info.it_conf.tc_cst,
-		cache_info.it_conf.tc_aid,
-		cache_info.it_conf.tc_pad1);
-#endif
 
 	split_tlb = 0;
 	if (cache_info.dt_conf.tc_sh == 0 || cache_info.dt_conf.tc_sh == 2) {
@@ -215,9 +159,6 @@ parisc_cache_init(void)
 	if ((boot_cpu_data.pdc.capabilities & PDC_MODEL_NVA_MASK) ==
 						PDC_MODEL_NVA_UNSUPPORTED) {
 		printk(KERN_WARNING "parisc_cache_init: Only equivalent aliasing supported!\n");
-#if 0
-		panic("SMP kernel required to avoid non-equivalent aliasing");
-#endif
 	}
 }
 

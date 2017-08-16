@@ -638,12 +638,6 @@ static void __gdbstub_console_write(struct console *co, const char *p, unsigned 
 	}
 }
 
-#if 0
-void debug_to_serial(const char *p, int n)
-{
-	gdbstub_console_write(NULL,p,n);
-}
-#endif
 
 #ifdef CONFIG_GDB_CONSOLE
 
@@ -887,17 +881,6 @@ static int gdbstub_set_breakpoint(unsigned long type, unsigned long addr, unsign
 		gdbstub_bkpts[bkpt].addr = addr;
 		gdbstub_bkpts[bkpt].len = len;
 
-#if 0
-		gdbstub_printk("Set BKPT[%02x]: %08lx #%d {%04x, %04x} -> { %04x, %04x }\n",
-			       bkpt,
-			       gdbstub_bkpts[bkpt].addr,
-			       gdbstub_bkpts[bkpt].len,
-			       gdbstub_bkpts[bkpt].originsns[0],
-			       gdbstub_bkpts[bkpt].originsns[1],
-			       ((uint32_t *) addr)[0],
-			       ((uint32_t *) addr)[1]
-			       );
-#endif
 		return 0;
 
 		/* set hardware breakpoint */
@@ -1411,14 +1394,6 @@ void gdbstub(int sigval)
 
 	save_user_regs(&__debug_frame0->uc);
 
-#if 0
-	gdbstub_printk("--> gdbstub() %08x %p %08x %08x\n",
-		       __debug_frame->pc,
-		       __debug_frame,
-		       __debug_regs->brr,
-		       __debug_regs->bpsr);
-//	gdbstub_show_regs();
-#endif
 
 	LEDS(0x5001);
 
@@ -1889,7 +1864,6 @@ void gdbstub(int sigval)
 			gdbstub_strcpy(output_buffer, "OK");
 			break;
 
-			/* reset the whole machine (FIXME: system dependent) */
 		case 'r':
 			break;
 
@@ -2059,13 +2033,6 @@ void __init gdbstub_init(void)
 	gdbstub_printk("GDB Stub set\n");
 #endif
 
-#if 0
-	/* send banner */
-	ptr = output_buffer;
-	*ptr++ = 'O';
-	ptr = mem2hex(gdbstub_banner, ptr, sizeof(gdbstub_banner) - 1, 0);
-	gdbstub_send_packet(output_buffer);
-#endif
 #if defined(CONFIG_GDB_CONSOLE) && defined(CONFIG_GDBSTUB_IMMEDIATE)
 	register_console(&gdbstub_console);
 #endif
@@ -2076,7 +2043,7 @@ void __init gdbstub_init(void)
 /*
  * register the console at a more appropriate time
  */
-#if defined (CONFIG_GDB_CONSOLE) && !defined(CONFIG_GDBSTUB_IMMEDIATE)
+#if defined(CONFIG_GDB_CONSOLE) && !defined(CONFIG_GDBSTUB_IMMEDIATE)
 static int __init gdbstub_postinit(void)
 {
 	printk("registering console\n");

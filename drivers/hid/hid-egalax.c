@@ -293,4 +293,3 @@ static void __exit egalax_exit(void)
 
 module_init(egalax_init);
 module_exit(egalax_exit);
-

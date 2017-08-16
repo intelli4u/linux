@@ -39,7 +39,6 @@ enum {
 	AWA_inen = DMA1_1_CONFIG,
 #endif
 };
-	/* Anomaly Workaround */
 #define AWA_DUMMY_READ(name) bfin_read16(AWA_ ## name)
 #else
 #define AWA_DUMMY_READ(...)  do { } while (0)
@@ -1132,16 +1131,6 @@ int bfin_gpio_get_value(unsigned gpio)
 }
 EXPORT_SYMBOL(bfin_gpio_get_value);
 
-/* If we are booting from SPI and our board lacks a strong enough pull up,
- * the core can reset and execute the bootrom faster than the resistor can
- * pull the signal logically high.  To work around this (common) error in
- * board design, we explicitly set the pin back to GPIO mode, force /CS
- * high, and wait for the electrons to do their thing.
- *
- * This function only makes sense to be called from reset code, but it
- * lives here as we need to force all the GPIO states w/out going through
- * BUG() checks and such.
- */
 void bfin_reset_boot_spi_cs(unsigned short pin)
 {
 	unsigned short gpio = P_IDENT(pin);

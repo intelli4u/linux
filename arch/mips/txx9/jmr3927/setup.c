@@ -44,13 +44,11 @@
 static void jmr3927_machine_restart(char *command)
 {
 	local_irq_disable();
-#if 1	/* Resetting PCI bus */
 	jmr3927_ioc_reg_out(0, JMR3927_IOC_RESET_ADDR);
 	jmr3927_ioc_reg_out(JMR3927_IOC_RESET_PCI, JMR3927_IOC_RESET_ADDR);
 	(void)jmr3927_ioc_reg_in(JMR3927_IOC_RESET_ADDR);	/* flush WB */
 	mdelay(1);
 	jmr3927_ioc_reg_out(0, JMR3927_IOC_RESET_ADDR);
-#endif
 	jmr3927_ioc_reg_out(JMR3927_IOC_RESET_CPU, JMR3927_IOC_RESET_ADDR);
 	/* fallback */
 	(*_machine_halt)();

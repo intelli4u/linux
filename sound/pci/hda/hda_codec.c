@@ -1344,7 +1344,6 @@ static void hda_cleanup_all_streams(struct hda_codec *codec)
  * amp access functions
  */
 
-/* FIXME: more better hash key? */
 #define HDA_HASH_KEY(nid, dir, idx) (u32)((nid) + ((idx) << 16) + ((dir) << 24))
 #define HDA_HASH_PINCAP_KEY(nid) (u32)((nid) + (0x02 << 24))
 #define HDA_HASH_PARPCM_KEY(nid) (u32)((nid) + (0x03 << 24))
@@ -2988,7 +2987,6 @@ static void hda_set_power_state(struct hda_codec *codec, hda_nid_t fg,
 		msleep(100);
 	snd_hda_codec_read(codec, fg, 0, AC_VERB_SET_POWER_STATE,
 			    power_state);
-	/* partial workaround for "azx_get_response timeout" */
 	if (power_state == AC_PWRST_D0 &&
 	    (codec->vendor_id & 0xffff0000) == 0x14f10000)
 		msleep(10);
@@ -3439,7 +3437,6 @@ int snd_hda_is_supported_format(struct hda_codec *codec, hda_nid_t nid,
 			return 0;
 		}
 	} else {
-		/* FIXME: check for float32 and AC3? */
 	}
 
 	return 1;
@@ -4242,7 +4239,6 @@ int snd_hda_multi_out_analog_open(struct hda_codec *codec,
 					hinfo->maxbps = mout->spdif_maxbps;
 			} else {
 				mout->share_spdif = 0;
-				/* FIXME: need notify? */
 			}
 		}
 		mutex_unlock(&codec->spdif_mutex);

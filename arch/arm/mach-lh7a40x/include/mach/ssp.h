@@ -18,7 +18,7 @@
 
 */
 
-#if !defined (__SSP_H__)
+#if !defined(__SSP_H__)
 #    define   __SSP_H__
 
 /* ----- Includes */

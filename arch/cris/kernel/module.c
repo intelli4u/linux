@@ -23,11 +23,7 @@
 #include <linux/kernel.h>
 #include <linux/slab.h>
 
-#if 0
-#define DEBUGP printk
-#else
 #define DEBUGP(fmt , ...)
-#endif
 
 #ifdef CONFIG_ETRAX_KMALLOCED_MODULES
 #define MALLOC_MODULE(size) kmalloc(size, GFP_KERNEL)

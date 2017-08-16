@@ -27,7 +27,6 @@
 #define ATH_USB_RX_STREAM_MODE_TAG 0x4e00
 #define ATH_USB_TX_STREAM_MODE_TAG 0x697e
 
-/* FIXME: Verify these numbers (with Windows) */
 #define MAX_TX_URB_NUM  8
 #define MAX_TX_BUF_NUM  1024
 #define MAX_TX_BUF_SIZE 32768

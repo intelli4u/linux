@@ -168,17 +168,6 @@ ppp_print_buffer (const char *name, const __u8 *buf, int count)
  * Routines implementing the synchronous PPP line discipline.
  */
 
-/*
- * We have a potential race on dereferencing tty->disc_data,
- * because the tty layer provides no locking at all - thus one
- * cpu could be running ppp_synctty_receive while another
- * calls ppp_synctty_close, which zeroes tty->disc_data and
- * frees the memory that ppp_synctty_receive is using.  The best
- * way to fix this is to use a rwlock in the tty struct, but for now
- * we use a single global rwlock for all ttys in ppp line discipline.
- *
- * FIXME: Fixed in tty_io nowdays.
- */
 static DEFINE_RWLOCK(disc_data_lock);
 
 static struct syncppp *sp_get(struct tty_struct *tty)

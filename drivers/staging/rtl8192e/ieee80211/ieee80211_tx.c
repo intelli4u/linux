@@ -209,7 +209,6 @@ int ieee80211_encrypt_fragment(
 	/* To encrypt, frame format is:
 	 * IV (4 bytes), clear payload (including SNAP), ICV (4 bytes) */
 
-	// PR: FIXME: Copied from hostap. Check fragmentation/MSDU/MPDU encryption.
 	/* Host-based IEEE 802.11 fragmentation for TX is not yet supported, so
 	 * call both MSDU and MPDU encryption functions from here. */
 	atomic_inc(&crypt->refcnt);
@@ -235,11 +234,6 @@ void ieee80211_txb_free(struct ieee80211_txb *txb) {
 	//int i;
 	if (unlikely(!txb))
 		return;
-#if 0
-	for (i = 0; i < txb->nr_frags; i++)
-		if (txb->fragments[i])
-			dev_kfree_skb_any(txb->fragments[i]);
-#endif
 	kfree(txb);
 }
 
@@ -336,12 +330,10 @@ void ieee80211_tx_query_agg_cap(struct ieee80211_device* ieee, struct sk_buff* s
         }
 
 
-#if 1
 	if(!ieee->GetNmodeSupportBySecCfg(ieee->dev))
 	{
 		return;
 	}
-#endif
 	if(pHTInfo->bCurrentAMPDUEnable)
 	{
 		if (!GetTs(ieee, (PTS_COMMON_INFO*)(&pTxTs), hdr->addr1, skb->priority, TX_DIR, true))
@@ -676,7 +668,7 @@ int ieee80211_rtl_xmit(struct sk_buff *skb, struct net_device *dev)
 		if (skb->len > 282){//MINIMUM_DHCP_PACKET_SIZE) {
 			if (ETH_P_IP == ether_type) {// IP header
 				const struct iphdr *ip = (struct iphdr *)((u8 *)skb->data+14);
-				if (IPPROTO_UDP == ip->protocol) {//FIXME windows is 11 but here UDP in linux kernel is 17.
+				if (IPPROTO_UDP == ip->protocol) {
 					struct udphdr *udp = (struct udphdr *)((u8 *)ip + (ip->ihl << 2));
 					//if(((ntohs(udp->source) == 68) && (ntohs(udp->dest) == 67)) ||
 					///   ((ntohs(udp->source) == 67) && (ntohs(udp->dest) == 68))) {
@@ -930,7 +922,6 @@ int ieee80211_rtl_xmit(struct sk_buff *skb, struct net_device *dev)
 //WB add to fill data tcb_desc here. only first fragment is considered, need to change, and you may remove to other place.
 	if (txb)
 	{
-#if 1
 		cb_desc *tcb_desc = (cb_desc *)(txb->fragments[0]->cb + MAX_DEV_ADDR_SIZE);
 		tcb_desc->bTxEnableFwCalcDur = 1;
 		if (is_multicast_ether_addr(header.addr1))
@@ -970,7 +961,6 @@ int ieee80211_rtl_xmit(struct sk_buff *skb, struct net_device *dev)
 		ieee80211_query_seqnum(ieee, txb->fragments[0], header.addr1);
 //		IEEE80211_DEBUG_DATA(IEEE80211_DL_DATA, txb->fragments[0]->data, txb->fragments[0]->len);
 		//IEEE80211_DEBUG_DATA(IEEE80211_DL_DATA, tcb_desc, sizeof(cb_desc));
-#endif
 	}
 	spin_unlock_irqrestore(&ieee->lock, flags);
 	dev_kfree_skb_any(skb);

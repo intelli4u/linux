@@ -325,8 +325,6 @@ pcibios_setup_root_windows(struct pci_bus *bus, struct pci_controller *ctrl)
 	pci_bus_remove_resources(bus);
 	for (i = 0; i < ctrl->windows; i++) {
 		struct resource *res = &ctrl->window[i].resource;
-		/* HP's firmware has a hack to work around a Windows bug.
-		 * Ignore these tiny memory ranges */
 		if ((res->flags & IORESOURCE_MEM) &&
 		    (res->end - res->start < 16))
 			continue;
@@ -518,7 +516,6 @@ pcibios_update_irq (struct pci_dev *dev, int irq)
 {
 	pci_write_config_byte(dev, PCI_INTERRUPT_LINE, irq);
 
-	/* ??? FIXME -- record old value for shutdown.  */
 }
 
 int
@@ -571,12 +568,6 @@ pci_mmap_page_range (struct pci_dev *dev, struct vm_area_struct *vma,
 	 * stores on this platform.
 	 */
 	if (mmap_state == pci_mmap_io)
-		/*
-		 * XXX we could relax this for I/O spaces for which ACPI
-		 * indicates that the space is 1-to-1 mapped.  But at the
-		 * moment, we don't support multiple PCI address spaces and
-		 * the legacy I/O space is not 1-to-1 mapped, so this is moot.
-		 */
 		return -EINVAL;
 
 	if (!valid_mmap_phys_addr_range(vma->vm_pgoff, size))

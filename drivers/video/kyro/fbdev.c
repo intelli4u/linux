@@ -433,13 +433,6 @@ static int kyrofb_check_var(struct fb_var_screeninfo *var, struct fb_info *info)
 	/* par->PIXCLK is in 100Hz units. Convert to picoseconds -
 	 * ensuring we do not exceed 32 bit precision
 	 */
-	/*
-	 * XXX: Enabling this really screws over the pixclock value when we
-	 * read it back with fbset. As such, leaving this commented out appears
-	 * to do the right thing (at least for now) .. bearing in mind that we
-	 * have infact already done the KHZ2PICOS conversion in both the modedb
-	 * and kyro_var. -- PFM.
-	 */
 //	var->pixclock = 1000000000 / (par->PIXCLK / 10);
 
 	/* the header file claims we should use picoseconds

@@ -1,15 +1,4 @@
-/*
- * Save/restore floating point context for signal handlers.
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Copyright (C) 1999, 2000  Kaz Kojima & Niibe Yutaka
- * Copyright (C) 2006  ST Microelectronics Ltd. (denorm support)
- *
- * FIXME! These routines have not been tested for big endian case.
- */
+
 #include <linux/sched.h>
 #include <linux/signal.h>
 #include <linux/io.h>

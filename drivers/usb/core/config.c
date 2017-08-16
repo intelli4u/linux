@@ -568,7 +568,6 @@ static int usb_parse_configuration(struct usb_device *dev, int cfgidx,
 		kref_init(&intfc->ref);
 	}
 
-	/* FIXME: parse the BOS descriptor */
 
 	/* Skip over any Class Specific or Vendor Specific descriptors;
 	 * find the first interface descriptor */

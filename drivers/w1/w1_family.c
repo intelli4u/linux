@@ -119,14 +119,6 @@ void w1_family_put(struct w1_family *f)
 	spin_unlock(&w1_flock);
 }
 
-#if 0
-void w1_family_get(struct w1_family *f)
-{
-	spin_lock(&w1_flock);
-	__w1_family_get(f);
-	spin_unlock(&w1_flock);
-}
-#endif  /*  0  */
 
 void __w1_family_get(struct w1_family *f)
 {

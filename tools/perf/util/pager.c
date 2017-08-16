@@ -11,10 +11,6 @@ static int spawned_pager;
 
 static void pager_preexec(void)
 {
-	/*
-	 * Work around bug in "less" by not starting it until we
-	 * have real input
-	 */
 	fd_set in;
 
 	FD_ZERO(&in);

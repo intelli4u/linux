@@ -31,7 +31,6 @@ static unsigned int __init estimate_cpu_frequency(void)
 	unsigned int prid = read_c0_prid() & 0xffff00;
 	unsigned int count;
 
-#if 1
 	/*
 	 * hardwire the board frequency to 12MHz.
 	 */
@@ -41,27 +40,6 @@ static unsigned int __init estimate_cpu_frequency(void)
 		count = 12000000;
 	else
 		count =  6000000;
-#else
-	unsigned int flags;
-
-	local_irq_save(flags);
-
-	/* Start counter exactly on falling edge of update flag */
-	while (CMOS_READ(RTC_REG_A) & RTC_UIP);
-	while (!(CMOS_READ(RTC_REG_A) & RTC_UIP));
-
-	/* Start r4k counter. */
-	write_c0_count(0);
-
-	/* Read counter exactly on falling edge of update flag */
-	while (CMOS_READ(RTC_REG_A) & RTC_UIP);
-	while (!(CMOS_READ(RTC_REG_A) & RTC_UIP));
-
-	count = read_c0_count();
-
-	/* restore interrupts */
-	local_irq_restore(flags);
-#endif
 
 	mips_hpt_frequency = count;
 

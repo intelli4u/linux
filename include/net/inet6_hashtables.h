@@ -15,7 +15,7 @@
 #define _INET6_HASHTABLES_H
 
 
-#if defined(CONFIG_IPV6) || defined (CONFIG_IPV6_MODULE)
+#if defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE)
 #include <linux/in6.h>
 #include <linux/ipv6.h>
 #include <linux/types.h>

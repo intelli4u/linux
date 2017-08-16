@@ -136,11 +136,6 @@ struct ipmi_lan_addr {
 };
 
 
-/*
- * Channel for talking directly with the BMC.  When using this
- * channel, This is for the system interface address type only.  FIXME
- * - is this right, or should we use -1?
- */
 #define IPMI_BMC_CHANNEL  0xf
 #define IPMI_NUM_CHANNELS 0x10
 

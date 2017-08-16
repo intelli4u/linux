@@ -385,4 +385,3 @@ struct ixgbevf_info ixgbevf_vf_info = {
 	.mac = ixgbe_mac_82599_vf,
 	.mac_ops = &ixgbevf_mac_ops,
 };
-

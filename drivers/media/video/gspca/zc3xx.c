@@ -953,7 +953,6 @@ static const struct usb_action cs2102K_Initial[] = {
 	{0xa0, 0x00, ZC3XX_R11C_FIRSTXLOW},
 	{0xa0, 0xe8, ZC3XX_R09C_WINHEIGHTLOW},
 	{0xa0, 0x88, ZC3XX_R09E_WINWIDTHLOW},
-/*fixme: next sequence = i2c exchanges*/
 	{0xa0, 0x55, ZC3XX_R08B_I2CDEVICEADDR},
 	{0xa0, 0x18, ZC3XX_R092_I2CADDRESSSELECT},
 	{0xa0, 0x00, ZC3XX_R093_I2CSETVALUE},
@@ -1193,7 +1192,6 @@ static const struct usb_action cs2102K_Initial[] = {
 	{0xa0, 0x00, ZC3XX_R1A7_CALCGLOBALMEAN},
 	{0xa0, 0x04, ZC3XX_R1A7_CALCGLOBALMEAN},
 	{0xa0, 0x00, ZC3XX_R1A7_CALCGLOBALMEAN},
-/*fixme:what does the next sequence?*/
 	{0xa0, 0x04, ZC3XX_R1A7_CALCGLOBALMEAN},
 	{0xa0, 0x00, ZC3XX_R1A7_CALCGLOBALMEAN},
 	{0xa0, 0x04, ZC3XX_R1A7_CALCGLOBALMEAN},
@@ -5959,11 +5957,10 @@ static void setquality(struct gspca_dev *gspca_dev)
 	case SENSOR_PO2030:
 		return;
 	}
-/*fixme: is it really 0008 0007 0018 for all other sensors? */
 	reg_w(gspca_dev, QUANT_VAL, 0x0008);
 	frxt = 0x30;
 	reg_w(gspca_dev, frxt, 0x0007);
-#if QUANT_VAL == 0 || QUANT_VAL == 1 || QUANT_VAL == 2
+#if QUANT_VAL == QUANT_VAL == 1 == 2
 	frxt = 0xff;
 #elif QUANT_VAL == 3
 	frxt = 0xf0;
@@ -6278,7 +6275,6 @@ static int vga_3wr_probe(struct gspca_dev *gspca_dev)
 	u8 retbyte;
 	u16 retword;
 
-/*fixme: lack of 8b=b3 (11,12)-> 10, 8b=e0 (14,15,16)-> 12 found in gspcav1*/
 	reg_w(gspca_dev, 0x02, 0x0010);
 	reg_r(gspca_dev, 0x0010);
 	reg_w(gspca_dev, 0x01, 0x0000);
@@ -6796,9 +6792,8 @@ static int sd_start(struct gspca_dev *gspca_dev)
 	case SENSOR_OV7620:
 		reg_w(gspca_dev, 0x09, 0x01ad);
 		reg_w(gspca_dev, 0x15, 0x01ae);
-		i2c_read(gspca_dev, 0x13);	/*fixme: returns 0xa3 */
+		i2c_read(gspca_dev, 0x13);
 		i2c_write(gspca_dev, 0x13, 0xa3, 0x00);
-					 /*fixme: returned value to send? */
 		reg_w(gspca_dev, 0x40, 0x0117);
 		reg_r(gspca_dev, 0x0180);
 		break;

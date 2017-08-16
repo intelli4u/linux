@@ -250,16 +250,6 @@ int vx_send_msg_nolock(struct vx_core *chip, struct vx_rmh *rmh)
 		return err;
 	}
 
-#if 0
-	printk(KERN_DEBUG "rmh: cmd = 0x%06x, length = %d, stype = %d\n",
-	       rmh->Cmd[0], rmh->LgCmd, rmh->DspStat);
-	if (rmh->LgCmd > 1) {
-		printk(KERN_DEBUG "  ");
-		for (i = 1; i < rmh->LgCmd; i++)
-			printk("0x%06x ", rmh->Cmd[i]);
-		printk("\n");
-	}
-#endif
 	/* Check bit M is set according to length of the command */
 	if (rmh->LgCmd > 1)
 		rmh->Cmd[0] |= MASK_MORE_THAN_1_WORD_COMMAND;
@@ -373,9 +363,6 @@ int vx_send_rih_nolock(struct vx_core *chip, int cmd)
 	if (chip->chip_status & VX_STAT_IS_STALE)
 		return -EBUSY;
 
-#if 0
-	printk(KERN_DEBUG "send_rih: cmd = 0x%x\n", cmd);
-#endif
 	if ((err = vx_reset_chk(chip)) < 0)
 		return err;
 	/* send the IRQ */
@@ -430,14 +417,6 @@ int snd_vx_load_boot_image(struct vx_core *chip, const struct firmware *boot)
 		return -EINVAL;
 	if (boot->size % 3)
 		return -EINVAL;
-#if 0
-	{
-		/* more strict check */
-		unsigned int c = ((u32)boot->data[0] << 16) | ((u32)boot->data[1] << 8) | boot->data[2];
-		if (boot->size != (c + 2) * 3)
-			return -EINVAL;
-	}
-#endif
 
 	/* reset dsp */
 	vx_reset_dsp(chip);
@@ -507,10 +486,6 @@ static void vx_interrupt(unsigned long private_data)
 	if (vx_test_irq_src(chip, &events) < 0)
 		return;
     
-#if 0
-	if (events & 0x000800)
-		printk(KERN_ERR "DSP Stream underrun ! IRQ events = 0x%x\n", events);
-#endif
 	// printk(KERN_DEBUG "IRQ events = 0x%x\n", events);
 
 	/* We must prevent any application using this DSP

@@ -229,7 +229,6 @@ void b43legacy_qos_init(struct b43legacy_wldev *dev);
 static inline
 int b43legacy_new_kidx_api(struct b43legacy_wldev *dev)
 {
-	/* FIXME: Not sure the change was at rev 351 */
 	return (dev->fw.rev >= 351);
 }
 static inline

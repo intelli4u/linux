@@ -935,43 +935,6 @@ static void link_time_slot(struct snd_dbri *dbri, int pipe,
 	dbri_cmdsend(dbri, cmd, 4);
 }
 
-#if 0
-/*
- * Lock must be held before calling this.
- */
-static void unlink_time_slot(struct snd_dbri *dbri, int pipe,
-			     enum in_or_out direction, int prevpipe,
-			     int nextpipe)
-{
-	s32 *cmd;
-	int val;
-
-	if (pipe < 0 || pipe > DBRI_MAX_PIPE
-			|| prevpipe < 0 || prevpipe > DBRI_MAX_PIPE
-			|| nextpipe < 0 || nextpipe > DBRI_MAX_PIPE) {
-		printk(KERN_ERR
-		    "DBRI: unlink_time_slot called with illegal pipe number\n");
-		return;
-	}
-
-	cmd = dbri_cmdlock(dbri, 4);
-
-	if (direction == PIPEinput) {
-		val = D_DTS_VI | D_DTS_DEL | D_DTS_PRVIN(prevpipe) | pipe;
-		*(cmd++) = DBRI_CMD(D_DTS, 0, val);
-		*(cmd++) = D_TS_NEXT(nextpipe);
-		*(cmd++) = 0;
-	} else {
-		val = D_DTS_VO | D_DTS_DEL | D_DTS_PRVOUT(prevpipe) | pipe;
-		*(cmd++) = DBRI_CMD(D_DTS, 0, val);
-		*(cmd++) = 0;
-		*(cmd++) = D_TS_NEXT(nextpipe);
-	}
-	*(cmd++) = DBRI_CMD(D_PAUSE, 0, 0);
-
-	dbri_cmdsend(dbri, cmd, 4);
-}
-#endif
 
 /* xmit_fixed() / recv_fixed()
  *
@@ -1456,7 +1419,6 @@ static void cs4215_open(struct snd_dbri *dbri)
 	link_time_slot(dbri, 6, 16, 16, data_width, dbri->mm.offset);
 	link_time_slot(dbri, 21, 6, 16, 16, dbri->mm.offset + 40);
 
-	/* FIXME: enable CHI after _setdata? */
 	tmp = sbus_readl(dbri->regs + REG0);
 	tmp |= D_C;		/* Enable CHI */
 	sbus_writel(tmp, dbri->regs + REG0);
@@ -1474,7 +1436,6 @@ static int cs4215_setctrl(struct snd_dbri *dbri)
 	u32 tmp;
 	unsigned long flags;
 
-	/* FIXME - let the CPU do something useful during these delays */
 
 	/* Temporarily mute outputs, and wait 1/8000 sec (125 us)
 	 * to make sure this takes.  This avoids clicking noises.
@@ -1814,7 +1775,6 @@ static void reception_complete_intr(struct snd_dbri *dbri, int pipe)
 	info = &dbri->stream_info[DBRI_REC];
 	info->offset += DBRI_RD_CNT(status);
 
-	/* FIXME: Check status */
 
 	dprintk(D_INT, "Recv RD %d, status 0x%02x, len %d\n",
 		rd, DBRI_RD_STATUS(status), DBRI_RD_CNT(status));
@@ -1860,21 +1820,7 @@ static void dbri_process_one_interrupt(struct snd_dbri *dbri, int x)
 		 * resend SDP command with clear pipe bit (C) set
 		 */
 		{
-	/* FIXME: do something useful in case of underrun */
 			printk(KERN_ERR "DBRI: Underrun error\n");
-#if 0
-			s32 *cmd;
-			int pipe = channel;
-			int td = dbri->pipes[pipe].desc;
-
-			dbri->dma->desc[td].word4 = 0;
-			cmd = dbri_cmdlock(dbri, NoGetLock);
-			*(cmd++) = DBRI_CMD(D_SDP, 0,
-					    dbri->pipes[pipe].sdp
-					    | D_SDP_P | D_SDP_C | D_SDP_2SAME);
-			*(cmd++) = dbri->dma_dvma + dbri_dma_off(desc, td);
-			dbri_cmdsend(dbri, cmd);
-#endif
 		}
 		break;
 	case D_INTR_FXDT:
@@ -2428,7 +2374,6 @@ static struct snd_kcontrol_new dbri_controls[] __devinitdata = {
 	 .put   = snd_cs4215_put_volume,
 	 .private_value = DBRI_REC,
 	 },
-	/* FIXME: mic/line switch */
 	CS4215_SINGLE("Line in switch", 2, 4, 1, 0)
 	CS4215_SINGLE("High Pass Filter switch", 5, 7, 1, 0)
 	CS4215_SINGLE("Monitor Volume", 3, 4, 0xf, 1)

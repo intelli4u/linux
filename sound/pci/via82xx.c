@@ -63,9 +63,6 @@
 #include <sound/mpu401.h>
 #include <sound/initval.h>
 
-#if 0
-#define POINTER_DEBUG
-#endif
 
 MODULE_AUTHOR("Jaroslav Kysela <perex@perex.cz>");
 MODULE_DESCRIPTION("VIA VT82xx audio");
@@ -279,8 +276,8 @@ DEFINE_VIA_REGSET(CAPTURE_8233, 0x60);
 				 VIA_ACLINK_CTRL_PCM|\
 				 VIA_ACLINK_CTRL_VRA)
 #define VIA_FUNC_ENABLE		0x42
-#define  VIA_FUNC_MIDI_PNP	0x80 /* FIXME: it's 0x40 in the datasheet! */
-#define  VIA_FUNC_MIDI_IRQMASK	0x40 /* FIXME: not documented! */
+#define  VIA_FUNC_MIDI_PNP	0x80
+#define  VIA_FUNC_MIDI_IRQMASK	0x40
 #define  VIA_FUNC_RX2C_WRITE	0x20
 #define  VIA_FUNC_SB_FIFO_EMPTY	0x10
 #define  VIA_FUNC_ENABLE_GAME	0x08
@@ -1091,11 +1088,6 @@ static int snd_via8233_multi_prepare(struct snd_pcm_substream *substream)
 		VIA_REG_MULTPLAY_FMT_16BIT : VIA_REG_MULTPLAY_FMT_8BIT;
 	fmt |= runtime->channels << 4;
 	outb(fmt, VIADEV_REG(viadev, OFS_MULTPLAY_FORMAT));
-#if 0
-	if (chip->revision == VIA_REV_8233A)
-		slots = 0;
-	else
-#endif
 	{
 		/* set sample number to slot 3, 4, 7, 8, 6, 9 (for VIA8233/C,8235) */
 		/* corresponding to FL, FR, RL, RR, C, LFE ?? */
@@ -1789,7 +1781,7 @@ static struct ac97_quirk ac97_quirks[] = {
 		.name = "Soltek SL-75DRV5",
 		.type = AC97_TUNE_NONE
 	},
-	{	/* FIXME: which codec? */
+	{
 		.subvendor = 0x1106,
 		.subdevice = 0x4161,
 		.name = "ASRock K7VT2",
@@ -2023,7 +2015,7 @@ static int __devinit snd_via686_init_misc(struct via82xx *chip)
 
 	legacy = chip->old_legacy;
 	legacy_cfg = chip->old_legacy_cfg;
-	legacy |= VIA_FUNC_MIDI_IRQMASK;	/* FIXME: correct? (disable MIDI) */
+	legacy |= VIA_FUNC_MIDI_IRQMASK;
 	legacy &= ~VIA_FUNC_ENABLE_GAME;	/* disable joystick */
 	if (chip->revision >= VIA_REV_686_H) {
 		rev_h = 1;
@@ -2123,11 +2115,6 @@ static int snd_via82xx_chip_init(struct via82xx *chip)
 	unsigned long end_time;
 	unsigned char pval;
 
-#if 0 /* broken on K7M? */
-	if (chip->chip_type == TYPE_VIA686)
-		/* disable all legacy ports */
-		pci_write_config_byte(chip->pci, VIA_FUNC_ENABLE, 0);
-#endif
 	pci_read_config_byte(chip->pci, VIA_ACLINK_STAT, &pval);
 	if (! (pval & VIA_ACLINK_C00_READY)) { /* codec not ready? */
 		/* deassert ACLink reset, force SYNC */
@@ -2136,15 +2123,8 @@ static int snd_via82xx_chip_init(struct via82xx *chip)
 				      VIA_ACLINK_CTRL_RESET |
 				      VIA_ACLINK_CTRL_SYNC);
 		udelay(100);
-#if 1 /* FIXME: should we do full reset here for all chip models? */
 		pci_write_config_byte(chip->pci, VIA_ACLINK_CTRL, 0x00);
 		udelay(100);
-#else
-		/* deassert ACLink reset, force SYNC (warm AC'97 reset) */
-		pci_write_config_byte(chip->pci, VIA_ACLINK_CTRL,
-				      VIA_ACLINK_CTRL_RESET|VIA_ACLINK_CTRL_SYNC);
-		udelay(2);
-#endif
 		/* ACLink on, deassert ACLink reset, VSR, SGD data out */
 		/* note - FM data out has trouble with non VRA codecs !! */
 		pci_write_config_byte(chip->pci, VIA_ACLINK_CTRL, VIA_ACLINK_CTRL_INIT);
@@ -2173,25 +2153,6 @@ static int snd_via82xx_chip_init(struct via82xx *chip)
 	if ((val = snd_via82xx_codec_xread(chip)) & VIA_REG_AC97_BUSY)
 		snd_printk(KERN_ERR "AC'97 codec is not ready [0x%x]\n", val);
 
-#if 0 /* FIXME: we don't support the second codec yet so skip the detection now.. */
-	snd_via82xx_codec_xwrite(chip, VIA_REG_AC97_READ |
-				 VIA_REG_AC97_SECONDARY_VALID |
-				 (VIA_REG_AC97_CODEC_ID_SECONDARY << VIA_REG_AC97_CODEC_ID_SHIFT));
-	end_time = jiffies + msecs_to_jiffies(750);
-	snd_via82xx_codec_xwrite(chip, VIA_REG_AC97_READ |
-				 VIA_REG_AC97_SECONDARY_VALID |
-				 (VIA_REG_AC97_CODEC_ID_SECONDARY << VIA_REG_AC97_CODEC_ID_SHIFT));
-	do {
-		if ((val = snd_via82xx_codec_xread(chip)) & VIA_REG_AC97_SECONDARY_VALID) {
-			chip->ac97_secondary = 1;
-			goto __ac97_ok2;
-		}
-		schedule_timeout_uninterruptible(1);
-	} while (time_before(jiffies, end_time));
-	/* This is ok, the most of motherboards have only one codec */
-
-      __ac97_ok2:
-#endif
 
 	if (chip->chip_type == TYPE_VIA686) {
 		/* route FM trap to IRQ, disable FM trap */
@@ -2201,9 +2162,6 @@ static int snd_via82xx_chip_init(struct via82xx *chip)
 	}
 
 	if (chip->chip_type != TYPE_VIA686) {
-		/* Workaround for Award BIOS bug:
-		 * DXS channels don't work properly with VRA if MC97 is disabled.
-		 */
 		struct pci_dev *pci;
 		pci = pci_get_device(0x1106, 0x3068, NULL); /* MC97 */
 		if (pci) {
@@ -2565,7 +2523,7 @@ static int __devinit snd_via82xx_probe(struct pci_dev *pci,
 		if (chip_type == TYPE_VIA8233A) {
 			if ((err = snd_via8233a_pcm_new(chip)) < 0)
 				goto __error;
-			// chip->dxs_fixed = 1; /* FIXME: use 48k for DXS #3? */
+			// chip->dxs_fixed = 1;
 		} else {
 			if ((err = snd_via8233_pcm_new(chip)) < 0)
 				goto __error;

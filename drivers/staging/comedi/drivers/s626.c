@@ -605,7 +605,6 @@ static int s626_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 		/* soft reset */
 		writel(MC1_SOFT_RESET, devpriv->base_addr + P_MC1);
 
-		/* DMA FIXME DMA// */
 		DEBUG("s626_attach: DMA ALLOCATION\n");
 
 		/* adc buffer allocation */
@@ -859,12 +858,6 @@ static int s626_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 		/*  RPS program performs no explicit mem writes. */
 		WR7146(P_RPS1_TOUT, 0);	/*  Disable RPS timeouts. */
 
-		/* SAA7146 BUG WORKAROUND.  Initialize SAA7146 ADC interface
-		 * to a known state by invoking ADCs until FB BUFFER 1
-		 * register shows that it is correctly receiving ADC data.
-		 * This is necessary because the SAA7146 ADC interface does
-		 * not start up in a defined state after a PCI reset.
-		 */
 
 /*     PollList = EOPL;		// Create a simple polling */
 /*				// list for analog input */
@@ -1435,13 +1428,6 @@ void ResetADC(struct comedi_device *dev, uint8_t * ppl)
 		*pRPS++ = RPS_CLRSIGNAL | RPS_SIGADC;
 	}
 
-	/* SAA7146 BUG WORKAROUND Do a dummy DEBI Write.  This is necessary
-	 * because the first RPS DEBI Write following a non-RPS DEBI write
-	 * seems to always fail.  If we don't do this dummy write, the ADC
-	 * gain might not be set to the value required for the first slot in
-	 * the poll list; the ADC gain would instead remain unchanged from
-	 * the previously programmed value.
-	 */
 	*pRPS++ = RPS_LDREG | (P_DEBICMD >> 2);
 	/* Write DEBI Write command and address to shadow RAM. */
 
@@ -2875,7 +2861,6 @@ static void CloseDMAB(struct comedi_device *dev, struct bufferDMA *pdma,
 static uint32_t ReadLatch(struct comedi_device *dev, struct enc_private *k)
 {
 	register uint32_t value;
-	/* DEBUG FIXME DEBUG("ReadLatch: Read Latch enter\n"); */
 
 	/*  Latch counts and fetch LSW of latched counts value. */
 	value = (uint32_t) DEBIread(dev, k->MyLatchLsw);
@@ -2883,7 +2868,6 @@ static uint32_t ReadLatch(struct comedi_device *dev, struct enc_private *k)
 	/*  Fetch MSW of latched counts and combine with LSW. */
 	value |= ((uint32_t) DEBIread(dev, k->MyLatchLsw + 2) << 16);
 
-	/*  DEBUG FIXME DEBUG("ReadLatch: Read Latch exit\n"); */
 
 	/*  Return latched counts. */
 	return value;

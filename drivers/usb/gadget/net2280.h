@@ -181,9 +181,6 @@ static inline void clear_halt (struct net2280_ep *ep)
 	/* ep0 and bulk/intr endpoints */
 	writel (  (1 << CLEAR_ENDPOINT_HALT)
 		| (1 << CLEAR_ENDPOINT_TOGGLE)
-		    /* unless the gadget driver left a short packet in the
-		     * fifo, this reverses the erratum 0114 workaround.
-		     */
 		| ((ep->dev->chiprev == CHIPREV_1) << CLEAR_NAK_OUT_PACKETS)
 		, &ep->regs->ep_rsp);
 }
@@ -227,7 +224,6 @@ static inline void net2280_led_active (struct net2280 *dev, int is_active)
 {
 	u32	val = readl (&dev->regs->gpioctl);
 
-	// FIXME this LED never seems to turn on.
 	if (is_active)
 		val |= GPIO2_DATA;
 	else

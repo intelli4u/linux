@@ -127,12 +127,6 @@ long arch_ptrace(struct task_struct *child, long request, long addr, long data)
 		ret = put_user(tmp, (unsigned long *) data);
 		break;
 
-	/* Write the word at location addr in the USER area.  This will need
-	   to change when the kernel no longer saves all regs on a syscall.
-	   FIXME.  There is a problem at the moment in that r3-r18 are only
-	   saved if the process is ptraced on syscall entry, and even then
-	   those values are overwritten by actual register values on syscall
-	   exit. */
 	case PTRACE_POKEUSR:
 		/* Some register values written here may be ignored in
 		 * entry.S:syscall_restore_rfi; e.g. iaoq is written with
@@ -218,12 +212,6 @@ long compat_arch_ptrace(struct task_struct *child, compat_long_t request,
 		ret = put_user(tmp, (compat_uint_t *) (unsigned long) data);
 		break;
 
-	/* Write the word at location addr in the USER area.  This will need
-	   to change when the kernel no longer saves all regs on a syscall.
-	   FIXME.  There is a problem at the moment in that r3-r18 are only
-	   saved if the process is ptraced on syscall entry, and even then
-	   those values are overwritten by actual register values on syscall
-	   exit. */
 	case PTRACE_POKEUSR:
 		/* Some register values written here may be ignored in
 		 * entry.S:syscall_restore_rfi; e.g. iaoq is written with

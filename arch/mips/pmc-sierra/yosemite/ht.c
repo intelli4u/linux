@@ -62,7 +62,6 @@ static int titan_ht_config_read_dword(struct pci_dev *device,
         dev = PCI_SLOT(device->devfn);
         func = PCI_FUNC(device->devfn);
 
-	/* XXX Need to change the Bus # */
         if (bus > 2)
                 address = (bus << 16) | (dev << 11) | (func << 8) | (offset & 0xfc) |
                                                         0x80000000 | 0x1;
@@ -90,7 +89,6 @@ static int titan_ht_config_read_word(struct pci_dev *device,
         dev = PCI_SLOT(device->devfn);
         func = PCI_FUNC(device->devfn);
 
-	/* XXX Need to change the Bus # */
         if (bus > 2)
                 address = (bus << 16) | (dev << 11) | (func << 8) | (offset & 0xfc) |
                                                 0x80000000 | 0x1;
@@ -137,7 +135,6 @@ static int titan_ht_config_read_byte(struct pci_dev *device,
         dev = PCI_SLOT(device->devfn);
         func = PCI_FUNC(device->devfn);
 
-	/* XXX Need to change the Bus # */
         if (bus > 2)
                 address = (bus << 16) | (dev << 11) | (func << 8) | (offset & 0xfc) |
                                                         0x80000000 | 0x1;
@@ -178,7 +175,6 @@ static int titan_ht_config_write_dword(struct pci_dev *device,
         dev = PCI_SLOT(device->devfn);
         func = PCI_FUNC(device->devfn);
 
-	/* XXX Need to change the Bus # */
         if (bus > 2)
                 address = (bus << 16) | (dev << 11) | (func << 8) | (offset & 0xfc) |
                                                         0x80000000 | 0x1;
@@ -205,7 +201,6 @@ static int titan_ht_config_write_word(struct pci_dev *device,
         dev = PCI_SLOT(device->devfn);
         func = PCI_FUNC(device->devfn);
 
-	/* XXX Need to change the Bus # */
         if (bus > 2)
                 address = (bus << 16) | (dev << 11) | (func << 8) | (offset & 0xfc) |
                                 0x80000000 | 0x1;
@@ -238,7 +233,6 @@ static int titan_ht_config_write_byte(struct pci_dev *device,
         dev = PCI_SLOT(device->devfn);
         func = PCI_FUNC(device->devfn);
 
-	/* XXX Need to change the Bus # */
         if (bus > 2)
                 address = (bus << 16) | (dev << 11) | (func << 8) | (offset & 0xfc) |
                                 0x80000000 | 0x1;
@@ -384,13 +378,11 @@ void __init pcibios_init(void)
 {
 
         /* Reset PCI I/O and PCI MEM values */
-	/* XXX Need to add the proper values here */
         ioport_resource.start = 0xe0000000;
         ioport_resource.end   = 0xe0000000 + 0x20000000 - 1;
         iomem_resource.start  = 0xc0000000;
         iomem_resource.end    = 0xc0000000 + 0x20000000 - 1;
 
-	/* XXX Need to add bus values */
         pci_scan_bus(2, &titan_pci_ops, NULL);
         pci_scan_bus(3, &titan_pci_ops, NULL);
 }

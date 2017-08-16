@@ -265,24 +265,6 @@ struct ses_host_edev {
 	struct enclosure_device *edev;
 };
 
-#if 0
-int ses_match_host(struct enclosure_device *edev, void *data)
-{
-	struct ses_host_edev *sed = data;
-	struct scsi_device *sdev;
-
-	if (!scsi_is_sdev_device(edev->edev.parent))
-		return 0;
-
-	sdev = to_scsi_device(edev->edev.parent);
-
-	if (sdev->host != sed->shost)
-		return 0;
-
-	sed->edev = edev;
-	return 1;
-}
-#endif  /*  0  */
 
 static void ses_process_descriptor(struct enclosure_component *ecomp,
 				   unsigned char *desc)
@@ -316,7 +298,6 @@ static void ses_process_descriptor(struct enclosure_component *ecomp,
 			(u64)d[19];
 		break;
 	default:
-		/* FIXME: Need to add more protocols than just SAS */
 		break;
 	}
 	scomp->addr = addr;
@@ -531,9 +512,6 @@ static int ses_intf_add(struct device *cdev,
 		goto recv_failed;
 
 	if (hdr_buf[1] != 0) {
-		/* FIXME: need subenclosure support; I've just never
-		 * seen a device with subenclosures and it makes the
-		 * traversal routines more complex */
 		sdev_printk(KERN_ERR, sdev,
 			"FIXME driver has no support for subenclosures (%d)\n",
 			hdr_buf[1]);

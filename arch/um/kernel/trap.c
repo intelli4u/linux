@@ -94,9 +94,6 @@ good_area:
 	 * However, the generic code can mark a PTE writable but clean on a
 	 * concurrent read fault, triggering this harmlessly. So comment it out.
 	 */
-#if 0
-	WARN_ON(!pte_young(*pte) || (is_write && !pte_dirty(*pte)));
-#endif
 	flush_tlb_page(vma, address);
 out:
 	up_read(&mm->mmap_sem);
@@ -176,11 +173,6 @@ unsigned long segv(struct faultinfo fi, unsigned long ip, int is_user,
 					&si.si_code);
 	else {
 		err = -EFAULT;
-		/*
-		 * A thread accessed NULL, we get a fault, but CR2 is invalid.
-		 * This code is used in __do_copy_from_user() of TT mode.
-		 * XXX tt mode is gone, so maybe this isn't needed any more
-		 */
 		address = 0;
 	}
 

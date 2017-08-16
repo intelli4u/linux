@@ -1641,4 +1641,3 @@ void s_vCheckPreEDThreshold(void *hDeviceContext)
     }
     return;
 }
-

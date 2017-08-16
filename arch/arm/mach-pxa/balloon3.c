@@ -177,8 +177,7 @@ static inline void balloon3_nor_init(void) {}
 /******************************************************************************
  * Audio and Touchscreen
  ******************************************************************************/
-#if	defined(CONFIG_TOUCHSCREEN_UCB1400) || \
-	defined(CONFIG_TOUCHSCREEN_UCB1400_MODULE)
+#if	defined(CONFIG_TOUCHSCREEN_UCB1400) || defined(CONFIG_TOUCHSCREEN_UCB1400_MODULE)
 static struct ucb1400_pdata vpac270_ucb1400_pdata = {
 	.irq		= IRQ_GPIO(BALLOON3_GPIO_CODEC_IRQ),
 };
@@ -683,8 +682,7 @@ static inline void balloon3_nand_init(void) {}
 /******************************************************************************
  * Core power regulator
  ******************************************************************************/
-#if defined(CONFIG_REGULATOR_MAX1586) || \
-    defined(CONFIG_REGULATOR_MAX1586_MODULE)
+#if defined(CONFIG_REGULATOR_MAX1586) || defined(CONFIG_REGULATOR_MAX1586_MODULE)
 static struct regulator_consumer_supply balloon3_max1587a_consumers[] = {
 	{
 		.supply	= "vcc_core",

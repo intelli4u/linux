@@ -1253,7 +1253,6 @@ static int mos7720_write_room(struct tty_struct *tty)
 		return -ENODEV;
 	}
 
-	/* FIXME: Locking */
 	for (i = 0; i < NUM_URBS; ++i) {
 		if (mos7720_port->write_urb_pool[i] &&
 		    mos7720_port->write_urb_pool[i]->status != -EINPROGRESS)
@@ -1412,7 +1411,6 @@ static void mos7720_unthrottle(struct tty_struct *tty)
 	}
 }
 
-/* FIXME: this function does not work */
 static int set_higher_rates(struct moschip_port *mos7720_port,
 			    unsigned int baud)
 {
@@ -1731,8 +1729,6 @@ static void change_port_settings(struct tty_struct *tty,
 
 	dbg("%s - baud rate = %d", __func__, baud);
 	status = send_cmd_write_baud_rate(mos7720_port, baud);
-	/* FIXME: needs to write actual resulting baud back not just
-	   blindly do so */
 	if (cflag & CBAUD)
 		tty_encode_baud_rate(tty, baud, baud);
 	/* Enable Interrupts */
@@ -1988,7 +1984,6 @@ static int mos7720_ioctl(struct tty_struct *tty, struct file *file,
 					(unsigned int __user *)arg);
 		return 0;
 
-	/* FIXME: These should be using the mode methods */
 	case TIOCMBIS:
 	case TIOCMBIC:
 		dbg("%s (%d) TIOCMSET/TIOCMBIC/TIOCMSET",

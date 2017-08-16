@@ -360,14 +360,12 @@ static void hidp_process_handshake(struct hidp_session *session,
 
 	switch (param) {
 	case HIDP_HSHK_SUCCESSFUL:
-		/* FIXME: Call into SET_ GET_ handlers here */
 		break;
 
 	case HIDP_HSHK_NOT_READY:
 	case HIDP_HSHK_ERR_INVALID_REPORT_ID:
 	case HIDP_HSHK_ERR_UNSUPPORTED_REQUEST:
 	case HIDP_HSHK_ERR_INVALID_PARAMETER:
-		/* FIXME: Call into SET_ GET_ handlers here */
 		break;
 
 	case HIDP_HSHK_ERR_UNKNOWN:

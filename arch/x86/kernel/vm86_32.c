@@ -713,16 +713,6 @@ void handle_vm86_fault(struct kernel_vm86_regs *regs, long error_code)
 	return;
 
 simulate_sigsegv:
-	/* FIXME: After a long discussion with Stas we finally
-	 *        agreed, that this is wrong. Here we should
-	 *        really send a SIGSEGV to the user program.
-	 *        But how do we create the correct context? We
-	 *        are inside a general protection fault handler
-	 *        and has just returned from a page fault handler.
-	 *        The correct context for the signal handler
-	 *        should be a mixture of the two, but how do we
-	 *        get the information? [KD]
-	 */
 	return_to_32bit(regs, VM86_UNKNOWN);
 }
 
@@ -841,4 +831,3 @@ static int do_vm86_irq_handling(int subfunction, int irqnumber)
 	}
 	return -EINVAL;
 }
-

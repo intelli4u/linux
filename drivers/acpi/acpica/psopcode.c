@@ -771,7 +771,7 @@ const struct acpi_opcode_info *acpi_ps_get_opcode_info(u16 opcode)
 
 char *acpi_ps_get_opcode_name(u16 opcode)
 {
-#if defined(ACPI_DISASSEMBLER) || defined (ACPI_DEBUG_OUTPUT)
+#if defined(ACPI_DISASSEMBLER) || defined(ACPI_DEBUG_OUTPUT)
 
 	const struct acpi_opcode_info *op;
 

@@ -341,11 +341,5 @@ static void snd_gf1_mem_info_read(struct snd_info_entry *entry,
 	snd_iprintf(buffer, "  Total: memory = %i, used = %i, free = %i\n",
 		    total, used, total - used);
 	mutex_unlock(&alloc->memory_mutex);
-#if 0
-	ultra_iprintf(buffer, "  Verify: free = %i, max 8-bit block = %i, max 16-bit block = %i\n",
-		      ultra_memory_free_size(card, &card->gf1.mem_alloc),
-		  ultra_memory_free_block(card, &card->gf1.mem_alloc, 0),
-		 ultra_memory_free_block(card, &card->gf1.mem_alloc, 1));
-#endif
 }
 #endif

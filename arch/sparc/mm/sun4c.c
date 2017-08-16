@@ -475,7 +475,6 @@ static int sun4c_map_dma_area(struct device *dev, dma_addr_t *pba, unsigned long
 static void sun4c_unmap_dma_area(struct device *dev, unsigned long busa, int len)
 {
 	/* Fortunately for us, bus_addr == uncached_virt in sun4c. */
-	/* XXX Implement this */
 }
 
 /* TLB management. */
@@ -1649,13 +1648,9 @@ static int sun4c_pmd_present(pmd_t pmd)
 	return ((pmd_val(pmd) & PGD_PRESENT) != 0);
 }
 
-#if 0 /* if PMD takes one word */
-static void sun4c_pmd_clear(pmd_t *pmdp)	{ *pmdp = __pmd(0); }
-#else /* if pmd_t is a longish aggregate */
 static void sun4c_pmd_clear(pmd_t *pmdp) {
 	memset((void *)pmdp, 0, sizeof(pmd_t));
 }
-#endif
 
 static int sun4c_pgd_none(pgd_t pgd)		{ return 0; }
 static int sun4c_pgd_bad(pgd_t pgd)		{ return 0; }
@@ -2088,11 +2083,7 @@ void __init ld_mmu_sun4c(void)
 	BTFIXUPSET_CALL(set_pte, sun4c_set_pte, BTFIXUPCALL_STO1O0);
 
 	BTFIXUPSET_CALL(pte_pfn, sun4c_pte_pfn, BTFIXUPCALL_NORM);
-#if 0 /* PAGE_SHIFT <= 12 */ /* Eek. Investigate. XXX */
-	BTFIXUPSET_CALL(pmd_page, sun4c_pmd_page, BTFIXUPCALL_ANDNINT(PAGE_SIZE - 1));
-#else
 	BTFIXUPSET_CALL(pmd_page, sun4c_pmd_page, BTFIXUPCALL_NORM);
-#endif
 	BTFIXUPSET_CALL(pmd_set, sun4c_pmd_set, BTFIXUPCALL_NORM);
 	BTFIXUPSET_CALL(pmd_populate, sun4c_pmd_populate, BTFIXUPCALL_NORM);
 

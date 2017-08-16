@@ -9,7 +9,6 @@
 
 #include <asm/ptrace.h>
 
-/* Work around cpp -rob */
 #define ALLOC #alloc
 #define EXECINSTR #execinstr
 #define EX(x,y,a,b) 				\

@@ -781,13 +781,6 @@ islpci_free_memory(islpci_private *priv)
 	return 0;
 }
 
-#if 0
-static void
-islpci_set_multicast_list(struct net_device *dev)
-{
-	/* put device into promisc mode and let network layer handle it */
-}
-#endif
 
 static void islpci_ethtool_get_drvinfo(struct net_device *dev,
                                        struct ethtool_drvinfo *info)
@@ -947,10 +940,6 @@ islpci_set_state(islpci_private *priv, islpci_state_t new_state)
 			priv->state = new_state;
 		break;
 	}
-#if 0
-	printk(KERN_DEBUG "%s: state transition %d -> %d (off#%d)\n",
-	       priv->ndev->name, old_state, new_state, priv->state_off);
-#endif
 
 	/* invariants */
 	BUG_ON(priv->state_off < 0);

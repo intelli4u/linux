@@ -283,7 +283,7 @@ asmlinkage void __init mmu_init(void)
 				(u32) memblock.memory.region[0].size;
 	memory_size = memory_end - memory_start;
 
-	mm_cmdline_setup(); /* FIXME parse args from command line - not used */
+	mm_cmdline_setup();
 
 	/*
 	 * Map out the kernel text/data/bss from the available physical

@@ -764,7 +764,6 @@ static int __devinit mddi_probe(struct platform_device *pdev)
 				pdata->client_platform_data[i].name;
 			mddi->client_pdev.id =
 				pdata->client_platform_data[i].id;
-			/* XXX: possibly set clock */
 			break;
 		}
 	}

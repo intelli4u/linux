@@ -583,7 +583,6 @@ int pohmelfs_config_check(struct pohmelfs_config *config, int idx)
 
 int __init pohmelfs_config_init(void)
 {
-	/* XXX remove (void *) cast when vanilla connector got synced */
 	return cn_add_callback(&pohmelfs_cn_id, "pohmelfs", (void *)pohmelfs_cn_callback);
 }
 

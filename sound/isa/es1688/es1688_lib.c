@@ -226,9 +226,6 @@ static int snd_es1688_init(struct snd_es1688 * chip, int enable)
 			}
 		}
 	}
-#if 0
-	snd_printk(KERN_DEBUG "mpu cfg = 0x%x\n", cfg);
-#endif
 	spin_lock_irqsave(&chip->reg_lock, flags);
 	snd_es1688_mixer_write(chip, 0x40, cfg);
 	spin_unlock_irqrestore(&chip->reg_lock, flags);
@@ -244,10 +241,6 @@ static int snd_es1688_init(struct snd_es1688 * chip, int enable)
 			snd_printk(KERN_ERR "[0x%lx] ESS: bad IRQ %d "
 				   "for ES1688 chip!!\n",
 				   chip->port, chip->irq);
-#if 0
-			irq_bits = 0;
-			cfg = 0x10;
-#endif
 			return -EINVAL;
 		}
 		spin_lock_irqsave(&chip->reg_lock, flags);
@@ -258,10 +251,6 @@ static int snd_es1688_init(struct snd_es1688 * chip, int enable)
 		if (dma > 3 || dma == 2) {
 			snd_printk(KERN_ERR "[0x%lx] ESS: bad DMA channel %d "
 				   "for ES1688 chip!!\n", chip->port, dma);
-#if 0
-			dma_bits = 0;
-			cfg = 0x00;	/* disable all DMA */
-#endif
 			return -EINVAL;
 		} else {
 			dma_bits = dma;
@@ -347,11 +336,6 @@ static int snd_es1688_trigger(struct snd_es1688 *chip, int cmd, unsigned char va
 		spin_unlock(&chip->reg_lock);
 		return -EINVAL;	/* something is wrong */
 	}
-#if 0
-	printk(KERN_DEBUG "trigger: val = 0x%x, value = 0x%x\n", val, value);
-	printk(KERN_DEBUG "trigger: pointer = 0x%x\n",
-	       snd_dma_pointer(chip->dma8, chip->dma_size));
-#endif
 	snd_es1688_write(chip, 0xb8, (val & 0xf0) | value);
 	spin_unlock(&chip->reg_lock);
 	return 0;

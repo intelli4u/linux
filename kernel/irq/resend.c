@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  * linux/kernel/irq/resend.c
  *
@@ -18,6 +19,10 @@
 #include <linux/random.h>
 #include <linux/interrupt.h>
 
+#if defined(CONFIG_BUZZZ)
+#include <asm/buzzz.h>
+#endif	/*  CONFIG_BUZZZ */
+
 #include "internals.h"
 
 #ifdef CONFIG_HARDIRQS_SW_RESEND
@@ -35,6 +40,11 @@ static void resend_irqs(unsigned long arg)
 
 	while (!bitmap_empty(irqs_resend, nr_irqs)) {
 		irq = find_first_bit(irqs_resend, nr_irqs);
+
+#if defined(BUZZZ_KEVT_LVL) && (BUZZZ_KEVT_LVL >= 1)
+		buzzz_kevt_log1(BUZZZ_KEVT_ID_IRQ_RESEND, irq);
+#endif	/* BUZZZ_KEVT_LVL */
+
 		clear_bit(irq, irqs_resend);
 		desc = irq_to_desc(irq);
 		local_irq_disable();
@@ -56,6 +66,10 @@ static DECLARE_TASKLET(resend_tasklet, resend_irqs, 0);
 void check_irq_resend(struct irq_desc *desc, unsigned int irq)
 {
 	unsigned int status = desc->status;
+
+#if defined(BUZZZ_KEVT_LVL) && (BUZZZ_KEVT_LVL >= 1)
+	buzzz_kevt_log1(BUZZZ_KEVT_ID_IRQ_CHECK, irq);
+#endif	/* BUZZZ_KEVT_LVL */
 
 	/*
 	 * Make sure the interrupt is enabled, before resending it:

@@ -841,4 +841,3 @@ void dlm_stop_lockspaces(void)
 	}
 	spin_unlock(&lslist_lock);
 }
-

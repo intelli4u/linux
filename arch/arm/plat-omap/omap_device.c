@@ -132,7 +132,6 @@ static int _omap_device_activate(struct omap_device *od, u8 ignore_lat)
 
 		read_persistent_clock(&a);
 
-		/* XXX check return code */
 		odpl->activate_func(od);
 
 		read_persistent_clock(&b);
@@ -200,7 +199,6 @@ static int _omap_device_deactivate(struct omap_device *od, u8 ignore_lat)
 
 		read_persistent_clock(&a);
 
-		/* XXX check return code */
 		odpl->deactivate_func(od);
 
 		read_persistent_clock(&b);
@@ -649,11 +647,6 @@ bool omap_device_is_valid(struct omap_device *od)
  */
 struct powerdomain *omap_device_get_pwrdm(struct omap_device *od)
 {
-	/*
-	 * XXX Assumes that all omap_hwmod powerdomains are identical.
-	 * This may not necessarily be true.  There should be a sanity
-	 * check in here to WARN() if any difference appears.
-	 */
 	if (!od->hwmods_cnt)
 		return NULL;
 
@@ -698,7 +691,6 @@ int omap_device_enable_hwmods(struct omap_device *od)
 	for (i = 0, oh = *od->hwmods; i < od->hwmods_cnt; i++, oh++)
 		omap_hwmod_enable(oh);
 
-	/* XXX pass along return value here? */
 	return 0;
 }
 
@@ -716,7 +708,6 @@ int omap_device_idle_hwmods(struct omap_device *od)
 	for (i = 0, oh = *od->hwmods; i < od->hwmods_cnt; i++, oh++)
 		omap_hwmod_idle(oh);
 
-	/* XXX pass along return value here? */
 	return 0;
 }
 
@@ -735,7 +726,6 @@ int omap_device_disable_clocks(struct omap_device *od)
 	for (i = 0, oh = *od->hwmods; i < od->hwmods_cnt; i++, oh++)
 		omap_hwmod_disable_clocks(oh);
 
-	/* XXX pass along return value here? */
 	return 0;
 }
 
@@ -754,6 +744,5 @@ int omap_device_enable_clocks(struct omap_device *od)
 	for (i = 0, oh = *od->hwmods; i < od->hwmods_cnt; i++, oh++)
 		omap_hwmod_enable_clocks(oh);
 
-	/* XXX pass along return value here? */
 	return 0;
 }

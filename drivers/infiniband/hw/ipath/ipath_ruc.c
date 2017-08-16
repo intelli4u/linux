@@ -75,15 +75,6 @@ const u32 ib_ipath_rnr_table[32] = {
 	492			/* 1F */
 };
 
-/**
- * ipath_insert_rnr_queue - put QP on the RNR timeout list for the device
- * @qp: the QP
- *
- * Called with the QP s_lock held and interrupts disabled.
- * XXX Use a simple list for now.  We might need a priority
- * queue if we have lots of QPs waiting for RNR timeouts
- * but that should be rare.
- */
 void ipath_insert_rnr_queue(struct ipath_qp *qp)
 {
 	struct ipath_ibdev *dev = to_idev(qp->ibqp.device);

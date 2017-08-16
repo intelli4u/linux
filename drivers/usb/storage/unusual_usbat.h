@@ -15,8 +15,7 @@
  * 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#if defined(CONFIG_USB_STORAGE_USBAT) || \
-		defined(CONFIG_USB_STORAGE_USBAT_MODULE)
+#if defined(CONFIG_USB_STORAGE_USBAT) || defined(CONFIG_USB_STORAGE_USBAT_MODULE)
 
 UNUSUAL_DEV(  0x03f0, 0x0207, 0x0001, 0x0001,
 		"HP",

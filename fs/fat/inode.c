@@ -46,8 +46,6 @@ static int fat_add_cluster(struct inode *inode)
 	err = fat_alloc_clusters(inode, &cluster, 1);
 	if (err)
 		return err;
-	/* FIXME: this cluster should be added after data of this
-	 * cluster is writed */
 	err = fat_chain_add(inode, cluster, 1);
 	if (err)
 		fat_free_clusters(inode, cluster);
@@ -194,15 +192,6 @@ static ssize_t fat_direct_IO(int rw, struct kiocb *iocb,
 	ssize_t ret;
 
 	if (rw == WRITE) {
-		/*
-		 * FIXME: blockdev_direct_IO() doesn't use ->write_begin(),
-		 * so we need to update the ->mmu_private to block boundary.
-		 *
-		 * But we must fill the remaining area or hole by nul for
-		 * updating ->mmu_private.
-		 *
-		 * Return 0, and fallback to normal buffered write.
-		 */
 		loff_t size = offset + iov_length(iov, nr_segs);
 		if (MSDOS_I(inode)->mmu_private < size)
 			return 0;
@@ -1475,7 +1464,6 @@ int fat_fill_super(struct super_block *sb, void *data, int silent,
 		goto out_fail;
 	}
 
-	/* FIXME: utf8 is using iocharset for upper/lower conversion */
 	if (sbi->options.isvfat) {
 		sbi->nls_io = load_nls(sbi->options.iocharset);
 		if (!sbi->nls_io) {

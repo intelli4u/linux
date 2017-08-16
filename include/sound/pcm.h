@@ -820,16 +820,6 @@ int snd_pcm_format_unsigned(snd_pcm_format_t format);
 int snd_pcm_format_linear(snd_pcm_format_t format);
 int snd_pcm_format_little_endian(snd_pcm_format_t format);
 int snd_pcm_format_big_endian(snd_pcm_format_t format);
-#if 0 /* just for DocBook */
-/**
- * snd_pcm_format_cpu_endian - Check the PCM format is CPU-endian
- * @format: the format to check
- *
- * Returns 1 if the given PCM format is CPU-endian, 0 if
- * opposite, or a negative error code if endian not specified.
- */
-int snd_pcm_format_cpu_endian(snd_pcm_format_t format);
-#endif /* DocBook */
 #ifdef SNDRV_LITTLE_ENDIAN
 #define snd_pcm_format_cpu_endian(format) snd_pcm_format_little_endian(format)
 #else
@@ -925,32 +915,6 @@ int _snd_pcm_lib_alloc_vmalloc_buffer(struct snd_pcm_substream *substream,
 int snd_pcm_lib_free_vmalloc_buffer(struct snd_pcm_substream *substream);
 struct page *snd_pcm_lib_get_vmalloc_page(struct snd_pcm_substream *substream,
 					  unsigned long offset);
-#if 0 /* for kernel-doc */
-/**
- * snd_pcm_lib_alloc_vmalloc_buffer - allocate virtual DMA buffer
- * @substream: the substream to allocate the buffer to
- * @size: the requested buffer size, in bytes
- *
- * Allocates the PCM substream buffer using vmalloc(), i.e., the memory is
- * contiguous in kernel virtual space, but not in physical memory.  Use this
- * if the buffer is accessed by kernel code but not by device DMA.
- *
- * Returns 1 if the buffer was changed, 0 if not changed, or a negative error
- * code.
- */
-static int snd_pcm_lib_alloc_vmalloc_buffer
-			(struct snd_pcm_substream *substream, size_t size);
-/**
- * snd_pcm_lib_alloc_vmalloc_32_buffer - allocate 32-bit-addressable buffer
- * @substream: the substream to allocate the buffer to
- * @size: the requested buffer size, in bytes
- *
- * This function works like snd_pcm_lib_alloc_vmalloc_buffer(), but uses
- * vmalloc_32(), i.e., the pages are allocated from 32-bit-addressable memory.
- */
-static int snd_pcm_lib_alloc_vmalloc_32_buffer
-			(struct snd_pcm_substream *substream, size_t size);
-#endif
 #define snd_pcm_lib_alloc_vmalloc_buffer(subs, size) \
 	_snd_pcm_lib_alloc_vmalloc_buffer \
 			(subs, size, GFP_KERNEL | __GFP_HIGHMEM | __GFP_ZERO)

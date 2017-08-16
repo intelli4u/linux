@@ -328,7 +328,7 @@ static int tda18271_por(struct dvb_frontend *fe)
 
 	/* disable 1.5 MHz low pass filter */
 	regs[R_EB23] &= ~0x04; /* forcelp_fc2_en = 0 */
-	regs[R_EB23] &= ~0x02; /* XXX: lp_fc[2] = 0 */
+	regs[R_EB23] &= ~0x02;
 	ret = tda18271_write_regs(fe, R_EB21, 3);
 fail:
 	return ret;
@@ -952,10 +952,6 @@ static int tda18271_set_params(struct dvb_frontend *fe,
 			tda_warn("modulation not set!\n");
 			return -EINVAL;
 		}
-#if 0
-		/* userspace request is already center adjusted */
-		freq += 1750000; /* Adjust to center (+1.75MHZ) */
-#endif
 		bw = 6000000;
 	} else if (fe->ops.info.type == FE_OFDM) {
 		switch (params->u.ofdm.bandwidth) {

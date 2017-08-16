@@ -1,4 +1,4 @@
-/* $Id: teleint.c,v 1.16.2.5 2004/01/19 15:31:50 keil Exp $
+/* $Id: teleint.c,v 1.16.2.5 2004/01/19 15:31:50 Exp $
  *
  * low level stuff for TeleInt isdn cards
  *

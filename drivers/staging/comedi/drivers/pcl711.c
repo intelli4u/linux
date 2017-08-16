@@ -216,7 +216,6 @@ static irqreturn_t pcl711_interrupt(int irq, void *d)
 
 	data = (hi << 8) | lo;
 
-	/* FIXME! Nothing else sets ntrig! */
 	if (!(--devpriv->ntrig)) {
 		if (this_board->is_8112)
 			outb(1, dev->iobase + PCL711_MODE);

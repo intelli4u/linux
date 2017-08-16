@@ -3313,6 +3313,3 @@ fail:
 	return ret;
 
 } /* TLan_EeReadByte */
-
-
-

@@ -1559,8 +1559,6 @@ static void e1000_configure_tx(struct e1000_adapter *adapter)
 	else
 		adapter->txd_cmd |= E1000_TXD_CMD_RS;
 
-	/* Cache if we're 82544 running in PCI-X because we'll
-	 * need this to apply a workaround later in the send path. */
 	if (hw->mac_type == e1000_82544 &&
 	    hw->bus_type == e1000_bus_type_pcix)
 		adapter->pcix_82544 = 1;
@@ -2650,7 +2648,6 @@ static bool e1000_tx_csum(struct e1000_adapter *adapter,
 			cmd_len |= E1000_TXD_CMD_TCP;
 		break;
 	case cpu_to_be16(ETH_P_IPV6):
-		/* XXX not handling all IPV6 headers */
 		if (ipv6_hdr(skb)->nexthdr == IPPROTO_TCP)
 			cmd_len |= E1000_TXD_CMD_TCP;
 		break;
@@ -2705,31 +2702,18 @@ static int e1000_tx_map(struct e1000_adapter *adapter,
 	while (len) {
 		buffer_info = &tx_ring->buffer_info[i];
 		size = min(len, max_per_txd);
-		/* Workaround for Controller erratum --
-		 * descriptor for non-tso packet in a linear SKB that follows a
-		 * tso gets written back prematurely before the data is fully
-		 * DMA'd to the controller */
 		if (!skb->data_len && tx_ring->last_tx_tso &&
 		    !skb_is_gso(skb)) {
 			tx_ring->last_tx_tso = 0;
 			size -= 4;
 		}
 
-		/* Workaround for premature desc write-backs
-		 * in TSO mode.  Append 4-byte sentinel desc */
 		if (unlikely(mss && !nr_frags && size == len && size > 8))
 			size -= 4;
-		/* work-around for errata 10 and it applies
-		 * to all controllers in PCI-X mode
-		 * The fix is to make sure that the first descriptor of a
-		 * packet is smaller than 2048 - 16 - 16 (or 2016) bytes
-		 */
 		if (unlikely((hw->bus_type == e1000_bus_type_pcix) &&
 		                (size > 2015) && count == 0))
 		        size = 2015;
 
-		/* Workaround for potential 82544 hang in PCI-X.  Avoid
-		 * terminating buffers within evenly-aligned dwords. */
 		if (unlikely(adapter->pcix_82544 &&
 		   !((unsigned long)(skb->data + offset + size - 1) & 4) &&
 		   size > 4))
@@ -2770,13 +2754,8 @@ static int e1000_tx_map(struct e1000_adapter *adapter,
 
 			buffer_info = &tx_ring->buffer_info[i];
 			size = min(len, max_per_txd);
-			/* Workaround for premature desc write-backs
-			 * in TSO mode.  Append 4-byte sentinel desc */
 			if (unlikely(mss && f == (nr_frags-1) && size == len && size > 8))
 				size -= 4;
-			/* Workaround for potential 82544 hang in PCI-X.
-			 * Avoid terminating buffers within evenly-aligned
-			 * dwords. */
 			if (unlikely(adapter->pcix_82544 &&
 			    !((unsigned long)(page_to_phys(frag->page) + offset
 			                      + size - 1) & 4) &&
@@ -2877,14 +2856,6 @@ static void e1000_tx_queue(struct e1000_adapter *adapter,
 	mmiowb();
 }
 
-/**
- * 82547 workaround to avoid controller hang in half-duplex environment.
- * The workaround is to avoid queuing a large packet that would span
- * the internal Tx FIFO ring boundary by notifying the stack to resend
- * the packet at a later time.  This gives the Tx FIFO an opportunity to
- * flush all packets.  When that occurs, we reset the Tx FIFO pointers
- * to the beginning of the Tx FIFO.
- **/
 
 #define E1000_FIFO_HDR			0x10
 #define E1000_82547_PAD_LEN		0x3E0
@@ -2990,12 +2961,6 @@ static netdev_tx_t e1000_xmit_frame(struct sk_buff *skb,
 			switch (hw->mac_type) {
 				unsigned int pull_size;
 			case e1000_82544:
-				/* Make sure we have room to chop off 4 bytes,
-				 * and that the end alignment will work out to
-				 * this hardware's requirements
-				 * NOTE: this is a TSO only workaround
-				 * if end byte alignment not correct move us
-				 * into the next dword */
 				if ((unsigned long)(skb_tail_pointer(skb) - 1) & 4)
 					break;
 				/* fall through */
@@ -3020,7 +2985,6 @@ static netdev_tx_t e1000_xmit_frame(struct sk_buff *skb,
 		count++;
 	count++;
 
-	/* Controller Erratum workaround */
 	if (!skb->data_len && tx_ring->last_tx_tso && !skb_is_gso(skb))
 		count++;
 
@@ -3029,9 +2993,6 @@ static netdev_tx_t e1000_xmit_frame(struct sk_buff *skb,
 	if (adapter->pcix_82544)
 		count++;
 
-	/* work-around for errata 10 and it applies to all controllers
-	 * in PCI-X mode, so add one more descriptor to the count
-	 */
 	if (unlikely((hw->bus_type == e1000_bus_type_pcix) &&
 			(len > 2015)))
 		count++;
@@ -3747,7 +3708,6 @@ static bool e1000_clean_jumbo_rx_irq(struct e1000_adapter *adapter,
 			}
 		}
 
-		/* Receive Checksum Offload XXX recompute due to CRC strip? */
 		e1000_rx_checksum(adapter,
 		                  (u32)(status) |
 		                  ((u32)(rx_desc->errors) << 24),
@@ -3912,8 +3872,6 @@ static bool e1000_clean_rx_irq(struct e1000_adapter *adapter,
 			}
 		}
 
-		/* adjust length to remove Ethernet CRC, this must be
-		 * done after the TBI_ACCEPT workaround above */
 		length -= 4;
 
 		/* probably a little skewed due to removing CRC */
@@ -4145,10 +4103,6 @@ map_skb:
 			break; /* while !buffer_info->skb */
 		}
 
-		/*
-		 * XXX if it was allocated cleanly it will never map to a
-		 * boundary crossing
-		 */
 
 		/* Fix for errata 23, can't cross 64kB boundary */
 		if (!e1000_check_64k_bound(adapter,
@@ -4190,10 +4144,6 @@ map_skb:
 	}
 }
 
-/**
- * e1000_smartspeed - Workaround for SmartSpeed on 82541 and 82547 controllers.
- * @adapter:
- **/
 
 static void e1000_smartspeed(struct e1000_adapter *adapter)
 {

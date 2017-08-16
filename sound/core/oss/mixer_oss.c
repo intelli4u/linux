@@ -433,22 +433,6 @@ static long snd_mixer_oss_conv2(long val, long min, long max)
 	return snd_mixer_oss_conv(val, 0, 100, min, max);
 }
 
-#if 0
-static void snd_mixer_oss_recsrce_set(struct snd_card *card, int slot)
-{
-	struct snd_mixer_oss *mixer = card->mixer_oss;
-	if (mixer)
-		mixer->mask_recsrc |= 1 << slot;
-}
-
-static int snd_mixer_oss_recsrce_get(struct snd_card *card, int slot)
-{
-	struct snd_mixer_oss *mixer = card->mixer_oss;
-	if (mixer && (mixer->mask_recsrc & (1 << slot)))
-		return 1;
-	return 0;
-}
-#endif
 
 #define SNDRV_MIXER_OSS_SIGNATURE		0x65999250
 

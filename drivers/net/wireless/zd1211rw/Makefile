@@ -8,4 +8,3 @@ zd1211rw-objs := zd_chip.o zd_mac.o \
 ifeq ($(CONFIG_ZD1211RW_DEBUG),y)
 EXTRA_CFLAGS += -DDEBUG
 endif
-

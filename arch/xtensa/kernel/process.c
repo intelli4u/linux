@@ -206,7 +206,6 @@ int copy_thread(unsigned long clone_flags, unsigned long usp,
 		childregs->areg[1] = usp;
 		memcpy(&childregs->areg[XCHAL_NUM_AREGS - len/4],
 		       &regs->areg[XCHAL_NUM_AREGS - len/4], len);
-// FIXME: we need to set THREADPTR in thread_info...
 		if (clone_flags & CLONE_SETTLS)
 			childregs->areg[2] = childregs->areg[6];
 
@@ -336,4 +335,3 @@ long xtensa_execve(const char __user *name,
 out:
 	return error;
 }
-

@@ -376,7 +376,6 @@ static int mthca_load_fw(struct mthca_dev *mdev)
 	u8 status;
 	int err;
 
-	/* FIXME: use HCA-attached memory for FW if present */
 
 	mdev->fw.arbel.fw_icm =
 		mthca_alloc_icm(mdev, mdev->fw.arbel.fw_pages,

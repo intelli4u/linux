@@ -203,7 +203,7 @@ static int rds_cancel_sent_to(struct rds_sock *rs, char __user *optval,
 
 	/* racing with another thread binding seems ok here */
 	if (rs->rs_bound_addr == 0) {
-		ret = -ENOTCONN; /* XXX not a great errno */
+		ret = -ENOTCONN;
 		goto out;
 	}
 
@@ -463,7 +463,6 @@ static void rds_sock_inc_info(struct socket *sock, unsigned int len,
 	list_for_each_entry(rs, &rds_sock_list, rs_item) {
 		read_lock(&rs->rs_recv_lock);
 
-		/* XXX too lazy to maintain counts.. */
 		list_for_each_entry(inc, &rs->rs_recv_queue, i_item) {
 			total++;
 			if (total <= len)

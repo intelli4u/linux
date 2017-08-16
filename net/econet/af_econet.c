@@ -962,12 +962,6 @@ static void aun_data_available(struct sock *sk, int slen)
 	case 4:
 		aun_tx_ack(ah->handle, ECTYPE_TRANSMIT_NOT_LISTENING);
 		break;
-#if 0
-		/* This isn't quite right yet. */
-	case 5:
-		aun_send_response(ip->saddr, ah->handle, 6, ah->cb);
-		break;
-#endif
 	default:
 		printk(KERN_DEBUG "unknown AUN packet (type %d)\n", data[0]);
 	}

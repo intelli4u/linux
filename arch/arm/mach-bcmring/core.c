@@ -145,7 +145,6 @@ void __init bcmring_amba_init(void)
 	/* Only the devices attached to the AMBA bus are enabled just before the bus is */
 	/* scanned and the drivers are loaded. The clocks need to be on for the AMBA bus */
 	/* driver to access these blocks. The bus is probed, and the drivers are loaded. */
-	/* FIXME Need to remove enable of PIF once CLCD clock enable used properly in FPGA. */
 	bus_clock = chipcHw_REG_BUS_CLOCK_GE
 	    | chipcHw_REG_BUS_CLOCK_SDIO0 | chipcHw_REG_BUS_CLOCK_SDIO1;
 

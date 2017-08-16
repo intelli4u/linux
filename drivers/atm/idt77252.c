@@ -351,9 +351,6 @@ idt77252_read_gp(struct idt77252_dev *card)
 	u32 gp;
 
 	gp = readl(SAR_REG_GP);
-#if 0
-	printk("RD: %s\n", gp & SAR_GP_EEDI ? "1" : "0");
-#endif
 	return gp;
 }
 
@@ -362,11 +359,6 @@ idt77252_write_gp(struct idt77252_dev *card, u32 value)
 {
 	unsigned long flags;
 
-#if 0
-	printk("WR: %s %s %s\n", value & SAR_GP_EECS ? "   " : "/CS",
-	       value & SAR_GP_EESCLK ? "HIGH" : "LOW ",
-	       value & SAR_GP_EEDO   ? "1" : "0");
-#endif
 
 	spin_lock_irqsave(&card->cmd_lock, flags);
 	waitfor_idle(card);
@@ -2132,8 +2124,8 @@ idt77252_init_est(struct vc_map *vc, int pcr)
 	est->cps = est->maxcps;
 	est->avcps = est->cps << 5;
 
-	est->interval = 2;		/* XXX: make this configurable */
-	est->ewma_log = 2;		/* XXX: make this configurable */
+	est->interval = 2;
+	est->ewma_log = 2;
 	init_timer(&est->timer);
 	est->timer.data = (unsigned long)vc;
 	est->timer.function = idt77252_est_timer;
@@ -3247,23 +3239,6 @@ init_sram(struct idt77252_dev *card)
 		write_sram(card, card->rt_base + 256 + i, tmp);
 	}
 
-#if 0 /* Fill RDF and AIR tables. */
-	for (i = 0; i < 128; i++) {
-		unsigned int tmp;
-
-		tmp = RDF[0][(i << 1) + 0] << 16;
-		tmp |= RDF[0][(i << 1) + 1] << 0;
-		write_sram(card, card->rt_base + 512 + i, tmp);
-	}
-
-	for (i = 0; i < 128; i++) {
-		unsigned int tmp;
-
-		tmp = AIR[0][(i << 1) + 0] << 16;
-		tmp |= AIR[0][(i << 1) + 1] << 0;
-		write_sram(card, card->rt_base + 640 + i, tmp);
-	}
-#endif
 
 	IPRINTK("%s: initialize rate table ...\n", card->name);
 	writel(card->rt_base << 2, SAR_REG_RTBL);
@@ -3550,9 +3525,6 @@ init_card(struct atm_dev *dev)
 	printk("\n");
 #endif /* HAVE_EEPROM */
 
-	/*
-	 * XXX: <hack>
-	 */
 	sprintf(tname, "eth%d", card->index);
 	tmp = dev_get_by_name(&init_net, tname);	/* jhs: was "tmp = dev_get(tname);" */
 	if (tmp) {
@@ -3560,9 +3532,6 @@ init_card(struct atm_dev *dev)
 
 		printk("%s: ESI %pM\n", card->name, card->atmdev->esi);
 	}
-	/*
-	 * XXX: </hack>
-	 */
 
 	/* Set Maximum Deficit Count for now. */
 	writel(0xffff, SAR_REG_MDFCT);

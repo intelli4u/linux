@@ -88,7 +88,6 @@ struct vpd_prom {
 
 /* Allow us to debug "in the field" without requiring clients to
    recompile.... */
-#if 1
 #define rio_spin_lock_irqsave(sem, flags) do { \
 	rio_dprintk (RIO_DEBUG_SPINLOCK, "spinlockirqsave: %p %s:%d\n", \
 	                                sem, __FILE__, __LINE__);\
@@ -112,20 +111,6 @@ struct vpd_prom {
 	                                sem, __FILE__, __LINE__);\
 	spin_unlock(sem);\
 	} while (0)
-#else
-#define rio_spin_lock_irqsave(sem, flags) \
-            spin_lock_irqsave(sem, flags)
-
-#define rio_spin_unlock_irqrestore(sem, flags) \
-            spin_unlock_irqrestore(sem, flags)
-
-#define rio_spin_lock(sem) \
-            spin_lock(sem)
-
-#define rio_spin_unlock(sem) \
-            spin_unlock(sem)
-
-#endif
 
 
 

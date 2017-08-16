@@ -969,7 +969,6 @@ static const struct ath5k_ini rf5413_ini_common_end[] = {
 };
 
 /* Initial mode-specific settings for RF2413/2414 (Written after ar5212_ini) */
-/* XXX: a mode ? */
 static const struct ath5k_ini_mode rf2413_ini_mode_end[] = {
 	{ AR5K_TXCFG,
 	/*	a/XR	   aTurbo	  b	   g (DYN)     gTurbo     */
@@ -1091,7 +1090,6 @@ static const struct ath5k_ini rf2413_ini_common_end[] = {
 };
 
 /* Initial mode-specific settings for RF2425 (Written after ar5212_ini) */
-/* XXX: a mode ? */
 static const struct ath5k_ini_mode rf2425_ini_mode_end[] = {
 	{ AR5K_TXCFG,
 	/*	a/XR	   aTurbo	  b	   g (DYN)     gTurbo     */

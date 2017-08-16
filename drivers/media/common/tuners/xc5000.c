@@ -217,22 +217,6 @@ static int xc_send_i2c_data(struct xc5000_priv *priv, u8 *buf, int len)
 	return XC_RESULT_SUCCESS;
 }
 
-#if 0
-/* This routine is never used because the only time we read data from the
-   i2c bus is when we read registers, and we want that to be an atomic i2c
-   transaction in case we are on a multi-master bus */
-static int xc_read_i2c_data(struct xc5000_priv *priv, u8 *buf, int len)
-{
-	struct i2c_msg msg = { .addr = priv->i2c_props.addr,
-		.flags = I2C_M_RD, .buf = buf, .len = len };
-
-	if (i2c_transfer(priv->i2c_props.adap, &msg, 1) != 1) {
-		printk(KERN_ERR "xc5000 I2C read failed (len=%i)\n", len);
-		return -EREMOTEIO;
-	}
-	return 0;
-}
-#endif
 
 static int xc5000_readreg(struct xc5000_priv *priv, u16 reg, u16 *val)
 {

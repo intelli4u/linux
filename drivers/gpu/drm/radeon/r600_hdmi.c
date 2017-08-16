@@ -277,9 +277,6 @@ int r600_hdmi_buffer_status_changed(struct drm_encoder *encoder)
 	return result;
 }
 
-/*
- * write the audio workaround status to the hardware
- */
 void r600_hdmi_audio_workaround(struct drm_encoder *encoder)
 {
 	struct drm_device *dev = encoder->dev;
@@ -293,11 +290,9 @@ void r600_hdmi_audio_workaround(struct drm_encoder *encoder)
 	if (!radeon_encoder->hdmi_audio_workaround ||
 		r600_hdmi_is_audio_buffer_filled(encoder)) {
 
-		/* disable audio workaround */
 		WREG32_P(offset+R600_HDMI_CNTL, 0x00000001, ~0x00001001);
 
 	} else {
-		/* enable audio workaround */
 		WREG32_P(offset+R600_HDMI_CNTL, 0x00001001, ~0x00001001);
 	}
 }

@@ -119,10 +119,6 @@ static int stmmac_mdio_reset(struct mii_bus *bus)
 		priv->phy_reset(priv->bsp_priv);
 	}
 
-	/* This is a workaround for problems with the STE101P PHY.
-	 * It doesn't complete its reset until at least one clock cycle
-	 * on MDC, so perform a dummy mdio read.
-	 */
 	writel(0, ioaddr + mii_address);
 
 	return 0;

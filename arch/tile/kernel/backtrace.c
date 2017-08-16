@@ -61,11 +61,6 @@ struct BacktraceBundle {
 static bool bt_read_memory(void *result, VirtualAddress addr,
 			   unsigned int size, void *extra)
 {
-	/* FIXME: this should do some horrible signal stuff to catch
-	 * SEGV cleanly and fail.
-	 *
-	 * Or else the caller should do the setjmp for efficiency.
-	 */
 
 	memcpy(result, (const void *)addr, size);
 	return true;

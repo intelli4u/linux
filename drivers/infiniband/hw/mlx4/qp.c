@@ -1382,7 +1382,7 @@ static void set_fmr_seg(struct mlx4_wqe_fmr_seg *fseg, struct ib_send_wr *wr)
 	fseg->buf_list		= cpu_to_be64(mfrpl->map);
 	fseg->start_addr	= cpu_to_be64(wr->wr.fast_reg.iova_start);
 	fseg->reg_len		= cpu_to_be64(wr->wr.fast_reg.length);
-	fseg->offset		= 0; /* XXX -- is this just for ZBVA? */
+	fseg->offset		= 0;
 	fseg->page_size		= cpu_to_be32(wr->wr.fast_reg.page_shift);
 	fseg->reserved[0]	= 0;
 	fseg->reserved[1]	= 0;
@@ -1987,4 +1987,3 @@ out:
 	mutex_unlock(&qp->mutex);
 	return err;
 }
-

@@ -1026,4 +1026,3 @@ struct set_dev_state_resp {
 #define DEVREG_FAILURE_DEVICE_TYPE_NOT_VALID		0x07
 
 #endif
-

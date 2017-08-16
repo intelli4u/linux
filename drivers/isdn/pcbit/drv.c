@@ -710,7 +710,6 @@ static int pcbit_stat(u_char __user *buf, int len, int driver, int channel)
 	if (stat_count < 0)
 		stat_count = STATBUF_LEN - stat_st + stat_end;
 
-	/* FIXME: should we sleep and wait for more cookies ? */
 	if (len > stat_count)            
 		len = stat_count;
 

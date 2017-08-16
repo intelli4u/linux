@@ -281,10 +281,6 @@ static unsigned long space_width;
 #define LIRC_SERIAL_TRANSMITTER_LATENCY 256
 
 #endif  /* __i386__ */
-/*
- * FIXME: should we be using hrtimers instead of this
- * LIRC_SERIAL_TRANSMITTER_LATENCY nonsense?
- */
 
 /* fetch serial input packet (1 byte) from register offset */
 static u8 sinp(int offset)
@@ -493,13 +489,6 @@ static long send_pulse_homebrew_softcarrier(unsigned long length)
 	now = start;
 	target = pulse_width;
 	flag = 1;
-	/*
-	 * FIXME: This looks like a hard busy wait, without even an occasional,
-	 * polite, cpu_relax() call.  There's got to be a better way?
-	 *
-	 * The i2c code has the result of a lot of bit-banging work, I wonder if
-	 * there's something there which could be helpful here.
-	 */
 	while ((now - start) < length) {
 		/* Delay till flip time */
 		do {

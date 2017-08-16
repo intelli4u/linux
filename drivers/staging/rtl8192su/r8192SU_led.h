@@ -90,4 +90,3 @@ void DeInitSwLeds(struct net_device *dev);
 void LedControl8192SUsb(struct net_device *dev,LED_CTL_MODE LedAction);
 
 #endif
-

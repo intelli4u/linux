@@ -248,7 +248,3 @@ enum nl80211_attrs {
 #define IRDA_MODE_MONITOR   0x4
 
 #endif /* KERNEL_IRDA_H */
-
-
-
-

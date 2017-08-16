@@ -276,13 +276,6 @@ static int nfs_pageio_do_add_request(struct nfs_pageio_descriptor *desc,
 	if (desc->pg_count != 0) {
 		struct nfs_page *prev;
 
-		/*
-		 * FIXME: ideally we should be able to coalesce all requests
-		 * that are not block boundary aligned, but currently this
-		 * is problematic for the case of bsize < PAGE_CACHE_SIZE,
-		 * since nfs_flush_multi and nfs_pagein_multi assume you
-		 * can have only one struct nfs_page.
-		 */
 		if (desc->pg_bsize < PAGE_SIZE)
 			return 0;
 		newlen += desc->pg_count;
@@ -446,4 +439,3 @@ void nfs_destroy_nfspagecache(void)
 {
 	kmem_cache_destroy(nfs_page_cachep);
 }
-

@@ -243,7 +243,6 @@ static int tcf_nat(struct sk_buff *skb, struct tc_action *a,
 		new_addr &= mask;
 		new_addr |= addr & ~mask;
 
-		/* XXX Fix up the inner checksums. */
 		if (egress)
 			iph->daddr = new_addr;
 		else

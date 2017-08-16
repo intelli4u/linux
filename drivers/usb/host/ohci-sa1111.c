@@ -91,19 +91,6 @@ static void sa1111_stop_hc(struct sa1111_dev *dev)
 
 /*-------------------------------------------------------------------------*/
 
-#if 0
-static void dump_hci_status(struct usb_hcd *hcd, const char *label)
-{
-	unsigned long status = sa1111_readl(hcd->regs + SA1111_USB_STATUS);
-
-	dbg ("%s USB_STATUS = { %s%s%s%s%s}", label,
-	     ((status & USB_STATUS_IRQHCIRMTWKUP) ? "IRQHCIRMTWKUP " : ""),
-	     ((status & USB_STATUS_IRQHCIBUFFACC) ? "IRQHCIBUFFACC " : ""),
-	     ((status & USB_STATUS_NIRQHCIM) ? "" : "IRQHCIM "),
-	     ((status & USB_STATUS_NHCIMFCLR) ? "" : "HCIMFCLR "),
-	     ((status & USB_STATUS_USBPWRSENSE) ? "USBPWRSENSE " : ""));
-}
-#endif
 
 /*-------------------------------------------------------------------------*/
 
@@ -267,4 +254,3 @@ static struct sa1111_driver ohci_hcd_sa1111_driver = {
 	.probe		= ohci_hcd_sa1111_drv_probe,
 	.remove		= ohci_hcd_sa1111_drv_remove,
 };
-

@@ -758,10 +758,6 @@ xfs_inode_item_push(
 	xfs_iunlock(ip, XFS_ILOCK_SHARED);
 }
 
-/*
- * XXX rcc - this one really has to do something.  Probably needs
- * to stamp in a new field in the incore inode.
- */
 STATIC void
 xfs_inode_item_committing(
 	struct xfs_log_item	*lip,

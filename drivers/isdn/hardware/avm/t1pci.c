@@ -1,4 +1,4 @@
-/* $Id: t1pci.c,v 1.1.2.2 2004/01/16 21:09:27 keil Exp $
+/* $Id: t1pci.c,v 1.1.2.2 2004/01/16 21:09:27 Exp $
  * 
  * Module for AVM T1 PCI-card.
  * 

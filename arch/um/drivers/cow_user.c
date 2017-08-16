@@ -269,7 +269,6 @@ int file_reader(__u64 offset, char *buf, int len, void *arg)
 	return pread(fd, buf, len, offset);
 }
 
-/* XXX Need to sanity-check the values read from the header */
 
 int read_cow_header(int (*reader)(__u64, char *, int, void *), void *arg,
 		    __u32 *version_out, char **backing_file_out,

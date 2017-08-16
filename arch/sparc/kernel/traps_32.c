@@ -146,7 +146,6 @@ void do_priv_instruction(struct pt_regs *regs, unsigned long pc, unsigned long n
 	send_sig_info(SIGILL, &info, current);
 }
 
-/* XXX User may want to be allowed to do this. XXX */
 
 void do_memaccess_unaligned(struct pt_regs *regs, unsigned long pc, unsigned long npc,
 			    unsigned long psr)
@@ -159,15 +158,10 @@ void do_memaccess_unaligned(struct pt_regs *regs, unsigned long pc, unsigned lon
 		die_if_kernel("BOGUS", regs);
 		/* die_if_kernel("Kernel MNA access", regs); */
 	}
-#if 0
-	show_regs (regs);
-	instruction_dump ((unsigned long *) regs->pc);
-	printk ("do_MNA!\n");
-#endif
 	info.si_signo = SIGBUS;
 	info.si_errno = 0;
 	info.si_code = BUS_ADRALN;
-	info.si_addr = /* FIXME: Should dig out mna address */ (void *)0;
+	info.si_addr = (void *)0;
 	info.si_trapno = 0;
 	send_sig_info(SIGBUS, &info, current);
 }
@@ -420,7 +414,6 @@ void handle_hw_divzero(struct pt_regs *regs, unsigned long pc, unsigned long npc
 #ifdef CONFIG_DEBUG_BUGVERBOSE
 void do_BUG(const char *file, int line)
 {
-        // bust_spinlocks(1);   XXX Not in our original BUG()
         printk("kernel BUG at %s:%d!\n", file, line);
 }
 EXPORT_SYMBOL(do_BUG);

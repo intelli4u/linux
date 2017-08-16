@@ -746,4 +746,3 @@ static void __exit lkkbd_exit(void)
 
 module_init(lkkbd_init);
 module_exit(lkkbd_exit);
-

@@ -314,7 +314,6 @@ static int rtl8180_wx_get_range(struct net_device *dev,
 			range->freq[val].e = 1;
 			val++;
 		} else {
-			// FIXME: do we need to set anything for channels
 			// we don't use ?
 		}
 
@@ -385,7 +384,6 @@ static int r8180_wx_set_scan(struct net_device *dev, struct iw_request_info *a,
 		else
 		{
 			//YJ,add,080828, prevent scan in BusyTraffic
-			//FIXME: Need to consider last scan time
 			if ((priv->link_detect.bBusyTraffic) && (true))
 			{
 				ret = 0;
@@ -665,11 +663,6 @@ static int r8180_wx_set_retry(struct net_device *dev,
 		DMESG("Setting retry for non RTS/CTS data to %d", wrqu->retry.value);
 	}
 
-	/* FIXME !
-	 * We might try to write directly the TX config register
-	 * or to restart just the (R)TX process.
-	 * I'm unsure if whole reset is really needed
-	 */
 
  	rtl8180_commit(dev);
 	/*
@@ -1284,9 +1277,7 @@ static int r8180_wx_set_mlme(struct net_device *dev,
 
 
 	down(&priv->wx_sem);
-#if 1
 	ret = ieee80211_wx_set_mlme(priv->ieee80211, info, wrqu, extra);
-#endif
 	up(&priv->wx_sem);
 	return ret;
 }
@@ -1303,9 +1294,7 @@ static int r8180_wx_set_gen_ie(struct net_device *dev,
 		return 0;
 
         down(&priv->wx_sem);
-#if 1
         ret = ieee80211_wx_set_gen_ie(priv->ieee80211, extra, wrqu->data.length);
-#endif
         up(&priv->wx_sem);
 	//printk("<======%s(), ret:%d\n", __func__, ret);
         return ret;
@@ -1585,5 +1574,3 @@ struct iw_handler_def  r8180_wx_handlers_def={
 	.get_wireless_stats = r8180_get_wireless_stats,
 	.private_args = (struct iw_priv_args *)r8180_private_args,
 };
-
-

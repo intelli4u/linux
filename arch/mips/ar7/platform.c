@@ -474,7 +474,6 @@ static void __init detect_leds(void)
 	ar7_led_data.num_leds = ARRAY_SIZE(default_leds);
 	ar7_led_data.leds = default_leds;
 
-	/* FIXME: the whole thing is unreliable */
 	prid = prom_getenv("ProductID");
 	usb_prod = prom_getenv("usb_prod");
 

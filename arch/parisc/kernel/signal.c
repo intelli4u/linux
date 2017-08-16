@@ -142,7 +142,6 @@ sys_rt_sigreturn(struct pt_regs *regs, int in_syscall)
 	if (is_compat_task()) {
 		DBG(1,"sys_rt_sigreturn: compat_frame->uc.uc_mcontext 0x%p\n",
 				&compat_frame->uc.uc_mcontext);
-// FIXME: Load upper half from register file
 		if (restore_sigcontext32(&compat_frame->uc.uc_mcontext, 
 					&compat_frame->regs, regs))
 			goto give_sigsegv;
@@ -195,8 +194,6 @@ give_sigsegv:
 static inline void __user *
 get_sigframe(struct k_sigaction *ka, unsigned long sp, size_t frame_size)
 {
-	/*FIXME: ELF32 vs. ELF64 has different frame_size, but since we
-	  don't use the parameter it doesn't matter */
 
 	DBG(1,"get_sigframe: ka = %#lx, sp = %#lx, frame_size = %#lx\n",
 			(unsigned long)ka, sp, frame_size);
@@ -257,7 +254,6 @@ setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 #endif
 	
 	usp = (regs->gr[30] & ~(0x01UL));
-	/*FIXME: frame_size parameter is unused, remove it. */
 	frame = get_sigframe(ka, usp, sizeof(*frame));
 
 	DBG(1,"SETUP_RT_FRAME: START\n");
@@ -298,7 +294,6 @@ setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 		DBG(1,"setup_rt_frame: frame->uc = 0x%p\n", &frame->uc);
 		DBG(1,"setup_rt_frame: frame->uc.uc_mcontext = 0x%p\n", &frame->uc.uc_mcontext);
 		err |= setup_sigcontext(&frame->uc.uc_mcontext, regs, in_syscall);
-		/* FIXME: Should probably be converted aswell for the compat case */
 		err |= __copy_to_user(&frame->uc.uc_sigmask, set, sizeof(*set));
 	}
 	

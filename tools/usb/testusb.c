@@ -50,7 +50,6 @@
 
 #define	TEST_CASES	30
 
-// FIXME make these public somewhere; usbdevfs.h?
 
 struct usbtest_param {
 	// inputs
@@ -282,8 +281,6 @@ nomem:
 
 	entry->ifnum = ifnum;
 
-	/* FIXME ask usbfs what speed; update USBDEVFS_CONNECTINFO so
-	 * it tells about high speed etc */
 
 	fprintf(stderr, "%s speed\t%s\t%u\n",
 		speed(entry->speed), entry->name, entry->ifnum);
@@ -327,7 +324,6 @@ restart:
 		if (status < 0 && errno == EOPNOTSUPP)
 			continue;
 
-		/* FIXME need a "syslog it" option for background testing */
 
 		/* NOTE: each thread emits complete lines; no fragments! */
 		if (status < 0) {

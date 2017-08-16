@@ -60,7 +60,6 @@ i915_gem_next_active_object(struct drm_device *dev,
 			return render_obj;
 		}
 
-		/* XXX can we handle seqno wrapping? */
 		if (render_obj->last_rendering_seqno < bsd_obj->last_rendering_seqno) {
 			*render_iter = (*render_iter)->next;
 			return render_obj;

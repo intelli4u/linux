@@ -620,11 +620,6 @@ static struct clk dpll4_ck = {
 	.recalc		= &omap3_dpll_recalc,
 };
 
-/*
- * This virtual clock provides the CLKOUTX2 output from the DPLL if the
- * DPLL isn't bypassed --
- * XXX does this serve any downstream clocks?
- */
 static struct clk dpll4_x2_ck = {
 	.name		= "dpll4_x2_ck",
 	.ops		= &clkops_null,
@@ -1107,7 +1102,6 @@ static struct clk arm_fck = {
 	.recalc		= &omap2_clksel_recalc,
 };
 
-/* XXX What about neon_clkdm ? */
 
 /*
  * REVISIT: This clock is never specifically defined in the 3430 TRM,
@@ -1698,10 +1692,6 @@ static struct clk ssi_sst_fck_3430es2 = {
 
 /* CORE_L3_ICK based clocks */
 
-/*
- * XXX must add clk_enable/clk_disable for these if standard code won't
- * handle it
- */
 static struct clk core_l3_ick = {
 	.name		= "core_l3_ick",
 	.ops		= &clkops_null,
@@ -2312,7 +2302,6 @@ static struct clk usim_fck = {
 	.recalc		= &omap2_clksel_recalc,
 };
 
-/* XXX should gpt1's clksel have wkup_32k_fck as the 32k opt? */
 static struct clk gpt1_fck = {
 	.name		= "gpt1_fck",
 	.ops		= &clkops_omap2_dflt_wait,
@@ -2414,7 +2403,6 @@ static struct clk omap_32ksync_ick = {
 	.recalc		= &followparent_recalc,
 };
 
-/* XXX This clock no longer exists in 3430 TRM rev F */
 static struct clk gpt12_ick = {
 	.name		= "gpt12_ick",
 	.ops		= &clkops_omap2_dflt_wait,
@@ -2902,11 +2890,6 @@ static const struct clksel emu_src_clksel[] = {
 	{ .parent = NULL },
 };
 
-/*
- * Like the clkout_src clocks, emu_src_clk is a virtual clock, existing only
- * to switch the source of some of the EMU clocks.
- * XXX Are there CLKEN bits for these EMU clks?
- */
 static struct clk emu_src_ck = {
 	.name		= "emu_src_ck",
 	.ops		= &clkops_null,
@@ -3175,7 +3158,6 @@ static struct clk dummy_apb_pclk = {
  * clkdev
  */
 
-/* XXX At some point we should rename this file to clock3xxx_data.c */
 static struct omap_clk omap3xxx_clks[] = {
 	CLK(NULL,	"apb_pclk",	&dummy_apb_pclk,	CK_3XXX),
 	CLK(NULL,	"omap_32k_fck",	&omap_32k_fck,	CK_3XXX),
@@ -3447,13 +3429,6 @@ int __init omap3xxx_clk_init(void)
 		cpu_mask |= RATE_IN_36XX;
 		cpu_clkflg |= CK_36XX;
 
-		/*
-		 * XXX This type of dynamic rewriting of the clock tree is
-		 * deprecated and should be revised soon.
-		 *
-		 * For 3630: override clkops_omap2_dflt_wait for the
-		 * clocks affected from PWRDN reset Limitation
-		 */
 		dpll3_m3x2_ck.ops =
 				&clkops_omap36xx_pwrdn_with_hsdiv_wait_restore;
 		dpll4_m2x2_ck.ops =
@@ -3468,10 +3443,6 @@ int __init omap3xxx_clk_init(void)
 				&clkops_omap36xx_pwrdn_with_hsdiv_wait_restore;
 	}
 
-	/*
-	 * XXX This type of dynamic rewriting of the clock tree is
-	 * deprecated and should be revised soon.
-	 */
 	if (cpu_is_omap3630())
 		dpll4_dd = dpll4_dd_3630;
 	else

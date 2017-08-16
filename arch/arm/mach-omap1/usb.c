@@ -388,7 +388,6 @@ u32 __init omap1_usb2_init(unsigned nwires, unsigned alt_pingroup)
 		omap_cfg_reg(W5_USB2_SE0);
 		if (nwires != 3)
 			omap_cfg_reg(Y5_USB2_RCV);
-		// FIXME omap_cfg_reg(USB2_SPEED);
 	} else {
 		pr_debug("usb%d cpu unrecognized\n", 1);
 		return 0;

@@ -859,7 +859,6 @@ void agp_generic_enable(struct agp_bridge_data *bridge, u32 requested_mode)
 
 	bridge_agpstat = agp_collect_device_status(agp_bridge, requested_mode, bridge_agpstat);
 	if (bridge_agpstat == 0)
-		/* Something bad happened. FIXME: Return error code? */
 		return;
 
 	bridge_agpstat |= AGPSTAT_AGP_ENABLE;
@@ -1457,4 +1456,3 @@ const struct aper_size_info_16 agp3_generic_sizes[AGP_GENERIC_SIZES_ENTRIES] =
 	{   4,    1024, 0, 0xf3f}
 };
 EXPORT_SYMBOL(agp3_generic_sizes);
-

@@ -1,7 +1,7 @@
 /*
  * linux/drivers/char/pcmcia/synclink_cs.c
  *
- * $Id: synclink_cs.c,v 4.34 2005/09/08 13:20:54 paulkf Exp $
+ * $Id: synclink_cs.c,v 4.34 2005/09/08 13:20:54 Exp $
  *
  * Device driver for Microgate SyncLink PC Card
  * multiprotocol serial adapter.
@@ -75,7 +75,8 @@
 #include <pcmcia/cisreg.h>
 #include <pcmcia/ds.h>
 
-#if defined(CONFIG_HDLC) || (defined(CONFIG_HDLC_MODULE) && defined(CONFIG_SYNCLINK_CS_MODULE))
+#if defined(CONFIG_HDLC) || (defined(CONFIG_HDLC_MODULE) && \
+	defined(CONFIG_SYNCLINK_CS_MODULE))
 #define SYNCLINK_GENERIC_HDLC 1
 #else
 #define SYNCLINK_GENERIC_HDLC 0
@@ -242,9 +243,6 @@ typedef struct _mgslpc_info {
 #define CHA     0x00   /* channel A offset */
 #define CHB     0x40   /* channel B offset */
 
-/*
- *  FIXME: PPC has PVR defined in asm/reg.h.  For now we just undef it.
- */
 #undef PVR
 
 #define RXFIFO  0
@@ -4344,4 +4342,3 @@ static void hdlcdev_exit(MGSLPC_INFO *info)
 }
 
 #endif /* CONFIG_HDLC */
-

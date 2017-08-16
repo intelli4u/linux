@@ -135,10 +135,6 @@ static void reiserfs_vfs_truncate_file(struct inode *inode)
 
 /* Sync a reiserfs file. */
 
-/*
- * FIXME: sync_mapping_buffers() never has anything to sync.  Can
- * be removed...
- */
 
 static int reiserfs_sync_file(struct file *filp, int datasync)
 {

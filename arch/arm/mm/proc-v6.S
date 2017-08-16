@@ -182,12 +182,6 @@ __v6_setup:
 	orr	r0, r0, r6			@ set them
 	mov	pc, lr				@ return to head.S:__ret
 
-	/*
-	 *         V X F   I D LR
-	 * .... ...E PUI. .T.T 4RVI ZFRS BLDP WCAM
-	 * rrrr rrrx xxx0 0101 xxxx xxxx x111 xxxx < forced
-	 *         0 110       0011 1.00 .111 1101 < we want
-	 */
 	.type	v6_crval, #object
 v6_crval:
 	crval	clear=0x01e0fb7f, mmuset=0x00c0387d, ucset=0x00c0187c

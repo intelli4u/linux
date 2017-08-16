@@ -382,4 +382,3 @@ do {									\
 } while (0)
 
 #endif /* __LINUX_USB_SERIAL_H */
-

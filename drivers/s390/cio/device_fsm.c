@@ -1025,7 +1025,7 @@ fsm_func_t *dev_jumptable[NR_DEV_STATES][NR_DEV_EVENTS] = {
 		[DEV_EVENT_NOTOPER]	= ccw_device_generic_notoper,
 		[DEV_EVENT_INTERRUPT]	= ccw_device_killing_irq,
 		[DEV_EVENT_TIMEOUT]	= ccw_device_killing_timeout,
-		[DEV_EVENT_VERIFY]	= ccw_device_nop, //FIXME
+		[DEV_EVENT_VERIFY]	= ccw_device_nop,
 	},
 	[DEV_STATE_QUIESCE] = {
 		[DEV_EVENT_NOTOPER]	= ccw_device_quiesce_done,

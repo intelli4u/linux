@@ -316,15 +316,13 @@
  *  we maintain the same addresses, even if they're not mapped.
  *
  */
-#define PHYS_PCI_MEM_BASE               0x40000000   /* 512M to xxx */
+#define PHYS_PCI_MEM_BASE               0x40000000
 /*  unused 256M from A0000000-AFFFFFFF might be used for I2O ???
  */
-#define PHYS_PCI_IO_BASE                0x60000000   /* 16M to xxx */
+#define PHYS_PCI_IO_BASE                0x60000000
 /*  unused (128-16)M from B1000000-B7FFFFFF
  */
-#define PHYS_PCI_CONFIG_BASE            0x61000000   /* 16M to xxx */
-/*  unused ((128-16)M - 64K) from XXX
- */
+#define PHYS_PCI_CONFIG_BASE            0x61000000
 #define PHYS_PCI_V3_BASE                0x62000000
 
 /* ------------------------------------------------------------------------

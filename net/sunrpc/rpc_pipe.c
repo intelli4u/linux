@@ -609,9 +609,6 @@ static struct dentry *__rpc_lookup_create_exclusive(struct dentry *parent,
 	return ERR_PTR(-EEXIST);
 }
 
-/*
- * FIXME: This probably has races.
- */
 static void __rpc_depopulate(struct dentry *parent,
 			     const struct rpc_filelist *files,
 			     int start, int eof)

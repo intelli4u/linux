@@ -112,7 +112,6 @@ void kmemcheck_pagealloc_alloc(struct page *page, unsigned int order,
 	 * into them.
 	 */
 
-	/* XXX: Can use zone->node for node? */
 	kmemcheck_alloc_shadow(page, order, gfpflags, -1);
 
 	if (gfpflags & __GFP_ZERO)

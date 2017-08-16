@@ -692,14 +692,12 @@ static __le32 *handle_ar_packet(struct ar_context *ctx, __le32 *buffer)
 		break;
 
 	default:
-		/* FIXME: Stop context, discard everything, and restart? */
 		p.header_length = 0;
 		p.payload_length = 0;
 	}
 
 	p.payload = (void *) buffer + p.header_length;
 
-	/* FIXME: What to do about evt_* errors? */
 	length = (p.header_length + p.payload_length + 3) / 4;
 	status = cond_le32_to_cpu(buffer[length]);
 	evt    = (status >> 16) & 0x1f;
@@ -1182,17 +1180,6 @@ static int at_context_queue_packet(struct context *ctx,
 				     DESCRIPTOR_IRQ_ALWAYS |
 				     DESCRIPTOR_BRANCH_ALWAYS);
 
-	/*
-	 * If the controller and packet generations don't match, we need to
-	 * bail out and try again.  If IntEvent.busReset is set, the AT context
-	 * is halted, so appending to the context and trying to run it is
-	 * futile.  Most controllers do the right thing and just flush the AT
-	 * queue (per section 7.2.3.2 of the OHCI 1.1 specification), but
-	 * some controllers (like a JMicron JMB381 PCI-e) misbehave and wind
-	 * up stalling out.  So we just bail out in software and try again
-	 * later, and everyone is happy.
-	 * FIXME: Document how the locking works.
-	 */
 	if (ohci->generation != packet->generation ||
 	    reg_read(ohci, OHCI1394_IntEventSet) & OHCI1394_busReset) {
 		if (packet->payload_mapped)
@@ -1574,7 +1561,6 @@ static void bus_reset_tasklet(unsigned long data)
 		return;
 	}
 
-	/* FIXME: Document how the locking works. */
 	spin_lock_irqsave(&ohci->lock, flags);
 
 	ohci->generation = generation;
@@ -1699,12 +1685,6 @@ static irqreturn_t irq_handler(int irq, void *data)
 	}
 
 	if (unlikely(event & OHCI1394_cycleInconsistent)) {
-		/*
-		 * We need to clear this event bit in order to make
-		 * cycleMatch isochronous I/O work.  In theory we should
-		 * stop active cycleMatch iso contexts now and restart
-		 * them at least two cycles later.  (FIXME?)
-		 */
 		if (printk_ratelimit())
 			fw_notify("isochronous cycle inconsistent\n");
 	}
@@ -1880,24 +1860,6 @@ static int ohci_enable(struct fw_card *card,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * When the link is not yet enabled, the atomic config rom
-	 * update mechanism described below in ohci_set_config_rom()
-	 * is not active.  We have to update ConfigRomHeader and
-	 * BusOptions manually, and the write to ConfigROMmap takes
-	 * effect immediately.  We tie this to the enabling of the
-	 * link, so we have a valid config rom before enabling - the
-	 * OHCI requires that ConfigROMhdr and BusOptions have valid
-	 * values before enabling.
-	 *
-	 * However, when the ConfigROMmap is written, some controllers
-	 * always read back quadlets 0 and 2 from the config rom to
-	 * the ConfigRomHeader and BusOptions registers on bus reset.
-	 * They shouldn't do that in this initial case where the link
-	 * isn't enabled.  This means we have to use the same
-	 * workaround here, setting the bus header to 0 and then write
-	 * the right values in the bus reset tasklet.
-	 */
 
 	if (config_rom) {
 		ohci->next_config_rom =
@@ -1973,32 +1935,6 @@ static int ohci_set_config_rom(struct fw_card *card,
 
 	ohci = fw_ohci(card);
 
-	/*
-	 * When the OHCI controller is enabled, the config rom update
-	 * mechanism is a bit tricky, but easy enough to use.  See
-	 * section 5.5.6 in the OHCI specification.
-	 *
-	 * The OHCI controller caches the new config rom address in a
-	 * shadow register (ConfigROMmapNext) and needs a bus reset
-	 * for the changes to take place.  When the bus reset is
-	 * detected, the controller loads the new values for the
-	 * ConfigRomHeader and BusOptions registers from the specified
-	 * config rom and loads ConfigROMmap from the ConfigROMmapNext
-	 * shadow register. All automatically and atomically.
-	 *
-	 * Now, there's a twist to this story.  The automatic load of
-	 * ConfigRomHeader and BusOptions doesn't honor the
-	 * noByteSwapData bit, so with a be32 config rom, the
-	 * controller will load be32 values in to these registers
-	 * during the atomic update, even on litte endian
-	 * architectures.  The workaround we use is to put a 0 in the
-	 * header quadlet; 0 is endian agnostic and means that the
-	 * config rom isn't ready yet.  In the bus reset tasklet we
-	 * then set up the real values for the two registers.
-	 *
-	 * We use ohci->lock to avoid racing with the code that sets
-	 * ohci->next_config_rom to NULL (see bus_reset_tasklet).
-	 */
 
 	next_config_rom =
 		dma_alloc_coherent(ohci->card.device, CONFIG_ROM_SIZE,
@@ -2091,10 +2027,6 @@ static int ohci_enable_phys_dma(struct fw_card *card,
 	unsigned long flags;
 	int n, ret = 0;
 
-	/*
-	 * FIXME:  Make sure this bitmask is cleared when we clear the busReset
-	 * interrupt bit.  Clear physReqResourceAllBuses on bus reset.
-	 */
 
 	spin_lock_irqsave(&ohci->lock, flags);
 
@@ -2628,13 +2560,6 @@ static int queue_iso_transmit(struct iso_context *ctx,
 	if (!p->skip) {
 		d[0].control   = cpu_to_le16(DESCRIPTOR_KEY_IMMEDIATE);
 		d[0].req_count = cpu_to_le16(8);
-		/*
-		 * Link the skip address to this descriptor itself.  This causes
-		 * a context to skip a cycle whenever lost cycles or FIFO
-		 * overruns occur, without dropping the data.  The application
-		 * should then decide whether this is an error condition or not.
-		 * FIXME:  Make the context's cycle-lost behaviour configurable?
-		 */
 		d[0].branch_address = cpu_to_le32(d_bus | z);
 
 		header = (__le32 *) &d[1];
@@ -3043,10 +2968,6 @@ static void pci_remove(struct pci_dev *dev)
 	flush_writes(ohci);
 	fw_core_remove_card(&ohci->card);
 
-	/*
-	 * FIXME: Fail all pending packets here, now that the upper
-	 * layers can't queue any more.
-	 */
 
 	software_reset(ohci);
 	free_irq(dev->irq, ohci);

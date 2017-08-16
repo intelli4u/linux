@@ -435,16 +435,6 @@ int main(int argc, const char **argv)
 		cmd = "perf-help";
 	/* get debugfs mount point from /proc/mounts */
 	get_debugfs_mntpt();
-	/*
-	 * "perf-xxxx" is the same as "perf xxxx", but we obviously:
-	 *
-	 *  - cannot take flags in between the "perf" and the "xxxx".
-	 *  - cannot execute it externally (since it would just do
-	 *    the same thing over again)
-	 *
-	 * So we just directly call the internal command handler, and
-	 * die if that one cannot handle it.
-	 */
 	if (!prefixcmp(cmd, "perf-")) {
 		cmd += 5;
 		argv[0] = cmd;

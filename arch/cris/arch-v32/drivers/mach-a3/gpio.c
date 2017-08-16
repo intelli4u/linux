@@ -54,17 +54,7 @@
 
 #define D(x)
 
-#if 0
-static int dp_cnt;
-#define DP(x) \
-	do { \
-		dp_cnt++; \
-		if (dp_cnt % 1000 == 0) \
-			x; \
-	} while (0)
-#else
 #define DP(x)
-#endif
 
 static char gpio_name[] = "etrax gpio";
 

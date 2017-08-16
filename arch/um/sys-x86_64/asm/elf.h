@@ -101,7 +101,7 @@ extern int elf_core_copy_fpregs(struct task_struct *t, elf_fpregset_t *fpu);
 
 #define ELF_CORE_COPY_FPREGS(t, fpu) elf_core_copy_fpregs(t, fpu)
 
-#ifdef TIF_IA32 /* XXX */
+#ifdef TIF_IA32
 #error XXX, indeed
         clear_thread_flag(TIF_IA32);
 #endif

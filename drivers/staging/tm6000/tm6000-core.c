@@ -325,7 +325,6 @@ int tm6000_init_analog_mode(struct tm6000_core *dev)
 
 	/* Tuner firmware can now be loaded */
 
-	/*FIXME: Hack!!! */
 	struct v4l2_frequency f;
 	mutex_lock(&dev->lock);
 	f.frequency = dev->freq;
@@ -667,7 +666,6 @@ int tm6000_call_fillbuf(struct tm6000_core *dev, enum tm6000_ops_type type,
 {
 	struct tm6000_ops *ops = NULL;
 
-	/* FIXME: tm6000_extension_devlist_lock should be a spinlock */
 
 	if (!list_empty(&tm6000_extension_devlist)) {
 		list_for_each_entry(ops, &tm6000_extension_devlist, next) {

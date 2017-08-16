@@ -301,9 +301,6 @@ void snd_opl3_interrupt(struct snd_hwdep * hw)
 
 	opl3 = hw->private_data;
 	status = inb(opl3->l_port);
-#if 0
-	snd_printk(KERN_DEBUG "AdLib IRQ status = 0x%x\n", status);
-#endif
 	if (!(status & 0x80))
 		return;
 
@@ -529,7 +526,8 @@ int snd_opl3_hwdep_new(struct snd_opl3 * opl3,
 
 	opl3->hwdep = hw;
 	opl3->seq_dev_num = seq_device;
-#if defined(CONFIG_SND_SEQUENCER) || (defined(MODULE) && defined(CONFIG_SND_SEQUENCER_MODULE))
+#if defined(CONFIG_SND_SEQUENCER) || (defined(MODULE) && \
+	defined(CONFIG_SND_SEQUENCER_MODULE))
 	if (snd_seq_device_new(card, seq_device, SNDRV_SEQ_DEV_ID_OPL3,
 			       sizeof(struct snd_opl3 *), &opl3->seq_dev) >= 0) {
 		strcpy(opl3->seq_dev->name, hw->name);

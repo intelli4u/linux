@@ -162,8 +162,6 @@ int jffs2_read_inode_range(struct jffs2_sb_info *c, struct jffs2_inode_info *f,
 
 	frag = jffs2_lookup_node_frag(&f->fragtree, offset);
 
-	/* XXX FIXME: Where a single physical node actually shows up in two
-	   frags, we read it twice. Don't do that. */
 	/* Now we're pointing at the first frag which overlaps our page
 	 * (or perhaps is before it, if we've been asked to read off the
 	 * end of the file). */
@@ -213,4 +211,3 @@ int jffs2_read_inode_range(struct jffs2_sb_info *c, struct jffs2_inode_info *f,
 	}
 	return 0;
 }
-

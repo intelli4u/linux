@@ -466,7 +466,6 @@ static void ath9k_hw_ani_lower_immunity_old(struct ath_hw *ah)
 	} else {
 		rssi = BEACON_RSSI(ah);
 		if (rssi > aniState->rssiThrHigh) {
-			/* XXX: Handle me */
 		} else if (rssi > aniState->rssiThrLow) {
 			if (aniState->ofdmWeakSigDetectOff) {
 				if (ath9k_hw_ani_control(ah,

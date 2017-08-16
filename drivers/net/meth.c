@@ -755,7 +755,6 @@ static void meth_tx_timeout(struct net_device *dev)
  */
 static int meth_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 {
-	/* XXX Not yet implemented */
 	switch(cmd) {
 	case SIOCGMIIPHY:
 	case SIOCGMIIREG:

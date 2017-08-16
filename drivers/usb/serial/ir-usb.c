@@ -376,11 +376,6 @@ static void ir_set_termios(struct tty_struct *tty,
 
 	baud = tty_get_baud_rate(tty);
 
-	/*
-	 * FIXME, we should compare the baud request against the
-	 * capability stated in the IR header that we got in the
-	 * startup function.
-	 */
 
 	switch (baud) {
 	case 2400:
@@ -517,4 +512,3 @@ module_param(xbof, int, 0);
 MODULE_PARM_DESC(xbof, "Force specific number of XBOFs");
 module_param(buffer_size, int, 0);
 MODULE_PARM_DESC(buffer_size, "Size of the transfer buffers");
-

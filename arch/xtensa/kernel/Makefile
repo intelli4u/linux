@@ -18,7 +18,6 @@ obj-$(CONFIG_MODULES) += xtensa_ksyms.o module.o
 # in the linker script, such as: *(.literal .text).
 #
 # We need to post-process the generated vmlinux.lds scripts to convert
-# *(xxx.text) to  *(xxx.literal xxx.text) for the following text sections:
 #   .text .ref.text .*init.text .*exit.text .text.*
 #
 # Replicate rules in scripts/Makefile.build

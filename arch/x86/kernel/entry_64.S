@@ -428,29 +428,6 @@ END(ret_from_fork)
  * stack pointer.
  */
 
-/*
- * Register setup:
- * rax  system call number
- * rdi  arg0
- * rcx  return address for syscall/sysret, C arg3
- * rsi  arg1
- * rdx  arg2
- * r10  arg3 	(--> moved to rcx for C)
- * r8   arg4
- * r9   arg5
- * r11  eflags for syscall/sysret, temporary for C
- * r12-r15,rbp,rbx saved by C code, not touched.
- *
- * Interrupts are off on entry.
- * Only called from user space.
- *
- * XXX	if we had a free scratch register we could save the RSP into the stack frame
- *      and report it properly in ps. Unfortunately we haven't.
- *
- * When user can change the frames always force IRET. That is because
- * it deals with uncanonical addresses better. SYSRET has trouble
- * with them due to bugs in both AMD and Intel CPUs.
- */
 
 ENTRY(system_call)
 	CFI_STARTPROC	simple
@@ -1145,7 +1122,7 @@ ENTRY(native_load_gs_index)
 	SWAPGS
 gs_change:
 	movl %edi,%gs
-2:	mfence		/* workaround */
+2:	mfence
 	SWAPGS
 	popf
 	CFI_ADJUST_CFA_OFFSET -8

@@ -111,10 +111,6 @@ static int pnp_dock_event(int dock, struct pnp_docking_station_info *info)
 		return -ENOMEM;
 	}
 
-	/* FIXME: if there are actual users of this, it should be
-	 * integrated into the driver core and use the usual infrastructure
-	 * like sysfs and uevents
-	 */
 	argv[0] = "/sbin/pnpbios";
 	argv[1] = "dock";
 	argv[2] = NULL;
@@ -189,11 +185,6 @@ static int pnp_dock_thread(void *unused)
 		if (d != docked) {
 			if (pnp_dock_event(d, &now) == 0) {
 				docked = d;
-#if 0
-				printk(KERN_INFO
-				       "PnPBIOS: Docking station %stached\n",
-				       docked ? "at" : "de");
-#endif
 			}
 		}
 	}

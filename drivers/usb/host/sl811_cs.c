@@ -59,7 +59,6 @@ static void release_platform_dev(struct device * dev)
 static struct sl811_platform_data platform_data = {
 	.potpg		= 100,
 	.power		= 50,		/* == 100mA */
-	// .reset	= ... FIXME:  invoke CF reset on the card
 };
 
 static struct resource resources[] = {

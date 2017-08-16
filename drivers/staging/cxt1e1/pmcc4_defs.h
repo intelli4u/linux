@@ -74,9 +74,9 @@
  * an additional 300ms later */
 #define WATCHDOG_UTIMEOUT     (WATCHDOG_TIMEOUT+300000)
 
-#if !defined(SBE_ISR_TASKLET) && !defined(SBE_ISR_IMMEDIATE) && !defined(SBE_ISR_INLINE)
+#if !defined(SBE_ISR_TASKLET) && !defined(SBE_ISR_IMMEDIATE) && \
+	!defined(SBE_ISR_INLINE)
 #define SBE_ISR_TASKLET
 #endif
 
 #endif   /*** _INC_PMCC4_DEFS_H_ ***/
-

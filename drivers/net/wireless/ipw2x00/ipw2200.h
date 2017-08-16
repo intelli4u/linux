@@ -388,7 +388,7 @@ struct clx2_queue {
 	dma_addr_t dma_addr;		/**< physical addr for BD's */
 	int low_mark;		       /**< low watermark, resume queue if free space more than this */
 	int high_mark;		       /**< high watermark, stop queue if free space less than this */
-} __packed; /* XXX */
+} __packed;
 
 struct machdr32 {
 	__le16 frame_ctl;
@@ -1005,7 +1005,7 @@ struct ipw_sensitivity_calib {
  * - \a status contains status;
  * - \a param filled with status parameters.
  */
-struct ipw_cmd {	 /* XXX */
+struct ipw_cmd {
 	u32 cmd;   /**< Host command */
 	u32 status;/**< Status */
 	u32 status_len;
@@ -1100,7 +1100,7 @@ struct ipw_ibss_seq {
 	struct list_head list;
 };
 
-struct ipw_error_elem {	 /* XXX */
+struct ipw_error_elem {
 	u32 desc;
 	u32 time;
 	u32 blink1;
@@ -1110,13 +1110,13 @@ struct ipw_error_elem {	 /* XXX */
 	u32 data;
 };
 
-struct ipw_event {	 /* XXX */
+struct ipw_event {
 	u32 event;
 	u32 time;
 	u32 data;
 } __packed;
 
-struct ipw_fw_error {	 /* XXX */
+struct ipw_fw_error {
 	unsigned long jiffies;
 	u32 status;
 	u32 config;
@@ -1161,7 +1161,7 @@ struct ipw_prom_priv {
  */
 struct ipw_rt_hdr {
 	struct ieee80211_radiotap_header rt_hdr;
-	u64 rt_tsf;      /* TSF */	/* XXX */
+	u64 rt_tsf;      /* TSF */
 	u8 rt_flags;	/* radiotap packet flags */
 	u8 rt_rate;	/* rate in 500kb/s */
 	__le16 rt_channel;	/* channel in mhz */
@@ -1412,31 +1412,6 @@ do { if (ipw_debug_level & (level)) \
 #define IPW_LL_DEBUG(level, fmt, args...) do {} while (0)
 #endif				/* CONFIG_IPW2200_DEBUG */
 
-/*
- * To use the debug system;
- *
- * If you are defining a new debug classification, simply add it to the #define
- * list here in the form of:
- *
- * #define IPW_DL_xxxx VALUE
- *
- * shifting value to the left one bit from the previous entry.  xxxx should be
- * the name of the classification (for example, WEP)
- *
- * You then need to either add a IPW_xxxx_DEBUG() macro definition for your
- * classification, or use IPW_DEBUG(IPW_DL_xxxx, ...) whenever you want
- * to send output to that classification.
- *
- * To add your debug level to the list of levels seen when you perform
- *
- * % cat /proc/net/ipw/debug_level
- *
- * you simply need to add your entry to the ipw_debug_levels array.
- *
- * If you do not see debug_level in /proc/net/ipw then you do not have
- * CONFIG_IPW2200_DEBUG defined in your kernel configuration
- *
- */
 
 #define IPW_DL_ERROR         (1<<0)
 #define IPW_DL_WARNING       (1<<1)
@@ -1966,7 +1941,7 @@ struct host_cmd {
 	u8 len;
 	u16 reserved;
 	u32 *param;
-} __packed;	/* XXX */
+} __packed;
 
 struct cmdlog_host_cmd {
 	u8 cmd;

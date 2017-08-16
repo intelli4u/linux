@@ -3746,11 +3746,6 @@ mega_m_to_n(void __user *arg, nitioctl_t *uioc)
 		 * interface till the new specifitions are in place.
 		 */
 		return -EINVAL;
-#if 0
-		if( copy_from_user(uioc, arg, sizeof(nitioctl_t)) )
-			return (-EFAULT);
-		return 0;
-#endif
 	}
 
 	/*

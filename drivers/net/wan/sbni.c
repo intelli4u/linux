@@ -1717,4 +1717,3 @@ static u32  crc32tab[] __attribute__ ((aligned(8))) = {
 	0x616495A3,  0x1663A535,  0x8F6AF48F,  0xF86DC419,
 	0x660951BA,  0x110E612C,  0x88073096,  0xFF000000
 };
-

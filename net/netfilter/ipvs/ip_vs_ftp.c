@@ -96,11 +96,6 @@ ip_vs_ftp_done_conn(struct ip_vs_app *app, struct ip_vs_conn *cp)
 }
 
 
-/*
- * Get <addr,port> from the string "xxx.xxx.xxx.xxx,ppp,ppp", started
- * with the "pattern" and terminated with the "term" character.
- * <addr,port> is in network order.
- */
 static int ip_vs_ftp_get_addrport(char *data, char *data_limit,
 				  const char *pattern, size_t plen, char term,
 				  __be32 *addr, __be16 *port,
@@ -262,19 +257,6 @@ ip_vs_expect_related(struct sk_buff *skb, struct nf_conn *ct,
 	nf_ct_expect_put(exp);
 }
 
-/*
- * Look at outgoing ftp packets to catch the response to a PASV command
- * from the server (inside-to-outside).
- * When we see one, we build a connection entry with the client address,
- * client port 0 (unknown at the moment), the server address and the
- * server port.  Mark the current connection entry as a control channel
- * of the new entry. All this work is just to make the data connection
- * can be scheduled to the right server later.
- *
- * The outgoing packet should be something like
- *   "227 Entering Passive Mode (xxx,xxx,xxx,xxx,ppp,ppp)".
- * xxx,xxx,xxx,xxx is the server address, ppp,ppp is the server port number.
- */
 static int ip_vs_ftp_out(struct ip_vs_app *app, struct ip_vs_conn *cp,
 			 struct sk_buff *skb, int *diff)
 {
@@ -285,7 +267,7 @@ static int ip_vs_ftp_out(struct ip_vs_app *app, struct ip_vs_conn *cp,
 	union nf_inet_addr from;
 	__be16 port;
 	struct ip_vs_conn *n_cp;
-	char buf[24];		/* xxx.xxx.xxx.xxx,ppp,ppp\000 */
+	char buf[24];
 	unsigned buf_len;
 	int ret = 0;
 	enum ip_conntrack_info ctinfo;
@@ -389,17 +371,6 @@ static int ip_vs_ftp_out(struct ip_vs_app *app, struct ip_vs_conn *cp,
 }
 
 
-/*
- * Look at incoming ftp packets to catch the PASV/PORT command
- * (outside-to-inside).
- *
- * The incoming packet having the PORT command should be something like
- *      "PORT xxx,xxx,xxx,xxx,ppp,ppp\n".
- * xxx,xxx,xxx,xxx is the client address, ppp,ppp is the client port number.
- * In this case, we create a connection entry using the client address and
- * port, so that the active ftp data connection from the server can reach
- * the client.
- */
 static int ip_vs_ftp_in(struct ip_vs_app *app, struct ip_vs_conn *cp,
 			struct sk_buff *skb, int *diff)
 {

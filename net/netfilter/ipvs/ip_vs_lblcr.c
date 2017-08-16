@@ -444,17 +444,6 @@ static inline void ip_vs_lblcr_full_check(struct ip_vs_service *svc)
 }
 
 
-/*
- *      Periodical timer handler for IPVS lblcr table
- *      It is used to collect stale entries when the number of entries
- *      exceeds the maximum size of the table.
- *
- *      Fixme: we probably need more complicated algorithm to collect
- *             entries that have not been used for a long time even
- *             if the number of entries doesn't exceed the maximum size
- *             of the table.
- *      The full expiration check is for this purpose now.
- */
 static void ip_vs_lblcr_check_expire(unsigned long data)
 {
 	struct ip_vs_service *svc = (struct ip_vs_service *) data;

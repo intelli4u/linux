@@ -66,10 +66,6 @@ static void cvm_oct_rgmii_poll(struct net_device *dev)
 	link_info = cvmx_helper_link_get(priv->port);
 	if (link_info.u64 == priv->link_info) {
 
-		/*
-		 * If the 10Mbps preamble workaround is supported and we're
-		 * at 10Mbps we may need to do some special checking.
-		 */
 		if (USE_10MBPS_PREAMBLE_WORKAROUND && (link_info.s.speed == 10)) {
 
 			/*
@@ -129,10 +125,6 @@ static void cvm_oct_rgmii_poll(struct net_device *dev)
 		return;
 	}
 
-	/* If the 10Mbps preamble workaround is allowed we need to on
-	   preamble checking, FCS stripping, and clear error bits on
-	   every speed change. If errors occur during 10Mbps operation
-	   the above code will change this stuff */
 	if (USE_10MBPS_PREAMBLE_WORKAROUND) {
 
 		union cvmx_gmxx_rxx_frm_ctl gmxx_rxx_frm_ctl;

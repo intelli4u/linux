@@ -295,7 +295,7 @@ static int cg14_ioctl(struct fb_info *info, unsigned int cmd, unsigned long arg)
 		kmdi.mdi_height = info->var.yres;
 		kmdi.mdi_width = info->var.xres;
 		kmdi.mdi_mode = par->mode;
-		kmdi.mdi_pixfreq = 72; /* FIXME */
+		kmdi.mdi_pixfreq = 72;
 		kmdi.mdi_size = par->ramsize;
 		spin_unlock_irqrestore(&par->lock, flags);
 

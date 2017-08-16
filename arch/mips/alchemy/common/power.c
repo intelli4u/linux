@@ -94,9 +94,6 @@ static void save_core_regs(void)
 
 #else	/* AU1200 */
 
-	/* enable access to OTG mmio so we can save OTG CAP/MUX.
-	 * FIXME: write an OTG driver and move this stuff there!
-	 */
 	au_writel(au_readl(USB_MSR_BASE + 4) | (1 << 6), USB_MSR_BASE + 4);
 	au_sync();
 	sleep_usb[0] = au_readl(0xb4020020);	/* OTG_CAP */

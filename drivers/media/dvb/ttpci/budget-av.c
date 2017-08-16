@@ -1473,7 +1473,6 @@ static int budget_av_attach(struct saa7146_dev *dev, struct saa7146_pci_extensio
 		budget_av->has_saa7113 = 1;
 
 		if (0 != saa7146_vv_init(dev, &vv_data)) {
-			/* fixme: proper cleanup here */
 			ERR(("cannot init vv subsystem.\n"));
 			return err;
 		}
@@ -1482,7 +1481,6 @@ static int budget_av_attach(struct saa7146_dev *dev, struct saa7146_pci_extensio
 		vv_data.ops.vidioc_s_input = vidioc_s_input;
 
 		if ((err = saa7146_register_device(&budget_av->vd, dev, "knc1", VFL_TYPE_GRABBER))) {
-			/* fixme: proper cleanup here */
 			ERR(("cannot register capture v4l2 device.\n"));
 			saa7146_vv_release(dev);
 			return err;
@@ -1495,7 +1493,6 @@ static int budget_av_attach(struct saa7146_dev *dev, struct saa7146_pci_extensio
 		saa7113_setinput(budget_av, 0);
 	}
 
-	/* fixme: find some sane values here... */
 	saa7146_write(dev, PCI_BT_V1, 0x1c00101f);
 
 	mac = budget_av->budget.dvb_adapter.proposed_mac;

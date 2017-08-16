@@ -158,14 +158,6 @@ static struct pmc_cntrl_data pmc_cntrl[NUM_THREADS][NR_PHYS_CTRS];
  * either.
  */
 
-/*
- * Interpetation of hdw_thread:
- * 0 - even virtual cpus 0, 2, 4,...
- * 1 - odd virtual cpus 1, 3, 5, ...
- *
- * FIXME: this is strictly wrong, we need to clean this up in a number
- * of places. It works for now. -arnd
- */
 static u32 hdw_thread;
 
 static u32 virt_cntr_inter_mask;

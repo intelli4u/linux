@@ -131,10 +131,6 @@ pptp_outbound_pkt(struct sk_buff *skb,
 	switch (msg = ntohs(ctlh->messageType)) {
 	case PPTP_OUT_CALL_REQUEST:
 		cid_off = offsetof(union pptp_ctrl_union, ocreq.callID);
-		/* FIXME: ideally we would want to reserve a call ID
-		 * here.  current netfilter NAT core is not able to do
-		 * this :( For now we use TCP source port. This breaks
-		 * multiple calls within one control session */
 
 		/* save original call ID in nat_info */
 		nat_pptp_info->pns_call_id = ct_pptp_info->pns_call_id;

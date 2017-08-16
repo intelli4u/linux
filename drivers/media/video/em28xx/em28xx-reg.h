@@ -190,7 +190,6 @@
 #define EM28XX_AUDIO_SRC_TUNER	0xc0
 #define EM28XX_AUDIO_SRC_LINE	0x80
 
-/* FIXME: Need to be populated with the other chip ID's */
 enum em28xx_chip_id {
 	CHIP_ID_EM2800 = 7,
 	CHIP_ID_EM2710 = 17,

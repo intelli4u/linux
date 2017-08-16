@@ -72,7 +72,6 @@ EXPORT_SYMBOL(agp_special_page);
 
 void MMU_init(void);
 
-/* XXX should be in current.h  -- paulus */
 extern struct task_struct *current_set[NR_CPUS];
 
 /*
@@ -251,4 +250,3 @@ void free_initrd_mem(unsigned long start, unsigned long end)
 	}
 }
 #endif
-

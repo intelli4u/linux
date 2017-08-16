@@ -49,5 +49,3 @@
 
 #define PBCA_TYPE1		(1)
 #define PBCA_ENABLE		(1 << 31)
-
-

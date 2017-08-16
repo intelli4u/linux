@@ -158,6 +158,8 @@ struct neigh_table nd_tbl = {
 	.gc_thresh3 =	1024,
 };
 
+EXPORT_SYMBOL(nd_tbl);
+
 /* ND options */
 struct ndisc_options {
 	struct nd_opt_hdr *nd_opt_array[__ND_OPT_ARRAY_MAX];
@@ -825,7 +827,6 @@ static void ndisc_recv_ns(struct sk_buff *skb)
 
 		idev = in6_dev_get(dev);
 		if (!idev) {
-			/* XXX: count this drop? */
 			return;
 		}
 
@@ -976,7 +977,6 @@ static void ndisc_recv_na(struct sk_buff *skb)
 		if (lladdr && !memcmp(lladdr, dev->dev_addr, dev->addr_len) &&
 		    net->ipv6.devconf_all->forwarding && net->ipv6.devconf_all->proxy_ndp &&
 		    pneigh_lookup(&nd_tbl, net, &msg->target, dev, 0)) {
-			/* XXX: idev->cnf.prixy_ndp */
 			goto out;
 		}
 

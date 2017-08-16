@@ -42,11 +42,6 @@ struct line {
 	/*This lock is actually, mostly, local to*/
 	spinlock_t lock;
 	int throttled;
-	/* Yes, this is a real circular buffer.
-	 * XXX: And this should become a struct kfifo!
-	 *
-	 * buffer points to a buffer allocated on demand, of length
-	 * LINE_BUFSIZE, head to the start of the ring, tail to the end.*/
 	char *buffer;
 	char *head;
 	char *tail;

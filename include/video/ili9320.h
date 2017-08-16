@@ -198,4 +198,3 @@ struct ili9320_platdata {
 	unsigned short	interface5;
 	unsigned short	interface6;
 };
-

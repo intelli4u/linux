@@ -3911,4 +3911,3 @@ tar_dcons:
 
 module_init(atp870u_init);
 module_exit(atp870u_exit);
-

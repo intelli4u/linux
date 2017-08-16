@@ -911,19 +911,6 @@ static struct snd_pcm_ops snd_mixart_capture_ops = {
 
 static void preallocate_buffers(struct snd_mixart *chip, struct snd_pcm *pcm)
 {
-#if 0
-	struct snd_pcm_substream *subs;
-	int stream;
-
-	for (stream = 0; stream < 2; stream++) {
-		int idx = 0;
-		for (subs = pcm->streams[stream].substream; subs; subs = subs->next, idx++)
-			/* set up the unique device id with the chip index */
-			subs->dma_device.id = subs->pcm->device << 16 |
-				subs->stream << 8 | (subs->number + 1) |
-				(chip->chip_idx + 1) << 24;
-	}
-#endif
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
 					      snd_dma_pci_data(chip->mgr->pci), 32*1024, 32*1024);
 }
@@ -1297,7 +1284,7 @@ static int __devinit snd_mixart_probe(struct pci_dev *pci,
 	tasklet_init(&mgr->msg_taskq, snd_mixart_msg_tasklet, (unsigned long) mgr);
 
 	/* card assignment */
-	mgr->num_cards = MIXART_MAX_CARDS; /* 4  FIXME: configurable? */
+	mgr->num_cards = MIXART_MAX_CARDS;
 	for (i = 0; i < mgr->num_cards; i++) {
 		struct snd_card *card;
 		char tmpid[16];

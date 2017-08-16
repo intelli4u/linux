@@ -1,7 +1,7 @@
 /*
  * hfc_usb.c
  *
- * $Id: hfc_usb.c,v 2.3.2.24 2007/10/14 08:40:29 mbachem Exp $
+ * $Id: hfc_usb.c,v 2.3.2.24 2007/10/14 08:40:29 Exp $
  *
  * modular HiSax ISDN driver for Colognechip HFC-S USB chip
  *

@@ -747,32 +747,6 @@ static u16 apu_get_register(struct es1968 *chip, u16 channel, u8 reg)
 	return v;
 }
 
-#if 0 /* ASSP is not supported */
-
-static void assp_set_register(struct es1968 *chip, u32 reg, u32 value)
-{
-	unsigned long flags;
-
-	spin_lock_irqsave(&chip->reg_lock, flags);
-	outl(reg, chip->io_port + ASSP_INDEX);
-	outl(value, chip->io_port + ASSP_DATA);
-	spin_unlock_irqrestore(&chip->reg_lock, flags);
-}
-
-static u32 assp_get_register(struct es1968 *chip, u32 reg)
-{
-	unsigned long flags;
-	u32 value;
-
-	spin_lock_irqsave(&chip->reg_lock, flags);
-	outl(reg, chip->io_port + ASSP_INDEX);
-	value = inl(chip->io_port + ASSP_DATA);
-	spin_unlock_irqrestore(&chip->reg_lock, flags);
-
-	return value;
-}
-
-#endif
 
 static void wave_set_register(struct es1968 *chip, u16 reg, u16 value)
 {
@@ -914,10 +888,6 @@ snd_es1968_calc_bob_rate(struct es1968 *chip, struct esschan *es,
 static u32 snd_es1968_compute_rate(struct es1968 *chip, u32 freq)
 {
 	u32 rate = (freq << 16) / chip->clock;
-#if 0 /* XXX: do we need this? */ 
-	if (rate > 0x10000)
-		rate = 0x10000;
-#endif
 	return rate;
 }
 
@@ -1921,7 +1891,6 @@ static void es1968_update_hw_volume(unsigned long private_data)
 	if (! chip->master_switch || ! chip->master_volume)
 		return;
 
-	/* FIXME: we can't call snd_ac97_* functions since here is in tasklet. */
 	spin_lock_irqsave(&chip->ac97_lock, flags);
 	val = chip->ac97->regs[AC97_MASTER];
 	switch (x) {
@@ -2136,39 +2105,6 @@ static void snd_es1968_ac97_reset(struct es1968 *chip)
 	outw(inw(ioaddr + 0x3a) & 0xfffc, ioaddr + 0x3a);
 	outw(inw(ioaddr + 0x3c) & 0xfffc, ioaddr + 0x3c);
 
-#if 0				/* the loop here needs to be much better if we want it.. */
-	snd_printk(KERN_INFO "trying software reset\n");
-	/* try and do a software reset */
-	outb(0x80 | 0x7c, ioaddr + 0x30);
-	for (w = 0;; w++) {
-		if ((inw(ioaddr + 0x30) & 1) == 0) {
-			if (inb(ioaddr + 0x32) != 0)
-				break;
-
-			outb(0x80 | 0x7d, ioaddr + 0x30);
-			if (((inw(ioaddr + 0x30) & 1) == 0)
-			    && (inb(ioaddr + 0x32) != 0))
-				break;
-			outb(0x80 | 0x7f, ioaddr + 0x30);
-			if (((inw(ioaddr + 0x30) & 1) == 0)
-			    && (inb(ioaddr + 0x32) != 0))
-				break;
-		}
-
-		if (w > 10000) {
-			outb(inb(ioaddr + 0x37) | 0x08, ioaddr + 0x37);	/* do a software reset */
-			msleep(500);	/* oh my.. */
-			outb(inb(ioaddr + 0x37) & ~0x08,
-				ioaddr + 0x37);
-			udelay(1);
-			outw(0x80, ioaddr + 0x30);
-			for (w = 0; w < 10000; w++) {
-				if ((inw(ioaddr + 0x30) & 1) == 0)
-					break;
-			}
-		}
-	}
-#endif
 	if (vend == NEC_VERSA_SUBID1 || vend == NEC_VERSA_SUBID2) {
 		/* turn on external amp? */
 		outw(0xf9ff, ioaddr + 0x64);
@@ -2231,7 +2167,6 @@ static void snd_es1968_chip_init(struct es1968 *chip)
 	w &= ~SAFEGUARD;	/* Safeguard off */
 	w |= POST_WRITE;	/* Posted write */
 	w |= PCI_TIMING;	/* PCI timing on */
-	/* XXX huh?  claims to be reserved.. */
 	w &= ~SWAP_LR;		/* swap left/right 
 				   seems to only have effect on SB
 				   Emulation */
@@ -2244,7 +2179,6 @@ static void snd_es1968_chip_init(struct es1968 *chip)
 	pci_read_config_word(pci, ESM_CONFIG_B, &w);
 
 	w &= ~(1 << 15);	/* Turn off internal clock multiplier */
-	/* XXX how do we know which to use? */
 	w &= ~(1 << 14);	/* External clock */
 
 	w &= ~SPDIF_CONFB;	/* disable S/PDIF output */

@@ -31,7 +31,6 @@
 #define RT28XX_HANDLE_DEV_ASSIGN(handle, dev_p)				\
 	((struct os_cookie *)handle)->pci_dev = dev_p;
 
-#ifdef LINUX
 // set driver data
 #define RT28XX_DRVDATA_SET(_a)			pci_set_drvdata(_a, net_dev);
 
@@ -72,7 +71,5 @@
 #define PCI_REG_WIRTE_WORD(pci_dev, offset, Configuration)  \
     reg16 = cpu2le16(Configuration);                        \
     pci_write_config_word(pci_dev, offset, reg16);
-
-#endif // LINUX //
 
 #endif // __RTMP_PCI_H__ //

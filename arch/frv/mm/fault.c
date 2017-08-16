@@ -42,15 +42,6 @@ asmlinkage void do_page_fault(int datammu, unsigned long esr0, unsigned long ear
 	int write;
 	int fault;
 
-#if 0
-	const char *atxc[16] = {
-		[0x0] = "mmu-miss", [0x8] = "multi-dat", [0x9] = "multi-sat",
-		[0xa] = "tlb-miss", [0xc] = "privilege", [0xd] = "write-prot",
-	};
-
-	printk("do_page_fault(%d,%lx [%s],%lx)\n",
-	       datammu, esr0, atxc[esr0 >> 20 & 0xf], ear0);
-#endif
 
 	mm = current->mm;
 
@@ -100,23 +91,6 @@ asmlinkage void do_page_fault(int datammu, unsigned long esr0, unsigned long ear
 		 * doesn't show up until later..
 		 */
 		if ((ear0 & PAGE_MASK) + 2 * PAGE_SIZE < __frame->sp) {
-#if 0
-			printk("[%d] ### Access below stack @%lx (sp=%lx)\n",
-			       current->pid, ear0, __frame->sp);
-			show_registers(__frame);
-			printk("[%d] ### Code: [%08lx] %02x %02x %02x %02x %02x %02x %02x %02x\n",
-			       current->pid,
-			       __frame->pc,
-			       ((u8*)__frame->pc)[0],
-			       ((u8*)__frame->pc)[1],
-			       ((u8*)__frame->pc)[2],
-			       ((u8*)__frame->pc)[3],
-			       ((u8*)__frame->pc)[4],
-			       ((u8*)__frame->pc)[5],
-			       ((u8*)__frame->pc)[6],
-			       ((u8*)__frame->pc)[7]
-			       );
-#endif
 			goto bad_area;
 		}
 	}

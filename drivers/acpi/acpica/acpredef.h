@@ -512,15 +512,6 @@ static const union acpi_predefined_info predefined_names[] =
 	{{{0, 0, 0, 0}, 0, 0}}  /* Table terminator */
 };
 
-#if 0
-	/* This is an internally implemented control method, no need to check */
-	{{"_OSI", 1, ACPI_RTYPE_INTEGER}},
-
-	/* TBD: */
-
-	_PRT - currently ignore reversed entries. attempt to fix here?
-	think about possibly fixing package elements like _BIF, etc.
-#endif
 
 #endif
 #endif

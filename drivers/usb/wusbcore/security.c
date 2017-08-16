@@ -1,27 +1,4 @@
-/*
- * Wireless USB Host Controller
- * Security support: encryption enablement, etc
- *
- * Copyright (C) 2006 Intel Corporation
- * Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
- *
- *
- * FIXME: docs
- */
+
 #include <linux/types.h>
 #include <linux/slab.h>
 #include <linux/usb/ch9.h>
@@ -160,14 +137,13 @@ static int wusb_dev_set_encryption(struct usb_device *usb_dev, int value)
 	if (value) {
 		value = wusb_dev->ccm1_etd.bEncryptionValue;
 	} else {
-		/* FIXME: should be wusb_dev->etd[UNSECURE].bEncryptionValue */
 		value = 0;
 	}
 	/* Set device's */
 	result = usb_control_msg(usb_dev, usb_sndctrlpipe(usb_dev, 0),
 			USB_REQ_SET_ENCRYPTION,
 			USB_DIR_OUT | USB_TYPE_STANDARD | USB_RECIP_DEVICE,
-			value, 0, NULL, 0, 1000 /* FIXME: arbitrary */);
+			value, 0, NULL, 0, 1000);
 	if (result < 0)
 		dev_err(dev, "Can't set device's WUSB encryption to "
 			"%s (value %d): %d\n",
@@ -195,7 +171,6 @@ static int wusb_dev_set_gtk(struct wusbhc *wusbhc, struct wusb_dev *wusb_dev)
 }
 
 
-/* FIXME: prototype for adding security */
 int wusb_dev_sec_add(struct wusbhc *wusbhc,
 		     struct usb_device *usb_dev, struct wusb_dev *wusb_dev)
 {
@@ -259,8 +234,6 @@ int wusb_dev_sec_add(struct wusbhc *wusbhc,
 			ccm1_etd = etd;
 	}
 	/* This code only supports CCM1 as of now. */
-	/* FIXME: user has to choose which sec mode to use?
-	 * In theory we want CCM */
 	if (ccm1_etd == NULL) {
 		dev_err(dev, "WUSB device doesn't support CCM1 encryption, "
 			"can't use!\n");
@@ -301,7 +274,7 @@ int wusb_dev_update_address(struct wusbhc *wusbhc, struct wusb_dev *wusb_dev)
 	/* Set address 0 */
 	result = usb_control_msg(usb_dev, usb_sndctrlpipe(usb_dev, 0),
 				 USB_REQ_SET_ADDRESS, 0,
-				 0, 0, NULL, 0, 1000 /* FIXME: arbitrary */);
+				 0, 0, NULL, 0, 1000);
 	if (result < 0) {
 		dev_err(dev, "auth failed: can't set address 0: %d\n",
 			result);
@@ -317,7 +290,7 @@ int wusb_dev_update_address(struct wusbhc *wusbhc, struct wusb_dev *wusb_dev)
 	result = usb_control_msg(usb_dev, usb_sndctrlpipe(usb_dev, 0),
 				 USB_REQ_SET_ADDRESS, 0,
 				 new_address, 0, NULL, 0,
-				 1000 /* FIXME: arbitrary */);
+				 1000);
 	if (result < 0) {
 		dev_err(dev, "auth failed: can't set address %u: %d\n",
 			new_address, result);
@@ -338,7 +311,6 @@ error_addr0:
  *
  *
  */
-/* FIXME: split and cleanup */
 int wusb_dev_4way_handshake(struct wusbhc *wusbhc, struct wusb_dev *wusb_dev,
 			    struct wusb_ckhdid *ck)
 {
@@ -380,7 +352,7 @@ int wusb_dev_4way_handshake(struct wusbhc *wusbhc, struct wusb_dev *wusb_dev,
 		usb_dev, usb_sndctrlpipe(usb_dev, 0),
 		USB_REQ_SET_HANDSHAKE,
 		USB_DIR_OUT | USB_TYPE_STANDARD | USB_RECIP_DEVICE,
-		1, 0, &hs[0], sizeof(hs[0]), 1000 /* FIXME: arbitrary */);
+		1, 0, &hs[0], sizeof(hs[0]), 1000);
 	if (result < 0) {
 		dev_err(dev, "Handshake1: request failed: %d\n", result);
 		goto error_hs1;
@@ -391,7 +363,7 @@ int wusb_dev_4way_handshake(struct wusbhc *wusbhc, struct wusb_dev *wusb_dev,
 		usb_dev, usb_rcvctrlpipe(usb_dev, 0),
 		USB_REQ_GET_HANDSHAKE,
 		USB_DIR_IN | USB_TYPE_STANDARD | USB_RECIP_DEVICE,
-		2, 0, &hs[1], sizeof(hs[1]), 1000 /* FIXME: arbitrary */);
+		2, 0, &hs[1], sizeof(hs[1]), 1000);
 	if (result < 0) {
 		dev_err(dev, "Handshake2: request failed: %d\n", result);
 		goto error_hs2;
@@ -468,7 +440,7 @@ int wusb_dev_4way_handshake(struct wusbhc *wusbhc, struct wusb_dev *wusb_dev,
 		usb_dev, usb_sndctrlpipe(usb_dev, 0),
 		USB_REQ_SET_HANDSHAKE,
 		USB_DIR_OUT | USB_TYPE_STANDARD | USB_RECIP_DEVICE,
-		3, 0, &hs[2], sizeof(hs[2]), 1000 /* FIXME: arbitrary */);
+		3, 0, &hs[2], sizeof(hs[2]), 1000);
 	if (result < 0) {
 		dev_err(dev, "Handshake3: request failed: %d\n", result);
 		goto error_hs3;

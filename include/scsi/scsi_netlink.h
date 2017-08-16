@@ -144,4 +144,3 @@ int scsi_nl_send_vendor_msg(u32 pid, unsigned short host_no, u64 vendor_id,
 #endif /* __KERNEL__ */
 
 #endif /* SCSI_NETLINK_H */
-

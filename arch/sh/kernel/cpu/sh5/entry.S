@@ -2065,4 +2065,3 @@ trap_init_loop:
 	addi	SP, 24, SP
 	ptabs	LINK, tr0
 	blink	tr0, ZERO
-

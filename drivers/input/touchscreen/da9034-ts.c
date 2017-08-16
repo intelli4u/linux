@@ -178,11 +178,6 @@ static void da9034_event_handler(struct da9034_touch *touch, int event)
 
 		touch->state = STATE_STOP;
 
-		/* FIXME: PEN_{UP/DOWN} events are expected to be
-		 * available by stopping TSI, but this is found not
-		 * always true, delay and simulate such an event
-		 * here is more reliable
-		 */
 		mdelay(1);
 		da9034_event_handler(touch,
 				     is_pen_down(touch) ? EVENT_PEN_DOWN :

@@ -1067,4 +1067,3 @@ out:
 	mlx4_en_destroy_netdev(dev);
 	return err;
 }
-

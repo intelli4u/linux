@@ -489,12 +489,6 @@ static const char *action_name[] = {
 	[RECOVERED] = "Recovered",
 };
 
-/*
- * XXX: It is possible that a page is isolated from LRU cache,
- * and then kept in swap cache or failed to remove from page cache.
- * The page count will stop it from being freed by unpoison.
- * Stress tests should be aware of this memory leak problem.
- */
 static int delete_from_lru_cache(struct page *p)
 {
 	if (!isolate_lru_page(p)) {
@@ -872,12 +866,6 @@ static int hwpoison_user_mappings(struct page *p, unsigned long pfn,
 		ttu |= TTU_IGNORE_HWPOISON;
 	}
 
-	/*
-	 * Propagate the dirty bit from PTEs to struct page first, because we
-	 * need this to decide if we should kill or just drop the page.
-	 * XXX: the dirty test could be racy: set_page_dirty() may not always
-	 * be called inside page lock (it's recommended but not enforced).
-	 */
 	mapping = page_mapping(hpage);
 	if (!PageDirty(hpage) && mapping &&
 	    mapping_cap_writeback_dirty(mapping)) {

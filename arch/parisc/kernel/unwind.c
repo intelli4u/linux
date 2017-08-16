@@ -182,17 +182,6 @@ int unwind_init(void)
 	unwind_table_init(&kernel_unwind_table, "kernel", KERNEL_START,
 			  gp, 
 			  &__start___unwind[0], &__stop___unwind[0]);
-#if 0
-	{
-		int i;
-		for (i = 0; i < 10; i++)
-		{
-			printk("region 0x%x-0x%x\n", 
-				__start___unwind[i].region_start, 
-				__start___unwind[i].region_end);
-		}
-	}
-#endif
 	return 0;
 }
 

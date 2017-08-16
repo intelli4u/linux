@@ -26,9 +26,6 @@
    IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
    POSSIBILITY OF SUCH DAMAGE.  */
 
-/* FIXME: This file should really only be used for reference, as the
-   result is somewhat depending on gcc generating what we expect rather
-   than what we describe.  An assembly file should be used instead.  */
 
 /* Note the multiple occurrence of the expression "12*4", including the
    asm.  It is hard to get it into the asm in a good way.  Thus better to

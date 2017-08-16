@@ -1,28 +1,4 @@
-/*
- * pata_ali.c 	- ALI 15x3 PATA for new ATA layer
- *			  (C) 2005 Red Hat Inc
- *
- * based in part upon
- * linux/drivers/ide/pci/alim15x3.c		Version 0.17	2003/01/02
- *
- *  Copyright (C) 1998-2000 Michel Aubry, Maintainer
- *  Copyright (C) 1998-2000 Andrzej Krzysztofowicz, Maintainer
- *  Copyright (C) 1999-2000 CJ, cjtsai@ali.com.tw, Maintainer
- *
- *  Copyright (C) 1998-2000 Andre Hedrick (andre@linux-ide.org)
- *  May be copied or modified under the terms of the GNU General Public License
- *  Copyright (C) 2002 Alan Cox <alan@redhat.com>
- *  ALi (now ULi M5228) support by Clear Zhang <Clear.Zhang@ali.com.tw>
- *
- *  Documentation
- *	Chipset documentation available under NDA only
- *
- *  TODO/CHECK
- *	Cannot have ATAPI on both master & slave for rev < c2 (???) but
- *	otherwise should do atapi DMA (For now for old we do PIO only for
- *	ATAPI)
- *	Review Sunblade workaround.
- */
+
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -321,14 +297,6 @@ static void ali_lock_sectors(struct ata_device *adev)
 static int ali_check_atapi_dma(struct ata_queued_cmd *qc)
 {
 	if (!ali_atapi_dma) {
-		/* FIXME: pata_ali can't do ATAPI DMA reliably but the
-		 * IDE alim15x3 driver can.  I tried lots of things
-		 * but couldn't find what the actual difference was.
-		 * If you got an idea, please write it to
-		 * linux-ide@vger.kernel.org and cc htejun@gmail.com.
-		 *
-		 * Disable ATAPI DMA for now.
-		 */
 		return -EOPNOTSUPP;
 	}
 

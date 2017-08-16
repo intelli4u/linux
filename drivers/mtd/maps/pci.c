@@ -47,16 +47,6 @@ static map_word mtd_pci_read8(struct map_info *_map, unsigned long ofs)
 	return val;
 }
 
-#if 0
-static map_word mtd_pci_read16(struct map_info *_map, unsigned long ofs)
-{
-	struct map_pci_info *map = (struct map_pci_info *)_map;
-	map_word val;
-	val.x[0] = readw(map->base + map->translate(map, ofs));
-//	printk("read16: %08lx => %04x\n", ofs, val.x[0]);
-	return val;
-}
-#endif
 static map_word mtd_pci_read32(struct map_info *_map, unsigned long ofs)
 {
 	struct map_pci_info *map = (struct map_pci_info *)_map;
@@ -79,14 +69,6 @@ static void mtd_pci_write8(struct map_info *_map, map_word val, unsigned long of
 	writeb(val.x[0], map->base + map->translate(map, ofs));
 }
 
-#if 0
-static void mtd_pci_write16(struct map_info *_map, map_word val, unsigned long ofs)
-{
-	struct map_pci_info *map = (struct map_pci_info *)_map;
-//	printk("write16: %08lx <= %04x\n", ofs, val.x[0]);
-	writew(val.x[0], map->base + map->translate(map, ofs));
-}
-#endif
 static void mtd_pci_write32(struct map_info *_map, map_word val, unsigned long ofs)
 {
 	struct map_pci_info *map = (struct map_pci_info *)_map;
@@ -369,4 +351,3 @@ MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Russell King <rmk@arm.linux.org.uk>");
 MODULE_DESCRIPTION("Generic PCI map driver");
 MODULE_DEVICE_TABLE(pci, mtd_pci_ids);
-

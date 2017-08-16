@@ -1,4 +1,4 @@
-/* $Id: isdnl1.c,v 2.46.2.5 2004/02/11 13:21:34 keil Exp $
+/* $Id: isdnl1.c,v 2.46.2.5 2004/02/11 13:21:34 Exp $
  *
  * common low level stuff for Siemens Chipsetbased isdn cards
  *

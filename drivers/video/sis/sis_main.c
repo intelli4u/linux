@@ -2371,11 +2371,9 @@ SISDoSense(struct sis_video_info *ivideo, u16 type, u16 test)
           temp ^= 0x0e;
           temp &= mytest;
           if(temp == mytest) result++;
-#if 1
 	  outSISIDXREG(SISPART4,0x11,0x00);
 	  andSISIDXREG(SISPART4,0x10,0xe0);
 	  SiS_DDC2Delay(&ivideo->SiS_Pr, 0x1000);
-#endif
        }
        if((result == 0) || (result >= 2)) break;
     }
@@ -2697,11 +2695,6 @@ sisfb_get_VB_type(struct sis_video_info *ivideo)
 			   ivideo->vbflags |= VB_301C;	/* Deprecated */
 			   ivideo->vbflags2 |= VB2_301C;
 			   printk(KERN_INFO "%s SiS301C(P4) %s\n", stdstr, bridgestr);
-#if 0
-			   ivideo->vbflags |= VB_302ELV;	/* Deprecated */
-			   ivideo->vbflags2 |= VB2_302ELV;
-			   printk(KERN_INFO "%s SiS302ELV %s\n", stdstr, bridgestr);
-#endif
 			}
 		}
 		break;
@@ -3126,7 +3119,6 @@ sisfb_getheapstart(struct sis_video_info *ivideo)
 		def = maxoffs - 0x8000;
 	}
 
-	/* Use default for secondary card for now (FIXME) */
 	if((!ret) || (ret > maxoffs) || (ivideo->cardnumber != 0))
 		ret = def;
 
@@ -4115,10 +4107,6 @@ sisfb_find_rom(struct pci_dev *pdev)
 
 				if((myrombase = vmalloc(65536))) {
 
-					/* Work around bug in pci/rom.c: Folks forgot to check
-					 * whether the size retrieved from the BIOS image eventually
-					 * is larger than the mapped size
-					 */
 					if(pci_resource_len(pdev, PCI_ROM_RESOURCE) < romsize)
 						romsize = pci_resource_len(pdev, PCI_ROM_RESOURCE);
 
@@ -4570,13 +4558,6 @@ sisfb_post_sis300(struct pci_dev *pdev)
 #endif
 
 #ifdef CONFIG_FB_SIS_315
-#if 0
-static void __devinit
-sisfb_post_sis315330(struct pci_dev *pdev)
-{
-	/* TODO */
-}
-#endif
 
 static void __devinit
 sisfb_post_xgi_delay(struct sis_video_info *ivideo, int delay)
@@ -5682,18 +5663,6 @@ sisfb_post_xgi(struct pci_dev *pdev)
 
 	}
 
-#if 0
-	printk(KERN_DEBUG "-----------------\n");
-	for(i = 0; i < 0xff; i++) {
-		inSISIDXREG(SISCR, i, reg);
-		printk(KERN_DEBUG "CR%02x(%x) = 0x%02x\n", i, SISCR, reg);
-	}
-	for(i = 0; i < 0x40; i++) {
-		inSISIDXREG(SISSR, i, reg);
-		printk(KERN_DEBUG "SR%02x(%x) = 0x%02x\n", i, SISSR, reg);
-	}
-	printk(KERN_DEBUG "-----------------\n");
-#endif
 
 	/* Sense CRT1 */
 	if(ivideo->chip == XGI_20) {
@@ -6765,6 +6734,3 @@ EXPORT_SYMBOL(sis_malloc);
 EXPORT_SYMBOL(sis_free);
 EXPORT_SYMBOL_GPL(sis_malloc_new);
 EXPORT_SYMBOL_GPL(sis_free_new);
-
-
-

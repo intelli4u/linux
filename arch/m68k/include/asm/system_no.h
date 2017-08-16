@@ -72,7 +72,7 @@ asmlinkage void resume(void);
 	: "cc", "%d0", "memory")
 #else
 
-/* portable version */ /* FIXME - see entry.h*/
+/* portable version */
 #define ALLOWINT 0xf8ff
 
 #define local_irq_enable() asm volatile ("andiw %0,%%sr": : "i" (ALLOWINT) : "memory")

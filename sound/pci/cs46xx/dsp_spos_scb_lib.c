@@ -185,13 +185,6 @@ void cs46xx_dsp_remove_scb (struct snd_cs46xx *chip, struct dsp_scb_descriptor *
 		       (ins->scbs + scb->index) != scb))
 		return;
 
-#if 0
-	/* can't remove a SCB with childs before 
-	   removing childs first  */
-	if (snd_BUG_ON(scb->sub_list_ptr != ins->the_null_scb ||
-		       scb->next_scb_ptr != ins->the_null_scb))
-		goto _end;
-#endif
 
 	spin_lock_irqsave(&chip->reg_lock, flags);    
 	_dsp_unlink_scb (chip,scb);
@@ -219,12 +212,6 @@ void cs46xx_dsp_remove_scb (struct snd_cs46xx *chip, struct dsp_scb_descriptor *
 		ins->scb_highest_frag_index = ins->nscb;
 	}
 
-#if 0
-	/* !!!! THIS IS A PIECE OF SHIT MADE BY ME !!! */
-	for(i = scb->index + 1;i < ins->nscb; ++i) {
-		ins->scbs[i - 1].index = i - 1;
-	}
-#endif
 }
 
 
@@ -319,11 +306,6 @@ _dsp_create_generic_scb (struct snd_cs46xx *chip, char * name, u32 * scb_data, u
   
 	/* update parent SCB */
 	if (scb->parent_scb_ptr) {
-#if 0
-		printk ("scb->parent_scb_ptr = %s\n",scb->parent_scb_ptr->scb_name);
-		printk ("scb->parent_scb_ptr->next_scb_ptr = %s\n",scb->parent_scb_ptr->next_scb_ptr->scb_name);
-		printk ("scb->parent_scb_ptr->sub_list_ptr = %s\n",scb->parent_scb_ptr->sub_list_ptr->scb_name);
-#endif
 		/* link to  parent SCB */
 		if (scb_child_type == SCB_ON_PARENT_NEXT_SCB) {
 			if (snd_BUG_ON(scb->parent_scb_ptr->next_scb_ptr !=
@@ -470,11 +452,7 @@ cs46xx_dsp_create_codec_in_scb(struct snd_cs46xx * chip, char * codec_name,
 			0
 		},
     
-#if 0  /* cs4620 */
-		SyncIOSCB,NULL_SCB_ADDR
-#else
 		0 , 0,
-#endif
 		0,0,
 
 		RSCONFIG_SAMPLE_16STEREO + RSCONFIG_MODULO_64,  /* strmRsConfig */
@@ -699,56 +677,6 @@ cs46xx_dsp_create_src_task_scb(struct snd_cs46xx * chip, char * scb_name,
 	return scb;
 }
 
-#if 0 /* not used */
-struct dsp_scb_descriptor * 
-cs46xx_dsp_create_filter_scb(struct snd_cs46xx * chip, char * scb_name,
-			     u16 buffer_addr, u32 dest,
-			     struct dsp_scb_descriptor * parent_scb,
-			     int scb_child_type) {
-	struct dsp_scb_descriptor * scb;
-	
-	struct dsp_filter_scb filter_scb = {
-		.a0_right            = 0x41a9,
-		.a0_left             = 0x41a9,
-		.a1_right            = 0xb8e4,
-		.a1_left             = 0xb8e4,
-		.a2_right            = 0x3e55,
-		.a2_left             = 0x3e55,
-		
-		.filter_unused3      = 0x0000,
-		.filter_unused2      = 0x0000,
-
-		.output_buf_ptr      = buffer_addr,
-		.init                = 0x000,
-
-		.prev_sample_output1 = 0x00000000,
-		.prev_sample_output2 = 0x00000000,
-
-		.prev_sample_input1  = 0x00000000,
-		.prev_sample_input2  = 0x00000000,
-
-		.next_scb_ptr        = 0x0000,
-		.sub_list_ptr        = 0x0000,
-
-		.entry_point         = 0x0000,
-		.spb_ptr             = 0x0000,
-
-		.b0_right            = 0x0e38,
-		.b0_left             = 0x0e38,
-		.b1_right            = 0x1c71,
-		.b1_left             = 0x1c71,
-		.b2_right            = 0x0e38,
-		.b2_left             = 0x0e38,
-	};
-
-
-	scb = cs46xx_dsp_create_generic_scb(chip,scb_name,(u32 *)&filter_scb,
-					    dest,"FILTERTASK",parent_scb,
-					    scb_child_type);
-
- 	return scb;
-}
-#endif /* not used */
 
 struct dsp_scb_descriptor * 
 cs46xx_dsp_create_mix_only_scb(struct snd_cs46xx * chip, char * scb_name,
@@ -1027,47 +955,6 @@ cs46xx_dsp_create_asynch_fg_rx_scb(struct snd_cs46xx * chip, char * scb_name, u3
 }
 
 
-#if 0 /* not used */
-struct dsp_scb_descriptor * 
-cs46xx_dsp_create_output_snoop_scb(struct snd_cs46xx * chip, char * scb_name, u32 dest,
-                                   u16 snoop_buffer_address,
-                                   struct dsp_scb_descriptor * snoop_scb,
-                                   struct dsp_scb_descriptor * parent_scb,
-                                   int scb_child_type)
-{
-
-	struct dsp_scb_descriptor * scb;
-  
-	struct dsp_output_snoop_scb output_snoop_scb = {
-		{ 0,	/*  not used.  Zero */
-		  0,
-		  0,
-		  0,
-		},
-		{
-			0, /* not used.  Zero */
-			0,
-			0,
-			0,
-			0
-		},
-    
-		0,0,
-		0,0,
-    
-		RSCONFIG_SAMPLE_16STEREO + RSCONFIG_MODULO_64,
-		snoop_buffer_address << 0x10,  
-		0,0,
-		0,
-		0,snoop_scb->address
-	};
-  
-	scb = cs46xx_dsp_create_generic_scb(chip,scb_name,(u32 *)&output_snoop_scb,
-					    dest,"OUTPUTSNOOP",parent_scb,
-					    scb_child_type);
-	return scb;
-}
-#endif /* not used */
 
 
 struct dsp_scb_descriptor * 

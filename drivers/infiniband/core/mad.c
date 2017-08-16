@@ -1175,7 +1175,7 @@ struct ib_mad_agent *ib_redirect_mad_qp(struct ib_qp *qp,
 					ib_mad_recv_handler recv_handler,
 					void *context)
 {
-	return ERR_PTR(-EINVAL);	/* XXX: for now */
+	return ERR_PTR(-EINVAL);
 }
 EXPORT_SYMBOL(ib_redirect_mad_qp);
 
@@ -2891,7 +2891,6 @@ static int ib_mad_port_close(struct ib_device *device, int port_num)
 	ib_destroy_cq(port_priv->cq);
 	cleanup_recv_queue(&port_priv->qp_info[1]);
 	cleanup_recv_queue(&port_priv->qp_info[0]);
-	/* XXX: Handle deallocation of MAD registration tables */
 
 	kfree(port_priv);
 

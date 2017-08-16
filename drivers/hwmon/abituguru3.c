@@ -1169,9 +1169,6 @@ static inline int abituguru3_dmi_detect(void)
 
 #endif /* CONFIG_DMI */
 
-/* FIXME: Manual detection should die eventually; we need to collect stable
- *        DMI model names first before we can rely entirely on CONFIG_DMI.
- */
 
 static int __init abituguru3_detect(void)
 {

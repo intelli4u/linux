@@ -974,19 +974,6 @@ temac_of_probe(struct platform_device *op, const struct of_device_id *match)
 	ndev->flags &= ~IFF_MULTICAST;  /* clear multicast */
 	ndev->features = NETIF_F_SG | NETIF_F_FRAGLIST;
 	ndev->netdev_ops = &temac_netdev_ops;
-#if 0
-	ndev->features |= NETIF_F_IP_CSUM; /* Can checksum TCP/UDP over IPv4. */
-	ndev->features |= NETIF_F_HW_CSUM; /* Can checksum all the packets. */
-	ndev->features |= NETIF_F_IPV6_CSUM; /* Can checksum IPV6 TCP/UDP */
-	ndev->features |= NETIF_F_HIGHDMA; /* Can DMA to high memory. */
-	ndev->features |= NETIF_F_HW_VLAN_TX; /* Transmit VLAN hw accel */
-	ndev->features |= NETIF_F_HW_VLAN_RX; /* Receive VLAN hw acceleration */
-	ndev->features |= NETIF_F_HW_VLAN_FILTER; /* Receive VLAN filtering */
-	ndev->features |= NETIF_F_VLAN_CHALLENGED; /* cannot handle VLAN pkts */
-	ndev->features |= NETIF_F_GSO; /* Enable software GSO. */
-	ndev->features |= NETIF_F_MULTI_QUEUE; /* Has multiple TX/RX queues */
-	ndev->features |= NETIF_F_LRO; /* large receive offload */
-#endif
 
 	/* setup temac private info structure */
 	lp = netdev_priv(ndev);

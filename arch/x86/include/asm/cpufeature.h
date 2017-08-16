@@ -150,7 +150,7 @@
 #define X86_FEATURE_SSE4A	(6*32+ 6) /* SSE-4A */
 #define X86_FEATURE_MISALIGNSSE (6*32+ 7) /* Misaligned SSE mode */
 #define X86_FEATURE_3DNOWPREFETCH (6*32+ 8) /* 3DNow prefetch instructions */
-#define X86_FEATURE_OSVW	(6*32+ 9) /* OS Visible Workaround */
+#define X86_FEATURE_OSVW	(6*32+ 9)
 #define X86_FEATURE_IBS		(6*32+10) /* Instruction Based Sampling */
 #define X86_FEATURE_XOP		(6*32+11) /* extended AVX instructions */
 #define X86_FEATURE_SKINIT	(6*32+12) /* SKINIT/STGI instructions */

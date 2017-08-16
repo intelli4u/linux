@@ -78,7 +78,7 @@ static unsigned char	fec_mac_default[] = {
 #define	FEC_FLASHMAC	0xf0006000
 #elif defined(CONFIG_CANCam)
 #define	FEC_FLASHMAC	0xf0020000
-#elif defined (CONFIG_M5272C3)
+#elif defined(CONFIG_M5272C3)
 #define	FEC_FLASHMAC	(0xffe04000 + 4)
 #elif defined(CONFIG_MOD5272)
 #define FEC_FLASHMAC 	0xffc0406b
@@ -133,7 +133,7 @@ static unsigned char	fec_mac_default[] = {
  * account when setting it.
  */
 #if defined(CONFIG_M523x) || defined(CONFIG_M527x) || defined(CONFIG_M528x) || \
-    defined(CONFIG_M520x) || defined(CONFIG_M532x) || defined(CONFIG_ARCH_MXC)
+	defined(CONFIG_M520x) || defined(CONFIG_M532x) || defined(CONFIG_ARCH_MXC)
 #define	OPT_FRAME_SIZE	(PKT_MAXBUF_SIZE << 16)
 #else
 #define	OPT_FRAME_SIZE	0
@@ -1064,11 +1064,6 @@ static const struct net_device_ops fec_netdev_ops = {
 	.ndo_do_ioctl           = fec_enet_ioctl,
 };
 
- /*
-  * XXX:  We need to clean up on failure exits here.
-  *
-  * index is only used in legacy code
-  */
 static int fec_enet_init(struct net_device *dev, int index)
 {
 	struct fec_enet_private *fep = netdev_priv(dev);

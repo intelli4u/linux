@@ -61,7 +61,6 @@ static int rx_copybreak;
 static int options[MAX_UNITS] = {-1, -1, -1, -1, -1, -1, -1, -1};
 static int full_duplex[MAX_UNITS] = {-1, -1, -1, -1, -1, -1, -1, -1};
 
-/* Do ugly workaround for GX server chipset errata. */
 static int gx_fix;
 
 /* Operational parameters that are set at compile time. */

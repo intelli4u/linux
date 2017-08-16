@@ -1,4 +1,4 @@
-/* $Id: timer.c,v 1.3.6.1 2001/09/23 22:24:59 kai Exp $
+/* $Id: timer.c,v 1.3.6.1 2001/09/23 22:24:59 Exp $
  *
  * Copyright (C) 1996  SpellCaster Telecommunications Inc.
  *
@@ -120,4 +120,3 @@ void check_phystat(unsigned long data)
 	sendmessage(card, CEPID,ceReqTypePhy,ceReqClass2,
 		ceReqPhyStatus,0,0,NULL);
 }
-

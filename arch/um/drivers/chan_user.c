@@ -35,7 +35,6 @@ int generic_read(int fd, char *c_out, void *unused)
 	return -errno;
 }
 
-/* XXX Trivial wrapper around write */
 
 int generic_write(int fd, const char *buf, int n, void *unused)
 {

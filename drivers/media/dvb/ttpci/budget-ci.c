@@ -155,7 +155,6 @@ static void msp430_ir_interrupt(unsigned long data)
 		return;
 	budget_ci->ir.have_command = false;
 
-	/* FIXME: We should generate complete scancodes with device info */
 	if (budget_ci->ir.rc5_device != IR_DEVICE_ANY &&
 	    budget_ci->ir.rc5_device != (command & 0x1f))
 		return;

@@ -211,7 +211,7 @@ void __init sb1250_setup(void)
 	case K_SYS_REVISION_BCM1250_PASS2:
 		/* Pass 2 - easiest as default for now - so many numbers */
 #if !defined(CONFIG_SB1_PASS_2_WORKAROUNDS) || \
-    !defined(CONFIG_SB1_PASS_2_1_WORKAROUNDS)
+	!defined(CONFIG_SB1_PASS_2_1_WORKAROUNDS)
 		printk("@@@@ This is a BCM1250 A3-A10 board, and the "
 		            "kernel doesn't have the proper workarounds "
 		            "compiled in. @@@@\n");
@@ -230,8 +230,7 @@ void __init sb1250_setup(void)
 		            "compiled in. @@@@\n");
 		bad_config = 1;
 #endif
-#if defined(CONFIG_SB1_PASS_2_1_WORKAROUNDS) || \
-    !defined(CONFIG_CPU_HAS_PREFETCH)
+#if defined(CONFIG_SB1_PASS_2_1_WORKAROUNDS) || !defined(CONFIG_CPU_HAS_PREFETCH)
 		printk("@@@@ This is a BCM1250 B1/B2, but the kernel is "
 		            "conservatively configured for an 'A' stepping. "
 		            "@@@@\n");

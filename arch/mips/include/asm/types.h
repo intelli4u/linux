@@ -33,8 +33,8 @@ typedef unsigned short umode_t;
 #ifdef __KERNEL__
 #ifndef __ASSEMBLY__
 
-#if (defined(CONFIG_HIGHMEM) && defined(CONFIG_64BIT_PHYS_ADDR)) \
-    || defined(CONFIG_64BIT)
+#if (defined(CONFIG_HIGHMEM) && defined(CONFIG_64BIT_PHYS_ADDR)) || \
+	defined(CONFIG_64BIT)
 typedef u64 dma_addr_t;
 #else
 typedef u32 dma_addr_t;

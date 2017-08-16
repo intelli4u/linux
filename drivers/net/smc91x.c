@@ -1951,21 +1951,6 @@ static int __devinit smc_probe(struct net_device *dev, void __iomem *ioaddr,
 	/* now, reset the chip, and put it into a known state */
 	smc_reset(dev);
 
-	/*
-	 * If dev->irq is 0, then the device has to be banged on to see
-	 * what the IRQ is.
- 	 *
-	 * This banging doesn't always detect the IRQ, for unknown reasons.
-	 * a workaround is to reset the chip and try again.
-	 *
-	 * Interestingly, the DOS packet driver *SETS* the IRQ on the card to
-	 * be what is requested on the command line.   I don't do that, mostly
-	 * because the card that I have uses a non-standard method of accessing
-	 * the IRQs, and because this _should_ work in most configurations.
-	 *
-	 * Specifying an IRQ is done with the assumption that the user knows
-	 * what (s)he is doing.  No checking is done!!!!
-	 */
 	if (dev->irq < 1) {
 		int trials;
 

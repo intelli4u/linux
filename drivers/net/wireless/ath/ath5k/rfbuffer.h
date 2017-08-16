@@ -645,9 +645,6 @@ static const struct ath5k_rf_reg rf_regs_2413[] = {
 	{6, AR5K_RF_DB_2GHZ,		AR5K_RF2413_DB_2GHZ},
 };
 
-/* Default mode specific settings
- * XXX: a/aTurbo ???
- */
 static const struct ath5k_ini_rfbuffer rfb_2413[] = {
 	{ 1, 0x98d4,
 	/*     mode a/XR  mode aTurbo    mode b     mode g    mode gTurbo */
@@ -940,9 +937,6 @@ static const struct ath5k_rf_reg rf_regs_2425[] = {
 	{6, AR5K_RF_DB_2GHZ,		AR5K_RF2425_DB_2GHZ},
 };
 
-/* Default mode specific settings
- * XXX: a/aTurbo ?
- */
 static const struct ath5k_ini_rfbuffer rfb_2425[] = {
 	{ 1, 0x98d4,
 	/*     mode a/XR  mode aTurbo    mode b     mode g    mode gTurbo */
@@ -1099,11 +1093,6 @@ static const struct ath5k_ini_rfbuffer rfb_2317[] = {
 	    { 0x0000000e, 0x0000000e, 0x0000000e, 0x0000000e, 0x0000000e } },
 };
 
-/*
- * TODO: Handle the few differences with swan during
- * bank modification and get rid of this
- * XXX: a/aTurbo ?
- */
 static const struct ath5k_ini_rfbuffer rfb_2417[] = {
 	{ 1, 0x98d4,
 	/*     mode a/XR  mode aTurbo    mode b     mode g    mode gTurbo */

@@ -487,4 +487,3 @@ void ieee80211_crypto_ccmp_exit(void)
 {
 	ieee80211_unregister_crypto_ops(&ieee80211_crypt_ccmp);
 }
-

@@ -541,7 +541,7 @@ static struct snd_kcontrol_new maya_controls[] __devinitdata = {
 		.info = maya_pb_route_info,
 		.get = maya_pb_route_get,
 		.put = maya_pb_route_put,
-		.count = 4,  /* FIXME: do controls 5-9 have any meaning? */
+		.count = 4,
 	},
 };
 

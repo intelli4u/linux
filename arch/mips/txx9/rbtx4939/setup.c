@@ -39,8 +39,7 @@ static void __init rbtx4939_time_init(void)
 	tx4939_time_init(0);
 }
 
-#if defined(__BIG_ENDIAN) && \
-	(defined(CONFIG_SMC91X) || defined(CONFIG_SMC91X_MODULE))
+#if defined(__BIG_ENDIAN) && (defined(CONFIG_SMC91X) || defined(CONFIG_SMC91X_MODULE))
 #define HAVE_RBTX4939_IOSWAB
 #define IS_CE1_ADDR(addr) \
 	((((unsigned long)(addr) - IO_BASE) & 0xfff00000) == TXX9_CE(1))

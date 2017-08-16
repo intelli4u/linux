@@ -55,10 +55,6 @@ struct s5h1420_state {
 	fe_code_rate_t fec_inner;
 	u32 symbol_rate;
 
-	/* FIXME: ugly workaround for flexcop's incapable i2c-controller
-	 * it does not support repeated-start, workaround: write addr-1
-	 * and then read
-	 */
 	u8 shadow[256];
 };
 
@@ -227,13 +223,13 @@ static int s5h1420_recv_slave_reply (struct dvb_frontend* fe,
 
 	/* setup for DISEQC recieve */
 	val = s5h1420_readreg(state, 0x3b);
-	s5h1420_writereg(state, 0x3b, 0x82); /* FIXME: guess - do we need to set DIS_RDY(0x08) in receive mode? */
+	s5h1420_writereg(state, 0x3b, 0x82);
 	msleep(15);
 
 	/* wait for reception to complete */
 	timeout = jiffies + ((reply->timeout*HZ) / 1000);
 	while(time_before(jiffies, timeout)) {
-		if (!(s5h1420_readreg(state, 0x3b) & 0x80)) /* FIXME: do we test DIS_RDY(0x08) or RCV_EN(0x80)? */
+		if (!(s5h1420_readreg(state, 0x3b) & 0x80))
 			break;
 
 		msleep(5);
@@ -243,8 +239,6 @@ static int s5h1420_recv_slave_reply (struct dvb_frontend* fe,
 		goto exit;
 	}
 
-	/* check error flag - FIXME: not sure what this does - docs do not describe
-	 * beyond "error flag for diseqc receive data :( */
 	if (s5h1420_readreg(state, 0x49)) {
 		result = -EIO;
 		goto exit;

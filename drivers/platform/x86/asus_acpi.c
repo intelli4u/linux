@@ -602,7 +602,6 @@ static int parse_arg(const char __user *buf, unsigned long count, int *val)
 	return count;
 }
 
-/* FIXME: kill extraneous args so it can be called independently */
 static int
 write_led(const char __user *buffer, unsigned long count,
 	  char *ledname, int ledmask, int invert)

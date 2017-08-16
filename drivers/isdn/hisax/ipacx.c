@@ -911,4 +911,3 @@ init_ipacx(struct IsdnCardState *cs, int part)
 }
 
 //----------------- end of file -----------------------
-

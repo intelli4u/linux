@@ -195,5 +195,3 @@ DWORD CRCdwGetCrc32Ex(PBYTE pbyData, unsigned int cbByte, DWORD dwPreCRC)
 {
     return CRCdwCrc32(pbyData, cbByte, dwPreCRC);
 }
-
-

@@ -2213,4 +2213,3 @@ Isdnl2_cleanup(void)
 	TEIFree();
 	mISDN_FsmFree(&l2fsm);
 }
-

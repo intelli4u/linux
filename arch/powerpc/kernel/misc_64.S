@@ -372,11 +372,6 @@ _GLOBAL(scom970_read)
 	mfspr	r0,SPRN_SCOMC
 	isync
 
-	/* XXX:	fixup result on some buggy 970's (ouch ! we lost a bit, bah
-	 * that's the best we can do). Not implemented yet as we don't use
-	 * the scom on any of the bogus CPUs yet, but may have to be done
-	 * ultimately
-	 */
 
 	/* restore interrupts */
 	mtmsrd	r4,1

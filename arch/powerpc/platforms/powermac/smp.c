@@ -745,7 +745,6 @@ static void __init smp_core99_setup(int ncpus)
 	{
 		int i;
 
-		/* XXX should get this from reg properties */
 		for (i = 1; i < ncpus; ++i)
 			set_hard_smp_processor_id(i, i);
 	}
@@ -817,11 +816,6 @@ static void __devinit smp_core99_kick_cpu(int nr)
 	/* Put some life in our friend */
 	pmac_call_feature(PMAC_FTR_RESET_CPU, NULL, nr, 0);
 
-	/* FIXME: We wait a bit for the CPU to take the exception, I should
-	 * instead wait for the entry code to set something for me. Well,
-	 * ideally, all that crap will be done in prom.c and the CPU left
-	 * in a RAM-based wait loop like CHRP.
-	 */
 	mdelay(1);
 
 	/* Restore our exception vector */
@@ -871,7 +865,6 @@ int smp_core99_cpu_disable(void)
 {
 	set_cpu_online(smp_processor_id(), false);
 
-	/* XXX reset cpu affinity here */
 	mpic_cpu_set_priority(0xf);
 	asm volatile("mtdec %0" : : "r" (0x7fffffff));
 	mb();
@@ -958,4 +951,3 @@ void __init pmac_setup_smp(void)
 	}
 #endif /* CONFIG_PPC32 */
 }
-

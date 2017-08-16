@@ -634,17 +634,6 @@ static int ntfs_write_block(struct page *page, struct writeback_control *wbc)
 		bool is_retry = false;
 
 		if (unlikely(block >= dblock)) {
-			/*
-			 * Mapped buffers outside i_size will occur, because
-			 * this page can be outside i_size when there is a
-			 * truncate in progress. The contents of such buffers
-			 * were zeroed by ntfs_writepage().
-			 *
-			 * FIXME: What about the small race window where
-			 * ntfs_writepage() has not done any clearing because
-			 * the page was within i_size but before we get here,
-			 * vmtruncate() modifies i_size?
-			 */
 			clear_buffer_dirty(bh);
 			set_buffer_uptodate(bh);
 			continue;
@@ -679,15 +668,6 @@ static int ntfs_write_block(struct page *page, struct writeback_control *wbc)
 				// We don't need to wait on the writes.
 				// Update iblock.
 			}
-			/*
-			 * The current page straddles initialized size. Zero
-			 * all non-uptodate buffers and set them uptodate (and
-			 * dirty?). Note, there aren't any non-uptodate buffers
-			 * if the page is uptodate.
-			 * FIXME: For an uptodate page, the buffers may need to
-			 * be written out because they were not initialized on
-			 * disk before.
-			 */
 			if (!PageUptodate(page)) {
 				// TODO:
 				// Zero any non-uptodate buffers up to i_size.
@@ -697,7 +677,6 @@ static int ntfs_write_block(struct page *page, struct writeback_control *wbc)
 			// Update initialized size in the attribute and in the
 			// inode (up to i_size).
 			// Update iblock.
-			// FIXME: This is inefficient. Try to batch the two
 			// size changes to happen in one go.
 			ntfs_error(vol->sb, "Writing beyond initialized size "
 					"is not supported yet. Sorry.");

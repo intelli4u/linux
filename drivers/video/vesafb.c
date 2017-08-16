@@ -407,8 +407,6 @@ static int __init vesafb_probe(struct platform_device *dev)
 	vesafb_fix.ypanstep  = ypan     ? 1 : 0;
 	vesafb_fix.ywrapstep = (ypan>1) ? 1 : 0;
 
-	/* request failure does not faze us, as vgacon probably has this
-	 * region already (FIXME) */
 	request_region(0x3c0, 32, "vesafb");
 
 #ifdef CONFIG_MTRR

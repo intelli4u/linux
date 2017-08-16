@@ -64,7 +64,6 @@ static void snd_virmidi_init_event(struct snd_virmidi *vmidi,
 		ev->dest.client = SNDRV_SEQ_ADDRESS_SUBSCRIBERS;
 		break;
 	case SNDRV_VIRMIDI_SEQ_ATTACH:
-		/* FIXME: source and destination are same - not good.. */
 		ev->dest.client = vmidi->client;
 		ev->dest.port = vmidi->port;
 		break;
@@ -108,15 +107,6 @@ static int snd_virmidi_dev_receive_event(struct snd_virmidi_dev *rdev,
  * handler of a remote port which is attached to the virmidi via
  * SNDRV_VIRMIDI_SEQ_ATTACH.
  */
-#if 0
-int snd_virmidi_receive(struct snd_rawmidi *rmidi, struct snd_seq_event *ev)
-{
-	struct snd_virmidi_dev *rdev;
-
-	rdev = rmidi->private_data;
-	return snd_virmidi_dev_receive_event(rdev, ev);
-}
-#endif  /*  0  */
 
 /*
  * event handler of virmidi port

@@ -533,36 +533,5 @@ SetPwrLevel (comet_t * comet)
 **                backplane side.
 ** Returns:     Nothing
 */
-#if 0
-STATIC void
-SetCometOps (comet_t * comet)
-{
-    volatile u_int8_t rd_value;
-
-    if (comet == mConfig.C4Func1Base + (COMET0_OFFSET >> 2))
-    {
-        rd_value = (u_int8_t) pci_read_32 ((u_int32_t *) &comet->brif_cfg);     /* read the BRIF
-                                                                                 * Configuration */
-        rd_value &= ~0x20;
-        pci_write_32 ((u_int32_t *) &comet->brif_cfg, (u_int32_t) rd_value);
-
-        rd_value = (u_int8_t) pci_read_32 ((u_int32_t *) &comet->brif_fpcfg);   /* read the BRIF Frame
-                                                                                 * Pulse Configuration */
-        rd_value &= ~0x20;
-        pci_write_32 ((u_int32_t *) &comet->brif_fpcfg, (u_int8_t) rd_value);
-    } else
-    {
-        rd_value = (u_int8_t) pci_read_32 ((u_int32_t *) &comet->brif_cfg);     /* read the BRIF
-                                                                                 * Configuration */
-        rd_value |= 0x20;
-        pci_write_32 ((u_int32_t *) &comet->brif_cfg, (u_int32_t) rd_value);
-
-        rd_value = (u_int8_t) pci_read_32 ((u_int32_t *) &comet->brif_fpcfg);   /* read the BRIF Frame
-                                                                                 * Pulse Configuration */
-        rd_value |= 0x20;
-        pci_write_32 ((u_int32_t *) &comet->brif_fpcfg, (u_int8_t) rd_value);
-    }
-}
-#endif
 
 /***  End-of-File  ***/

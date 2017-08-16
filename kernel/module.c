@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
    Copyright (C) 2002 Richard Henderson
    Copyright (C) 2001 Rusty Russell, 2002, 2010 Rusty Russell IBM.
@@ -59,11 +60,7 @@
 #define CREATE_TRACE_POINTS
 #include <trace/events/module.h>
 
-#if 0
-#define DEBUGP printk
-#else
 #define DEBUGP(fmt , a...)
-#endif
 
 #ifndef ARCH_SHF_SMALL
 #define ARCH_SHF_SMALL 0
@@ -757,8 +754,6 @@ SYSCALL_DEFINE2(delete_module, const char __user *, name_user,
 
 	/* Doing init or already dying? */
 	if (mod->state != MODULE_STATE_LIVE) {
-		/* FIXME: if (force), slam module count and wake up
-                   waiter --RR */
 		DEBUGP("%s already dying\n", mod->name);
 		ret = -EBUSY;
 		goto out;
@@ -1805,12 +1800,14 @@ static void set_license(struct module *mod, const char *license)
 	if (!license)
 		license = "unspecified";
 
+#ifndef	CONFIG_LOCKDEP
 	if (!license_is_gpl_compatible(license)) {
 		if (!test_taint(TAINT_PROPRIETARY_MODULE))
 			printk(KERN_WARNING "%s: module license '%s' taints "
 				"kernel.\n", mod->name, license);
 		add_taint_module(mod, TAINT_PROPRIETARY_MODULE);
 	}
+#endif
 }
 
 /* Parse tag=value strings from .modinfo section */
@@ -3189,6 +3186,18 @@ void print_modules(void)
 {
 	struct module *mod;
 	char buf[8];
+
+	/* Show each module name and core base address for
+	 * GDB source code trace dump
+	 */
+	preempt_disable();
+	list_for_each_entry_rcu(mod, &modules, list) {
+		printk("module:  %s\t %p\t %u\n",
+			mod->name,
+			mod->module_core,
+			mod->init_size + mod->core_size);
+	}
+	preempt_enable();
 
 	printk(KERN_DEFAULT "Modules linked in:");
 	/* Most callers should already have preempt disabled, but make sure */

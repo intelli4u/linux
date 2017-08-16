@@ -269,10 +269,6 @@ void __pte_free_tlb(struct mmu_gather *tlb, struct page *pte,
 
 #ifndef __tilegx__
 
-/*
- * FIXME: needs to be atomic vs hypervisor writes.  For now we make the
- * window of vulnerability a bit smaller by doing an unlocked 8-bit update.
- */
 int ptep_test_and_clear_young(struct vm_area_struct *vma,
 			      unsigned long addr, pte_t *ptep)
 {
@@ -493,36 +489,7 @@ void iounmap(volatile void __iomem *addr_in)
 {
 	volatile void __iomem *addr = (volatile void __iomem *)
 		(PAGE_MASK & (unsigned long __force)addr_in);
-#if 1
 	vunmap((void * __force)addr);
-#else
-	/* x86 uses this complicated flow instead of vunmap().  Is
-	 * there any particular reason we should do the same? */
-	struct vm_struct *p, *o;
-
-	/* Use the vm area unlocked, assuming the caller
-	   ensures there isn't another iounmap for the same address
-	   in parallel. Reuse of the virtual address is prevented by
-	   leaving it in the global lists until we're done with it.
-	   cpa takes care of the direct mappings. */
-	read_lock(&vmlist_lock);
-	for (p = vmlist; p; p = p->next) {
-		if (p->addr == addr)
-			break;
-	}
-	read_unlock(&vmlist_lock);
-
-	if (!p) {
-		pr_err("iounmap: bad address %p\n", addr);
-		dump_stack();
-		return;
-	}
-
-	/* Finally remove it */
-	o = remove_vm_area((void *)addr);
-	BUG_ON(p != o || o == NULL);
-	kfree(p);
-#endif
 }
 EXPORT_SYMBOL(iounmap);
 

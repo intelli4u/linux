@@ -825,7 +825,6 @@ static int ppc440speB_pciex_init_port_hw(struct ppc4xx_pciex_port *port)
 
 static int ppc440speA_pciex_init_utl(struct ppc4xx_pciex_port *port)
 {
-	/* XXX Check what that value means... I hate magic */
 	dcr_write(port->dcrs, DCRO_PEGPL_SPECIAL, 0x68782800);
 
 	/*
@@ -925,7 +924,6 @@ static int ppc460ex_pciex_init_port_hw(struct ppc4xx_pciex_port *port)
 	       (PESDRx_RCSSET_RSTGU | PESDRx_RCSSET_RSTPYN));
 
 	/* Poll for PHY reset */
-	/* XXX FIXME add timeout */
 	switch (port->index) {
 	case 0:
 		while (!(mfdcri(SDR0, PESDR0_460EX_RSTSTA) & 0x1))
@@ -1114,7 +1112,6 @@ static void ppc405ex_pcie_phy_reset(struct ppc4xx_pciex_port *port)
 		mtdcri(SDR0, port->sdr_base + PESDRn_RCSSET, 0x01101000);
 
 	/* poll for phy !reset */
-	/* XXX FIXME add timeout */
 	while (!(mfdcri(SDR0, port->sdr_base + PESDRn_405EX_PHYSTA) & 0x00001000))
 		;
 
@@ -1242,7 +1239,6 @@ static void __init ppc4xx_pciex_port_init_mapping(struct ppc4xx_pciex_port *port
 	dcr_write(port->dcrs, DCRO_PEGPL_CFGBAL,
 		  RES_TO_U32_LOW(port->cfg_space.start));
 
-	/* XXX FIXME: Use size from reg property. For now, map 512M */
 	dcr_write(port->dcrs, DCRO_PEGPL_CFGMSK, 0xe0000001);
 
 	/* We map UTL registers based on the reg property */
@@ -1251,7 +1247,6 @@ static void __init ppc4xx_pciex_port_init_mapping(struct ppc4xx_pciex_port *port
 	dcr_write(port->dcrs, DCRO_PEGPL_REGBAL,
 		  RES_TO_U32_LOW(port->utl_regs.start));
 
-	/* XXX FIXME: Use size from reg property */
 	dcr_write(port->dcrs, DCRO_PEGPL_REGMSK, 0x00007001);
 
 	/* Disable all other outbound windows */
@@ -1974,4 +1969,3 @@ static int __init ppc4xx_pci_find_bridges(void)
 	return 0;
 }
 arch_initcall(ppc4xx_pci_find_bridges);
-

@@ -76,8 +76,7 @@ static DEFINE_SPINLOCK(idr_lock);
  * we assume that the new SIGEV_THREAD_ID shares no bits with the other
  * SIGEV values.  Here we put out an error if this assumption fails.
  */
-#if SIGEV_THREAD_ID != (SIGEV_THREAD_ID & \
-                       ~(SIGEV_SIGNAL | SIGEV_NONE | SIGEV_THREAD))
+#if SIGEV_THREAD_ID != (SIGEV_THREAD_ID & ~(SIGEV_SIGNAL | SIGEV_NONE | SIGEV_THREAD))
 #error "SIGEV_THREAD_ID must not share bit with other SIGEV values!"
 #endif
 
@@ -363,17 +362,6 @@ int posix_timer_event(struct k_itimer *timr, int si_private)
 {
 	struct task_struct *task;
 	int shared, ret = -1;
-	/*
-	 * FIXME: if ->sigq is queued we can race with
-	 * dequeue_signal()->do_schedule_next_timer().
-	 *
-	 * If dequeue_signal() sees the "right" value of
-	 * si_sys_private it calls do_schedule_next_timer().
-	 * We re-queue ->sigq and drop ->it_lock().
-	 * do_schedule_next_timer() locks the timer
-	 * and re-schedules it while ->sigq is pending.
-	 * Not really bad, but not that we want.
-	 */
 	timr->sigq->info.si_sys_private = si_private;
 
 	rcu_read_lock();
@@ -417,28 +405,6 @@ static enum hrtimer_restart posix_timer_fn(struct hrtimer *timer)
 		if (timr->it.real.interval.tv64 != 0) {
 			ktime_t now = hrtimer_cb_get_time(timer);
 
-			/*
-			 * FIXME: What we really want, is to stop this
-			 * timer completely and restart it in case the
-			 * SIG_IGN is removed. This is a non trivial
-			 * change which involves sighand locking
-			 * (sigh !), which we don't want to do late in
-			 * the release cycle.
-			 *
-			 * For now we just let timers with an interval
-			 * less than a jiffie expire every jiffie to
-			 * avoid softirq starvation in case of SIG_IGN
-			 * and a very small interval, which would put
-			 * the timer right back on the softirq pending
-			 * list. By moving now ahead of time we trick
-			 * hrtimer_forward() to expire the timer
-			 * later, while we still maintain the overrun
-			 * accuracy, but have some inconsistency in
-			 * the timer_gettime() case. This is at least
-			 * better than a starved softirq. A more
-			 * complex fix which solves also another related
-			 * inconsistency is already in the pipeline.
-			 */
 #ifdef CONFIG_HIGH_RES_TIMERS
 			{
 				ktime_t kj = ktime_set(0, NSEC_PER_SEC / HZ);

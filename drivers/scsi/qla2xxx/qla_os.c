@@ -1127,14 +1127,6 @@ qla2xxx_eh_host_reset(struct scsi_cmnd *cmd)
 	if (qla2x00_wait_for_reset_ready(vha) != QLA_SUCCESS)
 		goto eh_host_reset_lock;
 
-	/*
-	 * Fixme-may be dpc thread is active and processing
-	 * loop_resync,so wait a while for it to
-	 * be completed and then issue big hammer.Otherwise
-	 * it may cause I/O failure as big hammer marks the
-	 * devices as lost kicking of the port_down_timer
-	 * while dpc is stuck for the mailbox to complete.
-	 */
 	qla2x00_wait_for_loop_ready(vha);
 	if (vha != base_vha) {
 		if (qla2x00_vp_abort_isp(vha))
@@ -3847,10 +3839,6 @@ qla2xxx_pci_slot_reset(struct pci_dev *pdev)
 
 	DEBUG17(qla_printk(KERN_WARNING, ha, "slot_reset\n"));
 
-	/* Workaround: qla2xxx driver which access hardware earlier
-	 * needs error state to be pci_channel_io_online.
-	 * Otherwise mailbox command timesout.
-	 */
 	pdev->error_state = pci_channel_io_normal;
 
 	pci_restore_state(pdev);

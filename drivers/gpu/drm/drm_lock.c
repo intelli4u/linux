@@ -176,7 +176,6 @@ int drm_unlock(struct drm_device *dev, void *data, struct drm_file *file_priv)
 		dev->driver->kernel_context_switch_unlock(dev);
 	else {
 		if (drm_lock_free(&master->lock, lock->context)) {
-			/* FIXME: Should really bail out here. */
 		}
 	}
 

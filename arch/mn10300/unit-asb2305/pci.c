@@ -68,12 +68,6 @@ static struct resource pci_iomem_resource = {
 
 static inline int __query(const struct pci_bus *bus, unsigned int devfn)
 {
-#if 0
-	return bus->number == 0 && (devfn == PCI_DEVFN(0, 0));
-	return bus->number == 1;
-	return bus->number == 0 &&
-		(devfn == PCI_DEVFN(2, 0) || devfn == PCI_DEVFN(3, 0));
-#endif
 	return 1;
 }
 
@@ -93,10 +87,6 @@ void pcibios_resource_to_bus(struct pci_dev *dev, struct pci_bus_region *region,
 		region->end   = (res->end   & 0x03ffffff) | MEM_PAGING_REG;
 	}
 
-#if 0
-	printk(KERN_DEBUG "RES->BUS: %lx-%lx => %lx-%lx\n",
-	       res->start, res->end, region->start, region->end);
-#endif
 }
 EXPORT_SYMBOL(pcibios_resource_to_bus);
 
@@ -116,10 +106,6 @@ void pcibios_bus_to_resource(struct pci_dev *dev, struct resource *res,
 		res->end   = (region->end   & 0x03ffffff) | 0xb8000000;
 	}
 
-#if 0
-	printk(KERN_INFO "BUS->RES: %lx-%lx => %lx-%lx\n",
-	       region->start, region->end, res->start, res->end);
-#endif
 }
 EXPORT_SYMBOL(pcibios_bus_to_resource);
 

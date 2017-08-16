@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
  *		operating system.  INET is implemented using the  BSD Socket
@@ -157,9 +158,9 @@ static inline bool dev_xmit_complete(int rc)
 #endif
 
 #if !defined(CONFIG_NET_IPIP) && !defined(CONFIG_NET_IPIP_MODULE) && \
-    !defined(CONFIG_NET_IPGRE) &&  !defined(CONFIG_NET_IPGRE_MODULE) && \
-    !defined(CONFIG_IPV6_SIT) && !defined(CONFIG_IPV6_SIT_MODULE) && \
-    !defined(CONFIG_IPV6_TUNNEL) && !defined(CONFIG_IPV6_TUNNEL_MODULE)
+	!defined(CONFIG_NET_IPGRE) &&  !defined(CONFIG_NET_IPGRE_MODULE) && \
+	!defined(CONFIG_IPV6_SIT) && !defined(CONFIG_IPV6_SIT_MODULE) && \
+	!defined(CONFIG_IPV6_TUNNEL) && !defined(CONFIG_IPV6_TUNNEL_MODULE)
 #define MAX_HEADER LL_MAX_HEADER
 #else
 #define MAX_HEADER (LL_MAX_HEADER + 48)
@@ -775,15 +776,6 @@ struct net_device_ops {
 #endif
 };
 
-/*
- *	The DEVICE structure.
- *	Actually, this whole structure is a big mistake.  It mixes I/O
- *	data with strictly "high-level" data, and it has to know about
- *	almost every data structure used in the INET module.
- *
- *	FIXME: cleanup struct net_device such that network protocol info
- *	moves out.
- */
 
 struct net_device {
 
@@ -801,10 +793,6 @@ struct net_device {
 	/* snmp alias */
 	char 			*ifalias;
 
-	/*
-	 *	I/O specific fields
-	 *	FIXME: Merge these and struct ifmap into one
-	 */
 	unsigned long		mem_end;	/* shared mem end	*/
 	unsigned long		mem_start;	/* shared mem start	*/
 	unsigned long		base_addr;	/* device I/O address	*/
@@ -1075,6 +1063,10 @@ struct net_device {
 
 	/* phy device may attach itself for hardware timestamping */
 	struct phy_device *phydev;
+
+#ifdef BCMFA
+	bool			fa_on;
+#endif
 };
 #define to_net_dev(d) container_of(d, struct net_device, dev)
 
@@ -1690,6 +1682,9 @@ extern int		netif_rx(struct sk_buff *skb);
 extern int		netif_rx_ni(struct sk_buff *skb);
 #define HAVE_NETIF_RECEIVE_SKB 1
 extern int		netif_receive_skb(struct sk_buff *skb);
+#ifdef CONFIG_INET_GRO
+extern void		generic_napi_gro_flush(struct napi_struct *napi);
+#endif /* CONFIG_INET_GRO */
 extern gro_result_t	dev_gro_receive(struct napi_struct *napi,
 					struct sk_buff *skb);
 extern gro_result_t	napi_skb_finish(gro_result_t ret, struct sk_buff *skb);

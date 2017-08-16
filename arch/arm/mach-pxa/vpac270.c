@@ -428,8 +428,7 @@ static inline void vpac270_eth_init(void) {}
 /******************************************************************************
  * Audio and Touchscreen
  ******************************************************************************/
-#if	defined(CONFIG_TOUCHSCREEN_UCB1400) || \
-	defined(CONFIG_TOUCHSCREEN_UCB1400_MODULE)
+#if	defined(CONFIG_TOUCHSCREEN_UCB1400) || defined(CONFIG_TOUCHSCREEN_UCB1400_MODULE)
 static pxa2xx_audio_ops_t vpac270_ac97_pdata = {
 	.reset_gpio	= 95,
 };
@@ -639,8 +638,7 @@ static inline void vpac270_ide_init(void) {}
 /******************************************************************************
  * Core power regulator
  ******************************************************************************/
-#if defined(CONFIG_REGULATOR_MAX1586) || \
-    defined(CONFIG_REGULATOR_MAX1586_MODULE)
+#if defined(CONFIG_REGULATOR_MAX1586) || defined(CONFIG_REGULATOR_MAX1586_MODULE)
 static struct regulator_consumer_supply vpac270_max1587a_consumers[] = {
 	{
 		.supply	= "vcc_core",

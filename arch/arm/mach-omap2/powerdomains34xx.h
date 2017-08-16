@@ -144,7 +144,6 @@ static struct powerdomain sgx_pwrdm = {
 	.name		  = "sgx_pwrdm",
 	.prcm_offs	  = OMAP3430ES2_SGX_MOD,
 	.omap_chip	  = OMAP_CHIP_INIT(CHIP_GE_OMAP3430ES2),
-	/* XXX This is accurate for 3430 SGX, but what about GFX? */
 	.pwrsts		  = PWRSTS_OFF_ON,
 	.pwrsts_logic_ret = PWRDM_POWER_RET,
 	.banks		  = 1,

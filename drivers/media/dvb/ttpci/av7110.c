@@ -448,21 +448,6 @@ static void debiirq(unsigned long cookie)
 
 	case DATA_COMMON_INTERFACE:
 		CI_handle(av7110, (u8 *)av7110->debi_virt, av7110->debilen);
-#if 0
-	{
-		int i;
-
-		printk("av7110%d: ", av7110->num);
-		printk("%02x ", *(u8 *)av7110->debi_virt);
-		printk("%02x ", *(1+(u8 *)av7110->debi_virt));
-		for (i = 2; i < av7110->debilen; i++)
-			printk("%02x ", (*(i+(unsigned char *)av7110->debi_virt)));
-		for (i = 2; i < av7110->debilen; i++)
-			printk("%c", chtrans(*(i+(unsigned char *)av7110->debi_virt)));
-
-		printk("\n");
-	}
-#endif
 		xfer = RX_BUFF;
 		break;
 
@@ -1282,12 +1267,6 @@ static void vpeirq(unsigned long cookie)
 	/* Ensure streamed PCI data is synced to CPU */
 	pci_dma_sync_sg_for_cpu(budget->dev->pci, budget->pt.slist, budget->pt.nents, PCI_DMA_FROMDEVICE);
 
-#if 0
-	/* track rps1 activity */
-	printk("vpeirq: %02x Event Counter 1 0x%04x\n",
-	       mem[olddma],
-	       saa7146_read(budget->dev, EC1R) & 0x3fff);
-#endif
 
 	if (newdma > olddma)
 		/* no wraparound, dump olddma..newdma */
@@ -2259,7 +2238,6 @@ static int frontend_init(struct av7110 *av7110)
 	}
 
 	if (!av7110->fe) {
-		/* FIXME: propagate the failure code from the lower layers */
 		ret = -ENOMEM;
 		printk("dvb-ttpci: A frontend driver was not found for device [%04x:%04x] subsystem [%04x:%04x]\n",
 		       av7110->dev->pci->vendor,

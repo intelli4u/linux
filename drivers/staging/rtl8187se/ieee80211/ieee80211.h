@@ -162,31 +162,6 @@ do { if (ieee80211_debug_level & (level)) \
 #define IEEE80211_DEBUG(level, fmt, args...) do {} while (0)
 #endif	/* CONFIG_IEEE80211_DEBUG */
 
-/*
- * To use the debug system;
- *
- * If you are defining a new debug classification, simply add it to the #define
- * list here in the form of:
- *
- * #define IEEE80211_DL_xxxx VALUE
- *
- * shifting value to the left one bit from the previous entry.  xxxx should be
- * the name of the classification (for example, WEP)
- *
- * You then need to either add a IEEE80211_xxxx_DEBUG() macro definition for your
- * classification, or use IEEE80211_DEBUG(IEEE80211_DL_xxxx, ...) whenever you want
- * to send output to that classification.
- *
- * To add your debug level to the list of levels seen when you perform
- *
- * % cat /proc/net/ipw/debug_level
- *
- * you simply need to add your entry to the ipw_debug_levels array.
- *
- * If you do not see debug_level in /proc/net/ipw then you do not have
- * CONFIG_IEEE80211_DEBUG defined in your kernel configuration
- *
- */
 
 #define IEEE80211_DL_INFO          (1<<0)
 #define IEEE80211_DL_WX            (1<<1)
@@ -973,7 +948,6 @@ struct ieee80211_device {
 
 	int rate;       /* current rate */
 	int basic_rate;
-	//FIXME: pleace callback, see if redundant with softmac_features
 	short active_scan;
 
 	/* this contains flags for selectively enable softmac support */

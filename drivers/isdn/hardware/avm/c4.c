@@ -1,4 +1,4 @@
-/* $Id: c4.c,v 1.1.2.2 2004/01/16 21:09:27 keil Exp $
+/* $Id: c4.c,v 1.1.2.2 2004/01/16 21:09:27 Exp $
  * 
  * Module for AVM C4 & C2 card.
  * 

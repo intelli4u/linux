@@ -165,10 +165,6 @@ int snd_cs8427_create(struct snd_i2c_bus *bus,
 	  /* CS8427_REG_DATAFLOW: output drivers normal operation, Tx<=serial,
 	     Rx=>serial */
 	  CS8427_TXDSERIAL | CS8427_SPDAES3RECEIVER,
-	  /* CS8427_REG_CLOCKSOURCE: Run off, CMCK=256*Fs,
-	     output time base = OMCK, input time base = recovered input clock,
-	     recovered input clock source is ILRCK changed to AES3INPUT
-	     (workaround, see snd_cs8427_reset) */
 	  CS8427_RXDILRCK,
 	  /* CS8427_REG_SERIALINPUT: Serial audio input port data format = I2S,
 	     24-bit, 64*Fsi */
@@ -268,17 +264,6 @@ int snd_cs8427_create(struct snd_i2c_bus *bus,
 	chip->reset_timeout = reset_timeout;
 	snd_cs8427_reset(device);
 
-#if 0	// it's nice for read tests
-	{
-	char buf[128];
-	int xx;
-	buf[0] = 0x81;
-	snd_i2c_sendbytes(device, buf, 1);
-	snd_i2c_readbytes(device, buf, 127);
-	for (xx = 0; xx < 127; xx++)
-		printk(KERN_DEBUG "reg[0x%x] = 0x%x\n", xx+1, buf[xx]);
-	}
-#endif
 	
 	if (r_cs8427)
 		*r_cs8427 = device;
@@ -292,11 +277,6 @@ int snd_cs8427_create(struct snd_i2c_bus *bus,
 
 EXPORT_SYMBOL(snd_cs8427_create);
 
-/*
- * Reset the chip using run bit, also lock PLL using ILRCK and
- * put back AES3INPUT. This workaround is described in latest
- * CS8427 datasheet, otherwise TXDSERIAL will not work.
- */
 static void snd_cs8427_reset(struct snd_i2c_device *cs8427)
 {
 	struct cs8427 *chip;

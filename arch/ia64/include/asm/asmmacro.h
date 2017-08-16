@@ -77,16 +77,11 @@ name:
 [1:](pr)movl reg = obj;				\
 	.xdata4 ".data..patch.vtop", 1b-.
 
-/*
- * For now, we always put in the McKinley E9 workaround.  On CPUs that don't need it,
- * we'll patch out the work-around bundles with NOPs, so their impact is minimal.
- */
 #define DO_MCKINLEY_E9_WORKAROUND
 
 #ifdef DO_MCKINLEY_E9_WORKAROUND
 	.section ".data..patch.mckinley_e9", "a"
 	.previous
-/* workaround for Itanium 2 Errata 9: */
 # define FSYS_RETURN					\
 	.xdata4 ".data..patch.mckinley_e9", 1f-.;	\
 1:{ .mib;						\

@@ -84,40 +84,6 @@ void omap_pm_if_exit(void);
  */
 
 
-/**
- * omap_pm_set_max_mpu_wakeup_lat - set the maximum MPU wakeup latency
- * @dev: struct device * requesting the constraint
- * @t: maximum MPU wakeup latency in microseconds
- *
- * Request that the maximum interrupt latency for the MPU to be no
- * greater than @t microseconds. "Interrupt latency" in this case is
- * defined as the elapsed time from the occurrence of a hardware or
- * timer interrupt to the time when the device driver's interrupt
- * service routine has been entered by the MPU.
- *
- * It is intended that underlying PM code will use this information to
- * determine what power state to put the MPU powerdomain into, and
- * possibly the CORE powerdomain as well, since interrupt handling
- * code currently runs from SDRAM.  Advanced PM or board*.c code may
- * also configure interrupt controller priorities, OCP bus priorities,
- * CPU speed(s), etc.
- *
- * This function will not affect device wakeup latency, e.g., time
- * elapsed from when a device driver enables a hardware device with
- * clk_enable(), to when the device is ready for register access or
- * other use.  To control this device wakeup latency, use
- * omap_pm_set_max_dev_wakeup_lat()
- *
- * Multiple calls to omap_pm_set_max_mpu_wakeup_lat() will replace the
- * previous t value.  To remove the latency target for the MPU, call
- * with t = -1.
- *
- * XXX This constraint will be deprecated soon in favor of the more
- * general omap_pm_set_max_dev_wakeup_lat()
- *
- * Returns -EINVAL for an invalid argument, -ERANGE if the constraint
- * is not satisfiable, or 0 upon success.
- */
 int omap_pm_set_max_mpu_wakeup_lat(struct device *dev, long t);
 
 

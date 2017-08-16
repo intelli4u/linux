@@ -298,12 +298,6 @@ static int report_trace(struct stackframe *frame, void *d)
 	return *depth == 0;
 }
 
-/*
- * The registers we're interested in are at the end of the variable
- * length saved register structure. The fp points at the end of this
- * structure so the address of this struct is:
- * (struct frame_tail *)(xxx->fp)-1
- */
 struct frame_tail {
 	struct frame_tail *fp;
 	unsigned long sp;

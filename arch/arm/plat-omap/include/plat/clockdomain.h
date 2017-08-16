@@ -61,19 +61,6 @@ struct clkdm_autodep {
 	const struct omap_chip_id omap_chip;
 };
 
-/**
- * struct clkdm_dep - encode dependencies between clockdomains
- * @clkdm_name: clockdomain name
- * @clkdm: pointer to the struct clockdomain of @clkdm_name
- * @omap_chip: OMAP chip types that this dependency is valid on
- * @wkdep_usecount: Number of wakeup dependencies causing this clkdm to wake
- * @sleepdep_usecount: Number of sleep deps that could prevent clkdm from idle
- *
- * Statically defined.  @clkdm is resolved from @clkdm_name at runtime and
- * should not be pre-initialized.
- *
- * XXX Should also include hardware (fixed) dependencies.
- */
 struct clkdm_dep {
 	const char *clkdm_name;
 	struct clockdomain *clkdm;

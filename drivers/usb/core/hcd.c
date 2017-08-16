@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  * (C) Copyright Linus Torvalds 1999
  * (C) Copyright Johannes Erdfelt 1999-2001
@@ -298,7 +299,7 @@ static const u8 ss_rh_config_descriptor[] = {
 	/* one configuration */
 	0x09,       /*  __u8  bLength; */
 	0x02,       /*  __u8  bDescriptorType; Configuration */
-	0x19, 0x00, /*  __le16 wTotalLength; FIXME */
+	0x19, 0x00,
 	0x01,       /*  __u8  bNumInterfaces; (1) */
 	0x01,       /*  __u8  bConfigurationValue; */
 	0x00,       /*  __u8  iConfiguration; */
@@ -329,10 +330,6 @@ static const u8 ss_rh_config_descriptor[] = {
 		     * see hub.c:hub_configure() for details. */
 	(USB_MAXCHILDREN + 1 + 7) / 8, 0x00,
 	0x0c        /*  __u8  ep_bInterval; (256ms -- usb 2.0 spec) */
-	/*
-	 * All 3.0 hubs should have an endpoint companion descriptor,
-	 * but we're ignoring that for now.  FIXME?
-	 */
 };
 
 /*-------------------------------------------------------------------------*/
@@ -801,7 +798,7 @@ static ssize_t usb_host_authorized_default_show(struct device *dev,
 	struct usb_bus *usb_bus = rh_usb_dev->bus;
 	struct usb_hcd *usb_hcd;
 
-	if (usb_bus == NULL)	/* FIXME: not sure if this case is possible */
+	if (usb_bus == NULL)
 		return -ENODEV;
 	usb_hcd = bus_to_hcd(usb_bus);
 	return snprintf(buf, PAGE_SIZE, "%u\n", usb_hcd->authorized_default);
@@ -817,7 +814,7 @@ static ssize_t usb_host_authorized_default_store(struct device *dev,
 	struct usb_bus *usb_bus = rh_usb_dev->bus;
 	struct usb_hcd *usb_hcd;
 
-	if (usb_bus == NULL)	/* FIXME: not sure if this case is possible */
+	if (usb_bus == NULL)
 		return -ENODEV;
 	usb_hcd = bus_to_hcd(usb_bus);
 	result = sscanf(buf, "%u\n", &val);
@@ -1027,7 +1024,6 @@ long usb_calc_bus_time (int speed, int is_input, int isoc, int bytecount)
 			return (9107L + BW_HOST_DELAY + tmp);
 		}
 	case USB_SPEED_HIGH:	/* ISOC or INTR */
-		// FIXME adjust for input vs output
 		if (isoc)
 			tmp = HS_NSECS_ISO (bytecount);
 		else

@@ -1257,8 +1257,6 @@ static int labpc_ai_cmd(struct comedi_device *dev, struct comedi_subdevice *s)
 	devpriv->command4_bits = 0;
 	if (cmd->convert_src != TRIG_EXT)
 		devpriv->command4_bits |= EXT_CONVERT_DISABLE_BIT;
-	/* XXX should discard first scan when using interval scanning
-	 * since manual says it is not synced with scan clock */
 	if (labpc_use_continuous_mode(cmd) == 0) {
 		devpriv->command4_bits |= INTERVAL_SCAN_EN_BIT;
 		if (cmd->scan_begin_src == TRIG_EXT)

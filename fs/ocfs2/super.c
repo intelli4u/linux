@@ -463,7 +463,6 @@ static int ocfs2_init_global_system_inodes(struct ocfs2_super *osb)
 			ocfs2_release_system_inodes(osb);
 			status = -EINVAL;
 			mlog_errno(status);
-			/* FIXME: Should ERROR_RO_FS */
 			mlog(ML_ERROR, "Unable to load system inode %d, "
 			     "possibly corrupt fs?", i);
 			goto bail;
@@ -2170,13 +2169,6 @@ static int ocfs2_initialize_super(struct super_block *sb,
 
 	get_random_bytes(&osb->s_next_generation, sizeof(u32));
 
-	/* FIXME
-	 * This should be done in ocfs2_journal_init(), but unknown
-	 * ordering issues will cause the filesystem to crash.
-	 * If anyone wants to figure out what part of the code
-	 * refers to osb->journal before ocfs2_journal_init() is run,
-	 * be my guest.
-	 */
 	/* initialize our journal structure */
 
 	journal = kzalloc(sizeof(struct ocfs2_journal), GFP_KERNEL);
@@ -2469,11 +2461,6 @@ static void ocfs2_delete_osb(struct ocfs2_super *osb)
 
 	kfree(osb->osb_orphan_wipes);
 	kfree(osb->slot_recovery_generations);
-	/* FIXME
-	 * This belongs in journal shutdown, but because we have to
-	 * allocate osb->journal at the start of ocfs2_initialize_osb(),
-	 * we free it here.
-	 */
 	kfree(osb->journal);
 	if (osb->local_alloc_copy)
 		kfree(osb->local_alloc_copy);

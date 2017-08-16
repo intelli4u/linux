@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  * Squashfs - a compressed read only filesystem for Linux
  *
@@ -55,7 +56,6 @@
 
 #include "squashfs_fs.h"
 #include "squashfs_fs_sb.h"
-#include "squashfs_fs_i.h"
 #include "squashfs.h"
 
 /*
@@ -105,7 +105,7 @@ struct squashfs_cache_entry *squashfs_cache_get(struct super_block *sb,
 			entry = &cache->entry[i];
 
 			/*
-			 * Initialise choosen cache entry, and fill it in from
+			 * Initialise chosen cache entry, and fill it in from
 			 * disk.
 			 */
 			cache->unused--;
@@ -287,7 +287,7 @@ cleanup:
 
 
 /*
- * Copy upto length bytes from cache entry to buffer starting at offset bytes
+ * Copy up to length bytes from cache entry to buffer starting at offset bytes
  * into the cache entry.  If there's not length bytes then copy the number of
  * bytes available.  In all cases return the number of bytes copied.
  */

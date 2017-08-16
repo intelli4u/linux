@@ -579,7 +579,6 @@ static s32 e1000_init_mac_params_ich8lan(struct e1000_adapter *adapter)
 		break;
 	}
 
-	/* Enable PCS Lock-loss workaround for ICH8 */
 	if (mac->type == e1000_ich8lan)
 		e1000e_set_kmrn_lock_loss_workaround_ich8lan(hw, true);
 
@@ -947,13 +946,6 @@ out:
 	return ret_val;
 }
 
-/**
- *  e1000_sw_lcd_config_ich8lan - SW-based LCD Configuration
- *  @hw:   pointer to the HW structure
- *
- *  SW should configure the LCD from the NVM extended configuration region
- *  as a workaround for certain parts.
- **/
 static s32 e1000_sw_lcd_config_ich8lan(struct e1000_hw *hw)
 {
 	struct e1000_phy_info *phy = &hw->phy;
@@ -1070,16 +1062,6 @@ out:
 	return ret_val;
 }
 
-/**
- *  e1000_k1_gig_workaround_hv - K1 Si workaround
- *  @hw:   pointer to the HW structure
- *  @link: link up bool flag
- *
- *  If K1 is enabled for 1Gbps, the MAC might stall when transitioning
- *  from a lower speed.  This workaround disables K1 whenever link is at 1Gig
- *  If link is down, the function will restore the default K1 setting located
- *  in the NVM.
- **/
 static s32 e1000_k1_gig_workaround_hv(struct e1000_hw *hw, bool link)
 {
 	s32 ret_val = 0;
@@ -1343,15 +1325,10 @@ static s32 e1000_hv_phy_workarounds_ich8lan(struct e1000_hw *hw)
 	if (ret_val)
 		goto out;
 
-	/*
-	 * Configure the K1 Si workaround during phy reset assuming there is
-	 * link so that it disables K1 if link is in 1Gbps.
-	 */
 	ret_val = e1000_k1_gig_workaround_hv(hw, true);
 	if (ret_val)
 		goto out;
 
-	/* Workaround for link disconnects on a busy hub in half duplex */
 	ret_val = hw->phy.ops.acquire(hw);
 	if (ret_val)
 		goto out;
@@ -1405,12 +1382,6 @@ static u32 e1000_calc_rx_da_crc(u8 mac[])
 	return ~crc;
 }
 
-/**
- *  e1000_lv_jumbo_workaround_ich8lan - required for jumbo frame operation
- *  with 82579 PHY
- *  @hw: pointer to the HW structure
- *  @enable: flag to enable/disable workaround when enabling/disabling jumbos
- **/
 s32 e1000_lv_jumbo_workaround_ich8lan(struct e1000_hw *hw, bool enable)
 {
 	s32 ret_val = 0;
@@ -1421,7 +1392,6 @@ s32 e1000_lv_jumbo_workaround_ich8lan(struct e1000_hw *hw, bool enable)
 	if (hw->mac.type != e1000_pch2lan)
 		goto out;
 
-	/* disable Rx path while enabling/disabling workaround */
 	e1e_rphy(hw, PHY_REG(769, 20), &phy_reg);
 	ret_val = e1e_wphy(hw, PHY_REG(769, 20), phy_reg | (1 << 14));
 	if (ret_val)
@@ -1454,7 +1424,6 @@ s32 e1000_lv_jumbo_workaround_ich8lan(struct e1000_hw *hw, bool enable)
 		/* Write Rx addresses to the PHY */
 		e1000_copy_rx_addrs_to_phy_ich8lan(hw);
 
-		/* Enable jumbo frame workaround in the MAC */
 		mac_reg = er32(FFLT_DBG);
 		mac_reg &= ~(1 << 14);
 		mac_reg |= (7 << 15);
@@ -1487,7 +1456,6 @@ s32 e1000_lv_jumbo_workaround_ich8lan(struct e1000_hw *hw, bool enable)
 		if (ret_val)
 			goto out;
 
-		/* Enable jumbo frame workaround in the PHY */
 		e1e_rphy(hw, PHY_REG(769, 23), &data);
 		data &= ~(0x7F << 5);
 		data |= (0x37 << 5);
@@ -1571,7 +1539,6 @@ s32 e1000_lv_jumbo_workaround_ich8lan(struct e1000_hw *hw, bool enable)
 			goto out;
 	}
 
-	/* re-enable Rx path after enabling/disabling workaround */
 	ret_val = e1e_wphy(hw, PHY_REG(769, 20), phy_reg & ~(1 << 14));
 
 out:
@@ -1596,12 +1563,6 @@ out:
 	return ret_val;
 }
 
-/**
- *  e1000_k1_gig_workaround_lv - K1 Si workaround
- *  @hw:   pointer to the HW structure
- *
- *  Workaround to set the K1 beacon duration for 82579 parts
- **/
 static s32 e1000_k1_workaround_lv(struct e1000_hw *hw)
 {
 	s32 ret_val = 0;
@@ -1836,10 +1797,6 @@ static s32 e1000_set_d0_lplu_state_ich8lan(struct e1000_hw *hw, bool active)
 		if (phy->type != e1000_phy_igp_3)
 			return 0;
 
-		/*
-		 * Call gig speed drop workaround on LPLU before accessing
-		 * any PHY registers
-		 */
 		if (hw->mac.type == e1000_ich8lan)
 			e1000e_gig_downshift_workaround_ich8lan(hw);
 
@@ -1957,10 +1914,6 @@ static s32 e1000_set_d3_lplu_state_ich8lan(struct e1000_hw *hw, bool active)
 		if (phy->type != e1000_phy_igp_3)
 			return 0;
 
-		/*
-		 * Call gig speed drop workaround on LPLU before accessing
-		 * any PHY registers
-		 */
 		if (hw->mac.type == e1000_ich8lan)
 			e1000e_gig_downshift_workaround_ich8lan(hw);
 
@@ -2592,12 +2545,6 @@ void e1000e_write_protect_nvm_ich8lan(struct e1000_hw *hw)
 	pr0.range.wpe = true;
 	ew32flash(ICH_FLASH_PR0, pr0.regval);
 
-	/*
-	 * Lock down a subset of GbE Flash Control Registers, e.g.
-	 * PR0 to prevent the write-protection from being lifted.
-	 * Once FLOCKDN is set, the registers protected by it cannot
-	 * be written until FLOCKDN is cleared by a hardware reset.
-	 */
 	hsfsts.regval = er16flash(ICH_FLASH_HSFSTS);
 	hsfsts.hsf_status.flockdn = true;
 	ew32flash(ICH_FLASH_HSFSTS, hsfsts.regval);
@@ -2997,7 +2944,6 @@ static s32 e1000_reset_hw_ich8lan(struct e1000_hw *hw)
 
 	msleep(10);
 
-	/* Workaround for ICH8 bit corruption issue in FIFO memory */
 	if (hw->mac.type == e1000_ich8lan) {
 		/* Set Tx and Rx buffer allocation to 8k apiece. */
 		ew32(PBA, E1000_PBA_8K);
@@ -3212,10 +3158,6 @@ static void e1000_initialize_hw_bits_ich8lan(struct e1000_hw *hw)
 		ew32(STATUS, reg);
 	}
 
-	/*
-	 * work-around descriptor data corruption issue during nfs v2 udp
-	 * traffic, just disable the nfs filtering capability
-	 */
 	reg = er32(RFCTL);
 	reg |= (E1000_RFCTL_NFSW_DIS | E1000_RFCTL_NFSR_DIS);
 	ew32(RFCTL, reg);
@@ -3244,7 +3186,6 @@ static s32 e1000_setup_link_ich8lan(struct e1000_hw *hw)
 	 * set it to full.
 	 */
 	if (hw->fc.requested_mode == e1000_fc_default) {
-		/* Workaround h/w hang when Tx flow control enabled */
 		if (hw->mac.type == e1000_pchlan)
 			hw->fc.requested_mode = e1000_fc_rx_pause;
 		else
@@ -3367,16 +3308,6 @@ static s32 e1000_setup_copper_link_ich8lan(struct e1000_hw *hw)
 	return e1000e_setup_copper_link(hw);
 }
 
-/**
- *  e1000_get_link_up_info_ich8lan - Get current link speed and duplex
- *  @hw: pointer to the HW structure
- *  @speed: pointer to store current link speed
- *  @duplex: pointer to store the current link duplex
- *
- *  Calls the generic get_speed_and_duplex to retrieve the current link
- *  information and then calls the Kumeran lock loss workaround for links at
- *  gigabit speeds.
- **/
 static s32 e1000_get_link_up_info_ich8lan(struct e1000_hw *hw, u16 *speed,
 					  u16 *duplex)
 {
@@ -3395,21 +3326,6 @@ static s32 e1000_get_link_up_info_ich8lan(struct e1000_hw *hw, u16 *speed,
 	return ret_val;
 }
 
-/**
- *  e1000_kmrn_lock_loss_workaround_ich8lan - Kumeran workaround
- *  @hw: pointer to the HW structure
- *
- *  Work-around for 82566 Kumeran PCS lock loss:
- *  On link status change (i.e. PCI reset, speed change) and link is up and
- *  speed is gigabit-
- *    0) if workaround is optionally disabled do nothing
- *    1) wait 1ms for Kumeran link to come up
- *    2) check Kumeran Diagnostic register PCS lock loss bit
- *    3) if not set the link is locked (all is good), otherwise...
- *    4) reset the PHY
- *    5) repeat up to 10 times
- *  Note: this is only called for IGP3 copper when speed is 1gb.
- **/
 static s32 e1000_kmrn_lock_loss_workaround_ich8lan(struct e1000_hw *hw)
 {
 	struct e1000_dev_spec_ich8lan *dev_spec = &hw->dev_spec.ich8lan;
@@ -3454,24 +3370,12 @@ static s32 e1000_kmrn_lock_loss_workaround_ich8lan(struct e1000_hw *hw)
 		     E1000_PHY_CTRL_NOND0A_GBE_DISABLE);
 	ew32(PHY_CTRL, phy_ctrl);
 
-	/*
-	 * Call gig speed drop workaround on Gig disable before accessing
-	 * any PHY registers
-	 */
 	e1000e_gig_downshift_workaround_ich8lan(hw);
 
 	/* unable to acquire PCS lock */
 	return -E1000_ERR_PHY;
 }
 
-/**
- *  e1000_set_kmrn_lock_loss_workaround_ich8lan - Set Kumeran workaround state
- *  @hw: pointer to the HW structure
- *  @state: boolean value used to set the current Kumeran workaround state
- *
- *  If ICH8, set the current Kumeran workaround state (enabled - true
- *  /disabled - false).
- **/
 void e1000e_set_kmrn_lock_loss_workaround_ich8lan(struct e1000_hw *hw,
 						 bool state)
 {
@@ -3485,16 +3389,6 @@ void e1000e_set_kmrn_lock_loss_workaround_ich8lan(struct e1000_hw *hw,
 	dev_spec->kmrn_lock_loss_workaround_enabled = state;
 }
 
-/**
- *  e1000_ipg3_phy_powerdown_workaround_ich8lan - Power down workaround on D3
- *  @hw: pointer to the HW structure
- *
- *  Workaround for 82566 power-down on D3 entry:
- *    1) disable gigabit link
- *    2) write VR power-down enable
- *    3) read it back
- *  Continue if successful, else issue LCD reset and repeat
- **/
 void e1000e_igp3_phy_powerdown_workaround_ich8lan(struct e1000_hw *hw)
 {
 	u32 reg;
@@ -3504,7 +3398,6 @@ void e1000e_igp3_phy_powerdown_workaround_ich8lan(struct e1000_hw *hw)
 	if (hw->phy.type != e1000_phy_igp_3)
 		return;
 
-	/* Try the workaround twice (if needed) */
 	do {
 		/* Disable link */
 		reg = er32(PHY_CTRL);
@@ -3512,10 +3405,6 @@ void e1000e_igp3_phy_powerdown_workaround_ich8lan(struct e1000_hw *hw)
 			E1000_PHY_CTRL_NOND0A_GBE_DISABLE);
 		ew32(PHY_CTRL, reg);
 
-		/*
-		 * Call gig speed drop workaround on Gig disable before
-		 * accessing any PHY registers
-		 */
 		if (hw->mac.type == e1000_ich8lan)
 			e1000e_gig_downshift_workaround_ich8lan(hw);
 

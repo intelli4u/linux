@@ -50,4 +50,3 @@ Image.initrd:	vmlinux $(OBJS)
 zImage:	Image
 
 zImage.initrd:	Image.initrd
-

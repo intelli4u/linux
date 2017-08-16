@@ -776,8 +776,6 @@ static int vidioc_querybuf (struct file *file,
 	struct usb_usbvision *usbvision = video_drvdata(file);
 	struct usbvision_frame *frame;
 
-	/* FIXME : must control
-	   that buffers are mapped (VIDIOC_REQBUFS has been called) */
 	if(vb->index>=usbvision->num_frames)  {
 		return -EINVAL;
 	}
@@ -810,7 +808,6 @@ static int vidioc_qbuf (struct file *file, void *priv, struct v4l2_buffer *vb)
 	struct usbvision_frame *frame;
 	unsigned long lock_flags;
 
-	/* FIXME : works only on VIDEO_CAPTURE MODE, MMAP. */
 	if(vb->index>=usbvision->num_frames)  {
 		return -EINVAL;
 	}
@@ -1730,7 +1727,6 @@ static int __init usbvision_init(void)
 
 	/* disable planar mode support unless compression enabled */
 	if (isocMode != ISOC_MODE_COMPRESS ) {
-		// FIXME : not the right way to set supported flag
 		usbvision_v4l2_format[6].supported = 0; // V4L2_PIX_FMT_YVU420
 		usbvision_v4l2_format[7].supported = 0; // V4L2_PIX_FMT_YUV422P
 	}

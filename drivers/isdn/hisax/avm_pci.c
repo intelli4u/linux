@@ -1,4 +1,4 @@
-/* $Id: avm_pci.c,v 1.29.2.4 2004/02/11 13:21:32 keil Exp $
+/* $Id: avm_pci.c,v 1.29.2.4 2004/02/11 13:21:32 Exp $
  *
  * low level stuff for AVM Fritz!PCI and ISA PnP isdn cards
  *
@@ -599,37 +599,6 @@ setstack_hdlc(struct PStack *st, struct BCState *bcs)
 	return (0);
 }
 
-#if 0
-void __init
-clear_pending_hdlc_ints(struct IsdnCardState *cs)
-{
-	u_int val;
-
-	if (cs->subtyp == AVM_FRITZ_PCI) {
-		val = ReadHDLCPCI(cs, 0, HDLC_STATUS);
-		debugl1(cs, "HDLC 1 STA %x", val);
-		val = ReadHDLCPCI(cs, 1, HDLC_STATUS);
-		debugl1(cs, "HDLC 2 STA %x", val);
-	} else {
-		val = ReadHDLCPnP(cs, 0, HDLC_STATUS);
-		debugl1(cs, "HDLC 1 STA %x", val);
-		val = ReadHDLCPnP(cs, 0, HDLC_STATUS + 1);
-		debugl1(cs, "HDLC 1 RML %x", val);
-		val = ReadHDLCPnP(cs, 0, HDLC_STATUS + 2);
-		debugl1(cs, "HDLC 1 MODE %x", val);
-		val = ReadHDLCPnP(cs, 0, HDLC_STATUS + 3);
-		debugl1(cs, "HDLC 1 VIN %x", val);
-		val = ReadHDLCPnP(cs, 1, HDLC_STATUS);
-		debugl1(cs, "HDLC 2 STA %x", val);
-		val = ReadHDLCPnP(cs, 1, HDLC_STATUS + 1);
-		debugl1(cs, "HDLC 2 RML %x", val);
-		val = ReadHDLCPnP(cs, 1, HDLC_STATUS + 2);
-		debugl1(cs, "HDLC 2 MODE %x", val);
-		val = ReadHDLCPnP(cs, 1, HDLC_STATUS + 3);
-		debugl1(cs, "HDLC 2 VIN %x", val);
-	}
-}
-#endif  /*  0  */
 
 static void
 inithdlc(struct IsdnCardState *cs)

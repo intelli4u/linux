@@ -487,7 +487,6 @@ static inline int osd_data_in_integrity_info_sizeof(bool is_ver1)
 struct osd_timestamp {
 	u8 time[6]; /* number of milliseconds since 1/1/1970 UT (big endian) */
 } __packed;
-/* FIXME: define helper functions to convert to/from osd time format */
 
 /*
  * Capability & Security definitions

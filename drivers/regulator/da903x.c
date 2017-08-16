@@ -516,7 +516,6 @@ static int __devinit da903x_regulator_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* Workaround for the weird LDO12 voltage setting */
 	if (ri->desc.id == DA9034_ID_LDO12) {
 		ri->desc.ops = &da9034_regulator_ldo12_ops;
 		ri->desc.n_voltages = ARRAY_SIZE(da9034_ldo12_data);

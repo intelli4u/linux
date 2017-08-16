@@ -446,4 +446,3 @@ int __init s3c24xx_register_baseclocks(unsigned long xtal)
 
 	return 0;
 }
-

@@ -1,90 +1,4 @@
-/*
- * WUSB Wire Adapter: Control/Data Streaming Interface (WUSB[8])
- * Device Connect handling
- *
- * Copyright (C) 2006 Intel Corporation
- * Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
- *
- *
- * FIXME: docs
- * FIXME: this file needs to be broken up, it's grown too big
- *
- *
- * WUSB1.0[7.1, 7.5.1, ]
- *
- * WUSB device connection is kind of messy. Some background:
- *
- *     When a device wants to connect it scans the UWB radio channels
- *     looking for a WUSB Channel; a WUSB channel is defined by MMCs
- *     (Micro Managed Commands or something like that) [see
- *     Design-overview for more on this] .
- *
- * So, device scans the radio, finds MMCs and thus a host and checks
- * when the next DNTS is. It sends a Device Notification Connect
- * (DN_Connect); the host picks it up (through nep.c and notif.c, ends
- * up in wusb_devconnect_ack(), which creates a wusb_dev structure in
- * wusbhc->port[port_number].wusb_dev), assigns an unauth address
- * to the device (this means from 0x80 to 0xfe) and sends, in the MMC
- * a Connect Ack Information Element (ConnAck IE).
- *
- * So now the device now has a WUSB address. From now on, we use
- * that to talk to it in the RPipes.
- *
- * ASSUMPTIONS:
- *
- *  - We use the the as device address the port number where it is
- *    connected (port 0 doesn't exist). For unauth, it is 128 + that.
- *
- * ROADMAP:
- *
- *   This file contains the logic for doing that--entry points:
- *
- *   wusb_devconnect_ack()      Ack a device until _acked() called.
- *                              Called by notif.c:wusb_handle_dn_connect()
- *                              when a DN_Connect is received.
- *
- *     wusb_devconnect_acked()  Ack done, release resources.
- *
- *   wusb_handle_dn_alive()     Called by notif.c:wusb_handle_dn()
- *                              for processing a DN_Alive pong from a device.
- *
- *   wusb_handle_dn_disconnect()Called by notif.c:wusb_handle_dn() to
- *                              process a disconenct request from a
- *                              device.
- *
- *   __wusb_dev_disable()       Called by rh.c:wusbhc_rh_clear_port_feat() when
- *                              disabling a port.
- *
- *   wusb_devconnect_create()   Called when creating the host by
- *                              lc.c:wusbhc_create().
- *
- *   wusb_devconnect_destroy()  Cleanup called removing the host. Called
- *                              by lc.c:wusbhc_destroy().
- *
- *   Each Wireless USB host maintains a list of DN_Connect requests
- *   (actually we maintain a list of pending Connect Acks, the
- *   wusbhc->ca_list).
- *
- * LIFE CYCLE OF port->wusb_dev
- *
- *   Before the @wusbhc structure put()s the reference it owns for
- *   port->wusb_dev [and clean the wusb_dev pointer], it needs to
- *   lock @wusbhc->mutex.
- */
+
 
 #include <linux/jiffies.h>
 #include <linux/ctype.h>
@@ -212,8 +126,6 @@ static struct wusb_dev *wusbhc_cack_add(struct wusbhc *wusbhc,
 	 */
 	bitmap_fill(wusb_dev->availability.bm, UWB_NUM_MAS);
 
-	/* FIXME: handle reconnects instead of assuming connects are
-	   always new. */
 	if (1 && new_connection == 0)
 		new_connection = 1;
 	if (new_connection) {
@@ -271,32 +183,6 @@ static void wusbhc_devconnect_acked_work(struct work_struct *work)
 	wusb_dev_put(wusb_dev);
 }
 
-/*
- * Ack a device for connection
- *
- * FIXME: docs
- *
- * @pr_cdid:	Printable CDID...hex Use @dnc->cdid for the real deal.
- *
- * So we get the connect ack IE (may have been allocated already),
- * find an empty connect block, an empty virtual port, create an
- * address with it (see below), make it an unauth addr [bit 7 set] and
- * set the MMC.
- *
- * Addresses: because WUSB hosts have no downstream hubs, we can do a
- *            1:1 mapping between 'port number' and device
- *            address. This simplifies many things, as during this
- *            initial connect phase the USB stack has no knoledge of
- *            the device and hasn't assigned an address yet--we know
- *            USB's choose_address() will use the same euristics we
- *            use here, so we can assume which address will be assigned.
- *
- *            USB stack always assigns address 1 to the root hub, so
- *            to the port number we add 2 (thus virtual port #0 is
- *            addr #2).
- *
- * @wusbhc shall be referenced
- */
 static
 void wusbhc_devconnect_ack(struct wusbhc *wusbhc, struct wusb_dn_connect *dnc,
 			   const char *pr_cdid)
@@ -407,25 +293,6 @@ static void __wusbhc_dev_disconnect(struct wusbhc *wusbhc,
 	 */
 }
 
-/*
- * Refresh the list of keep alives to emit in the MMC
- *
- * Some devices don't respond to keep alives unless they've been
- * authenticated, so skip unauthenticated devices.
- *
- * We only publish the first four devices that have a coming timeout
- * condition. Then when we are done processing those, we go for the
- * next ones. We ignore the ones that have timed out already (they'll
- * be purged).
- *
- * This might cause the first devices to timeout the last devices in
- * the port array...FIXME: come up with a better algorithm?
- *
- * Note we can't do much about MMC's ops errors; we hope next refresh
- * will kind of handle it.
- *
- * NOTE: @wusbhc->mutex is locked
- */
 static void __wusbhc_keep_alive(struct wusbhc *wusbhc)
 {
 	struct device *dev = wusbhc->dev;
@@ -638,7 +505,6 @@ void wusbhc_handle_dn(struct wusbhc *wusbhc, u8 srcaddr,
 	case WUSB_DN_MASAVAILCHANGED:
 	case WUSB_DN_RWAKE:
 	case WUSB_DN_SLEEP:
-		/* FIXME: handle these DNs. */
 		break;
 	case WUSB_DN_EPRDY:
 		/* The hardware handles these. */
@@ -859,28 +725,6 @@ static struct usb_wireless_cap_descriptor wusb_cap_descr_default = {
 	.bReserved = 0
 };
 
-/*
- * USB stack's device addition Notifier Callback
- *
- * Called from drivers/usb/core/hub.c when a new device is added; we
- * use this hook to perform certain WUSB specific setup work on the
- * new device. As well, it is the first time we can connect the
- * wusb_dev and the usb_dev. So we note it down in wusb_dev and take a
- * reference that we'll drop.
- *
- * First we need to determine if the device is a WUSB device (else we
- * ignore it). For that we use the speed setting (USB_SPEED_WIRELESS)
- * [FIXME: maybe we'd need something more definitive]. If so, we track
- * it's usb_busd and from there, the WUSB HC.
- *
- * Because all WUSB HCs are contained in a 'struct wusbhc', voila, we
- * get the wusbhc for the device.
- *
- * We have a reference on @usb_dev (as we are called at the end of its
- * enumeration).
- *
- * NOTE: @usb_dev locked
- */
 static void wusb_dev_add_ncb(struct usb_device *usb_dev)
 {
 	int result = 0;
@@ -1043,15 +887,6 @@ void wusbhc_devconnect_destroy(struct wusbhc *wusbhc)
 	/* no op */
 }
 
-/*
- * wusbhc_devconnect_start - start accepting device connections
- * @wusbhc: the WUSB HC
- *
- * Sets the Host Info IE to accept all new connections.
- *
- * FIXME: This also enables the keep alives but this is not necessary
- * until there are connected and authenticated devices.
- */
 int wusbhc_devconnect_start(struct wusbhc *wusbhc)
 {
 	struct device *dev = wusbhc->dev;

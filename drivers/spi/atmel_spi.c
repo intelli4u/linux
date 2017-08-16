@@ -78,30 +78,6 @@ static bool atmel_spi_is_v2(void)
 	return !cpu_is_at91rm9200();
 }
 
-/*
- * Earlier SPI controllers (e.g. on at91rm9200) have a design bug whereby
- * they assume that spi slave device state will not change on deselect, so
- * that automagic deselection is OK.  ("NPCSx rises if no data is to be
- * transmitted")  Not so!  Workaround uses nCSx pins as GPIOs; or newer
- * controllers have CSAAT and friends.
- *
- * Since the CSAAT functionality is a bit weird on newer controllers as
- * well, we use GPIO to control nCSx pins on all controllers, updating
- * MR.PCS to avoid confusing the controller.  Using GPIOs also lets us
- * support active-high chipselects despite the controller's belief that
- * only active-low devices/systems exists.
- *
- * However, at91rm9200 has a second erratum whereby nCS0 doesn't work
- * right when driven with GPIO.  ("Mode Fault does not allow more than one
- * Master on Chip Select 0.")  No workaround exists for that ... so for
- * nCS0 on that chip, we (a) don't use the GPIO, (b) can't support CS_HIGH,
- * and (c) will trigger that first erratum in some cases.
- *
- * TODO: Test if the atmel_spi_is_v2() branch below works on
- * AT91RM9200 if we use some other register than CSR0. However, don't
- * do this unconditionally since AP7000 has an errata where the BITS
- * field in CSR0 overrides all other CSRs.
- */
 
 static void cs_activate(struct atmel_spi *as, struct spi_device *spi)
 {
@@ -510,11 +486,6 @@ atmel_spi_interrupt(int irq, void *dev_id)
 					cs_activate(as, msg->spi);
 				}
 
-				/*
-				 * Not done yet. Submit the next transfer.
-				 *
-				 * FIXME handle protocol options for xfer
-				 */
 				atmel_spi_next_xfer(master, msg);
 			}
 		} else {
@@ -672,7 +643,6 @@ static int atmel_spi_transfer(struct spi_device *spi, struct spi_message *msg)
 			return -EINVAL;
 		}
 
-		/* FIXME implement these protocol options!! */
 		if (xfer->bits_per_word || xfer->speed_hz) {
 			dev_dbg(&spi->dev, "no protocol options yet\n");
 			return -ENOPROTOOPT;
@@ -803,7 +773,7 @@ static int __init atmel_spi_probe(struct platform_device *pdev)
 	/* Initialize the hardware */
 	clk_enable(clk);
 	spi_writel(as, CR, SPI_BIT(SWRST));
-	spi_writel(as, CR, SPI_BIT(SWRST)); /* AT91SAM9263 Rev B workaround */
+	spi_writel(as, CR, SPI_BIT(SWRST));
 	spi_writel(as, MR, SPI_BIT(MSTR) | SPI_BIT(MODFDIS));
 	spi_writel(as, PTCR, SPI_BIT(RXTDIS) | SPI_BIT(TXTDIS));
 	spi_writel(as, CR, SPI_BIT(SPIEN));
@@ -820,7 +790,7 @@ static int __init atmel_spi_probe(struct platform_device *pdev)
 
 out_reset_hw:
 	spi_writel(as, CR, SPI_BIT(SWRST));
-	spi_writel(as, CR, SPI_BIT(SWRST)); /* AT91SAM9263 Rev B workaround */
+	spi_writel(as, CR, SPI_BIT(SWRST));
 	clk_disable(clk);
 	free_irq(irq, master);
 out_unmap_regs:
@@ -844,7 +814,7 @@ static int __exit atmel_spi_remove(struct platform_device *pdev)
 	spin_lock_irq(&as->lock);
 	as->stopping = 1;
 	spi_writel(as, CR, SPI_BIT(SWRST));
-	spi_writel(as, CR, SPI_BIT(SWRST)); /* AT91SAM9263 Rev B workaround */
+	spi_writel(as, CR, SPI_BIT(SWRST));
 	spi_readl(as, SR);
 	spin_unlock_irq(&as->lock);
 

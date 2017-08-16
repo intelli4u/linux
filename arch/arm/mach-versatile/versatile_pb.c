@@ -35,11 +35,7 @@
 
 #include "core.h"
 
-#if 1
 #define IRQ_MMCI1A	IRQ_VICSOURCE23
-#else
-#define IRQ_MMCI1A	IRQ_SIC_MMCI1A
-#endif
 
 static struct mmci_platform_data mmc1_plat_data = {
 	.ocr_mask	= MMC_VDD_32_33|MMC_VDD_33_34,

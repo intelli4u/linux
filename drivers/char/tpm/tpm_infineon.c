@@ -359,11 +359,6 @@ static int tpm_inf_send(struct tpm_chip *chip, u8 * buf, size_t count)
 
 static void tpm_inf_cancel(struct tpm_chip *chip)
 {
-	/*
-	   Since we are using the legacy mode to communicate
-	   with the TPM, we have no cancel functions, but have
-	   a workaround for interrupting the TPM through WTX.
-	 */
 }
 
 static u8 tpm_inf_status(struct tpm_chip *chip)

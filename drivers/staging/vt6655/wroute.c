@@ -194,6 +194,3 @@ bool ROUTEbRelay (PSDevice pDevice, unsigned char *pbySkbData, unsigned int uDat
 
     return true;
 }
-
-
-

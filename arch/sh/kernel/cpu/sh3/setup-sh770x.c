@@ -42,9 +42,8 @@ static struct intc_vect vectors[] __initdata = {
 	INTC_VECT(WDT, 0x560),
 	INTC_VECT(REF, 0x580),
 	INTC_VECT(REF, 0x5a0),
-#if defined(CONFIG_CPU_SUBTYPE_SH7706) || \
-    defined(CONFIG_CPU_SUBTYPE_SH7707) || \
-    defined(CONFIG_CPU_SUBTYPE_SH7709)
+#if defined(CONFIG_CPU_SUBTYPE_SH7706) || defined(CONFIG_CPU_SUBTYPE_SH7707) || \
+	defined(CONFIG_CPU_SUBTYPE_SH7709)
 	/* IRQ0->5 are handled in setup-sh3.c */
 	INTC_VECT(DMAC, 0x800), INTC_VECT(DMAC, 0x820),
 	INTC_VECT(DMAC, 0x840), INTC_VECT(DMAC, 0x860),
@@ -52,8 +51,7 @@ static struct intc_vect vectors[] __initdata = {
 	INTC_VECT(SCIF2, 0x900), INTC_VECT(SCIF2, 0x920),
 	INTC_VECT(SCIF2, 0x940), INTC_VECT(SCIF2, 0x960),
 #endif
-#if defined(CONFIG_CPU_SUBTYPE_SH7707) || \
-    defined(CONFIG_CPU_SUBTYPE_SH7709)
+#if defined(CONFIG_CPU_SUBTYPE_SH7707) || defined(CONFIG_CPU_SUBTYPE_SH7709)
 	INTC_VECT(PINT07, 0x700), INTC_VECT(PINT815, 0x720),
 	INTC_VECT(SCIF0, 0x880), INTC_VECT(SCIF0, 0x8a0),
 	INTC_VECT(SCIF0, 0x8c0), INTC_VECT(SCIF0, 0x8e0),
@@ -67,15 +65,13 @@ static struct intc_vect vectors[] __initdata = {
 static struct intc_prio_reg prio_registers[] __initdata = {
 	{ 0xfffffee2, 0, 16, 4, /* IPRA */ { TMU0, TMU1, TMU2, RTC } },
 	{ 0xfffffee4, 0, 16, 4, /* IPRB */ { WDT, REF, SCI, 0 } },
-#if defined(CONFIG_CPU_SUBTYPE_SH7706) || \
-    defined(CONFIG_CPU_SUBTYPE_SH7707) || \
-    defined(CONFIG_CPU_SUBTYPE_SH7709)
+#if defined(CONFIG_CPU_SUBTYPE_SH7706) || defined(CONFIG_CPU_SUBTYPE_SH7707) || \
+	defined(CONFIG_CPU_SUBTYPE_SH7709)
 	{ 0xa4000016, 0, 16, 4, /* IPRC */ { IRQ3, IRQ2, IRQ1, IRQ0 } },
 	{ 0xa4000018, 0, 16, 4, /* IPRD */ { 0, 0, IRQ5, IRQ4 } },
 	{ 0xa400001a, 0, 16, 4, /* IPRE */ { DMAC, 0, SCIF2, ADC_ADI } },
 #endif
-#if defined(CONFIG_CPU_SUBTYPE_SH7707) || \
-    defined(CONFIG_CPU_SUBTYPE_SH7709)
+#if defined(CONFIG_CPU_SUBTYPE_SH7707) || defined(CONFIG_CPU_SUBTYPE_SH7709)
 	{ 0xa4000018, 0, 16, 4, /* IPRD */ { PINT07, PINT815, } },
 	{ 0xa400001a, 0, 16, 4, /* IPRE */ { 0, SCIF0 } },
 #endif
@@ -120,9 +116,8 @@ static struct platform_device scif0_device = {
 		.platform_data	= &scif0_platform_data,
 	},
 };
-#if defined(CONFIG_CPU_SUBTYPE_SH7706) || \
-    defined(CONFIG_CPU_SUBTYPE_SH7707) || \
-    defined(CONFIG_CPU_SUBTYPE_SH7709)
+#if defined(CONFIG_CPU_SUBTYPE_SH7706) || defined(CONFIG_CPU_SUBTYPE_SH7707) || \
+	defined(CONFIG_CPU_SUBTYPE_SH7709)
 static struct plat_sci_port scif1_platform_data = {
 	.mapbase	= 0xa4000150,
 	.flags		= UPF_BOOT_AUTOCONF,
@@ -138,8 +133,7 @@ static struct platform_device scif1_device = {
 	},
 };
 #endif
-#if defined(CONFIG_CPU_SUBTYPE_SH7707) || \
-    defined(CONFIG_CPU_SUBTYPE_SH7709)
+#if defined(CONFIG_CPU_SUBTYPE_SH7707) || defined(CONFIG_CPU_SUBTYPE_SH7709)
 static struct plat_sci_port scif2_platform_data = {
 	.mapbase	= 0xa4000140,
 	.flags		= UPF_BOOT_AUTOCONF,
@@ -241,13 +235,11 @@ static struct platform_device tmu2_device = {
 
 static struct platform_device *sh770x_devices[] __initdata = {
 	&scif0_device,
-#if defined(CONFIG_CPU_SUBTYPE_SH7706) || \
-    defined(CONFIG_CPU_SUBTYPE_SH7707) || \
-    defined(CONFIG_CPU_SUBTYPE_SH7709)
+#if defined(CONFIG_CPU_SUBTYPE_SH7706) || defined(CONFIG_CPU_SUBTYPE_SH7707) || \
+	defined(CONFIG_CPU_SUBTYPE_SH7709)
 	&scif1_device,
 #endif
-#if defined(CONFIG_CPU_SUBTYPE_SH7707) || \
-    defined(CONFIG_CPU_SUBTYPE_SH7709)
+#if defined(CONFIG_CPU_SUBTYPE_SH7707) || defined(CONFIG_CPU_SUBTYPE_SH7709)
 	&scif2_device,
 #endif
 	&tmu0_device,
@@ -265,13 +257,11 @@ arch_initcall(sh770x_devices_setup);
 
 static struct platform_device *sh770x_early_devices[] __initdata = {
 	&scif0_device,
-#if defined(CONFIG_CPU_SUBTYPE_SH7706) || \
-    defined(CONFIG_CPU_SUBTYPE_SH7707) || \
-    defined(CONFIG_CPU_SUBTYPE_SH7709)
+#if defined(CONFIG_CPU_SUBTYPE_SH7706) || defined(CONFIG_CPU_SUBTYPE_SH7707) || \
+	defined(CONFIG_CPU_SUBTYPE_SH7709)
 	&scif1_device,
 #endif
-#if defined(CONFIG_CPU_SUBTYPE_SH7707) || \
-    defined(CONFIG_CPU_SUBTYPE_SH7709)
+#if defined(CONFIG_CPU_SUBTYPE_SH7707) || defined(CONFIG_CPU_SUBTYPE_SH7709)
 	&scif2_device,
 #endif
 	&tmu0_device,
@@ -288,9 +278,8 @@ void __init plat_early_device_setup(void)
 void __init plat_irq_setup(void)
 {
 	register_intc_controller(&intc_desc);
-#if defined(CONFIG_CPU_SUBTYPE_SH7706) || \
-    defined(CONFIG_CPU_SUBTYPE_SH7707) || \
-    defined(CONFIG_CPU_SUBTYPE_SH7709)
+#if defined(CONFIG_CPU_SUBTYPE_SH7706) || defined(CONFIG_CPU_SUBTYPE_SH7707) || \
+	defined(CONFIG_CPU_SUBTYPE_SH7709)
 	plat_irq_setup_sh3();
 #endif
 }

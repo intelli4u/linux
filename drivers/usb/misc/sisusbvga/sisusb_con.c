@@ -120,10 +120,6 @@ sisusb_set_cursor(struct sisusb_usb_data *sisusb, unsigned int location)
 
 	sisusb->sisusb_cursor_loc = location;
 
-	/* Hardware bug: Text cursor appears twice or not at all
-	 * at some positions. Work around it with the cursor skew
-	 * bits.
-	 */
 
 	if ((location & 0x0007) == 0x0007) {
 		sisusb->bad_cursor_pos = 1;
@@ -1559,6 +1555,3 @@ void __init sisusb_init_concode(void)
 }
 
 #endif /* INCL_CON */
-
-
-

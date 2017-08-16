@@ -60,13 +60,6 @@ static int cx25840_set_audclk_freq(struct i2c_client *client, u32 freq)
 			 * 432 MHz pre-postdivide
 			 */
 
-			/*
-			 * AUX_PLL Fraction = 0x1bb39ee
-			 * 28636363 * 0x6.dd9cf70/0x10 = 32000 * 384
-			 * 196.6 MHz pre-postdivide
-			 * FIXME < 200 MHz is out of specified valid range
-			 * FIXME 28636363 ref_freq doesn't match VID PLL ref
-			 */
 			cx25840_write4(client, 0x110, 0x01bb39ee);
 
 			/*
@@ -98,12 +91,6 @@ static int cx25840_set_audclk_freq(struct i2c_client *client, u32 freq)
 			 * 432 MHz pre-postdivide
 			 */
 
-			/*
-			 * AUX_PLL Fraction = 0x0ec6bd6
-			 * 28636363 * 0x9.7635eb0/0x10 = 44100 * 384
-			 * 271 MHz pre-postdivide
-			 * FIXME 28636363 ref_freq doesn't match VID PLL ref
-			 */
 			cx25840_write4(client, 0x110, 0x00ec6bd6);
 
 			/*
@@ -135,12 +122,6 @@ static int cx25840_set_audclk_freq(struct i2c_client *client, u32 freq)
 			 * 432 MHz pre-postdivide
 			 */
 
-			/*
-			 * AUX_PLL Fraction = 0x098d6e5
-			 * 28636363 * 0xa.4c6b728/0x10 = 48000 * 384
-			 * 295 MHz pre-postdivide
-			 * FIXME 28636363 ref_freq doesn't match VID PLL ref
-			 */
 			cx25840_write4(client, 0x110, 0x0098d6e5);
 
 			/*
@@ -174,12 +155,6 @@ static int cx25840_set_audclk_freq(struct i2c_client *client, u32 freq)
 			 * 432 MHz pre-postdivide
 			 */
 
-			/*
-			 * AUX_PLL Fraction = 0x12a0869
-			 * 28636363 * 0x8.9504348/0x1e = 32000 * 256
-			 * 246 MHz pre-postdivide
-			 * FIXME 28636363 ref_freq doesn't match VID PLL ref
-			 */
 			cx25840_write4(client, 0x110, 0x012a0869);
 
 			/*
@@ -215,12 +190,6 @@ static int cx25840_set_audclk_freq(struct i2c_client *client, u32 freq)
 			 * 432 MHz pre-postdivide
 			 */
 
-			/*
-			 * AUX_PLL Fraction = 0x0ec6bd6
-			 * 28636363 * 0x9.7635eb0/0x18 = 44100 * 256
-			 * 271 MHz pre-postdivide
-			 * FIXME 28636363 ref_freq doesn't match VID PLL ref
-			 */
 			cx25840_write4(client, 0x110, 0x00ec6bd6);
 
 			/*
@@ -256,12 +225,6 @@ static int cx25840_set_audclk_freq(struct i2c_client *client, u32 freq)
 			 * 432 MHz pre-postdivide
 			 */
 
-			/*
-			 * AUX_PLL Fraction = 0x098d6e5
-			 * 28636363 * 0xa.4c6b728/0x18 = 48000 * 256
-			 * 295 MHz pre-postdivide
-			 * FIXME 28636363 ref_freq doesn't match VID PLL ref
-			 */
 			cx25840_write4(client, 0x110, 0x0098d6e5);
 
 			/*
@@ -307,7 +270,6 @@ static int cx23885_set_audclk_freq(struct i2c_client *client, u32 freq)
 		case 48000:
 			/* We don't have register values
 			 * so avoid destroying registers. */
-			/* FIXME return -EINVAL; */
 			break;
 		}
 	} else {
@@ -316,7 +278,6 @@ static int cx23885_set_audclk_freq(struct i2c_client *client, u32 freq)
 		case 44100:
 			/* We don't have register values
 			 * so avoid destroying registers. */
-			/* FIXME return -EINVAL; */
 			break;
 
 		case 48000:
@@ -370,7 +331,6 @@ static int cx231xx_set_audclk_freq(struct i2c_client *client, u32 freq)
 		}
 	} else {
 		switch (freq) {
-		/* FIXME These cases make different assumptions about audclk */
 		case 32000:
 			/* src1_ctl */
 			/* 0x1.0000 = 32000/32000 */

@@ -416,5 +416,3 @@ bool SROMbAutoLoad(unsigned long dwIoBase)
         return false;
     return true;
 }
-
-

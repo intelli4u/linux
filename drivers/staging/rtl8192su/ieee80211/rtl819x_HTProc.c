@@ -378,7 +378,6 @@ void HTIOTPeerDetermine(struct ieee80211_device* ieee)
 {
 	PRT_HIGH_THROUGHPUT	pHTInfo = ieee->pHTInfo;
 	struct ieee80211_network* net = &ieee->current_network;
-	//FIXME: need to decide  92U_SOFTAP //LZM,090320
 	if(net->bssht.bdRT2RTAggregation){
 		pHTInfo->IOTPeer = HT_IOT_PEER_REALTEK;
 		if(net->bssht.RT2RT_HT_Mode & RT_HT_CAP_USE_92SE){
@@ -482,7 +481,6 @@ bool HTIOTActIsDisableMCSTwoSpatialStream(struct ieee80211_device* ieee)
 
 //#endif
 #endif
-#if 1
        PRT_HIGH_THROUGHPUT	pHTInfo = ieee->pHTInfo;
 	if(ieee->is_ap_in_wep_tkip && ieee->is_ap_in_wep_tkip(ieee->dev))
 	{
@@ -491,7 +489,6 @@ bool HTIOTActIsDisableMCSTwoSpatialStream(struct ieee80211_device* ieee)
 		    (pHTInfo->IOTPeer != HT_IOT_PEER_MARVELL) )
 			retValue = true;
 	}
-#endif
 	return retValue;
 }
 
@@ -1258,19 +1255,10 @@ void HTOnAssocRsp(struct ieee80211_device *ieee)
 
 	// <2> Set AMPDU Minimum MPDU Start Spacing
 	// 802.11n 3.0 section 9.7d.3
-#if 0
 	if(pHTInfo->MPDU_Density > pPeerHTCap->MPDUDensity)
 		pHTInfo->CurrentMPDUDensity = pHTInfo->MPDU_Density;
 	else
 		pHTInfo->CurrentMPDUDensity = pPeerHTCap->MPDUDensity;
-	if(ieee->pairwise_key_type != KEY_TYPE_NA )
-		pHTInfo->CurrentMPDUDensity 	= 7; // 8us
-#else
-	if(pHTInfo->MPDU_Density > pPeerHTCap->MPDUDensity)
-		pHTInfo->CurrentMPDUDensity = pHTInfo->MPDU_Density;
-	else
-		pHTInfo->CurrentMPDUDensity = pPeerHTCap->MPDUDensity;
-#endif
 	// Force TX AMSDU
 
 	// Lanhsin: mark for tmp to avoid deauth by ap from  s3

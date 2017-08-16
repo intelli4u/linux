@@ -924,18 +924,6 @@ int drm_mode_group_init_legacy_group(struct drm_device *dev,
 	return 0;
 }
 
-/**
- * drm_mode_config_cleanup - free up DRM mode_config info
- * @dev: DRM device
- *
- * LOCKING:
- * Caller must hold mode config lock.
- *
- * Free up all the connectors and CRTCs associated with this DRM device, then
- * free up the framebuffers and associated buffer objects.
- *
- * FIXME: cleanup any dangling user buffer objects too
- */
 void drm_mode_config_cleanup(struct drm_device *dev)
 {
 	struct drm_connector *connector, *ot;
@@ -1219,23 +1207,6 @@ out:
 	return ret;
 }
 
-/**
- * drm_mode_getcrtc - get CRTC configuration
- * @inode: inode from the ioctl
- * @filp: file * from the ioctl
- * @cmd: cmd from ioctl
- * @arg: arg from ioctl
- *
- * LOCKING:
- * Caller? (FIXME)
- *
- * Construct a CRTC configuration structure to return to the user.
- *
- * Called by the user via ioctl.
- *
- * RETURNS:
- * Zero on success, errno on failure.
- */
 int drm_mode_getcrtc(struct drm_device *dev,
 		     void *data, struct drm_file *file_priv)
 {
@@ -1276,23 +1247,6 @@ out:
 	return ret;
 }
 
-/**
- * drm_mode_getconnector - get connector configuration
- * @inode: inode from the ioctl
- * @filp: file * from the ioctl
- * @cmd: cmd from ioctl
- * @arg: arg from ioctl
- *
- * LOCKING:
- * Caller? (FIXME)
- *
- * Construct a connector configuration structure to return to the user.
- *
- * Called by the user via ioctl.
- *
- * RETURNS:
- * Zero on success, errno on failure.
- */
 int drm_mode_getconnector(struct drm_device *dev, void *data,
 			  struct drm_file *file_priv)
 {
@@ -1454,23 +1408,6 @@ out:
 	return ret;
 }
 
-/**
- * drm_mode_setcrtc - set CRTC configuration
- * @inode: inode from the ioctl
- * @filp: file * from the ioctl
- * @cmd: cmd from ioctl
- * @arg: arg from ioctl
- *
- * LOCKING:
- * Caller? (FIXME)
- *
- * Build a new CRTC configuration based on user request.
- *
- * Called by the user via ioctl.
- *
- * RETURNS:
- * Zero on success, errno on failure.
- */
 int drm_mode_setcrtc(struct drm_device *dev, void *data,
 		     struct drm_file *file_priv)
 {
@@ -1755,23 +1692,6 @@ out:
 	return ret;
 }
 
-/**
- * drm_mode_getfb - get FB info
- * @inode: inode from the ioctl
- * @filp: file * from the ioctl
- * @cmd: cmd from ioctl
- * @arg: arg from ioctl
- *
- * LOCKING:
- * Caller? (FIXME)
- *
- * Lookup the FB given its ID and return info about it.
- *
- * Called by the user via ioctl.
- *
- * RETURNS:
- * Zero on success, errno on failure.
- */
 int drm_mode_getfb(struct drm_device *dev,
 		   void *data, struct drm_file *file_priv)
 {

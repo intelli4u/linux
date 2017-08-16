@@ -16,11 +16,7 @@
 #include "uPD98402.h"
 
 
-#if 0
-#define DPRINTK(format,args...) printk(KERN_DEBUG format,##args)
-#else
 #define DPRINTK(format,args...)
-#endif
 
 
 struct uPD98402_priv {

@@ -114,7 +114,6 @@ static void md5_transform(u32 *hash, u32 const *in)
 	hash[3] += d;
 }
 
-/* XXX: this stuff can be optimized */
 static inline void le32_to_cpu_array(u32 *buf, unsigned int words)
 {
 	while (words--) {

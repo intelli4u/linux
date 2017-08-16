@@ -63,7 +63,7 @@ struct qib_user_sdma_pkt {
 		u8  put_page;                   /* should we put_page? */
 		u8  dma_mapped;                 /* is page dma_mapped? */
 		struct page *page;              /* may be NULL (coherent mem) */
-		void *kvaddr;                   /* FIXME: only for pio hack */
+		void *kvaddr;
 		dma_addr_t addr;
 	} addr[4];   /* max pages, any more and we coalesce */
 	struct list_head list;  /* list element */

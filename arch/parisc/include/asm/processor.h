@@ -51,8 +51,6 @@
 
 #ifdef __KERNEL__
 
-/* XXX: STACK_TOP actually should be STACK_BOTTOM for parisc.
- * prumpf */
 
 #define STACK_TOP	TASK_SIZE
 #define STACK_TOP_MAX	DEFAULT_TASK_SIZE
@@ -61,12 +59,6 @@
 
 #ifndef __ASSEMBLY__
 
-/*
- * Data detected about CPUs at boot time which is the same for all CPU's.
- * HP boxes are SMP - ie identical processors.
- *
- * FIXME: some CPU rev info may be processor specific...
- */
 struct system_cpuinfo_parisc {
 	unsigned int	cpu_count;
 	unsigned int	cpu_hz;

@@ -208,7 +208,7 @@ ENTRY(tme_handler)
 	bra	5b
 #endif
 
-#elif defined (CONFIG_ISA_M32R)
+#elif defined(CONFIG_ISA_M32R)
 
 	st	sp, @-sp
 	st	r0, @-sp

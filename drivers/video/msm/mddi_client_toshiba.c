@@ -282,4 +282,3 @@ static int __init mddi_client_toshiba_init(void)
 }
 
 module_init(mddi_client_toshiba_init);
-

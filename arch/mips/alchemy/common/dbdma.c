@@ -208,10 +208,6 @@ u32 au1xxx_ddma_add_device(dbdev_tab_t *dev)
 		p->dev_id = DSCR_DEV2CUSTOM_ID(new_id, dev->dev_id);
 		ret = p->dev_id;
 		new_id++;
-#if 0
-		printk(KERN_DEBUG "add_device: id:%x flags:%x padd:%x\n",
-				  p->dev_id, p->dev_flags, p->dev_physaddr);
-#endif
 	}
 
 	return ret;
@@ -535,12 +531,6 @@ u32 au1xxx_dbdma_ring_alloc(u32 chanid, int entries)
 	if (dtp->dev_physaddr)
 		dest0 = dtp->dev_physaddr;
 
-#if 0
-		printk(KERN_DEBUG "did:%x sid:%x cmd0:%x cmd1:%x source0:%x "
-				  "source1:%x dest0:%x dest1:%x\n",
-				  dtp->dev_id, stp->dev_id, cmd0, cmd1, src0,
-				  src1, dest0, dest1);
-#endif
 	for (i = 0; i < entries; i++) {
 		dp->dscr_cmd0 = cmd0;
 		dp->dscr_cmd1 = cmd1;
@@ -660,11 +650,6 @@ u32 au1xxx_dbdma_put_dest(u32 chanid, dma_addr_t buf, int nbytes, u32 flags)
 
 	dp->dscr_dest0 = buf & ~0UL;
 	dp->dscr_cmd1 = nbytes;
-#if 0
-	printk(KERN_DEBUG "cmd0:%x cmd1:%x source0:%x source1:%x dest0:%x dest1:%x\n",
-			  dp->dscr_cmd0, dp->dscr_cmd1, dp->dscr_source0,
-			  dp->dscr_source1, dp->dscr_dest0, dp->dscr_dest1);
-#endif
 	/*
 	 * There is an errata on the Au1200/Au1550 parts that could result in
 	 * "stale" data being DMA'ed. It has to do with the snoop logic on the

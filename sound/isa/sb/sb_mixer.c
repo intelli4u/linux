@@ -687,14 +687,8 @@ static struct sbmix_elem snd_als4000_controls[] = {
 	SB_SINGLE("3D Control - Switch", SB_ALS4000_3D_SND_FX, 6, 0x01),
 	SB_SINGLE("Digital Loopback Switch",
 		  SB_ALS4000_CR3_CONFIGURATION, 7, 0x01),
-	/* FIXME: functionality of 3D controls might be swapped, I didn't find
-	 * a description of how to identify what is supposed to be what */
 	SB_SINGLE("3D Control - Level", SB_ALS4000_3D_SND_FX, 0, 0x07),
-	/* FIXME: maybe there's actually some standard 3D ctrl name for it?? */
 	SB_SINGLE("3D Control - Freq", SB_ALS4000_3D_SND_FX, 4, 0x03),
-	/* FIXME: ALS4000a.pdf mentions BBD (Bucket Brigade Device) time delay,
-	 * but what ALSA 3D attribute is that actually? "Center", "Depth",
-	 * "Wide" or "Space" or even "Level"? Assuming "Wide" for now... */
 	SB_SINGLE("3D Control - Wide", SB_ALS4000_3D_TIME_DELAY, 0, 0x0f),
 	SB_SINGLE("3D PowerOff Switch", SB_ALS4000_3D_TIME_DELAY, 4, 0x01),
 	SB_SINGLE("Master Playback 8kHz / 20kHz LPF Switch",

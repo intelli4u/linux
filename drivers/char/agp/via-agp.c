@@ -403,12 +403,6 @@ static struct agp_device_ids via_agp_device_ids[] __devinitdata =
 	 * but VT3336 doesn't. - explaination from via, just leave this as
 	 * as a placeholder to avoid future patches adding it back in.
 	 */
-#if 0
-	{
-		.device_id  = PCI_DEVICE_ID_VIA_VT3336,
-		.chipset_name   = "VT3336",
-	},
-#endif
 	/* P4M890 */
 	{
 		.device_id  = PCI_DEVICE_ID_VIA_P4M890,

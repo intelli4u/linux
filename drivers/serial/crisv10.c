@@ -53,7 +53,7 @@ static char *serial_version = "$Revision: 1.25 $";
 #endif
 
 #if defined(CONFIG_ETRAX_SERIAL_RX_TIMEOUT_TICKS) && \
-           (CONFIG_ETRAX_SERIAL_RX_TIMEOUT_TICKS == 0)
+	(CONFIG_ETRAX_SERIAL_RX_TIMEOUT_TICKS == 0)
 #error "RX_TIMEOUT_TICKS == 0 not allowed, use 1"
 #endif
 
@@ -744,9 +744,9 @@ static unsigned char dummy_ser[NR_PORTS] = {0xFF, 0xFF, 0xFF,0xFF};
 
 
 #if defined(CONFIG_ETRAX_SER0_DTR_RI_DSR_CD_MIXED) || \
-    defined(CONFIG_ETRAX_SER1_DTR_RI_DSR_CD_MIXED) || \
-    defined(CONFIG_ETRAX_SER2_DTR_RI_DSR_CD_MIXED) || \
-    defined(CONFIG_ETRAX_SER3_DTR_RI_DSR_CD_MIXED)
+	defined(CONFIG_ETRAX_SER1_DTR_RI_DSR_CD_MIXED) || \
+	defined(CONFIG_ETRAX_SER2_DTR_RI_DSR_CD_MIXED) || \
+	defined(CONFIG_ETRAX_SER3_DTR_RI_DSR_CD_MIXED)
 #define CONFIG_ETRAX_SERX_DTR_RI_DSR_CD_MIXED
 #endif
 
@@ -1677,10 +1677,6 @@ transmit_chars_dma(struct e100_serial *info)
 static void
 start_transmit(struct e100_serial *info)
 {
-#if 0
-	if (info->line == SERIAL_DEBUG_LINE)
-		printk("x\n");
-#endif
 
 	info->tr_descr.sw_len = 0;
 	info->tr_descr.hw_len = 0;
@@ -2024,8 +2020,6 @@ tr_interrupt(int irq, void *dev_id)
 			transmit_chars_dma(info);
 		}
 
-		/* FIXME: here we should really check for a change in the
-		   status lines and if so call status_handle(info) */
 	}
 	return IRQ_RETVAL(handled);
 } /* tr_interrupt */
@@ -2066,8 +2060,6 @@ rec_interrupt(int irq, void *dev_id)
 			receive_chars_dma(info);
 		}
 
-		/* FIXME: here we should really check for a change in the
-		   status lines and if so call status_handle(info) */
 	}
 	return IRQ_RETVAL(handled);
 } /* rec_interrupt */
@@ -4236,7 +4228,6 @@ rs_open(struct tty_struct *tty, struct file * filp)
 		if (allocated_resources)
 			deinit_port(info);
 
-		/* FIXME Decrease count info->count here too? */
 		return retval;
 	}
 
@@ -4301,7 +4292,6 @@ static void seq_line_info(struct seq_file *m, struct e100_serial *info)
 		   (unsigned long)info->recv_cnt,
 		   (unsigned long)info->max_recv_cnt);
 
-#if 1
 	if (info->port.tty) {
 		if (info->port.tty->stopped)
 			seq_printf(m, " stopped:%i",
@@ -4316,8 +4306,6 @@ static void seq_line_info(struct seq_file *m, struct e100_serial *info)
 		if (rstat & IO_MASK(R_SERIAL0_STATUS, xoff_detect))
 			seq_printf(m, " xoff_detect:1");
 	}
-
-#endif
 
 	if (info->icount.frame)
 		seq_printf(m, " fe:%lu", (unsigned long)info->icount.frame);

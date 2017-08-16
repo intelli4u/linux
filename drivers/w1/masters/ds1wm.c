@@ -281,8 +281,6 @@ static void ds1wm_search(void *data, struct w1_master *master_dev,
 	int i;
 	unsigned long long rom_id;
 
-	/* XXX We need to iterate for multiple devices per the DS1WM docs.
-	 * See http://www.maxim-ic.com/appnotes.cfm/appnote_number/120. */
 	if (ds1wm_reset(ds1wm_data))
 		return;
 

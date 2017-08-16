@@ -537,19 +537,11 @@ e100_open(struct net_device *dev)
 	*R_NETWORK_SA_1 = dev->dev_addr[4] | (dev->dev_addr[5] << 8);
 	*R_NETWORK_SA_2 = 0;
 
-#if 0
-	/* use promiscuous mode for testing */
-	*R_NETWORK_GA_0 = 0xffffffff;
-	*R_NETWORK_GA_1 = 0xffffffff;
-
-	*R_NETWORK_REC_CONFIG = 0xd; /* broadcast rec, individ. rec, ma0 enabled */
-#else
 	SETS(network_rec_config_shadow, R_NETWORK_REC_CONFIG, max_size, size1522);
 	SETS(network_rec_config_shadow, R_NETWORK_REC_CONFIG, broadcast, receive);
 	SETS(network_rec_config_shadow, R_NETWORK_REC_CONFIG, ma0, enable);
 	SETF(network_rec_config_shadow, R_NETWORK_REC_CONFIG, duplex, full_duplex);
 	*R_NETWORK_REC_CONFIG = network_rec_config_shadow;
-#endif
 
 	*R_NETWORK_GEN_CONFIG =
 		IO_STATE(R_NETWORK_GEN_CONFIG, phy,    mii_clk) |

@@ -203,8 +203,8 @@ void bf5xx_ac97_write(struct snd_ac97 *ac97, unsigned short reg,
 
 static void bf5xx_ac97_warm_reset(struct snd_ac97 *ac97)
 {
-#if defined(CONFIG_BF54x) || defined(CONFIG_BF561) || \
- (defined(BF537_FAMILY) && (CONFIG_SND_BF5XX_SPORT_NUM == 1))
+#if defined(CONFIG_BF54x) || defined(CONFIG_BF561) || (defined(BF537_FAMILY) && \
+	(CONFIG_SND_BF5XX_SPORT_NUM == 1))
 
 #define CONCAT(a, b, c) a ## b ## c
 #define BFIN_SPORT_RFS(x) CONCAT(P_SPORT, x, _RFS)

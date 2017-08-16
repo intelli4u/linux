@@ -2327,7 +2327,6 @@ RT_STATUS rtl8192_BBConfig(struct net_device* dev)
 	RT_STATUS	rtStatus = RT_STATUS_SUCCESS;
 	rtl8192_InitBBRFRegDef(dev);
 	//config BB&RF. As hardCode based initialization has not been well
-	//implemented, so use file first.FIXME:should implement it for hardcode?
 	rtStatus = rtl8192_BB_Config_ParaFile(dev);
 	return rtStatus;
 }
@@ -3209,7 +3208,6 @@ void rtl8192_SetBWModeWorkItem(struct net_device *dev)
 	}
 	//Skip over setting of J-mode in BB register here. Default value is "None J mode". Emily 20070315
 
-#if 1
 	//<3>Set RF related register
 	switch( priv->rf_chip )
 	{
@@ -3235,7 +3233,6 @@ void rtl8192_SetBWModeWorkItem(struct net_device *dev)
 			RT_TRACE(COMP_ERR, "Unknown RFChipID: %d\n", priv->rf_chip);
 			break;
 	}
-#endif
 	atomic_dec(&(priv->ieee80211->atm_swbw));
 	priv->SetBWModeInProgress= false;
 
@@ -3349,4 +3346,3 @@ void InitialGain819xPci(struct net_device *dev, u8 Operation)
 		}
 	}
 }
-

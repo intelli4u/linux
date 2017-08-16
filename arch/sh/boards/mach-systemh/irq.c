@@ -17,9 +17,6 @@
 #include <mach/systemh7751.h>
 #include <asm/smc37c93x.h>
 
-/* address of external interrupt mask register
- * address must be set prior to use these (maybe in init_XXX_irq())
- * XXX : is it better to use .config than specifying it in code? */
 static unsigned long *systemh_irq_mask_register = (unsigned long *)0xB3F10004;
 static unsigned long *systemh_irq_request_register = (unsigned long *)0xB3F10000;
 

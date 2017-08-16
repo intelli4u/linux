@@ -432,11 +432,6 @@ static int request_fast_irq(unsigned int irq,
 	trap_table = &trapbase_cpu3; INSTANTIATE(trap_table)
 #endif
 #undef INSTANTIATE
-	/*
-	 * XXX Correct thing whould be to flush only I- and D-cache lines
-	 * which contain the handler in question. But as of time of the
-	 * writing we have no CPU-neutral interface to fine-grained flushes.
-	 */
 	flush_cache_all();
 
 	action->flags = irqflags;
@@ -495,7 +490,6 @@ void sparc_floppy_irq(int irq, void *dev_id, struct pt_regs *regs)
 	irq_exit();
 	enable_pil_irq(irq);
 	set_irq_regs(old_regs);
-	// XXX Eek, it's totally changed with preempt_count() and such
 	// if (softirq_pending(cpu))
 	//	do_softirq();
 }

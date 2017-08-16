@@ -523,7 +523,6 @@ pt1_update_power(struct pt1 *pt1)
 			break;
 		}
 
-		/* XXX: The bits should be changed depending on adap->sleep. */
 		bits |= sleep_bits[i];
 	}
 	pt1_write_reg(pt1, 1, bits);

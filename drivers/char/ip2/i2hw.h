@@ -649,4 +649,3 @@ typedef union _loadHdrStr
 #define I2_INSB(port, addr, count)	insb((port), (addr), (((count)+1))&-2)
 
 #endif   // I2HW_H
-

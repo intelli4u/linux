@@ -69,7 +69,6 @@
  */
 #define PWRDM_MAX_CLKDMS	9
 
-/* XXX A completely arbitrary number. What is reasonable here? */
 #define PWRDM_TRANSITION_BAILOUT 100000
 
 struct clockdomain;

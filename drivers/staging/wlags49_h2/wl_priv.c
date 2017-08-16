@@ -723,7 +723,6 @@ int wvlan_uil_put_info( struct uilreq *urq, struct wl_private *lp )
 				//case CFG_PROBE_DATA_RATE:
 #endif  // HERMES25
 
-#if 1 //;? (HCF_TYPE) & HCF_TYPE_AP
 		//;?should we restore this to allow smaller memory footprint
 
 				case CFG_CNF_OWN_DTIM_PERIOD:
@@ -775,7 +774,6 @@ int wvlan_uil_put_info( struct uilreq *urq, struct wl_private *lp )
 					lp->RejectAny   = pLtv->u.u16[0];
 					pLtv->u.u16[0]  = CNV_INT_TO_LITTLE( pLtv->u.u16[0] );
 					break;
-#endif
 
 				case CFG_CNF_ENCRYPTION:
 					lp->EnableEncryption    = pLtv->u.u16[0];
@@ -785,7 +783,6 @@ int wvlan_uil_put_info( struct uilreq *urq, struct wl_private *lp )
 					lp->authentication  = pLtv->u.u16[0];
 					pLtv->u.u16[0]      = CNV_INT_TO_LITTLE( pLtv->u.u16[0] );
 					break;
-#if 1 //;? (HCF_TYPE) & HCF_TYPE_AP
 		//;?should we restore this to allow smaller memory footprint
 
 				//case CFG_CNF_EXCL_UNENCRYPTED:
@@ -799,7 +796,6 @@ int wvlan_uil_put_info( struct uilreq *urq, struct wl_private *lp )
 					lp->intraBSSRelay   = pLtv->u.u16[0];
 					pLtv->u.u16[0]      = CNV_INT_TO_LITTLE( pLtv->u.u16[0] );
 					break;
-#endif
 
 				case CFG_CNF_MICRO_WAVE:
 					/* TODO: determine if we are going to store anything based on this */
@@ -856,7 +852,6 @@ int wvlan_uil_put_info( struct uilreq *urq, struct wl_private *lp )
 				//case CFG_WAKE_ON_LAN:
 					/* TODO: determine if we are going to store anything based on this */
 					//break;
-#if 1 //;? #if (HCF_TYPE) & HCF_TYPE_AP
 		//;?should we restore this to allow smaller memory footprint
 				case CFG_RTS_THRH0:
 					lp->RTSThreshold    = pLtv->u.u16[0];
@@ -928,7 +923,6 @@ int wvlan_uil_put_info( struct uilreq *urq, struct wl_private *lp )
 					hcfPort                     = HCF_PORT_6;
 					break;
 #endif  /* USE_WDS */
-#endif  /* (HCF_TYPE) & HCF_TYPE_AP */
 
 				case CFG_DEFAULT_KEYS:
 					{
@@ -1086,7 +1080,6 @@ int wvlan_uil_put_info( struct uilreq *urq, struct wl_private *lp )
 				case CFG_CNF_CONNECTION_CNTL:
 				//case CFG_PROBE_DATA_RATE:
 #endif // HERMES25
-#if 1 //;? (HCF_TYPE) & HCF_TYPE_AP
 		//;?should we restore this to allow smaller memory footprint
 				case CFG_CNF_OWN_DTIM_PERIOD:
 #ifdef WARP
@@ -1102,17 +1095,14 @@ int wvlan_uil_put_info( struct uilreq *urq, struct wl_private *lp )
 #endif
 				case CFG_CNF_MCAST_PM_BUF:
 				case CFG_CNF_REJECT_ANY:
-#endif
 
 				case CFG_CNF_ENCRYPTION:
 				case CFG_CNF_AUTHENTICATION:
-#if 1 //;? (HCF_TYPE) & HCF_TYPE_AP
 		//;?should we restore this to allow smaller memory footprint
 
 				case CFG_CNF_EXCL_UNENCRYPTED:
 				case CFG_CNF_MCAST_RATE:
 				case CFG_CNF_INTRA_BSS_RELAY:
-#endif
 
 				case CFG_CNF_MICRO_WAVE:
 				//case CFG_CNF_LOAD_BALANCING:

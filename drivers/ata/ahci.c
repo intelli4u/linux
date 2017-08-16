@@ -384,6 +384,12 @@ static const struct pci_device_id ahci_pci_tbl[] = {
 	/* Promise */
 	{ PCI_VDEVICE(PROMISE, 0x3f20), board_ahci },	/* PDC42819 */
 
+	/* ASMedia */
+	{ PCI_VDEVICE(ASMEDIA, 0x0601), board_ahci },
+	{ PCI_VDEVICE(ASMEDIA, 0x0602), board_ahci },
+	{ PCI_VDEVICE(ASMEDIA, 0x0611), board_ahci },
+	{ PCI_VDEVICE(ASMEDIA, 0x0612), board_ahci },
+
 	/* Generic, PCI class code for AHCI */
 	{ PCI_ANY_ID, PCI_ANY_ID, PCI_ANY_ID, PCI_ANY_ID,
 	  PCI_CLASS_STORAGE_SATA_AHCI, 0xffffff, board_ahci },
@@ -584,19 +590,6 @@ static int ahci_p5wdh_hardreset(struct ata_link *link, unsigned int *class,
 
 	ahci_start_engine(ap);
 
-	/* The pseudo configuration device on SIMG4726 attached to
-	 * ASUS P5W-DH Deluxe doesn't send signature FIS after
-	 * hardreset if no device is attached to the first downstream
-	 * port && the pseudo device locks up on SRST w/ PMP==0.  To
-	 * work around this, wait for !BSY only briefly.  If BSY isn't
-	 * cleared, perform CLO and proceed to IDENTIFY (achieved by
-	 * ATA_LFLAG_NO_SRST and ATA_LFLAG_ASSUME_ATA).
-	 *
-	 * Wait for two seconds.  Devices attached to downstream port
-	 * which can't process the following IDENTIFY after this will
-	 * have to be reset again.  For most cases, this should
-	 * suffice while making probing snappish enough.
-	 */
 	if (online) {
 		rc = ata_wait_after_reset(link, jiffies + 2 * HZ,
 					  ahci_check_ready);
@@ -1129,7 +1122,6 @@ static int ahci_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	    (pdev->revision == 0xa1 || pdev->revision == 0xa2))
 		hpriv->flags |= AHCI_HFLAG_NO_MSI;
 
-	/* SB800 does NOT need the workaround to ignore SERR_INTERNAL */
 	if (board_id == board_ahci_sb700 && pdev->revision >= 0x40)
 		hpriv->flags &= ~AHCI_HFLAG_IGN_SERR_INTERNAL;
 
@@ -1221,7 +1213,6 @@ static int ahci_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 			ap->ops = &ata_dummy_port_ops;
 	}
 
-	/* apply workaround for ASUS P5W DH Deluxe mainboard */
 	ahci_p5wdh_workaround(host);
 
 	/* apply gtf filter quirk */

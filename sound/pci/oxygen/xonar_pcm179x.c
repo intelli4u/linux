@@ -579,7 +579,6 @@ static void update_cs2000_rate(struct oxygen *chip, unsigned int rate)
 	u8 rate_mclk, reg;
 
 	switch (rate) {
-		/* XXX Why is the I2S A MCLK half the actual I2S MCLK? */
 	case 32000:
 		rate_mclk = OXYGEN_RATE_32000 | OXYGEN_I2S_MCLK_256;
 		break;

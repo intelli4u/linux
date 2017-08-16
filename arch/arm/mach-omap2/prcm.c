@@ -122,7 +122,6 @@ struct omap3_prcm_regs prcm_context;
 
 u32 omap_prcm_get_reset_sources(void)
 {
-	/* XXX This presumably needs modification for 34XX */
 	if (cpu_is_omap24xx() || cpu_is_omap34xx())
 		return prm_read_mod_reg(WKUP_MOD, OMAP2_RM_RSTST) & 0x7f;
 	if (cpu_is_omap44xx())

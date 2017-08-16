@@ -60,7 +60,7 @@ MODULE_PARM_DESC(buffer_size, "DMA buffer allocation size");
 #define	MODER_NBO	(1 <<  8) /* no back-off */
 #define	MODER_EDE	(1 <<  9) /* excess defer enable */
 #define	MODER_FULLD	(1 << 10) /* full duplex */
-#define	MODER_RESET	(1 << 11) /* FIXME: reset (undocumented) */
+#define	MODER_RESET	(1 << 11)
 #define	MODER_DCRC	(1 << 12) /* delayed CRC enable */
 #define	MODER_CRC	(1 << 13) /* CRC enable */
 #define	MODER_HUGE	(1 << 14) /* huge packets enable */
@@ -1145,4 +1145,3 @@ module_exit(ethoc_exit);
 MODULE_AUTHOR("Thierry Reding <thierry.reding@avionic-design.de>");
 MODULE_DESCRIPTION("OpenCores Ethernet MAC driver");
 MODULE_LICENSE("GPL v2");
-

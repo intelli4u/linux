@@ -338,7 +338,6 @@ netxen_check_hw_init(struct netxen_adapter *adapter, int first_boot)
 		if (!NX_IS_REVISION_P2(adapter->ahw.revision_id))
 			return 0;
 
-		/* PCI bus master workaround */
 		first_boot = NXRD32(adapter, NETXEN_PCIE_REG(0x4));
 		if (!(first_boot & 0x4)) {
 			first_boot |= 0x4;

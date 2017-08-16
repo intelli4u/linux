@@ -590,8 +590,6 @@ static int radeon_vga_get_modes(struct drm_connector *connector)
 static int radeon_vga_mode_valid(struct drm_connector *connector,
 				  struct drm_display_mode *mode)
 {
-	/* XXX check mode bandwidth */
-	/* XXX verify against max DAC output frequency */
 	return MODE_OK;
 }
 
@@ -918,7 +916,6 @@ static int radeon_dvi_mode_valid(struct drm_connector *connector,
 	struct radeon_device *rdev = dev->dev_private;
 	struct radeon_connector *radeon_connector = to_radeon_connector(connector);
 
-	/* XXX check mode bandwidth */
 
 	/* clocks over 135 MHz have heat issues with DVI on RV100 */
 	if (radeon_connector->use_digital &&
@@ -1014,7 +1011,6 @@ static int radeon_dp_mode_valid(struct drm_connector *connector,
 	struct radeon_connector *radeon_connector = to_radeon_connector(connector);
 	struct radeon_connector_atom_dig *radeon_dig_connector = radeon_connector->con_priv;
 
-	/* XXX check mode bandwidth */
 
 	if ((radeon_dig_connector->dp_sink_type == CONNECTOR_OBJECT_ID_DISPLAYPORT) ||
 	    (radeon_dig_connector->dp_sink_type == CONNECTOR_OBJECT_ID_eDP))

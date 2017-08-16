@@ -191,10 +191,6 @@ void __put_task_struct(struct task_struct *tsk)
 		free_task(tsk);
 }
 
-/*
- * macro override instead of weak attribute alias, to workaround
- * gcc 4.1.0 and 4.1.1 bugs with weak attribute and empty functions.
- */
 #ifndef arch_task_cache_init
 #define arch_task_cache_init()
 #endif

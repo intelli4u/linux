@@ -175,4 +175,3 @@ MODULE_LICENSE("GPL");
 
 module_init(i2c_hydra_init);
 module_exit(i2c_hydra_exit);
-

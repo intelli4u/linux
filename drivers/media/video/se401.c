@@ -1061,7 +1061,7 @@ static long se401_do_ioctl(struct file *file, unsigned int cmd, void *arg)
 	{
 		struct video_window *vw = arg;
 
-		vw->x = 0;               /* FIXME */
+		vw->x = 0;
 		vw->y = 0;
 		vw->chromakey = 0;
 		vw->flags = 0;

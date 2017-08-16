@@ -62,42 +62,6 @@
  *   run this mode)
  */
 
-/*
- * 29.Sept.96: virt_to_bus changes for new memory scheme
- * 19.Feb.96: more Mcast changes, module support (MH)
- *
- * 18.Nov.95: Mcast changes (AC).
- *
- * 23.April.95: fixed(?) receiving problems by configuring a RFD more
- *              than the number of RBD's. Can maybe cause other problems.
- * 18.April.95: Added MODULE support (MH)
- * 17.April.95: MC related changes in init586() and set_multicast_list().
- *              removed use of 'jiffies' in init586() (MH)
- *
- * 19.Sep.94: Added Multicast support (not tested yet) (MH)
- *
- * 18.Sep.94: Workaround for 'EL-Bug'. Removed flexible RBD-handling.
- *            Now, every RFD has exact one RBD. (MH)
- *
- * 14.Sep.94: added promiscuous mode, a few cleanups (MH)
- *
- * 19.Aug.94: changed request_irq() parameter (MH)
- *
- * 20.July.94: removed cleanup bugs, removed a 16K-mem-probe-bug (MH)
- *
- * 19.July.94: lotsa cleanups .. (MH)
- *
- * 17.July.94: some patches ... verified to run with 1.1.29 (MH)
- *
- * 4.July.94: patches for Linux 1.1.24  (MH)
- *
- * 26.March.94: patches for Linux 1.0 and iomem-auto-probe (MH)
- *
- * 30.Sep.93: Added nop-chain .. driver now runs with only one Xmit-Buff,
- *				too (MH)
- *
- * < 30.Sep.93: first versions
- */
 
 static int debuglevel;	/* debug-printk 0: off 1: a few 2: more */
 static int automatic_resume; /* experimental .. better should be zero */

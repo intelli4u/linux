@@ -226,9 +226,6 @@ typedef enum {
 	AHD_AIC7902_FE		= AHD_MULTI_FUNC
 } ahd_feature;
 
-/*
- * Bugs in the silicon that we work around in software.
- */
 typedef enum {
 	AHD_BUGNONE		= 0x0000,
 	/*

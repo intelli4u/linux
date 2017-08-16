@@ -888,5 +888,3 @@ bfa_lps_isr(struct bfa_s *bfa, struct bfi_msg_s *m)
 		bfa_assert(0);
 	}
 }
-
-

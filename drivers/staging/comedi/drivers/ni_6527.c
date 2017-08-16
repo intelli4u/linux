@@ -414,7 +414,7 @@ static int ni6527_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	s->type = COMEDI_SUBD_DO;
 	s->subdev_flags = SDF_READABLE | SDF_WRITABLE;
 	s->n_chan = 24;
-	s->range_table = &range_unknown;  /* FIXME: actually conductance */
+	s->range_table = &range_unknown;
 	s->maxdata = 1;
 	s->insn_bits = ni6527_do_insn_bits;
 

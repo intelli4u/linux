@@ -122,7 +122,7 @@ ide_startstop_t do_rw_taskfile(ide_drive_t *drive, struct ide_cmd *orig_cmd)
 	case ATA_PROT_PIO:
 		if (cmd->tf_flags & IDE_TFLAG_WRITE) {
 			tp_ops->exec_command(hwif, tf->command);
-			ndelay(400);	/* FIXME */
+			ndelay(400);
 			return pre_task_out_intr(drive, cmd);
 		}
 		handler = task_pio_intr;

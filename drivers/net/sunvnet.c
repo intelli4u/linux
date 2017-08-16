@@ -407,7 +407,6 @@ static int vnet_rx(struct vnet_port *port, void *msgbuf)
 
 	dr->rcv_nxt++;
 
-	/* XXX Validate pkt->start_idx and pkt->end_idx XXX */
 
 	return vnet_walk_rx(port, dr, pkt->start_idx, pkt->end_idx);
 }
@@ -455,7 +454,6 @@ static int vnet_ack(struct vnet_port *port, void *msgbuf)
 
 static int vnet_nack(struct vnet_port *port, void *msgbuf)
 {
-	/* XXX just reset or similar XXX */
 	return 0;
 }
 
@@ -730,7 +728,6 @@ out_dropped:
 
 static void vnet_tx_timeout(struct net_device *dev)
 {
-	/* XXX Implement me XXX */
 }
 
 static int vnet_open(struct net_device *dev)

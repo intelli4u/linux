@@ -414,7 +414,7 @@ int tipc_bclink_send_msg(struct sk_buff *buf)
 
 void tipc_bclink_recv_pkt(struct sk_buff *buf)
 {
-#if (TIPC_BCAST_LOSS_RATE)
+#if TIPC_BCAST_LOSS_RATE
 	static int rx_count = 0;
 #endif
 	struct tipc_msg *msg = buf_msg(buf);
@@ -454,7 +454,7 @@ void tipc_bclink_recv_pkt(struct sk_buff *buf)
 		return;
 	}
 
-#if (TIPC_BCAST_LOSS_RATE)
+#if TIPC_BCAST_LOSS_RATE
 	if (++rx_count == TIPC_BCAST_LOSS_RATE) {
 		rx_count = 0;
 		buf_discard(buf);
@@ -931,4 +931,3 @@ void tipc_port_list_free(struct port_list *pl_ptr)
 		kfree(item);
 	}
 }
-

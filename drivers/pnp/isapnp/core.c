@@ -45,9 +45,6 @@
 
 #include "../base.h"
 
-#if 0
-#define ISAPNP_REGION_OK
-#endif
 
 int isapnp_disable;		/* Disable ISA PnP */
 static int isapnp_rdp;		/* Read Data Port */
@@ -379,10 +376,6 @@ static int __init isapnp_read_tag(unsigned char *type, unsigned short *size)
 		*type = (tag >> 3) & 0x0f;
 		*size = tag & 0x07;
 	}
-#if 0
-	printk(KERN_DEBUG "tag = 0x%x, type = 0x%x, size = %i\n", tag, *type,
-	       *size);
-#endif
 	if (*type == 0xff && *size == 0xffff)	/* probably invalid data */
 		return -1;
 	return 0;
@@ -813,13 +806,6 @@ static int __init isapnp_build_device_list(void)
 		if (!card)
 			continue;
 
-#if 0
-		dev_info(&card->dev,
-		       "vendor: %02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x\n",
-		       header[0], header[1], header[2], header[3], header[4],
-		       header[5], header[6], header[7], header[8]);
-		dev_info(&card->dev, "checksum = %#x\n", checksum);
-#endif
 		INIT_LIST_HEAD(&card->devices);
 		card->serial =
 		    (header[7] << 24) | (header[6] << 16) | (header[5] << 8) |
@@ -860,20 +846,6 @@ int isapnp_cfg_begin(int csn, int logdev)
 	isapnp_wait();
 	isapnp_key();
 	isapnp_wake(csn);
-#if 0
-	/* to avoid malfunction when the isapnptools package is used */
-	/* we must set RDP to our value again */
-	/* it is possible to set RDP only in the isolation phase */
-	/*   Jens Thoms Toerring <Jens.Toerring@physik.fu-berlin.de> */
-	isapnp_write_byte(0x02, 0x04);	/* clear CSN of card */
-	mdelay(2);		/* is this necessary? */
-	isapnp_wake(csn);	/* bring card into sleep state */
-	isapnp_wake(0);		/* bring card into isolation state */
-	isapnp_set_rdp();	/* reset the RDP port */
-	udelay(1000);		/* delay 1000us */
-	isapnp_write_byte(0x06, csn);	/* reset CSN to previous value */
-	udelay(250);		/* is this necessary? */
-#endif
 	if (logdev >= 0)
 		isapnp_device(logdev);
 	return 0;
@@ -977,7 +949,6 @@ static int isapnp_set_resources(struct pnp_dev *dev)
 					  (res->start >> 8) & 0xffff);
 		}
 	}
-	/* FIXME: We aren't handling 32bit mems properly here */
 	isapnp_activate(dev->number);
 	isapnp_cfg_end();
 	return 0;

@@ -374,4 +374,3 @@ void __init at572d940hf_init_interrupts(unsigned int priority[NR_AIC_IRQS])
 	/* Enable GPIO interrupts */
 	at91_gpio_irq_setup();
 }
-

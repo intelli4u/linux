@@ -57,20 +57,6 @@ struct clkops {
 #define RATE_IN_24XX		(RATE_IN_242X | RATE_IN_243X)
 #define RATE_IN_3430ES2PLUS	(RATE_IN_3430ES2 | RATE_IN_36XX)
 
-/**
- * struct clksel_rate - register bitfield values corresponding to clk divisors
- * @val: register bitfield value (shifted to bit 0)
- * @div: clock divisor corresponding to @val
- * @flags: (see "struct clksel_rate.flags possibilities" above)
- *
- * @val should match the value of a read from struct clk.clksel_reg
- * AND'ed with struct clk.clksel_mask, shifted right to bit 0.
- *
- * @div is the divisor that should be applied to the parent clock's rate
- * to produce the current clock's rate.
- *
- * XXX @flags probably should be replaced with an struct omap_chip.
- */
 struct clksel_rate {
 	u32			val;
 	u8			div;
@@ -90,50 +76,6 @@ struct clksel {
 	const struct clksel_rate *rates;
 };
 
-/**
- * struct dpll_data - DPLL registers and integration data
- * @mult_div1_reg: register containing the DPLL M and N bitfields
- * @mult_mask: mask of the DPLL M bitfield in @mult_div1_reg
- * @div1_mask: mask of the DPLL N bitfield in @mult_div1_reg
- * @clk_bypass: struct clk pointer to the clock's bypass clock input
- * @clk_ref: struct clk pointer to the clock's reference clock input
- * @control_reg: register containing the DPLL mode bitfield
- * @enable_mask: mask of the DPLL mode bitfield in @control_reg
- * @rate_tolerance: maximum variance allowed from target rate (in Hz)
- * @last_rounded_rate: cache of the last rate result of omap2_dpll_round_rate()
- * @last_rounded_m: cache of the last M result of omap2_dpll_round_rate()
- * @max_multiplier: maximum valid non-bypass multiplier value (actual)
- * @last_rounded_n: cache of the last N result of omap2_dpll_round_rate()
- * @min_divider: minimum valid non-bypass divider value (actual)
- * @max_divider: maximum valid non-bypass divider value (actual)
- * @modes: possible values of @enable_mask
- * @autoidle_reg: register containing the DPLL autoidle mode bitfield
- * @idlest_reg: register containing the DPLL idle status bitfield
- * @autoidle_mask: mask of the DPLL autoidle mode bitfield in @autoidle_reg
- * @freqsel_mask: mask of the DPLL jitter correction bitfield in @control_reg
- * @idlest_mask: mask of the DPLL idle status bitfield in @idlest_reg
- * @auto_recal_bit: bitshift of the driftguard enable bit in @control_reg
- * @recal_en_bit: bitshift of the PRM_IRQENABLE_* bit for recalibration IRQs
- * @recal_st_bit: bitshift of the PRM_IRQSTATUS_* bit for recalibration IRQs
- * @flags: DPLL type/features (see below)
- *
- * Possible values for @flags:
- * DPLL_J_TYPE: "J-type DPLL" (only some 36xx, 4xxx DPLLs)
- * NO_DCO_SEL: don't program DCO (only for some J-type DPLLs)
-
- * @freqsel_mask is only used on the OMAP34xx family and AM35xx.
- *
- * XXX Some DPLLs have multiple bypass inputs, so it's not technically
- * correct to only have one @clk_bypass pointer.
- *
- * XXX @rate_tolerance should probably be deprecated - currently there
- * don't seem to be any usecases for DPLL rounding that is not exact.
- *
- * XXX The runtime-variable fields (@last_rounded_rate, @last_rounded_m,
- * @last_rounded_n) should be separated from the runtime-fixed fields
- * and placed into a differenct structure, so that the runtime-fixed data
- * can be placed into read-only space.
- */
 struct dpll_data {
 	void __iomem		*mult_div1_reg;
 	u32			mult_mask;
@@ -172,53 +114,6 @@ struct dpll_data {
 #define ENABLE_ON_INIT		(1 << 3)	/* Enable upon framework init */
 #define INVERT_ENABLE		(1 << 4)	/* 0 enables, 1 disables */
 
-/**
- * struct clk - OMAP struct clk
- * @node: list_head connecting this clock into the full clock list
- * @ops: struct clkops * for this clock
- * @name: the name of the clock in the hardware (used in hwmod data and debug)
- * @parent: pointer to this clock's parent struct clk
- * @children: list_head connecting to the child clks' @sibling list_heads
- * @sibling: list_head connecting this clk to its parent clk's @children
- * @rate: current clock rate
- * @enable_reg: register to write to enable the clock (see @enable_bit)
- * @recalc: fn ptr that returns the clock's current rate
- * @set_rate: fn ptr that can change the clock's current rate
- * @round_rate: fn ptr that can round the clock's current rate
- * @init: fn ptr to do clock-specific initialization
- * @enable_bit: bitshift to write to enable/disable the clock (see @enable_reg)
- * @usecount: number of users that have requested this clock to be enabled
- * @fixed_div: when > 0, this clock's rate is its parent's rate / @fixed_div
- * @flags: see "struct clk.flags possibilities" above
- * @clksel_reg: for clksel clks, register va containing src/divisor select
- * @clksel_mask: bitmask in @clksel_reg for the src/divisor selector
- * @clksel: for clksel clks, pointer to struct clksel for this clock
- * @dpll_data: for DPLLs, pointer to struct dpll_data for this clock
- * @clkdm_name: clockdomain name that this clock is contained in
- * @clkdm: pointer to struct clockdomain, resolved from @clkdm_name at runtime
- * @rate_offset: bitshift for rate selection bitfield (OMAP1 only)
- * @src_offset: bitshift for source selection bitfield (OMAP1 only)
- *
- * XXX @rate_offset, @src_offset should probably be removed and OMAP1
- * clock code converted to use clksel.
- *
- * XXX @usecount is poorly named.  It should be "enable_count" or
- * something similar.  "users" in the description refers to kernel
- * code (core code or drivers) that have called clk_enable() and not
- * yet called clk_disable(); the usecount of parent clocks is also
- * incremented by the clock code when clk_enable() is called on child
- * clocks and decremented by the clock code when clk_disable() is
- * called on child clocks.
- *
- * XXX @clkdm, @usecount, @children, @sibling should be marked for
- * internal use only.
- *
- * @children and @sibling are used to optimize parent-to-child clock
- * tree traversals.  (child-to-parent traversals use @parent.)
- *
- * XXX The notion of the clock's current rate probably needs to be
- * separated from the clock's target rate.
- */
 struct clk {
 	struct list_head	node;
 	const struct clkops	*ops;

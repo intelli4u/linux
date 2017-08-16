@@ -16,7 +16,7 @@ enum hgpk_model_t {
 struct hgpk_data {
 	struct psmouse *psmouse;
 	bool powered;
-	int count, x_tally, y_tally;	/* hardware workaround stuff */
+	int count, x_tally, y_tally;
 	unsigned long recalib_window;
 	struct delayed_work recalib_wq;
 };

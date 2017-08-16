@@ -110,7 +110,7 @@ static inline unsigned long fd_dma_mem_alloc(unsigned long size)
 	mem = __get_dma_pages(GFP_KERNEL, get_order(size));
 	if(!mem)
 		return 0;
-	vdma_alloc(CPHYSADDR(mem), size);	/* XXX error checking */
+	vdma_alloc(CPHYSADDR(mem), size);
 
 	return mem;
 }
@@ -123,9 +123,6 @@ static inline void fd_dma_mem_free(unsigned long addr, unsigned long size)
 
 static inline unsigned long fd_drive_type(unsigned long n)
 {
-	/* XXX This is wrong for machines with ED 2.88mb disk drives like the
-	   Olivetti M700.  Anyway, we should suck this from the ARC
-	   firmware.  */
 	if (n == 0)
 		return 4;	/* 3,5", 1.44mb */
 

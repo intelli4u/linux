@@ -903,6 +903,3 @@ out:
 		up_write(&mdsc->snap_rwsem);
 	return;
 }
-
-
-

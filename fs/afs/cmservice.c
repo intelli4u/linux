@@ -17,9 +17,6 @@
 #include "internal.h"
 #include "afs_cm.h"
 
-#if 0
-struct workqueue_struct *afs_cm_workqueue;
-#endif  /*  0  */
 
 static int afs_deliver_cb_init_call_back_state(struct afs_call *,
 					       struct sk_buff *, bool);

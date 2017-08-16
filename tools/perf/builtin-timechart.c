@@ -532,16 +532,6 @@ static void end_sample_processing(void)
 		memset(pwr, 0, sizeof(struct power_event));
 
 		/* C state */
-#if 0
-		pwr->state = cpus_cstate_state[cpu];
-		pwr->start_time = cpus_cstate_start_times[cpu];
-		pwr->end_time = last_time;
-		pwr->cpu = cpu;
-		pwr->type = CSTATE;
-		pwr->next = power_events;
-
-		power_events = pwr;
-#endif
 		/* P state */
 
 		pwr = malloc(sizeof(struct power_event));

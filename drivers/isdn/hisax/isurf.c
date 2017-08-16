@@ -1,4 +1,4 @@
-/* $Id: isurf.c,v 1.12.2.4 2004/01/13 21:46:03 keil Exp $
+/* $Id: isurf.c,v 1.12.2.4 2004/01/13 21:46:03 Exp $
  *
  * low level stuff for Siemens I-Surf/I-Talk cards
  *

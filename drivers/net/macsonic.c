@@ -403,10 +403,6 @@ static int __devinit mac_onboard_sonic_probe(struct net_device *dev)
 	       "%s: revision 0x%04x, using %d bit DMA and register offset %d\n",
 	       dev_name(lp->device), sr, lp->dma_bitmode?32:16, lp->reg_offset);
 
-#if 0 /* This is sometimes useful to find out how MacOS configured the card. */
-	printk(KERN_INFO "%s: DCR: 0x%04x, DCR2: 0x%04x\n", dev_name(lp->device),
-	       SONIC_READ(SONIC_DCR) & 0xffff, SONIC_READ(SONIC_DCR2) & 0xffff);
-#endif
 
 	/* Software reset, then initialize control registers. */
 	SONIC_WRITE(SONIC_CMD, SONIC_CR_RST);
@@ -559,10 +555,6 @@ static int __devinit mac_nubus_sonic_probe(struct net_device *dev)
 	printk(KERN_INFO "%s: revision 0x%04x, using %d bit DMA and register offset %d\n",
 	       dev_name(lp->device), SONIC_READ(SONIC_SR), dma_bitmode?32:16, reg_offset);
 
-#if 0 /* This is sometimes useful to find out how MacOS configured the card. */
-	printk(KERN_INFO "%s: DCR: 0x%04x, DCR2: 0x%04x\n", dev_name(lp->device),
-	       SONIC_READ(SONIC_DCR) & 0xffff, SONIC_READ(SONIC_DCR2) & 0xffff);
-#endif
 
 	/* Software reset, then initialize control registers. */
 	SONIC_WRITE(SONIC_CMD, SONIC_CR_RST);

@@ -308,7 +308,6 @@ static void twl4030_usb_set_mode(struct twl4030_usb *twl, int mode)
 					ULPI_FUNC_CTRL_OPMODE_MASK);
 		break;
 	case -1:
-		/* FIXME: power on defaults */
 		break;
 	default:
 		dev_err(twl->dev, "unsupported T2 transceiver mode %d\n",
@@ -364,13 +363,6 @@ static void twl4030_phy_power(struct twl4030_usb *twl, int on)
 	if (on) {
 		regulator_enable(twl->usb3v1);
 		regulator_enable(twl->usb1v8);
-		/*
-		 * Disabling usb3v1 regulator (= writing 0 to VUSB3V1_DEV_GRP
-		 * in twl4030) resets the VUSB_DEDICATED2 register. This reset
-		 * enables VUSB3V1_SLEEP bit that remaps usb3v1 ACTIVE state to
-		 * SLEEP. We work around this by clearing the bit after usv3v1
-		 * is re-activated. This ensures that VUSB3V1 is really active.
-		 */
 		twl_i2c_write_u8(TWL4030_MODULE_PM_RECEIVER, 0,
 							VUSB_DEDICATED2);
 		regulator_enable(twl->usb1v5);
@@ -491,17 +483,6 @@ static irqreturn_t twl4030_usb_irq(int irq, void *_twl)
 
 	status = twl4030_usb_linkstat(twl);
 	if (status >= 0) {
-		/* FIXME add a set_power() method so that B-devices can
-		 * configure the charger appropriately.  It's not always
-		 * correct to consume VBUS power, and how much current to
-		 * consume is a function of the USB configuration chosen
-		 * by the host.
-		 *
-		 * REVISIT usb_gadget_vbus_connect(...) as needed, ditto
-		 * its disconnect() sibling, when changing to/from the
-		 * USB_LINK_VBUS state.  musb_hdrc won't care until it
-		 * starts to handle softconnect right.
-		 */
 		if (status == USB_EVENT_NONE)
 			twl4030_phy_suspend(twl, 0);
 		else
@@ -620,14 +601,6 @@ static int __devinit twl4030_usb_probe(struct platform_device *pdev)
 
 	BLOCKING_INIT_NOTIFIER_HEAD(&twl->otg.notifier);
 
-	/* Our job is to use irqs and status from the power module
-	 * to keep the transceiver disabled when nothing's connected.
-	 *
-	 * FIXME we actually shouldn't start enabling it until the
-	 * USB controller drivers have said they're ready, by calling
-	 * set_host() and/or set_peripheral() ... OTG_capable boards
-	 * need both handles, otherwise just one suffices.
-	 */
 	twl->irq_enabled = true;
 	status = request_threaded_irq(twl->irq, NULL, twl4030_usb_irq,
 			IRQF_TRIGGER_FALLING | IRQF_TRIGGER_RISING,

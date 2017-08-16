@@ -63,10 +63,6 @@ static inline unsigned long get_msc_port_base(unsigned long reg)
 #define GIC_BASE_ADDR			0x1bdc0000
 #define GIC_ADDRSPACE_SZ		(128 * 1024)
 
-/*
- * MSC01 BIU Specific definitions
- * FIXME : These should be elsewhere ?
- */
 #define MSC01_BIU_REG_BASE		0x1bc80000
 #define MSC01_BIU_ADDRSPACE_SZ		(256 * 1024)
 #define MSC01_SC_CFG_OFS		0x0110

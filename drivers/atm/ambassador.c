@@ -52,246 +52,6 @@ static inline void __init show_version (void) {
   printk ("%s version %s\n", description_string, version_string);
 }
 
-/*
-  
-  Theory of Operation
-  
-  I Hardware, detection, initialisation and shutdown.
-  
-  1. Supported Hardware
-  
-  This driver is for the PCI ATMizer-based Ambassador card (except
-  very early versions). It is not suitable for the similar EISA "TR7"
-  card. Commercially, both cards are known as Collage Server ATM
-  adapters.
-  
-  The loader supports image transfer to the card, image start and few
-  other miscellaneous commands.
-  
-  Only AAL5 is supported with vpi = 0 and vci in the range 0 to 1023.
-  
-  The cards are big-endian.
-  
-  2. Detection
-  
-  Standard PCI stuff, the early cards are detected and rejected.
-  
-  3. Initialisation
-  
-  The cards are reset and the self-test results are checked. The
-  microcode image is then transferred and started. This waits for a
-  pointer to a descriptor containing details of the host-based queues
-  and buffers and various parameters etc. Once they are processed
-  normal operations may begin. The BIA is read using a microcode
-  command.
-  
-  4. Shutdown
-  
-  This may be accomplished either by a card reset or via the microcode
-  shutdown command. Further investigation required.
-  
-  5. Persistent state
-  
-  The card reset does not affect PCI configuration (good) or the
-  contents of several other "shared run-time registers" (bad) which
-  include doorbell and interrupt control as well as EEPROM and PCI
-  control. The driver must be careful when modifying these registers
-  not to touch bits it does not use and to undo any changes at exit.
-  
-  II Driver software
-  
-  0. Generalities
-  
-  The adapter is quite intelligent (fast) and has a simple interface
-  (few features). VPI is always zero, 1024 VCIs are supported. There
-  is limited cell rate support. UBR channels can be capped and ABR
-  (explicit rate, but not EFCI) is supported. There is no CBR or VBR
-  support.
-  
-  1. Driver <-> Adapter Communication
-  
-  Apart from the basic loader commands, the driver communicates
-  through three entities: the command queue (CQ), the transmit queue
-  pair (TXQ) and the receive queue pairs (RXQ). These three entities
-  are set up by the host and passed to the microcode just after it has
-  been started.
-  
-  All queues are host-based circular queues. They are contiguous and
-  (due to hardware limitations) have some restrictions as to their
-  locations in (bus) memory. They are of the "full means the same as
-  empty so don't do that" variety since the adapter uses pointers
-  internally.
-  
-  The queue pairs work as follows: one queue is for supply to the
-  adapter, items in it are pending and are owned by the adapter; the
-  other is the queue for return from the adapter, items in it have
-  been dealt with by the adapter. The host adds items to the supply
-  (TX descriptors and free RX buffer descriptors) and removes items
-  from the return (TX and RX completions). The adapter deals with out
-  of order completions.
-  
-  Interrupts (card to host) and the doorbell (host to card) are used
-  for signalling.
-  
-  1. CQ
-  
-  This is to communicate "open VC", "close VC", "get stats" etc. to
-  the adapter. At most one command is retired every millisecond by the
-  card. There is no out of order completion or notification. The
-  driver needs to check the return code of the command, waiting as
-  appropriate.
-  
-  2. TXQ
-  
-  TX supply items are of variable length (scatter gather support) and
-  so the queue items are (more or less) pointers to the real thing.
-  Each TX supply item contains a unique, host-supplied handle (the skb
-  bus address seems most sensible as this works for Alphas as well,
-  there is no need to do any endian conversions on the handles).
-  
-  TX return items consist of just the handles above.
-  
-  3. RXQ (up to 4 of these with different lengths and buffer sizes)
-  
-  RX supply items consist of a unique, host-supplied handle (the skb
-  bus address again) and a pointer to the buffer data area.
-  
-  RX return items consist of the handle above, the VC, length and a
-  status word. This just screams "oh so easy" doesn't it?
-
-  Note on RX pool sizes:
-   
-  Each pool should have enough buffers to handle a back-to-back stream
-  of minimum sized frames on a single VC. For example:
-  
-    frame spacing = 3us (about right)
-    
-    delay = IRQ lat + RX handling + RX buffer replenish = 20 (us)  (a guess)
-    
-    min number of buffers for one VC = 1 + delay/spacing (buffers)
-
-    delay/spacing = latency = (20+2)/3 = 7 (buffers)  (rounding up)
-    
-  The 20us delay assumes that there is no need to sleep; if we need to
-  sleep to get buffers we are going to drop frames anyway.
-  
-  In fact, each pool should have enough buffers to support the
-  simultaneous reassembly of a separate frame on each VC and cope with
-  the case in which frames complete in round robin cell fashion on
-  each VC.
-  
-  Only one frame can complete at each cell arrival, so if "n" VCs are
-  open, the worst case is to have them all complete frames together
-  followed by all starting new frames together.
-  
-    desired number of buffers = n + delay/spacing
-    
-  These are the extreme requirements, however, they are "n+k" for some
-  "k" so we have only the constant to choose. This is the argument
-  rx_lats which current defaults to 7.
-  
-  Actually, "n ? n+k : 0" is better and this is what is implemented,
-  subject to the limit given by the pool size.
-  
-  4. Driver locking
-  
-  Simple spinlocks are used around the TX and RX queue mechanisms.
-  Anyone with a faster, working method is welcome to implement it.
-  
-  The adapter command queue is protected with a spinlock. We always
-  wait for commands to complete.
-  
-  A more complex form of locking is used around parts of the VC open
-  and close functions. There are three reasons for a lock: 1. we need
-  to do atomic rate reservation and release (not used yet), 2. Opening
-  sometimes involves two adapter commands which must not be separated
-  by another command on the same VC, 3. the changes to RX pool size
-  must be atomic. The lock needs to work over context switches, so we
-  use a semaphore.
-  
-  III Hardware Features and Microcode Bugs
-  
-  1. Byte Ordering
-  
-  *%^"$&%^$*&^"$(%^$#&^%$(&#%$*(&^#%!"!"!*!
-  
-  2. Memory access
-  
-  All structures that are not accessed using DMA must be 4-byte
-  aligned (not a problem) and must not cross 4MB boundaries.
-  
-  There is a DMA memory hole at E0000000-E00000FF (groan).
-  
-  TX fragments (DMA read) must not cross 4MB boundaries (would be 16MB
-  but for a hardware bug).
-  
-  RX buffers (DMA write) must not cross 16MB boundaries and must
-  include spare trailing bytes up to the next 4-byte boundary; they
-  will be written with rubbish.
-  
-  The PLX likes to prefetch; if reading up to 4 u32 past the end of
-  each TX fragment is not a problem, then TX can be made to go a
-  little faster by passing a flag at init that disables a prefetch
-  workaround. We do not pass this flag. (new microcode only)
-  
-  Now we:
-  . Note that alloc_skb rounds up size to a 16byte boundary.  
-  . Ensure all areas do not traverse 4MB boundaries.
-  . Ensure all areas do not start at a E00000xx bus address.
-  (I cannot be certain, but this may always hold with Linux)
-  . Make all failures cause a loud message.
-  . Discard non-conforming SKBs (causes TX failure or RX fill delay).
-  . Discard non-conforming TX fragment descriptors (the TX fails).
-  In the future we could:
-  . Allow RX areas that traverse 4MB (but not 16MB) boundaries.
-  . Segment TX areas into some/more fragments, when necessary.
-  . Relax checks for non-DMA items (ignore hole).
-  . Give scatter-gather (iovec) requirements using ???. (?)
-  
-  3. VC close is broken (only for new microcode)
-  
-  The VC close adapter microcode command fails to do anything if any
-  frames have been received on the VC but none have been transmitted.
-  Frames continue to be reassembled and passed (with IRQ) to the
-  driver.
-  
-  IV To Do List
-  
-  . Fix bugs!
-  
-  . Timer code may be broken.
-  
-  . Deal with buggy VC close (somehow) in microcode 12.
-  
-  . Handle interrupted and/or non-blocking writes - is this a job for
-    the protocol layer?
-  
-  . Add code to break up TX fragments when they span 4MB boundaries.
-  
-  . Add SUNI phy layer (need to know where SUNI lives on card).
-  
-  . Implement a tx_alloc fn to (a) satisfy TX alignment etc. and (b)
-    leave extra headroom space for Ambassador TX descriptors.
-  
-  . Understand these elements of struct atm_vcc: recvq (proto?),
-    sleep, callback, listenq, backlog_quota, reply and user_back.
-  
-  . Adjust TX/RX skb allocation to favour IP with LANE/CLIP (configurable).
-  
-  . Impose a TX-pending limit (2?) on each VC, help avoid TX q overflow.
-  
-  . Decide whether RX buffer recycling is or can be made completely safe;
-    turn it back on. It looks like Werner is going to axe this.
-  
-  . Implement QoS changes on open VCs (involves extracting parts of VC open
-    and close into separate functions and using them to make changes).
-  
-  . Hack on command queue so that someone can issue multiple commands and wait
-    on the last one (OR only "no-op" or "wait" commands are waited for).
-  
-  . Eliminate need for while-schedule around do_command.
-  
-*/
 
 static void do_housekeeping (unsigned long arg);
 /********** globals **********/
@@ -477,7 +237,6 @@ static void rx_complete (amb_dev * dev, rx_out * rx) {
   
   PRINTD (DBG_FLOW|DBG_RX, "rx_complete %p %p (len=%hu)", dev, rx, rx_len);
   
-  // XXX move this in and add to VC stats ???
   if (!status) {
     struct atm_vcc * atm_vcc = dev->rxer[vc];
     dev->stats.rx.ok++;
@@ -1084,13 +843,6 @@ static int amb_open (struct atm_vcc * atm_vcc)
 	}
 	break;
       }
-#if 0
-      case ATM_ABR: {
-	pcr = atm_pcr_goal (txtp);
-	PRINTD (DBG_QOS, "pcr goal = %d", pcr);
-	break;
-      }
-#endif
       default: {
 	// PRINTD (DBG_QOS, "request for non-UBR/ABR denied");
 	PRINTD (DBG_QOS, "request for non-UBR denied");
@@ -1124,13 +876,6 @@ static int amb_open (struct atm_vcc * atm_vcc)
       case ATM_UBR: {
 	break;
       }
-#if 0
-      case ATM_ABR: {
-	pcr = atm_pcr_goal (rxtp);
-	PRINTD (DBG_QOS, "pcr goal = %d", pcr);
-	break;
-      }
-#endif
       default: {
 	// PRINTD (DBG_QOS, "request for non-UBR/ABR denied");
 	PRINTD (DBG_QOS, "request for non-UBR denied");
@@ -1245,11 +990,9 @@ static void amb_close (struct atm_vcc * atm_vcc) {
     
     mutex_lock(&dev->vcc_sf);
     if (dev->rxer[vci]) {
-      // RXer still on the channel, just modify rate... XXX not really needed
       cmd.request = cpu_to_be32 (SRB_MODIFY_VC_RATE);
       cmd.args.modify_rate.vc = cpu_to_be32 (vci);  // vpi 0
       cmd.args.modify_rate.rate = cpu_to_be32 (0);
-      // ... and clear TX rate flags (XXX to stop RM cell output?), preserving RX pool
     } else {
       // no RXer on the channel, close channel
       cmd.request = cpu_to_be32 (SRB_CLOSE_VC);
@@ -1270,7 +1013,6 @@ static void amb_close (struct atm_vcc * atm_vcc) {
     
     mutex_lock(&dev->vcc_sf);
     if (dev->txer[vci].tx_present) {
-      // TXer still on the channel, just go to pool zero XXX not really needed
       cmd.request = cpu_to_be32 (SRB_MODIFY_VC_FLAGS);
       cmd.args.modify_flags.vc = cpu_to_be32 (vci);  // vpi 0
       cmd.args.modify_flags.flags = cpu_to_be32
@@ -1388,40 +1130,6 @@ static int amb_send (struct atm_vcc * atm_vcc, struct sk_buff * skb) {
 
 /********** Free RX Socket Buffer **********/
 
-#if 0
-static void amb_free_rx_skb (struct atm_vcc * atm_vcc, struct sk_buff * skb) {
-  amb_dev * dev = AMB_DEV (atm_vcc->dev);
-  amb_vcc * vcc = AMB_VCC (atm_vcc);
-  unsigned char pool = vcc->rx_info.pool;
-  rx_in rx;
-  
-  // This may be unsafe for various reasons that I cannot really guess
-  // at. However, I note that the ATM layer calls kfree_skb rather
-  // than dev_kfree_skb at this point so we are least covered as far
-  // as buffer locking goes. There may be bugs if pcap clones RX skbs.
-
-  PRINTD (DBG_FLOW|DBG_SKB, "amb_rx_free skb %p (atm_vcc %p, vcc %p)",
-	  skb, atm_vcc, vcc);
-  
-  rx.handle = virt_to_bus (skb);
-  rx.host_address = cpu_to_be32 (virt_to_bus (skb->data));
-  
-  skb->data = skb->head;
-  skb->tail = skb->head;
-  skb->len = 0;
-  
-  if (!rx_give (dev, &rx, pool)) {
-    // success
-    PRINTD (DBG_SKB|DBG_POOL, "recycled skb for pool %hu", pool);
-    return;
-  }
-  
-  // just do what the ATM layer would have done
-  dev_kfree_skb_any (skb);
-  
-  return;
-}
-#endif
 
 /********** Proc File Output **********/
 
@@ -1477,11 +1185,6 @@ static int amb_proc_read (struct atm_dev * atm_dev, loff_t * pos, char * page) {
     return count;
   }
   
-#if 0
-  if (!left--) {
-    // suni block etc?
-  }
-#endif
   
   return 0;
 }
@@ -1871,12 +1574,10 @@ static int amb_reset (amb_dev * dev, int diags) {
   wr_plain (dev, offsetof(amb_mem, reset_control), word | AMB_RESET_BITS);
   // wait a short while
   udelay (10);
-#if 1
   // put card into known good state
   wr_plain (dev, offsetof(amb_mem, interrupt_control), AMB_DOORBELL_BITS);
   // clear all interrupts just in case
   wr_plain (dev, offsetof(amb_mem, interrupt), -1);
-#endif
   // clear self-test done flag
   wr_plain (dev, offsetof(amb_mem, mb.loader.ready), 0);
   // take card out of reset state
@@ -1897,7 +1598,6 @@ static int amb_reset (amb_dev * dev, int diags) {
       }
     
     // get results of self-test
-    // XXX double check byte-order
     word = rd_mem (dev, offsetof(amb_mem, mb.loader.result));
     if (word & SELF_TEST_FAILURE) {
       if (word & GPINT_TST_FAILURE)

@@ -348,4 +348,3 @@ extern int fst_debug_mask;              /* Bit mask of actions to debug, bits
                                          * one of these then I've been an ass
                                          */
 #endif  /* FST_DEBUG */
-

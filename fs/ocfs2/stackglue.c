@@ -401,7 +401,6 @@ int ocfs2_cluster_disconnect(struct ocfs2_cluster_connection *conn,
 
 	ret = active_stack->sp_ops->disconnect(conn);
 
-	/* XXX Should we free it anyway? */
 	if (!ret) {
 		kfree(conn);
 		if (!hangup_pending)

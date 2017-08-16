@@ -390,4 +390,3 @@ void fifo_icap_flush_fifo(struct hwicap_drvdata *drvdata)
 	out_be32(drvdata->base_address + XHI_CR_OFFSET,
 				reg_data & (~XHI_CR_FIFO_CLR_MASK));
 }
-

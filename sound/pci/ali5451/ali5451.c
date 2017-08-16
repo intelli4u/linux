@@ -1834,7 +1834,6 @@ static int snd_ali5451_spdif_put(struct snd_kcontrol *kcontrol,
 
 static struct snd_kcontrol_new snd_ali5451_mixer_spdif[] __devinitdata = {
 	/* spdif aplayback switch */
-	/* FIXME: "IEC958 Playback Switch" may conflict with one on ac97_codec */
 	ALI5451_SPDIF(SNDRV_CTL_NAME_IEC958("Output ",NONE,SWITCH), 0, 0),
 	/* spdif out to spdif channel */
 	ALI5451_SPDIF(SNDRV_CTL_NAME_IEC958("Channel Output ",NONE,SWITCH), 0, 1),

@@ -93,10 +93,6 @@
 #define MGA_UPLOAD_2D		0x40
 #define MGA_WAIT_AGE		0x80	/* handled client-side */
 #define MGA_UPLOAD_CLIPRECTS	0x100	/* handled client-side */
-#if 0
-#define MGA_DMA_FLUSH		0x200	/* set when someone gets the lock
-					   quiescent */
-#endif
 
 /* 32 buffers of 64k each, total 2 meg.
  */

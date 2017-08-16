@@ -547,7 +547,6 @@ SendReceive2(const unsigned int xid, struct cifsSesInfo *ses,
 						midQ->sequence_number+1);
 			if (rc) {
 				cERROR(1, "Unexpected SMB signature");
-				/* BB FIXME add code to kill session */
 			}
 		}
 
@@ -735,7 +734,6 @@ SendReceive(const unsigned int xid, struct cifsSesInfo *ses,
 						midQ->sequence_number+1);
 			if (rc) {
 				cERROR(1, "Unexpected SMB signature");
-				/* BB FIXME add code to kill session */
 			}
 		}
 
@@ -985,7 +983,6 @@ SendReceiveBlockingLock(const unsigned int xid, struct cifsTconInfo *tcon,
 					   midQ->sequence_number+1);
 		if (rc) {
 			cERROR(1, "Unexpected SMB signature");
-			/* BB FIXME add code to kill session */
 		}
 	}
 

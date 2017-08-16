@@ -26,7 +26,7 @@
 # define CPLD_SIZE		PAGE_SIZE
 #endif
 
-#if defined (CONFIG_MACH_LPD7A400) || defined (CONFIG_MACH_LPD7A404)
+#if defined(CONFIG_MACH_LPD7A400) || defined(CONFIG_MACH_LPD7A404)
 
 # define IOBARRIER_PHYS		0x10000000 /* Second bank, fastest timing */
 # define IOBARRIER_VIRT		0xf0000000

@@ -629,5 +629,3 @@ struct Authentication_Frame_Body {
 
 
 #endif /* _MAC_Structure_H_ */
-
-

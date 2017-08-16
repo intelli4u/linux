@@ -97,13 +97,6 @@ extern void fpsave(unsigned long *fpregs, unsigned long *fsr,
 
 extern void flushw_all(void);
 
-/*
- * Flush windows so that the VM switch which follows
- * would not pull the stack from under us.
- *
- * SWITCH_ENTER and SWITH_DO_LAZY_FPU do not work yet (e.g. SMP does not work)
- * XXX WTF is the above comment? Found in late teen 2.4.x.
- */
 #define prepare_arch_switch(next) do { \
 	__asm__ __volatile__( \
 	".globl\tflush_patch_switch\nflush_patch_switch:\n\t" \
@@ -169,7 +162,6 @@ extern void flushw_all(void);
 	  "o0", "o1", "o2", "o3",                   "o7");	\
 	} while(0)
 
-/* XXX Change this if we ever use a PSO mode kernel. */
 #define mb()	__asm__ __volatile__ ("" : : : "memory")
 #define rmb()	mb()
 #define wmb()	mb()

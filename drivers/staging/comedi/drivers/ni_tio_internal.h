@@ -530,8 +530,6 @@ enum Gi_Mode_Bits {
 };
 
 #define Gi_Second_Gate_Select_Shift 7
-/*FIXME: m-series has a second gate subselect bit */
-/*FIXME: m-series second gate sources are undocumented (by NI)*/
 enum Gi_Second_Gate_Bits {
 	Gi_Second_Gate_Mode_Bit = 0x1,
 	Gi_Second_Gate_Select_Mask = 0x1f << Gi_Second_Gate_Select_Shift,

@@ -1269,7 +1269,6 @@ int i2400m_rx(struct i2400m *i2400m, struct sk_buff *skb)
 	}
 	/* Walk each payload payload--check we really got it */
 	for (i = 0; i < num_pls; i++) {
-		/* work around old gcc warnings */
 		pl_size = i2400m_pld_size(&msg_hdr->pld[i]);
 		result = i2400m_rx_pl_descr_check(i2400m, &msg_hdr->pld[i],
 						  pl_itr, skb_len);

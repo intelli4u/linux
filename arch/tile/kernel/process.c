@@ -148,20 +148,6 @@ void free_thread_info(struct thread_info *info)
 
 	if (step_state) {
 
-		/*
-		 * FIXME: we don't munmap step_state->buffer
-		 * because the mm_struct for this process (info->task->mm)
-		 * has already been zeroed in exit_mm().  Keeping a
-		 * reference to it here seems like a bad move, so this
-		 * means we can't munmap() the buffer, and therefore if we
-		 * ptrace multiple threads in a process, we will slowly
-		 * leak user memory.  (Note that as soon as the last
-		 * thread in a process dies, we will reclaim all user
-		 * memory including single-step buffers in the usual way.)
-		 * We should either assign a kernel VA to this buffer
-		 * somehow, or we should associate the buffer(s) with the
-		 * mm itself so we can clean them up that way.
-		 */
 		kfree(step_state);
 	}
 

@@ -74,9 +74,6 @@ void __init plat_mem_setup(void)
 	panic_on_oops = 1;
 	register_panic_notifier();
 
-#if 0
-	mips_pcibios_init();
-#endif
 	mips_reboot_setup();
 }
 

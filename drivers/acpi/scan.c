@@ -1037,11 +1037,6 @@ static void acpi_add_id(struct acpi_device *device, const char *dev_id)
 	list_add_tail(&id->list, &device->pnp.ids);
 }
 
-/*
- * Old IBM workstations have a DSDT bug wherein the SMBus object
- * lacks the SMBUS01 HID and the methods do not have the necessary "_"
- * prefix.  Work around this.
- */
 static int acpi_ibm_smbus_match(struct acpi_device *device)
 {
 	acpi_handle h_dummy;

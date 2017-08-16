@@ -536,7 +536,6 @@ static int __init do_eepro_probe(struct net_device *dev)
 	int irq = dev->irq;
 
 #ifdef PnPWakeup
-	/* XXXX for multiple cards should this only be run once? */
 
 	/* Wakeup: */
 	#define WakeupPort 0x279
@@ -799,9 +798,6 @@ static int __init eepro_probe1(struct net_device *dev, int autoprobe)
 	   the EEPROM */
 	station_addr[0] = read_eeprom(ioaddr, 2, dev);
 
-	/* FIXME - find another way to know that we've found
-	 * an Etherexpress 10
-	 */
 	if (station_addr[0] == 0x0000 || station_addr[0] == 0xffff) {
 		lp->eepro = LAN595FX_10ISA;
 		lp->eeprom_reg = EEPROM_REG_10;
@@ -1411,10 +1407,8 @@ read_eeprom(int ioaddr, int location, struct net_device *dev)
 	int read_cmd = location | EE_READ_CMD;
 	short ctrl_val = EECS ;
 
-	/* XXXX - black magic */
 		eepro_sw2bank1(ioaddr);
 		outb(0x00, ioaddr + STATUS_REG);
-	/* XXXX - black magic */
 
 	eepro_sw2bank2(ioaddr);
 	outb(ctrl_val, ee_addr);

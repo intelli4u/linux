@@ -429,11 +429,6 @@ cifs_sfu_type(struct cifs_fattr *fattr, const unsigned char *path,
 
 #define SFBITS_MASK (S_ISVTX | S_ISGID | S_ISUID)  /* SETFILEBITS valid bits */
 
-/*
- * Fetch mode bits as provided by SFU.
- *
- * FIXME: Doesn't this clobber the type bit we got from cifs_sfu_type ?
- */
 static int cifs_sfu_mode(struct cifs_fattr *fattr, const unsigned char *path,
 			 struct cifs_sb_info *cifs_sb, int xid)
 {
@@ -521,11 +516,6 @@ int cifs_get_file_info(struct file *filp)
 	xid = GetXid();
 	rc = CIFSSMBQFileInfo(xid, tcon, cfile->netfid, &find_data);
 	if (rc == -EOPNOTSUPP || rc == -EINVAL) {
-		/*
-		 * FIXME: legacy server -- fall back to path-based call?
-		 * for now, just skip revalidating and mark inode for
-		 * immediate reval.
-		 */
 		rc = 0;
 		CIFS_I(inode)->time = 0;
 		goto cgfi_exit;
@@ -1036,14 +1026,6 @@ cifs_rename_pending_delete(char *full_path, struct dentry *dentry, int xid)
 	if (!cifsInode->delete_pending) {
 		rc = CIFSSMBSetFileDisposition(xid, tcon, true, netfid,
 					       current->tgid);
-		/*
-		 * some samba versions return -ENOENT when we try to set the
-		 * file disposition here. Likely a samba bug, but work around
-		 * it for now. This means that some cifsXXX files may hang
-		 * around after they shouldn't.
-		 *
-		 * BB: remove this hack after more servers have the fix
-		 */
 		if (rc == -ENOENT)
 			rc = 0;
 		else if (rc != 0) {
@@ -1564,7 +1546,6 @@ cifs_inode_needs_reval(struct inode *inode)
 	if (cifs_i->time == 0)
 		return true;
 
-	/* FIXME: the actimeo should be tunable */
 	if (time_after_eq(jiffies, cifs_i->time + HZ))
 		return true;
 
@@ -2073,12 +2054,3 @@ cifs_setattr(struct dentry *direntry, struct iattr *attrs)
 
 	/* BB: add cifs_setattr_legacy for really old servers */
 }
-
-#if 0
-void cifs_delete_inode(struct inode *inode)
-{
-	cFYI(1, "In cifs_delete_inode, inode = 0x%p", inode);
-	/* may have to add back in if and when safe distributed caching of
-	   directories added e.g. via FindNotify */
-}
-#endif

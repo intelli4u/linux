@@ -253,4 +253,3 @@ extern int ext4_ext_search_right(struct inode *, struct ext4_ext_path *,
 extern void ext4_ext_drop_refs(struct ext4_ext_path *);
 extern int ext4_ext_check_inode(struct inode *inode);
 #endif /* _EXT4_EXTENTS */
-

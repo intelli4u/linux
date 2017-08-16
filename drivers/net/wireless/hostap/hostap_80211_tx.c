@@ -155,8 +155,6 @@ netdev_tx_t hostap_data_start_xmit(struct sk_buff *skb,
 							 &hdr.addr4, ETH_ALEN);
 			hdr_len += ETH_ALEN;
 		} else {
-			/* bogus 4-addr format to workaround Prism2 station
-			 * f/w bug */
 			fc |= IEEE80211_FCTL_TODS;
 			/* From DS: Addr1 = DA (used as RA),
 			 * Addr2 = BSSID (used as TA), Addr3 = SA (used as DA),

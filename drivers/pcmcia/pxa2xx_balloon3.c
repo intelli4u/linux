@@ -72,11 +72,6 @@ static void balloon3_pcmcia_socket_state(struct soc_pcmcia_socket *skt,
 	status = __raw_readw(BALLOON3_CF_STATUS_REG);
 	flip = (status ^ balloon3_pcmcia_status[skt->nr])
 		& BALLOON3_CF_nSTSCHG_BVD1;
-	/*
-	 * Workaround for STSCHG which can't be deasserted:
-	 * We therefore disable/enable corresponding IRQs
-	 * as needed to avoid IRQ locks.
-	 */
 	if (flip) {
 		balloon3_pcmcia_status[skt->nr] = status;
 		if (status & BALLOON3_CF_nSTSCHG_BVD1)

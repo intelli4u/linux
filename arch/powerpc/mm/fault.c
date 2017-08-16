@@ -151,8 +151,7 @@ int __kprobes do_page_fault(struct pt_regs *regs, unsigned long address,
 	if (!user_mode(regs) && (address >= TASK_SIZE))
 		return SIGSEGV;
 
-#if !(defined(CONFIG_4xx) || defined(CONFIG_BOOKE) || \
-			     defined(CONFIG_PPC_BOOK3S_64))
+#if !(defined(CONFIG_4xx) || defined(CONFIG_BOOKE) || defined(CONFIG_PPC_BOOK3S_64))
   	if (error_code & DSISR_DABRMATCH) {
 		/* DABR match */
 		do_dabr(regs, address, error_code);

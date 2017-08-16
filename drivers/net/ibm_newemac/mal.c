@@ -205,14 +205,12 @@ static inline void mal_enable_eob_irq(struct mal_instance *mal)
 {
 	MAL_DBG2(mal, "enable_irq" NL);
 
-	// XXX might want to cache MAL_CFG as the DCR read can be slooooow
 	set_mal_dcrn(mal, MAL_CFG, get_mal_dcrn(mal, MAL_CFG) | MAL_CFG_EOPIE);
 }
 
 /* synchronized by NAPI state */
 static inline void mal_disable_eob_irq(struct mal_instance *mal)
 {
-	// XXX might want to cache MAL_CFG as the DCR read can be slooooow
 	set_mal_dcrn(mal, MAL_CFG, get_mal_dcrn(mal, MAL_CFG) & ~MAL_CFG_EOPIE);
 
 	MAL_DBG2(mal, "disable_irq" NL);
@@ -424,7 +422,7 @@ static int mal_poll(struct napi_struct *napi, int budget)
 			received += n;
 			budget -= n;
 			if (budget <= 0)
-				goto more_work; // XXX What if this is the last one ?
+				goto more_work;
 		}
 	}
 
@@ -579,7 +577,7 @@ static int __devinit mal_probe(struct platform_device *ofdev,
 
 	if (of_device_is_compatible(ofdev->dev.of_node, "ibm,mcmal-405ez")) {
 #if defined(CONFIG_IBM_NEW_EMAC_MAL_CLR_ICINTSTAT) && \
-		defined(CONFIG_IBM_NEW_EMAC_MAL_COMMON_ERR)
+	defined(CONFIG_IBM_NEW_EMAC_MAL_COMMON_ERR)
 		mal->features |= (MAL_FTR_CLEAR_ICINTSTAT |
 				MAL_FTR_COMMON_ERR_INT);
 #else

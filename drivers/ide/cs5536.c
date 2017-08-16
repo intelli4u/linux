@@ -1,34 +1,4 @@
-/*
- * CS5536 PATA support
- * (C) 2007 Martin K. Petersen <mkp@mkp.net>
- * (C) 2009 Bartlomiej Zolnierkiewicz
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- * Documentation:
- *	Available from AMD web site.
- *
- * The IDE timing registers for the CS5536 live in the Geode Machine
- * Specific Register file and not PCI config space.  Most BIOSes
- * virtualize the PCI registers so the chip looks like a standard IDE
- * controller.  Unfortunately not all implementations get this right.
- * In particular some have problems with unaligned accesses to the
- * virtualized PCI registers.  This driver always does full dword
- * writes to work around the issue.  Also, in case of a bad BIOS this
- * driver can be loaded with the "msr=1" parameter which forces using
- * the Machine Specific Registers to configure the device.
- */
+
 
 #include <linux/kernel.h>
 #include <linux/module.h>

@@ -473,10 +473,6 @@ int ide_cd_queue_pc(ide_drive_t *drive, const unsigned char *cmd,
 		flags = rq->cmd_flags;
 		blk_put_request(rq);
 
-		/*
-		 * FIXME: we should probably abort/retry or something in case of
-		 * failure.
-		 */
 		if (flags & REQ_FAILED) {
 			/*
 			 * The request failed.  Retry if it was due to a unit

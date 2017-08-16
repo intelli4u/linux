@@ -52,7 +52,6 @@ static int debug_default = 0;  /* you can set this to control debugging
 				  wavefront.h
 			       */
 
-/* XXX this needs to be made firmware and hardware version dependent */
 
 #define DEFAULT_OSPATH	"wavefront.os"
 static char *ospath = DEFAULT_OSPATH; /* the firmware file name */
@@ -810,18 +809,12 @@ wavefront_send_program (snd_wavefront_t *dev, wavefront_patch_info *header)
 
 	dev->prog_status[header->number] = WF_SLOT_USED;
 
-	/* XXX need to zero existing SLOT_USED bit for program_status[i]
-	   where `i' is the program that's being (potentially) overwritten.
-	*/
     
 	for (i = 0; i < WF_NUM_LAYERS; i++) {
 		if (header->hdr.pr.layer[i].mute) {
 			dev->patch_status[header->hdr.pr.layer[i].patch_number] |=
 				WF_SLOT_USED;
 
-			/* XXX need to mark SLOT_USED for sample used by
-			   patch_number, but this means we have to load it. Ick.
-			*/
 		}
 	}
 
@@ -899,28 +892,6 @@ wavefront_send_sample (snd_wavefront_t *dev,
 
 	if (header->size) {
 
-		/* XXX it's a debatable point whether or not RDONLY semantics
-		   on the ROM samples should cover just the sample data or
-		   the sample header. For now, it only covers the sample data,
-		   so anyone is free at all times to rewrite sample headers.
-
-		   My reason for this is that we have the sample headers
-		   available in the WFB file for General MIDI, and so these
-		   can always be reset if needed. The sample data, however,
-		   cannot be recovered without a complete reset and firmware
-		   reload of the ICS2115, which is a very expensive operation.
-
-		   So, doing things this way allows us to honor the notion of
-		   "RESETSAMPLES" reasonably cheaply. Note however, that this
-		   is done purely at user level: there is no WFB parser in
-		   this driver, and so a complete reset (back to General MIDI,
-		   or theoretically some other configuration) is the
-		   responsibility of the user level library. 
-
-		   To try to do this in the kernel would be a little
-		   crazy: we'd need 158K of kernel space just to hold
-		   a copy of the patch/program/sample header data.
-		*/
 
 		if (dev->rom_samples_rdonly) {
 			if (dev->sample_status[header->number] & WF_SLOT_ROM) {
@@ -1335,22 +1306,6 @@ wavefront_find_free_sample (snd_wavefront_t *dev)
 	return -1;
 }
 
-#if 0
-static int 
-wavefront_find_free_patch (snd_wavefront_t *dev)
-
-{
-	int i;
-
-	for (i = 0; i < WF_MAX_PATCH; i++) {
-		if (!(dev->patch_status[i] & WF_SLOT_FILLED)) {
-			return i;
-		}
-	}
-	snd_printk ("no free patch slots!\n");
-	return -1;
-}
-#endif
 
 static int
 wavefront_load_patch (snd_wavefront_t *dev, const char __user *addr)
@@ -1868,21 +1823,6 @@ wavefront_reset_to_cleanliness (snd_wavefront_t *dev)
 		goto gone_bad;
 	} 
 
-	/* Note: data port is now the data port, not the h/w initialization
-	   port.
-
-	   At this point, only "HW VERSION" or "DOWNLOAD OS" commands
-	   will work. So, issue one of them, and wait for TX
-	   interrupt. This can take a *long* time after a cold boot,
-	   while the ISC ROM does its RAM test. The SDK says up to 4
-	   seconds - with 12MB of RAM on a Tropez+, it takes a lot
-	   longer than that (~16secs). Note that the card understands
-	   the difference between a warm and a cold boot, so
-	   subsequent ISC2115 reboots (say, caused by module
-	   reloading) will get through this much faster.
-
-	   XXX Interesting question: why is no RX interrupt received first ?
-	*/
 
 	wavefront_should_cause_interrupt(dev, WFC_HARDWARE_VERSION, 
 					 dev->data_port, ramcheck_time*HZ);
@@ -2111,7 +2051,6 @@ snd_wavefront_start (snd_wavefront_t *dev)
 	if (dev->israw) {
 		samples_are_from_rom = 1;
 	} else {
-		/* XXX is this always true ? */
 		samples_are_from_rom = 0;
 	}
 

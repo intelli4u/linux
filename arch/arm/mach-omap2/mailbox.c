@@ -279,7 +279,6 @@ static struct omap_mbox_ops omap2_mbox_ops = {
  * MAILBOX 3: ARM <- IVA.
  */
 
-/* FIXME: the following structs should be filled automatically by the user id */
 
 #if defined(CONFIG_ARCH_OMAP3430) || defined(CONFIG_ARCH_OMAP2420)
 /* DSP */

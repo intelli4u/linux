@@ -93,7 +93,6 @@
 	rlwimi	r11,r14,32-19,27,27
 	rlwimi	r11,r14,32-16,19,19
 	beq	normal_tlb_miss
-	/* XXX replace the RMW cycles with immediate loads + writes */
 1:	mfspr	r10,SPRN_MAS1
 	cmpldi	cr0,r15,8		/* Check for vmalloc region */
 	rlwinm	r10,r10,0,16,1		/* Clear TID */
@@ -138,7 +137,6 @@
 	cmpldi	cr0,r15,0			/* Check for user region */
 	std	r14,EX_TLB_ESR(r12)		/* write crazy -1 to frame */
 	beq	normal_tlb_miss
-	/* XXX replace the RMW cycles with immediate loads + writes */
 1:	mfspr	r10,SPRN_MAS1
 	cmpldi	cr0,r15,8			/* Check for vmalloc region */
 	rlwinm	r10,r10,0,16,1			/* Clear TID */
@@ -239,7 +237,6 @@ finish_normal_tlb_miss:
 	rlwimi	r15,r14,32-8,22,25	/* Move in U bits */
 	rlwimi	r15,r14,32-2,26,31	/* Move in BAP bits */
 
-	/* Mask out SW and UW if !DIRTY (XXX optimize this !) */
 	andi.	r11,r14,_PAGE_DIRTY
 	bne	1f
 	li	r11,MAS3_SW|MAS3_UW
@@ -280,30 +277,6 @@ normal_tlb_miss_access_fault:
 	b	exc_instruction_storage_book3e
 
 
-/*
- * This is the guts of the second-level TLB miss handler for direct
- * misses. We are entered with:
- *
- * r16 = virtual page table faulting address
- * r15 = region (top 4 bits of address)
- * r14 = crap (free to use)
- * r13 = PACA
- * r12 = TLB exception frame in PACA
- * r11 = crap (free to use)
- * r10 = crap (free to use)
- *
- * Note that this should only ever be called as a second level handler
- * with the current scheme when using SW load.
- * That means we can always get the original fault DEAR at
- * EX_TLB_DEAR-EX_TLB_SIZE(r12)
- *
- * It can be re-entered by the linear mapping miss handler. However, to
- * avoid too much complication, it will restart the whole fault at level
- * 0 so we don't care too much about clobbers
- *
- * XXX That code was written back when we couldn't clobber r14. We can now,
- * so we could probably optimize things a bit
- */
 virt_page_table_tlb_miss:
 	/* Are we hitting a kernel page table ? */
 	andi.	r10,r15,0x8
@@ -316,7 +289,6 @@ virt_page_table_tlb_miss:
 
 	/* If kernel, we need to clear MAS1 TID */
 	beq	1f
-	/* XXX replace the RMW cycles with immediate loads + writes */
 	mfspr	r10,SPRN_MAS1
 	rlwinm	r10,r10,0,16,1			/* Clear TID */
 	mtspr	SPRN_MAS1,r10
@@ -497,7 +469,6 @@ virt_page_table_tlb_miss_whacko_fault:
 	ld	r15,PACAPGD(r13)	/* Load user pgdir */
 	beq	htw_tlb_miss
 
-	/* XXX replace the RMW cycles with immediate loads + writes */
 1:	mfspr	r10,SPRN_MAS1
 	cmpldi	cr0,r11,8		/* Check for vmalloc region */
 	rlwinm	r10,r10,0,16,1		/* Clear TID */
@@ -541,7 +512,6 @@ virt_page_table_tlb_miss_whacko_fault:
 	ld	r15,PACAPGD(r13)		/* Load user pgdir */
 	beq	htw_tlb_miss
 
-	/* XXX replace the RMW cycles with immediate loads + writes */
 1:	mfspr	r10,SPRN_MAS1
 	cmpldi	cr0,r11,8			/* Check for vmalloc region */
 	rlwinm	r10,r10,0,16,1			/* Clear TID */

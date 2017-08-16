@@ -1468,15 +1468,6 @@ packet_waiting:
 			for (loop = 0; loop < 32; loop++)     /* 32 - FS0-31 */
 				ptr = hex2mem(ptr, &zero, 4, 0);
 
-#if 0
-			/*
-			 * See if the stack pointer has moved. If so, then copy
-			 * the saved locals and ins to the new location.
-			 */
-			unsigned long *newsp = (unsigned long *) registers[SP];
-			if (sp != newsp)
-				sp = memcpy(newsp, sp, 16 * 4);
-#endif
 
 			gdbstub_strcpy(output_buffer, "OK");
 		}
@@ -1542,9 +1533,6 @@ packet_waiting:
 		case 'k' :
 			goto done;	/* just continue */
 
-			/*
-			 * Reset the whole machine (FIXME: system dependent)
-			 */
 		case 'r':
 			break;
 

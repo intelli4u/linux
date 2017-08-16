@@ -3142,7 +3142,6 @@ static const struct sensor_info vc0323_probe_data[] = {
 /* ?? */
 	{-1,		    0x80 | 0x56, 0x01, 0x0000, 0x64, 0x67, 0x01},
 	{SENSOR_MI1320_SOC, 0x80 | 0x48, 0x00, 0x148c, 0x64, 0x67, 0x01},
-/*fixme: not in the ms-win probe - may be found before? */
 	{SENSOR_OV7670,     0x80 | 0x21, 0x0a, 0x7673, 0x66, 0x67, 0x05},
 };
 
@@ -3266,7 +3265,6 @@ static int vc032x_probe_sensor(struct gspca_dev *gspca_dev)
 	u16 value;
 	const struct sensor_info *ptsensor_info;
 
-/*fixme: should also check the other sensor (back mi1320_soc, front mc501cb)*/
 	if (sd->flags & FL_SAMSUNG) {
 		reg_w(gspca_dev, 0xa0, 0x01, 0xb301);
 		reg_w(gspca_dev, 0x89, 0xf0ff, 0xffff);
@@ -3329,7 +3327,6 @@ static void i2c_write(struct gspca_dev *gspca_dev,
 		PDEBUG(D_USBO, "i2c_w %02x %02x%02x", reg, *val, val[1]);
 #endif
 	reg_r_i(gspca_dev, 0xa1, 0xb33f, 1);
-/*fixme:should check if (!(gspca_dev->usb_buf[0] & 0x02)) error*/
 	reg_w_i(gspca_dev, 0xa0, size, 0xb334);
 	reg_w_i(gspca_dev, 0xa0, reg, 0xb33a);
 	reg_w_i(gspca_dev, 0xa0, val[0], 0xb336);
@@ -3672,7 +3669,6 @@ static void setautogain(struct gspca_dev *gspca_dev)
 
 static void setgamma(struct gspca_dev *gspca_dev)
 {
-/*fixme:to do */
 	usb_exchange(gspca_dev, poxxxx_gamma);
 }
 
@@ -3708,7 +3704,6 @@ static void setbacklight(struct gspca_dev *gspca_dev)
 
 static void setwb(struct gspca_dev *gspca_dev)
 {
-/*fixme:to do - valid when reg d1 = 0x1c - (reg16 + reg15 = 0xa3)*/
 	static const u8 data[2] = {0x00, 0x00};
 
 	i2c_write(gspca_dev, 0x16, &data[0], 1);
@@ -3728,7 +3723,6 @@ static int sd_start(struct gspca_dev *gspca_dev)
 		mi1320_soc_InitQVGA,
 	};
 
-/*fixme: back sensor only*/
 	if (sd->flags & FL_SAMSUNG) {
 		reg_w(gspca_dev, 0x89, 0xf0ff, 0xffff);
 		reg_w(gspca_dev, 0xa9, 0x8348, 0x000e);
@@ -3845,7 +3839,6 @@ static int sd_start(struct gspca_dev *gspca_dev)
 				gspca_dev->usb_buf[2] & 1 ? 0 : 1,
 				0xb35c);
 		msleep(300);
-/*fixme: i2c read 04 and 05*/
 		init = poxxxx_init_end_1;
 		break;
 	}
@@ -3911,7 +3904,6 @@ static void sd_stop0(struct gspca_dev *gspca_dev)
 
 	if (!gspca_dev->present)
 		return;
-/*fixme: is this useful?*/
 	if (sd->sensor == SENSOR_MI1310_SOC)
 		reg_w(gspca_dev, 0x89, 0x058c, 0x00ff);
 	else if (!(sd->flags & FL_SAMSUNG))

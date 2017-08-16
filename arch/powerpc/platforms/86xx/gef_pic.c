@@ -255,4 +255,3 @@ unsigned int gef_pic_get_irq(void)
 
 	return virq;
 }
-

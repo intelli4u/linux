@@ -603,9 +603,7 @@ static int wireless_get_bssid(struct net_device *dev, struct iw_request_info *in
 	struct wl_private *lp = wl_priv(dev);
 	unsigned long flags;
 	int ret = 0;
-#if 1 //;? (HCF_TYPE) & HCF_TYPE_STA
 	int status = -1;
-#endif /* (HCF_TYPE) & HCF_TYPE_STA */
 	/*------------------------------------------------------------------------*/
 
 
@@ -631,7 +629,6 @@ static int wireless_get_bssid(struct net_device *dev, struct iw_request_info *in
 	memcpy(&ap_addr->sa_data, lp->dev->dev_addr, ETH_ALEN);
 
 
-#if 1 //;? (HCF_TYPE) & HCF_TYPE_STA
 					//;?should we return an error status in AP mode
 
 	if ( CNV_INT_TO_LITTLE( lp->hcfCtx.IFB_FWIdentity.comp_id ) == COMP_ID_FW_STA  ) {
@@ -647,8 +644,6 @@ static int wireless_get_bssid(struct net_device *dev, struct iw_request_info *in
 			ret = -EFAULT;
 		}
 	}
-
-#endif // (HCF_TYPE) & HCF_TYPE_STA
 
     	wl_act_int_on( lp );
 
@@ -1046,22 +1041,16 @@ static int wireless_get_essid(struct net_device *dev, struct iw_request_info *in
 	lp->ltvRecord.len = 1 + ( sizeof( *pName ) / sizeof( hcf_16 ));
 
 
-#if 1 //;? (HCF_TYPE) & HCF_TYPE_STA
 					//;?should we return an error status in AP mode
 
 	lp->ltvRecord.typ = CFG_DESIRED_SSID;
 
-#endif
 
-
-#if 1 //;? (HCF_TYPE) & HCF_TYPE_AP
 		//;?should we restore this to allow smaller memory footprint
 
 	if ( CNV_INT_TO_LITTLE( lp->hcfCtx.IFB_FWIdentity.comp_id ) == COMP_ID_FW_AP  ) {
 		lp->ltvRecord.typ = CFG_CNF_OWN_SSID;
 	}
-
-#endif // HCF_AP
 
 
 	status = hcf_get_info( &( lp->hcfCtx ), (LTVP)&( lp->ltvRecord ));
@@ -1084,7 +1073,6 @@ static int wireless_get_essid(struct net_device *dev, struct iw_request_info *in
 		data->flags = 1;
 
 
-#if 1 //;? (HCF_TYPE) & HCF_TYPE_STA
 					//;?should we return an error status in AP mode
 #ifdef RETURN_CURRENT_NETWORKNAME
 
@@ -1116,7 +1104,6 @@ static int wireless_get_essid(struct net_device *dev, struct iw_request_info *in
 		}
 
 #endif // RETURN_CURRENT_NETWORKNAME
-#endif // HCF_STA
 
 		data->length--;
 
@@ -1170,9 +1157,7 @@ static int wireless_set_encode(struct net_device *dev, struct iw_request_info *i
 	unsigned long flags;
 	int     ret = 0;
 
-#if 1 //;? #if WIRELESS_EXT > 8 - used unconditionally in the rest of the code...
 	hcf_8   encryption_state;
-#endif // WIRELESS_EXT > 8
 	/*------------------------------------------------------------------------*/
 
 
@@ -1447,13 +1432,6 @@ static int wireless_set_nickname(struct net_device *dev, struct iw_request_info 
 		goto out;
 	}
 
-#if 0 //;? Needed, was present in original code but not in 7.18 Linux 2.6 kernel version
-	if( !capable(CAP_NET_ADMIN )) {
-		ret = -EPERM;
-		DBG_LEAVE( DbgInfo );
-		return ret;
-	}
-#endif
 
 	/* Validate the new value */
 	if(data->length > HCF_MAX_NAME_LEN) {
@@ -1627,19 +1605,6 @@ static int wireless_set_porttype(struct net_device *dev, struct iw_request_info 
 		break;
 
 
-#if 0 //;? (HCF_TYPE) & HCF_TYPE_AP
-
-	case IW_MODE_MASTER:
-
-		/* Set BSS/AP mode */
-		portType             = 1;
-
-		lp->CreateIBSS       = 0;
-		lp->DownloadFirmware = WVLAN_DRV_MODE_AP; //2;
-
-		break;
-
-#endif /* (HCF_TYPE) & HCF_TYPE_AP */
 
 
 	default:
@@ -1732,21 +1697,6 @@ static int wireless_get_porttype(struct net_device *dev, struct iw_request_info 
 		switch( *pPortType ) {
 		case 1:
 
-#if 0
-#if (HCF_TYPE) & HCF_TYPE_AP
-
-			if ( CNV_INT_TO_LITTLE( lp->hcfCtx.IFB_FWIdentity.comp_id ) == COMP_ID_FW_AP  ) {
-				*mode = IW_MODE_MASTER;
-			} else {
-				*mode = IW_MODE_INFRA;
-			}
-
-#else
-
-			*mode = IW_MODE_INFRA;
-
-#endif  /* (HCF_TYPE) & HCF_TYPE_AP */
-#endif
 
 			if ( CNV_INT_TO_LITTLE( lp->hcfCtx.IFB_FWIdentity.comp_id ) == COMP_ID_FW_AP  ) {
 				*mode =  IW_MODE_MASTER;
@@ -1823,14 +1773,6 @@ static int wireless_set_power(struct net_device *dev, struct iw_request_info *in
 
 	DBG_PRINT( "THIS CORRUPTS PMEnabled ;?!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n" );
 
-#if 0 //;? Needed, was present in original code but not in 7.18 Linux 2.6 kernel version
-	if( !capable( CAP_NET_ADMIN )) {
-		ret = -EPERM;
-
-		DBG_LEAVE( DbgInfo );
-		return ret;
-	}
-#endif
 
 	wl_lock( lp, &flags );
 
@@ -2458,71 +2400,6 @@ out:
 
 
 
-#if 0 //;? Not used anymore
-/*******************************************************************************
- *	wireless_get_private_interface()
- *******************************************************************************
- *
- *  DESCRIPTION:
- *
- *      Returns the Linux Wireless Extensions' compatible private interface of
- *  the driver.
- *
- *  PARAMETERS:
- *
- *      wrq - the wireless request buffer
- *      lp  - the device's private adapter structure
- *
- *  RETURNS:
- *
- *      0 on success
- *      errno value otherwise
- *
- ******************************************************************************/
-int wireless_get_private_interface( struct iwreq *wrq, struct wl_private *lp )
-{
-	int ret = 0;
-	/*------------------------------------------------------------------------*/
-
-
-	DBG_FUNC( "wireless_get_private_interface" );
-	DBG_ENTER( DbgInfo );
-
-	if(lp->portState == WVLAN_PORT_STATE_DISABLED) {
-		ret = -EBUSY;
-		goto out;
-	}
-
-	if( wrq->u.data.pointer != NULL ) {
-		struct iw_priv_args priv[] =
-		{
-			{ SIOCSIWNETNAME, IW_PRIV_TYPE_CHAR | HCF_MAX_NAME_LEN, 0, "snetwork_name" },
-			{ SIOCGIWNETNAME, 0, IW_PRIV_TYPE_CHAR | HCF_MAX_NAME_LEN, "gnetwork_name" },
-			{ SIOCSIWSTANAME, IW_PRIV_TYPE_CHAR | HCF_MAX_NAME_LEN, 0, "sstation_name" },
-			{ SIOCGIWSTANAME, 0, IW_PRIV_TYPE_CHAR | HCF_MAX_NAME_LEN, "gstation_name" },
-			{ SIOCSIWPORTTYPE, IW_PRIV_TYPE_BYTE | IW_PRIV_SIZE_FIXED | 1, 0, "sport_type" },
-			{ SIOCGIWPORTTYPE, 0, IW_PRIV_TYPE_BYTE | IW_PRIV_SIZE_FIXED | 1, "gport_type" },
-		};
-
-		/* Verify the user buffer */
-		ret = verify_area( VERIFY_WRITE, wrq->u.data.pointer, sizeof( priv ));
-
-		if( ret != 0 ) {
-			DBG_LEAVE( DbgInfo );
-			return ret;
-		}
-
-		/* Copy the data into the user's buffer */
-		wrq->u.data.length = NELEM( priv );
-		copy_to_user( wrq->u.data.pointer, &priv, sizeof( priv ));
-	}
-
-out:
-	DBG_LEAVE( DbgInfo );
-	return ret;
-} // wireless_get_private_interface
-/*============================================================================*/
-#endif
 
 
 
@@ -3001,35 +2878,6 @@ static int hermes_set_key(ltv_t *ltv, int alg, int key_idx, u8 *addr,
 	{
 	case IW_ENCODE_ALG_TKIP:
 		DBG_TRACE( DbgInfo, "IW_ENCODE_ALG_TKIP: key(%d)\n", key_idx);
-#if 0
-		/*
-                 * Make sure that there is no data queued up in the firmware
-                 * before setting the TKIP keys. If this check is not
-                 * performed, some data may be sent out with incorrect MIC
-                 * and cause synchronizarion errors with the AP
-                 */
-		/* Check every 1ms for 100ms */
-		for( count = 0; count < 100; count++ )
-		{
-			usleep( 1000 );
-
-			ltv.len = 2;
-			ltv.typ = 0xFD91;  // This RID not defined in HCF yet!!!
-			ltv.u.u16[0] = 0;
-
-			wl_get_info( sock, &ltv, ifname );
-
-			if( ltv.u.u16[0] == 0 )
-			{
-				break;
-			}
-		}
-
-		if( count == 100 )
-		{
-			wpa_printf( MSG_DEBUG, "Timed out waiting for TxQ!" );
-		}
-#endif
 
 		switch (key_idx) {
 		case 0:
@@ -3663,7 +3511,6 @@ void wl_wext_event_encode( struct net_device *dev )
 
 		/* Only set IW_ENCODE_RESTRICTED/OPEN flag using lp->ExcludeUnencrypted
 		   if we're in AP mode */
-#if 1 //;? (HCF_TYPE) & HCF_TYPE_AP
 		//;?should we restore this to allow smaller memory footprint
 
 		if ( CNV_INT_TO_LITTLE( lp->hcfCtx.IFB_FWIdentity.comp_id ) == COMP_ID_FW_AP  ) {
@@ -3673,8 +3520,6 @@ void wl_wext_event_encode( struct net_device *dev )
 				wrqu.encoding.flags |= IW_ENCODE_OPEN;
 			}
 		}
-
-#endif  // HCF_TYPE_AP
 
 		/* Only provide the key if permissions allow */
 		if( capable( CAP_NET_ADMIN )) {
@@ -4045,11 +3890,7 @@ static const iw_handler wl_handler[] =
                 NULL,                                   /* SIOCSIWTHRSPY */
                 NULL,                                   /* SIOCGIWTHRSPY */
                 (iw_handler) NULL,                      /* SIOCSIWAP */
-#if 1 //;? (HCF_TYPE) & HCF_TYPE_STA
                 (iw_handler) wireless_get_bssid,        /* SIOCGIWAP */
-#else
-                (iw_handler) NULL,                      /* SIOCGIWAP */
-#endif
                 (iw_handler) NULL,                      /* SIOCSIWMLME */
                 (iw_handler) wireless_get_ap_list,      /* SIOCGIWAPLIST */
                 (iw_handler) wireless_set_scan,         /* SIOCSIWSCAN */
@@ -4092,10 +3933,8 @@ static const iw_handler wl_private_handler[] =
                 wvlan_get_netname,                      /* 1: SIOCGIWNETNAME */
                 wvlan_set_station_nickname,             /* 2: SIOCSIWSTANAME */
                 wvlan_get_station_nickname,             /* 3: SIOCGIWSTANAME */
-#if 1 //;? (HCF_TYPE) & HCF_TYPE_STA
                 wvlan_set_porttype,                     /* 4: SIOCSIWPORTTYPE */
                 wvlan_get_porttype,                     /* 5: SIOCGIWPORTTYPE */
-#endif
 };
 
 struct iw_priv_args wl_priv_args[] = {
@@ -4103,10 +3942,8 @@ struct iw_priv_args wl_priv_args[] = {
         {SIOCGIWNETNAME, 0, IW_PRIV_TYPE_CHAR | HCF_MAX_NAME_LEN,    "gnetwork_name" },
         {SIOCSIWSTANAME,    IW_PRIV_TYPE_CHAR | HCF_MAX_NAME_LEN, 0, "sstation_name" },
         {SIOCGIWSTANAME, 0, IW_PRIV_TYPE_CHAR | HCF_MAX_NAME_LEN,    "gstation_name" },
-#if 1 //;? #if (HCF_TYPE) & HCF_TYPE_STA
         {SIOCSIWPORTTYPE,    IW_PRIV_TYPE_INT | IW_PRIV_SIZE_FIXED | 1, 0, "sport_type" },
         {SIOCGIWPORTTYPE, 0, IW_PRIV_TYPE_INT | IW_PRIV_SIZE_FIXED | 1,    "gport_type" },
-#endif
 };
 
 const struct iw_handler_def wl_iw_handler_def =

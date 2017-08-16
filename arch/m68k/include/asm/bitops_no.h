@@ -14,7 +14,7 @@
 #error only <linux/bitops.h> can be included directly
 #endif
 
-#if defined (__mcfisaaplus__) || defined (__mcfisac__)
+#if defined(__mcfisaaplus__) || defined(__mcfisac__)
 static inline int ffs(unsigned int val)
 {
         if (!val)

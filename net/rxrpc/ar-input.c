@@ -326,16 +326,6 @@ void rxrpc_fast_process_packet(struct rxrpc_call *call, struct sk_buff *skb)
 
 	ASSERT(!irqs_disabled());
 
-#if 0 // INJECT RX ERROR
-	if (sp->hdr.type == RXRPC_PACKET_TYPE_DATA) {
-		static int skip = 0;
-		if (++skip == 3) {
-			printk("DROPPED 3RD PACKET!!!!!!!!!!!!!\n");
-			skip = 0;
-			goto free_packet;
-		}
-	}
-#endif
 
 	/* track the latest serial number on this connection for ACK packet
 	 * information */

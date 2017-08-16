@@ -65,7 +65,7 @@ struct no_agp_kern {
 #define DRM_AGP_KERN            struct no_agp_kern
 #endif
 
-#if !(__OS_HAS_MTRR)
+#if !__OS_HAS_MTRR
 static __inline__ int mtrr_add(unsigned long base, unsigned long size,
 			       unsigned int type, char increment)
 {
