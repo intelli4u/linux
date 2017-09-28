@@ -62,7 +62,7 @@
 #define NEED_ACK        1
 #define NO_ACK          0
 
-#define INIT_SEQ        1   /* Base number of PPTP sequence */
+#define INIT_SEQ        0   /* Base number of PPTP sequence */
 
 static unsigned long call_id;       /* Call ID for local client */
 static unsigned long peer_call_id;  /* Call ID for peer server */
@@ -282,7 +282,7 @@ static int pptp_device_event(struct notifier_block *this,
 			      unsigned long event, void *ptr)
 {
 	struct net_device *dev = (struct net_device *) ptr;
-
+	
 	/* Only look at sockets that are using this specific device. */
 	switch (event) {
 	case NETDEV_CHANGEMTU:
@@ -578,6 +578,7 @@ static int pptp_create(struct net *net, struct socket *sock)
 	if (!sk)
 		return -ENOMEM;
 
+	seq_number = INIT_SEQ;  /* some pptp servers check sequence number , it must start from 0. */ 		
 	sock_init_data(sock, sk);
 
     /* Foxconn added start, pptp, Winster Chan, 06/26/2006 */
@@ -671,7 +672,7 @@ static int pptp_connect(struct socket *sock, struct sockaddr *uservaddr,
 	error = -EALREADY;
 	if ((sk->sk_state & PPPOX_DEAD) && !sp->sa_addr.pptp.srcaddr )
 		goto end;
-
+    
 	error = 0;
 	if (po->pptp_pa.srcaddr) {
 		pppox_unbind_sock(sk);
@@ -783,7 +784,7 @@ static int pptp_ioctl(struct socket *sock, unsigned int cmd,
 	struct pppox_sock *po = pppox_sk(sk);
 	int val = 0;
 	int err = 0;
-
+	
 	switch (cmd) {
 	case PPPIOCGMRU:
 		err = -ENXIO;
