@@ -18,9 +18,15 @@
 # $Id: Makefile,v 1.3 2008-08-13 20:20:16 $
 #
 
+ifneq ($(ROOTDIR),)
+EMFDIR := $(BCM_REL_DIR)../../../$(ROUTER)/emf
+EMFSRCDIR := $(EMFDIR)/emf
+EMFCSRCDIR := $(EMFDIR)/emf
+else
 EMFSRCDIR := ../../../../../../../src/router/emf/emf
 EMFCSRCDIR := ../../../../../../../src/emf/emf
 EMFDIR := ../../../../../../../src/router/emf
+endif
 
 EMF_OBJS := $(EMFCSRCDIR)/emfc.o $(EMFSRCDIR)/emf_linux.o
 
@@ -30,8 +36,8 @@ endif # CONFIG_BUZZZ_FUNC
 
 # Search for sources under src/router/emf/emf
 ifneq ($(wildcard $(src)/$(EMFSRCDIR)),)
-	EXTRA_CFLAGS += -I$(SRCBASE)/router/emf/emf -I$(SRCBASE)/router/emf/igs
-	EXTRA_CFLAGS += -I$(SRCBASE)/include/emf/emf -I$(SRCBASE)/include/emf/igs
+	EXTRA_CFLAGS += -I$(ROOTDIR)$(SRCBASE)/router/emf/emf -I$(ROOTDIR)$(SRCBASE)/router/emf/igs
+	EXTRA_CFLAGS += -I$(ROOTDIR)$(SRCBASE)/include/emf/emf -I$(ROOTDIR)$(SRCBASE)/include/emf/igs
 	emf-objs := $(EMF_OBJS)
 else
 	emf-objs := $(EMFDIR)/emf.o

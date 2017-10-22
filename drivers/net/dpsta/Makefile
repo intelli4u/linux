@@ -20,7 +20,11 @@
 
 obj-${CONFIG_DPSTA} := dpsta.o
 
+ifneq ($(ROOTDIR),)
+DPSTASRC := $(BCM_REL_DIR)../../../$(ROUTER)/dpsta
+else
 DPSTASRC := ../../../../../../../src/router/dpsta
+endif
 DPSTAOBJ := $(DPSTASRC)/dpsta_linux.o
 SYMOBJ := $(DPSTASRC)/dpsta_linux.o
 

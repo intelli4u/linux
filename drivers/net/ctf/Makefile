@@ -20,7 +20,11 @@
 
 obj-${CONFIG_BCM_CTF} := ctf.o
 
+ifneq ($(ROOTDIR),)
+CTFSRC := $(BCM_REL_DIR)../../../$(ROUTER)/ctf
+else
 CTFSRC := ../../../../../../../src/router/ctf/
+endif
 CTFOBJ := $(CTFSRC)/hndctf.o $(CTFSRC)/hndctf_linux.o
 SYMOBJ := $(CTFSRC)/hndctf.o
 
