@@ -18,7 +18,11 @@
 # $Id: Makefile,v 1.13 2010-12-13 20:23:49 $
 #
 
+ifneq ($(SRCBASE),)
+SRCBASE_OFFSET := $(BCM_REL_DIR)../../../$(SRCBASE)
+else
 SRCBASE_OFFSET := ../../../../../../../src
+endif
 
 TARGET := wl
 WLCONF_H := wlconf.h

@@ -360,15 +360,24 @@ KBUILD_CFLAGS_MODULE  := -DMODULE
 KBUILD_LDFLAGS_MODULE := -T $(srctree)/scripts/module-common.lds
 
 # Broadcom source tree
-KBUILD_CFLAGS += -I$(SRCBASE)/include
-KBUILD_CFLAGS += -I$(SRCBASE)/common/include
+KBUILD_CFLAGS += -I$(ROOTDIR)$(SRCBASE)/include
+KBUILD_CFLAGS += -I$(ROOTDIR)$(SRCBASE)/common/include
 KBUILD_CFLAGS += $(WLAN_ComponentIncPath)
 KBUILD_CFLAGS += $(WLAN_StdIncPathA)
-KBUILD_AFLAGS += -I$(SRCBASE)/include
-KBUILD_AFLAGS += -I$(SRCBASE)/common/include
+KBUILD_AFLAGS += -I$(ROOTDIR)$(SRCBASE)/include
+KBUILD_AFLAGS += -I$(ROOTDIR)$(SRCBASE)/common/include
 KBUILD_CFLAGS += -DBCMDRIVER -Dlinux
+ifneq ($(ACOS),)
+KBUILD_CFLAGS += -I$(ROOTDIR)$(ACOS)
+else
+KBUILD_CFLAGS += -I../../../../ap/acos
+endif
 
-
+# Detect the relative directory with srctree to adpat the compilation location
+BCM_REL_DIR := $(patsubst $(srctree)/%/$(SRCBASE),%/,$(strip \
+	$(firstword $(wildcard \
+		$(addprefix $(srctree)/, ../$(SRCBASE) ../../$(SRCBASE) ../../../$(SRCBASE))))))
+export BCM_REL_DIR
 
 #[MJ] add for debugging 5G crash.
 #CFLAGS += -DBCMDBG -DBCMDBG_ASSERT -DBCMDBG_ERR -DWLMSG_ASSOC -DWLTEST
@@ -524,7 +533,7 @@ scripts: scripts_basic include/config/auto.conf include/config/tristate.conf
 # Objects we will link into vmlinux / subdirs we need to visit
 init-y		:= init/
 drivers-y	:= drivers/ sound/ firmware/
-net-y		:= net/ ../../../../ap/acos/acos_nat/
+net-y		:= net/
 libs-y		:= lib/
 core-y		:= usr/
 endif # KBUILD_EXTMOD

@@ -29,7 +29,7 @@
 
 /* modified start, water, 01/07/10*/
 //#include "../../../../router/multissidcontrol/MultiSsidControl.h"
-#include "../../../../../../ap/acos/multissidcontrol/MultiSsidControl.h"
+#include "multissidcontrol/MultiSsidControl.h"
 /* modified end, water, 01/07/10*/
 
 T_MSsidCtlProfile *gProfile = NULL;
@@ -46,7 +46,7 @@ EXPORT_SYMBOL(gProfile_5g);
 
 /*Fxcn added start by dennis,02/16/2012,for access control*/
 #ifdef INCLUDE_ACCESSCONTROL
-#include "../../../../../../ap/acos/access_control/AccessControl.h"
+#include "access_control/AccessControl.h"
 /*Fxcn added end by dennis,02/16/2012,for access control*/
 /*Fxcn added start by dennis,02/16/2012,for access control*/
 T_AccessControlTable *gAccessTable = NULL;

@@ -17,21 +17,24 @@
 #
 # $Id: Makefile,v 1.8 2010-09-17 04:51:19 $
 #
+ifdef $(SHARED)
+RELATED = $(BCM_REL_DIR)../../../../
+else
+SHARED ?= ../../../../../../shared
+endif
 
-SHARED := ../../../../../../shared
-
-BCM947XX_OBJS := $(addprefix $(SHARED)/, hndmips.o hndchipc.o )
-BCM947XX_OBJS += $(addprefix $(SHARED)/, sflash.o)
-BCM947XX_OBJS += $(addprefix $(SHARED)/, nvram.o)
+BCM947XX_OBJS := $(addprefix $(RELATED)$(SHARED)/, hndmips.o hndchipc.o )
+BCM947XX_OBJS += $(addprefix $(RELATED)$(SHARED)/, sflash.o)
+BCM947XX_OBJS += $(addprefix $(RELATED)$(SHARED)/, nvram.o)
 
 EXTRA_CFLAGS += -DLINUX_HYBRID_POSTPROCESSING_REMOVAL
 
 ifeq ($(CONFIG_PCI),y)
-BCM947XX_OBJS += $(addprefix $(SHARED)/, hndpci.o) pcibios.o
+BCM947XX_OBJS += $(addprefix $(RELATED)$(SHARED)/, hndpci.o) pcibios.o
 endif
 
 ifeq ($(CONFIG_MTD_NFLASH),y)
-BCM947XX_OBJS += $(addprefix $(SHARED)/, nflash.o)
+BCM947XX_OBJS += $(addprefix $(RELATED)$(SHARED)/, nflash.o)
 endif
 
 ifeq ($(CONFIG_MTD_BCMCONF_PARTS),y)
@@ -41,7 +44,7 @@ endif
 ifeq ($(CONFIG_GENERIC_GPIO),y)
 BCM947XX_OBJS += gen_gpio.o
 else
-BCM947XX_OBJS += $(addprefix $(SHARED)/, linux_gpio.o)
+BCM947XX_OBJS += $(addprefix $(RELATED)$(SHARED)/, linux_gpio.o)
 endif
 
 
