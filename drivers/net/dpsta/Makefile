@@ -20,16 +20,19 @@
 
 obj-${CONFIG_DPSTA} := dpsta.o
 
-DPSTASRC := ../../../../../../src-rt-6.x.4708/router/dpsta
+ifneq ($(ROOTDIR),)
+DPSTASRC := $(BCM_REL_DIR)../../../$(ROUTER)/dpsta
+else
+DPSTASRC := ../../../../../../../src/router/dpsta
+endif
 DPSTAOBJ := $(DPSTASRC)/dpsta_linux.o
 SYMOBJ := $(DPSTASRC)/dpsta_linux.o
-
 # Search for sources under src/router/dpsta
 ifneq (,$(wildcard $(src)/$(DPSTASRC)/*.c))
-  EXTRA_CFLAGS += -I$(src)/$(DPSTASRC)/../../router/dpsta
+  EXTRA_CFLAGS += -I$(src)/$(DPSTASRC)
   dpsta-objs := $(DPSTAOBJ) dpsta_ksyms.o
 else
-  dpsta-objs := $(DPSTASRC)/linux/dpsta.o
+  dpsta-objs := $(DPSTASRC)/$(if $(MERLIN),$(if $(ＥX7),bcm7,bcm6),linux)/dpsta.o
 endif
 
 ifeq (,${KERNELRELEASE})

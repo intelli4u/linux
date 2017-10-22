@@ -18,7 +18,11 @@
 # $Id: Makefile,v 1.5 2010-12-07 04:47:36 $
 #
 
-ETSRCDIR := ../../../../../../src-rt-6.x.4708/et
+ifneq ($(ROOTDIR),)
+ETSRCDIR := $(BCM_REL_DIR)../../../$(SRCBASE)/et
+else
+ETSRCDIR := ../../../../../../../src/et
+endif
 
 et-objs := $(ETSRCDIR)/sys/et_linux.o $(ETSRCDIR)/sys/etc.o
 
@@ -53,8 +57,9 @@ endif
 endif	# /* CONFIG_ET_ALL_PASSIVE_ON */
 
 # Search for sources under src/et/sys or objects under src/et/linux
-ifneq ($(wildcard $(src)/$(ETSRCDIR)/sys),)
-EXTRA_CFLAGS	+= -I$(src)/$(ETSRCDIR)/sys -I$(src)/$(ETSRCDIR)/include
+srcbase_et := $(ROOTDIR)$(SRCBASE)/et
+ifneq ($(wildcard $(srcbase_et)/include),)
+EXTRA_CFLAGS	+= $(addprefix -I$(srcbase_et)/,sys include)
 else
 et-objs := $(ETSRCDIR)/linux/et.o
 endif

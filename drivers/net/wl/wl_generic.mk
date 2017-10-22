@@ -96,7 +96,7 @@ else # SRCBASE/wl/sys doesn't exist
 
     # Otherwise, assume prebuilt object module(s) in src/wl/linux directory
     prebuilt := wl_$(wl_suffix).o
-    $(TARGET)-objs := $(SRCBASE_OFFSET)/wl/linux/$(prebuilt)
+    $(TARGET)-objs := $(SRCBASE_OFFSET)/wl${BCMEX}/$(if $(MERLIN),prebuilt/${BUILD_NAME},linux)/$(prebuilt)
     obj-$(CONFIG_WL) := $(TARGET).o
 
     ifeq ("$(CONFIG_WL_USBAP)","y")

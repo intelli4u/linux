@@ -1,4 +1,4 @@
-include ../../.config
+-include $(SRC_BASE_DIR)/.config
 
 VERSION = 2
 PATCHLEVEL = 6
@@ -362,13 +362,25 @@ KBUILD_CFLAGS_MODULE  := -DMODULE
 KBUILD_LDFLAGS_MODULE := -T $(srctree)/scripts/module-common.lds
 
 # Broadcom source tree
-KBUILD_CFLAGS += -I$(SRCBASE)/include
-KBUILD_CFLAGS += -I$(SRCBASE)/common/include
+KBUILD_CFLAGS += -I$(ROOTDIR)$(SRCBASE)/include
+KBUILD_CFLAGS += -I$(ROOTDIR)$(SRCBASE)/common/include
+KBUILD_CFLAGS += -I$(ROOTDIR)$(SRCBASE)/shared/bcmwifi/include
 KBUILD_CFLAGS += $(WLAN_ComponentIncPath)
 KBUILD_CFLAGS += $(WLAN_StdIncPathA)
-KBUILD_AFLAGS += -I$(SRCBASE)/include
-KBUILD_AFLAGS += -I$(SRCBASE)/common/include
+KBUILD_AFLAGS += -I$(ROOTDIR)$(SRCBASE)/include
+KBUILD_AFLAGS += -I$(ROOTDIR)$(SRCBASE)/common/include
 KBUILD_CFLAGS += -DBCMDRIVER -Dlinux
+
+ifeq ($(VENDOR),merlin)
+export MERLIN=y
+KBUILD_CFLAGS += -DMERLIN
+endif
+
+# Detect the relative directory with srctree to adpat the compilation location
+BCM_REL_DIR := $(patsubst $(srctree)/%/$(SRCBASE),%/,$(strip \
+	$(firstword $(wildcard \
+		$(addprefix $(srctree)/, ../$(SRCBASE) ../../$(SRCBASE) ../../../$(SRCBASE))))))
+export BCM_REL_DIR
 
 # Bcm dbg flag
 #KBUILD_CFLAGS += -DBCMDBG

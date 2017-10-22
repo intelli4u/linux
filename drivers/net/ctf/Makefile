@@ -20,7 +20,11 @@
 
 obj-${CONFIG_BCM_CTF} := ctf.o
 
-CTFSRC := ../../../../../../src-rt-6.x.4708/router/ctf${BCMEX}/
+ifneq ($(ROOTDIR),)
+CTFSRC := $(BCM_REL_DIR)../../../$(ROUTER)/ctf${BCMEX}
+else
+CTFSRC := ../../../../../../../src/router/ctf
+endif
 CTFOBJ := $(CTFSRC)/hndctf.o $(CTFSRC)/hndctf_linux.o
 SYMOBJ := $(CTFSRC)/hndctf.o
 
@@ -33,7 +37,7 @@ ifneq (,$(wildcard $(src)/$(CTFSRC)/*.c))
   EXTRA_CFLAGS += -I$(src)/$(CTFSRC)/../../router/ctf${BCMEX} -DHNDCTF
   ctf-objs := $(CTFOBJ) ctf_ksyms.o
 else
-  ctf-objs := $(CTFSRC)/linux/ctf.o
+  ctf-objs := $(CTFSRC)/$(if ${EX7},bcm7,bcm6)/ctf.o
 endif
 
 ifeq (,${KERNELRELEASE})

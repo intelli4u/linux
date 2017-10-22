@@ -18,7 +18,11 @@
 # $Id: Makefile,v 1.13 2010-12-13 20:23:49 $
 #
 
-SRCBASE_OFFSET := ../../../../../../src-rt-6.x.4708
+ifneq ($(ROOTDIR),)
+SRCBASE_OFFSET := $(BCM_REL_DIR)../../../$(if $(MERLIN),$(ROUTER),$(SRCBASE))
+else
+SRCBASE_OFFSET := ../../../../../../../src
+endif
 
 TARGET := wl
 WLCONF_H := wlconf.h
