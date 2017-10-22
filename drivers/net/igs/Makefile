@@ -18,16 +18,22 @@
 # $Id: Makefile,v 1.3 2008-08-13 20:20:16 $
 #
 
+ifneq ($(ROOTDIR),)
+EMFDIR := $(BCM_REL_DIR)../../../$(ROUTER)/emf
+IGSSRCDIR := $(EMPDIR)/igs
+IGSCSRCDIR := $(EMPDIR)/igs
+else
 IGSSRCDIR := ../../../../../../../src/router/emf/igs
 IGSCSRCDIR := ../../../../../../../src/emf/igs
 EMFDIR := ../../../../../../../src/router/emf
+endif
 
 IGS_OBJS := $(IGSCSRCDIR)/igsc.o $(IGSCSRCDIR)/igsc_sdb.o $(IGSSRCDIR)/igs_linux.o \
 	    $(IGSCSRCDIR)/osl_linux.o
 
 # Search for sources under src/router/emf/igs
 ifneq ($(wildcard $(src)/$(IGSSRCDIR)),)
-	EXTRA_CFLAGS += -I$(SRCBASE)/router/emf/igs -I$(SRCBASE)/router/emf/emf
+	EXTRA_CFLAGS += -I$(ROOTDIR)$(SRCBASE)/router/emf/igs -I$(ROOTDIR)$(SRCBASE)/router/emf/emf
 	EXTRA_CFLAGS += -I$(SRCBASE)/include/emf/igs -I$(SRCBASE)/include/emf/emf
 	igs-objs := $(IGS_OBJS)
 else
