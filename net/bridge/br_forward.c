@@ -25,10 +25,10 @@
 #ifdef MULTIPLE_SSID
 /*foxconn modified start, water, 01/07/10*/
 //#include "../../../../router/multissidcontrol/MultiSsidControl.h"
-#include "../../../../../../ap/acos/multissidcontrol/MultiSsidControl.h"
+#include "multissidcontrol/MultiSsidControl.h"
 /*Foxconn add start by Hank 08/29/2012*/
 #ifdef INCLUDE_ACCESSCONTROL
-#include "../../../../../../ap/acos/access_control/AccessControl.h"
+#include "access_control/AccessControl.h"
 #endif
 /*Foxconn add end by Hank 08/29/2012*/
 /*foxconn modified end, water, 01/07/10*/
