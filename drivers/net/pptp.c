@@ -62,7 +62,7 @@
 #define NEED_ACK        1
 #define NO_ACK          0
 
-#define INIT_SEQ        1   /* Base number of PPTP sequence */
+#define INIT_SEQ        0   /* Base number of PPTP sequence */
 
 static unsigned long call_id;       /* Call ID for local client */
 static unsigned long peer_call_id;  /* Call ID for peer server */
@@ -577,6 +577,9 @@ static int pptp_create(struct net *net, struct socket *sock)
 	sk = sk_alloc(net, PF_PPPOX, GFP_KERNEL, &pptp_sk_proto);
 	if (!sk)
 		return -ENOMEM;
+
+	seq_number = INIT_SEQ;  /* some pptp servers check sequence number , it must start from 0. */ 		
+
 
 	sock_init_data(sock, sk);
 
