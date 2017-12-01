@@ -1601,7 +1601,7 @@ static int __init arp_proc_init(void)
 #ifdef ATTADEV
 #define FLAG_VALID 1
 #define FLAG_INVALID 0
-#define MAX_ATTADEV_ENTRY 128
+#define MAX_ATTADEV_ENTRY 255
 #define ATTADEV_HASHMASK 0x7f
 
 typedef struct {
