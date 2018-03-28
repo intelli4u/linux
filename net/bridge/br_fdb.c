@@ -41,6 +41,10 @@ static int mac_cnt = 0;
 #define BCMFASTPATH_HOST
 #endif	/* HNDCTF */
 
+#ifdef INCLUDE_ACCESSCONTROL
+int (*br_ctf_accesscntl_hook)(struct sk_buff *skb)=NULL;
+#endif
+
 #ifdef HNDCTF
 static void
 br_brc_init(ctf_brc_t *brc, unsigned char *ea, struct net_device *rxdev, unsigned char *sip)
@@ -114,7 +118,12 @@ br_brc_add(unsigned char *ea, struct net_device *rxdev, struct sk_buff *skb)
 #endif
 
 	/* Add the bridge cache entry */
-	ctf_brc_add(kcih, &brc_entry);
+
+
+  if(!SKBCB_NO_CTF(skb))
+  {
+	    ctf_brc_add(kcih, &brc_entry);
+  }
 
 	return;
 }
@@ -597,3 +606,21 @@ void BCMFASTPATH_HOST br_fdb_update(struct net_bridge *br, struct net_bridge_por
 		spin_unlock(&br->hash_lock);
 	}
 }
+
+
+#ifdef INCLUDE_ACCESSCONTROL
+
+void insert_acs_func_to_br_ctf(void *FUNC)
+{
+   br_ctf_accesscntl_hook= FUNC;
+}
+
+void remove_acs_func_from_br_ctf(void)
+{
+   br_ctf_accesscntl_hook= NULL;
+}
+
+EXPORT_SYMBOL(insert_acs_func_to_br_ctf);
+EXPORT_SYMBOL(remove_acs_func_from_br_ctf);
+
+#endif

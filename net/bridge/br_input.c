@@ -143,6 +143,10 @@ static inline int is_link_local(const unsigned char *dest)
 	return ((a[0] ^ b[0]) | (a[1] ^ b[1]) | ((a[2] ^ b[2]) & m)) == 0;
 }
 
+#ifdef INCLUDE_ACCESSCONTROL
+int (*br_input_accesscntl_hook)(struct sk_buff *skb)=NULL;
+#endif
+
 /*
  * Return NULL if skb is handled
  * note: already called with rcu_read_lock
@@ -152,6 +156,12 @@ struct sk_buff *br_handle_frame(struct sk_buff *skb)
 	struct net_bridge_port *p;
 	const unsigned char *dest = eth_hdr(skb)->h_dest;
 	int (*rhook)(struct sk_buff *skb);
+
+#ifdef INCLUDE_ACCESSCONTROL
+    if(br_input_accesscntl_hook){		
+		br_input_accesscntl_hook(skb);		
+	}
+#endif
 
 	if (skb->pkt_type == PACKET_LOOPBACK)
 		return skb;
@@ -204,3 +214,22 @@ drop:
 	}
 	return NULL;
 }
+
+#ifdef INCLUDE_ACCESSCONTROL
+/*fxcn added start by dennis,02/17/12*/
+void insert_acs_func_to_br_input(void *FUNC)
+{
+	br_input_accesscntl_hook= FUNC;
+}
+
+void remove_acs_func_from_br_input(void)
+{
+	br_input_accesscntl_hook= NULL;
+}
+/*dxcn added end by dennis, 02/17/12*/
+/*Foxconn add start by Hank 08/29/2012*/
+EXPORT_SYMBOL(insert_acs_func_to_br_input);
+EXPORT_SYMBOL(remove_acs_func_from_br_input);
+/*Foxconn add end by Hank 08/29/2012*/
+#endif
+

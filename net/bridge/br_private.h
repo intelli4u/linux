@@ -542,5 +542,6 @@ extern void br_sysfs_delbr(struct net_device *dev);
 #define br_sysfs_addbr(dev)	(0)
 #define br_sysfs_delbr(dev)	do { } while(0)
 #endif /* CONFIG_SYSFS */
+#define SKBCB_NO_CTF(skb)                        (skb->fpath_cb[sizeof(skb->fpath_cb)-17])   /* wklin added @tpt */
 
 #endif

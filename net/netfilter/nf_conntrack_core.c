@@ -48,6 +48,12 @@
 #include <net/netfilter/nf_nat_core.h>
 
 #define NF_CONNTRACK_VERSION	"0.5.0"
+//#define DEBUG
+#define NIPQUAD(addr) \
+((unsigned char *)&addr)[0], \
+((unsigned char *)&addr)[1], \
+((unsigned char *)&addr)[2], \
+((unsigned char *)&addr)[3]
 
 #ifdef HNDCTF
 #include <linux/if.h>
@@ -409,6 +415,10 @@ ip_conntrack_ipct_add(struct sk_buff *skb, u_int32_t hooknum,
 	printk("txif: %s\n", ((struct net_device *)ipc_entry.txif)->name);
 #endif
 
+	ipc_entry.portmask = PKTCB_PORT_ID(skb);
+#ifdef DEBUG
+	printk("%s: port mask: 0x%x\n", __FUNCTION__, ipc_entry.portmask);
+#endif
 	ctf_ipc_add(kcih, &ipc_entry, !IPVERSION_IS_4(ipver));
 
 #ifdef CTF_PPPOE
