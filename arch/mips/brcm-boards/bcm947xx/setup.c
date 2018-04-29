@@ -1,7 +1,7 @@
 /*
  * HND MIPS boards setup routines
  *
- * Copyright (C) 2011, Broadcom Corporation. All Rights Reserved.
+ * Copyright (C) 2013, Broadcom Corporation. All Rights Reserved.
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -131,7 +131,9 @@ EXPORT_SYMBOL( jtag_scan );
 static void
 bcm947xx_reboot_handler(void)
 {
+#ifndef BCMDBG
 	int wombo_reset;
+#endif /* BCMDBG */
 
 	/* Reset the PCI(e) interfaces */
 	if (CHIPID(sih->chip) == BCM4706_CHIP_ID)
@@ -145,6 +147,7 @@ bcm947xx_reboot_handler(void)
 		bcm_mdelay(1);
 	}
 
+#ifndef BCMDBG
 	/* gpio 0 is also valid wombo_reset */
 	if ((wombo_reset = getgpiopin(NULL, "wombo_reset", GPIO_PIN_NOTDEFINED)) !=
 	    GPIO_PIN_NOTDEFINED) {
@@ -154,6 +157,7 @@ bcm947xx_reboot_handler(void)
 		si_gpioouten(sih, reset, reset, GPIO_DRV_PRIORITY);
 		bcm_mdelay(10);
 	}
+#endif /* BCMDBG */
 }
 
 void

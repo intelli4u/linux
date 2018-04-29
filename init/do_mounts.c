@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 #include <linux/module.h>
 #include <linux/sched.h>
 #include <linux/ctype.h>

@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  * VLAN		An implementation of 802.1Q VLAN tagging.
  *

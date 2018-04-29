@@ -595,6 +595,14 @@ KBUILD_CFLAGS += -DCTF_IPV6
 endif
 endif
 
+ifneq ($(CONFIG_BCM_FA),)
+KBUILD_CFLAGS += -DBCMFA
+endif
+
+ifneq ($(CONFIG_RGMII_BCM_FA),)
+KBUILD_CFLAGS += -DRGMII_BCM_FA
+endif
+
 ifneq ($(CONFIG_BCM47XX),)
 KBUILD_CFLAGS += -DBCM47XX
 endif
@@ -603,6 +611,11 @@ ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 KBUILD_CFLAGS	+= -Os
 else
 KBUILD_CFLAGS	+= -O2
+
+ifeq ($(BWDPI),y)
+KBUILD_CFLAGS += -DRTCONFIG_BWDPI
+endif
+
 endif
 
 include $(srctree)/arch/$(SRCARCH)/Makefile
@@ -637,6 +650,12 @@ endif
 
 ifdef CONFIG_FUNCTION_TRACER
 KBUILD_CFLAGS	+= -pg
+endif
+
+ifeq ($(CONFIG_ELF_CORE),y)
+KBUILD_CFLAGS	+= -DDEBUG
+KBUILD_CFLAGS	+= -g
+KBUILD_AFLAGS	+= -gdwarf-2
 endif
 
 # We trigger additional mismatches with less inlining
@@ -1148,7 +1167,7 @@ _modinst_:
 	@cp -f $(objtree)/modules.order $(MODLIB)/
 	@cp -f $(objtree)/modules.builtin $(MODLIB)/
 	$(Q)$(MAKE) -f $(srctree)/scripts/Makefile.modinst
-	@echo "================================================"
+
 # This depmod is only for convenience to give the initial
 # boot a modules.dep even before / is mounted read-write.  However the
 # boot script depmod is the master version.
@@ -1395,10 +1414,7 @@ modules_install: _emodinst_ _emodinst_post
 install-dir := $(if $(INSTALL_MOD_DIR),$(INSTALL_MOD_DIR),extra)
 PHONY += _emodinst_
 _emodinst_:
-	@echo WinsDbg _emodinst_ MODLIB = $(MODLIB)
-	@echo WinsDbg _emodinst_ TARGETDIR = $(TARGETDIR)
 	$(Q)mkdir -p $(MODLIB)/$(install-dir)
-	@echo WinsDbg _emodinst_ install-dir = $(install-dir)
 	$(Q)$(MAKE) -f $(srctree)/scripts/Makefile.modinst
 
 PHONY += _emodinst_post

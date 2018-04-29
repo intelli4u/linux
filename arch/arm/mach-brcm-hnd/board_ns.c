@@ -356,8 +356,6 @@ void __init bcm47xx_adjust_zones(unsigned long *size, unsigned long *hole)
 }
 #endif /* CONFIG_ZONE_DMA */
 
-
-
 static struct sys_timer board_timer = {
    .init = board_init_timer,
 };
