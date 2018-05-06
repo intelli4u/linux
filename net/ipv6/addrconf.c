@@ -1539,6 +1539,8 @@ static void addrconf_join_anycast(struct inet6_ifaddr *ifp)
 static void addrconf_leave_anycast(struct inet6_ifaddr *ifp)
 {
 	struct in6_addr addr;
+	if (ifp->prefix_len >= 127) /* RFC 6164 */
+		return;
 	ipv6_addr_prefix(&addr, &ifp->addr, ifp->prefix_len);
 	if (ipv6_addr_any(&addr))
 		return;
@@ -1882,7 +1884,7 @@ void addrconf_prefix_rcv(struct net_device *dev, u8 *opt, int len)
 
 		rt = rt6_lookup(net, &pinfo->prefix, NULL,
 				dev->ifindex, 1);
-
+#if 0
 		if (rt && addrconf_is_prefix_route(rt)) {
 			/* Autoconf prefix route */
 			if (valid_lft == 0) {
@@ -1897,6 +1899,8 @@ void addrconf_prefix_rcv(struct net_device *dev, u8 *opt, int len)
 				rt->rt6i_expires = 0;
 			}
 		} else if (valid_lft) {
+#endif
+		if (valid_lft) {
 			clock_t expires = 0;
 			int flags = RTF_ADDRCONF | RTF_PREFIX_RT;
 			if (addrconf_finite_timeout(rt_expires)) {

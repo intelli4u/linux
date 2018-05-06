@@ -449,6 +449,9 @@ struct sk_buff {
 #ifdef CONFIG_NETWORK_SECMARK
 	__u32			secmark;
 #endif
+#ifdef HNDCTF
+	void			*ctf_ipc_txif;
+#endif
 };
 
 #ifdef __KERNEL__
@@ -2115,6 +2118,7 @@ static inline void nf_reset(struct sk_buff *skb)
 	skb->nfct = NULL;
 	nf_conntrack_put_reasm(skb->nfct_reasm);
 	skb->nfct_reasm = NULL;
+	/* skb->nfcache = 0; ? */
 #endif
 #ifdef CONFIG_BRIDGE_NETFILTER
 	nf_bridge_put(skb->nf_bridge);
@@ -2131,6 +2135,7 @@ static inline void __nf_copy(struct sk_buff *dst, const struct sk_buff *src)
 	dst->nfctinfo = src->nfctinfo;
 	dst->nfct_reasm = src->nfct_reasm;
 	nf_conntrack_get_reasm(src->nfct_reasm);
+	dst->nfcache = src->nfcache;
 #endif
 #ifdef CONFIG_BRIDGE_NETFILTER
 	dst->nf_bridge  = src->nf_bridge;

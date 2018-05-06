@@ -2706,9 +2706,7 @@ struct sk_buff BCMFASTPATH_HOST *tcp_tso_segment(struct sk_buff *skb, int featur
 	 * the old method since the packets are passed up to the application
 	 * layer.
 	 */
-	/*fix can not access web GUI by using ipv6 ip when not bypass this if condition*/
-	/* Remove by Foxconn Peter 06/14/2013 For ipv6 web login issue */
-	if (!skb->tcpf_nf && !(skb_shinfo(skb)->frag_list) && (ip_hdr(skb)->version == 4)) {
+	if (!skb->tcpf_nf && !(skb_shinfo(skb)->frag_list) && (skb->protocol != htons(ETH_P_IPV6))) {
 		return skb_tcp_segment(skb, features, oldlen, thlen);
 	}
 

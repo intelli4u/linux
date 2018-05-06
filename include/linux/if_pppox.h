@@ -123,6 +123,7 @@ struct sockaddr_pppol2tpv3 {
 #define PPPOEIOCSFWD	_IOW(0xB1 ,0, size_t)
 #define PPPOEIOCDFWD	_IO(0xB1 ,1)
 /*#define PPPOEIOCGFWD	_IOWR(0xB1,2, size_t)*/
+#define PPPTPIOWFP  	_IOWR(0xB1 ,2,size_t)
 /*  added start, pptp, Winster Chan, 06/26/2006 */
 #define PPTPIOCSFWD     _IOW(0xB1 ,0, size_t)
 #define PPTPIOCDFWD     _IO(0xB1 ,1)

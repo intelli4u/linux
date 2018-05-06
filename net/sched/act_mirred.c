@@ -277,8 +277,8 @@ static struct tc_action_ops act_mirred_ops = {
 	.walk		=	tcf_generic_walker
 };
 
-MODULE_AUTHOR("Jamal Hadi Salim(2002)");
-MODULE_DESCRIPTION("Device Mirror/redirect actions");
+MODULE_AUTHOR("Jamal Hadi Salim(2002) / George Amanakis(2015)");
+MODULE_DESCRIPTION("Device Mirror/redirect actions / CONNMARK retrieval");
 MODULE_LICENSE("GPL");
 
 static int __init mirred_init_module(void)
