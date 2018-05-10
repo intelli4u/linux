@@ -78,6 +78,9 @@
 # define SET_TSC_CTL(a)		(-EINVAL)
 #endif
 
+#ifdef KERNEL_CRASH_DUMP_TO_MTD
+int flash_write_reboot_reason(int);
+#endif
 /*
  * this is where the system-wide overflow UID and GID are defined, for
  * architectures that now have 32-bit UID/GID but didn't in the past
@@ -309,7 +312,13 @@ void kernel_restart(char *cmd)
 {
 	kernel_restart_prepare(cmd);
 	if (!cmd)
+	{
+		#ifdef KERNEL_CRASH_DUMP_TO_MTD
+		flash_write_reboot_reason(1);
+		#endif
+
 		printk(KERN_EMERG "Restarting system.\n");
+	}
 	else
 		printk(KERN_EMERG "Restarting system with command '%s'.\n", cmd);
 	machine_restart(cmd);

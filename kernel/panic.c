@@ -54,6 +54,7 @@ void  nvram_store_crash(void);
 
 #ifdef KERNEL_CRASH_DUMP_TO_MTD
 int flash_write_buffer(void);
+int flash_write_reboot_reason(int);
 #endif
 
 /**
@@ -110,6 +111,7 @@ NORET_TYPE void panic(const char * fmt, ...)
 	
 #ifdef KERNEL_CRASH_DUMP_TO_MTD
         flash_write_buffer();
+        flash_write_reboot_reason(0);
 #endif
 
 #ifdef CONFIG_CRASHLOG

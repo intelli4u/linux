@@ -4816,3 +4816,64 @@ int restore_ipv6_forwarding(struct net_device *dev)
     return 0;
 }
 /* Foxconn added end pling 08/16/2010 */
+
+/* Foxconn added start 11/21/2014 */
+/* Export a function for IPv6 DNS hijack to use, to avoid kernel message */
+struct inet6_dev * ipv6_find_idev2(struct net_device *dev)
+{   
+    struct inet_dev *idev;
+
+    rtnl_lock();
+    idev = ipv6_find_idev(dev);
+    rtnl_unlock();
+
+    return idev;
+}
+EXPORT_SYMBOL(ipv6_find_idev2);
+/* Foxconn added end 11/21/2014 */
+
+/* Foxconn Bernie added start, 2014/12/26 @ Fix unreachable msg code 5  */
+
+struct inet6_dev * ipv6_find_idev3(struct net_device *dev)
+{   
+    struct inet_dev *idev;
+
+    rtnl_lock();
+    idev = ipv6_find_idev(dev);
+    rtnl_unlock();
+
+    return idev;
+}
+EXPORT_SYMBOL(ipv6_find_idev3);
+
+void add_code5_src_route(struct in6_addr *pfx, int plen, struct net_device *dev,
+		      unsigned long expires, u32 flags)
+{
+	struct fib6_config cfg = {
+		.fc_table = RT6_TABLE_PREFIX,
+		.fc_metric = IP6_RT_PRIO_ADDRCONF,
+		.fc_ifindex = dev->ifindex,
+		.fc_expires = expires,
+		.fc_dst_len = plen,
+		.fc_flags = RTF_UP | flags,
+		.fc_nlinfo.nl_net = dev_net(dev),
+		.fc_protocol = RTPROT_KERNEL,
+	};
+
+	ipv6_addr_copy(&cfg.fc_dst, pfx);
+
+	/* Prevent useless cloning on PtP SIT.
+	   This thing is done here expecting that the whole
+	   class of non-broadcast devices need not cloning.
+	 */
+#if defined(CONFIG_IPV6_SIT) || defined(CONFIG_IPV6_SIT_MODULE)
+	if (dev->type == ARPHRD_SIT && (dev->flags & IFF_POINTOPOINT))
+		cfg.fc_flags |= RTF_NONEXTHOP;
+#endif
+
+	ip6_route_add(&cfg);
+}
+EXPORT_SYMBOL(add_code5_src_route);
+/* Foxconn Bernie added end, 2014/12/26 @ Fix unreachable msg code 5  */
+
+

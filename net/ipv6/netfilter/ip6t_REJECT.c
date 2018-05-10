@@ -205,6 +205,9 @@ reject_tg6(struct sk_buff *skb, const struct xt_action_param *par)
 	case IP6T_TCP_RESET:
 		send_reset(net, skb);
 		break;
+	case IP6T_ICMP6_SRC_ADDR_FAILED:
+		send_unreach(net, skb, ICMPV6_SRC_ADDR_FAILED, par->hooknum);
+		break;
 	default:
 		if (net_ratelimit())
 			pr_info("case %u not handled yet\n", reject->with);

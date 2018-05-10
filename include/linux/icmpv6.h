@@ -123,6 +123,7 @@ static inline struct icmp6hdr *icmp6_hdr(const struct sk_buff *skb)
 #define ICMPV6_NOT_NEIGHBOUR		2
 #define ICMPV6_ADDR_UNREACH		3
 #define ICMPV6_PORT_UNREACH		4
+#define ICMPV6_SRC_ADDR_FAILED		5 //Foxconn added Bernie 2014/12/10, support code 5.
 
 /*
  *	Codes for Time Exceeded

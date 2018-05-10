@@ -293,6 +293,9 @@ static void mip6_addr_swap(struct sk_buff *skb)
 static inline void mip6_addr_swap(struct sk_buff *skb) {}
 #endif
 
+#define BR_IFNAME		"br0"
+struct net_device *_g_devb = NULL; 
+struct inet6_dev *_g_idevb = NULL; 
 /*
  *	Send an ICMP message in response to a packet in error
  */
@@ -304,6 +307,7 @@ void icmpv6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info)
 	struct sock *sk;
 	struct ipv6_pinfo *np;
 	struct in6_addr *saddr = NULL;
+	struct in6_addr code5saddr; /* Foxconn Bernie add start, 2014/12/26 @ Fix unreachable msg code 5	*/
 	struct dst_entry *dst;
 	struct dst_entry *dst2;
 	struct icmp6hdr tmp_hdr;
@@ -326,6 +330,56 @@ void icmpv6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info)
 	 *	Rule (e.1) is enforced by not using icmpv6_send
 	 *	in any code that processes icmp errors.
 	 */
+	 
+/* Foxconn Bernie added start, 2014/12/26 @ Fix unreachable msg code 5  */
+	memset(&code5saddr, 0, sizeof(code5saddr));
+	if(code==ICMPV6_SRC_ADDR_FAILED)
+	{
+		struct net_device *devb = NULL;
+		devb = dev_get_by_name(&init_net,BR_IFNAME);
+
+		extern void add_code5_src_route(struct in6_addr *, int , struct net_device *, unsigned long , u32 );
+		add_code5_src_route(&hdr->saddr, 64,devb, 100, RTF_EXPIRES);
+	    if (devb)
+	    {
+	        extern struct inet6_dev * ipv6_find_idev3(struct net_device *devb);
+            /*foxconn Han edited start, 12/22/2017 prevent call ipv6_find_idev3() multiple times*/
+	        struct inet6_dev *idevb = NULL;//ipv6_find_idev3(devb);
+            if((_g_devb != devb) || (_g_idevb == NULL))
+            {
+                _g_devb = devb;
+                _g_idevb = ipv6_find_idev3(devb);
+            }
+            idevb = _g_idevb;
+            /*foxconn Han edited end, 12/22/2017 prevent call ipv6_find_idev3() multiple times*/
+
+	        if (idevb)
+	        {
+	            struct inet6_ifaddr *ifa, *ifn;
+	            list_for_each_entry_safe(ifa, ifn, &idevb->addr_list, if_list)
+	            {
+	                memcpy(&code5saddr, &ifa->addr, sizeof(code5saddr));
+					//printk(KERN_EMERG "\n%s,%d,&ifa->addr=%pI6\n",__func__,__LINE__,&ifa->addr);
+	                if (ifa->addr.s6_addr16[0] != htons(0xfe80))
+	                {
+	                	memset(&code5saddr, 0, sizeof(code5saddr));
+	                	memcpy(&code5saddr, &ifa->addr, sizeof(code5saddr));
+	                    break;  /* assume we got global address, break */
+	                }
+	            }
+	        }
+	    }
+	}
+	
+	if(code==ICMPV6_SRC_ADDR_FAILED)
+	{
+
+		//printk(KERN_EMERG "\n%s,%d,hdr->saddr=%pI6,hdr->daddr=%pI6,skb->dev->name=%s\n",__func__,__LINE__,&hdr->saddr,&hdr->daddr,skb->dev->name);
+		//printk(KERN_EMERG "\n%s,%d,code5saddr=%pI6\n",__func__,__LINE__,&code5saddr);
+
+	}
+/* Foxconn Bernie added end, 2014/12/26 @ Fix unreachable msg code 5	*/
+
 	addr_type = ipv6_addr_type(&hdr->daddr);
 
 	if (ipv6_chk_addr(net, &hdr->daddr, skb->dev, 0))
@@ -352,7 +406,15 @@ void icmpv6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info)
 	 */
 
 	if (addr_type & IPV6_ADDR_LINKLOCAL)
+	{
 		iif = skb->dev->ifindex;
+	}
+/* Foxconn Bernie added start, 2014/12/26 @ Fix unreachable msg code 5	*/
+	if(code==ICMPV6_SRC_ADDR_FAILED)
+	{
+		iif = skb->dev->ifindex;
+	}
+/* Foxconn Bernie added end, 2014/12/26 @ Fix unreachable msg code 5	*/
 
 	/*
 	 *	Must not send error if the source does not uniquely
@@ -370,7 +432,14 @@ void icmpv6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info)
 	 */
 	if (is_ineligible(skb)) {
 		LIMIT_NETDEBUG(KERN_DEBUG "icmpv6_send: no reply to icmp error\n");
-		return;
+
+/* Foxconn Bernie modified start, 2014/12/26 @ Fix unreachable msg code 5	*/
+		if(code!=ICMPV6_SRC_ADDR_FAILED)
+		{
+			return;
+		}
+/* Foxconn Bernie modified end, 2014/12/26 @ Fix unreachable msg code 5	*/
+
 	}
 
 	mip6_addr_swap(skb);
@@ -378,8 +447,17 @@ void icmpv6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info)
 	memset(&fl, 0, sizeof(fl));
 	fl.proto = IPPROTO_ICMPV6;
 	ipv6_addr_copy(&fl.fl6_dst, &hdr->saddr);
-	if (saddr)
-		ipv6_addr_copy(&fl.fl6_src, saddr);
+	if(code==ICMPV6_SRC_ADDR_FAILED)
+	{
+		ipv6_addr_copy(&fl.fl6_src,  &code5saddr);
+		//printk(KERN_EMERG "\n%s,%d,&fl.fl6_src=%pI6, &fl.fl6_dst=%pI6,send..\n",__func__,__LINE__,&fl.fl6_src,&fl.fl6_dst);
+	}
+	else
+	{
+		if (saddr)
+			ipv6_addr_copy(&fl.fl6_src, saddr);
+	}
+/* Foxconn Bernie modified end, 2014/12/26 @ Fix unreachable msg code 5	*/
 	fl.oif = iif;
 	fl.fl_icmp_type = type;
 	fl.fl_icmp_code = code;

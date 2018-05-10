@@ -30,6 +30,7 @@
 #include <linux/backing-dev.h>
 #include <linux/compat.h>
 #include <linux/mount.h>
+#include <linux/time.h>
 
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/map.h>
@@ -38,6 +39,11 @@
 
 #define MTD_INODE_FS_MAGIC 0x11307854
 static struct vfsmount *mtd_inode_mnt __read_mostly;
+
+/* Foxconn added start, James Hsu, 2016/10/20 for Router Analytics kernel reboot timestampe with correct timezone */
+int AWS_timezone=0;
+EXPORT_SYMBOL(AWS_timezone);
+/* Foxconn added start, James Hsu, 2016/10/20 */
 
 /*
  * Data structure to hold the pointer to the mtd device as well
@@ -1152,24 +1158,91 @@ extern char *get_logbuf(void);
 extern char *get_logsize(void);
 int flash_write_buffer()
 {
-	struct mtd_info *nvram_mtd;
+	struct mtd_info *nvram_mtd=NULL;
 	
 	char *buffer;
 	int buf_len;
 	int len;
 
-	nvram_mtd = get_mtd_device(NULL, 5);
+	nvram_mtd = get_mtd_device(NULL, 16);
 
 	if (!nvram_mtd) {
 		printk("%s(%d): NVRAM not found\n", __FUNCTION__, __LINE__);
 		return -ENODEV;
 	}
 	
+#if 1
+    int mtd5_crash_dump_num, mtd5_start, bitmap;
+    char buffer2[13],buffer3[75];
+
+    nvram_mtd->read(nvram_mtd, 0, 12, &len, buffer2);
+    buffer2[12] = '\0';
+    sscanf(buffer2,"%d %10d",&mtd5_crash_dump_num,&mtd5_start);
+    bitmap = mtd5_start % 1000;
+	if(bitmap < 0)	bitmap =0;
+    mtd5_start /= 1000;	
+    if(mtd5_crash_dump_num < 1 || mtd5_crash_dump_num > 9)
+    {
+        mtd5_crash_dump_num = 0;
+        mtd5_start = 12;
+    }
+    /* Foxconn modified start, James Hsu, 2016/10/20 for Router Analytics kernel reboot timestamp */
+    /* Add timestamp for Router Analtytics kernel reboot */
+    struct timeval now;
+    struct tm tm_val;
+
+    do_gettimeofday(&now);
+    time_to_tm(now.tv_sec+AWS_timezone*3600, 0, &tm_val);
+	
+    buf_len = get_logsize();
+    sprintf(buffer2,"%d %10d",++mtd5_crash_dump_num,(mtd5_start+74+buf_len)*1000+bitmap);
+    nvram_mtd->write(nvram_mtd, 0, 12, &len, buffer2);
+    sprintf(buffer3,
+    "\n==========================Kernel crash log  %d/%d/%d %02d:%02d:%02d==============================\n",1900 + tm_val.tm_year,tm_val.tm_mon + 1,tm_val.tm_mday, tm_val.tm_hour, tm_val.tm_min,tm_val.tm_sec);
+    /* Foxconn modified end, James Hsu, 2016/10/20 */
+    nvram_mtd->write(nvram_mtd, mtd5_start, 74, &len, buffer3);
+    buffer = get_logbuf();
+    nvram_mtd->write(nvram_mtd, mtd5_start+74, buf_len, &len, buffer);
+#else
 	buf_len = get_logsize();
     buffer = get_logbuf();
 	nvram_mtd->write(nvram_mtd, 0, buf_len, &len, buffer);
+#endif
 done:
 	return 0;
+}
+int flash_write_reboot_reason(int choice)
+{
+    struct mtd_info *nvram_mtd;
+    int len;
+    int mtd5_crash_dump_num, mtd5_start, bitmap;
+    char buffer[13];
+
+    nvram_mtd = get_mtd_device(NULL, 16);
+    nvram_mtd->read(nvram_mtd, 0, 12, &len, buffer);
+    buffer[12] = '\0';
+    sscanf(buffer,"%d %10d",&mtd5_crash_dump_num,&mtd5_start);
+    bitmap = mtd5_start % 1000;
+	if(bitmap < 0)	bitmap = 0;
+    mtd5_start /= 1000;
+	if(mtd5_start < 0)	mtd5_start = 0;
+	
+    if(bitmap == 0 || bitmap > 63)
+        bitmap = 1;
+			
+    if(!choice)    //0 for kernel crash, 1 for user manual reboot
+	    bitmap = (bitmap << 1) + 0;
+    else	
+        bitmap = (bitmap << 1) + 1;
+		
+	if(bitmap & 64)
+	{
+		bitmap = bitmap & 31;
+		bitmap |= 32;
+	}
+		
+    sprintf(buffer,"%d %10d",mtd5_crash_dump_num,mtd5_start*1000+bitmap);
+    nvram_mtd->write(nvram_mtd, 0, 12, &len, buffer);
 }
 #endif //KERNEL_CRASH_DUMP_TO_MTD
 
