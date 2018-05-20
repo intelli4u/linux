@@ -1081,6 +1081,9 @@ struct net_device {
     unsigned    acos_flags;
     int traffic_meter_counter;      /* wklin added, 02/08/2010 */
     /*  wklin added end, 11/06/2008 */
+#ifdef BCMFA
+	bool fa_on;
+#endif
 };
 #define to_net_dev(d) container_of(d, struct net_device, dev)
 

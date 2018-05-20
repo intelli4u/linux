@@ -175,6 +175,10 @@ struct pppoe_hdr {
 
 /* Length of entire PPPoE + PPP header */
 #define PPPOE_SES_HLEN	8
+
+#ifdef __KERNEL__
+#include <linux/skbuff.h>
+
 /* Socket options */
 #define PPTP_SO_TIMEOUT 1
 #define PPTP_SO_WINDOW  2     
@@ -281,6 +285,7 @@ struct pptp_opt {
 					     relayed to (PPTP relaying) */
 #endif
 };
+#endif
 
 #include <net/sock.h>
 
