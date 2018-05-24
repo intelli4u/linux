@@ -793,8 +793,8 @@ destroy_conntrack(struct nf_conntrack *nfct)
 	NF_CT_ASSERT(atomic_read(&nfct->use) == 0);
 	NF_CT_ASSERT(!timer_pending(&ct->timeout));
 
-#if 0 //Don't let conntrack detele CTF entry
-//#ifdef HNDCTF
+//#if 0 //Don't let conntrack detele CTF entry
+#ifdef HNDCTF
 	ip_conntrack_ipct_delete(ct, 0);
 #endif /* HNDCTF*/
 	/* To make sure we don't get any weird locking issues here:
@@ -884,8 +884,8 @@ EXPORT_SYMBOL_GPL(nf_ct_insert_dying_list);
 static void death_by_timeout(unsigned long ul_conntrack)
 {
 	struct nf_conn *ct = (void *)ul_conntrack;
-#if 0 //Don't let conntrack detele CTF entry
-//#ifdef HNDCTF
+//#if 0 //Don't let conntrack detele CTF entry
+#ifdef HNDCTF
 	/* If negative error is returned it means the entry hasn't
 	 * timed out yet.
 	 */
@@ -1178,8 +1178,8 @@ static noinline int early_drop(struct net *net, unsigned int hash)
 	if (!ct)
 		return dropped;
 
-#if 0 //Don't let conntrack detele CTF entry
-//#ifdef HNDCTF
+//#if 0 //Don't let conntrack detele CTF entry
+#ifdef HNDCTF
 	ip_conntrack_ipct_delete(ct, 0);
 #endif /* HNDCTF */
 
@@ -1743,8 +1743,8 @@ void nf_ct_iterate_cleanup(struct net *net,
 	unsigned int bucket = 0;
 
 	while ((ct = get_next_corpse(net, iter, data, &bucket)) != NULL) {
-#if 0 //Don't let conntrack detele CTF entry
-//#ifdef HNDCTF
+//#if 0 //Don't let conntrack detele CTF entry
+#ifdef HNDCTF
 		ip_conntrack_ipct_delete(ct, 0);
 #endif /* HNDCTF */
 		/* Time to push up daises... */
