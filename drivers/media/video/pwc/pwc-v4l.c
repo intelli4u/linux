@@ -435,14 +435,6 @@ long pwc_video_do_ioctl(struct file *file, unsigned int cmd, void *arg)
 		case VIDIOCSPICT:
 		{
 			struct video_picture *p = arg;
-			/*
-			 *	FIXME:	Suppose we are mid read
-				ANSWER: No problem: the firmware of the camera
-					can handle brightness/contrast/etc
-					changes at _any_ time, and the palette
-					is used exactly once in the uncompress
-					routine.
-			 */
 			pwc_set_brightness(pdev, p->brightness);
 			pwc_set_contrast(pdev, p->contrast);
 			pwc_set_gamma(pdev, p->whiteness);
@@ -555,7 +547,6 @@ long pwc_video_do_ioctl(struct file *file, unsigned int cmd, void *arg)
 					return ret;
 			} /* ... size mismatch */
 
-			/* FIXME: should we lock here? */
 			if (pdev->image_used[vm->frame])
 				return -EBUSY;	/* buffer wasn't available. Bummer */
 			pdev->image_used[vm->frame] = 1;
@@ -600,12 +591,6 @@ long pwc_video_do_ioctl(struct file *file, unsigned int cmd, void *arg)
 			if (pdev->image_used[*mbuf] == 0)
 				return -EINVAL;
 
-			/* Add ourselves to the frame wait-queue.
-
-			   FIXME: needs auditing for safety.
-			   QUESTION: In what respect? I think that using the
-				     frameq is safe now.
-			 */
 			add_wait_queue(&pdev->frameq, &wait);
 			while (pdev->full_frames == NULL) {
 				/* Check for unplugged/etc. here */
@@ -1125,12 +1110,6 @@ long pwc_video_do_ioctl(struct file *file, unsigned int cmd, void *arg)
 			if (buf->type != V4L2_BUF_TYPE_VIDEO_CAPTURE)
 				return -EINVAL;
 
-			/* Add ourselves to the frame wait-queue.
-
-			   FIXME: needs auditing for safety.
-			   QUESTION: In what respect? I think that using the
-				     frameq is safe now.
-			 */
 			add_wait_queue(&pdev->frameq, &wait);
 			while (pdev->full_frames == NULL) {
 				if (pdev->error_status) {

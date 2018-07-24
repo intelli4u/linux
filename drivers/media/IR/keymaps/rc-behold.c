@@ -29,7 +29,7 @@ static struct ir_scancode behold[] = {
 	/*  0x1c            0x12  *
 	 *  TV/FM          POWER  *
 	 *                        */
-	{ 0x1c, KEY_TUNER },	/* XXX KEY_TV / KEY_RADIO */
+	{ 0x1c, KEY_TUNER },
 	{ 0x12, KEY_POWER },
 
 	/*  0x01    0x02    0x03  *
@@ -75,7 +75,7 @@ static struct ir_scancode behold[] = {
 	 *                        */
 	{ 0x0b, KEY_CHANNELUP },
 	{ 0x18, KEY_VOLUMEDOWN },
-	{ 0x16, KEY_OK },		/* XXX KEY_ENTER */
+	{ 0x16, KEY_OK },
 	{ 0x0c, KEY_VOLUMEUP },
 	{ 0x15, KEY_CHANNELDOWN },
 
@@ -96,8 +96,8 @@ static struct ir_scancode behold[] = {
 	{ 0x1b, KEY_PLAYPAUSE },
 	{ 0x1a, KEY_STOP },
 	{ 0x0e, KEY_TEXT },
-	{ 0x1f, KEY_RED },	/*XXX KEY_AUDIO	*/
-	{ 0x1e, KEY_YELLOW },	/*XXX KEY_SOURCE	*/
+	{ 0x1f, KEY_RED },
+	{ 0x1e, KEY_YELLOW },
 
 	/*  0x1d   0x13     0x19  *
 	 * SLEEP  PREVIEW   DVB   *
@@ -105,7 +105,7 @@ static struct ir_scancode behold[] = {
 	 *                        */
 	{ 0x1d, KEY_SLEEP },
 	{ 0x13, KEY_GREEN },
-	{ 0x19, KEY_BLUE },	/* XXX KEY_SAT	*/
+	{ 0x19, KEY_BLUE },
 
 	/*  0x58           0x5c   *
 	 * FREEZE        SNAPSHOT *

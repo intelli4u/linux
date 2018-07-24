@@ -1,49 +1,4 @@
 /* typhoon.c: A Linux Ethernet device driver for 3Com 3CR990 family of NICs */
-/*
-	Written 2002-2004 by David Dillow <dave@thedillows.org>
-	Based on code written 1998-2000 by Donald Becker <becker@scyld.com> and
-	Linux 2.2.x driver by David P. McLean <davidpmclean@yahoo.com>.
-
-	This software may be used and distributed according to the terms of
-	the GNU General Public License (GPL), incorporated herein by reference.
-	Drivers based on or derived from this code fall under the GPL and must
-	retain the authorship, copyright and license notice.  This file is not
-	a complete program and may only be used when the entire operating
-	system is licensed under the GPL.
-
-	This software is available on a public web site. It may enable
-	cryptographic capabilities of the 3Com hardware, and may be
-	exported from the United States under License Exception "TSU"
-	pursuant to 15 C.F.R. Section 740.13(e).
-
-	This work was funded by the National Library of Medicine under
-	the Department of Energy project number 0274DD06D1 and NLM project
-	number Y1-LM-2015-01.
-
-	This driver is designed for the 3Com 3CR990 Family of cards with the
-	3XP Processor. It has been tested on x86 and sparc64.
-
-	KNOWN ISSUES:
-	*) The current firmware always strips the VLAN tag off, even if
-		we tell it not to. You should filter VLANs at the switch
-		as a workaround (good practice in any event) until we can
-		get this fixed.
-	*) Cannot DMA Rx packets to a 2 byte aligned address. Also firmware
-		issue. Hopefully 3Com will fix it.
-	*) Waiting for a command response takes 8ms due to non-preemptable
-		polling. Only significant for getting stats and creating
-		SAs, but an ugly wart never the less.
-
-	TODO:
-	*) Doesn't do IPSEC offloading. Yet. Keep yer pants on, it's coming.
-	*) Add more support for ethtool (especially for NIC stats)
-	*) Allow disabling of RX checksum offloading
-	*) Fix MAC changing to work while the interface is up
-		(Need to put commands on the TX ring, which changes
-		the locking)
-	*) Add in FCS to {rx,tx}_bytes, since the hardware doesn't. See
-		http://oss.sgi.com/cgi-bin/mesg.cgi?a=netdev&i=20031215152211.7003fe8e.rddunlap%40osdl.org
-*/
 
 /* Set the copy breakpoint for the copy-only-tiny-frames scheme.
  * Setting to > 1518 effectively disables this feature.
@@ -1673,12 +1628,6 @@ typhoon_alloc_rx_skb(struct typhoon *tp, u32 idx)
 	if(!skb)
 		return -ENOMEM;
 
-#if 0
-	/* Please, 3com, fix the firmware to allow DMA to a unaligned
-	 * address! Pretty please?
-	 */
-	skb_reserve(skb, 2);
-#endif
 
 	skb->dev = tp->dev;
 	dma_addr = pci_map_single(tp->pdev, skb->data,

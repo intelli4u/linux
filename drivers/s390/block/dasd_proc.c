@@ -256,7 +256,6 @@ static ssize_t dasd_stats_proc_write(struct file *file,
 	/* check for valid verbs */
 	str = skip_spaces(buffer);
 	if (strncmp(str, "set", 3) == 0 && isspace(str[3])) {
-		/* 'set xxx' was given */
 		str = skip_spaces(str + 4);
 		if (strcmp(str, "on") == 0) {
 			/* switch on statistics profiling */

@@ -1562,10 +1562,6 @@ static void ipath_ht_tidtemplate(struct ipath_devdata *dd)
 	dd->ipath_tidtemplate <<= INFINIPATH_RT_BUFSIZE_SHIFT;
 	dd->ipath_tidtemplate |= INFINIPATH_RT_VALID;
 
-	/*
-	 * work around chip errata bug 7358, by marking invalid tids
-	 * as having max length
-	 */
 	dd->ipath_tidinvalid = (-1LL & INFINIPATH_RT_BUFSIZE_MASK) <<
 		INFINIPATH_RT_BUFSIZE_SHIFT;
 }

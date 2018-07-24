@@ -738,4 +738,3 @@ void __init dev_mcast_init(void)
 {
 	register_pernet_subsys(&dev_mc_net_ops);
 }
-

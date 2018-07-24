@@ -928,11 +928,6 @@ static struct cmm_allocator *get_allocator(struct cmm_object *cmm_mgr_obj,
 	return allocator;
 }
 
-/*
- *  The CMM_Xlator[xxx] routines below are used by Node and Stream
- *  to perform SM address translation to the client process address space.
- *  A "translator" object is created by a node/stream for each SM seg used.
- */
 
 /*
  *  ======== cmm_xlator_create ========

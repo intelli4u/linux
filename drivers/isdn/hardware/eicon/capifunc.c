@@ -1,4 +1,4 @@
-/* $Id: capifunc.c,v 1.61.4.7 2005/02/11 19:40:25 armin Exp $
+/* $Id: capifunc.c,v 1.61.4.7 2005/02/11 19:40:25 Exp $
  *
  * ISDN interface module for Eicon active cards DIVA.
  * CAPI Interface common functions
@@ -930,7 +930,7 @@ static u16 diva_send_message(struct capi_ctr *ctrl,
 #endif
 
 		if (clength == 24)
-			clength = 22;	/* workaround for PPcom bug */
+			clength = 22;
 		/* header is always 22      */
 		if (GET_WORD(&msg->info.data_b3_req.Data_Length) >
 		    this->MaxDataLength

@@ -64,4 +64,3 @@ static inline int mmp2_add_twsi(int id, struct i2c_pxa_platform_data *data,
 }
 
 #endif /* __ASM_MACH_MMP2_H */
-

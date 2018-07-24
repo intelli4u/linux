@@ -582,8 +582,6 @@ static inline int cpulist_parse(const char *buf, struct cpumask *dstp)
  */
 static inline size_t cpumask_size(void)
 {
-	/* FIXME: Once all cpumask assignments are eliminated, this
-	 * can be nr_cpumask_bits */
 	return BITS_TO_LONGS(NR_CPUS) * sizeof(long);
 }
 

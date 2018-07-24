@@ -74,7 +74,6 @@ static int omapfb_setup_plane(struct fb_info *fbi, struct omapfb_plane_info *pi)
 		goto out;
 	}
 
-	/* XXX uses only the first overlay */
 	ovl = ofbi->overlays[0];
 
 	old_rg = ofbi->region;
@@ -196,7 +195,7 @@ static int omapfb_query_plane(struct fb_info *fbi, struct omapfb_plane_info *pi)
 		pi->pos_x = ovli->pos_x;
 		pi->pos_y = ovli->pos_y;
 		pi->enabled = ovli->enabled;
-		pi->channel_out = 0; /* xxx */
+		pi->channel_out = 0;
 		pi->mirror = 0;
 		pi->mem_idx = get_mem_idx(ofbi);
 		pi->out_width = ovli->out_width;
@@ -381,7 +380,6 @@ static int omapfb_get_update_mode(struct fb_info *fbi,
 	return 0;
 }
 
-/* XXX this color key handling is a hack... */
 static struct omapfb_color_key omapfb_color_keys[2];
 
 static int _omapfb_set_color_key(struct omap_overlay_manager *mgr,
@@ -914,5 +912,3 @@ int omapfb_ioctl(struct fb_info *fbi, unsigned int cmd, unsigned long arg)
 
 	return r;
 }
-
-

@@ -123,7 +123,6 @@ static rh_block_t *get_slot(rh_info_t * info)
 	rh_block_t *blk;
 
 	/* If no more free slots, and failure to extend. */
-	/* XXX: You should have called assure_empty before */
 	if (info->empty_slots == 0) {
 		printk(KERN_ERR "rh: out of slots; crash is imminent.\n");
 		return NULL;
@@ -703,7 +702,7 @@ EXPORT_SYMBOL_GPL(rh_set_owner);
 
 void rh_dump(rh_info_t * info)
 {
-	static rh_stats_t st[32];	/* XXX maximum 32 blocks */
+	static rh_stats_t st[32];
 	int maxnr;
 	int i, nr;
 
@@ -744,4 +743,3 @@ void rh_dump_blk(rh_info_t * info, rh_block_t * blk)
 	       blk, blk->start, blk->start + blk->size, blk->size);
 }
 EXPORT_SYMBOL_GPL(rh_dump_blk);
-

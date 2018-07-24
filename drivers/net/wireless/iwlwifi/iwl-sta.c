@@ -104,14 +104,6 @@ static int iwl_process_add_sta_resp(struct iwl_priv *priv,
 		       STA_CONTROL_MODIFY_MSK ?  "Modified" : "Added",
 		       sta_id, priv->stations[sta_id].sta.sta.addr);
 
-	/*
-	 * XXX: The MAC address in the command buffer is often changed from
-	 * the original sent to the device. That is, the MAC address
-	 * written to the command buffer often is not the same MAC adress
-	 * read from the command buffer when the command returns. This
-	 * issue has not yet been resolved and this debugging is left to
-	 * observe the problem.
-	 */
 	IWL_DEBUG_INFO(priv, "%s station according to cmd buffer %pM\n",
 		       priv->stations[sta_id].sta.mode ==
 		       STA_CONTROL_MODIFY_MSK ? "Modified" : "Added",

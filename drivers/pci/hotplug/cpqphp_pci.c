@@ -225,7 +225,6 @@ static int PCI_ScanBusForNonBridge(struct controller *ctrl, u8 bus_num, u8 * dev
 		/* Yep we got one. bridge ? */
 		if ((work >> 8) == PCI_TO_PCI_BRIDGE_CLASS) {
 			pci_bus_read_config_byte (ctrl->pci_bus, PCI_DEVFN(tdevice, 0), PCI_SECONDARY_BUS, &tbus);
-			/* XXX: no recursion, wtf? */
 			dbg("Recurse on bus_num %d tdevice %d\n", tbus, tdevice);
 			return 0;
 		}
@@ -583,10 +582,6 @@ int cpqhp_save_base_addr_length(struct controller *ctrl, struct pci_func * func)
 			}
 			pci_bus->number = func->bus;
 
-			/* FIXME: this loop is duplicated in the non-bridge
-			 * case.  The two could be rolled together Figure out
-			 * IO and memory base lengths
-			 */
 			for (cloop = 0x10; cloop <= 0x14; cloop += 4) {
 				temp_register = 0xFFFFFFFF;
 				pci_bus_write_config_dword (pci_bus, devfn, cloop, temp_register);
@@ -1556,4 +1551,3 @@ void cpqhp_destroy_board_resources (struct pci_func * func)
 		kfree(tres);
 	}
 }
-

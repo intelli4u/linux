@@ -442,23 +442,6 @@ label:
 	addi	r3,r1,STACK_FRAME_OVERHEAD
 	EXC_XFER_LITE(0x1000, timer_interrupt)
 
-#if 0
-/* NOTE:
- * FIT and WDT handlers are not implemented yet.
- */
-
-/* 0x1010 - Fixed Interval Timer (FIT) Exception
-*/
-	STND_EXCEPTION(0x1010,	FITException,		unknown_exception)
-
-/* 0x1020 - Watchdog Timer (WDT) Exception
-*/
-#ifdef CONFIG_BOOKE_WDT
-	CRITICAL_EXCEPTION(0x1020, WDTException, WatchdogException)
-#else
-	CRITICAL_EXCEPTION(0x1020, WDTException, unknown_exception)
-#endif
-#endif
 
 /* 0x1100 - Data TLB Miss Exception
  * As the name implies, translation is not in the MMU, so search the

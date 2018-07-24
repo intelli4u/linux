@@ -282,4 +282,3 @@ MACHINE_START(MXT_TD60, "Maxtrack i-MXT TD60")
 	.init_machine	= mxt_td60_board_init,
 	.timer		= &mxt_td60_timer,
 MACHINE_END
-

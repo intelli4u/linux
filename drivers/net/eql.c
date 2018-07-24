@@ -203,7 +203,6 @@ static int eql_open(struct net_device *dev)
 {
 	equalizer_t *eql = netdev_priv(dev);
 
-	/* XXX We should force this off automatically for the user. */
 	printk(KERN_INFO "%s: remember to turn off Van-Jacobson compression on "
 	       "your slave devices.\n", dev->name);
 

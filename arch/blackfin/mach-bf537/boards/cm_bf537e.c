@@ -355,17 +355,11 @@ static struct resource bfin_uart0_resources[] = {
 	},
 #ifdef CONFIG_BFIN_UART0_CTSRTS
 	{
-		/*
-		 * Refer to arch/blackfin/mach-xxx/include/mach/gpio.h for the GPIO map.
-		 */
 		.start = -1,
 		.end = -1,
 		.flags = IORESOURCE_IO,
 	},
 	{
-		/*
-		 * Refer to arch/blackfin/mach-xxx/include/mach/gpio.h for the GPIO map.
-		 */
 		.start = -1,
 		.end = -1,
 		.flags = IORESOURCE_IO,
@@ -416,17 +410,11 @@ static struct resource bfin_uart1_resources[] = {
 	},
 #ifdef CONFIG_BFIN_UART1_CTSRTS
 	{
-		/*
-		 * Refer to arch/blackfin/mach-xxx/include/mach/gpio.h for the GPIO map.
-		 */
 		.start = -1,
 		.end = -1,
 		.flags = IORESOURCE_IO,
 	},
 	{
-		/*
-		 * Refer to arch/blackfin/mach-xxx/include/mach/gpio.h for the GPIO map.
-		 */
 		.start = -1,
 		.end = -1,
 		.flags = IORESOURCE_IO,

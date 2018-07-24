@@ -639,9 +639,6 @@ static struct snd_kcontrol_new snd_pmac_awacs_mixers_pmac[] __devinitdata = {
 	AWACS_SWITCH("CD Capture Switch", 0, SHIFT_MUX_CD, 0),
 };
 
-/* FIXME: is this correct order?
- * screamer (powerbook G3 pismo) seems to have different bits...
- */
 static struct snd_kcontrol_new snd_pmac_awacs_mixers2[] __devinitdata = {
 	AWACS_SWITCH("Line Capture Switch", 0, SHIFT_MUX_LINE, 0),
 	AWACS_SWITCH("Mic Capture Switch", 0, SHIFT_MUX_MIC, 0),
@@ -893,7 +890,6 @@ snd_pmac_awacs_init(struct snd_pmac *chip)
 	 */
 	chip->awacs_reg[0] = MASK_MUX_CD | 0xff | MASK_GAINLINE;
 	chip->awacs_reg[1] = MASK_CMUTE | MASK_AMUTE;
-	/* FIXME: Only machines with external SRS module need MASK_PAROUT */
 	if (chip->has_iic || chip->device_id == 0x5 ||
 	    /* chip->_device_id == 0x8 || */
 	    chip->device_id == 0xb)
@@ -906,9 +902,7 @@ snd_pmac_awacs_init(struct snd_pmac *chip)
 	chip->awacs_reg[2] = vol;
 	chip->awacs_reg[4] = vol;
 	if (chip->model == PMAC_SCREAMER) {
-		/* FIXME: screamer has loopthru vol control */
 		chip->awacs_reg[5] = vol;
-		/* FIXME: maybe should be vol << 3 for PCMCIA speaker */
 		chip->awacs_reg[6] = MASK_MIC_BOOST;
 		chip->awacs_reg[7] = 0;
 	}

@@ -229,7 +229,6 @@ static struct resource zeus_serial_resources[] = {
 
 static struct plat_serial8250_port serial_platform_data[] = {
 	/* External UARTs */
-	/* FIXME: Shared IRQs on COM1-COM4 will not work properly on v1i1 hardware. */
 	{ /* COM1 */
 		.mapbase	= 0x10000000,
 		.irq		= gpio_to_irq(ZEUS_UARTA_GPIO),
@@ -908,4 +907,3 @@ MACHINE_START(ARCOM_ZEUS, "Arcom/Eurotech ZEUS")
 	.timer		= &pxa_timer,
 	.init_machine	= zeus_init,
 MACHINE_END
-

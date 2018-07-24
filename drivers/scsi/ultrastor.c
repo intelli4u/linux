@@ -507,10 +507,6 @@ static int ultrastor_14f_detect(struct scsi_host_template * tpnt)
     config.mscp_free = ~0;
 #endif
 
-    /*
-     * Brrr, &config.mscp[0].SCint->host) it is something magical....
-     * XXX and FIXME
-     */
     if (request_irq(config.interrupt, do_ultrastor_interrupt, 0, "Ultrastor", &config.mscp[0].SCint->device->host)) {
 	printk("Unable to allocate IRQ%u for UltraStor controller.\n",
 	       config.interrupt);
@@ -758,11 +754,6 @@ static int ultrastor_queuecommand(struct scsi_cmnd *SCpnt,
     my_mscp->SCint = SCpnt;
     SCpnt->host_scribble = (unsigned char *)my_mscp;
 
-    /* Find free OGM slot.  On 24F, look for OGM status byte == 0.
-       On 14F and 34F, wait for local interrupt pending flag to clear. 
-       
-       FIXME: now we are using new_eh we should punt here and let the
-       midlayer sort it out */
 
 retry:
     if (config.slot)
@@ -898,7 +889,6 @@ static int ultrastor_abort(struct scsi_cmnd *SCpnt)
 	printk("Ux4F: abort while completed command pending\n");
 	
 	spin_lock_irqsave(host->host_lock, flags);
-	/* FIXME: Ewww... need to think about passing host around properly */
 	ultrastor_interrupt(NULL);
 	spin_unlock_irqrestore(host->host_lock, flags);
 	return SUCCESS;
@@ -928,7 +918,6 @@ static int ultrastor_abort(struct scsi_cmnd *SCpnt)
 	printk(out, ogm_status, ogm_addr, icm_status, icm_addr);
 #endif
 	spin_unlock_irqrestore(host->host_lock, flags);
-	/* FIXME: add a wait for the abort to complete */
 	return SUCCESS;
       }
 
@@ -941,10 +930,6 @@ static int ultrastor_abort(struct scsi_cmnd *SCpnt)
        still be using it.  Setting SCint = 0 causes the interrupt
        handler to ignore the command.  */
 
-    /* FIXME - devices that implement soft resets will still be running
-       the command after a bus reset.  We would probably rather leave
-       the command in the queue.  The upper level code will automatically
-       leave the command in the active state instead of requeueing it. ERY */
 
 #if ULTRASTOR_DEBUG & UD_ABORT
     if (config.mscp[mscp_index].SCint != SCpnt)
@@ -1011,11 +996,6 @@ static int ultrastor_host_reset(struct scsi_cmnd * SCpnt)
       }
 #endif
 
-    /* FIXME - if the device implements soft resets, then the command
-       will still be running.  ERY  
-       
-       Even bigger deal with new_eh! 
-     */
 
     memset((unsigned char *)config.aborted, 0, sizeof config.aborted);
 #if ULTRASTOR_MAX_CMDS == 1
@@ -1038,10 +1018,6 @@ int ultrastor_biosparam(struct scsi_device *sdev, struct block_device *bdev,
     dkinfo[0] = config.heads;
     dkinfo[1] = config.sectors;
     dkinfo[2] = size / s;	/* Ignore partial cylinders */
-#if 0
-    if (dkinfo[2] > 1024)
-	dkinfo[2] = 1024;
-#endif
     return 0;
 }
 

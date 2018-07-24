@@ -1509,7 +1509,6 @@ static unsigned int atapi_eh_request_sense(struct ata_device *dev,
 
 	DPRINTK("ATAPI request sense\n");
 
-	/* FIXME: is this needed? */
 	memset(sense_buf, 0, SCSI_SENSE_BUFFERSIZE);
 
 	/* initialize sense_buf with the error register,
@@ -3288,19 +3287,6 @@ static int ata_eh_schedule_probe(struct ata_device *dev)
 	ehc->saved_xfer_mode[dev->devno] = 0;
 	ehc->saved_ncq_enabled &= ~(1 << dev->devno);
 
-	/* Record and count probe trials on the ering.  The specific
-	 * error mask used is irrelevant.  Because a successful device
-	 * detection clears the ering, this count accumulates only if
-	 * there are consecutive failed probes.
-	 *
-	 * If the count is equal to or higher than ATA_EH_PROBE_TRIALS
-	 * in the last ATA_EH_PROBE_TRIAL_INTERVAL, link speed is
-	 * forced to 1.5Gbps.
-	 *
-	 * This is to work around cases where failed link speed
-	 * negotiation results in device misdetection leading to
-	 * infinite DEVXCHG or PHRDY CHG events.
-	 */
 	ata_ering_record(&dev->ering, 0, AC_ERR_OTHER);
 	ata_ering_map(&dev->ering, ata_count_probe_trials_cb, &trials);
 
@@ -3616,10 +3602,6 @@ void ata_eh_finish(struct ata_port *ap)
 			continue;
 
 		if (qc->err_mask) {
-			/* FIXME: Once EH migration is complete,
-			 * generate sense data in this function,
-			 * considering both err_mask and tf.
-			 */
 			if (qc->flags & ATA_QCFLAG_RETRY)
 				ata_eh_qc_retry(qc);
 			else

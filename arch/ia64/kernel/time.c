@@ -501,4 +501,3 @@ void update_vsyscall(struct timespec *wall, struct timespec *wtm,
 
         write_sequnlock_irqrestore(&fsyscall_gtod_data.lock, flags);
 }
-

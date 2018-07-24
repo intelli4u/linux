@@ -114,7 +114,6 @@ indirect_write_config(struct pci_bus *bus, unsigned int devfn, int offset,
 			(bus->number == hose->first_busno))
 			val &= 0xffffff00;
 
-	/* Workaround for PCI_28 Errata in 440EPx/GRx */
 	if ((hose->indirect_type & INDIRECT_TYPE_BROKEN_MRM) &&
 			offset == PCI_CACHE_LINE_SIZE) {
 		val = 0;

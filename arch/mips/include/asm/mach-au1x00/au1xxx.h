@@ -26,7 +26,7 @@
 #include <asm/mach-au1x00/au1000.h>
 
 #if defined(CONFIG_MIPS_DB1000) || defined(CONFIG_MIPS_DB1100) || \
-    defined(CONFIG_MIPS_DB1500) || defined(CONFIG_MIPS_DB1550)
+	defined(CONFIG_MIPS_DB1500) || defined(CONFIG_MIPS_DB1550)
 #include <asm/mach-db1x00/db1x00.h>
 
 #elif defined(CONFIG_MIPS_PB1550)

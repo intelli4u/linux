@@ -107,8 +107,8 @@ void m5307_cpu_reset(void)
 
 void __init config_BSP(char *commandp, int size)
 {
-#if defined(CONFIG_NETtel) || \
-    defined(CONFIG_SECUREEDGEMP3) || defined(CONFIG_CLEOPATRA)
+#if defined(CONFIG_NETtel) || defined(CONFIG_SECUREEDGEMP3) || \
+	defined(CONFIG_CLEOPATRA)
 	/* Copy command line from FLASH to local buffer... */
 	memcpy(commandp, (char *) 0xf0004000, size);
 	commandp[size-1] = 0;

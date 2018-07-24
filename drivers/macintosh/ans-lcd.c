@@ -102,7 +102,7 @@ anslcd_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	case ANSLCD_SENDCTRL:
 		temp = (char __user *) arg;
 		__get_user(ch, temp);
-		for (; ch; temp++) { /* FIXME: This is ugly, but should work, as a \0 byte is not a valid command code */
+		for (; ch; temp++) {
 			anslcd_write_byte_ctrl ( ch );
 			__get_user(ch, temp);
 		}

@@ -42,7 +42,6 @@ void foo(void)
 	DEFINE(HOST_GS, GS);
 	DEFINE(UM_FRAME_SIZE, sizeof(struct user_regs_struct));
 
-	/* XXX Duplicated between i386 and x86_64 */
 	DEFINE(UM_POLLIN, POLLIN);
 	DEFINE(UM_POLLPRI, POLLPRI);
 	DEFINE(UM_POLLOUT, POLLOUT);

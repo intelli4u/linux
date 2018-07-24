@@ -25,7 +25,7 @@
  */
 #define PHYS_OFFSET	UL(0xc0000000)
 
-#if !defined(CONFIG_ARCH_CDB89712) && !defined (CONFIG_ARCH_AUTCPU12)
+#if !defined(CONFIG_ARCH_CDB89712) && !defined(CONFIG_ARCH_AUTCPU12)
 
 #define __virt_to_bus(x)	((x) - PAGE_OFFSET)
 #define __bus_to_virt(x)	((x) + PAGE_OFFSET)
@@ -75,4 +75,3 @@
 #define MAX_PHYSMEM_BITS	32
 
 #endif
-

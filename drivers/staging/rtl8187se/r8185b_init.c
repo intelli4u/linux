@@ -1841,4 +1841,3 @@ void rtl8185b_tx_enable(struct net_device *dev)
 	cmd=read_nic_byte(dev,CMD);
 	write_nic_byte(dev,CMD,cmd | (1<<CMD_TX_ENABLE_SHIFT));
 }
-

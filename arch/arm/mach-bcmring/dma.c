@@ -162,7 +162,7 @@ static int dma_proc_read_channels(char *buf, char **start, off_t offset,
 				    sprintf(buf + len, "InUse by %s",
 					    DMA_gDeviceAttribute[channel->
 								 devType].name);
-#if (DMA_DEBUG_TRACK_RESERVATION)
+#if DMA_DEBUG_TRACK_RESERVATION
 				len +=
 				    sprintf(buf + len, " (%s:%d)",
 					    channel->fileName,
@@ -711,7 +711,7 @@ int dma_init(void)
 			channel->devType = DMA_DEVICE_NONE;
 			channel->lastDevType = DMA_DEVICE_NONE;
 
-#if (DMA_DEBUG_TRACK_RESERVATION)
+#if DMA_DEBUG_TRACK_RESERVATION
 			channel->fileName = "";
 			channel->lineNum = 0;
 #endif
@@ -868,7 +868,7 @@ out:
 */
 /****************************************************************************/
 
-#if (DMA_DEBUG_TRACK_RESERVATION)
+#if DMA_DEBUG_TRACK_RESERVATION
 DMA_Handle_t dma_request_channel_dbg
     (DMA_Device_t dev, const char *fileName, int lineNum)
 #else
@@ -892,7 +892,7 @@ DMA_Handle_t dma_request_channel(DMA_Device_t dev)
 	}
 	devAttr = &DMA_gDeviceAttribute[dev];
 
-#if (DMA_DEBUG_TRACK_RESERVATION)
+#if DMA_DEBUG_TRACK_RESERVATION
 	{
 		char *s;
 
@@ -925,7 +925,7 @@ DMA_Handle_t dma_request_channel(DMA_Device_t dev)
 		channel->flags |= DMA_CHANNEL_FLAG_IN_USE;
 		devAttr->flags |= DMA_DEVICE_FLAG_IN_USE;
 
-#if (DMA_DEBUG_TRACK_RESERVATION)
+#if DMA_DEBUG_TRACK_RESERVATION
 		channel->fileName = fileName;
 		channel->lineNum = lineNum;
 #endif
@@ -992,7 +992,7 @@ DMA_Handle_t dma_request_channel(DMA_Device_t dev)
 						devAttr->flags |=
 						    DMA_DEVICE_FLAG_IN_USE;
 
-#if (DMA_DEBUG_TRACK_RESERVATION)
+#if DMA_DEBUG_TRACK_RESERVATION
 						channel->fileName = fileName;
 						channel->lineNum = lineNum;
 #endif
@@ -1044,7 +1044,7 @@ out:
 
 /* Create both _dbg and non _dbg functions for modules. */
 
-#if (DMA_DEBUG_TRACK_RESERVATION)
+#if DMA_DEBUG_TRACK_RESERVATION
 #undef dma_request_channel
 DMA_Handle_t dma_request_channel(DMA_Device_t dev)
 {
@@ -1912,7 +1912,6 @@ int dma_map_add_region(DMA_MemMap_t *memMap,	/* Stores state information about t
 
 			atomic_inc(&gDmaStatMemTypeUser);
 
-#if 1
 			/* If the pages are user pages, then the dma_mem_map_set_user_task function */
 			/* must have been previously called. */
 
@@ -2014,15 +2013,6 @@ int dma_map_add_region(DMA_MemMap_t *memMap,	/* Stores state information about t
 					bytesRemaining -= bytesThisPage;
 				}
 			}
-#else
-			printk(KERN_ERR
-			       "%s: User mode pages are not yet supported\n",
-			       __func__);
-
-			/* user pages are not physically contiguous */
-
-			rc = -EINVAL;
-#endif
 			break;
 		}
 

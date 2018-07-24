@@ -280,5 +280,3 @@ typedef struct _MPI2_SAS_IOUNIT_CONTROL_REPLY
 
 
 #endif
-
-

@@ -429,8 +429,6 @@ static int send_reply_chunks(struct svcxprt_rdma *xprt,
 	arg_ary = svc_rdma_get_reply_array(rdma_argp);
 	if (!arg_ary)
 		return 0;
-	/* XXX: need to fix when reply lists occur with read-list and or
-	 * write-list */
 	res_ary = (struct rpcrdma_write_array *)
 		&rdma_resp->rm_body.rm_chunks[2];
 

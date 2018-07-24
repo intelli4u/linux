@@ -99,7 +99,7 @@ struct dm_region_hash {
 };
 
 struct dm_region {
-	struct dm_region_hash *rh;	/* FIXME: can we get rid of this ? */
+	struct dm_region_hash *rh;
 	region_t key;
 	int state;
 
@@ -148,10 +148,6 @@ sector_t dm_rh_get_region_size(struct dm_region_hash *rh)
 }
 EXPORT_SYMBOL_GPL(dm_rh_get_region_size);
 
-/*
- * FIXME: shall we pass in a structure instead of all these args to
- * dm_region_hash_create()????
- */
 #define RH_HASH_MULT 2654435387U
 #define RH_HASH_SHIFT 12
 

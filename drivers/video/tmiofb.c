@@ -1022,9 +1022,6 @@ static void __init tmiofb_setup(char *options)
 	while ((this_opt = strsep(&options, ",")) != NULL) {
 		if (!*this_opt)
 			continue;
-		/*
-		 * FIXME
-		 */
 	}
 }
 #endif

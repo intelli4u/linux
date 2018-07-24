@@ -25,6 +25,14 @@
 
 #include "nf_internals.h"
 
+#include <typedefs.h>
+#include <bcmdefs.h>
+
+#ifdef CONFIG_IP_NF_LFP
+typedef int (*lfpHitHook)(int pf, unsigned int hook, struct sk_buff *skb);
+extern lfpHitHook lfp_hit_hook;
+#endif
+
 static DEFINE_MUTEX(afinfo_mutex);
 
 const struct nf_afinfo *nf_afinfo[NFPROTO_NUMPROTO] __read_mostly;
@@ -112,7 +120,7 @@ void nf_unregister_hooks(struct nf_hook_ops *reg, unsigned int n)
 }
 EXPORT_SYMBOL(nf_unregister_hooks);
 
-unsigned int nf_iterate(struct list_head *head,
+unsigned int BCMFASTPATH_HOST nf_iterate(struct list_head *head,
 			struct sk_buff *skb,
 			unsigned int hook,
 			const struct net_device *indev,
@@ -169,6 +177,13 @@ int nf_hook_slow(u_int8_t pf, unsigned int hook, struct sk_buff *skb,
 	/* We may already have this, but read-locks nest anyway */
 	rcu_read_lock();
 
+#ifdef CONFIG_IP_NF_LFP
+	if(likely(lfp_hit_hook)) {
+		ret = lfp_hit_hook(pf, hook, skb);
+		if(unlikely(ret)) goto unlock;
+	}
+#endif
+
 	elem = &nf_hooks[pf][hook];
 next_hook:
 	verdict = nf_iterate(&nf_hooks[pf][hook], skb, hook, indev,
@@ -179,10 +194,19 @@ next_hook:
 		kfree_skb(skb);
 		ret = -EPERM;
 	} else if ((verdict & NF_VERDICT_MASK) == NF_QUEUE) {
-		if (!nf_queue(skb, elem, pf, hook, indev, outdev, okfn,
-			      verdict >> NF_VERDICT_BITS))
-			goto next_hook;
+		int err = nf_queue(skb, elem, pf, hook, indev, outdev, okfn,
+				verdict >> NF_VERDICT_QBITS);
+		if (err < 0) {
+			if (err == -ECANCELED)
+				goto next_hook;
+			if (err == -ESRCH &&
+				(verdict & NF_VERDICT_FLAG_QUEUE_BYPASS))
+				goto next_hook;
+			kfree_skb(skb);
+		}
+		ret = 0;
 	}
+unlock:
 	rcu_read_unlock();
 	return ret;
 }

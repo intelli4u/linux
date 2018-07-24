@@ -21,7 +21,6 @@
 /* size of the nodename buffer */
 #define UNX_MAXNODENAME	32
 
-/* Work around the lack of a VFS credential */
 struct auth_cred {
 	uid_t	uid;
 	gid_t	gid;

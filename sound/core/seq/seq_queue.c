@@ -792,4 +792,3 @@ void snd_seq_info_queues_read(struct snd_info_entry *entry,
 	}
 }
 #endif /* CONFIG_PROC_FS */
-

@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  * Squashfs - a compressed read only filesystem for Linux
  *
@@ -158,17 +159,18 @@ static int squashfs_xattr_get(struct inode *inode, int name_index,
 					strncmp(target, name, name_size) == 0) {
 			/* found xattr */
 			if (type & SQUASHFS_XATTR_VALUE_OOL) {
-				__le64 xattr;
+				__le64 xattr_val;
+				u64 xattr;
 				/* val is a reference to the real location */
 				err = squashfs_read_metadata(sb, &val, &start,
 						&offset, sizeof(val));
 				if (err < 0)
 					goto failed;
-				err = squashfs_read_metadata(sb, &xattr, &start,
-					 &offset, sizeof(xattr));
+				err = squashfs_read_metadata(sb, &xattr_val,
+					&start, &offset, sizeof(xattr_val));
 				if (err < 0)
 					goto failed;
-				xattr = le64_to_cpu(xattr);
+				xattr = le64_to_cpu(xattr_val);
 				start = SQUASHFS_XATTR_BLK(xattr) +
 							msblk->xattr_table;
 				offset = SQUASHFS_XATTR_OFFSET(xattr);
@@ -320,4 +322,3 @@ const struct xattr_handler *squashfs_xattr_handlers[] = {
 	&squashfs_xattr_security_handler,
 	NULL
 };
-

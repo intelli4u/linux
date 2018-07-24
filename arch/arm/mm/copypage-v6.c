@@ -57,10 +57,6 @@ static void v6_clear_user_highpage_nonaliasing(struct page *page, unsigned long 
 	kunmap_atomic(kaddr, KM_USER0);
 }
 
-/*
- * Discard data in the kernel mapping for the new page.
- * FIXME: needs this MCRR to be supported.
- */
 static void discard_old_kernel_data(void *kto)
 {
 	__asm__("mcrr	p15, 0, %1, %0, c6	@ 0xec401f06"
@@ -79,10 +75,14 @@ static void v6_copy_user_highpage_aliasing(struct page *to,
 	unsigned int offset = CACHE_COLOUR(vaddr);
 	unsigned long kfrom, kto;
 
+#ifdef CONFIG_BCM47XX
+	/* Merged from Linux-2.6.37 */
+	if (!test_and_set_bit(PG_dcache_clean, &from->flags))
+#else
 	if (test_and_clear_bit(PG_dcache_dirty, &from->flags))
+#endif /* CONFIG_BCM47XX */
 		__flush_dcache_page(page_mapping(from), from);
 
-	/* FIXME: not highmem safe */
 	discard_old_kernel_data(page_address(to));
 
 	/*
@@ -115,7 +115,6 @@ static void v6_clear_user_highpage_aliasing(struct page *page, unsigned long vad
 	unsigned int offset = CACHE_COLOUR(vaddr);
 	unsigned long to = to_address + (offset << PAGE_SHIFT);
 
-	/* FIXME: not highmem safe */
 	discard_old_kernel_data(page_address(page));
 
 	/*

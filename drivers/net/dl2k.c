@@ -213,9 +213,6 @@ rio_probe1 (struct pci_dev *pdev, const struct pci_device_id *ent)
 	dev->netdev_ops = &netdev_ops;
 	dev->watchdog_timeo = TX_TIMEOUT;
 	SET_ETHTOOL_OPS(dev, &ethtool_ops);
-#if 0
-	dev->features = NETIF_F_IP_CSUM;
-#endif
 	pci_set_drvdata (pdev, dev);
 
 	ring_space = pci_alloc_consistent (pdev, TX_TOTAL_SIZE, &ring_dma);
@@ -616,13 +613,6 @@ start_xmit (struct sk_buff *skb, struct net_device *dev)
 	np->tx_skbuff[entry] = skb;
 	txdesc = &np->tx_ring[entry];
 
-#if 0
-	if (skb->ip_summed == CHECKSUM_PARTIAL) {
-		txdesc->status |=
-		    cpu_to_le64 (TCPChecksumEnable | UDPChecksumEnable |
-				 IPChecksumEnable);
-	}
-#endif
 	if (np->vlan) {
 		tfc_vlan_tag = VLANTagInsert |
 		    ((u64)np->vlan << 32) |
@@ -633,8 +623,6 @@ start_xmit (struct sk_buff *skb, struct net_device *dev)
 							PCI_DMA_TODEVICE));
 	txdesc->fraginfo |= cpu_to_le64((u64)skb->len << 48);
 
-	/* DL2K bug: DMA fails to get next descriptor ptr in 10Mbps mode
-	 * Work around: Always use 1 descriptor in 10Mbps mode */
 	if (entry % np->tx_coalesce == 0 || np->speed == 10)
 		txdesc->status = cpu_to_le64 (entry | tfc_vlan_tag |
 					      WordAlignDisable |
@@ -884,13 +872,6 @@ receive_packet (struct net_device *dev)
 							       PCI_DMA_FROMDEVICE);
 			}
 			skb->protocol = eth_type_trans (skb, dev);
-#if 0
-			/* Checksum done by hw, but csum value unavailable. */
-			if (np->pdev->pci_rev_id >= 0x0c &&
-				!(frame_status & (TCPError | UDPError | IPError))) {
-				skb->ip_summed = CHECKSUM_UNNECESSARY;
-			}
-#endif
 			netif_rx (skb);
 		}
 		entry = (entry + 1) % RX_RING_SIZE;
@@ -1610,12 +1591,6 @@ mii_set_media (struct net_device *dev)
 		} else {
 			printk (KERN_CONT "Half duplex\n");
 		}
-#if 0
-		/* Set 1000BaseT Master/Slave setting */
-		mscr = mii_read (dev, phy_addr, MII_MSCR);
-		mscr |= MII_MSCR_CFG_ENABLE;
-		mscr &= ~MII_MSCR_CFG_VALUE = 0;
-#endif
 		mii_write (dev, phy_addr, MII_BMCR, bmcr);
 		mdelay(10);
 	}
@@ -1832,4 +1807,3 @@ gcc -D__KERNEL__ -DMODULE -I/usr/src/linux/include -Wall -Wstrict-prototypes -O2
 Read Documentation/networking/dl2k.txt for details.
 
 */
-

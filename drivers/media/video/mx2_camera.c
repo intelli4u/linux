@@ -419,7 +419,6 @@ static irqreturn_t mx25_camera_irq(int irq_csi, void *data)
 	else if (status & CSISR_DMA_TSF_FB2_INT)
 		mx25_camera_frame_done(pcdev, 2, VIDEOBUF_DONE);
 
-	/* FIXME: handle CSISR_RFF_OR_INT */
 
 	writel(status, pcdev->base_csi + CSISR);
 
@@ -636,15 +635,6 @@ static void mx2_videobuf_release(struct videobuf_queue *vq,
 	}
 #endif
 
-	/*
-	 * Terminate only queued but inactive buffers. Active buffers are
-	 * released when they become inactive after videobuf_waiton().
-	 *
-	 * FIXME: implement forced termination of active buffers, so that the
-	 * user won't get stuck in an uninterruptible state. This requires a
-	 * specific handling for each of the three DMA types that this driver
-	 * supports.
-	 */
 	spin_lock_irqsave(&pcdev->lock, flags);
 	if (vb->state == VIDEOBUF_QUEUED) {
 		list_del(&vb->queue);
@@ -946,7 +936,6 @@ static int mx2_camera_try_fmt(struct soc_camera_device *icd,
 		return -EINVAL;
 	}
 
-	/* FIXME: implement MX27 limits */
 
 	/* eMMA can only do RGB565 */
 	if (mx27_camera_emma(pcdev) && pixfmt != V4L2_PIX_FMT_RGB565)
@@ -1097,7 +1086,7 @@ static void mx27_camera_dma_callback(int channel, void *data)
 	mx27_camera_frame_done(pcdev, VIDEOBUF_DONE);
 }
 
-#define DMA_REQ_CSI_RX          31 /* FIXME: Add this to a resource */
+#define DMA_REQ_CSI_RX          31
 
 static int __devinit mx27_camera_dma_init(struct platform_device *pdev,
 		struct mx2_camera_dev *pcdev)
@@ -1224,14 +1213,6 @@ static irqreturn_t mx27_camera_emma_irq(int irq_emma, void *data)
 
 	if (status & (1 << 7)) { /* overflow */
 		u32 cntl;
-		/*
-		 * We only disable channel 1 here since this is the only
-		 * enabled channel
-		 *
-		 * FIXME: the correct DMA overflow handling should be resetting
-		 * the buffer, returning an error frame, and continuing with
-		 * the next one.
-		 */
 		cntl = readl(pcdev->base_emma + PRP_CNTL);
 		writel(cntl & ~PRP_CNTL_CH1EN, pcdev->base_emma + PRP_CNTL);
 		writel(cntl, pcdev->base_emma + PRP_CNTL);

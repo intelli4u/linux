@@ -428,7 +428,6 @@ static struct snd_kcontrol __devinit *ctl_find(struct snd_card *card,
 {
 	struct snd_ctl_elem_id sid;
 	memset(&sid, 0, sizeof(sid));
-	/* FIXME: strcpy is bad. */
 	strcpy(sid.name, name);
 	sid.iface = SNDRV_CTL_ELEM_IFACE_MIXER;
 	return snd_ctl_find_id(card, &sid);
@@ -616,16 +615,7 @@ static int __devinit juli_init(struct snd_ice1712 *ice)
 	/* AK4114 in Juli can detect external rate correctly */
 	spec->ak4114->check_flags = 0;
 
-#if 0
-/*
- * it seems that the analog doughter board detection does not work reliably, so
- * force the analog flag; it should be very rare (if ever) to come at Juli@
- * used without the analog daughter board
- */
-	spec->analog = (ice->gpio.get_data(ice) & GPIO_ANALOG_PRESENT) ? 0 : 1;
-#else
 	spec->analog = 1;
-#endif
 
 	if (spec->analog) {
 		printk(KERN_INFO "juli@: analog I/O detected\n");

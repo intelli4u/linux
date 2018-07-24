@@ -795,7 +795,6 @@ static struct hpsb_packet *create_reply_packet(struct hpsb_host *host,
 
 	p = hpsb_alloc_packet(dsize);
 	if (unlikely(p == NULL)) {
-		/* FIXME - send data_error response */
 		HPSB_ERR("out of memory, cannot send response packet");
 		return NULL;
 	}
@@ -874,8 +873,6 @@ static void handle_incoming_packet(struct hpsb_host *host, int tcode,
 	u16 flags = (u16) data[0];
 	u64 addr;
 
-	/* FIXME?
-	 * Out-of-bounds lengths are left for highlevel_read|write to cap. */
 
 	switch (tcode) {
 	case TCODE_WRITEQ:

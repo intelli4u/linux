@@ -43,10 +43,8 @@
 #include <linux/pagemap.h>
 
 /* Default simulator parameters values */
-#if !defined(CONFIG_NANDSIM_FIRST_ID_BYTE)  || \
-    !defined(CONFIG_NANDSIM_SECOND_ID_BYTE) || \
-    !defined(CONFIG_NANDSIM_THIRD_ID_BYTE)  || \
-    !defined(CONFIG_NANDSIM_FOURTH_ID_BYTE)
+#if !defined(CONFIG_NANDSIM_FIRST_ID_BYTE)  || !defined(CONFIG_NANDSIM_SECOND_ID_BYTE) \
+	|| !defined(CONFIG_NANDSIM_THIRD_ID_BYTE)  || !defined(CONFIG_NANDSIM_FOURTH_ID_BYTE)
 #define CONFIG_NANDSIM_FIRST_ID_BYTE  0x98
 #define CONFIG_NANDSIM_SECOND_ID_BYTE 0x39
 #define CONFIG_NANDSIM_THIRD_ID_BYTE  0xFF /* No byte */

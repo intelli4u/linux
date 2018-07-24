@@ -30,7 +30,8 @@
  * Create /proc/fs/jfs if procfs is enabled andeither
  * CONFIG_JFS_DEBUG or CONFIG_JFS_STATISTICS is defined
  */
-#if defined(CONFIG_PROC_FS) && (defined(CONFIG_JFS_DEBUG) || defined(CONFIG_JFS_STATISTICS))
+#if defined(CONFIG_PROC_FS) && (defined(CONFIG_JFS_DEBUG) || \
+	defined(CONFIG_JFS_STATISTICS))
 #define PROC_FS_JFS
 extern void jfs_proc_init(void);
 extern void jfs_proc_clean(void);

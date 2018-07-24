@@ -410,14 +410,6 @@ retry:
 		err = ubi_io_read_vid_hdr(ubi, pnum, vid_hdr, 1);
 		if (err && err != UBI_IO_BITFLIPS) {
 			if (err > 0) {
-				/*
-				 * The header is either absent or corrupted.
-				 * The former case means there is a bug -
-				 * switch to read-only mode just in case.
-				 * The latter case means a real corruption - we
-				 * may try to recover data. FIXME: but this is
-				 * not implemented.
-				 */
 				if (err == UBI_IO_BAD_HDR_READ ||
 				    err == UBI_IO_BAD_HDR) {
 					ubi_warn("corrupted VID header at PEB "

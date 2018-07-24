@@ -63,9 +63,6 @@ static void snd_gf1_dma_program(struct snd_gus_card * gus,
 	}
 
 	dma_cmd = SNDRV_GF1_DMA_ENABLE | (unsigned short) cmd;
-#if 0
-	dma_cmd |= 0x08;
-#endif
 	if (dma_cmd & SNDRV_GF1_DMA_16BIT) {
 		count++;
 		count &= ~1;	/* align */
@@ -77,10 +74,6 @@ static void snd_gf1_dma_program(struct snd_gus_card * gus,
 	}
 	snd_gf1_dma_ack(gus);
 	snd_dma_program(gus->gf1.dma1, buf_addr, count, dma_cmd & SNDRV_GF1_DMA_READ ? DMA_MODE_READ : DMA_MODE_WRITE);
-#if 0
-	snd_printk(KERN_DEBUG "address = 0x%x, count = 0x%x, dma_cmd = 0x%x\n",
-		   address << 1, count, dma_cmd);
-#endif
 	spin_lock_irqsave(&gus->reg_lock, flags);
 	if (gus->gf1.enh_mode) {
 		address_high = ((address >> 16) & 0x000000f0) | (address & 0x0000000f);
@@ -143,11 +136,6 @@ static void snd_gf1_dma_interrupt(struct snd_gus_card * gus)
 	spin_unlock(&gus->dma_lock);
 	snd_gf1_dma_program(gus, block->addr, block->buf_addr, block->count, (unsigned short) block->cmd);
 	kfree(block);
-#if 0
-	snd_printd(KERN_DEBUG "program dma (IRQ) - "
-		   "addr = 0x%x, buffer = 0x%lx, count = 0x%x, cmd = 0x%x\n",
-		   block->addr, block->buf_addr, block->count, block->cmd);
-#endif
 }
 
 int snd_gf1_dma_init(struct snd_gus_card * gus)

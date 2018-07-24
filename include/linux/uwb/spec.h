@@ -426,11 +426,6 @@ struct uwb_vendor_id {
 	u8 data[3];
 } __attribute__((packed));
 
-/**
- * The device type ID
- * FIXME: clarify what this means
- * ECMA-368 [16.8.10]
- */
 struct uwb_device_type_id {
 	u8 data[3];
 } __attribute__((packed));

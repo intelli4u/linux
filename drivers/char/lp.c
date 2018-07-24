@@ -722,7 +722,6 @@ static long lp_compat_ioctl(struct file *file, unsigned int cmd,
 		break;
 #ifdef LP_STATS
 	case LPGETSTATS:
-		/* FIXME: add an implementation if you set LP_STATS */
 		ret = -EINVAL;
 		break;
 #endif

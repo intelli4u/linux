@@ -28,25 +28,6 @@ enum davinci_gpio_type {
 	GPIO_TYPE_TNETV107X,
 };
 
-/*
- * basic gpio routines
- *
- * board-specific init should be done by arch/.../.../board-XXX.c (maybe
- * initializing banks together) rather than boot loaders; kexec() won't
- * go through boot loaders.
- *
- * the gpio clock will be turned on when gpios are used, and you may also
- * need to pay attention to PINMUX registers to be sure those pins are
- * used as gpios, not with other peripherals.
- *
- * On-chip GPIOs are numbered 0..(DAVINCI_N_GPIO-1).  For documentation,
- * and maybe for later updates, code may write GPIO(N).  These may be
- * all 1.8V signals, all 3.3V ones, or a mix of the two.  A given chip
- * may not support all the GPIOs in that range.
- *
- * GPIOs can also be on external chips, numbered after the ones built-in
- * to the DaVinci chip.  For now, they won't be usable as IRQ sources.
- */
 #define	GPIO(X)		(X)		/* 0 <= X <= (DAVINCI_N_GPIO - 1) */
 
 /* Convert GPIO signal to GPIO pin number */

@@ -505,13 +505,6 @@ write_ep0_fifo (struct pxa25x_ep *ep, struct pxa25x_request *req)
 		done (ep, req, 0);
 		ep0_idle(ep->dev);
 #ifndef CONFIG_ARCH_IXP4XX
-#if 1
-		/* This seems to get rid of lost status irqs in some cases:
-		 * host responds quickly, or next request involves config
-		 * change automagic, or should have been hidden, or ...
-		 *
-		 * FIXME get rid of all udelays possible...
-		 */
 		if (count >= EP0_FIFO_SIZE) {
 			count = 100;
 			do {
@@ -524,7 +517,6 @@ write_ep0_fifo (struct pxa25x_ep *ep, struct pxa25x_request *req)
 				udelay(1);
 			} while (count);
 		}
-#endif
 #endif
 	} else if (ep->dev->req_pending)
 		ep0start(ep->dev, 0, "IN");

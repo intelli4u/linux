@@ -578,7 +578,6 @@ static int _sbi_write_mirror(struct exofs_io_state *ios, int cur_comp)
 				per_dev->dev = dev;
 			} else {
 				bio = master_dev->bio;
-				/* FIXME: bio_set_dir() */
 				bio->bi_rw |= REQ_WRITE;
 			}
 

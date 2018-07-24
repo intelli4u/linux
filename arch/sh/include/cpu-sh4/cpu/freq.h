@@ -10,10 +10,8 @@
 #ifndef __ASM_CPU_SH4_FREQ_H
 #define __ASM_CPU_SH4_FREQ_H
 
-#if defined(CONFIG_CPU_SUBTYPE_SH7722) || \
-    defined(CONFIG_CPU_SUBTYPE_SH7723) || \
-    defined(CONFIG_CPU_SUBTYPE_SH7343) || \
-    defined(CONFIG_CPU_SUBTYPE_SH7366)
+#if defined(CONFIG_CPU_SUBTYPE_SH7722) || defined(CONFIG_CPU_SUBTYPE_SH7723) || \
+	defined(CONFIG_CPU_SUBTYPE_SH7343) || defined(CONFIG_CPU_SUBTYPE_SH7366)
 #define FRQCR		        0xa4150000
 #define VCLKCR			0xa4150004
 #define SCLKACR			0xa4150008
@@ -67,4 +65,3 @@
 #define MAX_DIVISOR_NR		3
 
 #endif /* __ASM_CPU_SH4_FREQ_H */
-

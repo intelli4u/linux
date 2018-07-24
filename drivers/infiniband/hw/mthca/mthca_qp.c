@@ -1634,7 +1634,6 @@ int mthca_tavor_post_send(struct ib_qp *ibqp, struct ib_send_wr *wr,
 
 	spin_lock_irqsave(&qp->sq.lock, flags);
 
-	/* XXX check that state is OK to post send */
 
 	ind = qp->sq.next_ind;
 
@@ -1835,7 +1834,6 @@ int mthca_tavor_post_receive(struct ib_qp *ibqp, struct ib_recv_wr *wr,
 
 	spin_lock_irqsave(&qp->rq.lock, flags);
 
-	/* XXX check that state is OK to post receive */
 
 	ind = qp->rq.next_ind;
 
@@ -1949,7 +1947,6 @@ int mthca_arbel_post_send(struct ib_qp *ibqp, struct ib_send_wr *wr,
 
 	spin_lock_irqsave(&qp->sq.lock, flags);
 
-	/* XXX check that state is OK to post send */
 
 	ind = qp->sq.head & (qp->sq.max - 1);
 
@@ -2176,7 +2173,6 @@ int mthca_arbel_post_receive(struct ib_qp *ibqp, struct ib_recv_wr *wr,
 
 	spin_lock_irqsave(&qp->rq.lock, flags);
 
-	/* XXX check that state is OK to post receive */
 
 	ind = qp->rq.head & (qp->rq.max - 1);
 

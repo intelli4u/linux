@@ -24,8 +24,7 @@
 #include <linux/tty_flip.h>
 #include <linux/serial_core.h>
 
-#if defined(CONFIG_KGDB_SERIAL_CONSOLE) || \
-	defined(CONFIG_KGDB_SERIAL_CONSOLE_MODULE)
+#if defined(CONFIG_KGDB_SERIAL_CONSOLE) || defined(CONFIG_KGDB_SERIAL_CONSOLE_MODULE)
 #include <linux/kgdb.h>
 #include <asm/irq_regs.h>
 #endif
@@ -56,8 +55,7 @@
 static struct bfin_serial_port bfin_serial_ports[BFIN_UART_NR_PORTS];
 static int nr_active_ports = ARRAY_SIZE(bfin_serial_resource);
 
-#if defined(CONFIG_KGDB_SERIAL_CONSOLE) || \
-	defined(CONFIG_KGDB_SERIAL_CONSOLE_MODULE)
+#if defined(CONFIG_KGDB_SERIAL_CONSOLE) || defined(CONFIG_KGDB_SERIAL_CONSOLE_MODULE)
 
 # ifndef CONFIG_SERIAL_BFIN_PIO
 #  error KGDB only support UART in PIO mode.
@@ -82,8 +80,7 @@ static void bfin_serial_tx_chars(struct bfin_serial_port *uart);
 
 static void bfin_serial_reset_irda(struct uart_port *port);
 
-#if defined(CONFIG_SERIAL_BFIN_CTSRTS) || \
-	defined(CONFIG_SERIAL_BFIN_HARD_CTSRTS)
+#if defined(CONFIG_SERIAL_BFIN_CTSRTS) || defined(CONFIG_SERIAL_BFIN_HARD_CTSRTS)
 static unsigned int bfin_serial_get_mctrl(struct uart_port *port)
 {
 	struct bfin_serial_port *uart = (struct bfin_serial_port *)port;
@@ -237,8 +234,7 @@ static void bfin_serial_rx_chars(struct bfin_serial_port *uart)
  	ch = UART_GET_CHAR(uart);
  	uart->port.icount.rx++;
 
-#if defined(CONFIG_KGDB_SERIAL_CONSOLE) || \
-	defined(CONFIG_KGDB_SERIAL_CONSOLE_MODULE)
+#if defined(CONFIG_KGDB_SERIAL_CONSOLE) || defined(CONFIG_KGDB_SERIAL_CONSOLE_MODULE)
 	if (kgdb_connected && kgdboc_port_line == uart->port.line
 		&& kgdboc_break_enabled)
 		if (ch == 0x3) {/* Ctrl + C */
@@ -666,8 +662,7 @@ static int bfin_serial_startup(struct uart_port *port)
 	uart->rx_dma_timer.expires = jiffies + DMA_RX_FLUSH_JIFFIES;
 	add_timer(&(uart->rx_dma_timer));
 #else
-# if defined(CONFIG_KGDB_SERIAL_CONSOLE) || \
-	defined(CONFIG_KGDB_SERIAL_CONSOLE_MODULE)
+# if defined(CONFIG_KGDB_SERIAL_CONSOLE) || defined(CONFIG_KGDB_SERIAL_CONSOLE_MODULE)
 	if (kgdboc_port_line == uart->port.line && kgdboc_break_enabled)
 		kgdboc_break_enabled = 0;
 	else {
@@ -721,8 +716,7 @@ static int bfin_serial_startup(struct uart_port *port)
 		}
 	}
 # endif
-# if defined(CONFIG_KGDB_SERIAL_CONSOLE) || \
-	defined(CONFIG_KGDB_SERIAL_CONSOLE_MODULE)
+# if defined(CONFIG_KGDB_SERIAL_CONSOLE) || defined(CONFIG_KGDB_SERIAL_CONSOLE_MODULE)
 	}
 # endif
 #endif
@@ -1020,8 +1014,7 @@ static int bfin_serial_poll_get_char(struct uart_port *port)
 }
 #endif
 
-#if defined(CONFIG_KGDB_SERIAL_CONSOLE) || \
-	defined(CONFIG_KGDB_SERIAL_CONSOLE_MODULE)
+#if defined(CONFIG_KGDB_SERIAL_CONSOLE) || defined(CONFIG_KGDB_SERIAL_CONSOLE_MODULE)
 static void bfin_kgdboc_port_shutdown(struct uart_port *port)
 {
 	if (kgdboc_break_enabled) {
@@ -1056,8 +1049,7 @@ static struct uart_ops bfin_serial_pops = {
 	.request_port	= bfin_serial_request_port,
 	.config_port	= bfin_serial_config_port,
 	.verify_port	= bfin_serial_verify_port,
-#if defined(CONFIG_KGDB_SERIAL_CONSOLE) || \
-	defined(CONFIG_KGDB_SERIAL_CONSOLE_MODULE)
+#if defined(CONFIG_KGDB_SERIAL_CONSOLE) || defined(CONFIG_KGDB_SERIAL_CONSOLE_MODULE)
 	.kgdboc_port_startup	= bfin_kgdboc_port_startup,
 	.kgdboc_port_shutdown	= bfin_kgdboc_port_shutdown,
 #endif
@@ -1136,8 +1128,7 @@ static void __init bfin_serial_init_ports(void)
 			bfin_serial_resource[i].uart_rx_dma_channel;
 		init_timer(&(bfin_serial_ports[i].rx_dma_timer));
 #endif
-#if defined(CONFIG_SERIAL_BFIN_CTSRTS) || \
-	defined(CONFIG_SERIAL_BFIN_HARD_CTSRTS)
+#if defined(CONFIG_SERIAL_BFIN_CTSRTS) || defined(CONFIG_SERIAL_BFIN_HARD_CTSRTS)
 		bfin_serial_ports[i].cts_pin	    =
 			bfin_serial_resource[i].uart_cts_pin;
 		bfin_serial_ports[i].rts_pin	    =
@@ -1200,8 +1191,7 @@ bfin_serial_console_setup(struct console *co, char *options)
 	int baud = 57600;
 	int bits = 8;
 	int parity = 'n';
-# if defined(CONFIG_SERIAL_BFIN_CTSRTS) || \
-	defined(CONFIG_SERIAL_BFIN_HARD_CTSRTS)
+# if defined(CONFIG_SERIAL_BFIN_CTSRTS) || defined(CONFIG_SERIAL_BFIN_HARD_CTSRTS)
 	int flow = 'r';
 # else
 	int flow = 'n';

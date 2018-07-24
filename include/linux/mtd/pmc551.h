@@ -75,4 +75,3 @@ static int pmc551_write(struct mtd_info *, loff_t, size_t, size_t *, const u_cha
 
 
 #endif /* __MTD_PMC551_H__ */
-

@@ -13,7 +13,7 @@
  * 	Wang Zhenyu at intel.com
  * 	Dave Jiang at mvista.com
  *
- * $Id: edac_e752x.c,v 1.5.2.11 2005/10/05 00:43:44 dsp_llnl Exp $
+ * $Id: edac_e752x.c,v 1.5.2.11 2005/10/05 00:43:44 Exp $
  *
  */
 
@@ -96,7 +96,6 @@ static struct edac_pci_ctl_info *e752x_pci;
 					 *  3:2    Device width row 0
 					 */
 #define E752X_DRC		0x7C	/* DRAM controller mode reg (32b) */
-					/* FIXME:IS THIS RIGHT? */
 					/*
 					 * 22    Number channels 0=1,1=2
 					 * 19:18 DRB Granularity 32/64MB
@@ -319,7 +318,6 @@ static void do_process_ce(struct mem_ctl_info *mci, u16 error_one,
 	/* convert the addr to 4k page */
 	page = sec1_add >> (PAGE_SHIFT - 4);
 
-	/* FIXME - check for -1 */
 	if (pvt->mc_symmetric) {
 		/* chip select are bits 14 & 13 */
 		row = ((page >> 1) & 3);
@@ -1250,7 +1248,6 @@ static int e752x_probe1(struct pci_dev *pdev, int dev_idx)
 	pci_write_config_byte(pdev, E752X_DEVPRES1, stat8);
 
 	pci_read_config_word(pdev, E752X_DDRCSR, &ddrcsr);
-	/* FIXME: should check >>12 or 0xf, true for all? */
 	/* Dual channel = 1, Single channel = 0 */
 	drc_chan = dual_channel_active(ddrcsr);
 
@@ -1265,7 +1262,6 @@ static int e752x_probe1(struct pci_dev *pdev, int dev_idx)
 	/* 3100 IMCH supports SECDEC only */
 	mci->edac_ctl_cap = (dev_idx == I3100) ? EDAC_FLAG_SECDED :
 		(EDAC_FLAG_NONE | EDAC_FLAG_SECDED | EDAC_FLAG_S4ECD4ED);
-	/* FIXME - what if different memory types are in different csrows? */
 	mci->mod_name = EDAC_MOD_STR;
 	mci->mod_ver = E752X_REVISION;
 	mci->dev = &pdev->dev;

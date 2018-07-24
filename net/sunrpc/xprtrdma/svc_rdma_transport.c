@@ -930,11 +930,6 @@ static struct svc_xprt *svc_rdma_accept(struct svc_xprt *xprt)
 
 	ret = rdma_create_qp(newxprt->sc_cm_id, newxprt->sc_pd, &qp_attr);
 	if (ret) {
-		/*
-		 * XXX: This is a hack. We need a xx_request_qp interface
-		 * that will adjust the qp_attr's with a best-effort
-		 * number
-		 */
 		qp_attr.cap.max_send_sge -= 2;
 		qp_attr.cap.max_recv_sge -= 2;
 		ret = rdma_create_qp(newxprt->sc_cm_id, newxprt->sc_pd,

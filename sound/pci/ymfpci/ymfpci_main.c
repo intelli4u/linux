@@ -147,7 +147,7 @@ static u32 snd_ymfpci_calc_lpfK(u32 rate)
 	};
 	
 	if (rate == 44100)
-		return 0x40000000;	/* FIXME: What's the right value? */
+		return 0x40000000;
 	for (i = 0; i < 8; i++)
 		if (rate <= def_rate[i])
 			return val[i];
@@ -812,12 +812,6 @@ static irqreturn_t snd_ymfpci_interrupt(int irq, void *dev_id)
 			if (chip->capture_substream[nvoice])
 				snd_ymfpci_pcm_capture_interrupt(chip->capture_substream[nvoice]);
 		}
-#if 0
-		for (nvoice = 0; nvoice < YDSXG_EFFECT_VOICES; nvoice++) {
-			if (chip->effect_substream[nvoice])
-				snd_ymfpci_pcm_effect_interrupt(chip->effect_substream[nvoice]);
-		}
-#endif
 		spin_unlock(&chip->voice_lock);
 		spin_lock(&chip->reg_lock);
 		snd_ymfpci_writel(chip, YDSXGR_STATUS, 0x80000000);
@@ -857,9 +851,9 @@ static struct snd_pcm_hardware snd_ymfpci_playback =
 	.rate_max =		48000,
 	.channels_min =		1,
 	.channels_max =		2,
-	.buffer_bytes_max =	256 * 1024, /* FIXME: enough? */
+	.buffer_bytes_max =	256 * 1024,
 	.period_bytes_min =	64,
-	.period_bytes_max =	256 * 1024, /* FIXME: enough? */
+	.period_bytes_max =	256 * 1024,
 	.periods_min =		3,
 	.periods_max =		1024,
 	.fifo_size =		0,
@@ -879,9 +873,9 @@ static struct snd_pcm_hardware snd_ymfpci_capture =
 	.rate_max =		48000,
 	.channels_min =		1,
 	.channels_max =		2,
-	.buffer_bytes_max =	256 * 1024, /* FIXME: enough? */
+	.buffer_bytes_max =	256 * 1024,
 	.period_bytes_min =	64,
-	.period_bytes_max =	256 * 1024, /* FIXME: enough? */
+	.period_bytes_max =	256 * 1024,
 	.periods_min =		3,
 	.periods_max =		1024,
 	.fifo_size =		0,
@@ -907,7 +901,6 @@ static int snd_ymfpci_playback_open_1(struct snd_pcm_substream *substream)
 	runtime->hw = snd_ymfpci_playback;
 	runtime->private_data = ypcm;
 	runtime->private_free = snd_ymfpci_pcm_free_substream;
-	/* FIXME? True value is 256/48 = 5.33333 ms */
 	snd_pcm_hw_constraint_minmax(runtime, SNDRV_PCM_HW_PARAM_PERIOD_TIME, 5333, UINT_MAX);
 	return 0;
 }
@@ -1023,7 +1016,6 @@ static int snd_ymfpci_capture_open(struct snd_pcm_substream *substream,
 	ypcm->capture_bank_number = capture_bank_number;
 	chip->capture_substream[capture_bank_number] = substream;
 	runtime->hw = snd_ymfpci_capture;
-	/* FIXME? True value is 256/48 = 5.33333 ms */
 	snd_pcm_hw_constraint_minmax(runtime, SNDRV_PCM_HW_PARAM_PERIOD_TIME, 5333, UINT_MAX);
 	runtime->private_data = ypcm;
 	runtime->private_free = snd_ymfpci_pcm_free_substream;
@@ -1986,17 +1978,11 @@ static void snd_ymfpci_aclink_reset(struct pci_dev * pci)
 	u8 cmd;
 
 	pci_read_config_byte(pci, PCIR_DSXG_CTRL, &cmd);
-#if 0 // force to reset
-	if (cmd & 0x03) {
-#endif
 		pci_write_config_byte(pci, PCIR_DSXG_CTRL, cmd & 0xfc);
 		pci_write_config_byte(pci, PCIR_DSXG_CTRL, cmd | 0x03);
 		pci_write_config_byte(pci, PCIR_DSXG_CTRL, cmd & 0xfc);
 		pci_write_config_word(pci, PCIR_DSXG_PWRCTRL1, 0);
 		pci_write_config_word(pci, PCIR_DSXG_PWRCTRL2, 0);
-#if 0
-	}
-#endif
 }
 
 static void snd_ymfpci_enable_dsp(struct snd_ymfpci *chip)
@@ -2215,12 +2201,6 @@ static int snd_ymfpci_free(struct snd_ymfpci *chip)
 	snd_ymfpci_ac3_done(chip);
 
 	/* Set PCI device to D3 state */
-#if 0
-	/* FIXME: temporarily disabled, otherwise we cannot fire up
-	 * the chip again unless reboot.  ACPI bug?
-	 */
-	pci_set_power_state(chip->pci, 3);
-#endif
 
 #ifdef CONFIG_PM
 	vfree(chip->saved_regs);

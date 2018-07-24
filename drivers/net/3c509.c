@@ -1,63 +1,4 @@
 /* 3c509.c: A 3c509 EtherLink3 ethernet driver for linux. */
-/*
-	Written 1993-2000 by Donald Becker.
-
-	Copyright 1994-2000 by Donald Becker.
-	Copyright 1993 United States Government as represented by the
-	Director, National Security Agency.	 This software may be used and
-	distributed according to the terms of the GNU General Public License,
-	incorporated herein by reference.
-
-	This driver is for the 3Com EtherLinkIII series.
-
-	The author may be reached as becker@scyld.com, or C/O
-	Scyld Computing Corporation
-	410 Severn Ave., Suite 210
-	Annapolis MD 21403
-
-	Known limitations:
-	Because of the way 3c509 ISA detection works it's difficult to predict
-	a priori which of several ISA-mode cards will be detected first.
-
-	This driver does not use predictive interrupt mode, resulting in higher
-	packet latency but lower overhead.  If interrupts are disabled for an
-	unusually long time it could also result in missed packets, but in
-	practice this rarely happens.
-
-
-	FIXES:
-		Alan Cox:       Removed the 'Unexpected interrupt' bug.
-		Michael Meskes:	Upgraded to Donald Becker's version 1.07.
-		Alan Cox:	Increased the eeprom delay. Regardless of
-				what the docs say some people definitely
-				get problems with lower (but in card spec)
-				delays
-		v1.10 4/21/97 Fixed module code so that multiple cards may be detected,
-				other cleanups.  -djb
-		Andrea Arcangeli:	Upgraded to Donald Becker's version 1.12.
-		Rick Payne:	Fixed SMP race condition
-		v1.13 9/8/97 Made 'max_interrupt_work' an insmod-settable variable -djb
-		v1.14 10/15/97 Avoided waiting..discard message for fast machines -djb
-		v1.15 1/31/98 Faster recovery for Tx errors. -djb
-		v1.16 2/3/98 Different ID port handling to avoid sound cards. -djb
-		v1.18 12Mar2001 Andrew Morton
-			- Avoid bogus detect of 3c590's (Andrzej Krzysztofowicz)
-			- Reviewed against 1.18 from scyld.com
-		v1.18a 17Nov2001 Jeff Garzik <jgarzik@pobox.com>
-			- ethtool support
-		v1.18b 1Mar2002 Zwane Mwaikambo <zwane@commfireservices.com>
-			- Power Management support
-		v1.18c 1Mar2002 David Ruggiero <jdr@farfalle.com>
-			- Full duplex support
-		v1.19  16Oct2002 Zwane Mwaikambo <zwane@linuxpower.ca>
-			- Additional ethtool features
-		v1.19a 28Oct2002 Davud Ruggiero <jdr@farfalle.com>
-			- Increase *read_eeprom udelay to workaround oops with 2 cards.
-		v1.19b 08Nov2002 Marc Zyngier <maz@wild-wind.fr.eu.org>
-			- Introduce driver model for EISA cards.
-		v1.20  04Feb2008 Ondrej Zary <linux@rainbow-software.org>
-			- convert to isa_driver and pnp_driver and some cleanups
-*/
 
 #define DRV_NAME	"3c509"
 #define DRV_VERSION	"1.20"
@@ -830,25 +771,6 @@ el3_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		pr_debug("%s: el3_start_xmit(length = %u) called, status %4.4x.\n",
 			   dev->name, skb->len, inw(ioaddr + EL3_STATUS));
 	}
-#if 0
-#ifndef final_version
-	{	/* Error-checking code, delete someday. */
-		ushort status = inw(ioaddr + EL3_STATUS);
-		if (status & 0x0001 && 		/* IRQ line active, missed one. */
-		    inw(ioaddr + EL3_STATUS) & 1) { 			/* Make sure. */
-			pr_debug("%s: Missed interrupt, status then %04x now %04x"
-				   "  Tx %2.2x Rx %4.4x.\n", dev->name, status,
-				   inw(ioaddr + EL3_STATUS), inb(ioaddr + TX_STATUS),
-				   inw(ioaddr + RX_STATUS));
-			/* Fake interrupt trigger by masking, acknowledge interrupts. */
-			outw(SetStatusEnb | 0x00, ioaddr + EL3_CMD);
-			outw(AckIntr | IntLatch | TxAvailable | RxEarly | IntReq,
-				 ioaddr + EL3_CMD);
-			outw(SetStatusEnb | 0xff, ioaddr + EL3_CMD);
-		}
-	}
-#endif
-#endif
 	/*
 	 *	We lock the driver against other processors. Note
 	 *	we don't need to lock versus the IRQ as we suspended

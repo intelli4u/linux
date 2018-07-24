@@ -52,16 +52,6 @@ static inline unsigned char reg_read(struct ak4114 *ak4114, unsigned char reg)
 	return ak4114->read(ak4114->private_data, reg);
 }
 
-#if 0
-static void reg_dump(struct ak4114 *ak4114)
-{
-	int i;
-
-	printk(KERN_DEBUG "AK4114 REG DUMP:\n");
-	for (i = 0; i < 0x20; i++)
-		printk(KERN_DEBUG "reg[%02x] = %02x (%02x)\n", i, reg_read(ak4114, i), i < sizeof(ak4114->regmap) ? ak4114->regmap[i] : 0);
-}
-#endif
 
 static void snd_ak4114_free(struct ak4114 *chip)
 {

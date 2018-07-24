@@ -84,7 +84,6 @@ static void atombios_scaler_setup(struct drm_crtc *crtc)
 	ENABLE_SCALER_PS_ALLOCATION args;
 	int index = GetIndexIntoMasterTable(COMMAND, EnableScaler);
 
-	/* fixme - fill in enc_priv for atom dac */
 	enum radeon_tv_std tv_std = TV_STD_NTSC;
 	bool is_tv = false, is_cv = false;
 	struct drm_encoder *encoder;
@@ -416,7 +415,6 @@ static void atombios_enable_ss(struct drm_crtc *crtc)
 	uint16_t percentage = 0;
 	uint8_t type = 0, step = 0, delay = 0, range = 0;
 
-	/* XXX add ss support for DCE4 */
 	if (ASIC_IS_DCE4(rdev))
 		return;
 
@@ -565,10 +563,6 @@ static u32 atombios_adjust_pll(struct drm_crtc *crtc,
 		}
 	}
 
-	/* DCE3+ has an AdjustDisplayPll that will adjust the pixel clock
-	 * accordingly based on the encoder/transmitter to work around
-	 * special hw requirements.
-	 */
 	if (ASIC_IS_DCE3(rdev)) {
 		union adjust_pixel_clock args;
 		u8 frev, crev;

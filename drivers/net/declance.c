@@ -452,9 +452,6 @@ static void lance_init_ring(struct net_device *dev)
 	lp->rx_new = lp->tx_new = 0;
 	lp->rx_old = lp->tx_old = 0;
 
-	/* Copy the ethernet address to the lance init block.
-	 * XXX bit 0 of the physical address registers has to be zero
-	 */
 	*lib_ptr(ib, phys_addr[0], lp->type) = (dev->dev_addr[1] << 8) |
 				     dev->dev_addr[0];
 	*lib_ptr(ib, phys_addr[1], lp->type) = (dev->dev_addr[3] << 8) |
@@ -1072,15 +1069,11 @@ static int __devinit dec_lance_probe(struct device *bdev, const int type)
 		dev->base_addr = CKSEG1ADDR(dec_kn_slot_base + IOASIC_LANCE);
 
 		/* buffer space for the on-board LANCE shared memory */
-		/*
-		 * FIXME: ugly hack!
-		 */
 		dev->mem_start = CKSEG1ADDR(0x00020000);
 		dev->mem_end = dev->mem_start + 0x00020000;
 		dev->irq = dec_interrupt[DEC_IRQ_LANCE];
 		esar_base = CKSEG1ADDR(dec_kn_slot_base + IOASIC_ESAR);
 
-		/* Workaround crash with booting KN04 2.1k from Disk */
 		memset((void *)dev->mem_start, 0,
 		       dev->mem_end - dev->mem_start);
 

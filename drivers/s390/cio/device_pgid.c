@@ -568,4 +568,3 @@ void ccw_device_stlck_start(struct ccw_device *cdev, void *data, void *buf1,
 	stlck_build_cp(cdev, buf1, buf2);
 	ccw_request_start(cdev);
 }
-

@@ -1563,7 +1563,7 @@ static struct usb_driver asix_driver = {
 	.suspend =	usbnet_suspend,
 	.resume =	usbnet_resume,
 	.disconnect =	usbnet_disconnect,
-	.supports_autosuspend = 1,
+	.supports_autosuspend = 1
 };
 
 static int __init asix_init(void)
@@ -1581,4 +1581,3 @@ module_exit(asix_exit);
 MODULE_AUTHOR("David Hollis");
 MODULE_DESCRIPTION("ASIX AX8817X based USB 2.0 Ethernet Devices");
 MODULE_LICENSE("GPL");
-

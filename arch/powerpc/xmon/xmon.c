@@ -264,11 +264,6 @@ static inline void cinval(void *p)
 	asm volatile ("dcbi 0,%0; icbi 0,%0" : : "r" (p));
 }
 
-/*
- * Disable surveillance (the service processor watchdog function)
- * while we are in xmon.
- * XXX we should re-enable it when we leave. :)
- */
 #define SURVEILLANCE_TOKEN	9000
 
 static inline void disable_surveillance(void)

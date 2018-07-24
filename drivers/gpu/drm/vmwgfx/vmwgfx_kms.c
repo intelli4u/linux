@@ -497,7 +497,6 @@ int vmw_kms_new_framebuffer_surface(struct vmw_private *dev_priv,
 		goto out_err3;
 	}
 
-	/* XXX get the first 3 from the surface info */
 	vfbs->base.base.bits_per_pixel = 32;
 	vfbs->base.base.pitch = width * 32 / 4;
 	vfbs->base.base.depth = 24;
@@ -685,7 +684,6 @@ int vmw_kms_new_framebuffer_dmabuf(struct vmw_private *dev_priv,
 		goto out_err3;
 	}
 
-	/* XXX get the first 3 from the surface info */
 	vfbd->base.base.bits_per_pixel = 32;
 	vfbd->base.base.pitch = width * vfbd->base.base.bits_per_pixel / 8;
 	vfbd->base.base.depth = 24;

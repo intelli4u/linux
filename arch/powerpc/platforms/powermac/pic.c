@@ -46,7 +46,6 @@ struct pmac_irq_hw {
         unsigned int    level;
 };
 
-/* Workaround flags for 32bit powermac machines */
 unsigned int of_irq_workarounds;
 struct device_node *of_irq_dflt_pic;
 
@@ -743,4 +742,3 @@ static int __init init_pmacpic_sysfs(void)
 	return 0;
 }
 machine_subsys_initcall(powermac, init_pmacpic_sysfs);
-

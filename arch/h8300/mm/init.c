@@ -198,4 +198,3 @@ free_initmem(void)
 			(int)(addr - PAGE_SIZE));
 #endif
 }
-

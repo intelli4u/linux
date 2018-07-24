@@ -564,11 +564,6 @@ static int n2rng_control_configure_units(struct n2rng *np)
 			(2 << RNG_CTL_ASEL_SHIFT) |
 			RNG_CTL_LFSR);
 
-		/* XXX This isn't the best.  We should fetch a bunch
-		 * XXX of words using each entropy source combined XXX
-		 * with each VCO setting, and see which combinations
-		 * XXX give the best random data.
-		 */
 		for (esrc = 0; esrc < 3; esrc++)
 			up->control[esrc] = base |
 				(esrc << RNG_CTL_VCO_SHIFT) |

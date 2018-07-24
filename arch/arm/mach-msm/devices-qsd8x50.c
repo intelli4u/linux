@@ -89,4 +89,3 @@ struct clk msm_clocks_8x50[] = {
 };
 
 unsigned msm_num_clocks_8x50 = ARRAY_SIZE(msm_clocks_8x50);
-

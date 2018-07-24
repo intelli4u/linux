@@ -152,7 +152,7 @@ static int romfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 	unsigned long offset, maxoff;
 	int j, ino, nextfh;
 	int stored = 0;
-	char fsname[ROMFS_MAXFN];	/* XXX dynamic? */
+	char fsname[ROMFS_MAXFN];
 	int ret;
 
 	maxoff = romfs_maxsize(i->i_sb);
@@ -309,7 +309,6 @@ static struct inode *romfs_iget(struct super_block *sb, unsigned long pos)
 		if (ret < 0)
 			goto error;
 
-		/* XXX: do romfs_checksum here too (with name) */
 
 		nextfh = be32_to_cpu(ri.next);
 		if ((nextfh & ROMFH_TYPE) != ROMFH_HRD)

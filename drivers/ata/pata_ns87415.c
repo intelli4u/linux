@@ -141,16 +141,6 @@ static void ns87415_bmdma_setup(struct ata_queued_cmd *qc)
 	ap->ops->sff_exec_command(ap, &qc->tf);
 }
 
-/**
- *	ns87415_bmdma_start		-	Begin DMA transfer
- *	@qc: Command block
- *
- *	Switch the timings for the chip and set up for a DMA transfer
- *	before the DMA burst begins.
- *
- *	FIXME: We should do lazy switching on bmdma_start versus
- *	ata_pio_data_xfer for better performance.
- */
 
 static void ns87415_bmdma_start(struct ata_queued_cmd *qc)
 {
@@ -217,12 +207,6 @@ static int ns87415_check_atapi_dma(struct ata_queued_cmd *qc)
 
 #define SUPERIO_IDE_MAX_RETRIES 25
 
-/**
- *	ns87560_read_buggy	-	workaround buggy Super I/O chip
- *	@port: Port to read
- *
- *	Work around chipset problems in the 87560 SuperIO chip
- */
 
 static u8 ns87560_read_buggy(void __iomem *port)
 {
@@ -250,17 +234,6 @@ static u8 ns87560_check_status(struct ata_port *ap)
 	return ns87560_read_buggy(ap->ioaddr.status_addr);
 }
 
-/**
- *	ns87560_tf_read - input device's ATA taskfile shadow registers
- *	@ap: Port from which input is read
- *	@tf: ATA taskfile register set for storing input
- *
- *	Reads ATA taskfile registers for currently-selected device
- *	into @tf. Work around the 87560 bugs.
- *
- *	LOCKING:
- *	Inherited from caller.
- */
 void ns87560_tf_read(struct ata_port *ap, struct ata_taskfile *tf)
 {
 	struct ata_ioports *ioaddr = &ap->ioaddr;

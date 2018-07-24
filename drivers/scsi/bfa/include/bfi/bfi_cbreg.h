@@ -316,4 +316,3 @@ enum {
 
 
 #endif /* __BFI_CBREG_H__ */
-

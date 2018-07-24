@@ -91,7 +91,6 @@ static const struct usb_descriptor_header *otg_desc[] = {
 
 static int __ref audio_do_config(struct usb_configuration *c)
 {
-	/* FIXME alloc iConfiguration string, set it in c->strings */
 
 	if (gadget_is_otg(c->cdev->gadget)) {
 		c->descriptors = otg_desc;
@@ -185,4 +184,3 @@ module_exit(cleanup);
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_AUTHOR("Bryan Wu <cooloney@kernel.org>");
 MODULE_LICENSE("GPL");
-

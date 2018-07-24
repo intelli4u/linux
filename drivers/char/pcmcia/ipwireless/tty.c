@@ -276,7 +276,6 @@ static int ipw_write_room(struct tty_struct *linux_tty)
 	struct ipw_tty *tty = linux_tty->driver_data;
 	int room;
 
-	/* FIXME: Exactly how is the tty object locked here .. */
 	if (!tty)
 		return -ENODEV;
 
@@ -398,7 +397,6 @@ static int set_control_lines(struct ipw_tty *tty, unsigned int set,
 static int ipw_tiocmget(struct tty_struct *linux_tty, struct file *file)
 {
 	struct ipw_tty *tty = linux_tty->driver_data;
-	/* FIXME: Exactly how is the tty object locked here .. */
 
 	if (!tty)
 		return -ENODEV;
@@ -414,7 +412,6 @@ ipw_tiocmset(struct tty_struct *linux_tty, struct file *file,
 	     unsigned int set, unsigned int clear)
 {
 	struct ipw_tty *tty = linux_tty->driver_data;
-	/* FIXME: Exactly how is the tty object locked here .. */
 
 	if (!tty)
 		return -ENODEV;
@@ -436,7 +433,6 @@ static int ipw_ioctl(struct tty_struct *linux_tty, struct file *file,
 	if (!tty->open_count)
 		return -EINVAL;
 
-	/* FIXME: Exactly how is the tty object locked here .. */
 
 	switch (cmd) {
 	case TIOCGSERIAL:
@@ -578,8 +574,6 @@ void ipwireless_tty_free(struct ipw_tty *tty)
 				tty_hangup(ttyj->linux_tty);
 				/* Wait till the tty_hangup has completed */
 				flush_scheduled_work();
-				/* FIXME: Exactly how is the tty object locked here
-				   against a parallel ioctl etc */
 				mutex_lock(&ttyj->ipw_tty_mutex);
 			}
 			while (ttyj->open_count)
@@ -676,4 +670,3 @@ ipwireless_tty_notify_control_line_change(struct ipw_tty *tty,
 		tty_hangup(tty->linux_tty);
 	}
 }
-

@@ -783,14 +783,6 @@ static snd_pcm_uframes_t snd_es1938_capture_pointer(struct snd_pcm_substream *su
 {
 	struct es1938 *chip = snd_pcm_substream_chip(substream);
 	size_t ptr;
-#if 0
-	size_t old, new;
-	/* This stuff is *needed*, don't ask why - AB */
-	old = inw(SLDM_REG(chip, DMACOUNT));
-	while ((new = inw(SLDM_REG(chip, DMACOUNT))) != old)
-		old = new;
-	ptr = chip->dma1_size - 1 - new;
-#else
 	size_t count;
 	unsigned int diff;
 
@@ -805,7 +797,6 @@ static snd_pcm_uframes_t snd_es1938_capture_pointer(struct snd_pcm_substream *su
 	  chip->last_capture_dmaaddr = ptr;            /* good, remember it */
 
 	ptr -= chip->dma1_start;
-#endif
 	return ptr >> chip->dma1_shift;
 }
 
@@ -813,11 +804,7 @@ static snd_pcm_uframes_t snd_es1938_playback1_pointer(struct snd_pcm_substream *
 {
 	struct es1938 *chip = snd_pcm_substream_chip(substream);
 	size_t ptr;
-#if 1
 	ptr = chip->dma2_size - inw(SLIO_REG(chip, AUDIO2DMACOUNT));
-#else
-	ptr = inl(SLIO_REG(chip, AUDIO2DMAADDR)) - chip->dma2_start;
-#endif
 	return ptr >> chip->dma2_shift;
 }
 
@@ -826,15 +813,11 @@ static snd_pcm_uframes_t snd_es1938_playback2_pointer(struct snd_pcm_substream *
 	struct es1938 *chip = snd_pcm_substream_chip(substream);
 	size_t ptr;
 	size_t old, new;
-#if 1
 	/* This stuff is *needed*, don't ask why - AB */
 	old = inw(SLDM_REG(chip, DMACOUNT));
 	while ((new = inw(SLDM_REG(chip, DMACOUNT))) != old)
 		old = new;
 	ptr = chip->dma1_size - 1 - new;
-#else
-	ptr = inl(SLDM_REG(chip, DMAADDR)) - chip->dma1_start;
-#endif
 	return ptr >> chip->dma1_shift;
 }
 
@@ -1672,25 +1655,9 @@ static irqreturn_t snd_es1938_interrupt(int irq, void *dev_id)
 	int handled = 0;
 
 	status = inb(SLIO_REG(chip, IRQCONTROL));
-#if 0
-	printk(KERN_DEBUG "Es1938debug - interrupt status: =0x%x\n", status);
-#endif
 	
 	/* AUDIO 1 */
 	if (status & 0x10) {
-#if 0
-                printk(KERN_DEBUG
-		       "Es1938debug - AUDIO channel 1 interrupt\n");
-		printk(KERN_DEBUG
-		       "Es1938debug - AUDIO channel 1 DMAC DMA count: %u\n",
-		       inw(SLDM_REG(chip, DMACOUNT)));
-		printk(KERN_DEBUG
-		       "Es1938debug - AUDIO channel 1 DMAC DMA base: %u\n",
-		       inl(SLDM_REG(chip, DMAADDR)));
-		printk(KERN_DEBUG
-		       "Es1938debug - AUDIO channel 1 DMAC DMA status: 0x%x\n",
-		       inl(SLDM_REG(chip, DMASTATUS)));
-#endif
 		/* clear irq */
 		handled = 1;
 		audiostatus = inb(SLSB_REG(chip, STATUS));
@@ -1702,17 +1669,6 @@ static irqreturn_t snd_es1938_interrupt(int irq, void *dev_id)
 	
 	/* AUDIO 2 */
 	if (status & 0x20) {
-#if 0
-                printk(KERN_DEBUG
-		       "Es1938debug - AUDIO channel 2 interrupt\n");
-		printk(KERN_DEBUG
-		       "Es1938debug - AUDIO channel 2 DMAC DMA count: %u\n",
-		       inw(SLIO_REG(chip, AUDIO2DMACOUNT)));
-		printk(KERN_DEBUG
-		       "Es1938debug - AUDIO channel 2 DMAC DMA base: %u\n",
-		       inl(SLIO_REG(chip, AUDIO2DMAADDR)));
-
-#endif
 		/* clear irq */
 		handled = 1;
 		snd_es1938_mixer_bits(chip, ESSSB_IREG_AUDIO2CONTROL2, 0x80, 0);

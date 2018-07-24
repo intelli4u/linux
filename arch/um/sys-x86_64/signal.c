@@ -130,7 +130,7 @@ static int copy_sc_to_user(struct sigcontext __user *to,
 	err |= PUTREG(regs, R13, to, r13);
 	err |= PUTREG(regs, R14, to, r14);
 	err |= PUTREG(regs, R15, to, r15);
-	err |= PUTREG(regs, CS, to, cs); /* XXX x86_64 doesn't do this */
+	err |= PUTREG(regs, CS, to, cs);
 
 	err |= __put_user(fi->cr2, &to->cr2);
 	err |= __put_user(fi->error_code, &to->err);

@@ -462,7 +462,6 @@ static netdev_tx_t irda_usb_hard_xmit(struct sk_buff *skb,
 		irda_usb_build_header(self, self->tx_buff, 0);
 	}
 
-	/* FIXME: Make macro out of this one */
 	((struct irda_skb_cb *)skb->cb)->context = self;
 
 	usb_fill_bulk_urb(urb, self->usbdev,
@@ -477,7 +476,6 @@ static netdev_tx_t irda_usb_hard_xmit(struct sk_buff *skb,
 	 * This is how the dongle will detect the end of packet - Jean II */
 	urb->transfer_flags = URB_ZERO_PACKET;
 
-	/* Generate min turn time. FIXME: can we do better than this? */
 	/* Trying to a turnaround time at this level is trying to measure
 	 * processor clock cycle with a wrist-watch, approximate at best...
 	 *
@@ -721,10 +719,6 @@ static void irda_usb_net_timeout(struct net_device *netdev)
 }
 
 /************************* RECEIVE ROUTINES *************************/
-/*
- * Receive packets from the USB layer stack and pass them to the IrDA stack.
- * Try to work around USB failures...
- */
 
 /*
  * Note :
@@ -1388,11 +1382,9 @@ static inline void irda_usb_init_qos(struct irda_usb_cb *self)
 	if(self->capability & IUC_MAX_XBOFS)
 		self->qos.additional_bofs.bits	 = 0x01;
 
-#if 1
 	/* Module parameter can override the rx window size */
 	if (qos_mtt_bits)
 		self->qos.min_turn_time.bits = qos_mtt_bits;
-#endif	    
 	/* 
 	 * Note : most of those values apply only for the receive path,
 	 * the transmit path will be set differently - Jean II 

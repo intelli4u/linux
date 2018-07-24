@@ -566,7 +566,6 @@ static int initio_reset_scsi(struct initio_host * host, int seconds)
 
 	/* Stall for a while, wait for target's firmware ready,make it 2 sec ! */
 	/* SONY 5200 tape drive won't work if only stall for 1 sec */
-	/* FIXME: this is a very long busy wait right now */
 	initio_do_pause(seconds * HZ);
 
 	inb(host->addr + TUL_SInt);
@@ -958,7 +957,6 @@ static int initio_abort_srb(struct initio_host * host, struct scsi_cmnd *srbp)
 		/* disable Jasmin SCSI Int        */
 		outb(0x1F, host->addr + TUL_Mask);
 		spin_unlock_irqrestore(&host->semaph_lock, flags);
-		/* FIXME: synchronize_irq needed ? */
 		tulip_main(host);
 		spin_lock_irqsave(&host->semaph_lock, flags);
 		host->semaph = 1;
@@ -1154,7 +1152,6 @@ static int tulip_main(struct initio_host * host)
 			}
 			scb->flags |= SCF_DONE;
 			if (scb->flags & SCF_POST) {
-				/* FIXME: only one post method and lose casts */
 				(*scb->post) ((u8 *) host, (u8 *) scb);
 			}
 		}		/* while */
@@ -1933,7 +1930,6 @@ int int_initio_resel(struct initio_host * host)
 	u8 tar, lun;
 
 	if ((scb = host->active) != NULL) {
-		/* FIXME: Why check and not just clear ? */
 		if (scb->status & SCB_SELECT)		/* if waiting for selection complete */
 			scb->status &= ~SCB_SELECT;
 		host->active = NULL;
@@ -2676,18 +2672,6 @@ static int i91u_bus_reset(struct scsi_cmnd * cmnd)
 	return SUCCESS;
 }
 
-/**
- *	i91u_biospararm			-	return the "logical geometry
- *	@sdev: SCSI device
- *	@dev; Matching block device
- *	@capacity: Sector size of drive
- *	@info_array: Return space for BIOS geometry
- *
- *	Map the device geometry in a manner compatible with the host
- *	controller BIOS behaviour.
- *
- *	FIXME: limited to 2^32 sector devices.
- */
 
 static int i91u_biosparam(struct scsi_device *sdev, struct block_device *dev,
 		sector_t capacity, int *info_array)

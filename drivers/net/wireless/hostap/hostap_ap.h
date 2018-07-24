@@ -174,7 +174,7 @@ struct ap_data {
 	unsigned int tx_drop_nonassoc; /* number of unicast TX packets dropped
 					* because they were to an address that
 					* was not associated */
-	int nullfunc_ack; /* use workaround for nullfunc frame ACKs */
+	int nullfunc_ack;
 
 	spinlock_t sta_table_lock;
 	int num_sta; /* number of entries in sta_list */

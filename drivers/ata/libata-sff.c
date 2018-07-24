@@ -717,7 +717,6 @@ static void ata_pio_sector(struct ata_queued_cmd *qc)
 	if (PageHighMem(page)) {
 		unsigned long flags;
 
-		/* FIXME: use a bounce buffer */
 		local_irq_save(flags);
 		buf = kmap_atomic(page, KM_IRQ0);
 
@@ -792,8 +791,6 @@ static void atapi_send_cdb(struct ata_port *ap, struct ata_queued_cmd *qc)
 
 	ap->ops->sff_data_xfer(qc->dev, qc->cdb, qc->dev->cdb_len, 1);
 	ata_sff_sync(ap);
-	/* FIXME: If the CDB is for DMA do we need to do the transition delay
-	   or is bmdma_start guaranteed to do it ? */
 	switch (qc->tf.protocol) {
 	case ATAPI_PROT_PIO:
 		ap->hsm_task_state = HSM_ST;
@@ -862,7 +859,6 @@ next_sg:
 	if (PageHighMem(page)) {
 		unsigned long flags;
 
-		/* FIXME: use bounce buffer */
 		local_irq_save(flags);
 		buf = kmap_atomic(page, KM_IRQ0);
 
@@ -1096,11 +1092,6 @@ fsm_start:
 		 * let the EH abort the command or reset the device.
 		 */
 		if (unlikely(status & (ATA_ERR | ATA_DF))) {
-			/* Some ATAPI tape drives forget to clear the ERR bit
-			 * when doing the next command (mostly request sense).
-			 * We ignore ERR here to workaround and proceed sending
-			 * the CDB.
-			 */
 			if (!(qc->dev->horkage & ATA_HORKAGE_STUCK_ERR)) {
 				ata_ehi_push_desc(ehi, "ST_FIRST: "
 					"DRQ=1 with device error, "
@@ -1996,9 +1987,9 @@ static int ata_bus_softreset(struct ata_port *ap, unsigned int devmask,
 
 	/* software reset.  causes dev0 to be selected */
 	iowrite8(ap->ctl, ioaddr->ctl_addr);
-	udelay(20);	/* FIXME: flush */
+	udelay(20);
 	iowrite8(ap->ctl | ATA_SRST, ioaddr->ctl_addr);
-	udelay(20);	/* FIXME: flush */
+	udelay(20);
 	iowrite8(ap->ctl, ioaddr->ctl_addr);
 	ap->last_ctl = ap->ctl;
 
@@ -3009,20 +3000,6 @@ void ata_bmdma_start(struct ata_queued_cmd *qc)
 	dmactl = ioread8(ap->ioaddr.bmdma_addr + ATA_DMA_CMD);
 	iowrite8(dmactl | ATA_DMA_START, ap->ioaddr.bmdma_addr + ATA_DMA_CMD);
 
-	/* Strictly, one may wish to issue an ioread8() here, to
-	 * flush the mmio write.  However, control also passes
-	 * to the hardware at this point, and it will interrupt
-	 * us when we are to resume control.  So, in effect,
-	 * we don't care when the mmio write flushes.
-	 * Further, a read of the DMA status register _immediately_
-	 * following the write may not be what certain flaky hardware
-	 * is expected, so I think it is best to not add a readb()
-	 * without first all the MMIO ATA cards/mobos.
-	 * Or maybe I'm just being paranoid.
-	 *
-	 * FIXME: The posting of this write means I/O starts are
-	 * unneccessarily delayed for MMIO
-	 */
 }
 EXPORT_SYMBOL_GPL(ata_bmdma_start);
 

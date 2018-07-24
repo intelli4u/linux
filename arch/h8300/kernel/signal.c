@@ -82,7 +82,6 @@ do_rt_sigsuspend(struct pt_regs *regs)
 	size_t sigsetsize = (size_t)regs->er2;
 	sigset_t saveset, newset;
 
-	/* XXX: Don't preclude handling different sized sigset_t's.  */
 	if (sigsetsize != sizeof(sigset_t))
 		return -EINVAL;
 

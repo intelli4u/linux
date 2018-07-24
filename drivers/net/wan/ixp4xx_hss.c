@@ -452,7 +452,6 @@ static void hss_config(struct port *port)
 		BUG();
 	}
 
-	/* HDLC may stop working without this - check FIXME */
 	npe_recv_message(port->npe, &msg, "FLUSH_IT");
 }
 
@@ -542,7 +541,7 @@ static int hss_load_firmware(struct port *port)
 	hss_npe_send(port, &msg, "HSS_SET_PKT_RX_SIZE");
 
 	msg.cmd = PKT_PIPE_IDLE_PATTERN_WRITE;
-	msg.data32 = 0x7F7F7F7F; /* ??? FIXME */
+	msg.data32 = 0x7F7F7F7F;
 	hss_npe_send(port, &msg, "HSS_SET_PKT_IDLE");
 
 	port->initialized = 1;
@@ -697,12 +696,6 @@ static int hss_hdlc_poll(struct napi_struct *napi, int budget)
 		}
 
 		desc = rx_desc_ptr(port, n);
-#if 0 /* FIXME - error_count counts modulo 256, perhaps we should use it */
-		if (desc->error_count)
-			printk(KERN_DEBUG "%s: hss_hdlc_poll status 0x%02X"
-			       " errors %u\n", dev->name, desc->status,
-			       desc->error_count);
-#endif
 		skb = NULL;
 		switch (desc->status) {
 		case 0:
@@ -735,7 +728,7 @@ static int hss_hdlc_poll(struct napi_struct *napi, int budget)
 			dev->stats.rx_length_errors++;
 			dev->stats.rx_errors++;
 			break;
-		default:	/* FIXME - remove printk */
+		default:
 			printk(KERN_ERR "%s: hss_hdlc_poll: status 0x%02X"
 			       " errors %u\n", dev->name, desc->status,
 			       desc->error_count);

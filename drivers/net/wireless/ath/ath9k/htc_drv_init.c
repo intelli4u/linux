@@ -620,7 +620,7 @@ static int ath9k_init_priv(struct ath9k_htc_priv *priv, u16 devid)
 		return -ENOMEM;
 
 	ah->hw_version.devid = devid;
-	ah->hw_version.subsysid = 0; /* FIXME */
+	ah->hw_version.subsysid = 0;
 	priv->ah = ah;
 
 	common = ath9k_hw_common(ah);

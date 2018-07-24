@@ -113,15 +113,6 @@ static u8 pdc2026x_cable_detect(ide_hwif_t *hwif)
 	return (CIS & mask) ? ATA_CBL_PATA40 : ATA_CBL_PATA80;
 }
 
-/*
- * Set the control register to use the 66MHz system
- * clock for UDMA 3/4/5 mode operation when necessary.
- *
- * FIXME: this register is shared by both channels, some locking is needed
- *
- * It may also be possible to leave the 66MHz clock on
- * and readjust the timing parameters.
- */
 static void pdc_old_enable_66MHz_clock(ide_hwif_t *hwif)
 {
 	unsigned long clock_reg = hwif->extra_base + 0x01;

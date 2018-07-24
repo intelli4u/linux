@@ -1133,11 +1133,6 @@ static int x25_sendmsg(struct kiocb *iocb, struct socket *sock,
 		if (sx25.sx25_family != AF_X25)
 			goto out;
 	} else {
-		/*
-		 *	FIXME 1003.1g - if the socket is like this because
-		 *	it has become closed (not started closed) we ought
-		 *	to SIGPIPE, EPIPE;
-		 */
 		rc = -ENOTCONN;
 		if (sk->sk_state != TCP_ESTABLISHED)
 			goto out;

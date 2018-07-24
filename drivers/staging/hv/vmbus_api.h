@@ -165,7 +165,6 @@ struct hv_device {
 /* Vmbus driver object */
 struct vmbus_driver {
 	/* !! Must be the 1st field !! */
-	/* FIXME if ^, then someone is doing somthing stupid */
 	struct hv_driver Base;
 
 	/* Set by the caller */

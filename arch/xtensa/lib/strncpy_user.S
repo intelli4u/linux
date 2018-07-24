@@ -222,4 +222,3 @@ fixup_s:
 fixup_l:
 	movi	a2, -EFAULT
 	retw
-

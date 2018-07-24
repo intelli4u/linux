@@ -468,9 +468,6 @@ static int scsi_eh_completed_normally(struct scsi_cmnd *scmd)
 	case CONDITION_GOOD:
 	case INTERMEDIATE_GOOD:
 	case INTERMEDIATE_C_GOOD:
-		/*
-		 * who knows?  FIXME(eric)
-		 */
 		return SUCCESS;
 	case RESERVATION_CONFLICT:
 		if (scmd->cmnd[0] == TEST_UNIT_READY)
@@ -870,26 +867,6 @@ void scsi_eh_finish_cmd(struct scsi_cmnd *scmd, struct list_head *done_q)
 }
 EXPORT_SYMBOL(scsi_eh_finish_cmd);
 
-/**
- * scsi_eh_get_sense - Get device sense data.
- * @work_q:	Queue of commands to process.
- * @done_q:	Queue of processed commands.
- *
- * Description:
- *    See if we need to request sense information.  if so, then get it
- *    now, so we have a better idea of what to do.  
- *
- * Notes:
- *    This has the unfortunate side effect that if a shost adapter does
- *    not automatically request sense information, we end up shutting
- *    it down before we request it.
- *
- *    All drivers should request sense information internally these days,
- *    so for now all I have to say is tough noogies if you end up in here.
- *
- *    XXX: Long term this code should go away, but that needs an audit of
- *         all LLDDs first.
- */
 int scsi_eh_get_sense(struct list_head *work_q,
 		      struct list_head *done_q)
 {
@@ -1232,10 +1209,6 @@ static int scsi_eh_bus_reset(struct Scsi_Host *shost,
 			if (channel == scmd_channel(scmd)) {
 				chan_scmd = scmd;
 				break;
-				/*
-				 * FIXME add back in some support for
-				 * soft_reset devices.
-				 */
 			}
 		}
 
@@ -1315,9 +1288,6 @@ static void scsi_eh_offline_sdevs(struct list_head *work_q,
 			    "not ready after error recovery\n");
 		scsi_device_set_state(scmd->device, SDEV_OFFLINE);
 		if (scmd->eh_eflags & SCSI_EH_CANCEL_CMD) {
-			/*
-			 * FIXME: Handle lost cmds.
-			 */
 		}
 		scsi_eh_finish_cmd(scmd, done_q);
 	}
@@ -1521,9 +1491,6 @@ int scsi_decide_disposition(struct scsi_cmnd *scmd)
 	case INTERMEDIATE_GOOD:
 	case INTERMEDIATE_C_GOOD:
 	case ACA_ACTIVE:
-		/*
-		 * who knows?  FIXME(eric)
-		 */
 		return SUCCESS;
 
 	case RESERVATION_CONFLICT:

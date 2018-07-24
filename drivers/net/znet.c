@@ -348,8 +348,6 @@ static void znet_set_multicast_list (struct net_device *dev)
 	znet->tx_cur += sizeof(struct i82593_conf_block)/2;
 	outb(OP0_CONFIGURE | CR0_CHNL, ioaddr);
 
-	/* XXX FIXME maz : Add multicast addresses here, so having a
-	 * multicast address configured isn't equal to IFF_ALLMULTI */
 }
 
 static const struct net_device_ops znet_netdev_ops = {
@@ -748,13 +746,8 @@ static void znet_rx(struct net_device *dev)
 			dev->stats.rx_errors++;
 			if (status & RX_CRC_ERR) dev->stats.rx_crc_errors++;
 			if (status & RX_ALG_ERR) dev->stats.rx_frame_errors++;
-#if 0
-			if (status & 0x0200) dev->stats.rx_over_errors++; /* Wrong. */
-			if (status & 0x0100) dev->stats.rx_fifo_errors++;
-#else
 			/* maz : Wild guess... */
 			if (status & RX_OVRRUN) dev->stats.rx_over_errors++;
-#endif
 			if (status & RX_SRT_FRM) dev->stats.rx_length_errors++;
 		} else if (pkt_len > 1536) {
 			dev->stats.rx_length_errors++;

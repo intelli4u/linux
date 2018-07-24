@@ -31,11 +31,6 @@ static void __init i386_default_early_setup(void)
 void __init i386_start_kernel(void)
 {
 #ifdef CONFIG_X86_TRAMPOLINE
-	/*
-	 * But first pinch a few for the stack/trampoline stuff
-	 * FIXME: Don't need the extra page at 4K, but need to fix
-	 * trampoline before removing it. (see the GDT stuff)
-	 */
 	reserve_early_overlap_ok(PAGE_SIZE, PAGE_SIZE + PAGE_SIZE,
 					 "EX TRAMPOLINE");
 #endif

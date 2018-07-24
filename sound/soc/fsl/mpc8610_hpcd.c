@@ -183,23 +183,6 @@ static struct snd_soc_ops mpc8610_hpcd_ops = {
 	.startup = mpc8610_hpcd_startup,
 };
 
-/**
- * mpc8610_hpcd_probe: OF probe function for the fabric driver
- *
- * This function gets called when an SSI node is found in the device tree.
- *
- * Although this is a fabric driver, the SSI node is the "master" node with
- * respect to audio hardware connections.  Therefore, we create a new ASoC
- * device for each new SSI node that has a codec attached.
- *
- * FIXME: Currently, we only support one DMA controller, so if there are
- * multiple SSI nodes with codecs, only the first will be supported.
- *
- * FIXME: Even if we did support multiple DMA controllers, we have no
- * mechanism for assigning DMA controllers and channels to the individual
- * SSI devices.  We also probably aren't compatible with the generic Elo DMA
- * device driver.
- */
 static int mpc8610_hpcd_probe(struct platform_device *ofdev,
 	const struct of_device_id *match)
 {

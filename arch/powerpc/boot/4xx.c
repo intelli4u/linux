@@ -357,7 +357,6 @@ void ibm440gp_fixup_clocks(unsigned int sys_clk, unsigned int ser_clk)
 	opb = plb / opdv;
 	ebc = opb / epdv;
 
-	/* FIXME: Check if this is for all 440GP, or just Ebony */
 	if ((mfpvr() & 0xf0000fff) == 0x40000440)
 		/* Rev. B 440GP, use external system clock */
 		tb = sys_clk;

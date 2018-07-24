@@ -470,7 +470,6 @@ static unsigned long expand_and_crc_sym(struct symbol *sym, unsigned long crc)
 
 		case SYM_TYPEDEF:
 			subsym = find_symbol(cur->string, cur->tag);
-			/* FIXME: Bad reference files can segfault here. */
 			if (subsym->expansion_trail) {
 				if (flag_dump_defs)
 					fprintf(debugfile, "%s ", cur->string);

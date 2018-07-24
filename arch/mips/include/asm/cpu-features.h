@@ -83,6 +83,9 @@
 #ifndef kernel_uses_llsc
 #define kernel_uses_llsc	cpu_has_llsc
 #endif
+#ifndef cpu_has_mmips
+#define cpu_has_mmips		(cpu_data[0].options & MIPS_CPU_MICROMIPS)
+#endif
 #ifndef cpu_has_mips16
 #define cpu_has_mips16		(cpu_data[0].ases & MIPS_ASE_MIPS16)
 #endif
@@ -101,6 +104,9 @@
 #ifndef cpu_has_vtag_icache
 #define cpu_has_vtag_icache	(cpu_data[0].icache.flags & MIPS_CACHE_VTAG)
 #endif
+#ifndef cpu_has_vtag_dcache
+#define cpu_has_vtag_dcache     (cpu_data[0].dcache.flags & MIPS_CACHE_VTAG)
+#endif
 #ifndef cpu_has_dc_aliases
 #define cpu_has_dc_aliases	(cpu_data[0].dcache.flags & MIPS_CACHE_ALIASES)
 #endif
@@ -109,6 +115,56 @@
 #endif
 #ifndef cpu_has_pindexed_dcache
 #define cpu_has_pindexed_dcache	(cpu_data[0].dcache.flags & MIPS_CACHE_PINDEX)
+#endif
+
+/* Page Global Directory ptr comes from memory */
+#ifndef cpu_has_pgdc_in_memory
+#if defined(CONFIG_SMP) && defined(CONFIG_MIPS_MT_SMTC)
+#define cpu_has_pgdc_in_memory (1)
+#else
+#define cpu_has_pgdc_in_memory (!(cpu_has_pgdc_in_context || cpu_has_pgdc_in_errorepc))
+#endif
+#endif
+
+/* Page Global Directory ptr comes from Context
+ *
+ * SMP is supported when ErrorEPC is used to store smp_processor_id().
+ * Uniprocessor is always supported
+ *
+ * SMTC is not supported as Context is per-VPE.
+ * - SMTC is excluded in Kconfig
+ *
+ */
+#ifndef cpu_has_pgdc_in_context
+#if !defined(CONFIG_SMP) || (defined(CONFIG_SMP) && \
+	defined(CONFIG_MIPS_TLB_SMPID_ERROREPC))
+#define cpu_has_pgdc_in_context (cpu_data[0].options & MIPS_CPU_PGDC_CC)
+#else
+#define cpu_has_pgdc_in_context (0)
+#endif
+#endif
+
+/* Page Global Directory ptr is stored in ErrorEPC
+ * - avoids load from memory to load page table base
+ * - on SMP, also avoids index from SMP ID in Context
+ */
+#ifndef cpu_has_pgdc_in_errorepc
+#if defined(CONFIG_MIPS_TLB_PGD_ERROREPC)
+#define cpu_has_pgdc_in_errorepc (1)
+#else
+#define cpu_has_pgdc_in_errorepc (0)
+#endif
+#endif
+
+/* smp_processor_id() is stored in ErrorEPC
+ * - allows use of ContextConfig with SMP kernel
+ */
+#ifndef cpu_has_smpid_in_errorepc
+#if defined(CONFIG_MIPS_TLB_SMPID_ERROREPC)
+#define cpu_has_smpid_in_errorepc (1)
+#else
+#define cpu_has_smpid_in_errorepc (0)
+#endif
 #endif
 
 /*
@@ -179,6 +235,10 @@
 #define cpu_has_userlocal	(cpu_data[0].options & MIPS_CPU_ULRI)
 #endif
 
+#ifndef cpu_has_contextconfig
+#define cpu_has_contextconfig	((cpu_data[0].options & MIPS_CPU_CTXTC) || cpu_has_smartmips)
+#endif
+
 #ifdef CONFIG_32BIT
 # ifndef cpu_has_nofpuex
 # define cpu_has_nofpuex	(cpu_data[0].options & MIPS_CPU_NOFPUEX)
@@ -222,13 +282,15 @@
 # endif
 #endif
 
-#if defined(CONFIG_CPU_MIPSR2_IRQ_VI) && !defined(cpu_has_vint)
+#if (defined(CONFIG_MIPS_SEAD3) || defined(CONFIG_CPU_MIPSR2_IRQ_VI)) && \
+	!defined(cpu_has_vint)
 # define cpu_has_vint		(cpu_data[0].options & MIPS_CPU_VINT)
 #elif !defined(cpu_has_vint)
 # define cpu_has_vint			0
 #endif
 
-#if defined(CONFIG_CPU_MIPSR2_IRQ_EI) && !defined(cpu_has_veic)
+#if (defined(CONFIG_MIPS_SEAD3) || defined(CONFIG_CPU_MIPSR2_IRQ_EI)) && \
+	!defined(cpu_has_veic)
 # define cpu_has_veic		(cpu_data[0].options & MIPS_CPU_VEIC)
 #elif !defined(cpu_has_veic)
 # define cpu_has_veic			0

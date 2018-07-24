@@ -32,7 +32,6 @@ itlb_load:
 dtlb_load:
 	.asciz	"SUNW,dtlb-load"
 
-	/* XXX __cpuinit this thing XXX */
 #define TRAMP_STACK_SIZE	1024
 	.align	16
 tramp_stack:

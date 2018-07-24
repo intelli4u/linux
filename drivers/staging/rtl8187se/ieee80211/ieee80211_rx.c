@@ -633,7 +633,6 @@ int ieee80211_rtl_rx(struct ieee80211_device *ieee, struct sk_buff *skb,
 	hdr = (struct ieee80211_hdr_4addr *)skb->data;
 
 	/* skb: hdr + (possibly fragmented) plaintext payload */
-	// PR: FIXME: hostap has additional conditions in the "if" below:
 	// ieee->host_decrypt && (fc & IEEE80211_FCTL_WEP) &&
 	if ((frag != 0 || (fc & IEEE80211_FCTL_MOREFRAGS))) {
 		int flen;
@@ -1298,7 +1297,6 @@ inline void update_network(struct ieee80211_network *dst,
 	dst->last_scanned = jiffies;
 	/* dst->last_associate is not overwritten */
 // disable QoS process now, added by David 2006/7/25
-#if 1
 	dst->wmm_info = src->wmm_info; //sure to exist in beacon or probe response frame.
 /*
 	if((dst->wmm_info^src->wmm_info)&0x0f) {//Param Set Count change, update Parameter
@@ -1312,9 +1310,6 @@ inline void update_network(struct ieee80211_network *dst,
 	  memcpy(dst->wmm_param, src->wmm_param, WME_AC_PRAM_LEN);
 	}
 	dst->QoS_Enable = src->QoS_Enable;
-#else
-	dst->QoS_Enable = 1;//for Rtl8187 simulation
-#endif
 	dst->SignalStrength = src->SignalStrength;
 	dst->Turbo_Enable = src->Turbo_Enable;
 	dst->CountryIeLen = src->CountryIeLen;

@@ -302,21 +302,7 @@ compute_next_pc_for_16bit_insn(unsigned long insn, unsigned long pc,
 		switch (op2) {
 		case 0x0:
 			if (op3 == 0xf) { /* TRAP */
-#if 1
 				/* pass through */
-#else
- 				/* kernel space is not allowed as next_pc */
-				unsigned long evb;
-				unsigned long trapno;
-				trapno = insn & 0xf;
-				__asm__ __volatile__ (
-					"mvfc %0, cr5\n"
-		 			:"=r"(evb)
-		 			:
-				);
-				*next_pc = evb + (trapno << 2);
-				return;
-#endif
 			} else if (op3 == 0xd) { /* RTE */
 				*next_pc = get_stack_long(child, PT_BPC);
 				return;
@@ -442,14 +428,12 @@ register_debug_trap(struct task_struct *child, unsigned long next_pc,
 	p->nr_trap++;
 	if (next_pc & 3) {
 		*code = (next_insn & 0xffff0000) | 0x10f1;
-		/* xxx --> TRAP1 */
 	} else {
 		if ((next_insn & 0x80000000) || (next_insn & 0x8000)) {
 			*code = 0x10f17000;
 			/* TRAP1 --> NOP */
 		} else {
 			*code = (next_insn & 0xffff) | 0x10f10000;
-			/* TRAP1 --> xxx */
 		}
 	}
 	return 0;
@@ -526,8 +510,6 @@ invalidate_cache(void)
                 "stb    r1, @r0		; cache on		\n\t"
 		: : : "r0", "r1", "memory"
 	);
-	/* FIXME: copying-back d-cache and invalidating i-cache are needed.
-	 */
 #endif	/* CONFIG_CHIP_M32700 */
 }
 

@@ -177,9 +177,6 @@ extern char spider_net_driver_name[];
 #define SPIDER_NET_TXMODE_VALUE		0x00010000
 #define SPIDER_NET_RESTART_VALUE	0x00000000
 #define SPIDER_NET_WOL_VALUE		0x00001111
-#if 0
-#define SPIDER_NET_WOL_VALUE		0x00000000
-#endif
 #define SPIDER_NET_IPSECINIT_VALUE	0x6f716f71
 
 /* pause frames: automatic, no upper retransmission count */

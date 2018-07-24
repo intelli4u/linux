@@ -118,7 +118,6 @@ spkm3_make_token(struct spkm3_ctx *ctx,
 		goto out_err;
 	}
 
-	/* XXX need to implement sequence numbers, and ctx->expired */
 
 	return  GSS_S_COMPLETE;
 out_err:
@@ -142,7 +141,7 @@ make_spkm3_checksum(s32 cksumtype, struct xdr_netobj *key, char *header,
 		    unsigned int body_offset, struct xdr_netobj *cksum)
 {
 	char				*cksumname;
-	struct hash_desc		desc; /* XXX add to ctx? */
+	struct hash_desc		desc;
 	struct scatterlist		sg[1];
 	int err;
 

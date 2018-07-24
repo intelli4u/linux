@@ -732,7 +732,7 @@ static int __init control_of_init(struct device_node *dp)
 	}
 	p->control_regs = ioremap(p->control_regs_phys, p->control_regs_size);
 
-	p->cmap_regs_phys = 0xf301b000;	 /* XXX not in prom? */
+	p->cmap_regs_phys = 0xf301b000;
 	if (!request_mem_region(p->cmap_regs_phys, 0x1000, "controlfb cmap")) {
 		p->cmap_regs_phys = 0;
 		goto error_out;
@@ -1090,5 +1090,3 @@ static void control_cleanup(void)
 		release_mem_region(p->fb_orig_base, p->fb_orig_size);
 	kfree(p);
 }
-
-

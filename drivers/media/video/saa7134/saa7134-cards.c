@@ -388,7 +388,6 @@ struct saa7134_board saa7134_boards[] = {
 			.amux = TV,
 			.tv   = 1,
 		},{
-			/* workaround for problems with normal TV sound */
 			.name = name_tv_mono,
 			.vmux = 1,
 			.amux = LINE2,
@@ -529,7 +528,6 @@ struct saa7134_board saa7134_boards[] = {
 			.amux = TV,
 			.tv   = 1,
 		},{
-			/* workaround for problems with normal TV sound */
 			.name = name_tv_mono,
 			.vmux = 1,
 			.amux = LINE2,
@@ -2189,15 +2187,6 @@ struct saa7134_board saa7134_boards[] = {
 		},
 	},
 	[SAA7134_BOARD_KWORLD_XPERT] = {
-		/*
-		FIXME:
-		- Remote control doesn't initialize properly.
-		- Audio volume starts muted,
-		then gradually increases after channel change.
-		- Overlay scaling problems (application error?)
-		- Composite S-Video untested.
-		From: Konrad Rzepecki <hannibal@megapolis.pl>
-		*/
 		.name           = "Kworld Xpert TV PVR7134",
 		.audio_clock    = 0x00187de7,
 		.tuner_type     = TUNER_TENA_9533_DI,
@@ -2302,11 +2291,6 @@ struct saa7134_board saa7134_boards[] = {
 		},
 	},
 	[SAA7134_BOARD_YUAN_TUN900] = {
-		/* FIXME:
-		 * S-Video and composite sources untested.
-		 * Radio not working.
-		 * Remote control not yet implemented.
-		 * From : codemaster@webgeeks.be */
 		.name           = "Yuan TUN-900 (saa7135)",
 		.audio_clock    = 0x00187de7,
 		.tuner_type     = TUNER_PHILIPS_TDA8290,
@@ -3857,7 +3841,7 @@ struct saa7134_board saa7134_boards[] = {
 		.tuner_config   = 0,
 		.mpeg           = SAA7134_MPEG_DVB,
 		.inputs = {{
-			.name   = name_tv, /* FIXME: analog tv untested */
+			.name   = name_tv,
 			.vmux   = 1,
 			.amux   = TV,
 			.tv     = 1,
@@ -7027,7 +7011,6 @@ int saa7134_board_init1(struct saa7134_dev *dev)
 		saa_andorl(SAA7134_GPIO_GPSTATUS0 >> 2, 0x00040000, 0x00000000);
 		break;
 	case SAA7134_BOARD_PINNACLE_300I_DVBT_PAL:
-		/* this turns the remote control chip off to work around a bug in it */
 		saa_writeb(SAA7134_GPIO_GPMODE1, 0x80);
 		saa_writeb(SAA7134_GPIO_GPSTATUS1, 0x80);
 		break;

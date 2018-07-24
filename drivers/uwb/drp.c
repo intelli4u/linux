@@ -77,26 +77,6 @@ static void uwb_rc_set_drp_cmd_done(struct uwb_rc *rc, void *arg,
 	spin_unlock_bh(&rc->rsvs_lock);
 }
 
-/**
- * Construct and send the SET DRP IE
- *
- * @rc:         UWB Host controller
- * @returns:    >= 0 number of bytes still available in the beacon
- *              < 0 errno code on error.
- *
- * See WUSB[8.6.2.7]: The host must set all the DRP IEs that it wants the
- * device to include in its beacon at the same time. We thus have to
- * traverse all reservations and include the DRP IEs of all PENDING
- * and NEGOTIATED reservations in a SET DRP command for transmission.
- *
- * A DRP Availability IE is appended.
- *
- * rc->rsvs_mutex is held
- *
- * FIXME We currently ignore the returned value indicating the remaining space
- * in beacon. This could be used to deny reservation requests earlier if
- * determined that they would cause the beacon space to be exceeded.
- */
 int uwb_rc_send_all_drp_ie(struct uwb_rc *rc)
 {
 	int result;
@@ -127,7 +107,6 @@ int uwb_rc_send_all_drp_ie(struct uwb_rc *rc)
 	cmd->wIELength = num_bytes;
 	IEDataptr = (u8 *)&cmd->IEData[0];
 
-	/* FIXME: DRV avail IE is not always needed */
 	/* put DRP avail IE first */
 	memcpy(IEDataptr, &rc->drp_avail.ie, sizeof(rc->drp_avail.ie));
 	IEDataptr += sizeof(struct uwb_ie_drp_avail);
@@ -403,11 +382,6 @@ static void uwb_drp_process_target(struct uwb_rc *rc, struct uwb_rsv *rsv,
 		} else {
 			if (!bitmap_equal(rsv->mas.bm, mas.bm, UWB_NUM_MAS)) {
 				if (uwb_drp_avail_reserve_pending(rc, &mas) == -EBUSY) {
-					/* FIXME: there is a conflict, find
-					 * the conflicting reservations and
-					 * take a sensible action. Consider
-					 * that in drp_ie there is the
-					 * "neighbour" */
 					uwb_drp_handle_all_conflict_rsv(rc, drp_evt, drp_ie, &mas);
 				} else {
 					/* accept the extra reservation */

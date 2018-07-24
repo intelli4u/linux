@@ -75,8 +75,6 @@ start_dma:
 
 	solo_reg_write(solo_dev, SOLO_P2M_CONTROL(id), 0);
 
-	/* XXX Really looks to me like we will get stuck here if a
-	 * real PCI P2M error occurs */
 	if (p2m_dev->error)
 		goto start_dma;
 

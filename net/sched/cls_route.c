@@ -22,13 +22,6 @@
 #include <net/act_api.h>
 #include <net/pkt_cls.h>
 
-/*
-   1. For now we assume that route tags < 256.
-      It allows to use direct table lookups, instead of hash tables.
-   2. For now we assume that "from TAG" and "fromdev DEV" statements
-      are mutually  exclusive.
-   3. "to TAG from ANY" has higher priority, than "to ANY from XXX"
- */
 
 struct route4_fastmap
 {

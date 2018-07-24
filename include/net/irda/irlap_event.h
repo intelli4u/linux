@@ -111,7 +111,7 @@ typedef enum {
 /*
  * Disconnect reason code
  */
-typedef enum { /* FIXME check the two first reason codes */
+typedef enum {
 	LAP_DISC_INDICATION=1, /* Received a disconnect request from peer */
 	LAP_NO_RESPONSE,       /* To many retransmits without response */
 	LAP_RESET_INDICATION,  /* To many retransmits, or invalid nr/ns */

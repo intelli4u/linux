@@ -375,10 +375,6 @@ static irqreturn_t twl_rtc_interrupt(int irq, void *rtc)
 	u8 rd_reg;
 
 #ifdef CONFIG_LOCKDEP
-	/* WORKAROUND for lockdep forcing IRQF_DISABLED on us, which
-	 * we don't want and can't tolerate.  Although it might be
-	 * friendlier not to borrow this thread context...
-	 */
 	local_irq_enable();
 #endif
 
@@ -402,17 +398,6 @@ static irqreturn_t twl_rtc_interrupt(int irq, void *rtc)
 		goto out;
 
 	if (twl_class_is_4030()) {
-		/* Clear on Read enabled. RTC_IT bit of TWL4030_INT_PWR_ISR1
-		 * needs 2 reads to clear the interrupt. One read is done in
-		 * do_twl_pwrirq(). Doing the second read, to clear
-		 * the bit.
-		 *
-		 * FIXME the reason PWR_ISR1 needs an extra read is that
-		 * RTC_IF retriggered until we cleared REG_ALARM_M above.
-		 * But re-reading like this is a bad hack; by doing so we
-		 * risk wrongly clearing status for some other IRQ (losing
-		 * the interrupt).  Be smarter about handling RTC_UF ...
-		 */
 		res = twl_i2c_read_u8(TWL4030_MODULE_INT,
 			&rd_reg, TWL4030_INT_PWR_ISR1);
 		if (res)

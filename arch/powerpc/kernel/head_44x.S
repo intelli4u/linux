@@ -497,8 +497,6 @@ finish_tlb_load_44x:
 	li	r12,0
 	tlbwe	r10,r12,0
 
-	/* XXX can we do better ? Need to make sure tlbwe has established
-	 * latch V bit in MMUCR0 before the PTE is loaded further down */
 #ifdef CONFIG_SMP
 	isync
 #endif
@@ -509,10 +507,6 @@ finish_tlb_load_44x:
 	beq	2f			/* Bail if no table */
 	lwz	r11,0(r12)		/* Get high word of pte entry */
 
-	/* XXX can we do better ? maybe insert a known 0 bit from r11 into the
-	 * bottom of r12 to create a data dependency... We can also use r10
-	 * as destination nowadays
-	 */
 #ifdef CONFIG_SMP
 	lwsync
 #endif
@@ -580,8 +574,6 @@ finish_tlb_load_44x:
 	li	r12,0
 	tlbwe	r10,r12,0
 
-	/* XXX can we do better ? Need to make sure tlbwe has established
-	 * latch V bit in MMUCR0 before the PTE is loaded further down */
 #ifdef CONFIG_SMP
 	isync
 #endif
@@ -592,10 +584,6 @@ finish_tlb_load_44x:
 	beq	2f			/* Bail if no table */
 
 	lwz	r11,0(r12)		/* Get high word of pte entry */
-	/* XXX can we do better ? maybe insert a known 0 bit from r11 into the
-	 * bottom of r12 to create a data dependency... We can also use r10
-	 * as destination nowadays
-	 */
 #ifdef CONFIG_SMP
 	lwsync
 #endif

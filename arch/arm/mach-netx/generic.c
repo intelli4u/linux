@@ -62,11 +62,7 @@ static struct platform_device *devices[] __initdata = {
 	&netx_rtc_device,
 };
 
-#if 0
-#define DEBUG_IRQ(fmt...)	printk(fmt)
-#else
 #define DEBUG_IRQ(fmt...)	while (0) {}
-#endif
 
 static void
 netx_hif_demux_handler(unsigned int irq_unused, struct irq_desc *desc)
@@ -186,4 +182,3 @@ static int __init netx_init(void)
 }
 
 subsys_initcall(netx_init);
-

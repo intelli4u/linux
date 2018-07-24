@@ -197,4 +197,3 @@ const struct ethtool_ops spider_net_ethtool_ops = {
 	.get_sset_count		= spider_net_get_sset_count,
 	.get_ethtool_stats	= spider_net_get_ethtool_stats,
 };
-

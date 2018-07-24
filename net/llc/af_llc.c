@@ -42,11 +42,7 @@ static int llc_ui_wait_for_conn(struct sock *sk, long timeout);
 static int llc_ui_wait_for_disc(struct sock *sk, long timeout);
 static int llc_ui_wait_for_busy_core(struct sock *sk, long timeout);
 
-#if 0
-#define dprintk(args...) printk(KERN_DEBUG args)
-#else
 #define dprintk(args...)
-#endif
 
 /* Maybe we'll add some more in the future. */
 #define LLC_CMSG_PKTINFO	1
@@ -358,10 +354,6 @@ static int llc_ui_bind(struct socket *sock, struct sockaddr *uaddr, int addrlen)
 
 		memset(&laddr, 0, sizeof(laddr));
 		memset(&daddr, 0, sizeof(daddr));
-		/*
-		 * FIXME: check if the address is multicast,
-		 * 	  only SOCK_DGRAM can do this.
-		 */
 		memcpy(laddr.mac, addr->sllc_mac, IFHWADDRLEN);
 		laddr.lsap = addr->sllc_sap;
 		rc = -EADDRINUSE; /* mac + sap clash. */
@@ -739,11 +731,6 @@ static int llc_ui_recvmsg(struct kiocb *iocb, struct socket *sock,
 	do {
 		u32 offset;
 
-		/*
-		 * We need to check signals first, to get correct SIGURG
-		 * handling. FIXME: Need to check this doesn't impact 1003.1g
-		 * and move it down to the bottom of the loop
-		 */
 		if (signal_pending(current)) {
 			if (copied)
 				break;

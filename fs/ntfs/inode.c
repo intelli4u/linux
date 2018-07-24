@@ -596,23 +596,7 @@ static int ntfs_read_locked_inode(struct inode *vi)
 	/* Transfer information from mft record into vfs and ntfs inodes. */
 	vi->i_generation = ni->seq_no = le16_to_cpu(m->sequence_number);
 
-	/*
-	 * FIXME: Keep in mind that link_count is two for files which have both
-	 * a long file name and a short file name as separate entries, so if
-	 * we are hiding short file names this will be too high. Either we need
-	 * to account for the short file names by subtracting them or we need
-	 * to make sure we delete files even though i_nlink is not zero which
-	 * might be tricky due to vfs interactions. Need to think about this
-	 * some more when implementing the unlink command.
-	 */
 	vi->i_nlink = le16_to_cpu(m->link_count);
-	/*
-	 * FIXME: Reparse points can have the directory bit set even though
-	 * they would be S_IFLNK. Need to deal with this further below when we
-	 * implement reparse points / symbolic links but it will do for now.
-	 * Also if not a directory, it could be something else, rather than
-	 * a regular file. But again, will do for now.
-	 */
 	/* Everyone gets all permissions. */
 	vi->i_mode |= S_IRWXUGO;
 	/* If read-only, noone gets write permissions. */
@@ -789,7 +773,6 @@ skip_attr_list_load:
 				0, NULL, 0, ctx);
 		if (unlikely(err)) {
 			if (err == -ENOENT) {
-				// FIXME: File is corrupt! Hot-fix with empty
 				// index root attribute if recovery option is
 				// set.
 				ntfs_error(vi->i_sb, "$INDEX_ROOT attribute "
@@ -1041,7 +1024,6 @@ skip_large_dir_stuff:
 			 */
 			if (ntfs_is_extended_system_file(ctx) > 0)
 				goto no_data_attr_special_case;
-			// FIXME: File is corrupt! Hot-fix with empty data
 			// attribute if recovery option is set.
 			ntfs_error(vi->i_sb, "$DATA attribute is missing.");
 			goto unm_err_out;
@@ -1839,7 +1821,6 @@ int ntfs_read_inode_mount(struct inode *vi)
 
 	/* Apply the mst fixups. */
 	if (post_read_mst_fixup((NTFS_RECORD*)m, vol->mft_record_size)) {
-		/* FIXME: Try to use the $MFTMirr now. */
 		ntfs_error(sb, "MST fixup failed. $MFT is corrupt.");
 		goto err_out;
 	}
@@ -1948,17 +1929,6 @@ int ntfs_read_inode_mount(struct inode *vi)
 					a->data.resident.value_length));
 		}
 		/* The attribute list is now setup in memory. */
-		/*
-		 * FIXME: I don't know if this case is actually possible.
-		 * According to logic it is not possible but I have seen too
-		 * many weird things in MS software to rely on logic... Thus we
-		 * perform a manual search and make sure the first $MFT/$DATA
-		 * extent is in the base inode. If it is not we abort with an
-		 * error and if we ever see a report of this error we will need
-		 * to do some magic in order to have the necessary mft record
-		 * loaded and in the right place in the page cache. But
-		 * hopefully logic will prevail and this never happens...
-		 */
 		al_entry = (ATTR_LIST_ENTRY*)ni->attr_list;
 		al_end = (u8*)al_entry + ni->attr_list_size;
 		for (;; al_entry = next_al_entry) {
@@ -2227,7 +2197,6 @@ void ntfs_clear_extent_inode(ntfs_inode *ni)
 		if (!is_bad_inode(VFS_I(ni->ext.base_ntfs_ino)))
 			ntfs_error(ni->vol->sb, "Clearing dirty extent inode!  "
 					"Losing data!  This is a BUG!!!");
-		// FIXME:  Do something!!!
 	}
 #endif /* NTFS_RW */
 
@@ -2264,7 +2233,6 @@ void ntfs_evict_big_inode(struct inode *vi)
 		if (!was_bad && (is_bad_inode(vi) || NInoDirty(ni))) {
 			ntfs_error(vi->i_sb, "Failed to commit dirty inode "
 					"0x%lx.  Losing data!", vi->i_ino);
-			// FIXME:  Do something!!!
 		}
 	}
 #endif /* NTFS_RW */
@@ -2585,34 +2553,6 @@ retry_truncate:
 				"yet.");
 	err = -EOPNOTSUPP;
 	goto conv_err_out;
-#if 0
-	// TODO: Attempt to make other attributes non-resident.
-	if (!err)
-		goto do_resident_extend;
-	/*
-	 * Both the attribute list attribute and the standard information
-	 * attribute must remain in the base inode.  Thus, if this is one of
-	 * these attributes, we have to try to move other attributes out into
-	 * extent mft records instead.
-	 */
-	if (ni->type == AT_ATTRIBUTE_LIST ||
-			ni->type == AT_STANDARD_INFORMATION) {
-		// TODO: Attempt to move other attributes into extent mft
-		// records.
-		err = -EOPNOTSUPP;
-		if (!err)
-			goto do_resident_extend;
-		goto err_out;
-	}
-	// TODO: Attempt to move this attribute to an extent mft record, but
-	// only if it is not already the only attribute in an mft record in
-	// which case there would be nothing to gain.
-	err = -EOPNOTSUPP;
-	if (!err)
-		goto do_resident_extend;
-	/* There is nothing we can do to make enough space. )-: */
-	goto err_out;
-#endif
 do_non_resident_truncate:
 	BUG_ON(!NInoNonResident(ni));
 	if (alloc_change < 0) {
@@ -2902,10 +2842,6 @@ int ntfs_setattr(struct dentry *dentry, struct iattr *attr)
 	if (ia_valid & ATTR_SIZE) {
 		if (attr->ia_size != i_size_read(vi)) {
 			ntfs_inode *ni = NTFS_I(vi);
-			/*
-			 * FIXME: For now we do not support resizing of
-			 * compressed or encrypted files yet.
-			 */
 			if (NInoCompressed(ni) || NInoEncrypted(ni)) {
 				ntfs_warning(vi->i_sb, "Changes in inode size "
 						"are not supported yet for "

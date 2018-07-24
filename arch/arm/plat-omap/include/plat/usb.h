@@ -82,10 +82,6 @@ extern void usb_ohci_init(const struct ohci_hcd_omap_platform_data *pdata);
 #endif
 
 
-/*
- * FIXME correct answer depends on hmc_mode,
- * as does (on omap1) any nonzero value for config->otg port number
- */
 #ifdef	CONFIG_USB_GADGET_OMAP
 #define	is_usb0_device(config)	1
 #else

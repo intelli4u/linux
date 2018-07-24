@@ -97,11 +97,6 @@ static int process_sample_event(event_t *event, struct perf_session *session)
 			last_timestamp = data.time;
 			return 0;
 		}
-		/*
-		 * FIXME: better resolve from pid from the struct trace_entry
-		 * field, although it should be the same than this perf
-		 * event pid
-		 */
 		scripting_ops->process_event(data.cpu, data.raw_data,
 					     data.raw_size,
 					     data.time, thread->comm);

@@ -70,11 +70,7 @@ static struct workqueue_struct *led_wq;
 static void led_work_func(struct work_struct *);
 static DECLARE_DELAYED_WORK(led_task, led_work_func);
 
-#if 0
-#define DPRINTK(x)	printk x
-#else
 #define DPRINTK(x)
-#endif
 
 struct lcd_block {
 	unsigned char command;	/* stores the command byte      */
@@ -683,7 +679,6 @@ int __init led_init(void)
 	snprintf(lcd_text_default, sizeof(lcd_text_default),
 		"Linux %s", init_utsname()->release);
 
-	/* Work around the buggy PDC of KittyHawk-machines */
 	switch (CPU_HVERSION) {
 	case 0x580:		/* KittyHawk DC2-100 (K100) */
 	case 0x581:		/* KittyHawk DC3-120 (K210) */

@@ -279,25 +279,6 @@ void pdacf_tasklet(unsigned long private_data)
 	if (size > 64)
 		size -= 32;
 
-#if 0
-	chip->pcm_hwptr += size;
-	chip->pcm_hwptr %= chip->pcm_size;
-	chip->pcm_tdone += size;
-	if (chip->pcm_frame == 2) {
-		unsigned long rdp_port = chip->port + PDAUDIOCF_REG_MD;
-		while (size-- > 0) {
-			inw(rdp_port);
-			inw(rdp_port);
-		}
-	} else {
-		unsigned long rdp_port = chip->port + PDAUDIOCF_REG_MD;
-		while (size-- > 0) {
-			inw(rdp_port);
-			inw(rdp_port);
-			inw(rdp_port);
-		}
-	}
-#else
 	off = chip->pcm_hwptr + chip->pcm_tdone;
 	off %= chip->pcm_size;
 	chip->pcm_tdone += size;
@@ -310,7 +291,6 @@ void pdacf_tasklet(unsigned long private_data)
 		off %= chip->pcm_size;
 		size -= cont;
 	}
-#endif
 	spin_lock(&chip->reg_lock);
 	while (chip->pcm_tdone >= chip->pcm_period) {
 		chip->pcm_hwptr += chip->pcm_period;

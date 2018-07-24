@@ -960,7 +960,6 @@ static void _clear_gpio_irqbank(struct gpio_bank *bank, int gpio_mask)
 	}
 	__raw_writel(gpio_mask, reg);
 
-	/* Workaround for clearing DSP GPIO interrupts to allow retention */
 	if (cpu_is_omap24xx() || cpu_is_omap34xx())
 		reg = bank->base + OMAP24XX_GPIO_IRQSTATUS2;
 	else if (cpu_is_omap44xx())
@@ -2178,10 +2177,6 @@ void omap2_gpio_resume_after_idle(void)
 			l = __raw_readl(bank->base + OMAP4_GPIO_DATAIN);
 		}
 
-		/* Check if any of the non-wakeup interrupt GPIOs have changed
-		 * state.  If so, generate an IRQ by software.  This is
-		 * horribly racy, but it's the best we can do to work around
-		 * this silicon bug. */
 		l ^= bank->saved_datain;
 		l &= bank->enabled_non_wakeup_gpios;
 
@@ -2195,7 +2190,6 @@ void omap2_gpio_resume_after_idle(void)
 		gen1 = l & bank->saved_risingdetect;
 		gen1 &= ~(bank->saved_datain);
 
-		/* FIXME: Consider GPIO IRQs with level detections properly! */
 		gen = l & (~(bank->saved_fallingdetect) &
 				~(bank->saved_risingdetect));
 		/* Consider all GPIO IRQs needed to be updated */

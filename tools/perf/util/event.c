@@ -625,15 +625,6 @@ void thread__find_addr_map(struct thread *self,
 try_again:
 	al->map = map_groups__find(mg, type, al->addr);
 	if (al->map == NULL) {
-		/*
-		 * If this is outside of all known maps, and is a negative
-		 * address, try to look it up in the kernel dso, as it might be
-		 * a vsyscall or vdso (which executes in user-mode).
-		 *
-		 * XXX This is nasty, we should have a symbol list in the
-		 * "[vdso]" dso, but for now lets use the old trick of looking
-		 * in the whole kernel symbol list.
-		 */
 		if ((long long)al->addr < 0 &&
 		    cpumode == PERF_RECORD_MISC_KERNEL &&
 		    machine && mg != &machine->kmaps) {

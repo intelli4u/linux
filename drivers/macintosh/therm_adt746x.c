@@ -473,13 +473,6 @@ static struct i2c_driver thermostat_driver = {
 	.id_table = therm_adt746x_id,
 };
 
-/* 
- * Now, unfortunately, sysfs doesn't give us a nice void * we could
- * pass around to the attribute functions, so we don't really have
- * choice but implement a bunch of them...
- *
- * FIXME, it does now...
- */
 #define BUILD_SHOW_FUNC_INT(name, data)				\
 static ssize_t show_##name(struct device *dev, struct device_attribute *attr, char *buf)	\
 {								\

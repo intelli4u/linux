@@ -207,7 +207,6 @@ restore_sigcontext32(struct compat_sigcontext __user *sc, struct compat_regfile 
 				regn, regs->gr[regn], compat_regt, compat_reg);
 	}
 	DBG(2,"restore_sigcontext32: sc->sc_fr = 0x%p (%#lx)\n",sc->sc_fr, sizeof(sc->sc_fr));
-	/* XXX: BE WARNED FR's are 64-BIT! */
 	err |= __copy_from_user(regs->fr, sc->sc_fr, sizeof(regs->fr));
 		
 	/* Better safe than sorry, pass __get_user two things of
@@ -379,8 +378,6 @@ setup_sigcontext32(struct compat_sigcontext __user *sc, struct compat_regfile __
 				compat_regb, compat_reg);
 	}
 	
-	/* Copy the floating point registers (same size)
-	   XXX: BE WARNED FR's are 64-BIT! */	
 	DBG(1,"setup_sigcontext32: Copying from regs to sc, "
 	      "sc->sc_fr size = %#lx, regs->fr size = %#lx\n",
 		sizeof(regs->fr), sizeof(sc->sc_fr));
@@ -517,4 +514,3 @@ asmlinkage long compat_sys_rt_sigqueueinfo(int pid, int sig,
 	/* POSIX.1b doesn't mention process groups.  */
 	return kill_proc_info(sig, &info, pid);
 }
-

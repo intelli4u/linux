@@ -2563,22 +2563,6 @@ static void BusLogic_ProcessCompletedCCBs(struct BusLogic_HostAdapter *HostAdapt
 			   Place CCB back on the Host Adapter's free list.
 			 */
 			BusLogic_DeallocateCCB(CCB);
-#if 0				/* this needs to be redone different for new EH */
-			/*
-			   Bus Device Reset CCBs have the Command field non-NULL only when a
-			   Bus Device Reset was requested for a Command that did not have a
-			   currently active CCB in the Host Adapter (i.e., a Synchronous
-			   Bus Device Reset), and hence would not have its Completion Routine
-			   called otherwise.
-			 */
-			while (Command != NULL) {
-				struct scsi_cmnd *NextCommand = Command->reset_chain;
-				Command->reset_chain = NULL;
-				Command->result = DID_RESET << 16;
-				Command->scsi_done(Command);
-				Command = NextCommand;
-			}
-#endif
 			/*
 			   Iterate over the CCBs for this Host Adapter performing completion
 			   processing for any CCBs marked as Reset for this Target.
@@ -2995,78 +2979,6 @@ static int BusLogic_QueueCommand(struct scsi_cmnd *Command, void (*CompletionRou
 }
 
 
-#if 0
-/*
-  BusLogic_AbortCommand aborts Command if possible.
-*/
-
-static int BusLogic_AbortCommand(struct scsi_cmnd *Command)
-{
-	struct BusLogic_HostAdapter *HostAdapter = (struct BusLogic_HostAdapter *) Command->device->host->hostdata;
-
-	int TargetID = Command->device->id;
-	struct BusLogic_CCB *CCB;
-	BusLogic_IncrementErrorCounter(&HostAdapter->TargetStatistics[TargetID].CommandAbortsRequested);
-	/*
-	   Attempt to find an Active CCB for this Command.  If no Active CCB for this
-	   Command is found, then no Abort is necessary.
-	 */
-	for (CCB = HostAdapter->All_CCBs; CCB != NULL; CCB = CCB->NextAll)
-		if (CCB->Command == Command)
-			break;
-	if (CCB == NULL) {
-		BusLogic_Warning("Unable to Abort Command to Target %d - " "No CCB Found\n", HostAdapter, TargetID);
-		return SUCCESS;
-	} else if (CCB->Status == BusLogic_CCB_Completed) {
-		BusLogic_Warning("Unable to Abort Command to Target %d - " "CCB Completed\n", HostAdapter, TargetID);
-		return SUCCESS;
-	} else if (CCB->Status == BusLogic_CCB_Reset) {
-		BusLogic_Warning("Unable to Abort Command to Target %d - " "CCB Reset\n", HostAdapter, TargetID);
-		return SUCCESS;
-	}
-	if (BusLogic_MultiMasterHostAdapterP(HostAdapter)) {
-		/*
-		   Attempt to Abort this CCB.  MultiMaster Firmware versions prior to 5.xx
-		   do not generate Abort Tag messages, but only generate the non-tagged
-		   Abort message.  Since non-tagged commands are not sent by the Host
-		   Adapter until the queue of outstanding tagged commands has completed,
-		   and the Abort message is treated as a non-tagged command, it is
-		   effectively impossible to abort commands when Tagged Queuing is active.
-		   Firmware version 5.xx does generate Abort Tag messages, so it is
-		   possible to abort commands when Tagged Queuing is active.
-		 */
-		if (HostAdapter->TargetFlags[TargetID].TaggedQueuingActive && HostAdapter->FirmwareVersion[0] < '5') {
-			BusLogic_Warning("Unable to Abort CCB #%ld to Target %d - " "Abort Tag Not Supported\n", HostAdapter, CCB->SerialNumber, TargetID);
-			return FAILURE;
-		} else if (BusLogic_WriteOutgoingMailbox(HostAdapter, BusLogic_MailboxAbortCommand, CCB)) {
-			BusLogic_Warning("Aborting CCB #%ld to Target %d\n", HostAdapter, CCB->SerialNumber, TargetID);
-			BusLogic_IncrementErrorCounter(&HostAdapter->TargetStatistics[TargetID].CommandAbortsAttempted);
-			return SUCCESS;
-		} else {
-			BusLogic_Warning("Unable to Abort CCB #%ld to Target %d - " "No Outgoing Mailboxes\n", HostAdapter, CCB->SerialNumber, TargetID);
-			return FAILURE;
-		}
-	} else {
-		/*
-		   Call the FlashPoint SCCB Manager to abort execution of the CCB.
-		 */
-		BusLogic_Warning("Aborting CCB #%ld to Target %d\n", HostAdapter, CCB->SerialNumber, TargetID);
-		BusLogic_IncrementErrorCounter(&HostAdapter->TargetStatistics[TargetID].CommandAbortsAttempted);
-		FlashPoint_AbortCCB(HostAdapter->CardHandle, CCB);
-		/*
-		   The Abort may have already been completed and
-		   BusLogic_QueueCompletedCCB been called, or it
-		   may still be pending.
-		 */
-		if (CCB->Status == BusLogic_CCB_Completed) {
-			BusLogic_ProcessCompletedCCBs(HostAdapter);
-		}
-		return SUCCESS;
-	}
-	return SUCCESS;
-}
-
-#endif
 /*
   BusLogic_ResetHostAdapter resets Host Adapter if possible, marking all
   currently executing SCSI Commands as having been Reset.
@@ -3573,9 +3485,6 @@ static struct scsi_host_template Bus_Logic_template = {
 	.slave_configure = BusLogic_SlaveConfigure,
 	.bios_param = BusLogic_BIOSDiskParameters,
 	.eh_host_reset_handler = BusLogic_host_reset,
-#if 0
-	.eh_abort_handler = BusLogic_AbortCommand,
-#endif
 	.unchecked_isa_dma = 1,
 	.max_sectors = 128,
 	.use_clustering = ENABLE_CLUSTERING,

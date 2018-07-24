@@ -62,12 +62,6 @@
 
 #include "csumpartialcopygeneric.S"
 
-/*
- * FIXME: minor buglet here
- * We don't return the checksum for the data present in the buffer.  To do
- * so properly, we would have to add in whatever registers were loaded before
- * the fault, which, with the current asm above is not predictable.
- */
 		.pushsection .fixup,"ax"
 		.align	4
 9001:		mov	r4, #-EFAULT

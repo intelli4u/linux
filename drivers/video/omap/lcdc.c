@@ -350,12 +350,6 @@ static int omap_lcdc_setup_plane(int plane, int channel_out,
 		}
 		/* fallthrough */
 	default:
-		/* FIXME: other BPPs.
-		 * bpp1: code  0,     size 256
-		 * bpp2: code  0x1000 size 256
-		 * bpp4: code  0x2000 size 256
-		 * bpp12: code 0x4000 size 32
-		 */
 		dev_dbg(lcdc.fbdev->dev, "invalid color mode %d\n", color_mode);
 		BUG();
 		return -1;
@@ -460,7 +454,6 @@ static void calc_ck_div(int is_tft, int pck, int *pck_div)
 	else
 		*pck_div = max(3, *pck_div);
 	if (*pck_div > 255) {
-		/* FIXME: try to adjust logic clock divider as well */
 		*pck_div = 255;
 		dev_warn(lcdc.fbdev->dev, "pixclock %d kHz too low.\n",
 			 pck / 1000);
@@ -479,7 +472,6 @@ static void inline setup_regs(void)
 	l &= ~OMAP_LCDC_CTRL_LCD_TFT;
 	l |= is_tft ? OMAP_LCDC_CTRL_LCD_TFT : 0;
 #ifdef CONFIG_MACH_OMAP_PALMTE
-/* FIXME:if (machine_is_omap_palmte()) { */
 		/* PalmTE uses alternate TFT setting in 8BPP mode */
 		l |= (is_tft && panel->bpp == 8) ? 0x810000 : 0;
 /*	} */
@@ -758,9 +750,6 @@ static int omap_lcdc_init(struct omapfb_device *fbdev, int ext_mode,
 	l = 0;
 	omap_writel(l, OMAP_LCDC_CONTROL);
 
-	/* FIXME:
-	 * According to errata some platforms have a clock rate limitiation
-	 */
 	lcdc.lcd_ck = clk_get(fbdev->dev, "lcd_ck");
 	if (IS_ERR(lcdc.lcd_ck)) {
 		dev_err(fbdev->dev, "unable to access LCD clock\n");

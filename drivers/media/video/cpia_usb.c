@@ -637,4 +637,3 @@ static void __exit usb_cpia_cleanup(void)
 
 module_init (usb_cpia_init);
 module_exit (usb_cpia_cleanup);
-

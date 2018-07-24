@@ -311,7 +311,6 @@ struct edge_compatibility_bits {
 	// This __u32 defines which IOSP commands are supported over the
 	// bulk pipe EP1.
 
-											// xxxx Set if device supports:
 	__u32	IOSPOpen		:  1;	// 0001	OPEN / OPEN_RSP (Currently must be 1)
 	__u32	IOSPClose		:  1;	// 0002	CLOSE
 	__u32	IOSPChase		:  1;	// 0004	CHASE / CHASE_RSP

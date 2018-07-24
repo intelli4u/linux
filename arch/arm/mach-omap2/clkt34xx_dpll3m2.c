@@ -79,9 +79,6 @@ int omap3_core_dpll_m2_set_rate(struct clk *clk, unsigned long rate)
 		unlock_dll = 1;
 	}
 
-	/*
-	 * XXX This only needs to be done when the CPU frequency changes
-	 */
 	_mpurate = arm_fck_p->rate / CYCLES_PER_MHZ;
 	c = (_mpurate << SDRC_MPURATE_SCALE) >> SDRC_MPURATE_BASE_SHIFT;
 	c += 1;  /* for safety */
@@ -118,4 +115,3 @@ int omap3_core_dpll_m2_set_rate(struct clk *clk, unsigned long rate)
 
 	return 0;
 }
-

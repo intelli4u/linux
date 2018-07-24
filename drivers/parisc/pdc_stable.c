@@ -260,21 +260,6 @@ pdcspath_hwpath_read(struct pdcspath_entry *entry, char *buf)
 	return out - buf;
 }
 
-/**
- * pdcspath_hwpath_write - This function handles hardware path modifying.
- * @entry: An allocated and populated pdscpath_entry struct.
- * @buf: The input buffer to read from.
- * @count: The number of bytes to be read.
- * 
- * We will call this function to change the current hardware path.
- * Hardware paths are to be given '/'-delimited, without brackets.
- * We make sure that the provided path actually maps to an existing
- * device, BUT nothing would prevent some foolish user to set the path to some
- * PCI bridge or even a CPU...
- * A better work around would be to make sure we are at the end of a device tree
- * for instance, but it would be IMHO beyond the simple scope of that driver.
- * The aim is to provide a facility. Data correctness is left to userland.
- */
 static ssize_t
 pdcspath_hwpath_write(struct pdcspath_entry *entry, const char *buf, size_t count)
 {
@@ -378,18 +363,6 @@ pdcspath_layer_read(struct pdcspath_entry *entry, char *buf)
 	return out - buf;
 }
 
-/**
- * pdcspath_layer_write - This function handles extended layer modifying.
- * @entry: An allocated and populated pdscpath_entry struct.
- * @buf: The input buffer to read from.
- * @count: The number of bytes to be read.
- * 
- * We will call this function to change the current layer value.
- * Layers are to be given '.'-delimited, without brackets.
- * XXX beware we are far less checky WRT input data provided than for hwpath.
- * Potential harm can be done, since there's no way to check the validity of
- * the layer fields.
- */
 static ssize_t
 pdcspath_layer_write(struct pdcspath_entry *entry, const char *buf, size_t count)
 {

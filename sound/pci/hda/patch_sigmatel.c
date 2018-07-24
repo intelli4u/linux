@@ -4475,11 +4475,6 @@ static void stac92xx_set_pinctl(struct hda_codec *codec, hda_nid_t nid,
 			0, AC_VERB_GET_PIN_WIDGET_CONTROL, 0x00);
 
 	if (pin_ctl & AC_PINCTL_IN_EN) {
-		/*
-		 * we need to check the current set-up direction of
-		 * shared input pins since they can be switched via
-		 * "xxx as Output" mixer switch
-		 */
 		struct sigmatel_spec *spec = codec->spec;
 		if (nid == spec->line_switch || nid == spec->mic_switch)
 			return;
@@ -4627,19 +4622,6 @@ static void stac92xx_hp_detect(struct hda_codec *codec)
 			continue;
 		if (presence)
 			stac92xx_set_pinctl(codec, cfg->hp_pins[i], val);
-#if 0 /* FIXME */
-/* Resetting the pinctl like below may lead to (a sort of) regressions
- * on some devices since they use the HP pin actually for line/speaker
- * outs although the default pin config shows a different pin (that is
- * wrong and useless).
- *
- * So, it's basically a problem of default pin configs, likely a BIOS issue.
- * But, disabling the code below just works around it, and I'm too tired of
- * bug reports with such devices... 
- */
-		else
-			stac92xx_reset_pinctl(codec, cfg->hp_pins[i], val);
-#endif /* FIXME */
 	}
 } 
 
@@ -6025,16 +6007,6 @@ static int patch_stac927x(struct hda_codec *codec)
 
 	codec->proc_widget_hook = stac927x_proc_hook;
 
-	/*
-	 * !!FIXME!!
-	 * The STAC927x seem to require fairly long delays for certain
-	 * command sequences.  With too short delays (even if the answer
-	 * is set to RIRB properly), it results in the silence output
-	 * on some hardwares like Dell.
-	 *
-	 * The below flag enables the longer delay (see get_response
-	 * in hda_intel.c).
-	 */
 	codec->bus->needs_damn_long_delay = 1;
 
 	/* no jack detecion for ref-no-jd model */

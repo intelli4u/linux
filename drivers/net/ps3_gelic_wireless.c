@@ -985,7 +985,7 @@ static int gelic_wl_set_essid(struct net_device *netdev,
 	spin_unlock_irqrestore(&wl->lock, irqflag);
 
 
-	gelic_wl_try_associate(netdev); /* FIXME */
+	gelic_wl_try_associate(netdev);
 	pr_debug("%s: ->\n", __func__);
 	return 0;
 }
@@ -1908,16 +1908,6 @@ static int gelic_wl_do_wpa_setup(struct gelic_wl_info *wl)
 		 wpasecstr(wpa->security),
 		 (wpa->psk_type == GELIC_EURUS_WPA_PSK_BIN) ?
 		 "BIN" : "passphrase");
-#if 0
-	/*
-	 * don't enable here if you plan to submit
-	 * the debug log because this dumps your precious
-	 * passphrase/key.
-	 */
-	pr_debug("%s: psk=%s\n", __func__,
-		 (wpa->psk_type == GELIC_EURUS_WPA_PSK_BIN) ?
-		 "N/A" : wpa->psk);
-#endif
 #endif
 	/* issue wpa setup */
 	cmd = gelic_eurus_sync_cmd(wl, GELIC_EURUS_CMD_SET_WPA_CFG,
@@ -2017,7 +2007,7 @@ static int gelic_wl_associate_bss(struct gelic_wl_info *wl,
 	kfree(cmd);
 
 	/* wait for connected event */
-	rc = wait_for_completion_timeout(&wl->assoc_done, HZ * 4);/*FIXME*/
+	rc = wait_for_completion_timeout(&wl->assoc_done, HZ * 4);
 
 	if (!rc) {
 		/* timeouted.  Maybe key or cyrpt mode is wrong */
@@ -2216,7 +2206,7 @@ static void gelic_wl_assoc_worker(struct work_struct *work)
 	ret = gelic_wl_start_scan(wl, 0, essid, essid_len);
 	if (ret == -ERESTARTSYS) {
 		pr_debug("%s: scan start failed association\n", __func__);
-		schedule_delayed_work(&wl->assoc_work, HZ/10); /*FIXME*/
+		schedule_delayed_work(&wl->assoc_work, HZ/10);
 		goto out;
 	} else if (ret) {
 		pr_info("%s: scan prerequisite failed\n", __func__);
@@ -2363,7 +2353,7 @@ static struct net_device * __devinit gelic_wl_alloc(struct gelic_card *card)
 
 	spin_lock_init(&wl->lock);
 
-	wl->scan_age = 5*HZ; /* FIXME */
+	wl->scan_age = 5*HZ;
 
 	/* buffer for receiving scanned list etc */
 	BUILD_BUG_ON(PAGE_SIZE <

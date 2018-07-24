@@ -135,7 +135,6 @@ static int i2c_wait_done(struct i2c_adapter *i2c_adap)
 	return 1;
 }
 
-/* FIXME: Implement join handling correctly */
 static int i2c_sendbytes(struct i2c_adapter *i2c_adap,
 	const struct i2c_msg *msg, int joined_rlen)
 {
@@ -212,7 +211,6 @@ static int i2c_sendbytes(struct i2c_adapter *i2c_adap,
 	return msg->len;
 }
 
-/* FIXME: Implement join handling correctly */
 static int i2c_readbytes(struct i2c_adapter *i2c_adap,
 	const struct i2c_msg *msg, int joined)
 {
@@ -387,4 +385,3 @@ int au0828_i2c_unregister(struct au0828_dev *dev)
 	i2c_del_adapter(&dev->i2c_adap);
 	return 0;
 }
-

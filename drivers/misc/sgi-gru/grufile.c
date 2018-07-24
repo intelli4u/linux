@@ -522,7 +522,7 @@ static int __init gru_init(void)
 		return 0;
 
 #if defined CONFIG_IA64
-	gru_start_paddr = 0xd000000000UL; /* ZZZZZZZZZZZZZZZZZZZ fixme */
+	gru_start_paddr = 0xd000000000UL;
 #else
 	gru_start_paddr = uv_read_local_mmr(UVH_RH_GAM_GRU_OVERLAY_CONFIG_MMR) &
 				0x7fffffffffffUL;
@@ -614,4 +614,3 @@ MODULE_AUTHOR("Silicon Graphics, Inc.");
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION(GRU_DRIVER_ID_STR GRU_DRIVER_VERSION_STR);
 MODULE_VERSION(GRU_DRIVER_VERSION_STR);
-

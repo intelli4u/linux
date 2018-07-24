@@ -199,7 +199,6 @@ irqreturn_t whcrc_irq_cb(int irq, void *_whcrc)
 
 	if (urcsts & URCSTS_HSE) {
 		dev_err(dev, "host system error -- hardware halted\n");
-		/* FIXME: do something sensible here */
 		goto out;
 	}
 	if (urcsts & URCSTS_ER)

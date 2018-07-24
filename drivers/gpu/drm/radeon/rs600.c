@@ -112,15 +112,6 @@ void rs600_pm_misc(struct radeon_device *rdev)
 	else
 		hdp_dyn_cntl |= HDP_FORCEON;
 	WREG32_PLL(HDP_DYN_CNTL, hdp_dyn_cntl);
-#if 0
-	/* mc_host_dyn seems to cause hangs from time to time */
-	mc_host_dyn_cntl = RREG32_PLL(MC_HOST_DYN_CNTL);
-	if (ps->misc & ATOM_PM_MISCINFO_DYNAMIC_MC_HOST_BLOCK_EN)
-		mc_host_dyn_cntl &= ~MC_HOST_FORCEON;
-	else
-		mc_host_dyn_cntl |= MC_HOST_FORCEON;
-	WREG32_PLL(MC_HOST_DYN_CNTL, mc_host_dyn_cntl);
-#endif
 	dyn_backbias_cntl = RREG32_PLL(DYN_BACKBIAS_CNTL);
 	if (ps->misc & ATOM_PM_MISCINFO2_DYNAMIC_BACK_BIAS_EN)
 		dyn_backbias_cntl |= IO_CG_BACKBIAS_EN;
@@ -403,7 +394,6 @@ int rs600_gart_enable(struct radeon_device *rdev)
 	/* Enable bus master */
 	tmp = RREG32(R_00004C_BUS_CNTL) & C_00004C_BUS_MASTER_DIS;
 	WREG32(R_00004C_BUS_CNTL, tmp);
-	/* FIXME: setup default page */
 	WREG32_MC(R_000100_MC_PT0_CNTL,
 		  (S_000100_EFFECTIVE_L2_CACHE_SIZE(6) |
 		   S_000100_EFFECTIVE_L2_QUEUE_SIZE(6)));
@@ -454,7 +444,6 @@ void rs600_gart_disable(struct radeon_device *rdev)
 	u32 tmp;
 	int r;
 
-	/* FIXME: disable out of gart access */
 	WREG32_MC(R_000100_MC_PT0_CNTL, 0);
 	tmp = RREG32_MC(R_000009_MC_CNTL1);
 	WREG32_MC(R_000009_MC_CNTL1, tmp & C_000009_ENABLE_PAGE_TABLES);
@@ -708,7 +697,6 @@ void rs600_bandwidth_update(struct radeon_device *rdev)
 	struct drm_display_mode *mode0 = NULL;
 	struct drm_display_mode *mode1 = NULL;
 	u32 d1mode_priority_a_cnt, d2mode_priority_a_cnt;
-	/* FIXME: implement full support */
 
 	radeon_update_display_priority(rdev);
 
@@ -768,7 +756,6 @@ static void rs600_mc_program(struct radeon_device *rdev)
 	if (rs600_mc_wait_for_idle(rdev))
 		dev_warn(rdev->dev, "Wait MC idle timeout before updating MC.\n");
 
-	/* FIXME: What does AGP means for such chipset ? */
 	WREG32_MC(R_000005_MC_AGP_LOCATION, 0x0FFFFFFF);
 	WREG32_MC(R_000006_AGP_BASE, 0);
 	WREG32_MC(R_000007_AGP_BASE_2, 0);

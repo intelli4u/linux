@@ -105,7 +105,6 @@ static void copy_vbi_data(struct cx18 *cx, int lines, u32 pts_stamp)
 
 /* Compress raw VBI format, removes leading SAV codes and surplus space
    after the frame.  Returns new compressed size. */
-/* FIXME - this function ignores the input size. */
 static u32 compress_raw_buf(struct cx18 *cx, u8 *buf, u32 size, u32 hdr_size)
 {
 	u32 line_size = vbi_active_samples;

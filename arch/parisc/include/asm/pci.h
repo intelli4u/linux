@@ -67,11 +67,6 @@ struct pci_hba_data {
 
 #define HBA_DATA(d)		((struct pci_hba_data *) (d))
 
-/* 
-** We support 2^16 I/O ports per HBA.  These are set up in the form
-** 0xbbxxxx, where bb is the bus number and xxxx is the I/O port
-** space address.
-*/
 #define HBA_PORT_SPACE_BITS	16
 
 #define HBA_PORT_BASE(h)	((h) << HBA_PORT_SPACE_BITS)

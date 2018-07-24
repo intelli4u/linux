@@ -1347,7 +1347,6 @@ static void rtl8169_get_mac_version(struct rtl8169_private *tp,
 		{ 0x7c800000, 0x34800000,	RTL_GIGA_MAC_VER_09 },
 		{ 0x7c800000, 0x24800000,	RTL_GIGA_MAC_VER_09 },
 		{ 0x7c800000, 0x34000000,	RTL_GIGA_MAC_VER_16 },
-		/* FIXME: where did these entries come from ? -- FR */
 		{ 0xfc800000, 0x38800000,	RTL_GIGA_MAC_VER_15 },
 		{ 0xfc800000, 0x30800000,	RTL_GIGA_MAC_VER_14 },
 
@@ -3737,7 +3736,6 @@ static void rtl_hw_start_8168(struct net_device *dev)
 
 	RTL_W16(IntrMitigate, 0x5151);
 
-	/* Work around for RxFIFO overflow. */
 	if (tp->mac_version == RTL_GIGA_MAC_VER_11) {
 		tp->intr_event |= RxFIFOOver | PCSTimeout;
 		tp->intr_event &= ~RxOverflow;
@@ -4574,7 +4572,6 @@ static int rtl8169_rx_interrupt(struct net_device *dev,
 			dev->stats.rx_packets++;
 		}
 
-		/* Work around for AMD plateform. */
 		if ((desc->opts2 & cpu_to_le32(0xfffe000)) &&
 		    (tp->mac_version == RTL_GIGA_MAC_VER_05)) {
 			desc->opts2 = 0;
@@ -4590,13 +4587,6 @@ static int rtl8169_rx_interrupt(struct net_device *dev,
 		netif_info(tp, intr, dev, "no Rx buffer allocated\n");
 	tp->dirty_rx += delta;
 
-	/*
-	 * FIXME: until there is periodic timer to try and refill the ring,
-	 * a temporary shortage may definitely kill the Rx process.
-	 * - disable the asic to try and avoid an overflow and kick it again
-	 *   after refill ?
-	 * - how do others driver handle this condition (Uh oh...).
-	 */
 	if (tp->dirty_rx + NUM_RX_DESC == tp->cur_rx)
 		netif_emerg(tp, intr, dev, "Rx buffers exhausted\n");
 
@@ -4626,7 +4616,6 @@ static irqreturn_t rtl8169_interrupt(int irq, void *dev_instance)
 			break;
 		}
 
-		/* Work around for rx fifo overflow */
 		if (unlikely(status & RxFIFOOver) &&
 		(tp->mac_version == RTL_GIGA_MAC_VER_11)) {
 			netif_stop_queue(dev);
@@ -4734,7 +4723,7 @@ core_down:
 	synchronize_irq(dev->irq);
 
 	/* Give a racing hard_start_xmit a few cycles to complete. */
-	synchronize_sched();  /* FIXME: should this be synchronize_irq()? */
+	synchronize_sched();
 
 	/*
 	 * And now for the 50k$ question: are IRQ disabled or not ?

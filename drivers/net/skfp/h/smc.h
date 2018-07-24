@@ -485,4 +485,3 @@ extern void read_address(struct s_smc *smc, u_char * mac_addr);
 extern void timer_irq(struct s_smc *smc);
 
 #endif	/* _SCMECM_ */
-

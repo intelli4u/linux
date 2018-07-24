@@ -539,4 +539,3 @@ static struct platform_driver ohci_hcd_pxa27x_driver = {
 #endif
 	},
 };
-

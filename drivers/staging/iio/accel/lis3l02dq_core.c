@@ -884,7 +884,6 @@ err_ret:
 	return ret;
 }
 
-/* fixme, confirm ordering in this function */
 static int lis3l02dq_remove(struct spi_device *spi)
 {
 	int ret;

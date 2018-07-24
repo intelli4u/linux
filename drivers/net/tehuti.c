@@ -9,58 +9,6 @@
  * (at your option) any later version.
  */
 
-/*
- * RX HW/SW interaction overview
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- * There are 2 types of RX communication channels betwean driver and NIC.
- * 1) RX Free Fifo - RXF - holds descriptors of empty buffers to accept incoming
- * traffic. This Fifo is filled by SW and is readen by HW. Each descriptor holds
- * info about buffer's location, size and ID. An ID field is used to identify a
- * buffer when it's returned with data via RXD Fifo (see below)
- * 2) RX Data Fifo - RXD - holds descriptors of full buffers. This Fifo is
- * filled by HW and is readen by SW. Each descriptor holds status and ID.
- * HW pops descriptor from RXF Fifo, stores ID, fills buffer with incoming data,
- * via dma moves it into host memory, builds new RXD descriptor with same ID,
- * pushes it into RXD Fifo and raises interrupt to indicate new RX data.
- *
- * Current NIC configuration (registers + firmware) makes NIC use 2 RXF Fifos.
- * One holds 1.5K packets and another - 26K packets. Depending on incoming
- * packet size, HW desides on a RXF Fifo to pop buffer from. When packet is
- * filled with data, HW builds new RXD descriptor for it and push it into single
- * RXD Fifo.
- *
- * RX SW Data Structures
- * ~~~~~~~~~~~~~~~~~~~~~
- * skb db - used to keep track of all skbs owned by SW and their dma addresses.
- * For RX case, ownership lasts from allocating new empty skb for RXF until
- * accepting full skb from RXD and passing it to OS. Each RXF Fifo has its own
- * skb db. Implemented as array with bitmask.
- * fifo - keeps info about fifo's size and location, relevant HW registers,
- * usage and skb db. Each RXD and RXF Fifo has its own fifo structure.
- * Implemented as simple struct.
- *
- * RX SW Execution Flow
- * ~~~~~~~~~~~~~~~~~~~~
- * Upon initialization (ifconfig up) driver creates RX fifos and initializes
- * relevant registers. At the end of init phase, driver enables interrupts.
- * NIC sees that there is no RXF buffers and raises
- * RD_INTR interrupt, isr fills skbs and Rx begins.
- * Driver has two receive operation modes:
- *    NAPI - interrupt-driven mixed with polling
- *    interrupt-driven only
- *
- * Interrupt-driven only flow is following. When buffer is ready, HW raises
- * interrupt and isr is called. isr collects all available packets
- * (bdx_rx_receive), refills skbs (bdx_rx_alloc_skbs) and exit.
-
- * Rx buffer allocation note
- * ~~~~~~~~~~~~~~~~~~~~~~~~~
- * Driver cares to feed such amount of RxF descriptors that respective amount of
- * RxD descriptors can not fill entire RxD fifo. The main reason is lack of
- * overflow check in Bordeaux for RxD fifo free/used size.
- * FIXME: this is NOT fully implemented, more work should be done
- *
- */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -799,7 +747,6 @@ static void bdx_setmulti(struct net_device *ndev)
 	/* IMF - imperfect (hash) rx multicat filter */
 	/* PMF - perfect rx multicat filter */
 
-	/* FIXME: RXE(OFF) */
 	if (ndev->flags & IFF_PROMISC) {
 		rxf_val |= GMAC_RX_FILTER_PRM;
 	} else if (ndev->flags & IFF_ALLMULTI) {
@@ -841,7 +788,6 @@ static void bdx_setmulti(struct net_device *ndev)
 	}
 	WRITE_REG(priv, regGMAC_RXF_A, rxf_val);
 	/* enable RX */
-	/* FIXME: RXE(ON) */
 	RET();
 }
 
@@ -1318,7 +1264,6 @@ static int bdx_rx_receive(struct bdx_priv *priv, struct rxd_fifo *f, int budget)
 
 	priv->net_stats.rx_packets += done;
 
-	/* FIXME: do smth to minimize pci accesses    */
 	WRITE_REG(priv, f->m.reg_RPTR, f->m.rptr & TXF_WPTR_WR_PTR);
 
 	bdx_rx_alloc_skbs(priv, &priv->rxf_fifo0);

@@ -38,10 +38,6 @@ int raw(int fd)
 	if (err < 0)
 		return -errno;
 
-	/*
-	 * XXX tcsetattr could have applied only some changes
-	 * (and cfmakeraw() is a set of changes)
-	 */
 	return 0;
 }
 

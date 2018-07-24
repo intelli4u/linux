@@ -58,4 +58,3 @@ bcom_fec_tx_release(struct bcom_task *tsk);
 
 
 #endif /* __BESTCOMM_FEC_H__ */
-

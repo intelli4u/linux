@@ -275,8 +275,6 @@ static void au1550_hwcontrol(struct mtd_info *mtd, int cmd)
 
 	case NAND_CTL_CLRALE:
 		this->IO_ADDR_W = p_nand + MEM_STNAND_DATA;
-		/* FIXME: Nobody knows why this is necessary,
-		 * but it works only that way */
 		udelay(1);
 		break;
 

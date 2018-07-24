@@ -97,16 +97,6 @@ END_FTR_SECTION_IFCLR(CPU_FTR_1T_SEGMENT)
 	bne-	8f			/* invalid ea bits set */
 
 
-	/* when using slices, we extract the psize off the slice bitmaps
-	 * and then we need to get the sllp encoding off the mmu_psize_defs
-	 * array.
-	 *
-	 * XXX This is a bit inefficient especially for the normal case,
-	 * so we should try to implement a fast path for the standard page
-	 * size using the old sllp value so we avoid the array. We cannot
-	 * really do dynamic patching unfortunately as processes might flip
-	 * between 4k and 64k standard page size
-	 */
 #ifdef CONFIG_PPC_MM_SLICES
 	cmpldi	r10,16
 
@@ -296,4 +286,3 @@ slb_finish_load_1T:
 	/* r3 = EA, r11 = VSID data */
 	clrrdi	r3,r3,SID_SHIFT_1T	/* clear out non-ESID bits */
 	b	7b
-

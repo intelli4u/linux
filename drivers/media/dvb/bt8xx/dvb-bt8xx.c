@@ -945,11 +945,6 @@ static struct bttv_sub_driver driver = {
 	},
 	.probe		= dvb_bt8xx_probe,
 	.remove		= dvb_bt8xx_remove,
-	/* FIXME:
-	 * .shutdown	= dvb_bt8xx_shutdown,
-	 * .suspend	= dvb_bt8xx_suspend,
-	 * .resume	= dvb_bt8xx_resume,
-	 */
 };
 
 static int __init dvb_bt8xx_init(void)

@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  *	linux/mm/filemap.c
  *
@@ -36,12 +37,12 @@
 #include <linux/mm_inline.h> /* for page_is_file_cache() */
 #include "internal.h"
 
-/*
- * FIXME: remove all knowledge of the buffer layer from the core VM
- */
 #include <linux/buffer_head.h> /* for try_to_free_buffers */
 
 #include <asm/mman.h>
+
+#include <typedefs.h>
+#include <bcmdefs.h>
 
 /*
  * Shared mappings implemented 30.11.1994. It's not fully working yet,
@@ -545,7 +546,7 @@ EXPORT_SYMBOL_GPL(add_page_wait_queue);
  * The mb is necessary to enforce ordering between the clear_bit and the read
  * of the waitqueue (to avoid SMP races with a parallel wait_on_page_locked()).
  */
-void unlock_page(struct page *page)
+void BCMFASTPATH_HOST unlock_page(struct page *page)
 {
 	VM_BUG_ON(!PageLocked(page));
 	clear_bit_unlock(PG_locked, &page->flags);
@@ -801,7 +802,7 @@ repeat:
  *
  * find_get_pages_contig() returns the number of pages which were found.
  */
-unsigned find_get_pages_contig(struct address_space *mapping, pgoff_t index,
+unsigned BCMFASTPATH_HOST find_get_pages_contig(struct address_space *mapping, pgoff_t index,
 			       unsigned int nr_pages, struct page **pages)
 {
 	unsigned int i;
@@ -2028,7 +2029,6 @@ inline int generic_write_checks(struct file *file, loff_t *pos, size_t *count, i
                 return -EINVAL;
 
 	if (!isblk) {
-		/* FIXME: this is for backwards compatibility with 2.4 */
 		if (file->f_flags & O_APPEND)
                         *pos = i_size_read(inode);
 

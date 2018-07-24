@@ -387,24 +387,6 @@ release_stateid_lockowners(struct nfs4_stateid *open_stp)
 	}
 }
 
-/*
- * We store the NONE, READ, WRITE, and BOTH bits separately in the
- * st_{access,deny}_bmap field of the stateid, in order to track not
- * only what share bits are currently in force, but also what
- * combinations of share bits previous opens have used.  This allows us
- * to enforce the recommendation of rfc 3530 14.2.19 that the server
- * return an error if the client attempt to downgrade to a combination
- * of share bits not explicable by closing some of its previous opens.
- *
- * XXX: This enforcement is actually incomplete, since we don't keep
- * track of access/deny bit combinations; so, e.g., we allow:
- *
- *	OPEN allow read, deny write
- *	OPEN allow both, deny none
- *	DOWNGRADE allow read, deny none
- *
- * which we should reject.
- */
 static void
 set_access(unsigned int *access, unsigned long bmap) {
 	int i;
@@ -476,7 +458,7 @@ static void unhash_openowner(struct nfs4_stateowner *sop)
 	list_del(&sop->so_idhash);
 	list_del(&sop->so_strhash);
 	list_del(&sop->so_perclient);
-	list_del(&sop->so_perstateid); /* XXX: necessary? */
+	list_del(&sop->so_perstateid);
 	while (!list_empty(&sop->so_stateids)) {
 		stp = list_first_entry(&sop->so_stateids,
 				struct nfs4_stateid, st_perstateowner);
@@ -610,10 +592,6 @@ static int init_forechannel_attrs(struct svc_rqst *rqstp,
 		fchan->maxops = NFSD_MAX_OPS_PER_COMPOUND;
 	session_fchan->maxops = fchan->maxops;
 
-	/* FIXME: Error means no more DRC pages so the server should
-	 * recover pages from existing sessions. For now fail session
-	 * creation.
-	 */
 	status = set_forechannel_drc_size(fchan);
 
 	session_fchan->maxresp_cached = fchan->maxresp_cached;
@@ -652,7 +630,6 @@ alloc_init_session(struct svc_rqst *rqstp, struct nfs4_client *clp,
 
 	memset(&tmp, 0, sizeof(tmp));
 
-	/* FIXME: For now, we just accept the client back channel attributes. */
 	tmp.se_bchannel = cses->back_channel;
 	status = init_forechannel_attrs(rqstp, &tmp.se_fchannel,
 					&cses->fore_channel);
@@ -787,11 +764,6 @@ STALE_CLIENTID(clientid_t *clid)
 	return 1;
 }
 
-/* 
- * XXX Should we use a slab cache ?
- * This type of memory management is somewhat inefficient, but we use it
- * anyway since SETCLIENTID is not a common operation.
- */
 static struct nfs4_client *alloc_client(struct xdr_netobj name)
 {
 	struct nfs4_client *clp;
@@ -924,7 +896,6 @@ same_clid(clientid_t *cl1, clientid_t *cl2)
 	return (cl1->cl_boot == cl2->cl_boot) && (cl1->cl_id == cl2->cl_id);
 }
 
-/* XXX what about NGROUP */
 static int
 same_creds(struct svc_cred *cr1, struct svc_cred *cr2)
 {
@@ -1051,15 +1022,6 @@ find_unconfirmed_client(clientid_t *clid)
 	return NULL;
 }
 
-/*
- * Return 1 iff clp's clientid establishment method matches the use_exchange_id
- * parameter. Matching is based on the fact the at least one of the
- * EXCHGID4_FLAG_USE_{NON_PNFS,PNFS_MDS,PNFS_DS} flags must be set for v4.1
- *
- * FIXME: we need to unify the clientid namespaces for nfsv4.x
- * and correctly deal with client upgrade/downgrade in EXCHANGE_ID
- * and SET_CLIENTID{,_CONFIRM}
- */
 static inline int
 match_clientid_establishment(struct nfs4_client *clp, bool use_exchange_id)
 {
@@ -1669,10 +1631,6 @@ nfsd4_setclientid(struct svc_rqst *rqstp, struct nfsd4_compound_state *cstate,
 	if (status)
 		return status;
 
-	/* 
-	 * XXX The Duplicate Request Cache (DRC) has been checked (??)
-	 * We get here on a DRC miss.
-	 */
 
 	strhashval = clientstr_hashval(dname);
 
@@ -1777,10 +1735,6 @@ nfsd4_setclientid_confirm(struct svc_rqst *rqstp,
 
 	if (STALE_CLIENTID(clid))
 		return nfserr_stale_clientid;
-	/* 
-	 * XXX The Duplicate Request Cache (DRC) has been checked (??)
-	 * We get here on a DRC miss.
-	 */
 
 	nfs4_lock_state();
 
@@ -3610,9 +3564,6 @@ nfsd4_lock(struct svc_rqst *rqstp, struct nfsd4_compound_state *cstate,
 		strhashval = lock_ownerstr_hashval(fp->fi_inode, 
 				open_sop->so_client->cl_clientid.cl_id, 
 				&lock->v.new.owner);
-		/* XXX: Do we need to check for duplicate stateowners on
-		 * the same file, or should they just be allowed (and
-		 * create new stateids)? */
 		status = nfserr_resource;
 		lock_sop = alloc_init_lock_stateowner(strhashval,
 				open_sop->so_client, open_stp, lock);
@@ -3923,7 +3874,6 @@ nfsd4_release_lockowner(struct svc_rqst *rqstp,
 	dprintk("nfsd4_release_lockowner clientid: (%08x/%08x):\n",
 		clid->cl_boot, clid->cl_id);
 
-	/* XXX check for lease expiration */
 
 	status = nfserr_stale_clientid;
 	if (STALE_CLIENTID(clid))
@@ -3932,10 +3882,6 @@ nfsd4_release_lockowner(struct svc_rqst *rqstp,
 	nfs4_lock_state();
 
 	status = nfserr_locks_held;
-	/* XXX: we're doing a linear search through all the lockowners.
-	 * Yipes!  For now we'll just hope clients aren't really using
-	 * release_lockowner much, but eventually we have to fix these
-	 * data structures. */
 	INIT_LIST_HEAD(&matches);
 	for (i = 0; i < LOCK_HASH_SIZE; i++) {
 		list_for_each_entry(sop, &lock_ownerid_hashtbl[i], so_idhash) {

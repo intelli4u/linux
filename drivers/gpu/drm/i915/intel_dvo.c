@@ -118,7 +118,6 @@ static int intel_dvo_mode_valid(struct drm_connector *connector,
 	if (mode->flags & DRM_MODE_FLAG_DBLSCAN)
 		return MODE_NO_DBLESCAN;
 
-	/* XXX: Validate clock range */
 
 	if (intel_dvo->panel_fixed_mode) {
 		if (mode->hdisplay > intel_dvo->panel_fixed_mode->hdisplay)

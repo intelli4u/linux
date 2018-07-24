@@ -993,12 +993,6 @@ int qla4xxx_soft_reset(struct scsi_qla_host *ha)
 	}
 	spin_unlock_irqrestore(&ha->hardware_lock, flags);
 
-	/* If soft reset fails then most probably the bios on other
-	 * function is also enabled.
-	 * Since the initialization is sequential the other fn
-	 * wont be able to acknowledge the soft reset.
-	 * Issue a force soft reset to workaround this scenario.
-	 */
 	if (max_wait_time == 0) {
 		/* Issue Force Soft Reset */
 		spin_lock_irqsave(&ha->hardware_lock, flags);
@@ -2095,7 +2089,6 @@ static int qla4xxx_eh_device_reset(struct scsi_cmnd *cmd)
 		      cmd, jiffies, cmd->request->timeout / HZ,
 		      ha->dpc_flags, cmd->result, cmd->allowed));
 
-	/* FIXME: wait for hba to go online */
 	stat = qla4xxx_reset_lun(ha, ddb_entry, cmd->device->lun);
 	if (stat != QLA_SUCCESS) {
 		ql4_printk(KERN_INFO, ha, "DEVICE RESET FAILED. %d\n", stat);

@@ -466,9 +466,6 @@ static irqreturn_t dma_ccerr_handler(int irq, void *data)
 		} else if (edma_read(ctlr, EDMA_CCERR)) {
 			dev_dbg(data, "CCERR %08x\n",
 				edma_read(ctlr, EDMA_CCERR));
-			/* FIXME:  CCERR.BIT(16) ignored!  much better
-			 * to just write CCERRCLR with CCERR value...
-			 */
 			for (i = 0; i < 8; i++) {
 				if (edma_read(ctlr, EDMA_CCERR) & BIT(i)) {
 					/* Clear the corresponding IPR bits */
@@ -1325,18 +1322,6 @@ void edma_stop(unsigned channel)
 }
 EXPORT_SYMBOL(edma_stop);
 
-/******************************************************************************
- *
- * It cleans ParamEntry qand bring back EDMA to initial state if media has
- * been removed before EDMA has finished.It is usedful for removable media.
- * Arguments:
- *      ch_no     - channel no
- *
- * Return: zero on success, or corresponding error no on failure
- *
- * FIXME this should not be needed ... edma_stop() should suffice.
- *
- *****************************************************************************/
 
 void edma_clean_channel(unsigned channel)
 {
@@ -1589,4 +1574,3 @@ static int __init edma_init(void)
 	return platform_driver_probe(&edma_driver, edma_probe);
 }
 arch_initcall(edma_init);
-

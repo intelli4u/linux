@@ -979,9 +979,6 @@ static inline unsigned int get_pcd(struct pxafb_info *fbi,
 {
 	unsigned long long pcd;
 
-	/* FIXME: Need to take into account Double Pixel Clock mode
-	 * (DPC) bit? or perhaps set it based on the various clock
-	 * speeds */
 	pcd = (unsigned long long)(clk_get_rate(fbi->clk) / 10000);
 	pcd *= pixclock;
 	do_div(pcd, 100000000 * 2);
@@ -1214,7 +1211,6 @@ static void setup_smart_timing(struct pxafb_info *fbi,
 	fbi->reg_lccr3 |= (var->sync & FB_SYNC_HOR_HIGH_ACT) ? LCCR3_HSP : 0;
 	fbi->reg_lccr3 |= (var->sync & FB_SYNC_VERT_HIGH_ACT) ? LCCR3_VSP : 0;
 
-	/* FIXME: make this configurable */
 	fbi->reg_cmdcr = 1;
 }
 

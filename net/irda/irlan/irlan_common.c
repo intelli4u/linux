@@ -554,12 +554,7 @@ void irlan_ias_register(struct irlan_cb *self, __u8 tsap_sel)
 	/* Register PnP object only if not registered before */
 	if (!irias_find_object("PnP")) {
 		obj = irias_new_object("PnP", IAS_PNP_ID);
-#if 0
-		irias_add_string_attrib(obj, "Name", sysctl_devname,
-					IAS_KERNEL_ATTR);
-#else
 		irias_add_string_attrib(obj, "Name", "Linux", IAS_KERNEL_ATTR);
-#endif
 		irias_add_string_attrib(obj, "DeviceID", "HWP19F0",
 					IAS_KERNEL_ATTR);
 		irias_add_integer_attrib(obj, "CompCnt", 1, IAS_KERNEL_ATTR);
@@ -1211,4 +1206,3 @@ MODULE_PARM_DESC(access, "Access type DIRECT=1, PEER=2, HOSTED=3");
 
 module_init(irlan_init);
 module_exit(irlan_cleanup);
-

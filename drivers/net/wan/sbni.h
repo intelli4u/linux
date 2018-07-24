@@ -144,4 +144,3 @@ struct sbni_flags {
 #endif
 
 #endif
-

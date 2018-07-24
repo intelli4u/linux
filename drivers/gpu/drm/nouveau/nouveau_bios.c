@@ -289,10 +289,6 @@ static int parse_init_table(struct nvbios *, unsigned int, struct init_exec *);
 
 static void still_alive(void)
 {
-#if 0
-	sync();
-	msleep(2);
-#endif
 }
 
 static uint32_t
@@ -6007,20 +6003,6 @@ static void fabricate_dvi_i_output(struct dcb_table *dcb, bool twoHeads)
 	entry->or = 1;	/* means |0x10 gets set on CRE_LCD__INDEX */
 	entry->duallink_possible = false; /* SiI164 and co. are single link */
 
-#if 0
-	/*
-	 * For dvi-a either crtc probably works, but my card appears to only
-	 * support dvi-d.  "nvidia" still attempts to program it for dvi-a,
-	 * doing the full fp output setup (program 0x6808.. fp dimension regs,
-	 * setting 0x680848 to 0x10000111 to enable, maybe setting 0x680880);
-	 * the monitor picks up the mode res ok and lights up, but no pixel
-	 * data appears, so the board manufacturer probably connected up the
-	 * sync lines, but missed the video traces / components
-	 *
-	 * with this introduction, dvi-a left as an exercise for the reader.
-	 */
-	fabricate_vga_output(dcb, LEGACY_I2C_PANEL, entry->heads);
-#endif
 }
 
 static void fabricate_tv_output(struct dcb_table *dcb, bool twoHeads)

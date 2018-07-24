@@ -511,50 +511,6 @@ static void at91_read_msg(struct net_device *dev, unsigned int mb)
 	stats->rx_bytes += cf->can_dlc;
 }
 
-/**
- * at91_poll_rx - read multiple CAN messages from mailboxes
- * @dev: net device
- * @quota: max number of pkgs we're allowed to receive
- *
- * Theory of Operation:
- *
- * 12 of the 16 mailboxes on the chip are reserved for RX. we split
- * them into 2 groups. The lower group holds 8 and upper 4 mailboxes.
- *
- * Like it or not, but the chip always saves a received CAN message
- * into the first free mailbox it finds (starting with the
- * lowest). This makes it very difficult to read the messages in the
- * right order from the chip. This is how we work around that problem:
- *
- * The first message goes into mb nr. 0 and issues an interrupt. All
- * rx ints are disabled in the interrupt handler and a napi poll is
- * scheduled. We read the mailbox, but do _not_ reenable the mb (to
- * receive another message).
- *
- *    lower mbxs      upper
- *   ______^______    __^__
- *  /             \  /     \
- * +-+-+-+-+-+-+-+-++-+-+-+-+
- * |x|x|x|x|x|x|x|x|| | | | |
- * +-+-+-+-+-+-+-+-++-+-+-+-+
- *  0 0 0 0 0 0  0 0 0 0 1 1  \ mail
- *  0 1 2 3 4 5  6 7 8 9 0 1  / box
- *
- * The variable priv->rx_next points to the next mailbox to read a
- * message from. As long we're in the lower mailboxes we just read the
- * mailbox but not reenable it.
- *
- * With completion of the last of the lower mailboxes, we reenable the
- * whole first group, but continue to look for filled mailboxes in the
- * upper mailboxes. Imagine the second group like overflow mailboxes,
- * which takes CAN messages if the lower goup is full. While in the
- * upper group we reenable the mailbox right after reading it. Giving
- * the chip more room to store messages.
- *
- * After finishing we look again in the lower group if we've still
- * quota.
- *
- */
 static int at91_poll_rx(struct net_device *dev, int quota)
 {
 	struct at91_priv *priv = netdev_priv(dev);

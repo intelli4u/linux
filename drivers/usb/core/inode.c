@@ -772,4 +772,3 @@ void usbfs_cleanup(void)
 	if (usbdir)
 		remove_proc_entry("bus/usb", NULL);
 }
-

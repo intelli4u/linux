@@ -225,4 +225,3 @@ int osd_schedule_callback(struct workqueue_struct *wq,
 	INIT_WORK(&cb->work, osd_callback_work);
 	return queue_work(wq, &cb->work);
 }
-

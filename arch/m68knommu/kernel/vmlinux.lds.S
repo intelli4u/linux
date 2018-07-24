@@ -179,4 +179,3 @@ SECTIONS {
 
 	DISCARDS
 }
-

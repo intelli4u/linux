@@ -129,10 +129,6 @@ static struct dentry *gfs2_get_parent(struct dentry *child)
 	struct qstr dotdot;
 	struct dentry *dentry;
 
-	/*
-	 * XXX(hch): it would be a good idea to keep this around as a
-	 *	     static variable.
-	 */
 	gfs2_str2qstr(&dotdot, "..");
 
 	dentry = d_obtain_alias(gfs2_lookupi(child->d_inode, &dotdot, 1));
@@ -253,4 +249,3 @@ const struct export_operations gfs2_export_ops = {
 	.get_name = gfs2_get_name,
 	.get_parent = gfs2_get_parent,
 };
-

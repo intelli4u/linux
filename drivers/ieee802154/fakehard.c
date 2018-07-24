@@ -285,7 +285,6 @@ static netdev_tx_t ieee802154_fake_xmit(struct sk_buff *skb,
 	dev->stats.tx_packets++;
 	dev->stats.tx_bytes += skb->len;
 
-	/* FIXME: do hardware work here ... */
 
 	dev_kfree_skb(skb);
 	return NETDEV_TX_OK;
@@ -301,7 +300,6 @@ static int ieee802154_fake_ioctl(struct net_device *dev, struct ifreq *ifr,
 
 	switch (cmd) {
 	case SIOCGIFADDR:
-		/* FIXME: fixed here, get from device IRL */
 		pan_id = fake_get_pan_id(dev);
 		short_addr = fake_get_short_addr(dev);
 		if (pan_id == IEEE802154_PANID_BROADCAST ||
@@ -458,4 +456,3 @@ static __exit void fake_exit(void)
 module_init(fake_init);
 module_exit(fake_exit);
 MODULE_LICENSE("GPL");
-

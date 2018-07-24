@@ -358,4 +358,3 @@ struct board_type {
 };
 
 #endif /* HPSA_H */
-

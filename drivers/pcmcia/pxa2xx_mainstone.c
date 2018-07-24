@@ -63,11 +63,6 @@ static void mst_pcmcia_socket_state(struct soc_pcmcia_socket *skt,
 	status = (skt->nr == 0) ? MST_PCMCIA0 : MST_PCMCIA1;
 	flip = (status ^ mst_pcmcia_status[skt->nr]) & MST_PCMCIA_nSTSCHG_BVD1;
 
-	/*
-	 * Workaround for STSCHG which can't be deasserted:
-	 * We therefore disable/enable corresponding IRQs
-	 * as needed to avoid IRQ locks.
-	 */
 	if (flip) {
 		mst_pcmcia_status[skt->nr] = status;
 		if (status & MST_PCMCIA_nSTSCHG_BVD1)

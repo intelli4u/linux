@@ -380,4 +380,3 @@ typedef struct _FALSE_ALARM_STATISTICS{
 
 
 #endif //__INC_HTTYPE_H
-

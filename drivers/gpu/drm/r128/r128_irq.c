@@ -81,13 +81,6 @@ void r128_disable_vblank(struct drm_device *dev, int crtc)
 	if (crtc != 0)
 		DRM_ERROR("%s:  bad crtc %d\n", __func__, crtc);
 
-	/*
-	 * FIXME: implement proper interrupt disable by using the vblank
-	 * counter register (if available)
-	 *
-	 * R128_WRITE(R128_GEN_INT_CNTL,
-	 *            R128_READ(R128_GEN_INT_CNTL) & ~R128_CRTC_VBLANK_INT_EN);
-	 */
 }
 
 void r128_driver_irq_preinstall(struct drm_device *dev)

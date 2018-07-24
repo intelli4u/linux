@@ -719,7 +719,6 @@ static int au8522_g_chip_ident(struct v4l2_subdev *sd,
 
 static int au8522_log_status(struct v4l2_subdev *sd)
 {
-	/* FIXME: Add some status info here */
 	return 0;
 }
 

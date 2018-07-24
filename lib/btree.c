@@ -396,8 +396,6 @@ static unsigned long *find_level(struct btree_head *head, struct btree_geo *geo,
 
 		if ((i == geo->no_pairs) || !bval(geo, node, i)) {
 			/* right-most key is too large, update it */
-			/* FIXME: If the right-most key on higher levels is
-			 * always zero, this wouldn't be necessary. */
 			i--;
 			setkey(geo, node, i, key);
 		}

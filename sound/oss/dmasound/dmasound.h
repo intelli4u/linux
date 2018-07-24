@@ -60,9 +60,9 @@ static inline int ioctl_return(int __user *addr, int value)
 
 #undef HAS_8BIT_TABLES
 
-#if defined(CONFIG_DMASOUND_ATARI) || defined(CONFIG_DMASOUND_ATARI_MODULE) ||\
-    defined(CONFIG_DMASOUND_PAULA) || defined(CONFIG_DMASOUND_PAULA_MODULE) ||\
-    defined(CONFIG_DMASOUND_Q40) || defined(CONFIG_DMASOUND_Q40_MODULE)
+#if defined(CONFIG_DMASOUND_ATARI) || defined(CONFIG_DMASOUND_ATARI_MODULE) || \
+	defined(CONFIG_DMASOUND_PAULA) || defined(CONFIG_DMASOUND_PAULA_MODULE) || \
+	defined(CONFIG_DMASOUND_Q40) || defined(CONFIG_DMASOUND_Q40_MODULE)
 #define HAS_8BIT_TABLES
 #define MIN_BUFFERS	4
 #define MIN_BUFSIZE	(1<<12)	/* in bytes (- where does this come from ?) */

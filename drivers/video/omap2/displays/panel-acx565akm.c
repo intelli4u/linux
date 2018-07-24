@@ -500,7 +500,6 @@ static int acx_panel_probe(struct omap_dss_device *dssdev)
 	dev_dbg(&dssdev->dev, "%s\n", __func__);
 	dssdev->panel.config = OMAP_DSS_LCD_TFT | OMAP_DSS_LCD_IVS |
 					OMAP_DSS_LCD_IHS;
-	/* FIXME AC bias ? */
 	dssdev->panel.timings = acx_panel_timings;
 
 	if (dssdev->platform_enable)
@@ -595,7 +594,6 @@ static int acx_panel_power_on(struct omap_dss_device *dssdev)
 		goto fail_unlock;
 	}
 
-	/*FIXME tweak me */
 	msleep(50);
 
 	if (dssdev->platform_enable) {
@@ -664,7 +662,6 @@ static void acx_panel_power_off(struct omap_dss_device *dssdev)
 	if (dssdev->platform_disable)
 		dssdev->platform_disable(dssdev);
 
-	/* FIXME need to tweak this delay */
 	msleep(100);
 
 	omapdss_sdi_display_disable(dssdev);

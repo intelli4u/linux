@@ -1,22 +1,4 @@
-/*
- * unicode.c
- *
- * PURPOSE
- *	Routines for converting between UTF-8 and OSTA Compressed Unicode.
- *      Also handles filename mangling
- *
- * DESCRIPTION
- *	OSTA Compressed Unicode is explained in the OSTA UDF specification.
- *		http://www.osta.org/
- *	UTF-8 is explained in the IETF RFC XXXX.
- *		ftp://ftp.internic.net/rfc/rfcxxxx.txt
- *
- * COPYRIGHT
- *	This file is distributed under the terms of the GNU General Public
- *	License (GPL). Copies of the GPL can be obtained from:
- *		ftp://prep.ai.mit.edu/pub/gnu/GPL
- *	Each contributing author retains all rights to their own work.
- */
+
 
 #include "udfdecl.h"
 

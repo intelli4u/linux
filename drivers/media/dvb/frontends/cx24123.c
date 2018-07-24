@@ -108,11 +108,6 @@ static struct cx24123_AGC_val {
 	},
 };
 
-/*
- * Various tuner defaults need to be established for a given frequency kHz.
- * fixme: The bounds on the bands do not match the doc in real life.
- * fixme: Some of them have been moved, other might need adjustment.
- */
 static struct cx24123_bandselect_val {
 	u32 freq_low;
 	u32 freq_high;
@@ -1165,4 +1160,3 @@ MODULE_DESCRIPTION("DVB Frontend module for Conexant " \
 	"CX24123/CX24109/CX24113 hardware");
 MODULE_AUTHOR("Steven Toth");
 MODULE_LICENSE("GPL");
-

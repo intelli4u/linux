@@ -192,23 +192,10 @@
  */
 #define SCSI_NCR_SETUP_SETTLE_TIME	(2)
 
-/*
-**	Bridge quirks work-around option defaulted to 1.
-*/
 #ifndef	SCSI_NCR_PCIQ_WORK_AROUND_OPT
 #define	SCSI_NCR_PCIQ_WORK_AROUND_OPT	1
 #endif
 
-/*
-**	Work-around common bridge misbehaviour.
-**
-**	- Do not flush posted writes in the opposite 
-**	  direction on read.
-**	- May reorder DMA writes to memory.
-**
-**	This option should not affect performances 
-**	significantly, so it is the default.
-*/
 #if	SCSI_NCR_PCIQ_WORK_AROUND_OPT == 1
 #define	SCSI_NCR_PCIQ_MAY_NOT_FLUSH_PW_UPSTREAM
 #define	SCSI_NCR_PCIQ_MAY_REORDER_WRITES
@@ -264,11 +251,7 @@
 #define SCSI_NCR_SG_TABLESIZE	(SCSI_NCR_MAX_SCATTER)
 #define SCSI_NCR_TIMER_INTERVAL	(HZ)
 
-#if 1 /* defined CONFIG_SCSI_MULTI_LUN */
 #define SCSI_NCR_MAX_LUN	(16)
-#else
-#define SCSI_NCR_MAX_LUN	(1)
-#endif
 
 /*
  *  IO functions definition for big/little endian CPU support.

@@ -54,7 +54,7 @@ typedef struct bd_info {
 	unsigned long	bi_flashoffset; /* reserved area for startup monitor */
 	unsigned long	bi_sramstart;	/* start of SRAM memory */
 	unsigned long	bi_sramsize;	/* size	 of SRAM memory */
-#if defined(TARGET_8xx) || defined(TARGET_CPM2) || defined(TARGET_85xx) ||\
+#if defined(TARGET_8xx) || defined(TARGET_CPM2) || defined(TARGET_85xx) || \
 	defined(TARGET_83xx)
 	unsigned long	bi_immr_base;	/* base of IMMR register */
 #endif
@@ -103,8 +103,8 @@ typedef struct bd_info {
 	unsigned char	bi_enet1addr[6];
 #define HAVE_ENET1ADDR
 #endif
-#if defined(TARGET_EVB64260) || defined(TARGET_440GX) || \
-    defined(TARGET_85xx) || defined(TARGET_HAS_ETH2)
+#if defined(TARGET_EVB64260) || defined(TARGET_440GX) || defined(TARGET_85xx) || \
+	defined(TARGET_HAS_ETH2)
 	/* third onboard ethernet ports */
 	unsigned char	bi_enet2addr[6];
 #define HAVE_ENET2ADDR

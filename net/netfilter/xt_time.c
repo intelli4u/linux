@@ -189,6 +189,29 @@ time_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	if (stamp < info->date_start || stamp > info->date_stop)
 		return false;
 
+#ifdef CONFIG_BCM947XX
+	/* Do not spend time computing monthday if all days match anyway */
+	if (info->monthdays_match != XT_TIME_ALL_MONTHDAYS) {
+		localtime_3(&current_time, stamp);
+		if (!(info->monthdays_match & (1 << current_time.monthday)))
+			return false;
+	}
+
+	localtime_2(&current_time, stamp);
+	if (!(info->weekdays_match & (1 << current_time.weekday)))
+		return false;
+
+	packet_time = localtime_1(&current_time, stamp);
+	if (info->daytime_start < info->daytime_stop) {
+		if (packet_time < info->daytime_start ||
+		    packet_time > info->daytime_stop)
+			return false;
+	} else {
+		if (packet_time < info->daytime_start &&
+		    packet_time > info->daytime_stop)
+			return false;
+	}
+#else
 	packet_time = localtime_1(&current_time, stamp);
 
 	if (info->daytime_start < info->daytime_stop) {
@@ -212,6 +235,7 @@ time_mt(const struct sk_buff *skb, struct xt_action_param *par)
 		if (!(info->monthdays_match & (1 << current_time.monthday)))
 			return false;
 	}
+#endif /* CONFIG_BCM947XX */
 
 	return true;
 }

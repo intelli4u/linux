@@ -304,10 +304,6 @@ static long do_saa5249_ioctl(struct file *file, unsigned int cmd, void *arg)
 					if (i2c_senddata(t, 8, 0, 0x21, 0, -1) ||
 						i2c_getdata(t, 40, t->vdau[req->pgbuf].pgbuf + VTX_PAGESIZE + 16 * 40))
 						return -EIO;
-					/* Packet 8/30/0...8/30/15
-					 * FIXME: AFAIK, the 5249 does hamming-decoding for some bytes in packet 8/30,
-					 *        so we should undo this here.
-					 */
 					if (i2c_senddata(t, 8, 0, 0x22, 0, -1) ||
 						i2c_getdata(t, 40, t->vdau[req->pgbuf].pgbuf + VTX_PAGESIZE + 23 * 40))
 						return -EIO;

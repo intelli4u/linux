@@ -407,7 +407,7 @@ static const struct vino_data_format vino_data_formats[] = {
 	}, {
 		.description	= "YUV 4:2:2",
 		.bpp		= 2,
-		.pixelformat	= V4L2_PIX_FMT_YUYV, // XXX: swapped?
+		.pixelformat	= V4L2_PIX_FMT_YUYV,
 		.colorspace	= V4L2_COLORSPACE_SMPTE170M,
 	}
 };
@@ -775,92 +775,6 @@ static int vino_allocate_buffer(struct vino_framebuffer *fb,
 	return ret;
 }
 
-#if 0
-/* user buffers not fully implemented yet */
-static int vino_prepare_user_buffer(struct vino_framebuffer *fb,
-				     void *user,
-				     unsigned int size)
-{
-	unsigned int count, i, j;
-	int ret = 0;
-
-	dprintk("vino_prepare_user_buffer():\n");
-
-	if (size < 1)
-		return -EINVAL;
-
-	memset(fb, 0, sizeof(struct vino_framebuffer));
-
-	count = ((size / PAGE_SIZE)) & ~3;
-
-	dprintk("vino_prepare_user_buffer(): size = %d, count = %d\n",
-		size, count);
-
-	/* allocate memory for table with virtual (page) addresses */
-	fb->desc_table.virtual = (unsigned long *)
-		kmalloc(count * sizeof(unsigned long), GFP_KERNEL);
-	if (!fb->desc_table.virtual)
-		return -ENOMEM;
-
-	/* allocate memory for table with dma addresses
-	 * (has space for four extra descriptors) */
-	fb->desc_table.dma_cpu =
-		dma_alloc_coherent(NULL, VINO_PAGE_RATIO * (count + 4) *
-				   sizeof(dma_addr_t), &fb->desc_table.dma,
-				   GFP_KERNEL | GFP_DMA);
-	if (!fb->desc_table.dma_cpu) {
-		ret = -ENOMEM;
-		goto out_free_virtual;
-	}
-
-	/* allocate pages for the buffer and acquire the according
-	 * dma addresses */
-	for (i = 0; i < count; i++) {
-		dma_addr_t dma_data_addr;
-
-		fb->desc_table.virtual[i] =
-			get_zeroed_page(GFP_KERNEL | GFP_DMA);
-		if (!fb->desc_table.virtual[i]) {
-			ret = -ENOBUFS;
-			break;
-		}
-
-		dma_data_addr =
-			dma_map_single(NULL,
-				       (void *)fb->desc_table.virtual[i],
-				       PAGE_SIZE, DMA_FROM_DEVICE);
-
-		for (j = 0; j < VINO_PAGE_RATIO; j++) {
-			fb->desc_table.dma_cpu[VINO_PAGE_RATIO * i + j] =
-				dma_data_addr + VINO_PAGE_SIZE * j;
-		}
-
-		SetPageReserved(virt_to_page((void *)fb->desc_table.virtual[i]));
-	}
-
-	/* page_count needs to be set anyway, because the descriptor table has
-	 * been allocated according to this number */
-	fb->desc_table.page_count = count;
-
-	if (ret) {
-		/* the descriptor with index i doesn't contain
-		 * a valid address yet */
-		vino_free_buffer_with_count(fb, i);
-		return ret;
-	}
-
-	//fb->size = size;
-	fb->size = count * PAGE_SIZE;
-
-	/* set the dma stop-bit for the last (count+1)th descriptor */
-	fb->desc_table.dma_cpu[VINO_PAGE_RATIO * count] = VINO_DESC_STOP;
-	return 0;
-
- out_free_virtual:
-	kfree(fb->desc_table.virtual);
-	return ret;
-}
-#endif
 
 static void vino_sync_buffer(struct vino_framebuffer *fb)
 {
@@ -904,13 +818,6 @@ static inline int vino_fifo_has_id(struct vino_framebuffer_fifo *f,
 	return 0;
 }
 
-#if 0
-/* returns true/false */
-static inline int vino_fifo_full(struct vino_framebuffer_fifo *f)
-{
-	return (f->used == f->length);
-}
-#endif
 
 static inline unsigned int vino_fifo_get_used(struct vino_framebuffer_fifo *f)
 {
@@ -1260,33 +1167,6 @@ out:
 	return ret;
 }
 
-#if 0
-static int vino_queue_get_total(struct vino_framebuffer_queue *q,
-				unsigned int *total)
-{
-	int ret = 0;
-	unsigned long flags;
-
-	if (q->magic != VINO_QUEUE_MAGIC) {
-		return VINO_QUEUE_ERROR;
-	}
-
-	spin_lock_irqsave(&q->queue_lock, flags);
-
-	if (q->length == 0) {
-		ret = VINO_QUEUE_ERROR;
-		goto out;
-	}
-
-	*total = vino_fifo_get_used(&q->in) +
-		vino_fifo_get_used(&q->out);
-
-out:
-	spin_unlock_irqrestore(&q->queue_lock, flags);
-
-	return ret;
-}
-#endif
 
 static struct vino_framebuffer *vino_queue_peek(struct
 						vino_framebuffer_queue *q,
@@ -1535,7 +1415,7 @@ static void vino_set_framerate(struct vino_channel_settings *vcs,
 	switch (vcs->data_norm) {
 	case VINO_DATA_NORM_NTSC:
 	case VINO_DATA_NORM_D1:
-		fps = (unsigned int)(fps / 6) * 6; // FIXME: round!
+		fps = (unsigned int)(fps / 6) * 6;
 
 		if (fps < vino_data_norms[vcs->data_norm].fps_min)
 			fps = vino_data_norms[vcs->data_norm].fps_min;
@@ -1565,7 +1445,7 @@ static void vino_set_framerate(struct vino_channel_settings *vcs,
 		break;
 	case VINO_DATA_NORM_PAL:
 	case VINO_DATA_NORM_SECAM:
-		fps = (unsigned int)(fps / 5) * 5; // FIXME: round!
+		fps = (unsigned int)(fps / 5) * 5;
 
 		if (fps < vino_data_norms[vcs->data_norm].fps_min)
 			fps = vino_data_norms[vcs->data_norm].fps_min;
@@ -2246,52 +2126,6 @@ out:
 	spin_unlock_irqrestore(&vcs->capture_lock, flags);
 }
 
-#if 0
-static int vino_capture_failed(struct vino_channel_settings *vcs)
-{
-	struct vino_framebuffer *fb;
-	unsigned long flags;
-	unsigned int i;
-	int ret;
-
-	dprintk("vino_capture_failed():\n");
-
-	spin_lock_irqsave(&vino_drvdata->vino_lock, flags);
-
-	vino_dma_stop(vcs);
-	vino_clear_interrupt(vcs);
-
-	spin_unlock_irqrestore(&vino_drvdata->vino_lock, flags);
-
-	ret = vino_queue_get_incoming(&vcs->fb_queue, &i);
-	if (ret == VINO_QUEUE_ERROR) {
-		dprintk("vino_queue_get_incoming() failed\n");
-		return -EINVAL;
-	}
-	if (i == 0) {
-		/* no buffers to process */
-		return 0;
-	}
-
-	fb = vino_queue_peek(&vcs->fb_queue, &i);
-	if (fb == NULL) {
-		dprintk("vino_queue_peek() failed\n");
-		return -EINVAL;
-	}
-
-	spin_lock_irqsave(&fb->state_lock, flags);
-	if (fb->state == VINO_FRAMEBUFFER_IN_USE) {
-		fb->state = VINO_FRAMEBUFFER_UNUSED;
-		vino_queue_transfer(&vcs->fb_queue);
-		vino_queue_remove(&vcs->fb_queue, &i);
-		/* we should actually discard the newest frame,
-		 * but who cares ... */
-	}
-	spin_unlock_irqrestore(&fb->state_lock, flags);
-
-	return 0;
-}
-#endif
 
 static void vino_skip_frame(struct vino_channel_settings *vcs)
 {
@@ -2890,7 +2724,6 @@ static int vino_int_enum_input(struct vino_channel_settings *vcs, __u32 index)
 static __u32 vino_find_input_index(struct vino_channel_settings *vcs)
 {
 	__u32 index = 0;
-	// FIXME: detect when no inputs available
 
 	if (vino_drvdata->decoder && vino_drvdata->camera) {
 		switch (vcs->input) {
@@ -3328,7 +3161,6 @@ static int vino_g_parm(struct file *file, void *__fh,
 
 	spin_unlock_irqrestore(&vino_drvdata->input_lock, flags);
 
-	/* TODO: cp->readbuffers = xxx; */
 
 	return 0;
 }

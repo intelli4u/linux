@@ -106,7 +106,6 @@ enum azf_freq_t {
 #undef AZF_FREQ
 };
 
-/** DirectX timer, main interrupt area (FIXME: and something else?) **/ 
 #define IDX_IO_TIMER_VALUE	0x60 /* found this timer area by pure luck :-) */
   /* timer countdown value; triggers IRQ when timer is finished */
   #define TIMER_VALUE_MASK		0x000fffffUL
@@ -149,8 +148,6 @@ enum azf_freq_t {
    * in case playback is active? Or is this driver-induced?
    */
 
-/* this WORD can be set to have bits 0x0028 activated (FIXME: correct??);
- * actually inhibits PCM playback!!! maybe power management??: */
 #define IDX_IO_6AH		0x6A /* WRITE_ONLY! */
   /* bit 5: enabling this will activate permanent counting of bytes 2/3
    * at gameport I/O (0xb402/3) (equal values each) and cause
@@ -261,7 +258,6 @@ enum {
    * 11 --> 1/200: */
   #define GAME_HWCFG_ADC_COUNTER_FREQ_MASK	0x06
 
-  /* FIXME: these values might be reversed... */
   #define GAME_HWCFG_ADC_COUNTER_FREQ_STD	0
   #define GAME_HWCFG_ADC_COUNTER_FREQ_1_2	1
   #define GAME_HWCFG_ADC_COUNTER_FREQ_1_20	2

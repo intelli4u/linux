@@ -1136,9 +1136,6 @@ static int ioat3_reset_hw(struct ioat_chan_common *chan)
 	}
 	pci_write_config_dword(pdev, IOAT_PCI_CHANERR_INT_OFFSET, chanerr);
 
-	/* Clear DMAUNCERRSTS Cfg-Reg Parity Error status bit
-	 * (workaround for spurious config parity error after restart)
-	 */
 	pci_read_config_word(pdev, IOAT_PCI_DEVICE_ID_OFFSET, &dev_id);
 	if (dev_id == PCI_DEVICE_ID_INTEL_IOAT_TBG0)
 		pci_write_config_dword(pdev, IOAT_PCI_DMAUNCERRSTS_OFFSET, 0x10);

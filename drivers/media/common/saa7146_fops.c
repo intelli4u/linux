@@ -138,7 +138,6 @@ void saa7146_buffer_next(struct saa7146_dev *dev,
 			/* nothing to do -- just prevent next video-dma1 transfer
 			   by lowering the protection address */
 
-			// fixme: fix this for vflip != 0
 
 			saa7146_write(dev, PROT_ADDR1, 0);
 			saa7146_write(dev, MC2, (MASK_02|MASK_18));

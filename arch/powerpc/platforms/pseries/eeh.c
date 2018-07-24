@@ -592,18 +592,6 @@ dn_unlock:
 
 EXPORT_SYMBOL_GPL(eeh_dn_check_failure);
 
-/**
- * eeh_check_failure - check if all 1's data is due to EEH slot freeze
- * @token i/o token, should be address in the form 0xA....
- * @val value, should be all 1's (XXX why do we need this arg??)
- *
- * Check for an EEH failure at the given token address.  Call this
- * routine if the result of a read was all 0xff's and you want to
- * find out if this is due to an EEH slot freeze event.  This routine
- * will query firmware for the EEH status.
- *
- * Note this routine is safe to call in an interrupt context.
- */
 unsigned long eeh_check_failure(const volatile void __iomem *token, unsigned long val)
 {
 	unsigned long addr;

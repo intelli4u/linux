@@ -1950,7 +1950,6 @@ static int qeth_ulp_enable(struct qeth_card *card)
 	char prot_type;
 	struct qeth_cmd_buffer *iob;
 
-	/*FIXME: trace view callbacks*/
 	QETH_DBF_TEXT(SETUP, 2, "ulpenabl");
 
 	iob = qeth_wait_for_buffer(&card->write);

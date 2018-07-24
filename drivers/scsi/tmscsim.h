@@ -3,7 +3,7 @@
 ;*		    TEKRAM DC-390(T) PCI SCSI Bus Master Host Adapter  *
 ;*		    Device Driver				       *
 ;***********************************************************************/
-/* $Id: tmscsim.h,v 2.15.2.3 2000/11/17 20:52:27 garloff Exp $ */
+/* $Id: tmscsim.h,v 2.15.2.3 2000/11/17 20:52:27 Exp $ */
 
 #ifndef _TMSCSIM_H
 #define _TMSCSIM_H
@@ -132,7 +132,8 @@ u8		msgin123[4];
 u8		Connected;
 u8		pad;
 
-#if defined(USE_SPINLOCKS) && USE_SPINLOCKS > 1 && (defined(CONFIG_SMP) || DEBUG_SPINLOCKS > 0)
+#if defined(USE_SPINLOCKS) && USE_SPINLOCKS > 1 && (defined(CONFIG_SMP) || \
+	DEBUG_SPINLOCKS > 0)
 spinlock_t	lock;
 #endif
 u8		sel_timeout;

@@ -1,4 +1,4 @@
-/* $Id: hycapi.c,v 1.8.6.4 2001/09/23 22:24:54 kai Exp $
+/* $Id: hycapi.c,v 1.8.6.4 2001/09/23 22:24:54 Exp $
  *
  * Linux driver for HYSDN cards, CAPI2.0-Interface.
  *

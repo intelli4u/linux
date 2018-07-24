@@ -32,7 +32,6 @@
 #include "tuner-xc2028.h"
 
 
-/*FIXME: Hack to avoid needing to patch i2c-id.h */
 #define I2C_HW_B_TM6000 I2C_HW_B_EM28XX
 /* ----------------------------------------------------------- */
 
@@ -103,9 +102,6 @@ static int tm6000_i2c_recv_regs(struct tm6000_core *dev, unsigned char addr,
 
 	/* capture mutex */
 	if ((dev->caps.has_zl10353) && (dev->demod_addr << 1 == addr) && (reg % 2 == 0)) {
-		/*
-		 * Workaround an I2C bug when reading from zl10353
-		 */
 		reg -= 1;
 		len += 1;
 

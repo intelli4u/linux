@@ -110,4 +110,3 @@
 /* Both of these are needed, otherwise nothing happens. */
 #define NV50_EVO_CRTC_SCALE_RES1                                     0x000008d8
 #define NV50_EVO_CRTC_SCALE_RES2                                     0x000008dc
-

@@ -79,4 +79,3 @@ int dio_create_sysfs_dev_files(struct dio_dev *d)
 
 	return 0;
 }
-

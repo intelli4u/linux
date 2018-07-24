@@ -1,5 +1,5 @@
 /***********************************
- * $Id: m68360_enet.h,v 1.1 2002/03/02 15:01:07 gerg Exp $
+ * $Id: m68360_enet.h,v 1.1 2002/03/02 15:01:07 Exp $
  ***********************************
  *
  ***************************************
@@ -174,4 +174,3 @@ void ethernet_init(int                       scc_number,
 int  ethernet_tx(int scc_number, void *buf, int length);
 
 #endif
-

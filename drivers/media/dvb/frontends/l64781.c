@@ -384,8 +384,6 @@ static int l64781_read_ber(struct dvb_frontend* fe, u32* ber)
 {
 	struct l64781_state* state = fe->demodulator_priv;
 
-	/*   XXX FIXME: set up counting period (reg 0x26...0x28)
-	 */
 	*ber = l64781_readreg (state, 0x39)
 	    | (l64781_readreg (state, 0x3a) << 8);
 

@@ -548,7 +548,6 @@ static void ext2_splice_branch(struct inode *inode,
 
 	block_i = EXT2_I(inode)->i_block_alloc_info;
 
-	/* XXX LOCKING probably should have i_meta_lock ?*/
 	/* That's it */
 
 	*where->p = where->key;
@@ -705,9 +704,6 @@ static int ext2_get_blocks(struct inode *inode,
 	 */
 	count = ext2_blks_to_allocate(partial, indirect_blks,
 					maxblocks, blocks_to_boundary);
-	/*
-	 * XXX ???? Block out ext2_truncate while we alter the tree
-	 */
 	err = ext2_alloc_branch(inode, indirect_blks, &count, goal,
 				offsets + (partial - chain), partial);
 
@@ -1156,14 +1152,6 @@ do_indirects:
 
 static void ext2_truncate_blocks(struct inode *inode, loff_t offset)
 {
-	/*
-	 * XXX: it seems like a bug here that we don't allow
-	 * IS_APPEND inode to have blocks-past-i_size trimmed off.
-	 * review and fix this.
-	 *
-	 * Also would be nice to be able to handle IO errors and such,
-	 * but that's probably too much to ask.
-	 */
 	if (!(S_ISREG(inode->i_mode) || S_ISDIR(inode->i_mode) ||
 	    S_ISLNK(inode->i_mode)))
 		return;

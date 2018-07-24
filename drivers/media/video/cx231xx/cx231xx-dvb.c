@@ -220,36 +220,6 @@ static struct xc5000_config cnxt_rde250_tunerconfig = {
 };
 
 /* ------------------------------------------------------------------ */
-#if 0
-static int attach_xc5000(u8 addr, struct cx231xx *dev)
-{
-
-	struct dvb_frontend *fe;
-	struct xc5000_config cfg;
-
-	memset(&cfg, 0, sizeof(cfg));
-	cfg.i2c_adap = &dev->i2c_bus[1].i2c_adap;
-	cfg.i2c_addr = addr;
-
-	if (!dev->dvb->frontend) {
-		printk(KERN_ERR "%s/2: dvb frontend not attached. "
-		       "Can't attach xc5000\n", dev->name);
-		return -EINVAL;
-	}
-
-	fe = dvb_attach(xc5000_attach, dev->dvb->frontend, &cfg);
-	if (!fe) {
-		printk(KERN_ERR "%s/2: xc5000 attach failed\n", dev->name);
-		dvb_frontend_detach(dev->dvb->frontend);
-		dev->dvb->frontend = NULL;
-		return -EINVAL;
-	}
-
-	printk(KERN_INFO "%s/2: xc5000 attached\n", dev->name);
-
-	return 0;
-}
-#endif
 
 int cx231xx_set_analog_freq(struct cx231xx *dev, u32 freq)
 {

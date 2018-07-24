@@ -104,7 +104,6 @@ static int atihdmi_dig_playback_pcm_prepare(struct hda_pcm_stream *hinfo,
 		return err;
 	snd_hda_codec_write(codec, CVT_NID, 0, AC_VERB_SET_CVT_CHAN_COUNT,
 			    chans - 1);
-	/* FIXME: XXX */
 	for (i = 0; i < chans; i++) {
 		snd_hda_codec_write(codec, CVT_NID, 0,
 				    AC_VERB_SET_HDMI_CHAN_SLOT,
@@ -138,8 +137,6 @@ static int atihdmi_build_pcms(struct hda_codec *codec)
 	info->pcm_type = HDA_PCM_TYPE_HDMI;
 	info->stream[SNDRV_PCM_STREAM_PLAYBACK] = atihdmi_pcm_digital_playback;
 
-	/* FIXME: we must check ELD and change the PCM parameters dynamically
-	 */
 	chans = get_wcaps(codec, CVT_NID);
 	chans = get_wcaps_channels(chans);
 	info->stream[SNDRV_PCM_STREAM_PLAYBACK].channels_max = chans;

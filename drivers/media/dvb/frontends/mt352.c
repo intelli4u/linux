@@ -424,17 +424,6 @@ static int mt352_read_status(struct dvb_frontend* fe, fe_status_t* status)
 	struct mt352_state* state = fe->demodulator_priv;
 	int s0, s1, s3;
 
-	/* FIXME:
-	 *
-	 * The MT352 design manual from Zarlink states (page 46-47):
-	 *
-	 * Notes about the TUNER_GO register:
-	 *
-	 * If the Read_Tuner_Byte (bit-1) is activated, then the tuner status
-	 * byte is copied from the tuner to the STATUS_3 register and
-	 * completion of the read operation is indicated by bit-5 of the
-	 * INTERRUPT_3 register.
-	 */
 
 	if ((s0 = mt352_read_register(state, STATUS_0)) < 0)
 		return -EREMOTEIO;

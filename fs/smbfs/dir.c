@@ -640,7 +640,6 @@ smb_rename(struct inode *old_dir, struct dentry *old_dentry,
 				DENTRY_PATH(new_dentry), error);
 			goto out;
 		}
-		/* FIXME */
 		d_delete(new_dentry);
 	}
 
@@ -656,10 +655,6 @@ out:
 	return error;
 }
 
-/*
- * FIXME: samba servers won't let you create device nodes unless uid/gid
- * matches the connection credentials (and we don't know which those are ...)
- */
 static int
 smb_make_node(struct inode *dir, struct dentry *dentry, int mode, dev_t dev)
 {

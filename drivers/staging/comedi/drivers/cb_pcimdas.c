@@ -397,7 +397,7 @@ static int cb_pcimdas_ai_rinsn(struct comedi_device *dev,
 		maxchans = thisboard->ai_se_chans;
 
 	if (chan > (maxchans - 1))
-		return -ETIMEDOUT;	/* *** Wrong error code. Fixme. */
+		return -ETIMEDOUT;
 
 	/* configure for sw initiated read */
 	d = inb(devpriv->BADR3 + 5);

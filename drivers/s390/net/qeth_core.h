@@ -319,7 +319,7 @@ struct qeth_hdr_ext_tso {
 } __attribute__ ((packed));
 
 struct qeth_hdr_tso {
-	struct qeth_hdr hdr;	/*hdr->hdr.l3.xxx*/
+	struct qeth_hdr hdr;
 	struct qeth_hdr_ext_tso ext;
 } __attribute__ ((packed));
 

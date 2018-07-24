@@ -33,24 +33,8 @@
  * in exit.c or in signal.c.
  */
 
-#if 0
-/*
- * Breakpoint SWI instruction: SWI &9F0001
- */
-#define BREAKINST_ARM	0xef9f0001
-#define BREAKINST_THUMB	0xdf00		/* fill this in later */
-#else
-/*
- * New breakpoints - use an undefined instruction.  The ARM architecture
- * reference manual guarantees that the following instruction space
- * will produce an undefined instruction exception on all CPUs:
- *
- *  ARM:   xxxx 0111 1111 xxxx xxxx xxxx 1111 xxxx
- *  Thumb: 1101 1110 xxxx xxxx
- */
 #define BREAKINST_ARM	0xe7f001f0
 #define BREAKINST_THUMB	0xde01
-#endif
 
 struct pt_regs_offset {
 	const char *name;

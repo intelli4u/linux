@@ -1752,17 +1752,6 @@ fail:
 	return error;
 }
 
-/**
- * gfs2_rlist_add - add a RG to a list of RGs
- * @sdp: the filesystem
- * @rlist: the list of resource groups
- * @block: the block
- *
- * Figure out what RG a block belongs to and add that RG to the list
- *
- * FIXME: Don't use NOFAIL
- *
- */
 
 void gfs2_rlist_add(struct gfs2_sbd *sdp, struct gfs2_rgrp_list *rlist,
 		    u64 block)
@@ -1805,16 +1794,6 @@ void gfs2_rlist_add(struct gfs2_sbd *sdp, struct gfs2_rgrp_list *rlist,
 	rlist->rl_rgd[rlist->rl_rgrps++] = rgd;
 }
 
-/**
- * gfs2_rlist_alloc - all RGs have been added to the rlist, now allocate
- *      and initialize an array of glock holders for them
- * @rlist: the list of resource groups
- * @state: the lock state to acquire the RG lock in
- * @flags: the modifier flags for the holder structures
- *
- * FIXME: Don't use NOFAIL
- *
- */
 
 void gfs2_rlist_alloc(struct gfs2_rgrp_list *rlist, unsigned int state)
 {
@@ -1846,4 +1825,3 @@ void gfs2_rlist_free(struct gfs2_rgrp_list *rlist)
 		kfree(rlist->rl_ghs);
 	}
 }
-

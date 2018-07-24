@@ -41,15 +41,6 @@
 #include <sound/tlv.h>
 #include <sound/emu10k1.h>
 
-#if 0		/* for testing purposes - digital out -> capture */
-#define EMU10K1_CAPTURE_DIGITAL_OUT
-#endif
-#if 0		/* for testing purposes - set S/PDIF to AC3 output */
-#define EMU10K1_SET_AC3_IEC958
-#endif
-#if 0		/* for testing purposes - feed the front signal to Center/LFE outputs */
-#define EMU10K1_CENTER_LFE_FROM_FRONT
-#endif
 
 static bool high_res_gpr_volume;
 module_param(high_res_gpr_volume, bool, 0444);
@@ -755,7 +746,6 @@ static int snd_emu10k1_verify_controls(struct snd_emu10k1 *emu,
 		}
 	}
 	for (i = 0; i < icode->gpr_list_control_count; i++) {
-	     	/* FIXME: we need to check the WRITE access */
 		if (copy_gctl(emu, gctl, icode->gpr_list_controls, i)) {
 			err = -EFAULT;
 			goto __error;
@@ -1010,7 +1000,6 @@ static int snd_emu10k1_ipcm_poke(struct snd_emu10k1 *emu,
 	if (ipcm->channels == 0) {	/* remove */
 		pcm->valid = 0;
 	} else {
-		/* FIXME: we need to add universal code to the PCM transfer routine */
 		if (ipcm->channels != 2) {
 			err = -EINVAL;
 			goto __error;
@@ -1214,7 +1203,6 @@ static int __devinit _snd_emu10k1_audigy_init_efx(struct snd_emu10k1 *emu)
 	/* stop FX processor */
 	snd_emu10k1_ptr_write(emu, A_DBG, 0, (emu->fx8010.dbg = 0) | A_DBG_SINGLE_STEP);
 
-#if 1
 	/* PCM front Playback Volume (independent from stereo mix)
 	 * playback = 0 + ( gpr * FXBUS_PCM_LEFT_FRONT >> 31)
 	 * where gpr contains attenuation from corresponding mixer control
@@ -1700,14 +1688,6 @@ A_OP(icode, &ptr, iMAC0, A_GPR(var), A_GPR(var), A_GPR(vol), A_EXTIN(input))
 			     A_C_00000000, A_C_00000000);
 		}
 
-#if 0
-		for (z = 4; z < 8; z++) {
-			A_OP(icode, &ptr, iACC3, A_FXBUS2(z), A_C_00000000, A_C_00000000, A_C_00000000);
-		}
-		for (z = 0xc; z < 0x10; z++) {
-			A_OP(icode, &ptr, iACC3, A_FXBUS2(z), A_C_00000000, A_C_00000000, A_C_00000000);
-		}
-#endif
 	} else {
 		/* EFX capture - capture the 16 EXTINs */
 		/* Capture 16 channels of S16_LE sound */
@@ -1715,8 +1695,6 @@ A_OP(icode, &ptr, iMAC0, A_GPR(var), A_GPR(var), A_GPR(vol), A_EXTIN(input))
 			A_OP(icode, &ptr, iACC3, A_FXBUS2(z), A_C_00000000, A_C_00000000, A_EXTIN(z));
 		}
 	}
-	
-#endif /* JCD test */
 	/*
 	 * ok, set up done..
 	 */
@@ -2387,23 +2365,6 @@ void snd_emu10k1_free_efx(struct snd_emu10k1 *emu)
 		snd_emu10k1_ptr_write(emu, DBG, 0, emu->fx8010.dbg = EMU10K1_DBG_SINGLE_STEP);
 }
 
-#if 0 /* FIXME: who use them? */
-int snd_emu10k1_fx8010_tone_control_activate(struct snd_emu10k1 *emu, int output)
-{
-	if (output < 0 || output >= 6)
-		return -EINVAL;
-	snd_emu10k1_ptr_write(emu, emu->gpr_base + 0x94 + output, 0, 1);
-	return 0;
-}
-
-int snd_emu10k1_fx8010_tone_control_deactivate(struct snd_emu10k1 *emu, int output)
-{
-	if (output < 0 || output >= 6)
-		return -EINVAL;
-	snd_emu10k1_ptr_write(emu, emu->gpr_base + 0x94 + output, 0, 0);
-	return 0;
-}
-#endif
 
 int snd_emu10k1_fx8010_tram_setup(struct snd_emu10k1 *emu, u32 size)
 {

@@ -33,7 +33,6 @@ struct vp702x_device_state {
 	u8 power_state;
 };
 
-/* check for mutex FIXME */
 int vp702x_usb_in_op(struct dvb_usb_device *d, u8 req, u16 value, u16 index, u8 *b, int blen)
 {
 	int ret = -1;

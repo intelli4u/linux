@@ -21,91 +21,6 @@
 
 /* $DHD: intelfb/intelfbdrv.c,v 1.20 2003/06/27 15:17:40 dawes Exp $ */
 
-/*
- * Changes:
- *    01/2003 - Initial driver (0.1.0), no mode switching, no acceleration.
- *		This initial version is a basic core that works a lot like
- *		the vesafb driver.  It must be built-in to the kernel,
- *		and the initial video mode must be set with vga=XXX at
- *		boot time.  (David Dawes)
- *
- *    01/2003 - Version 0.2.0: Mode switching added, colormap support
- *		implemented, Y panning, and soft screen blanking implemented.
- *		No acceleration yet.  (David Dawes)
- *
- *    01/2003 - Version 0.3.0: fbcon acceleration support added.  Module
- *		option handling added.  (David Dawes)
- *
- *    01/2003 - Version 0.4.0: fbcon HW cursor support added.  (David Dawes)
- *
- *    01/2003 - Version 0.4.1: Add auto-generation of built-in modes.
- *		(David Dawes)
- *
- *    02/2003 - Version 0.4.2: Add check for active non-CRT devices, and
- *		mode validation checks.  (David Dawes)
- *
- *    02/2003 - Version 0.4.3: Check when the VC is in graphics mode so that
- *		acceleration is disabled while an XFree86 server is running.
- *		(David Dawes)
- *
- *    02/2003 - Version 0.4.4: Monitor DPMS support.  (David Dawes)
- *
- *    02/2003 - Version 0.4.5: Basic XFree86 + fbdev working.  (David Dawes)
- *
- *    02/2003 - Version 0.5.0: Modify to work with the 2.5.32 kernel as well
- *		as 2.4.x kernels.  (David Dawes)
- *
- *    02/2003 - Version 0.6.0: Split out HW-specifics into a separate file.
- *		(David Dawes)
- *
- *    02/2003 - Version 0.7.0: Test on 852GM/855GM.  Acceleration and HW
- *		cursor are disabled on this platform.  (David Dawes)
- *
- *    02/2003 - Version 0.7.1: Test on 845G.  Acceleration is disabled
- *		on this platform.  (David Dawes)
- *
- *    02/2003 - Version 0.7.2: Test on 830M.  Acceleration and HW
- *		cursor are disabled on this platform.  (David Dawes)
- *
- *    02/2003 - Version 0.7.3: Fix 8-bit modes for mobile platforms
- *		(David Dawes)
- *
- *    02/2003 - Version 0.7.4: Add checks for FB and FBCON_HAS_CFB* configured
- *		in the kernel, and add mode bpp verification and default
- *		bpp selection based on which FBCON_HAS_CFB* are configured.
- *		(David Dawes)
- *
- *    02/2003 - Version 0.7.5: Add basic package/install scripts based on the
- *		DRI packaging scripts.  (David Dawes)
- *
- *    04/2003 - Version 0.7.6: Fix typo that affects builds with SMP-enabled
- *		kernels.  (David Dawes, reported by Anupam).
- *
- *    06/2003 - Version 0.7.7:
- *              Fix Makefile.kernel build problem (Tsutomu Yasuda).
- *		Fix mis-placed #endif (2.4.21 kernel).
- *
- *    09/2004 - Version 0.9.0 - by Sylvain Meyer
- *              Port to linux 2.6 kernel fbdev
- *              Fix HW accel and HW cursor on i845G
- *              Use of agpgart for fb memory reservation
- *              Add mtrr support
- *
- *    10/2004 - Version 0.9.1
- *              Use module_param instead of old MODULE_PARM
- *              Some cleanup
- *
- *    11/2004 - Version 0.9.2
- *              Add vram option to reserve more memory than stolen by BIOS
- *              Fix intelfbhw_pan_display typo
- *              Add __initdata annotations
- *
- *    04/2008 - Version 0.9.5
- *              Add support for 965G/965GM. (Maik Broemme <mbroemme@plusserver.de>)
- *
- *    08/2008 - Version 0.9.6
- *              Add support for 945GME. (Phil Endecott <spam_from_intelfb@chezphil.org>)
- */
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -1703,4 +1618,3 @@ static int intelfb_sync(struct fb_info *info)
 	intelfbhw_do_sync(dinfo);
 	return 0;
 }
-

@@ -322,7 +322,7 @@ static int cx22700_set_frontend(struct dvb_frontend* fe, struct dvb_frontend_par
 {
 	struct cx22700_state* state = fe->demodulator_priv;
 
-	cx22700_writereg (state, 0x00, 0x02); /* XXX CHECKME: soft reset*/
+	cx22700_writereg (state, 0x00, 0x02);
 	cx22700_writereg (state, 0x00, 0x00);
 
 	if (fe->ops.tuner_ops.set_params) {

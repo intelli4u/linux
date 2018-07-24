@@ -110,7 +110,6 @@ struct smsc911x_data {
 	unsigned int resetcount;
 #endif
 
-	/* Members for Multicast filter workaround */
 	unsigned int multicast_update_pending;
 	unsigned int set_bits_mask;
 	unsigned int clear_bits_mask;
@@ -270,7 +269,6 @@ static u32 smsc911x_mac_read(struct smsc911x_data *pdata, unsigned int offset)
 	smsc911x_reg_write(pdata, MAC_CSR_CMD, ((offset & 0xFF) |
 		MAC_CSR_CMD_CSR_BUSY_ | MAC_CSR_CMD_R_NOT_W_));
 
-	/* Workaround for hardware read-after-write restriction */
 	temp = smsc911x_reg_read(pdata, BYTE_TEST);
 
 	/* Wait for the read to complete */
@@ -303,7 +301,6 @@ static void smsc911x_mac_write(struct smsc911x_data *pdata,
 	smsc911x_reg_write(pdata, MAC_CSR_CMD, ((offset & 0xFF) |
 		MAC_CSR_CMD_CSR_BUSY_));
 
-	/* Workaround for hardware read-after-write restriction */
 	temp = smsc911x_reg_read(pdata, BYTE_TEST);
 
 	/* Wait for the write to complete */
@@ -1170,9 +1167,12 @@ static int smsc911x_open(struct net_device *dev)
 	}
 
 	/* Reset the LAN911x */
-	if (smsc911x_soft_reset(pdata)) {
-		SMSC_WARNING(HW, "soft reset failed");
-		return -EIO;
+	if (!(pdata->config.flags & SMSC911X_SAVE_MAC_ADDRESS))
+	{
+		if (smsc911x_soft_reset(pdata)) {
+			SMSC_WARNING(HW, "soft reset failed");
+			return -EIO;
+		}
 	}
 
 	smsc911x_reg_write(pdata, HW_CFG, 0x00050000);
@@ -1700,7 +1700,6 @@ static int smsc911x_eeprom_write_location(struct smsc911x_data *pdata,
 		op = E2P_CMD_EPC_CMD_WRITE_ | address;
 		smsc911x_reg_write(pdata, E2P_DATA, (u32)data);
 
-		/* Workaround for hardware read-after-write restriction */
 		temp = smsc911x_reg_read(pdata, BYTE_TEST);
 
 		ret = smsc911x_eeprom_send_cmd(pdata, op);
@@ -1887,9 +1886,6 @@ static int __devinit smsc911x_init(struct net_device *dev)
 		SMSC_WARNING(PROBE,
 			"This driver is not intended for this chip revision");
 
-	/* workaround for platforms without an eeprom, where the mac address
-	 * is stored elsewhere and set by the bootloader.  This saves the
-	 * mac address before resetting the device */
 	if (pdata->config.flags & SMSC911X_SAVE_MAC_ADDRESS)
 		smsc911x_read_mac_address(dev);
 

@@ -139,7 +139,6 @@ static long booke_wdt_ioctl(struct file *file,
 	case WDIOC_GETSTATUS:
 		return put_user(0, p);
 	case WDIOC_GETBOOTSTATUS:
-		/* XXX: something is clearing TSR */
 		tmp = mfspr(SPRN_TSR) & TSR_WRS(3);
 		/* returns CARDRESET if last reset was caused by the WDT */
 		return (tmp ? WDIOF_CARDRESET : 0);

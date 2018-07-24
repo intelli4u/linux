@@ -553,4 +553,3 @@ void zfLed100msCtrl(zdev_t* dev)
         }
     }
 }
-

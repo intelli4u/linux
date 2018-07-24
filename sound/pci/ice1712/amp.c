@@ -92,4 +92,3 @@ struct snd_ice1712_card_info snd_vt1724_amp_cards[] __devinitdata = {
 	},
 	{ } /* terminator */
 };
-

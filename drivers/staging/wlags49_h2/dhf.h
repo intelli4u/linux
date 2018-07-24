@@ -223,4 +223,3 @@ EXTERN_C int dhf_download_binary(memimage *fw);
 EXTERN_C hcf_16 *find_record_in_pda(hcf_16 *pdap, hcf_16 code);
 
 #endif  /* DHF_H */
-

@@ -166,16 +166,6 @@ static int bt866_s_routing(struct v4l2_subdev *sd,
 	return 0;
 }
 
-#if 0
-/* Code to setup square pixels, might be of some use in the future,
-   but is currently unused. */
-	val = encoder->reg[0xdc];
-	if (*iarg)
-		val |= 1; /* SQUARE */
-	else
-		val &= ~1; /* !SQUARE */
-	bt866_write(client, 0xdc, val);
-#endif
 
 static int bt866_g_chip_ident(struct v4l2_subdev *sd, struct v4l2_dbg_chip_ident *chip)
 {

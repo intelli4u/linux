@@ -1342,13 +1342,6 @@ static struct of_platform_driver of_mpc8xxx_spi_driver = {
 };
 
 #ifdef CONFIG_MPC832x_RDB
-/*
- * 				XXX XXX XXX
- * This is "legacy" platform driver, was used by the MPC8323E-RDB boards
- * only. The driver should go away soon, since newer MPC8323E-RDB's device
- * tree can work with OpenFirmware driver. But for now we support old trees
- * as well.
- */
 static int __devinit plat_mpc8xxx_spi_probe(struct platform_device *pdev)
 {
 	struct resource *mem;

@@ -136,7 +136,6 @@ static struct pcm_format_data pcm_formats[SNDRV_PCM_FORMAT_LAST+1] = {
 		.width = 5, .phys = 5, .le = -1, .signd = -1,
 		.silence = {},
 	},
-	/* FIXME: the following three formats are not defined properly yet */
 	[SNDRV_PCM_FORMAT_MPEG] = {
 		.le = -1, .signd = -1,
 	},
@@ -399,12 +398,6 @@ int snd_pcm_format_set_silence(snd_pcm_format_t format, void *data, unsigned int
 	/* non-zero samples, fill using a loop */
 	width /= 8;
 	dst = data;
-#if 0
-	while (samples--) {
-		memcpy(dst, pat, width);
-		dst += width;
-	}
-#else
 	/* a bit optimization for constant width */
 	switch (width) {
 	case 2:
@@ -432,7 +425,6 @@ int snd_pcm_format_set_silence(snd_pcm_format_t format, void *data, unsigned int
 		}
 		break;
 	}
-#endif
 	return 0;
 }
 

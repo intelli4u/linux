@@ -1621,4 +1621,3 @@ MODULE_LICENSE("GPL");
 
 module_init(sensors_w83792d_init);
 module_exit(sensors_w83792d_exit);
-

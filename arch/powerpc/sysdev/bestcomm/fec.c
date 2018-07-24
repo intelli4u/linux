@@ -267,4 +267,3 @@ EXPORT_SYMBOL_GPL(bcom_fec_tx_release);
 MODULE_DESCRIPTION("BestComm FEC tasks driver");
 MODULE_AUTHOR("Dale Farnsworth <dfarnsworth@mvista.com>");
 MODULE_LICENSE("GPL v2");
-

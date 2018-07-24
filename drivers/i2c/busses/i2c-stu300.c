@@ -635,9 +635,6 @@ static int stu300_send_address(struct stu300_dev *dev,
 		if (ret != 0)
 			return ret;
 	}
-	/* FIXME: Why no else here? two events for 10bit?
-	 * Await event 6 (normal) or event 9 (10bit)
-	 */
 
 	if (resend)
 		dev_dbg(&dev->pdev->dev, "await event 6\n");
@@ -679,12 +676,6 @@ static int stu300_xfer_msg(struct i2c_adapter *adap,
 		goto exit_disable;
 	}
 
-	/*
-	 * For some reason, sending the address sometimes fails when running
-	 * on  the 13 MHz clock. No interrupt arrives. This is a work around,
-	 * which tries to restart and send the address up to 10 times before
-	 * really giving up. Usually 5 to 8 attempts are enough.
-	 */
 	do {
 		if (attempts)
 			dev_dbg(&dev->pdev->dev, "wait while busy\n");

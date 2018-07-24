@@ -1,24 +1,4 @@
-/*
- * Cryptographic API.
- *
- * Zlib algorithm
- *
- * Copyright 2008 Sony Corporation
- *
- * Based on deflate.c, which is
- * Copyright (c) 2003 James Morris <jmorris@intercode.com.au>
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
- * FIXME: deflate transforms will require up to a total of about 436k of kernel
- * memory on i386 (390k for compression, the rest for decompression), as the
- * current zlib kernel code uses a worst case pre-allocation system by default.
- * This needs to be fixed so that the amount of memory required is properly
- * related to the winbits and memlevel parameters.
- */
+
 
 #define pr_fmt(fmt)	"%s: " fmt, __func__
 
@@ -306,11 +286,6 @@ static int zlib_decompress_final(struct crypto_pcomp *tfm,
 
 	if (dctx->decomp_windowBits < 0) {
 		ret = zlib_inflate(stream, Z_SYNC_FLUSH);
-		/*
-		 * Work around a bug in zlib, which sometimes wants to taste an
-		 * extra byte when being used in the (undocumented) raw deflate
-		 * mode. (From USAGI).
-		 */
 		if (ret == Z_OK && !stream->avail_in && stream->avail_out) {
 			const void *saved_next_in = stream->next_in;
 			u8 zerostuff = 0;

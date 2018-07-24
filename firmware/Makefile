@@ -187,7 +187,6 @@ wordsize_deps := $(wildcard include/config/64bit.h include/config/32bit.h \
 		include/config/superh32.h include/config/superh64.h \
 		include/config/x86_32.h include/config/x86_64.h)
 
-# Workaround for make < 3.81, where .SECONDEXPANSION doesn't work.
 # It'll end up depending on these targets, so make them a PHONY rule which
 # depends on _all_ the directories in $(firmware-dirs), and it'll work out OK.
 PHONY += $(objtree)/$$(%) $(objtree)/$(obj)/$$(%)

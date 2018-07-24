@@ -11,14 +11,10 @@
 #ifndef _I2C_PXA_H_
 #define _I2C_PXA_H_
 
-#if 0
-#define DEF_TIMEOUT             3
-#else
 /* need a longer timeout if we're dealing with the fact we may well be
  * looking at a multi-master environment
 */
 #define DEF_TIMEOUT             32
-#endif
 
 #define BUS_ERROR               (-EREMOTEIO)
 #define XFER_NAKED              (-ECONNREFUSED)

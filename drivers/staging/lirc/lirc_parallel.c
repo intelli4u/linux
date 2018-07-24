@@ -246,11 +246,6 @@ static void irq_handler(void *blah)
 	if (!is_claimed)
 		return;
 
-#if 0
-	/* disable interrupt */
-	  disable_irq(irq);
-	  out(LIRC_PORT_IRQ, in(LIRC_PORT_IRQ) & (~LP_PINTEN));
-#endif
 	if (check_pselecd && (in(1) & LP_PSELECD))
 		return;
 
@@ -648,15 +643,6 @@ static int __init lirc_parallel_init(void)
 
 	timer = init_lirc_timer();
 
-#if 0	/* continue even if device is offline */
-	if (timer == 0) {
-		is_claimed = 0;
-		parport_release(pport);
-		parport_unregister_device(ppdevice);
-		return -EIO;
-	}
-
-#endif
 	if (debug)
 		out(LIRC_PORT_DATA, 0);
 #endif

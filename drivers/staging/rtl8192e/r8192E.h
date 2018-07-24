@@ -92,11 +92,6 @@
 #define IC_VersionCut_D	0x3
 #define IC_VersionCut_E	0x4
 
-#if 0 //we need to use RT_TRACE instead DMESG as RT_TRACE will clearly show debug level wb.
-#define DMESG(x,a...) printk(KERN_INFO RTL819xE_MODULE_NAME ": " x "\n", ## a)
-#define DMESGW(x,a...) printk(KERN_WARNING RTL819xE_MODULE_NAME ": WW:" x "\n", ## a)
-#define DMESGE(x,a...) printk(KERN_WARNING RTL819xE_MODULE_NAME ": EE:" x "\n", ## a)
-#else
 #define DMESG(x,a...)
 #define DMESGW(x,a...)
 #define DMESGE(x,a...)
@@ -148,7 +143,6 @@ do { if(rt_global_debug_component & component) \
 #define COMP_DOWN				BIT27  // for rm driver module
 #define COMP_INTR 				BIT28  // for interrupt
 #define COMP_ERR				BIT31  // for error out, always on
-#endif
 
 #define RTL819x_DEBUG
 #ifdef RTL819x_DEBUG
@@ -470,44 +464,6 @@ typedef struct _rt_firmware{
 #define CAM_CONTENT_COUNT       8
 //#define CFG_DEFAULT_KEY         BIT5
 #define CFG_VALID               BIT15
-#if 0
-//----------------------------------------------------------------------------
-//       8187B WPA Config Register (offset 0xb0, 1 byte)
-//----------------------------------------------------------------------------
-#define SCR_UseDK                       0x01
-#define SCR_TxSecEnable                 0x02
-#define SCR_RxSecEnable                 0x04
-
-//----------------------------------------------------------------------------
-//       8187B CAM Config Setting (offset 0xb0, 1 byte)
-//----------------------------------------------------------------------------
-#define CAM_VALID                               0x8000
-#define CAM_NOTVALID                    0x0000
-#define CAM_USEDK                               0x0020
-
-
-#define CAM_NONE                                0x0
-#define CAM_WEP40                               0x01
-#define CAM_TKIP                                0x02
-#define CAM_AES                                 0x04
-#define CAM_WEP104                              0x05
-
-//#define CAM_SIZE                              16
-#define TOTAL_CAM_ENTRY         16
-#define CAM_ENTRY_LEN_IN_DW     6       // 6, unit: in u4byte. Added by Annie, 2006-05-25.
-#define CAM_ENTRY_LEN_IN_BYTE   (CAM_ENTRY_LEN_IN_DW*sizeof(u32))    // 24, unit: in u1byte. Added by Annie, 2006-05-25.
-
-#define CAM_CONFIG_USEDK                1
-#define CAM_CONFIG_NO_USEDK             0
-
-#define CAM_WRITE                               0x00010000
-#define CAM_READ                                0x00000000
-#define CAM_POLLINIG                    0x80000000
-
-//=================================================================
-//=================================================================
-
-#endif
 #define EPROM_93c46 0
 #define EPROM_93c56 1
 
@@ -555,16 +511,6 @@ typedef struct rtl_reg_debug{
         unsigned char buf[0xff];
 }rtl_reg_debug;
 
-#if 0
-
-typedef struct tx_pendingbuf
-{
-	struct ieee80211_txb *txb;
-	short ispending;
-	short descfrag;
-} tx_pendigbuf;
-
-#endif
 
 typedef struct _rt_9x_tx_rate_history {
 	u32             cck[4];
@@ -1387,86 +1333,11 @@ typedef enum{
 	} priority_t;
 */
 //for rtl8187B
-#if 0
-typedef enum{
-	BULK_PRIORITY = 0x01,
-	//RSVD0,
-	//RSVD1,
-	LOW_PRIORITY,
-	NORM_PRIORITY,
-	VO_PRIORITY,
-	VI_PRIORITY, //0x05
-	BE_PRIORITY,
-	BK_PRIORITY,
-	CMD_PRIORITY,//0x8
-	RSVD3,
-	BEACON_PRIORITY, //0x0A
-	HIGH_PRIORITY,
-	MANAGE_PRIORITY,
-	RSVD4,
-	RSVD5,
-	UART_PRIORITY //0x0F
-} priority_t;
-#endif
 typedef enum{
 	NIC_8192E = 1,
 	} nic_t;
 
 
-#if 0 //defined in Qos.h
-//typedef u32 AC_CODING;
-#define AC0_BE	0		// ACI: 0x00	// Best Effort
-#define AC1_BK	1		// ACI: 0x01	// Background
-#define AC2_VI	2		// ACI: 0x10	// Video
-#define AC3_VO	3		// ACI: 0x11	// Voice
-#define AC_MAX	4		// Max: define total number; Should not to be used as a real enum.
-
-//
-// ECWmin/ECWmax field.
-// Ref: WMM spec 2.2.2: WME Parameter Element, p.13.
-//
-typedef	union _ECW{
-	u8	charData;
-	struct
-	{
-		u8	ECWmin:4;
-		u8	ECWmax:4;
-	}f;	// Field
-}ECW, *PECW;
-
-//
-// ACI/AIFSN Field.
-// Ref: WMM spec 2.2.2: WME Parameter Element, p.12.
-//
-typedef	union _ACI_AIFSN{
-	u8	charData;
-
-	struct
-	{
-		u8	AIFSN:4;
-		u8	ACM:1;
-		u8	ACI:2;
-		u8	Reserved:1;
-	}f;	// Field
-}ACI_AIFSN, *PACI_AIFSN;
-
-//
-// AC Parameters Record Format.
-// Ref: WMM spec 2.2.2: WME Parameter Element, p.12.
-//
-typedef	union _AC_PARAM{
-	u32	longData;
-	u8	charData[4];
-
-	struct
-	{
-		ACI_AIFSN	AciAifsn;
-		ECW		Ecw;
-		u16		TXOPLimit;
-	}f;	// Field
-}AC_PARAM, *PAC_PARAM;
-
-#endif
 bool init_firmware(struct net_device *dev);
 short rtl8192_tx(struct net_device *dev, struct sk_buff* skb);
 u32 read_cam(struct net_device *dev, u8 addr);

@@ -1447,7 +1447,6 @@ struct velocity_info {
 	struct tx_info {
 		int numq;
 
-		/* FIXME: the locality of the data seems rather poor. */
 		int used[TX_QUEUE_NO];
 		int curr[TX_QUEUE_NO];
 		int tail[TX_QUEUE_NO];

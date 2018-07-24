@@ -452,9 +452,8 @@ out_nfserr:
 	goto out;
 }
 
-#if defined(CONFIG_NFSD_V2_ACL) || \
-    defined(CONFIG_NFSD_V3_ACL) || \
-    defined(CONFIG_NFSD_V4)
+#if defined(CONFIG_NFSD_V2_ACL) || defined(CONFIG_NFSD_V3_ACL) || \
+	defined(CONFIG_NFSD_V4)
 static ssize_t nfsd_getxattr(struct dentry *dentry, char *key, void **buf)
 {
 	ssize_t buflen;
@@ -1490,7 +1489,6 @@ nfsd_create_v3(struct svc_rqst *rqstp, struct svc_fh *fhp,
 		/* Cram the verifier into atime/mtime */
 		iap->ia_valid = ATTR_MTIME|ATTR_ATIME
 			| ATTR_MTIME_SET|ATTR_ATIME_SET;
-		/* XXX someone who knows this better please fix it for nsec */ 
 		iap->ia_mtime.tv_sec = v_mtime;
 		iap->ia_atime.tv_sec = v_atime;
 		iap->ia_mtime.tv_nsec = 0;
@@ -2064,23 +2062,6 @@ nfsd_permission(struct svc_rqst *rqstp, struct svc_export *exp,
 
 	if (acc == NFSD_MAY_NOP)
 		return 0;
-#if 0
-	dprintk("nfsd: permission 0x%x%s%s%s%s%s%s%s mode 0%o%s%s%s\n",
-		acc,
-		(acc & NFSD_MAY_READ)?	" read"  : "",
-		(acc & NFSD_MAY_WRITE)?	" write" : "",
-		(acc & NFSD_MAY_EXEC)?	" exec"  : "",
-		(acc & NFSD_MAY_SATTR)?	" sattr" : "",
-		(acc & NFSD_MAY_TRUNC)?	" trunc" : "",
-		(acc & NFSD_MAY_LOCK)?	" lock"  : "",
-		(acc & NFSD_MAY_OWNER_OVERRIDE)? " owneroverride" : "",
-		inode->i_mode,
-		IS_IMMUTABLE(inode)?	" immut" : "",
-		IS_APPEND(inode)?	" append" : "",
-		__mnt_is_readonly(exp->ex_path.mnt)?	" ro" : "");
-	dprintk("      owner %d/%d user %d/%d\n",
-		inode->i_uid, inode->i_gid, current_fsuid(), current_fsgid());
-#endif
 
 	/* Normally we reject any write/sattr etc access on a read-only file
 	 * system.  But if it is IRIX doing check on write-access for a 

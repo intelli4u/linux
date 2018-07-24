@@ -331,13 +331,6 @@ static void start_request(struct floppy_state *fs)
 				break;
 		}
 		req = fd_req;
-#if 0
-		printk("do_fd_req: dev=%s cmd=%d sec=%ld nr_sec=%u buf=%p\n",
-		       req->rq_disk->disk_name, req->cmd,
-		       (long)blk_rq_pos(req), blk_rq_sectors(req), req->buffer);
-		printk("           errors=%d current_nr_sectors=%u\n",
-		       req->errors, blk_rq_cur_sectors(req));
-#endif
 
 		if (blk_rq_pos(req) >= fs->total_secs) {
 			swim3_end_request_cur(-EIO);
@@ -488,7 +481,7 @@ static void act(struct floppy_state *fs)
 	for (;;) {
 		switch (fs->state) {
 		case idle:
-			return;		/* XXX shouldn't get here */
+			return;
 
 		case locating:
 			if (swim3_readbit(fs, TRACK_ZERO)) {
@@ -1190,10 +1183,6 @@ static struct macio_driver swim3_driver =
 		.of_match_table	= swim3_match,
 	},
 	.probe		= swim3_attach,
-#if 0
-	.suspend	= swim3_suspend,
-	.resume		= swim3_resume,
-#endif
 };
 
 

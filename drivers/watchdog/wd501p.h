@@ -48,4 +48,3 @@
 #define WDC_SR_PSUOVER		32	/* Active low */ /*  X   X   -  */
 #define WDC_SR_PSUUNDR		64	/* Active low */ /*  X   X   -  */
 #define WDC_SR_IRQ		128	/* Active low */ /*  X   X   X  */
-

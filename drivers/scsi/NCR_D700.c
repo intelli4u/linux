@@ -209,7 +209,6 @@ NCR_D700_probe_one(struct NCR_D700_private *p, int siop, int irq,
 	}
 
 	p->hosts[siop] = host;
-	/* FIXME: read this from SUS */
 	host->this_id = id_array[slot * 2 + siop];
 	host->irq = irq;
 	host->base = region;

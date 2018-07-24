@@ -362,9 +362,6 @@ static int cmos_set_alarm(struct device *dev, struct rtc_wkalrm *t)
 			CMOS_WRITE(mon, cmos->mon_alrm);
 	}
 
-	/* FIXME the HPET alarm glue currently ignores day_alrm
-	 * and mon_alrm ...
-	 */
 	hpet_set_alarm_time(t->time.tm_hour, t->time.tm_min, t->time.tm_sec);
 
 	if (t->enabled)
@@ -751,9 +748,6 @@ cmos_do_probe(struct device *dev, struct resource *ports, int rtc_irq)
 
 	spin_unlock_irq(&rtc_lock);
 
-	/* FIXME:
-	 * <asm-generic/rtc.h> doesn't know 12-hour mode either.
-	 */
        if (is_valid_irq(rtc_irq) && !(rtc_control & RTC_24H)) {
 		dev_warn(dev, "only 24-hr supported\n");
 		retval = -ENXIO;
@@ -1017,7 +1011,6 @@ cmos_wake_setup(struct device *dev)
 	acpi_rtc_info.wake_on = rtc_wake_on;
 	acpi_rtc_info.wake_off = rtc_wake_off;
 
-	/* workaround bug in some ACPI tables */
 	if (acpi_gbl_FADT.month_alarm && !acpi_gbl_FADT.day_alarm) {
 		dev_dbg(dev, "bogus FADT month_alarm (%d)\n",
 			acpi_gbl_FADT.month_alarm);

@@ -28,6 +28,9 @@
 #include <net/pkt_sched.h>
 #include <net/dst.h>
 
+#include <typedefs.h>
+#include <bcmdefs.h>
+
 /* Main transmission queue. */
 
 /* Modifications to data participating in scheduling must be protected with
@@ -112,7 +115,7 @@ static inline int handle_dev_cpu_collision(struct sk_buff *skb,
  *				0  - queue is empty or throttled.
  *				>0 - queue is not empty.
  */
-int sch_direct_xmit(struct sk_buff *skb, struct Qdisc *q,
+int BCMFASTPATH_HOST sch_direct_xmit(struct sk_buff *skb, struct Qdisc *q,
 		    struct net_device *dev, struct netdev_queue *txq,
 		    spinlock_t *root_lock)
 {
@@ -189,7 +192,7 @@ static inline int qdisc_restart(struct Qdisc *q)
 	return sch_direct_xmit(skb, q, dev, txq, root_lock);
 }
 
-void __qdisc_run(struct Qdisc *q)
+void BCMFASTPATH __qdisc_run(struct Qdisc *q)
 {
 	unsigned long start_time = jiffies;
 
@@ -445,7 +448,7 @@ static inline struct sk_buff_head *band2list(struct pfifo_fast_priv *priv,
 	return priv->q + band;
 }
 
-static int pfifo_fast_enqueue(struct sk_buff *skb, struct Qdisc* qdisc)
+static int BCMFASTPATH pfifo_fast_enqueue(struct sk_buff *skb, struct Qdisc* qdisc)
 {
 	if (skb_queue_len(&qdisc->q) < qdisc_dev(qdisc)->tx_queue_len) {
 		int band = prio2band[skb->priority & TC_PRIO_MAX];

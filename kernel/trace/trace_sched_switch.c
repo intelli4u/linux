@@ -294,4 +294,3 @@ __init static int init_sched_switch_trace(void)
 	return register_tracer(&sched_switch_trace);
 }
 device_initcall(init_sched_switch_trace);
-

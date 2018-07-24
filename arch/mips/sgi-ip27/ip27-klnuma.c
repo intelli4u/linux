@@ -21,11 +21,6 @@
 
 static cpumask_t ktext_repmask;
 
-/*
- * XXX - This needs to be much smarter about where it puts copies of the
- * kernel.  For example, we should never put a copy on a headless node,
- * and we should respect the topology of the machine.
- */
 void __init setup_replication_mask(void)
 {
 	/* Set only the master cnode's bit.  The master cnode is always 0. */
@@ -54,10 +49,7 @@ void __init setup_replication_mask(void)
 
 static __init void set_ktext_source(nasid_t client_nasid, nasid_t server_nasid)
 {
-	cnodeid_t client_cnode;
 	kern_vars_t *kvp;
-
-	client_cnode = NASID_TO_COMPACT_NODEID(client_nasid);
 
 	kvp = &hub_data(client_nasid)->kern_vars;
 
@@ -71,7 +63,6 @@ static __init void set_ktext_source(nasid_t client_nasid, nasid_t server_nasid)
 	printk("REPLICATION: ON nasid %d, ktext from nasid %d, kdata from nasid %d\n", client_nasid, server_nasid, master_nasid);
 }
 
-/* XXX - When the BTE works, we should use it instead of this. */
 static __init void copy_kernel(nasid_t dest_nasid)
 {
 	unsigned long dest_kern_start, source_start, source_end, kern_size;

@@ -487,8 +487,7 @@ static struct platform_device stamp_flash_device = {
 };
 #endif
 
-#if defined(CONFIG_MTD_M25P80) \
-	|| defined(CONFIG_MTD_M25P80_MODULE)
+#if defined(CONFIG_MTD_M25P80) || defined(CONFIG_MTD_M25P80_MODULE)
 static struct mtd_partition bfin_spi_flash_partitions[] = {
 	{
 		.name = "bootloader(spi)",
@@ -520,8 +519,7 @@ static struct bfin5xx_spi_chip spi_flash_chip_info = {
 };
 #endif
 
-#if defined(CONFIG_BFIN_SPI_ADC) \
-	|| defined(CONFIG_BFIN_SPI_ADC_MODULE)
+#if defined(CONFIG_BFIN_SPI_ADC) || defined(CONFIG_BFIN_SPI_ADC_MODULE)
 /* SPI ADC chip */
 static struct bfin5xx_spi_chip spi_adc_chip_info = {
 	.enable_dma = 1,         /* use dma transfer with this chip*/
@@ -529,16 +527,14 @@ static struct bfin5xx_spi_chip spi_adc_chip_info = {
 };
 #endif
 
-#if defined(CONFIG_SND_BF5XX_SOC_AD183X) \
-	|| defined(CONFIG_SND_BF5XX_SOC_AD183X_MODULE)
+#if defined(CONFIG_SND_BF5XX_SOC_AD183X) || defined(CONFIG_SND_BF5XX_SOC_AD183X_MODULE)
 static struct bfin5xx_spi_chip ad1836_spi_chip_info = {
 	.enable_dma = 0,
 	.bits_per_word = 16,
 };
 #endif
 
-#if defined(CONFIG_SND_BF5XX_SOC_AD193X) \
-	|| defined(CONFIG_SND_BF5XX_SOC_AD193X_MODULE)
+#if defined(CONFIG_SND_BF5XX_SOC_AD193X) || defined(CONFIG_SND_BF5XX_SOC_AD193X_MODULE)
 static struct bfin5xx_spi_chip ad1938_spi_chip_info = {
 	.enable_dma = 0,
 	.bits_per_word = 8,
@@ -638,8 +634,6 @@ static struct ad714x_platform_data ad7142_i2c_platform_data = {
 	.button_num = 4,
 	.button = ad7142_i2c_button_plat,
 	.stage_cfg_reg =  {
-		/* fixme: figure out right setting for all comoponent according
-		 * to hardware feature of EVAL-AD7142EB board */
 		{0xE7FF, 0x3FFF, 0x0005, 0x2626, 0x01F4, 0x01F4, 0x028A, 0x028A},
 		{0xFDBF, 0x3FFF, 0x0001, 0x2626, 0x01F4, 0x01F4, 0x028A, 0x028A},
 		{0xFFFF, 0x2DFF, 0x0001, 0x2626, 0x01F4, 0x01F4, 0x028A, 0x028A},
@@ -799,7 +793,8 @@ static const struct adxl34x_platform_data adxl34x_info = {
 };
 #endif
 
-#if defined(CONFIG_TOUCHSCREEN_AD7879_SPI) || defined(CONFIG_TOUCHSCREEN_AD7879_SPI_MODULE)
+#if defined(CONFIG_TOUCHSCREEN_AD7879_SPI) || \
+	defined(CONFIG_TOUCHSCREEN_AD7879_SPI_MODULE)
 static struct bfin5xx_spi_chip spi_ad7879_chip_info = {
 	.enable_dma = 0,
 	.bits_per_word = 16,
@@ -898,8 +893,7 @@ static struct ads7846_platform_data __initdata ad7873_pdata = {
 };
 #endif
 
-#if defined(CONFIG_MTD_DATAFLASH) \
-	|| defined(CONFIG_MTD_DATAFLASH_MODULE)
+#if defined(CONFIG_MTD_DATAFLASH) || defined(CONFIG_MTD_DATAFLASH_MODULE)
 
 static struct mtd_partition bfin_spi_dataflash_partitions[] = {
 	{
@@ -939,8 +933,7 @@ static struct bfin5xx_spi_chip spi_adxl34x_chip_info = {
 #endif
 
 static struct spi_board_info bfin_spi_board_info[] __initdata = {
-#if defined(CONFIG_MTD_M25P80) \
-	|| defined(CONFIG_MTD_M25P80_MODULE)
+#if defined(CONFIG_MTD_M25P80) || defined(CONFIG_MTD_M25P80_MODULE)
 	{
 		/* the modalias must be the same as spi device driver name */
 		.modalias = "m25p80", /* Name of spi_driver for this device */
@@ -952,8 +945,7 @@ static struct spi_board_info bfin_spi_board_info[] __initdata = {
 		.mode = SPI_MODE_3,
 	},
 #endif
-#if defined(CONFIG_MTD_DATAFLASH) \
-	|| defined(CONFIG_MTD_DATAFLASH_MODULE)
+#if defined(CONFIG_MTD_DATAFLASH) || defined(CONFIG_MTD_DATAFLASH_MODULE)
 	{	/* DataFlash chip */
 		.modalias = "mtd_dataflash",
 		.max_speed_hz = 33250000,     /* max spi clock (SCK) speed in HZ */
@@ -964,8 +956,7 @@ static struct spi_board_info bfin_spi_board_info[] __initdata = {
 		.mode = SPI_MODE_3,
 	},
 #endif
-#if defined(CONFIG_BFIN_SPI_ADC) \
-	|| defined(CONFIG_BFIN_SPI_ADC_MODULE)
+#if defined(CONFIG_BFIN_SPI_ADC) || defined(CONFIG_BFIN_SPI_ADC_MODULE)
 	{
 		.modalias = "bfin_spi_adc", /* Name of spi_driver for this device */
 		.max_speed_hz = 6250000,     /* max spi clock (SCK) speed in HZ */
@@ -976,8 +967,7 @@ static struct spi_board_info bfin_spi_board_info[] __initdata = {
 	},
 #endif
 
-#if defined(CONFIG_SND_BF5XX_SOC_AD183X) \
-	|| defined(CONFIG_SND_BF5XX_SOC_AD183X_MODULE)
+#if defined(CONFIG_SND_BF5XX_SOC_AD183X) || defined(CONFIG_SND_BF5XX_SOC_AD183X_MODULE)
 	{
 		.modalias = "ad183x",
 		.max_speed_hz = 3125000,     /* max spi clock (SCK) speed in HZ */
@@ -1066,7 +1056,8 @@ static struct spi_board_info bfin_spi_board_info[] __initdata = {
 		.controller_data = &spi_ad7877_chip_info,
 	},
 #endif
-#if defined(CONFIG_TOUCHSCREEN_AD7879_SPI) || defined(CONFIG_TOUCHSCREEN_AD7879_SPI_MODULE)
+#if defined(CONFIG_TOUCHSCREEN_AD7879_SPI) || \
+	defined(CONFIG_TOUCHSCREEN_AD7879_SPI_MODULE)
 	{
 		.modalias = "ad7879",
 		.platform_data = &bfin_ad7879_ts_info,
@@ -1823,7 +1814,7 @@ static struct i2c_board_info __initdata bfin_i2c_board_info[] = {
 #if defined(CONFIG_AD7150) || defined(CONFIG_AD7150_MODULE)
 	{
 		I2C_BOARD_INFO("ad7150", 0x48),
-		.irq = IRQ_PG5, /* fixme: use real interrupt number */
+		.irq = IRQ_PG5,
 	},
 #endif
 
@@ -1876,7 +1867,8 @@ static struct i2c_board_info __initdata bfin_i2c_board_info[] = {
 		.irq = IRQ_PG6,
 	},
 #endif
-#if defined(CONFIG_TOUCHSCREEN_AD7879_I2C) || defined(CONFIG_TOUCHSCREEN_AD7879_I2C_MODULE)
+#if defined(CONFIG_TOUCHSCREEN_AD7879_I2C) || \
+	defined(CONFIG_TOUCHSCREEN_AD7879_I2C_MODULE)
 	{
 		I2C_BOARD_INFO("ad7879", 0x2F),
 		.irq = IRQ_PG5,
@@ -2424,7 +2416,6 @@ void __init native_machine_early_platform_add_devices(void)
 
 void native_machine_restart(char *cmd)
 {
-	/* workaround reboot hang when booting from SPI */
 	if ((bfin_read_SYSCR() & 0x7) == 0x3)
 		bfin_reset_boot_spi_cs(P_DEFAULT_BOOT_SPI_CS);
 }

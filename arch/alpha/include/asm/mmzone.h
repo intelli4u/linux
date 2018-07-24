@@ -33,18 +33,8 @@ extern pg_data_t node_data[];
 
 #define node_localnr(pfn, nid)	((pfn) - NODE_DATA(nid)->node_start_pfn)
 
-#if 1
 #define PLAT_NODE_DATA_LOCALNR(p, n)	\
 	(((p) >> PAGE_SHIFT) - PLAT_NODE_DATA(n)->gendata.node_start_pfn)
-#else
-static inline unsigned long
-PLAT_NODE_DATA_LOCALNR(unsigned long p, int n)
-{
-	unsigned long temp;
-	temp = p >> PAGE_SHIFT;
-	return temp - PLAT_NODE_DATA(n)->gendata.node_start_pfn;
-}
-#endif
 
 #ifdef CONFIG_DISCONTIGMEM
 
@@ -67,7 +57,6 @@ PLAT_NODE_DATA_LOCALNR(unsigned long p, int n)
     ((unsigned long)__va(NODE_DATA(kvaddr_to_nid(kaddr))->node_start_pfn  \
 			 << PAGE_SHIFT))
 
-/* XXX: FIXME -- wli */
 #define kern_addr_valid(kaddr)	(0)
 
 #define virt_to_page(kaddr)	pfn_to_page(__pa(kaddr) >> PAGE_SHIFT)

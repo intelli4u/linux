@@ -198,7 +198,6 @@ static int ether1394_recv_init(struct eth1394_priv *priv)
 {
 	unsigned int iso_buf_size;
 
-	/* FIXME: rawiso limits us to PAGE_SIZE */
 	iso_buf_size = min((unsigned int)PAGE_SIZE,
 			   2 * (1U << (priv->host->csr.max_rec + 1)));
 
@@ -246,8 +245,6 @@ static int ether1394_stop(struct net_device *dev)
 	return 0;
 }
 
-/* FIXME: What to do if we timeout? I think a host reset is probably in order,
- * so that's what we do. Should we increment the stat counters too?  */
 static void ether1394_tx_timeout(struct net_device *dev)
 {
 	struct hpsb_host *host =
@@ -476,9 +473,6 @@ static void ether1394_reset_priv(struct net_device *dev, int set_mtu)
 	priv->bc_maxpayload = 512;
 
 	/* Determine speed limit */
-	/* FIXME: This is broken for nodes with link speed < PHY speed,
-	 * and it is suboptimal for S200B...S800B hardware.
-	 * The result of nodemgr's speed probe should be used somehow. */
 	for (i = 0; i < host->node_count; i++) {
 		/* take care of S100B...S400B PHY ports */
 		if (host->speed[i] == SELFID_SPEED_UNKNOWN) {
@@ -534,7 +528,6 @@ static void ether1394_init_dev(struct net_device *dev)
 	dev->hard_header_len 	= ETH1394_HLEN;
 	dev->type		= ARPHRD_IEEE1394;
 
-	/* FIXME: This value was copied from ether_setup(). Is it too much? */
 	dev->tx_queue_len	= 1000;
 }
 
@@ -805,10 +798,6 @@ static __be16 ether1394_type_trans(struct sk_buff *skb, struct net_device *dev)
 	if (*eth->h_dest & 1) {
 		if (memcmp(eth->h_dest, dev->broadcast, dev->addr_len) == 0)
 			skb->pkt_type = PACKET_BROADCAST;
-#if 0
-		else
-			skb->pkt_type = PACKET_MULTICAST;
-#endif
 	} else {
 		if (memcmp(eth->h_dest, dev->dev_addr, dev->addr_len))
 			skb->pkt_type = PACKET_OTHERHOST;
@@ -1573,13 +1562,6 @@ static netdev_tx_t ether1394_tx(struct sk_buff *skb,
 	if (ptask == NULL)
 		goto fail;
 
-	/* XXX Ignore this for now. Noticed that when MacOSX is the IRM,
-	 * it does not set our validity bit. We need to compensate for
-	 * that somewhere else, but not in eth1394. */
-#if 0
-	if ((priv->host->csr.broadcast_channel & 0xc0000000) != 0xc0000000)
-		goto fail;
-#endif
 
 	skb = skb_share_check(skb, GFP_ATOMIC);
 	if (!skb)
@@ -1699,7 +1681,7 @@ static void ether1394_get_drvinfo(struct net_device *dev,
 				  struct ethtool_drvinfo *info)
 {
 	strcpy(info->driver, driver_name);
-	strcpy(info->bus_info, "ieee1394"); /* FIXME provide more detail? */
+	strcpy(info->bus_info, "ieee1394");
 }
 
 static const struct ethtool_ops ethtool_ops = {

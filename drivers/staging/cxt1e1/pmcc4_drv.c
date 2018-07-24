@@ -85,7 +85,7 @@ char        OSSIid_pmcc4_drvc[] =
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
-#if defined (__FreeBSD__) || defined (__NetBSD__)
+#if defined(__FreeBSD__) || defined(__NetBSD__)
 #include <sys/param.h>
 #include <sys/systm.h>
 #include <sys/errno.h>
@@ -141,7 +141,7 @@ extern int  max_mtu;
 extern int  max_rxdesc_used, max_rxdesc_default;
 extern int  max_txdesc_used, max_txdesc_default;
 
-#if defined (__powerpc__)
+#if defined(__powerpc__)
 extern void *memset (void *s, int c, size_t n);
 
 #endif
@@ -656,11 +656,6 @@ c4_init (ci_t * ci, u_char *func0, u_char *func1)
         case 0x3:
             ci->max_port = 2;
             break;
-#if 0
-        case 0x7:                   /* not built, but could be... */
-            ci->max_port = 3;
-            break;
-#endif
         case 0xf:
             ci->max_port = 4;
             break;
@@ -748,18 +743,6 @@ c4_init2 (ci_t * ci)
     if ((ret = musycc_init (ci)) != SBE_DRVR_SUCCESS)
         return ret;
 
-#if 0
-    ci->p.framing_type = FRAMING_CBP;
-    ci->p.h110enable = 1;
-#if 0
-    ci->p.hypersize = 0;
-#else
-    hyperdummy = 0;
-#endif
-    ci->p.clock = 0;                /* Use internal clocking until set to
-                                     * external */
-    c4_card_set_params (ci, &ci->p);
-#endif
     OS_start_watchdog (&ci->wd);
     return SBE_DRVR_SUCCESS;
 }
@@ -1119,10 +1102,8 @@ c4_new_chan (ci_t * ci, int portnum, int channum, void *user)
     ch->gchan = gchan;
     ch->channum = channum;          /* mark our channel assignment */
     ch->p.channum = channum;
-#if 1
     ch->p.card = ci->brdno;
     ch->p.port = portnum;
-#endif
     ch->p.chan_mode = CFG_CH_PROTO_HDLC_FCS16;
     ch->p.idlecode = CFG_CH_FLAG_7E;
     ch->p.pad_fill_count = 2;
@@ -1189,12 +1170,10 @@ c4_set_chan (int channum, struct sbecom_chan_param * p)
     if (!(ch = c4_find_chan (channum)))
         return ENOENT;
 
-#if 1
     if (ch->p.card != p->card ||
         ch->p.port != p->port ||
         ch->p.channum != p->channum)
         return EINVAL;
-#endif
 
     if (!(ch->up->group_is_set))
     {
@@ -1418,14 +1397,6 @@ c4_chan_up (ci_t * ci, int channum)
     rxnum = max_rxdesc_used + (nts / 4);
     txnum = max_txdesc_used + (nts / 4);
 
-#if 0
-    /* DEBUG INFO */
-    if (log_level >= LOG_MONITOR)
-        pr_info("%s: mode %x rxnum %d (rxused %d def %d) txnum %d (txused %d def %d)\n",
-                ci->devname, ch->p.chan_mode,
-                rxnum, max_rxdesc_used, max_rxdesc_default,
-                txnum, max_txdesc_used, max_txdesc_default);
-#endif
 
     ch->rxd_num = rxnum;
     ch->txd_num = txnum;
@@ -1665,12 +1636,6 @@ c4_ebus_intr_th_handler (void *devp)
         if (nciInterrupt[brdno][3] != NULL)
             (*nciInterrupt[brdno][3]) ();
     }
-#if 0
-    /*** Test code just de-implements the asserted interrupt.  Alternate
-    vendor will supply COMET interrupt handling code herein or such.
-    ***/
-    pci_write_32 ((u_int32_t *) &ci->reg->glcd, GCD_MAGIC | MUSYCC_GCD_INTB_DISABLE);
-#endif
 
     return IRQ_RETVAL (handled);
 }

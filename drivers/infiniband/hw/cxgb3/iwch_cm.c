@@ -1291,7 +1291,7 @@ static void accept_cr(struct iwch_ep *ep, __be32 peer_ip, struct sk_buff *skb)
 	rpl->opt0h = htonl(opt0h);
 	rpl->opt0l_status = htonl(opt0l | CPL_PASS_OPEN_ACCEPT);
 	rpl->opt2 = htonl(opt2);
-	rpl->rsvd = rpl->opt2;	/* workaround for HW bug */
+	rpl->rsvd = rpl->opt2;
 	skb->priority = CPL_PRIORITY_SETUP;
 	iwch_l2t_send(ep->com.tdev, skb, ep->l2t);
 

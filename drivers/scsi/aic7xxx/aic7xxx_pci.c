@@ -276,10 +276,6 @@ static const struct ahc_pci_identity ahc_pci_ident_table[] = {
 		ahc_aha398XU_setup
 	},
 	{
-		/*
-		 * XXX Don't know the slot numbers
-		 * so we can't identify channels
-		 */
 		ID_AHA_4944U & ID_DEV_VENDOR_MASK,
 		ID_DEV_VENDOR_MASK,
 		"Adaptec 4944 Ultra SCSI adapter",
@@ -775,14 +771,6 @@ ahc_pci_config(struct ahc_softc *ahc, const struct ahc_pci_identity *entry)
 	if (error != 0)
 		return (error);
 
-	/*
-	 * Disable PCI parity error checking.  Users typically
-	 * do this to work around broken PCI chipsets that get
-	 * the parity timing wrong and thus generate lots of spurious
-	 * errors.  The chip only allows us to disable *all* parity
-	 * error reporting when doing this, so CIO bus, scb ram, and
-	 * scratch ram parity errors will be ignored too.
-	 */
 	if ((ahc->flags & AHC_DISABLE_PCI_PERR) != 0)
 		ahc->seqctl |= FAILDIS;
 
@@ -2296,36 +2284,14 @@ ahc_aic7895_setup(struct ahc_softc *ahc)
 		ahc->chip = AHC_AIC7895;
 		ahc->features = AHC_AIC7895_FE;
 
-		/*
-		 * The BIOS disables the use of MWI transactions
-		 * since it does not have the MWI bug work around
-		 * we have.  Disabling MWI reduces performance, so
-		 * turn it on again.
-		 */
 		command = ahc_pci_read_config(pci, PCIR_COMMAND, /*bytes*/1);
 		command |= PCIM_CMD_MWRICEN;
 		ahc_pci_write_config(pci, PCIR_COMMAND, command, /*bytes*/1);
 		ahc->bugs |= AHC_PCI_MWI_BUG;
 	}
-	/*
-	 * XXX Does CACHETHEN really not work???  What about PCI retry?
-	 * on C level chips.  Need to test, but for now, play it safe.
-	 */
 	ahc->bugs |= AHC_TMODE_WIDEODD_BUG|AHC_PCI_2_1_RETRY_BUG
 		  |  AHC_CACHETHEN_BUG;
 
-#if 0
-	uint32_t devconfig;
-
-	/*
-	 * Cachesize must also be zero due to stray DAC
-	 * problem when sitting behind some bridges.
-	 */
-	ahc_pci_write_config(pci, CSIZE_LATTIME, 0, /*bytes*/1);
-	devconfig = ahc_pci_read_config(pci, DEVCONFIG, /*bytes*/1);
-	devconfig |= MRDCEN;
-	ahc_pci_write_config(pci, DEVCONFIG, devconfig, /*bytes*/1);
-#endif
 	ahc->flags |= AHC_NEWEEPROM_FMT;
 	ahc->instruction_ram_size = 512;
 	return (0);

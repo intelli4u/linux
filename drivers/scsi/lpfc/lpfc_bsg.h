@@ -108,4 +108,3 @@ struct menlo_command {
 struct menlo_response {
 	uint32_t xri; /* return the xri of the iocb exchange */
 };
-

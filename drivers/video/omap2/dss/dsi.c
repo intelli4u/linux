@@ -808,8 +808,6 @@ static int dsi_calc_clock_rates(struct dsi_clock_info *cinfo)
 
 	if (cinfo->use_dss2_fck) {
 		cinfo->clkin = dss_clk_get_rate(DSS_CLK_FCK2);
-		/* XXX it is unclear if highfreq should be used
-		 * with DSS2_FCK source also */
 		cinfo->highfreq = 0;
 	} else {
 		cinfo->clkin = dispc_pclk_rate();
@@ -1107,7 +1105,6 @@ int dsi_pll_init(struct omap_dss_device *dssdev, bool enable_hsclk,
 	if (r)
 		goto err0;
 
-	/* XXX PLL does not come out of reset without this... */
 	dispc_pck_free_enable(1);
 
 	if (wait_for_bit_change(DSI_PLL_STATUS, 0, 1) != 1) {
@@ -1117,8 +1114,6 @@ int dsi_pll_init(struct omap_dss_device *dssdev, bool enable_hsclk,
 		goto err1;
 	}
 
-	/* XXX ... but if left on, we get problems when planes do not
-	 * fill the whole display. No idea about this */
 	dispc_pck_free_enable(0);
 
 	if (enable_hsclk && enable_hsdiv)
@@ -2411,7 +2406,6 @@ static int dsi_proto_config(struct omap_dss_device *dssdev)
 			DSI_FIFO_SIZE_32,
 			DSI_FIFO_SIZE_32);
 
-	/* XXX what values for the timeouts? */
 	dsi_set_stop_state_counter(0x1000, false, false);
 	dsi_set_ta_timeout(0x1fff, true, true);
 	dsi_set_lp_rx_timeout(0x1fff, true, true);
@@ -2609,7 +2603,6 @@ static int dsi_update_screen_l4(struct omap_dss_device *dssdev,
 		DSI_DECL_VARS;
 		first = 0;
 
-#if 1
 		/* using fifo not empty */
 		/* TX_FIFO_NOT_EMPTY */
 		while (FLD_GET(dsi_read_reg(DSI_VC_CTRL(0)), 5, 5)) {
@@ -2622,29 +2615,6 @@ static int dsi_update_screen_l4(struct omap_dss_device *dssdev,
 			}
 			udelay(1);
 		}
-#elif 1
-		/* using fifo emptiness */
-		while ((REG_GET(DSI_TX_FIFO_VC_EMPTINESS, 7, 0)+1)*4 <
-				max_dsi_packet_size) {
-			fifo_stalls++;
-			if (fifo_stalls > 0xfffff) {
-				DSSERR("fifo stalls overflow, pixels left %d\n",
-					       pixels_left);
-				dsi_if_enable(0);
-				return -EIO;
-			}
-		}
-#else
-		while ((REG_GET(DSI_TX_FIFO_VC_EMPTINESS, 7, 0)+1)*4 == 0) {
-			fifo_stalls++;
-			if (fifo_stalls > 0xfffff) {
-				DSSERR("fifo stalls overflow, pixels left %d\n",
-					       pixels_left);
-				dsi_if_enable(0);
-				return -EIO;
-			}
-		}
-#endif
 		pixels = min(max_pixels_per_packet, pixels_left);
 
 		pixels_left -= pixels;
@@ -2687,8 +2657,6 @@ static void dsi_update_screen_dispc(struct omap_dss_device *dssdev,
 	int r;
 	const unsigned channel = dsi.update_channel;
 	/* line buffer is 1024 x 24bits */
-	/* XXX: for some reason using full buffer size causes considerable TX
-	 * slowdown with update sizes that fill the whole buffer */
 	const unsigned line_buf_size = 1023 * 3;
 
 	DSSDBG("dsi_update_screen_dispc(%d,%d %dx%d)\n",
@@ -2795,12 +2763,6 @@ static void dsi_handle_framedone(int error)
 
 static void dsi_framedone_timeout_work_callback(struct work_struct *work)
 {
-	/* XXX While extremely unlikely, we could get FRAMEDONE interrupt after
-	 * 250ms which would conflict with this timeout work. What should be
-	 * done is first cancel the transfer on the HW, and then cancel the
-	 * possibly scheduled framedone work. However, cancelling the transfer
-	 * on the HW is buggy, and would probably require resetting the whole
-	 * DSI */
 
 	DSSERR("Framedone not received for 250ms!\n");
 
@@ -3213,7 +3175,6 @@ int dsi_init_display(struct omap_dss_device *dssdev)
 {
 	DSSDBG("DSI init\n");
 
-	/* XXX these should be figured out dynamically */
 	dssdev->caps = OMAP_DSS_DISPLAY_CAP_MANUAL_UPDATE |
 		OMAP_DSS_DISPLAY_CAP_TEAR_ELIM;
 
@@ -3304,4 +3265,3 @@ void dsi_exit(void)
 
 	DSSDBG("omap_dsi_exit\n");
 }
-

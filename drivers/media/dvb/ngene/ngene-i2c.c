@@ -27,7 +27,6 @@
  * Or, point your browser to http://www.gnu.org/copyleft/gpl.html
  */
 
-/* FIXME - some of these can probably be removed */
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/delay.h>
@@ -175,4 +174,3 @@ int ngene_i2c_init(struct ngene *dev, int dev_nr)
 
 	return i2c_add_adapter(adap);
 }
-

@@ -478,5 +478,3 @@ bfa_fcs_port_scn_process_rscn(struct bfa_fcs_port_s *port, struct fchs_s *fchs,
 	if (nsquery)
 		bfa_fcs_port_ns_query(port);
 }
-
-

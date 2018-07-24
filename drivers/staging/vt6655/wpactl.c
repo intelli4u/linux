@@ -617,7 +617,6 @@ static int wpa_get_scan(PSDevice pDevice,
 	int ret = 0;
 	u16 count = 0;
 	u16 ii, jj;
-#if 1
 
     unsigned char *ptempBSS;
 
@@ -664,8 +663,6 @@ static int wpa_get_scan(PSDevice pDevice,
   //    printk("%d [%s]:RSSI=%d\n",ii,((PWLAN_IE_SSID)(pMgmt->sBSSList[ii].abySSID))->abySSID,
 
   //                                                                 pMgmt->sBSSList[ii].uRSSI);
-
- #endif
 
 //******mike:bubble sort by stronger RSSI*****//
 
@@ -992,4 +989,3 @@ out:
 
 	return ret;
 }
-

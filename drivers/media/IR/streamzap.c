@@ -330,10 +330,6 @@ static void streamzap_callback(struct urb *urb)
 	struct streamzap_ir *sz;
 	unsigned int i;
 	int len;
-	#if 0
-	static int timeout = (((STREAMZAP_TIMEOUT * STREAMZAP_RESOLUTION) &
-				IR_MAX_DURATION) | 0x03000000);
-	#endif
 
 	if (!urb)
 		return;
@@ -384,14 +380,6 @@ static void streamzap_callback(struct urb *urb)
 				if (sz->buf_in[i] == STREAMZAP_TIMEOUT) {
 					sz->idle = 1;
 					streamzap_stop_timer(sz);
-					#if 0
-					if (sz->timeout_enabled) {
-						sz->rawir.pulse = false;
-						sz->rawir.duration = timeout;
-						sz->rawir.duration *= 1000;
-						sz_push(sz);
-					}
-					#endif
 					streamzap_flush_delay_buffer(sz);
 				} else
 					sz_push_full_space(sz, sz->buf_in[i]);
@@ -446,7 +434,6 @@ static struct input_dev *streamzap_init_input_dev(struct streamzap_ir *sz)
 
 	props->priv = sz;
 	props->driver_type = RC_DRIVER_IR_RAW;
-	/* FIXME: not sure about supported protocols, check on this */
 	props->allowed_protos = IR_TYPE_RC5 | IR_TYPE_RC6;
 
 	sz->props = props;
@@ -587,13 +574,6 @@ static int __devinit streamzap_probe(struct usb_interface *intf,
 
 	sz->idle = true;
 	sz->decoder_state = PulseSpace;
-	#if 0
-	/* not yet supported, depends on patches from maxim */
-	/* see also: LIRC_GET_REC_RESOLUTION and LIRC_SET_REC_TIMEOUT */
-	sz->timeout_enabled = false;
-	sz->min_timeout = STREAMZAP_TIMEOUT * STREAMZAP_RESOLUTION * 1000;
-	sz->max_timeout = STREAMZAP_TIMEOUT * STREAMZAP_RESOLUTION * 1000;
-	#endif
 
 	init_timer(&sz->delay_timer);
 	sz->delay_timer.function = streamzap_delay_timeout;

@@ -49,7 +49,7 @@ static struct mpic *mpics;
 static struct mpic *mpic_primary;
 static DEFINE_RAW_SPINLOCK(mpic_lock);
 
-#ifdef CONFIG_PPC32	/* XXX for now */
+#ifdef CONFIG_PPC32
 #ifdef CONFIG_IRQ_ALL_CPUS
 #define distribute_irqs	(1)
 #else
@@ -328,9 +328,6 @@ static void __init mpic_test_broken_ipi(struct mpic *mpic)
 
 #ifdef CONFIG_MPIC_U3_HT_IRQS
 
-/* Test if an interrupt is sourced from HyperTransport (used on broken U3s)
- * to force the edge setting on the MPIC and do the ack workaround.
- */
 static inline int mpic_is_ht_interrupt(struct mpic *mpic, unsigned int source)
 {
 	if (source >= 128 || !mpic->fixups)

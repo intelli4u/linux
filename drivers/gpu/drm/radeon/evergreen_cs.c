@@ -123,7 +123,6 @@ static void evergreen_cs_track_init(struct evergreen_cs_track *track)
 
 static inline int evergreen_cs_track_validate_cb(struct radeon_cs_parser *p, int i)
 {
-	/* XXX fill in */
 	return 0;
 }
 
@@ -137,7 +136,6 @@ static int evergreen_cs_track_check(struct radeon_cs_parser *p)
 		return -EINVAL;
 	}
 
-	/* XXX fill in */
 	return 0;
 }
 
@@ -229,7 +227,6 @@ static int evergreen_cs_packet_next_reloc(struct radeon_cs_parser *p,
 			  idx, relocs_chunk->length_dw);
 		return -EINVAL;
 	}
-	/* FIXME: we assume reloc size is 4 dwords */
 	*cs_reloc = p->relocs_ptr[(idx / 4)];
 	return 0;
 }
@@ -920,7 +917,6 @@ static inline int evergreen_check_texture_resource(struct radeon_cs_parser *p,  
 						   struct radeon_bo *texture,
 						   struct radeon_bo *mipmap)
 {
-	/* XXX fill in */
 	return 0;
 }
 
@@ -1240,7 +1236,6 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
 		}
 		break;
 	case PACKET3_SET_ALU_CONST:
-		/* XXX fix me ALU const buffers only */
 		break;
 	case PACKET3_SET_BOOL_CONST:
 		start_reg = (idx_value << 2) + PACKET3_SET_BOOL_CONST_START;
@@ -1341,14 +1336,7 @@ int evergreen_cs_parse(struct radeon_cs_parser *p)
 			return r;
 		}
 	} while (p->idx < p->chunks[p->chunk_ib_idx].length_dw);
-#if 0
-	for (r = 0; r < p->ib->length_dw; r++) {
-		printk(KERN_INFO "%05d  0x%08X\n", r, p->ib->ptr[r]);
-		mdelay(1);
-	}
-#endif
 	kfree(p->track);
 	p->track = NULL;
 	return 0;
 }
-

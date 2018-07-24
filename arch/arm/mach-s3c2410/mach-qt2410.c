@@ -370,5 +370,3 @@ MACHINE_START(QT2410, "QT2410")
 	.init_machine	= qt2410_machine_init,
 	.timer		= &s3c24xx_timer,
 MACHINE_END
-
-

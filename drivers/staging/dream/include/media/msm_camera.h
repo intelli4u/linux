@@ -110,7 +110,7 @@ struct msm_ctrl_cmd {
 	void *value;
 	uint16_t status;
 	uint32_t timeout_ms;
-	int resp_fd; /* FIXME: to be used by the kernel, pass-through for now */
+	int resp_fd;
 };
 
 struct msm_vfe_evt_msg {

@@ -34,7 +34,6 @@
 
 #include <asm/sn/sn0/addrs.h>
 //#include <sys/SN/router.h>
-// XXX Stolen from <sys/SN/router.h>:
 #define MAX_ROUTER_PORTS (6)    /* Max. number of ports on a router */
 #include <asm/sn/fru.h>
 //#include <sys/graph.h>
@@ -78,7 +77,6 @@ typedef s32 klconf_off_t;
  */
 #define MAX_SLOTS_PER_NODE	(1 + 2 + 6 + 2)
 
-/* XXX if each node is guranteed to have some memory */
 
 #define MAX_PCI_DEVS		8
 
@@ -359,7 +357,7 @@ typedef struct kl_config_hdr {
 #define KLTYPE_ETHERNET	(KLCLASS_IO  | 0x3)
 #define KLTYPE_MENET	KLTYPE_ETHERNET     /* Additional name */
 #define KLTYPE_FDDI  	(KLCLASS_IO  | 0x4)
-#define KLTYPE_UNUSED	(KLCLASS_IO  | 0x5) /* XXX UNUSED */
+#define KLTYPE_UNUSED	(KLCLASS_IO  | 0x5)
 #define KLTYPE_HAROLD   (KLCLASS_IO  | 0x6) /* PCI SHOE BOX */
 #define KLTYPE_PCI	KLTYPE_HAROLD
 #define KLTYPE_VME      (KLCLASS_IO  | 0x7) /* Any 3rd party VME card */
@@ -532,7 +530,7 @@ typedef struct klinfo_s {                  /* Generic info */
 #define KLSTRUCT_HUB_UART 	17
 #define KLSTRUCT_IOC3ENET 	18
 #define KLSTRUCT_IOC3UART 	19
-#define KLSTRUCT_UNUSED		20 /* XXX UNUSED */
+#define KLSTRUCT_UNUSED		20
 #define KLSTRUCT_IOC3PCKM       21
 #define KLSTRUCT_RAD        	22
 #define KLSTRUCT_HUB_TTY        23
@@ -709,7 +707,6 @@ typedef struct klvmed_s {                          /* VME DEVICE - VME BOARD */
 
 #define ROUTER_VECTOR_VERS	2
 
-/* XXX - Don't we need the number of ports here?!? */
 typedef struct klrou_s {                          /* ROUTER */
 	klinfo_t 	rou_info ;
 	unsigned int		rou_flags ;           /* PCFG_ROUTER_xxx flags */
@@ -799,7 +796,7 @@ typedef struct klmsdev_s {                          /* mouse device */
         void 		*msdev_cfg ;
 } klmsdev_t ;
 
-#define MAX_FDDI_DEVS 10 /* XXX Is this true */
+#define MAX_FDDI_DEVS 10
 
 typedef struct klfddi_s {                          /* FDDI */
 	klinfo_t 	fddi_info ;

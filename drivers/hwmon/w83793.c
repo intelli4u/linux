@@ -1799,9 +1799,6 @@ static int w83793_probe(struct i2c_client *client,
 		goto exit_devunreg;
 	}
 
-	/* Enable Watchdog registers.
-	   Set Configuration Register to Enable Watch Dog Registers
-	   (Bit 2) = XXXX, X1XX. */
 	tmp = w83793_read_value(client, W83793_REG_CONFIG);
 	w83793_write_value(client, W83793_REG_CONFIG, tmp | 0x04);
 

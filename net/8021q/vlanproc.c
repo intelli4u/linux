@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /******************************************************************************
  * vlanproc.c	VLAN Module. /proc filesystem interface.
  *
@@ -39,6 +40,9 @@ static void *vlan_seq_start(struct seq_file *seq, loff_t *pos);
 static void *vlan_seq_next(struct seq_file *seq, void *v, loff_t *pos);
 static void vlan_seq_stop(struct seq_file *seq, void *);
 static int vlandev_seq_show(struct seq_file *seq, void *v);
+#ifdef CONFIG_INET_GRO
+static int gro_write(struct file *file, const char __user *buf, size_t size, loff_t *ppos);
+#endif /* CONFIG_INET_GRO */
 
 /*
  *	Global Data
@@ -94,10 +98,75 @@ static int vlandev_seq_open(struct inode *inode, struct file *file)
 	return single_open(file, vlandev_seq_show, PDE(inode)->data);
 }
 
+#ifdef CONFIG_INET_GRO
+extern atomic_t gro_timer_init;
+static struct timer_list gro_timer;
+spinlock_t gro_lock;
+static int gro_timer_interval;
+extern struct napi_struct gro_napi;
+
+static void gro_watchdog(ulong data)
+{
+	struct net_device *gro_dev = (struct net_device *)data;
+
+	if (gro_dev->features & NETIF_F_GRO) {
+		gro_timer.expires = jiffies + gro_timer_interval;
+		add_timer(&gro_timer);
+	}
+
+	spin_lock_bh(&gro_lock);
+	generic_napi_gro_flush(&gro_napi);
+	spin_unlock_bh(&gro_lock);
+}
+
+static int gro_write(struct file *file, const char __user *buf, size_t size, loff_t *ppos)
+{
+	struct seq_file *seq = (struct seq_file *)file->private_data;
+	struct net_device *gro_dev = seq->private;
+
+	if (!atomic_read(&gro_timer_init)) {
+		spin_lock_init(&gro_lock);
+
+		init_timer(&gro_timer);
+		gro_timer.function = gro_watchdog;
+		atomic_set(&gro_timer_init, 1);
+	}
+
+	if (size < 5 || size > 8)
+		return -EINVAL;
+
+	if (strncmp(buf, "-gro", 4))
+		return -EINVAL;
+
+	sscanf(buf, "-gro %d", &gro_timer_interval);
+
+	if (gro_timer_interval > 0) {
+		gro_dev->features |= NETIF_F_GRO;
+		gro_timer.data = (ulong)gro_dev;
+		gro_timer.expires = jiffies + gro_timer_interval;
+		mod_timer(&gro_timer, jiffies + gro_timer_interval);
+		printk("\ngro enabled with interval %d\n", gro_timer_interval);
+	}
+	else {
+		gro_dev->features &= ~NETIF_F_GRO;
+		del_timer(&gro_timer);
+
+		/* flush packet */
+		gro_watchdog((ulong)gro_dev);
+		printk("\ngro disabled\n");
+	}
+
+	return size;
+}
+#endif /* CONFIG_INET_GRO */
+
 static const struct file_operations vlandev_fops = {
 	.owner = THIS_MODULE,
 	.open    = vlandev_seq_open,
 	.read    = seq_read,
+#ifdef CONFIG_INET_GRO
+	.write   = gro_write,
+#endif /* CONFIG_INET_GRO */
 	.llseek  = seq_lseek,
 	.release = single_release,
 };

@@ -92,10 +92,6 @@ enum {
 	/* A/D  D/A  DI  DO  CT */
 	DT9812_DEVID_DT9812_10,	/*  8    2   8   8   1  +/- 10V */
 	DT9812_DEVID_DT9812_2PT5,	/* 8    2   8   8   1  0-2.44V */
-#if 0
-	DT9812_DEVID_DT9813,	/*  16   2   4   4   1  +/- 10V */
-	DT9812_DEVID_DT9814	/*  24   2   0   0   1  +/- 10V */
-#endif
 };
 
 enum dt9812_gain {
@@ -239,25 +235,6 @@ struct dt9812_usb_cmd {
 		struct dt9812_write_multi write_multi_info;
 		struct dt9812_rmw_multi rmw_multi_info;
 	} u;
-#if 0
-	WRITE_BYTE_INFO WriteByteInfo;
-	READ_BYTE_INFO ReadByteInfo;
-	WRITE_MULTI_INFO WriteMultiInfo;
-	READ_MULTI_INFO ReadMultiInfo;
-	RMW_BYTE_INFO RMWByteInfo;
-	RMW_MULTI_INFO RMWMultiInfo;
-	DAC_THRESHOLD_INFO DacThresholdInfo;
-	INT_ON_CHANGE_MASK_INFO IntOnChangeMaskInfo;
-	CGL_INFO CglInfo;
-	SUBSYSTEM_INFO SubsystemInfo;
-	CAL_POT_CMD CalPotCmd;
-	WRITE_DEV_BYTE_INFO WriteDevByteInfo;
-	READ_DEV_BYTE_INFO ReadDevByteInfo;
-	WRITE_DEV_MULTI_INFO WriteDevMultiInfo;
-	READ_DEV_MULTI_INFO ReadDevMultiInfo;
-	READ_SINGLE_VALUE_INFO ReadSingleValueInfo;
-	WRITE_SINGLE_VALUE_INFO WriteSingleValueInfo;
-#endif
 };
 
 #define DT9812_NUM_SLOTS	16

@@ -1021,7 +1021,7 @@ static void ioc3_init(struct net_device *dev)
 	__ioc3_set_mac_address(dev);
 	ioc3_w_ehar_h(ip->ehar_h);
 	ioc3_w_ehar_l(ip->ehar_l);
-	ioc3_w_ersr(42);			/* XXX should be random */
+	ioc3_w_ersr(42);
 
 	ioc3_init_rings(dev);
 

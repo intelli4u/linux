@@ -83,10 +83,6 @@ int wl1251_ps_elp_wakeup(struct wl1251 *wl)
 
 	elp_reg = wl1251_read_elp(wl, HW_ACCESS_ELP_CTRL_REG_ADDR);
 
-	/*
-	 * FIXME: we should wait for irq from chip but, as a temporary
-	 * solution to simplify locking, let's poll instead
-	 */
 	while (!(elp_reg & ELPCTRL_WLAN_READY)) {
 		if (time_after(jiffies, timeout)) {
 			wl1251_error("elp wakeup timeout");
@@ -193,4 +189,3 @@ int wl1251_ps_set_mode(struct wl1251 *wl, enum wl1251_cmd_ps_mode mode)
 
 	return ret;
 }
-

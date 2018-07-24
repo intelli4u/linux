@@ -1,4 +1,4 @@
-/* $Id: asuscom.c,v 1.14.2.4 2004/01/13 23:48:39 keil Exp $
+/* $Id: asuscom.c,v 1.14.2.4 2004/01/13 23:48:39 Exp $
  *
  * low level stuff for ASUSCOM NETWORK INC. ISDNLink cards
  *

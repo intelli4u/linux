@@ -168,7 +168,6 @@ static int pseries_cpu_disable(void)
 	if (cpu == boot_cpuid)
 		boot_cpuid = cpumask_any(cpu_online_mask);
 
-	/* FIXME: abstract this to not be platform specific later on */
 	xics_migrate_irqs_away();
 	return 0;
 }

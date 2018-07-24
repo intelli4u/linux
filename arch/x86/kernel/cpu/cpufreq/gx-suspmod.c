@@ -284,7 +284,6 @@ static void gx_set_cpuspeed(unsigned int khz)
 		switch (gx_params->cs55x0->device) {
 		case PCI_DEVICE_ID_CYRIX_5530_LEGACY:
 			pmer1 = gx_params->pci_pmer1 | IRQ_SPDUP | VID_SPDUP;
-			/* FIXME: need to test other values -- Zwane,Miura */
 			/* typical 2 to 4ms */
 			gx_write_byte(PCI_IRQTC, 4);
 			/* typical 50 to 100ms */
@@ -514,4 +513,3 @@ MODULE_LICENSE("GPL");
 
 module_init(cpufreq_gx_init);
 module_exit(cpufreq_gx_exit);
-

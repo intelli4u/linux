@@ -198,7 +198,7 @@ int rds_info_getsockopt(struct socket *sock, int optname, char __user *optval,
 			nr_pages = ret;
 		else
 			nr_pages = 0;
-		ret = -EAGAIN; /* XXX ? */
+		ret = -EAGAIN;
 		goto out;
 	}
 

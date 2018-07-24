@@ -158,9 +158,6 @@
 	moveb	#MCFINTC2_VECBASE,%d0
 	moveb	%d0,0x16b(%a1)			/* interrupt base register */
 
-	/*
-	 *      Work around broken CSMR0/DRAM vector problem.
-	 */
 	movel	#0x001F0021,%d0			/* disable C/I bit */
 	movel	%d0,0x84(%a0)			/* set CSMR0 */
 

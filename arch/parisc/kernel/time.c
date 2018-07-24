@@ -121,7 +121,6 @@ irqreturn_t __irq_entry timer_interrupt(int irq, void *dev_id)
 	if (next_tick - now2 > cpt)
 		mtctl(next_tick+cpt, 16);
 
-#if 1
 /*
  * GGG: DEBUG code for how many cycles programming CR16 used.
  */
@@ -131,7 +130,6 @@ irqreturn_t __irq_entry timer_interrupt(int irq, void *dev_id)
 			" next/now %lX/%lX\n",
 			cpu, now2 - now, cycles_elapsed, cycles_remainder,
 			next_tick, now );
-#endif
 
 	/* Can we differentiate between "early CR16" (aka Scenario 1) and
 	 * "long delay" (aka Scenario 3)? I don't think so.

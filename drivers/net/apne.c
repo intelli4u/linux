@@ -156,7 +156,6 @@ struct net_device * __init apne_probe(int unit)
 	if ((pcmcia_copy_tuple(CISTPL_FUNCID, tuple, 8) < 3) ||
 		(tuple[2] != CISTPL_FUNCID_NETWORK)) {
 		printk("not an ethernet card\n");
-		/* XXX: shouldn't we re-enable irq here? */
 		free_netdev(dev);
 		return ERR_PTR(-ENODEV);
 	}
@@ -165,7 +164,6 @@ struct net_device * __init apne_probe(int unit)
 	printk("ethernet PCMCIA card inserted\n");
 
 	if (!init_pcmcia()) {
-		/* XXX: shouldn't we re-enable irq here? */
 		free_netdev(dev);
 		return ERR_PTR(-ENODEV);
 	}

@@ -608,7 +608,6 @@ static struct snd_kcontrol_new pontis_controls[] __devinitdata = {
 		.get = cs_source_get,
 		.put = cs_source_put,
 	},
-	/* FIXME: which interface? */
 	{
 		.iface = SNDRV_CTL_ELEM_IFACE_CARD,
 		.name = "GPIO Mask",
@@ -746,12 +745,6 @@ static int __devinit pontis_init(struct snd_ice1712 *ice)
 		WM_DAC_CTRL2,	0x0000,	/* no deemphasis, no ZFLG */
 		WM_ADC_ATTEN_L,	0x0000,	/* ADC muted */
 		WM_ADC_ATTEN_R,	0x0000,	/* ADC muted */
-#if 0
-		WM_ALC_CTRL1,	0x007b,	/* */
-		WM_ALC_CTRL2,	0x0000,	/* */
-		WM_ALC_CTRL3,	0x0000,	/* */
-		WM_NOISE_GATE,	0x0000,	/* */
-#endif
 		WM_DAC_MUTE,	0x0000,	/* DAC unmute */
 		WM_ADC_MUX,	0x0003,	/* ADC unmute, both CD/Line On */
 	};

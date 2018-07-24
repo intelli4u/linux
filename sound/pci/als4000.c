@@ -423,12 +423,6 @@ static int snd_als4000_playback_prepare(struct snd_pcm_substream *substream)
 		count >>= 1;
 	count--;
 	
-	/* FIXME: from second playback on, there's a lot more clicks and pops
-	 * involved here than on first playback. Fiddling with
-	 * tons of different settings didn't help (DMA, speaker on/off,
-	 * reordering, ...). Something seems to get enabled on playback
-	 * that I haven't found out how to disable again, which then causes
-	 * the switching pops to reach the speakers the next time here. */
 	spin_lock_irq(&chip->reg_lock);
 	snd_als4000_set_rate(chip, runtime->rate);
 	snd_als4000_set_playback_dma(chip, runtime->dma_addr, size);
@@ -450,12 +444,6 @@ static int snd_als4000_capture_trigger(struct snd_pcm_substream *substream, int 
 	struct snd_sb *chip = snd_pcm_substream_chip(substream);
 	int result = 0;
 	
-	/* FIXME race condition in here!!!
-	   chip->mode non-atomic update gets consistently protected
-	   by reg_lock always, _except_ for this place!!
-	   Probably need to take reg_lock as outer (or inner??) lock, too.
-	   (or serialize both lock operations? probably not, though... - racy?)
-	*/
 	spin_lock(&chip->mixer_lock);
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
@@ -527,19 +515,6 @@ static snd_pcm_uframes_t snd_als4000_playback_pointer(struct snd_pcm_substream *
 	return bytes_to_frames( substream->runtime, result );
 }
 
-/* FIXME: this IRQ routine doesn't really support IRQ sharing (we always
- * return IRQ_HANDLED no matter whether we actually had an IRQ flag or not).
- * ALS4000a.PDF writes that while ACKing IRQ in PCI block will *not* ACK
- * the IRQ in the SB core, ACKing IRQ in SB block *will* ACK the PCI IRQ
- * register (alt_port + ALS4K_IOB_0E_IRQTYPE_SB_CR1E_MPU). Probably something
- * could be optimized here to query/write one register only...
- * And even if both registers need to be queried, then there's still the
- * question of whether it's actually correct to ACK PCI IRQ before reading
- * SB IRQ like we do now, since ALS4000a.PDF mentions that PCI IRQ will *clear*
- * SB IRQ status.
- * (hmm, SPECS_PAGE: 38 mentions it the other way around!)
- * And do we *really* need the lock here for *reading* SB_DSP4_IRQSTATUS??
- * */
 static irqreturn_t snd_als4000_interrupt(int irq, void *dev_id)
 {
 	struct snd_sb *chip = dev_id;
@@ -937,11 +912,6 @@ static int __devinit snd_card_als4000_probe(struct pci_dev *pci,
 				iobase + ALS4K_IOB_30_MIDI_DATA);
 		goto out_err;
 	}
-	/* FIXME: ALS4000 has interesting MPU401 configuration features
-	 * at ALS4K_CR1A_MPU401_UART_MODE_CONTROL
-	 * (pass-thru / UART switching, fast MIDI clock, etc.),
-	 * however there doesn't seem to be an ALSA API for this...
-	 * SPECS_PAGE: 21 */
 
 	if ((err = snd_als4000_pcm(chip, 0)) < 0) {
 		goto out_err;

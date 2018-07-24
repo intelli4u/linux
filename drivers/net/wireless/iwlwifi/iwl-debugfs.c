@@ -1654,6 +1654,3 @@ void iwl_dbgfs_unregister(struct iwl_priv *priv)
 	priv->debugfs_dir = NULL;
 }
 EXPORT_SYMBOL(iwl_dbgfs_unregister);
-
-
-

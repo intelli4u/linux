@@ -876,7 +876,7 @@ static int cx24116_set_tone(struct dvb_frontend *fe,
 		return ret;
 
 	/* Min delay time after DiSEqC send */
-	msleep(15); /* XXX determine is FW does this, see send_diseqc/burst */
+	msleep(15);
 
 	/* Now we set the tone */
 	cmd.args[0x00] = CMD_SET_TONE;
@@ -896,7 +896,7 @@ static int cx24116_set_tone(struct dvb_frontend *fe,
 	cmd.len = 0x04;
 
 	/* Min delay time before DiSEqC send */
-	msleep(15); /* XXX determine is FW does this, see send_diseqc/burst */
+	msleep(15);
 
 	return cx24116_cmd_execute(fe, &cmd);
 }
@@ -1024,16 +1024,6 @@ static int cx24116_send_diseqc_msg(struct dvb_frontend *fe,
 	ret = cx24116_cmd_execute(fe, &state->dsec_cmd);
 	if (ret != 0)
 		return ret;
-	/*
-	 * Wait for send
-	 *
-	 * Eutelsat spec:
-	 * >15ms delay          + (XXX determine if FW does this, see set_tone)
-	 *  13.5ms per byte     +
-	 * >15ms delay          +
-	 *  12.5ms burst        +
-	 * >15ms delay            (XXX determine if FW does this, see set_tone)
-	 */
 	msleep((state->dsec_cmd.args[CX24116_DISEQC_MSGLEN] << 4) +
 		((toneburst == CX24116_DISEQC_TONEOFF) ? 30 : 60));
 
@@ -1079,16 +1069,6 @@ static int cx24116_diseqc_send_burst(struct dvb_frontend *fe,
 	if (ret != 0)
 		return ret;
 
-	/*
-	 * Wait for send
-	 *
-	 * Eutelsat spec:
-	 * >15ms delay          + (XXX determine if FW does this, see set_tone)
-	 *  13.5ms per byte     +
-	 * >15ms delay          +
-	 *  12.5ms burst        +
-	 * >15ms delay            (XXX determine if FW does this, see set_tone)
-	 */
 	msleep((state->dsec_cmd.args[CX24116_DISEQC_MSGLEN] << 4) + 60);
 
 	return 0;
@@ -1397,10 +1377,6 @@ static int cx24116_set_frontend(struct dvb_frontend *fe,
 
 	cmd.len = 0x13;
 
-	/* We need to support pilot and non-pilot tuning in the
-	 * driver automatically. This is a workaround for because
-	 * the demod does not support autodetect.
-	 */
 	do {
 		/* Reset status register */
 		status = cx24116_readreg(state, CX24116_REG_SSTATUS)
@@ -1506,4 +1482,3 @@ static struct dvb_frontend_ops cx24116_ops = {
 MODULE_DESCRIPTION("DVB Frontend module for Conexant cx24116/cx24118 hardware");
 MODULE_AUTHOR("Steven Toth");
 MODULE_LICENSE("GPL");
-

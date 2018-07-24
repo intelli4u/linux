@@ -288,7 +288,7 @@ struct node *get_node_by_ref(struct node *tree, const char *ref)
 
 cell_t get_node_phandle(struct node *root, struct node *node)
 {
-	static cell_t phandle = 1; /* FIXME: ick, static local */
+	static cell_t phandle = 1;
 
 	if ((node->phandle != 0) && (node->phandle != -1))
 		return node->phandle;

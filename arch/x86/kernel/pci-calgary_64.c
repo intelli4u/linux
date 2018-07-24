@@ -1277,10 +1277,6 @@ static int __init calgary_bus_has_devices(int bus, unsigned short pci_dev)
 	u32 val;
 
 	if (pci_dev == PCI_DEVICE_ID_IBM_CALIOC2) {
-		/*
-		 * FIXME: properly scan for devices accross the
-		 * PCI-to-PCI bridge on every CalIOC2 port.
-		 */
 		return 1;
 	}
 

@@ -305,9 +305,6 @@ static int asd_get_tmf_resp_tasklet(struct asd_ascb *ascb,
 	res = ru->status;
 	if (ru->datapres == 1)	  /* Response data present */
 		res = ru->resp_data[3];
-#if 0
-	ascb->tag = fh->tag;
-#endif
 	ascb->tag_valid = 1;
 
 	asd_invalidate_edb(escb, edb_id);

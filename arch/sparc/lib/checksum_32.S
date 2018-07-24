@@ -144,7 +144,6 @@ cpout:	retl						! get outta here
 	.globl __csum_partial_copy_start, __csum_partial_copy_end
 __csum_partial_copy_start:
 
-/* Work around cpp -rob */
 #define ALLOC #alloc
 #define EXECINSTR #execinstr
 #define EX(x,y,a,b)				\

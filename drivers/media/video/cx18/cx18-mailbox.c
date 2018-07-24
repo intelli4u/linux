@@ -29,7 +29,7 @@
 #include "cx18-mailbox.h"
 #include "cx18-queue.h"
 #include "cx18-streams.h"
-#include "cx18-alsa-pcm.h" /* FIXME make configurable */
+#include "cx18-alsa-pcm.h"
 
 static const char *rpu_str[] = { "APU", "CPU", "EPU", "HPU" };
 

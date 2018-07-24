@@ -312,15 +312,6 @@ int SetCoreClockPLL(volatile STG4000REG __iomem *pSTGReg, struct pci_dev *pDev)
 
 	STG_WRITE_REG(SoftwareReset, PMX2_SOFTRESET_ALL);
 
-#if 0
-	/* Enable Primary Core Thread0 */
-	tmp = ((STG_READ_REG(Thread0Enable)) | SET_BIT(0));
-	STG_WRITE_REG(Thread0Enable, tmp);
-
-	/* Enable Primary Core Thread1 */
-	tmp = ((STG_READ_REG(Thread1Enable)) | SET_BIT(0));
-	STG_WRITE_REG(Thread1Enable, tmp);
-#endif
 
 	return 0;
 }

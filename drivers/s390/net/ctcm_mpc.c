@@ -2181,4 +2181,3 @@ static int mpc_send_qllc_discontact(struct net_device *dev)
 	return 0;
 }
 /* --- This is the END my friend --- */
-

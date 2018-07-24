@@ -523,7 +523,6 @@ static void frontend_init(struct budget *budget)
 
 		if (subtype < 0)
 			break;
-		/* fixme: find a better way to identify the card */
 		if (subtype < 0x36) {
 			/* assume ALPS BSRU6 */
 			budget->dvb_frontend = dvb_attach(stv0299_attach, &alps_bsru6_config_activy, &budget->i2c_adap);

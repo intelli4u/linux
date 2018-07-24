@@ -49,11 +49,6 @@ void omap2xxx_clk_prepare_for_reboot(void)
 	clk_set_rate(vclk, rate);
 }
 
-/*
- * Switch the MPU rate if specified on cmdline.  We cannot do this
- * early until cmdline is parsed.  XXX This should be removed from the
- * clock code and handled by the OPP layer code in the near future.
- */
 static int __init omap2xxx_clk_arch_init(void)
 {
 	int ret;
@@ -69,5 +64,3 @@ static int __init omap2xxx_clk_arch_init(void)
 }
 
 arch_initcall(omap2xxx_clk_arch_init);
-
-

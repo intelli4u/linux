@@ -91,7 +91,6 @@ static inline unsigned char bridge_swizzle(unsigned char pin,
  * format for those PPC systems that do not already have PCI
  * interrupts properly routed.
  */
-/* FIXME - double check this */
 #define PCI_IRQ_TABLE_LOOKUP ({ \
 	long _ctl_ = -1; \
 	if (idsel >= min_idsel && idsel <= max_idsel && pin <= irqs_per_slot) \

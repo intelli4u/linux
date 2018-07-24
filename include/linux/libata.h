@@ -631,7 +631,7 @@ struct ata_device {
 	u16			sectors;	/* Number of sectors per track */
 
 	union {
-		u16		id[ATA_ID_WORDS]; /* IDENTIFY xxx DEVICE data */
+		u16		id[ATA_ID_WORDS];
 		u32		gscr[SATA_PMP_GSCR_DWORDS]; /* PMP GSCR block */
 	};
 

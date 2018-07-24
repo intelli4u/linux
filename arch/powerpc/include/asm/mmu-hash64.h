@@ -426,17 +426,6 @@ typedef struct {
 } mm_context_t;
 
 
-#if 0
-/*
- * The code below is equivalent to this function for arguments
- * < 2^VSID_BITS, which is all this should ever be called
- * with.  However gcc is not clever enough to compute the
- * modulus (2^n-1) without a second multiply.
- */
-#define vsid_scramble(protovsid, size) \
-	((((protovsid) * VSID_MULTIPLIER_##size) % VSID_MODULUS_##size))
-
-#else /* 1 */
 #define vsid_scramble(protovsid, size) \
 	({								 \
 		unsigned long x;					 \
@@ -444,7 +433,6 @@ typedef struct {
 		x = (x >> VSID_BITS_##size) + (x & VSID_MODULUS_##size); \
 		(x + ((x+1) >> VSID_BITS_##size)) & VSID_MODULUS_##size; \
 	})
-#endif /* 1 */
 
 /* This is only valid for addresses >= PAGE_OFFSET */
 static inline unsigned long get_kernel_vsid(unsigned long ea, int ssize)

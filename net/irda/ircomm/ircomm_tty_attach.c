@@ -262,33 +262,11 @@ static void ircomm_tty_ias_register(struct ircomm_tty_cb *self)
  */
 static void ircomm_tty_ias_unregister(struct ircomm_tty_cb *self)
 {
-	/* Remove LM-IAS object now so it is not reused.
-	 * IrCOMM deals very poorly with multiple incoming connections.
-	 * It should looks a lot more like IrNET, and "dup" a server TSAP
-	 * to the application TSAP (based on various rules).
-	 * This is a cheap workaround allowing multiple clients to
-	 * connect to us. It will not always work.
-	 * Each IrCOMM socket has an IAS entry. Incoming connection will
-	 * pick the first one found. So, when we are fully connected,
-	 * we remove our IAS entries so that the next IAS entry is used.
-	 * We do that for *both* client and server, because a server
-	 * can also create client instances.
-	 * Jean II */
 	if (self->obj) {
 		irias_delete_object(self->obj);
 		self->obj = NULL;
 	}
 
-#if 0
-	/* Remove discovery handler.
-	 * While we are connected, we no longer need to receive
-	 * discovery events. This would be the case if there is
-	 * multiple IrLAP interfaces. Jean II */
-	if (self->ckey) {
-		irlmp_unregister_client(self->ckey);
-		self->ckey = NULL;
-	}
-#endif
 }
 
 /*
@@ -339,10 +317,6 @@ int ircomm_tty_send_initial_parameters(struct ircomm_tty_cb *self)
 
 	/* Only 9-wire service types continue here */
 	ircomm_param_request(self, IRCOMM_FLOW_CONTROL, FALSE);
-#if 0
-	ircomm_param_request(self, IRCOMM_XON_XOFF, FALSE);
-	ircomm_param_request(self, IRCOMM_ENQ_ACK, FALSE);
-#endif
 	/* Notify peer that we are ready to receive data */
 	ircomm_param_request(self, IRCOMM_DTE, TRUE);
 
@@ -365,17 +339,6 @@ static void ircomm_tty_discovery_indication(discinfo_t *discovery,
 
 	IRDA_DEBUG(2, "%s()\n", __func__ );
 
-	/* Important note :
-	 * We need to drop all passive discoveries.
-	 * The LSAP management of IrComm is deficient and doesn't deal
-	 * with the case of two instance connecting to each other
-	 * simultaneously (it will deadlock in LMP).
-	 * The proper fix would be to use the same technique as in IrNET,
-	 * to have one server socket and separate instances for the
-	 * connecting/connected socket.
-	 * The workaround is to drop passive discovery, which drastically
-	 * reduce the probability of this happening.
-	 * Jean II */
 	if(mode == DISCOVERY_PASSIVE)
 		return;
 
@@ -771,13 +734,7 @@ static int ircomm_tty_state_search(struct ircomm_tty_cb *self,
 		ircomm_tty_next_state(self, IRCOMM_TTY_READY);
 		break;
 	case IRCOMM_TTY_WD_TIMER_EXPIRED:
-#if 1
 		/* Give up */
-#else
-		/* Try to discover any remote devices */
-		ircomm_tty_start_watchdog_timer(self, 3*HZ);
-		irlmp_discovery_request(DISCOVERY_DEFAULT_SLOTS);
-#endif
 		break;
 	case IRCOMM_TTY_DETACH_CABLE:
 		ircomm_tty_next_state(self, IRCOMM_TTY_IDLE);
@@ -994,4 +951,3 @@ static int ircomm_tty_state_ready(struct ircomm_tty_cb *self,
 	}
 	return ret;
 }
-

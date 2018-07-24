@@ -713,11 +713,6 @@ static int sas_discover_sata_dev(struct domain_device *dev)
 			goto out_err;
 	}
 cont1:
-	/* XXX Hint: register this SATA device with SATL.
-	   When this returns, dev->sata_dev->lu is alive and
-	   present.
-	sas_satl_register_dev(dev);
-	*/
 
 	sas_fill_in_rphy(dev, dev->rphy);
 

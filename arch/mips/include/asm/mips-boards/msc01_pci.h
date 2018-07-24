@@ -201,12 +201,6 @@
 #define MSC01_PCI_SWAP_NOSWAP		0
 #define MSC01_PCI_SWAP_BYTESWAP		1
 
-/*
- * MIPS System controller PCI register base.
- *
- * FIXME - are these macros specific to Malta and co or to the MSC?  If the
- * latter, they should be moved elsewhere.
- */
 #define MIPS_MSC01_PCI_REG_BASE		0x1bd00000
 #define MIPS_SOCITSC_PCI_REG_BASE	0x1ff10000
 

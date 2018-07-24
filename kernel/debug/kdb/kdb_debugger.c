@@ -166,4 +166,3 @@ int kdb_stub(struct kgdb_state *ks)
 	}
 	return kgdb_info[ks->cpu].ret_state;
 }
-

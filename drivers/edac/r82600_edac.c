@@ -7,7 +7,7 @@
  * Written by Tim Small <tim@buttersideup.com>, based on work by Thayne
  * Harbaugh, Dan Hollis <goemon at anime dot net> and others.
  *
- * $Id: edac_r82600.c,v 1.1.2.6 2005/10/05 00:43:44 dsp_llnl Exp $
+ * $Id: edac_r82600.c,v 1.1.2.6 2005/10/05 00:43:44 Exp $
  *
  * Written with reference to 82600 High Integration Dual PCI System
  * Controller Data Book:
@@ -252,7 +252,6 @@ static void r82600_init_csrows(struct mem_ctl_info *mci, struct pci_dev *pdev,
 		 * 14 bits                                               */
 		csrow->grain = 1 << 14;
 		csrow->mtype = reg_sdram ? MEM_RDDR : MEM_DDR;
-		/* FIXME - check that this is unknowable with this chipset */
 		csrow->dtype = DEV_UNKNOWN;
 
 		/* Mode is global on 82600 */
@@ -287,9 +286,6 @@ static int r82600_probe1(struct pci_dev *pdev, int dev_idx)
 	mci->dev = &pdev->dev;
 	mci->mtype_cap = MEM_FLAG_RDDR | MEM_FLAG_DDR;
 	mci->edac_ctl_cap = EDAC_FLAG_NONE | EDAC_FLAG_EC | EDAC_FLAG_SECDED;
-	/* FIXME try to work out if the chip leads have been used for COM2
-	 * instead on this board? [MA6?] MAYBE:
-	 */
 
 	/* On the R82600, the pins for memory bits 72:65 - i.e. the   *
 	 * EC bits are shared with the pins for COM2 (!), so if COM2  *

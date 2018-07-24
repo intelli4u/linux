@@ -27,9 +27,6 @@ int baboon_present;
 static volatile struct baboon *baboon;
 static unsigned char baboon_disabled;
 
-#if 0
-extern int macide_ack_intr(struct ata_channel *);
-#endif
 
 /*
  * Baboon initialization.
@@ -77,11 +74,6 @@ static irqreturn_t baboon_irq(int irq, void *dev_id)
 		irq_bit <<= 1;
 		irq_num++;
 	} while(events >= irq_bit);
-#if 0
-	if (baboon->mb_ifr & 0x02) macide_ack_intr(NULL);
-	/* for now we need to smash all interrupts */
-	baboon->mb_ifr &= ~events;
-#endif
 	return IRQ_HANDLED;
 }
 

@@ -31,6 +31,12 @@
 #include <net/netfilter/ipv6/nf_conntrack_ipv6.h>
 #include <net/netfilter/nf_log.h>
 
+#ifdef HNDCTF
+extern void ip_conntrack_ipct_add(struct sk_buff *skb, u_int32_t hooknum,
+	struct nf_conn *ct, enum ip_conntrack_info ci,
+	struct nf_conntrack_tuple *manip);
+#endif /* HNDCTF */
+
 static bool ipv6_pkt_to_tuple(const struct sk_buff *skb, unsigned int nhoff,
 			      struct nf_conntrack_tuple *tuple)
 {
@@ -242,13 +248,12 @@ static unsigned int __ipv6_conntrack_in(struct net *net,
 					int (*okfn)(struct sk_buff *))
 {
 	struct sk_buff *reasm = skb->nfct_reasm;
+	unsigned int ret;
 
 	/* This packet is fragmented and has reassembled packet. */
 	if (reasm) {
 		/* Reassembled packet isn't parsed yet ? */
 		if (!reasm->nfct) {
-			unsigned int ret;
-
 			ret = nf_conntrack_in(net, PF_INET6, hooknum, reasm);
 			if (ret != NF_ACCEPT)
 				return ret;
@@ -259,7 +264,19 @@ static unsigned int __ipv6_conntrack_in(struct net *net,
 		return NF_ACCEPT;
 	}
 
-	return nf_conntrack_in(net, PF_INET6, hooknum, skb);
+	ret = nf_conntrack_in(net, PF_INET6, hooknum, skb);
+
+#if defined(HNDCTF)
+	if (ret == NF_ACCEPT) {
+		struct nf_conn *ct;
+		enum ip_conntrack_info ctinfo;
+
+		ct = nf_ct_get(skb, &ctinfo);
+		ip_conntrack_ipct_add(skb, hooknum, ct, ctinfo, NULL);
+	}
+#endif /* HNDCTF */
+
+	return ret;
 }
 
 static unsigned int ipv6_conntrack_in(unsigned int hooknum,

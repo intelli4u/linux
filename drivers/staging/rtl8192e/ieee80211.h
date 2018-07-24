@@ -547,31 +547,6 @@ do { if (ieee80211_debug_level & (level)) \
 
 /* debug macros not dependent on CONFIG_IEEE80211_DEBUG */
 
-/*
- * To use the debug system;
- *
- * If you are defining a new debug classification, simply add it to the #define
- * list here in the form of:
- *
- * #define IEEE80211_DL_xxxx VALUE
- *
- * shifting value to the left one bit from the previous entry.  xxxx should be
- * the name of the classification (for example, WEP)
- *
- * You then need to either add a IEEE80211_xxxx_DEBUG() macro definition for your
- * classification, or use IEEE80211_DEBUG(IEEE80211_DL_xxxx, ...) whenever you want
- * to send output to that classification.
- *
- * To add your debug level to the list of levels seen when you perform
- *
- * % cat /proc/net/ipw/debug_level
- *
- * you simply need to add your entry to the ipw_debug_levels array.
- *
- * If you do not see debug_level in /proc/net/ipw then you do not have
- * CONFIG_IEEE80211_DEBUG defined in your kernel configuration
- *
- */
 
 #define IEEE80211_DL_INFO          (1<<0)
 #define IEEE80211_DL_WX            (1<<1)
@@ -855,7 +830,6 @@ struct ieee_ibss_seq {
  *       information for frames received.  Not setting these will not cause
  *       any adverse affects. */
 struct ieee80211_rx_stats {
-#if 1
 	u32 mac_time[2];
 	s8 rssi;
 	u8 signal;
@@ -917,7 +891,6 @@ struct ieee80211_rx_stats {
 	bool		  bToSelfBA;		//cosa add for rssi
 	char 	  cck_adc_pwdb[4];	//cosa add for rx path selection
 	u16		  Seq_Num;
-#endif
 
 };
 
@@ -1265,7 +1238,6 @@ typedef union _frameqos {
 #define QOS_OUI_PARAM_SUB_TYPE          1
 #define QOS_VERSION_1                   1
 #define QOS_AIFSN_MIN_VALUE             2
-#if 1
 struct ieee80211_qos_information_element {
         u8 elementID;
         u8 length;
@@ -1340,7 +1312,6 @@ struct ieee80211_wmm_tspec_elem {
 	u16 surp_band_allow;
 	u16 medium_time;
 }__attribute__((packed));
-#endif
 enum eap_type {
 	EAP_PACKET = 0,
 	EAPOL_START,
@@ -1463,14 +1434,12 @@ enum {WMM_all_frame, WMM_two_frame, WMM_four_frame, WMM_six_frame};
 
 //UP Mapping to AC, using in MgntQuery_SequenceNumber() and maybe for DSCP
 //#define UP2AC(up)	((up<3) ? ((up==0)?1:0) : (up>>1))
-#if 1
 #define UP2AC(up) (		   \
 	((up) < 1) ? WME_AC_BE : \
 	((up) < 3) ? WME_AC_BK : \
 	((up) < 4) ? WME_AC_BE : \
 	((up) < 6) ? WME_AC_VI : \
 	WME_AC_VO)
-#endif
 //AC Mapping to UP, using in Tx part for selecting the corresponding TX queue
 #define AC2UP(_ac)	(       \
 	((_ac) == WME_AC_VO) ? 6 : \
@@ -1526,12 +1495,7 @@ struct ieee80211_network {
 	/* Ensure null-terminated for any debug msgs */
 	u8 ssid[IW_ESSID_MAX_SIZE + 1];
 	u8 ssid_len;
-#if 1
         struct ieee80211_qos_data qos_data;
-#else
-       // Qos related. Added by Annie, 2005-11-01.
-        BSS_QOS   BssQos;
-#endif
 
 	//added by amy for LEAP
 	bool	bWithAironetIE;
@@ -1597,7 +1561,6 @@ struct ieee80211_network {
 	struct list_head list;
 };
 
-#if 1
 enum ieee80211_state {
 
 	/* the card is not linked at all */
@@ -1636,17 +1599,6 @@ enum ieee80211_state {
 	IEEE80211_LINKED_SCANNING,
 
 };
-#else
-enum ieee80211_state {
-        IEEE80211_UNINITIALIZED = 0,
-        IEEE80211_INITIALIZED,
-        IEEE80211_ASSOCIATING,
-        IEEE80211_ASSOCIATED,
-        IEEE80211_AUTHENTICATING,
-        IEEE80211_AUTHENTICATED,
-        IEEE80211_SHUTDOWN
-};
-#endif
 
 #define DEFAULT_MAX_SCAN_AGE (15 * HZ)
 #define DEFAULT_FTS 2346
@@ -1986,7 +1938,6 @@ struct ieee80211_device {
         u16 prev_seq_ctl;       /* used to drop duplicate frames */
 
 	/* map of allowed channels. 0 is dummy */
-	// FIXME: remeber to default to a basic channel plan depending of the PHY type
 #ifdef ENABLE_DOT11D
 	void* pDot11dInfo;
 	bool bGlobalDomain;
@@ -1995,7 +1946,6 @@ struct ieee80211_device {
 #endif
 	int rate;       /* current rate */
 	int basic_rate;
-	//FIXME: pleace callback, see if redundant with softmac_features
 	short active_scan;
 
 	/* this contains flags for selectively enable softmac support */
@@ -2217,35 +2167,9 @@ struct ieee80211_device {
 //	void (*ps_request_tx_ack) (struct net_device *dev);
 	void (*enter_sleep_state) (struct net_device *dev, u32 th, u32 tl);
 	short (*ps_is_queue_empty) (struct net_device *dev);
-#if 0
-	/* Typical STA methods */
-        int (*handle_auth) (struct net_device * dev,
-                            struct ieee80211_auth * auth);
-        int (*handle_deauth) (struct net_device * dev,
-                              struct ieee80211_deauth * auth);
-        int (*handle_action) (struct net_device * dev,
-                              struct ieee80211_action * action,
-                              struct ieee80211_rx_stats * stats);
-        int (*handle_disassoc) (struct net_device * dev,
-                                struct ieee80211_disassoc * assoc);
-#endif
         int (*handle_beacon) (struct net_device * dev, struct ieee80211_beacon * beacon, struct ieee80211_network * network);
-#if 0
-        int (*handle_probe_response) (struct net_device * dev,
-                                      struct ieee80211_probe_response * resp,
-                                      struct ieee80211_network * network);
-        int (*handle_probe_request) (struct net_device * dev,
-                                     struct ieee80211_probe_request * req,
-                                     struct ieee80211_rx_stats * stats);
-#endif
         int (*handle_assoc_response) (struct net_device * dev, struct ieee80211_assoc_response_frame * resp, struct ieee80211_network * network);
 
-#if 0
-        /* Typical AP methods */
-        int (*handle_assoc_request) (struct net_device * dev);
-        int (*handle_reassoc_request) (struct net_device * dev,
-                                       struct ieee80211_reassoc_request * req);
-#endif
 
 	/* check whether Tx hw resouce available */
 	short (*check_nic_enough_desc)(struct net_device *dev, int queue_index);

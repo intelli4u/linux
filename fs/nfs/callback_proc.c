@@ -236,10 +236,6 @@ static bool referring_call_exists(struct nfs_client *clp,
 	struct referring_call_list *rclist;
 	struct referring_call *ref;
 
-	/*
-	 * XXX When client trunking is implemented, this becomes
-	 * a session lookup from within the loop
-	 */
 	session = clp->cl_session;
 	tbl = &session->fc_slot_table;
 

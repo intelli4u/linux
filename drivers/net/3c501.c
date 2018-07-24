@@ -565,10 +565,6 @@ static irqreturn_t el_interrupt(int irq, void *dev_id)
 					txsr, inw(GP_LOW), inw(RX_LOW));
 
 		if ((axsr & 0x80) && (txsr & TX_READY) == 0) {
-			/*
-			 *	FIXME: is there a logic to whether to keep
-			 *	on trying or reset immediately ?
-			 */
 			if (el_debug > 1)
 				pr_debug("%s: Unusual interrupt during Tx, txsr=%02x axsr=%02x gp=%03x rp=%03x.\n",
 					dev->name, txsr, axsr,
@@ -893,4 +889,3 @@ void __exit cleanup_module(void)
 MODULE_AUTHOR("Donald Becker, Alan Cox");
 MODULE_DESCRIPTION("Support for the ancient 3Com 3c501 ethernet card");
 MODULE_LICENSE("GPL");
-

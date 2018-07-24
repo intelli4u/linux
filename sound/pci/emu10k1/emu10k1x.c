@@ -368,12 +368,6 @@ static void snd_emu10k1x_pcm_interrupt(struct emu10k1x *emu, struct emu10k1x_voi
 		return;
 	if (epcm->substream == NULL)
 		return;
-#if 0
-	snd_printk(KERN_INFO "IRQ: position = 0x%x, period = 0x%x, size = 0x%x\n",
-		   epcm->substream->ops->pointer(epcm->substream),
-		   snd_pcm_lib_period_bytes(epcm->substream),
-		   snd_pcm_lib_buffer_bytes(epcm->substream));
-#endif
 	snd_pcm_period_elapsed(epcm->substream);
 }
 

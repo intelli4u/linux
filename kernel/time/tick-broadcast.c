@@ -28,7 +28,6 @@
  */
 
 static struct tick_device tick_broadcast_device;
-/* FIXME: Use cpumask_var_t. */
 static DECLARE_BITMAP(tick_broadcast_mask, NR_CPUS);
 static DECLARE_BITMAP(tmpmask, NR_CPUS);
 static DEFINE_RAW_SPINLOCK(tick_broadcast_lock);
@@ -359,7 +358,6 @@ int tick_resume_broadcast(void)
 
 #ifdef CONFIG_TICK_ONESHOT
 
-/* FIXME: use cpumask_var_t. */
 static DECLARE_BITMAP(tick_broadcast_oneshot_mask, NR_CPUS);
 
 /*

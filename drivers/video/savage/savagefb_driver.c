@@ -1056,7 +1056,7 @@ static int savagefb_decode_var(struct fb_var_screeninfo   *var,
 
 	vga_out8(0x3d4, 0x3a, par);
 	tmp = vga_in8(0x3d5, par);
-	if (1 /*FIXME:psav->pci_burst*/)
+	if (1)
 		reg->CR3A = (tmp & 0x7f) | 0x15;
 	else
 		reg->CR3A = tmp | 0x95;
@@ -2211,7 +2211,6 @@ static int __devinit savagefb_probe(struct pci_dev* dev,
 		goto failed_mmio;
 
 	video_len = savage_init_hw(par);
-	/* FIXME: cant be negative */
 	if (video_len < 0) {
 		err = video_len;
 		goto failed_mmio;

@@ -327,7 +327,8 @@ static int __init init_axis_flash(void)
 	 * but its size must be configured as 0 so as not to conflict
 	 * with our usage.
 	 */
-#if !defined(CONFIG_MTD_MTDRAM) || (CONFIG_MTDRAM_TOTAL_SIZE != 0) || (CONFIG_MTDRAM_ABS_POS != 0)
+#if !defined(CONFIG_MTD_MTDRAM) || (CONFIG_MTDRAM_TOTAL_SIZE != 0) || \
+	(CONFIG_MTDRAM_ABS_POS != 0)
 	if (!romfs_in_flash && !nand_boot) {
 		printk(KERN_EMERG "axisflashmap: Cannot create an MTD RAM "
 		       "device; configure CONFIG_MTD_MTDRAM with size = 0!\n");
@@ -367,34 +368,6 @@ static int __init init_axis_flash(void)
 		printk(KERN_INFO "axisflashmap: Found no flash chip.\n");
 	}
 
-#if 0 /* Dump flash memory so we can see what is going on */
-	if (main_mtd) {
-		int sectoraddr, i;
-		for (sectoraddr = 0; sectoraddr < 2*65536+4096;
-				sectoraddr += PAGESIZE) {
-			main_mtd->read(main_mtd, sectoraddr, PAGESIZE, &len,
-				page);
-			printk(KERN_INFO
-			       "Sector at %d (length %d):\n",
-			       sectoraddr, len);
-			for (i = 0; i < PAGESIZE; i += 16) {
-				printk(KERN_INFO
-				       "%02x %02x %02x %02x "
-				       "%02x %02x %02x %02x "
-				       "%02x %02x %02x %02x "
-				       "%02x %02x %02x %02x\n",
-				       page[i] & 255, page[i+1] & 255,
-				       page[i+2] & 255, page[i+3] & 255,
-				       page[i+4] & 255, page[i+5] & 255,
-				       page[i+6] & 255, page[i+7] & 255,
-				       page[i+8] & 255, page[i+9] & 255,
-				       page[i+10] & 255, page[i+11] & 255,
-				       page[i+12] & 255, page[i+13] & 255,
-				       page[i+14] & 255, page[i+15] & 255);
-			}
-		}
-	}
-#endif
 
 	if (main_mtd) {
 		main_mtd->owner = THIS_MODULE;
@@ -424,28 +397,6 @@ static int __init init_axis_flash(void)
 			ptable_head = &((struct partitiontable *) page)->head;
 		}
 
-#if 0 /* Dump partition table so we can see what is going on */
-		printk(KERN_INFO
-		       "axisflashmap: flash read %d bytes at 0x%08x, data: "
-		       "%02x %02x %02x %02x %02x %02x %02x %02x\n",
-		       len, CONFIG_ETRAX_PTABLE_SECTOR,
-		       page[0] & 255, page[1] & 255,
-		       page[2] & 255, page[3] & 255,
-		       page[4] & 255, page[5] & 255,
-		       page[6] & 255, page[7] & 255);
-		printk(KERN_INFO
-		       "axisflashmap: partition table offset %d, data: "
-		       "%02x %02x %02x %02x %02x %02x %02x %02x\n",
-		       PARTITION_TABLE_OFFSET,
-		       page[PARTITION_TABLE_OFFSET+0] & 255,
-		       page[PARTITION_TABLE_OFFSET+1] & 255,
-		       page[PARTITION_TABLE_OFFSET+2] & 255,
-		       page[PARTITION_TABLE_OFFSET+3] & 255,
-		       page[PARTITION_TABLE_OFFSET+4] & 255,
-		       page[PARTITION_TABLE_OFFSET+5] & 255,
-		       page[PARTITION_TABLE_OFFSET+6] & 255,
-		       page[PARTITION_TABLE_OFFSET+7] & 255);
-#endif
 	}
 
 	if (ptable_head && (ptable_head->magic == PARTITION_TABLE_MAGIC)

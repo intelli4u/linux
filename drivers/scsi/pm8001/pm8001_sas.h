@@ -494,4 +494,3 @@ int pm8001_mem_alloc(struct pci_dev *pdev, void **virt_addr,
 extern struct device_attribute *pm8001_host_attrs[];
 
 #endif
-

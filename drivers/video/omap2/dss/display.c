@@ -632,4 +632,3 @@ void omap_dss_stop_device(struct omap_dss_device *dssdev)
 	module_put(dssdev->dev.driver->owner);
 }
 EXPORT_SYMBOL(omap_dss_stop_device);
-

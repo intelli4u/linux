@@ -72,7 +72,6 @@
 #define K_SYS_REVISION_BCM1250_C3	0x23
 
 #if SIBYTE_HDR_FEATURE_CHIP(1250)
-/* XXX: discourage people from using these constants.  */
 #define K_SYS_REVISION_PASS1	    K_SYS_REVISION_BCM1250_PASS1
 #define K_SYS_REVISION_PASS2	    K_SYS_REVISION_BCM1250_PASS2
 #define K_SYS_REVISION_PASS2_2	    K_SYS_REVISION_BCM1250_PASS2_2
@@ -115,13 +114,11 @@
 #define G_SYS_NUM_CPUS(x)         _SB_GETVALUE(x, S_SYS_NUM_CPUS, M_SYS_NUM_CPUS)
 
 
-/* XXX: discourage people from using these constants.  */
 #define S_SYS_PART                  _SB_MAKE64(16)
 #define M_SYS_PART                  _SB_MAKEMASK(16, S_SYS_PART)
 #define V_SYS_PART(x)               _SB_MAKEVALUE(x, S_SYS_PART)
 #define G_SYS_PART(x)               _SB_GETVALUE(x, S_SYS_PART, M_SYS_PART)
 
-/* XXX: discourage people from using these constants.  */
 #define K_SYS_PART_SB1250           0x1250
 #define K_SYS_PART_BCM1120          0x1121
 #define K_SYS_PART_BCM1125          0x1123
@@ -525,7 +522,8 @@
 #define M_SCD_TRACE_CFG_FREEZE_FULL     _SB_MAKEMASK1(5)
 #define M_SCD_TRACE_CFG_DEBUG_FULL      _SB_MAKEMASK1(6)
 #define M_SCD_TRACE_CFG_FULL            _SB_MAKEMASK1(7)
-#if SIBYTE_HDR_FEATURE(1250, PASS2) || SIBYTE_HDR_FEATURE(112x, PASS1) || SIBYTE_HDR_FEATURE_CHIP(1480)
+#if SIBYTE_HDR_FEATURE(1250, PASS2) || SIBYTE_HDR_FEATURE(112x, PASS1) || \
+	SIBYTE_HDR_FEATURE_CHIP(1480)
 #define M_SCD_TRACE_CFG_FORCECNT        _SB_MAKEMASK1(8)
 #endif /* 1250 PASS2 || 112x PASS1 || 1480 */
 

@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  * Squashfs - a compressed read only filesystem for Linux
  *
@@ -34,7 +35,6 @@
 
 #include "squashfs_fs.h"
 #include "squashfs_fs_sb.h"
-#include "squashfs_fs_i.h"
 #include "squashfs.h"
 #include "decompressor.h"
 
@@ -64,6 +64,14 @@ static struct buffer_head *get_block_length(struct super_block *sb,
 		*length = (unsigned char) bh->b_data[*offset] |
 			(unsigned char) bh->b_data[*offset + 1] << 8;
 		*offset += 2;
+
+		if (*offset == msblk->devblksize) {
+			put_bh(bh);
+			bh = sb_bread(sb, ++(*cur_index));
+			if (bh == NULL)
+				return NULL;
+			*offset = 0;
+		}
 	}
 
 	return bh;

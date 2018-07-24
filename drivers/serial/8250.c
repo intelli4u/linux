@@ -70,17 +70,9 @@ static unsigned int skip_txen_test; /* force skip of txen test at init time */
 /*
  * Debugging.
  */
-#if 0
-#define DEBUG_AUTOCONF(fmt...)	printk(fmt)
-#else
 #define DEBUG_AUTOCONF(fmt...)	do { } while (0)
-#endif
 
-#if 0
-#define DEBUG_INTR(fmt...)	printk(fmt)
-#else
 #define DEBUG_INTR(fmt...)	do { } while (0)
-#endif
 
 #define PASS_LIMIT	256
 
@@ -764,7 +756,7 @@ static int size_fifo(struct uart_8250_port *up)
 	serial_outp(up, UART_LCR, 0x03);
 	for (count = 0; count < 256; count++)
 		serial_outp(up, UART_TX, count);
-	mdelay(20);/* FIXME - schedule_timeout */
+	mdelay(20);
 	for (count = 0; (serial_inp(up, UART_LSR) & UART_LSR_DR) &&
 	     (count < 256); count++)
 		serial_inp(up, UART_RX);
@@ -856,11 +848,6 @@ static void autoconfig_has_efr(struct uart_8250_port *up)
 	    (id3 == 0x50 || id3 == 0x52 || id3 == 0x54)) {
 		up->port.type = PORT_16C950;
 
-		/*
-		 * Enable work around for the Oxford Semiconductor 952 rev B
-		 * chip which causes it to seriously miscalculate baud rates
-		 * when DLL is 0.
-		 */
 		if (id3 == 0x52 && rev == 0x01)
 			up->bugs |= UART_BUG_QUOT;
 		return;
@@ -2285,9 +2272,6 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
 				  port->uartclk / 16);
 	quot = serial8250_get_divisor(port, baud);
 
-	/*
-	 * Oxford Semi 952 rev B workaround
-	 */
 	if (up->bugs & UART_BUG_QUOT && (quot & 0xff) == 0)
 		quot++;
 
@@ -2365,11 +2349,6 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
 
 	if (up->capabilities & UART_CAP_EFR) {
 		unsigned char efr = 0;
-		/*
-		 * TI16C752/Startech hardware flow control.  FIXME:
-		 * - TI16C752 requires control thresholds to be set.
-		 * - UART_MCR_RTS is ineffective if auto-RTS mode is enabled.
-		 */
 		if (termios->c_cflag & CRTSCTS)
 			efr |= UART_EFR_CTS;
 
@@ -2378,7 +2357,6 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
 	}
 
 #ifdef CONFIG_ARCH_OMAP
-	/* Workaround to enable 115200 baud on OMAP1510 internal ports */
 	if (cpu_is_omap1510() && is_omap_port(up)) {
 		if (baud == 115200) {
 			quot = 1;

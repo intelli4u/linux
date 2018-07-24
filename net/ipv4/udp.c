@@ -1124,6 +1124,7 @@ int udp_recvmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 	int peeked;
 	int err;
 	int is_udplite = IS_UDPLITE(sk);
+	bool checksum_valid = false;
 	bool slow;
 
 	/*
@@ -1154,11 +1155,12 @@ try_again:
 	 */
 
 	if (len < ulen || UDP_SKB_CB(skb)->partial_cov) {
-		if (udp_lib_checksum_complete(skb))
+		checksum_valid = !udp_lib_checksum_complete(skb);
+		if (!checksum_valid)
 			goto csum_copy_err;
 	}
 
-	if (skb_csum_unnecessary(skb))
+	if (checksum_valid || skb_csum_unnecessary(skb))
 		err = skb_copy_datagram_iovec(skb, sizeof(struct udphdr),
 					      msg->msg_iov, len);
 	else {
@@ -1842,19 +1844,6 @@ int compat_udp_getsockopt(struct sock *sk, int level, int optname,
 	return compat_ip_getsockopt(sk, level, optname, optval, optlen);
 }
 #endif
-/**
- * 	udp_poll - wait for a UDP event.
- *	@file - file struct
- *	@sock - socket
- *	@wait - poll table
- *
- *	This is same as datagram poll, except for the special case of
- *	blocking sockets. If application is using a blocking fd
- *	and a packet with checksum error is in the queue;
- *	then it could get return from select indicating data available
- *	but then block when reading it. Add special case code
- *	to work around these arguably broken applications.
- */
 unsigned int udp_poll(struct file *file, struct socket *sock, poll_table *wait)
 {
 	unsigned int mask = datagram_poll(file, sock, wait);
@@ -2241,4 +2230,3 @@ struct sk_buff *udp4_ufo_fragment(struct sk_buff *skb, int features)
 out:
 	return segs;
 }
-

@@ -251,11 +251,7 @@ static int snd_gus_detect_memory(struct snd_gus_card * gus)
 		    snd_gf1_peek(gus, 0L) != 0xaa)
 			break;
 	}
-#if 1
 	gus->gf1.memory = idx << 18;
-#else
-	gus->gf1.memory = 256 * 1024;
-#endif
 	for (l = 0, local = gus->gf1.memory; l < 4; l++, local -= 256 * 1024) {
 		gus->gf1.mem_alloc.banks_8[l].address =
 		    gus->gf1.mem_alloc.banks_8[l].size = 0;
@@ -308,9 +304,6 @@ static int snd_gus_init_dma_irq(struct snd_gus_card * gus, int latches)
 		return -EINVAL;
 	}
 	irq |= 0x40;
-#if 0
-	card->mixer.mix_ctrl_reg |= 0x10;
-#endif
 
 	spin_lock_irqsave(&gus->reg_lock, flags);
 	outb(5, GUSP(gus, REGCNTRLS));

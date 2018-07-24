@@ -48,7 +48,6 @@
 #include <sysdev/fsl_pci.h>
 
 /* CADMUS info */
-/* xxx - galak, move into device tree */
 #define CADMUS_BASE (0xf8004000)
 #define CADMUS_SIZE (256)
 #define CM_VER	(0)

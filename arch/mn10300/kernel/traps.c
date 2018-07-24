@@ -145,16 +145,9 @@ void show_trace(unsigned long *sp)
 	while (((long) stack & (THREAD_SIZE - 1)) != 0) {
 		addr = *stack++;
 		if (__kernel_text_address(addr)) {
-#if 1
 			printk(" [<%08lx>]", addr);
 			print_symbol(" %s", addr);
 			printk("\n");
-#else
-			if ((i % 6) == 0)
-				printk(KERN_EMERG "  ");
-			printk("[<%08lx>] ", addr);
-			i++;
-#endif
 		}
 	}
 
@@ -261,30 +254,12 @@ void show_registers(struct pt_regs *regs)
 		printk(KERN_EMERG "\n");
 		show_stack(current, (unsigned long *) sp);
 
-#if 0
-		printk(KERN_EMERG "\nCode: ");
-		if (regs->pc < PAGE_OFFSET)
-			goto bad;
-
-		for (i = 0; i < 20; i++) {
-			unsigned char c;
-			if (__get_user(c, &((unsigned char *) regs->pc)[i]))
-				goto bad;
-			printk("%02x ", c);
-		}
-#else
 		i = 0;
-#endif
 	}
 
 	printk("\n");
 	return;
 
-#if 0
-bad:
-	printk(KERN_EMERG " Bad PC value.");
-	break;
-#endif
 }
 
 /*

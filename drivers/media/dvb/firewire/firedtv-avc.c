@@ -571,15 +571,6 @@ int avc_tuner_dsd(struct firedtv *fdtv,
 
 	fdtv->avc_data_length = ALIGN(3 + pos, 4);
 	ret = avc_write(fdtv);
-#if 0
-	/*
-	 * FIXME:
-	 * u8 *status was an out-parameter of avc_tuner_dsd, unused by caller.
-	 * Check for AVC_RESPONSE_ACCEPTED here instead?
-	 */
-	if (status)
-		*status = r->operand[2];
-#endif
 	mutex_unlock(&fdtv->avc_mutex);
 
 	if (ret == 0)
@@ -624,7 +615,6 @@ int avc_tuner_set_pids(struct firedtv *fdtv, unsigned char pidc, u16 pid[])
 	fdtv->avc_data_length = ALIGN(3 + pos, 4);
 	ret = avc_write(fdtv);
 
-	/* FIXME: check response code? */
 
 	mutex_unlock(&fdtv->avc_mutex);
 
@@ -664,7 +654,6 @@ int avc_tuner_get_ts(struct firedtv *fdtv)
 	fdtv->avc_data_length = fdtv->type == FIREDTV_DVB_T ? 24 : 28;
 	ret = avc_write(fdtv);
 
-	/* FIXME: check response code? */
 
 	mutex_unlock(&fdtv->avc_mutex);
 
@@ -860,7 +849,6 @@ int avc_register_remote_control(struct firedtv *fdtv)
 	fdtv->avc_data_length = 8;
 	ret = avc_write(fdtv);
 
-	/* FIXME: check response code? */
 
 	mutex_unlock(&fdtv->avc_mutex);
 
@@ -876,36 +864,6 @@ void avc_remote_ctrl_work(struct work_struct *work)
 	avc_register_remote_control(fdtv);
 }
 
-#if 0 /* FIXME: unused */
-int avc_tuner_host2ca(struct firedtv *fdtv)
-{
-	struct avc_command_frame *c = (void *)fdtv->avc_data;
-	int ret;
-
-	mutex_lock(&fdtv->avc_mutex);
-
-	c->ctype   = AVC_CTYPE_CONTROL;
-	c->subunit = AVC_SUBUNIT_TYPE_TUNER | fdtv->subunit;
-	c->opcode  = AVC_OPCODE_VENDOR;
-
-	c->operand[0] = SFE_VENDOR_DE_COMPANYID_0;
-	c->operand[1] = SFE_VENDOR_DE_COMPANYID_1;
-	c->operand[2] = SFE_VENDOR_DE_COMPANYID_2;
-	c->operand[3] = SFE_VENDOR_OPCODE_HOST2CA;
-	c->operand[4] = 0; /* slot */
-	c->operand[5] = SFE_VENDOR_TAG_CA_APPLICATION_INFO; /* ca tag */
-	clear_operands(c, 6, 8);
-
-	fdtv->avc_data_length = 12;
-	ret = avc_write(fdtv);
-
-	/* FIXME: check response code? */
-
-	mutex_unlock(&fdtv->avc_mutex);
-
-	return ret;
-}
-#endif
 
 static int get_ca_object_pos(struct avc_response_frame *r)
 {
@@ -919,16 +877,6 @@ static int get_ca_object_pos(struct avc_response_frame *r)
 
 static int get_ca_object_length(struct avc_response_frame *r)
 {
-#if 0 /* FIXME: unused */
-	int size = 0;
-	int i;
-
-	if (r->operand[7] & 0x80)
-		for (i = 0; i < (r->operand[7] & 0x7f); i++) {
-			size <<= 8;
-			size += r->operand[8 + i];
-		}
-#endif
 	return r->operand[7];
 }
 
@@ -957,7 +905,6 @@ int avc_ca_app_info(struct firedtv *fdtv, char *app_info, unsigned int *len)
 	if (ret < 0)
 		goto out;
 
-	/* FIXME: check response code and validate response data */
 
 	pos = get_ca_object_pos(r);
 	app_info[0] = (EN50221_TAG_APP_INFO >> 16) & 0xff;
@@ -998,7 +945,6 @@ int avc_ca_info(struct firedtv *fdtv, char *app_info, unsigned int *len)
 	if (ret < 0)
 		goto out;
 
-	/* FIXME: check response code and validate response data */
 
 	pos = get_ca_object_pos(r);
 	app_info[0] = (EN50221_TAG_CA_INFO >> 16) & 0xff;
@@ -1038,7 +984,6 @@ int avc_ca_reset(struct firedtv *fdtv)
 	fdtv->avc_data_length = 12;
 	ret = avc_write(fdtv);
 
-	/* FIXME: check response code? */
 
 	mutex_unlock(&fdtv->avc_mutex);
 
@@ -1196,7 +1141,6 @@ int avc_ca_get_time_date(struct firedtv *fdtv, int *interval)
 	if (ret < 0)
 		goto out;
 
-	/* FIXME: check response code and validate response data */
 
 	*interval = r->operand[get_ca_object_pos(r)];
 out:
@@ -1227,7 +1171,6 @@ int avc_ca_enter_menu(struct firedtv *fdtv)
 	fdtv->avc_data_length = 12;
 	ret = avc_write(fdtv);
 
-	/* FIXME: check response code? */
 
 	mutex_unlock(&fdtv->avc_mutex);
 
@@ -1259,7 +1202,6 @@ int avc_ca_get_mmi(struct firedtv *fdtv, char *mmi_object, unsigned int *len)
 	if (ret < 0)
 		goto out;
 
-	/* FIXME: check response code and validate response data */
 
 	*len = get_ca_object_length(r);
 	memcpy(mmi_object, &r->operand[get_ca_object_pos(r)], *len);
@@ -1357,13 +1299,8 @@ repeat:
 		set_opcr_channel(opcr, channel);
 		set_opcr_data_rate(opcr, 2); /* S400 */
 
-		/* FIXME: this is for the worst case - optimize */
 		set_opcr_overhead_id(opcr, 0);
 
-		/*
-		 * FIXME: allocate isochronous channel and bandwidth at IRM
-		 * fdtv->backend->alloc_resources(fdtv, channels_mask, bw);
-		 */
 	}
 
 	set_opcr_p2p_connections(opcr, get_opcr_p2p_connections(*opcr) + 1);
@@ -1376,12 +1313,6 @@ repeat:
 		return ret;
 
 	if (old_opcr != *opcr) {
-		/*
-		 * FIXME: if old_opcr.P2P_Connections > 0,
-		 * deallocate isochronous channel and bandwidth at IRM
-		 * if (...)
-		 *	fdtv->backend->dealloc_resources(fdtv, channel, bw);
-		 */
 
 		if (++attempts < 6) /* arbitrary limit */
 			goto repeat;
@@ -1417,12 +1348,6 @@ repeat:
 		return;
 
 	if (old_opcr != *opcr) {
-		/*
-		 * FIXME: if old_opcr.P2P_Connections == 1, i.e. we were last
-		 * owner, deallocate isochronous channel and bandwidth at IRM
-		 * if (...)
-		 *	fdtv->backend->dealloc_resources(fdtv, channel, bw);
-		 */
 
 		if (++attempts < 6) /* arbitrary limit */
 			goto repeat;

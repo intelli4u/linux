@@ -190,7 +190,6 @@ static int __devinit ck804xrom_init_one (struct pci_dev *pdev,
 	pci_read_config_byte(pdev, 0x6d, &byte);
 	pci_write_config_byte(pdev, 0x6d, byte | 1);
 
-	/* FIXME handle registers 0x80 - 0x8C the bios region locks */
 
 	/* For write accesses caches are useless */
 	window->virt = ioremap_nocache(window->phys, window->size);
@@ -202,14 +201,12 @@ static int __devinit ck804xrom_init_one (struct pci_dev *pdev,
 
 	/* Get the first address to look for a rom chip at */
 	map_top = window->phys;
-#if 1
 	/* The probe sequence run over the firmware hub lock
 	 * registers sets them to 0x7 (no access).
 	 * Probe at most the last 4MiB of the address space.
 	 */
 	if (map_top < 0xffc00000)
 		map_top = 0xffc00000;
-#endif
 	/* Loop  through and look for rom chips.  Since we don't know the
 	 * starting address for each chip, probe every ROM_PROBE_STEP_SIZE
 	 * bytes from the starting address of the window.
@@ -343,16 +340,6 @@ static struct pci_device_id ck804xrom_pci_tbl[] = {
 	{ 0, }
 };
 
-#if 0
-MODULE_DEVICE_TABLE(pci, ck804xrom_pci_tbl);
-
-static struct pci_driver ck804xrom_driver = {
-	.name =		MOD_NAME,
-	.id_table =	ck804xrom_pci_tbl,
-	.probe =	ck804xrom_init_one,
-	.remove =	ck804xrom_remove_one,
-};
-#endif
 
 static int __init init_ck804xrom(void)
 {
@@ -372,9 +359,6 @@ static int __init init_ck804xrom(void)
 		return retVal;
 	}
 	return -ENXIO;
-#if 0
-	return pci_register_driver(&ck804xrom_driver);
-#endif
 }
 
 static void __exit cleanup_ck804xrom(void)
@@ -388,4 +372,3 @@ module_exit(cleanup_ck804xrom);
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Eric Biederman <ebiederman@lnxi.com>, Dave Olsen <dolsen@lnxi.com>");
 MODULE_DESCRIPTION("MTD map driver for BIOS chips on the Nvidia ck804 southbridge");
-

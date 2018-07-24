@@ -1,28 +1,4 @@
-/*
- * Intel 1480 Wireless UWB Link
- * WLP specific definitions
- *
- *
- * Copyright (C) 2005-2006 Intel Corporation
- * Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
- *
- *
- * FIXME: docs
- */
+
 
 #ifndef __i1480_wlp_h__
 #define __i1480_wlp_h__
@@ -34,7 +10,7 @@
 #include <asm/byteorder.h>
 
 /* New simplified header format? */
-#undef WLP_HDR_FMT_2 		/* FIXME: rename */
+#undef WLP_HDR_FMT_2
 
 /**
  * Values of the Delivery ID & Type field when PCA or DRP
@@ -67,7 +43,7 @@ struct wlp_tx_hdr {
 	u8                  phy_params;
 #ifndef WLP_HDR_FMT_2
 	u8                  reserved;
-	__le16              oui01;              /* FIXME: not so sure if __le16 or u8[2] */
+	__le16              oui01;
 	/* dword 2 */
 	u8                  oui2;               /*        if all LE, it could be merged */
 	__le16              prid;
@@ -164,7 +140,6 @@ void wlp_options_init(struct wlp_options *options)
 	mutex_init(&options->mutex);
 	wlp_tx_hdr_set_ack_policy(&options->def_tx_hdr, UWB_ACK_INM);
 	wlp_tx_hdr_set_rts_cts(&options->def_tx_hdr, 1);
-	/* FIXME: default to phy caps */
 	wlp_tx_hdr_set_phy_rate(&options->def_tx_hdr, UWB_PHY_RATE_480);
 #ifndef WLP_HDR_FMT_2
 	options->def_tx_hdr.prid = cpu_to_le16(0x0000);

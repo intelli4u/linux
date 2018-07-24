@@ -190,7 +190,6 @@ static int agp_backend_initialize(struct agp_bridge_data *bridge)
 	}
 	got_keylist = 1;
 
-	/* FIXME vmalloc'd memory not guaranteed contiguous */
 	memset(bridge->key_list, 0, PAGE_SIZE * 4);
 
 	if (bridge->driver->configure()) {
@@ -384,4 +383,3 @@ MODULE_ALIAS_MISCDEV(AGPGART_MINOR);
 
 module_init(agp_init);
 module_exit(agp_exit);
-

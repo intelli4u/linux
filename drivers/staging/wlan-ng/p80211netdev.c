@@ -273,7 +273,6 @@ static void p80211netdev_rx_bh(unsigned long arg)
 
 			if (dev->type != ARPHRD_ETHER) {
 				/* RAW frame; we shouldn't convert it */
-				/* XXX Append the Prism Header here instead. */
 
 				/* set up various data fields */
 				skb->dev = dev;
@@ -957,9 +956,6 @@ static int p80211_rx_typedrop(wlandevice_t *wlandev, u16 fc)
 	/* Classify frame, increment counter */
 	ftype = WLAN_GET_FC_FTYPE(fc);
 	fstype = WLAN_GET_FC_FSTYPE(fc);
-#if 0
-	pr_debug("rx_typedrop : ftype=%d fstype=%d.\n", ftype, fstype);
-#endif
 	switch (ftype) {
 	case WLAN_FTYPE_MGMT:
 		if ((wlandev->netdev->flags & IFF_PROMISC) ||

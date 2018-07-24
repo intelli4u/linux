@@ -231,7 +231,6 @@ void ocfs2_recovery_exit(struct ocfs2_super *osb)
 	 * freed,  the osb_lock is not taken here.
 	 */
 	rm = osb->recovery_map;
-	/* XXX: Should we bug if there are dirty entries? */
 
 	kfree(rm);
 }
@@ -264,7 +263,6 @@ static int ocfs2_recovery_map_set(struct ocfs2_super *osb,
 		return 1;
 	}
 
-	/* XXX: Can this be exploited? Not from o2dlm... */
 	BUG_ON(rm->rm_used >= osb->max_slots);
 
 	rm->rm_entries[rm->rm_used] = node_num;
@@ -288,7 +286,6 @@ static void ocfs2_recovery_map_clear(struct ocfs2_super *osb,
 	}
 
 	if (i < rm->rm_used) {
-		/* XXX: be careful with the pointer math */
 		memmove(&(rm->rm_entries[i]), &(rm->rm_entries[i + 1]),
 			(rm->rm_used - i - 1) * sizeof(unsigned int));
 		rm->rm_used--;

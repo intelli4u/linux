@@ -380,8 +380,6 @@ static int s5k83a_set_gain(struct gspca_dev *gspca_dev, __s32 val)
 	if (err < 0)
 		return err;
 
-	/* FIXME: This is not sane, we need to figure out the composition
-		  of these registers */
 	data[0] = val >> 3; /* gain, high 5 bits */
 	data[1] = val >> 1; /* gain, high 7 bits */
 	err = m5602_write_sensor(sd, S5K83A_GAIN, data, 2);

@@ -49,4 +49,3 @@ static inline void kcapi_proc_init(void) { };
 static inline void kcapi_proc_exit(void) { };
 
 #endif
-

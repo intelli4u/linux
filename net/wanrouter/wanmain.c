@@ -108,10 +108,6 @@ struct wan_device* wanrouter_router_devlist; /* list of registered devices */
  *	Organize Unique Identifiers for encapsulation/decapsulation
  */
 
-#if 0
-static unsigned char wanrouter_oui_ether[] = { 0x00, 0x00, 0x00 };
-static unsigned char wanrouter_oui_802_2[] = { 0x00, 0x80, 0xC2 };
-#endif
 
 static int __init wanrouter_init(void)
 {
@@ -250,104 +246,6 @@ int unregister_wan_device(char *name)
 	return 0;
 }
 
-#if 0
-
-/*
- *	Encapsulate packet.
- *
- *	Return:	encapsulation header size
- *		< 0	- unsupported Ethertype
- *
- *	Notes:
- *	1. This function may be called on interrupt context.
- */
-
-
-int wanrouter_encapsulate(struct sk_buff *skb, struct net_device *dev,
-			  unsigned short type)
-{
-	int hdr_len = 0;
-
-	switch (type) {
-	case ETH_P_IP:		/* IP datagram encapsulation */
-		hdr_len += 1;
-		skb_push(skb, 1);
-		skb->data[0] = NLPID_IP;
-		break;
-
-	case ETH_P_IPX:		/* SNAP encapsulation */
-	case ETH_P_ARP:
-		hdr_len += 7;
-		skb_push(skb, 7);
-		skb->data[0] = 0;
-		skb->data[1] = NLPID_SNAP;
-		skb_copy_to_linear_data_offset(skb, 2, wanrouter_oui_ether,
-					       sizeof(wanrouter_oui_ether));
-		*((unsigned short*)&skb->data[5]) = htons(type);
-		break;
-
-	default:		/* Unknown packet type */
-		printk(KERN_INFO
-			"%s: unsupported Ethertype 0x%04X on interface %s!\n",
-			wanrouter_modname, type, dev->name);
-		hdr_len = -EINVAL;
-	}
-	return hdr_len;
-}
-
-
-/*
- *	Decapsulate packet.
- *
- *	Return:	Ethertype (in network order)
- *			0	unknown encapsulation
- *
- *	Notes:
- *	1. This function may be called on interrupt context.
- */
-
-
-__be16 wanrouter_type_trans(struct sk_buff *skb, struct net_device *dev)
-{
-	int cnt = skb->data[0] ? 0 : 1;	/* there may be a pad present */
-	__be16 ethertype;
-
-	switch (skb->data[cnt]) {
-	case NLPID_IP:		/* IP datagramm */
-		ethertype = htons(ETH_P_IP);
-		cnt += 1;
-		break;
-
-	case NLPID_SNAP:	/* SNAP encapsulation */
-		if (memcmp(&skb->data[cnt + 1], wanrouter_oui_ether,
-			   sizeof(wanrouter_oui_ether))){
-			printk(KERN_INFO
-				"%s: unsupported SNAP OUI %02X-%02X-%02X "
-				"on interface %s!\n", wanrouter_modname,
-				skb->data[cnt+1], skb->data[cnt+2],
-				skb->data[cnt+3], dev->name);
-			return 0;
-		}
-		ethertype = *((__be16*)&skb->data[cnt+4]);
-		cnt += 6;
-		break;
-
-	/* add other protocols, e.g. CLNP, ESIS, ISIS, if needed */
-
-	default:
-		printk(KERN_INFO
-			"%s: unsupported NLPID 0x%02X on interface %s!\n",
-			wanrouter_modname, skb->data[cnt], dev->name);
-		return 0;
-	}
-	skb->protocol = ethertype;
-	skb->pkt_type = PACKET_HOST;	/*	Physically point to point */
-	skb_pull(skb, cnt);
-	skb_reset_mac_header(skb);
-	return ethertype;
-}
-
-#endif  /*  0  */
 
 /*
  *	WAN device IOCTL.

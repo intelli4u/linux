@@ -361,6 +361,7 @@ long arch_ptrace(struct task_struct *child, long request, long addr, long data)
 			preempt_enable();
 			break;
 		}
+#ifndef CONFIG_CPU_MICROMIPS
 		case DSP_BASE ... DSP_BASE + 5: {
 			dspreg_t *dregs;
 
@@ -381,6 +382,7 @@ long arch_ptrace(struct task_struct *child, long request, long addr, long data)
 			}
 			tmp = child->thread.dsp.dspcontrol;
 			break;
+#endif
 		default:
 			tmp = 0;
 			ret = -EIO;
@@ -450,6 +452,7 @@ long arch_ptrace(struct task_struct *child, long request, long addr, long data)
 		case FPC_CSR:
 			child->thread.fpu.fcr31 = data;
 			break;
+#ifndef CONFIG_CPU_MICROMIPS
 		case DSP_BASE ... DSP_BASE + 5: {
 			dspreg_t *dregs;
 
@@ -469,6 +472,7 @@ long arch_ptrace(struct task_struct *child, long request, long addr, long data)
 			}
 			child->thread.dsp.dspcontrol = data;
 			break;
+#endif
 		default:
 			/* The rest are not allowed. */
 			ret = -EIO;
@@ -539,8 +543,8 @@ asmlinkage void do_syscall_trace(struct pt_regs *regs, int entryexit)
 		secure_computing(regs->regs[2]);
 
 	if (unlikely(current->audit_context) && entryexit)
-		audit_syscall_exit(AUDITSC_RESULT(regs->regs[2]),
-		                   regs->regs[2]);
+		audit_syscall_exit(AUDITSC_RESULT(regs->regs[7]),
+		                   -regs->regs[2]);
 
 	if (!(current->ptrace & PT_PTRACED))
 		goto out;

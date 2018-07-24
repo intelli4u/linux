@@ -14,4 +14,3 @@
 #include <trace/events/power.h>
 
 EXPORT_TRACEPOINT_SYMBOL_GPL(power_frequency);
-

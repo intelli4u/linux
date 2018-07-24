@@ -119,4 +119,3 @@ module_exit(cleanup_ts5500_map);
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Sean Young <sean@mess.org>");
 MODULE_DESCRIPTION("MTD map driver for Techology Systems TS-5500 board");
-

@@ -409,7 +409,6 @@ void hpi_send_recv_ex(struct hpi_message *phm, struct hpi_response *phr,
 		break;
 	}
 	HPI_DEBUG_RESPONSE(phr);
-#if 1
 	if (phr->error >= HPI_ERROR_BACKEND_BASE) {
 		void *ep = NULL;
 		char *ep_name;
@@ -435,7 +434,6 @@ void hpi_send_recv_ex(struct hpi_message *phm, struct hpi_response *phr,
 			hpi_debug_data((u16 *)phm,
 				sizeof(*phm) / sizeof(u16));
 	}
-#endif
 }
 
 static void adapter_open(struct hpi_message *phm, struct hpi_response *phr)

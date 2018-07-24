@@ -1411,10 +1411,8 @@ void convert_reordering_packet_to_preAMSDU_or_802_3_packet(struct rt_rtmp_adapte
 	/* */
 	if (!RX_BLK_TEST_FLAG(pRxBlk, fRX_AMSDU)) {
 		{
-#ifdef LINUX
 			NdisMoveMemory(skb_push(pRxPkt, LENGTH_802_3),
 				       Header802_3, LENGTH_802_3);
-#endif
 		}
 	}
 }

@@ -324,7 +324,6 @@ static int _read_and_match_data_map(struct exofs_sb_info *sbi, unsigned numdevs,
 	sbi->data_map.odm_raid_algorithm  =
 				le32_to_cpu(dt->dt_data_map.cb_raid_algorithm);
 
-/* FIXME: Only raid0 for now. if not so, do not mount */
 	if (sbi->data_map.odm_num_comps != numdevs) {
 		EXOFS_ERR("odm_num_comps(%u) != numdevs(%u)\n",
 			  sbi->data_map.odm_num_comps, numdevs);
@@ -393,7 +392,6 @@ static int exofs_devs_2_odi(struct exofs_dt_device_info *dt_dev,
 	odi->osdname_len = le32_to_cpu(dt_dev->osdname_len);
 	odi->osdname = dt_dev->osdname;
 
-	/* FIXME support long names. Will need a _put function */
 	if (dt_dev->long_name_offset)
 		return -EINVAL;
 

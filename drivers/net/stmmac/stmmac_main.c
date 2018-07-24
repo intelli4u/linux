@@ -1630,8 +1630,6 @@ static int stmmac_associate_phy(struct device *dev, void *data)
 	DBG(probe, DEBUG, "%s: PHY irq on bus %d is %d\n", __func__,
 	    plat_dat->bus_id, priv->phy_irq);
 
-	/* Override with kernel parameters if supplied XXX CRS XXX
-	 * this needs to have multiple instances */
 	if ((phyaddr >= 0) && (phyaddr <= 31))
 		plat_dat->phy_addr = phyaddr;
 

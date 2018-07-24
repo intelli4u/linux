@@ -188,5 +188,3 @@ static const u32 PowerDbToMw[] = {
 };
 
 #endif /* __SME_API_H__ */
-
-

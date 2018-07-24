@@ -616,12 +616,6 @@ bool kmemcheck_fault(struct pt_regs *regs, unsigned long address,
 {
 	pte_t *pte;
 
-	/*
-	 * XXX: Is it safe to assume that memory accesses from virtual 86
-	 * mode or non-kernel code segments will _never_ access kernel
-	 * memory (e.g. tracked pages)? For now, we need this to avoid
-	 * invoking kmemcheck for PnP BIOS calls.
-	 */
 	if (regs->flags & X86_VM_MASK)
 		return false;
 	if (regs->cs != __KERNEL_CS)

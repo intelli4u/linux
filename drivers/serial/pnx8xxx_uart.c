@@ -334,10 +334,6 @@ static unsigned int pnx8xxx_get_mctrl(struct uart_port *port)
 
 static void pnx8xxx_set_mctrl(struct uart_port *port, unsigned int mctrl)
 {
-#if	0	/* FIXME */
-	struct pnx8xxx_port *sport = (struct pnx8xxx_port *)port;
-	unsigned int msr;
-#endif
 }
 
 /*

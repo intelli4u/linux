@@ -70,7 +70,6 @@ static void ebony_flashsel_fixup(void)
 
 static void ebony_fixups(void)
 {
-	// FIXME: sysclk should be derived by reading the FPGA registers
 	unsigned long sysclk = 33000000;
 
 	ibm440gp_fixup_clocks(sysclk, 6 * 1843200);

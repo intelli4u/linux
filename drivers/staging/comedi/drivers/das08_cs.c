@@ -74,7 +74,7 @@ static int das08_cs_attach(struct comedi_device *dev,
 {
 	int ret;
 	unsigned long iobase;
-	struct pcmcia_device *link = cur_dev;	/*  XXX hack */
+	struct pcmcia_device *link = cur_dev;
 
 	ret = alloc_private(dev, sizeof(struct das08_private_struct));
 	if (ret < 0)

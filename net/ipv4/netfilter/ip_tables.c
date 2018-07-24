@@ -27,8 +27,14 @@
 
 #include <linux/netfilter/x_tables.h>
 #include <linux/netfilter_ipv4/ip_tables.h>
+#ifdef CONFIG_IP_NF_TARGET_CONE
+#include <linux/netfilter_ipv4/ipt_cone.h>
+#endif /* CONFIG_IP_NF_TARGET_CONE */
 #include <net/netfilter/nf_log.h>
 #include "../../netfilter/xt_repldata.h"
+
+#include <typedefs.h>
+#include <bcmdefs.h>
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Netfilter Core Team <coreteam@netfilter.org>");
@@ -56,11 +62,6 @@ MODULE_DESCRIPTION("IPv4 packet filter");
 #define IP_NF_ASSERT(x)
 #endif
 
-#if 0
-/* All the better to debug you with... */
-#define static
-#define inline
-#endif
 
 void *ipt_alloc_initial_table(const struct xt_table *info)
 {
@@ -193,7 +194,7 @@ ipt_get_target_c(const struct ipt_entry *e)
 }
 
 #if defined(CONFIG_NETFILTER_XT_TARGET_TRACE) || \
-    defined(CONFIG_NETFILTER_XT_TARGET_TRACE_MODULE)
+	defined(CONFIG_NETFILTER_XT_TARGET_TRACE_MODULE)
 static const char *const hooknames[] = {
 	[NF_INET_PRE_ROUTING]		= "PREROUTING",
 	[NF_INET_LOCAL_IN]		= "INPUT",
@@ -294,7 +295,7 @@ struct ipt_entry *ipt_next_entry(const struct ipt_entry *entry)
 }
 
 /* Returns one of the generic firewall policies, like NF_ACCEPT. */
-unsigned int
+unsigned int BCMFASTPATH_HOST
 ipt_do_table(struct sk_buff *skb,
 	     unsigned int hook,
 	     const struct net_device *in,
@@ -350,6 +351,9 @@ ipt_do_table(struct sk_buff *skb,
 		const struct xt_entry_match *ematch;
 
 		IP_NF_ASSERT(e);
+#if defined(CONFIG_NF_CONNTRACK) || defined(CONFIG_NF_CONNTRACK_MODULE)
+		skb->nfcache |= e->nfcache;
+#endif
 		if (!ip_packet_match(ip, indev, outdev,
 		    &e->ip, acpar.fragoff)) {
  no_match:
@@ -370,7 +374,7 @@ ipt_do_table(struct sk_buff *skb,
 		IP_NF_ASSERT(t->u.kernel.target);
 
 #if defined(CONFIG_NETFILTER_XT_TARGET_TRACE) || \
-    defined(CONFIG_NETFILTER_XT_TARGET_TRACE_MODULE)
+	defined(CONFIG_NETFILTER_XT_TARGET_TRACE_MODULE)
 		/* The packet is traced: log it */
 		if (unlikely(skb->nf_trace))
 			trace_packet(skb, hook, in, out,
@@ -385,6 +389,14 @@ ipt_do_table(struct sk_buff *skb,
 				/* Pop from stack? */
 				if (v != IPT_RETURN) {
 					verdict = (unsigned)(-v) - 1;
+#ifdef CONFIG_IP_NF_TARGET_CONE
+					acpar.target   = t->u.kernel.target;
+					acpar.targinfo = t->data;
+					if (ipt_cone_target(skb, &acpar) == NF_ACCEPT) {
+						/* Accept cone target as default */
+						verdict = NF_ACCEPT;
+					}
+#endif /* CONFIG_IP_NF_TARGET_CONE */
 					break;
 				}
 				if (*stackptr == 0) {
@@ -423,6 +435,21 @@ ipt_do_table(struct sk_buff *skb,
 		ip = ip_hdr(skb);
 		if (verdict == IPT_CONTINUE)
 			e = ipt_next_entry(e);
+		else if (verdict == IPT_RETURN) {		// added -- zzz
+			e = jumpstack[--*stackptr];
+			if (*stackptr <= origptr) {
+				e = get_entry(table_base,
+				    private->underflow[hook]);
+				pr_debug("Underflow (this is normal) "
+					 "to %p\n", e);
+			} else {
+				e = jumpstack[--*stackptr];
+				pr_debug("Pulled %p out from pos %u\n",
+					 e, *stackptr);
+				e = ipt_next_entry(e);
+			}
+			continue;
+		}
 		else
 			/* Verdict */
 			break;
@@ -968,7 +995,6 @@ copy_entries_to_user(unsigned int total_size,
 		goto free_counters;
 	}
 
-	/* FIXME: use iterator macros --RR */
 	/* ... then go back and fix counters and names */
 	for (off = 0, num = 0; off < total_size; off += e->next_offset, num++){
 		unsigned int i;

@@ -305,7 +305,6 @@ static int cyberjack_write(struct tty_struct *tty,
 
 static int cyberjack_write_room(struct tty_struct *tty)
 {
-	/* FIXME: .... */
 	return CYBERJACK_LOCAL_BUF_SIZE;
 }
 

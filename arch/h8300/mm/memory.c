@@ -52,4 +52,3 @@ unsigned long kernel_map(unsigned long paddr, unsigned long size,
 {
 	return paddr;
 }
-

@@ -150,4 +150,3 @@ void et131x_tx_dma_enable(struct et131x_adapter *adapter);
 void et131x_handle_send_interrupt(struct et131x_adapter *adapter);
 void et131x_free_busy_send_packets(struct et131x_adapter *adapter);
 int et131x_send_packets(struct sk_buff *skb, struct net_device *netdev);
-

@@ -402,4 +402,3 @@ EXTERN_C void		 msf_assert	 		(unsigned int line_number, hcf_16 trace, hcf_32 qu
 #endif // HCF_ASSERT_LNK_MSF_RTN
 
 #endif  // HCF_H
-

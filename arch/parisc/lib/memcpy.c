@@ -320,35 +320,6 @@ static unsigned long pa_memcpy(void *dstp, const void *srcp, unsigned long len)
 	pds = (double *)pcs;
 	pdd = (double *)pcd;
 
-#if 0
-	/* Copy 8 doubles at a time */
-	while (len >= 8*sizeof(double)) {
-		register double r1, r2, r3, r4, r5, r6, r7, r8;
-		/* prefetch_src((char *)pds + L1_CACHE_BYTES); */
-		flddma(s_space, pds, r1, pmc_load_exc);
-		flddma(s_space, pds, r2, pmc_load_exc);
-		flddma(s_space, pds, r3, pmc_load_exc);
-		flddma(s_space, pds, r4, pmc_load_exc);
-		fstdma(d_space, r1, pdd, pmc_store_exc);
-		fstdma(d_space, r2, pdd, pmc_store_exc);
-		fstdma(d_space, r3, pdd, pmc_store_exc);
-		fstdma(d_space, r4, pdd, pmc_store_exc);
-
-#if 0
-		if (L1_CACHE_BYTES <= 32)
-			prefetch_src((char *)pds + L1_CACHE_BYTES);
-#endif
-		flddma(s_space, pds, r5, pmc_load_exc);
-		flddma(s_space, pds, r6, pmc_load_exc);
-		flddma(s_space, pds, r7, pmc_load_exc);
-		flddma(s_space, pds, r8, pmc_load_exc);
-		fstdma(d_space, r5, pdd, pmc_store_exc);
-		fstdma(d_space, r6, pdd, pmc_store_exc);
-		fstdma(d_space, r7, pdd, pmc_store_exc);
-		fstdma(d_space, r8, pdd, pmc_store_exc);
-		len -= 8*sizeof(double);
-	}
-#endif
 
 	pws = (unsigned int *)pds;
 	pwd = (unsigned int *)pdd;

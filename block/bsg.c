@@ -952,11 +952,7 @@ static long bsg_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	 * block device ioctls
 	 */
 	default:
-#if 0
-		return ioctl_by_bdev(bd->bdev, cmd, arg);
-#else
 		return -ENOTTY;
-#endif
 	}
 }
 

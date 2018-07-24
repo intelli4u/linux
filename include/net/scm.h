@@ -126,4 +126,3 @@ static __inline__ void scm_recv(struct socket *sock, struct msghdr *msg,
 
 
 #endif /* __LINUX_NET_SCM_H */
-

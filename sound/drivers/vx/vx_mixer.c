@@ -132,7 +132,7 @@ void vx_toggle_dac_mute(struct vx_core *chip, int mute)
 	unsigned int i;
 	for (i = 0; i < chip->hw->num_codecs; i++) {
 		if (chip->ops->akm_write)
-			chip->ops->akm_write(chip, XX_CODEC_DAC_CONTROL_REGISTER, mute); /* XXX */
+			chip->ops->akm_write(chip, XX_CODEC_DAC_CONTROL_REGISTER, mute);
 		else
 			vx_set_codec_reg(chip, i, XX_CODEC_DAC_CONTROL_REGISTER,
 					 mute ? DAC_ATTEN_MAX : DAC_ATTEN_MIN);
@@ -256,29 +256,6 @@ static int vx_adjust_audio_level(struct vx_core *chip, int audio, int capture,
 }
 
     
-#if 0 // not used
-static int vx_read_audio_level(struct vx_core *chip, int audio, int capture,
-			       struct vx_audio_level *info)
-{
-	int err;
-	struct vx_rmh rmh;
-
-	memset(info, 0, sizeof(*info));
-        vx_init_rmh(&rmh, CMD_GET_AUDIO_LEVELS);
-	if (capture)
-		rmh.Cmd[0] |= COMMAND_RECORD_MASK;
-	/* Add Audio IO mask */
-	rmh.Cmd[1] = 1 << audio;
-	err = vx_send_msg(chip, &rmh);
-	if (err < 0)
-		return err;
-	info.level = rmh.Stat[0] & MASK_DSP_WORD_LEVEL;
-	info.monitor_level = (rmh.Stat[0] >> 10) & MASK_DSP_WORD_LEVEL;
-	info.mute = (rmh.Stat[i] & AUDIO_IO_HAS_MUTE_LEVEL) ? 1 : 0;
-	info.monitor_mute = (rmh.Stat[i] & AUDIO_IO_HAS_MUTE_MONITORING_1) ? 1 : 0;
-	return 0;
-}
-#endif // not used
 
 /*
  * set the monitoring level and mute state of the given audio

@@ -372,7 +372,7 @@ int parport_negotiate (struct parport *port, int mode)
 		m = IEEE1284_MODE_EPP;
 		break;
 	case IEEE1284_MODE_BECP:
-		return -ENOSYS; /* FIXME (implement BECP) */
+		return -ENOSYS;
 	}
 
 	if (mode & IEEE1284_EXT_LINK)

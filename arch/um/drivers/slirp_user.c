@@ -92,12 +92,6 @@ static void slirp_close(int fd, void *data)
 		return;
 	}
 
-#if 0
-	if (kill(pri->pid, SIGHUP)<0) {
-		printk(UM_KERN_ERR "slirp_close: sending hangup to %d failed "
-		       "(%d)\n", pri->pid, errno);
-	}
-#endif
 	err = helper_wait(pri->pid);
 	if (err < 0)
 		return;

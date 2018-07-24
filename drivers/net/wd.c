@@ -350,12 +350,10 @@ static int __init wd_probe1(struct net_device *dev, int ioaddr)
 	dev->netdev_ops = &wd_netdev_ops;
 	NS8390_init(dev, 0);
 
-#if 1
 	/* Enable interrupt generation on softconfig cards -- M.U */
 	/* .. but possibly potentially unsafe - Donald */
 	if (inb(ioaddr+14) & 0x20)
 		outb(inb(ioaddr+4)|0x80, ioaddr+4);
-#endif
 
 	err = register_netdev(dev);
 	if (err) {

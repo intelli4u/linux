@@ -48,10 +48,6 @@ enum endpoints {
 
 enum {
 	USB_MAX_TRANSFER_SIZE		= 4096, /* bytes */
-	/* FIXME: The original driver uses this value. We have to check,
-	 * whether the MAX_TRANSFER_SIZE is sufficient and this needs only be
-	 * used if one combined frame is split over two USB transactions.
-	 */
 	USB_MAX_RX_SIZE			= 4800, /* bytes */
 	USB_MAX_IOWRITE16_COUNT		= 15,
 	USB_MAX_IOWRITE32_COUNT		= USB_MAX_IOWRITE16_COUNT/2,

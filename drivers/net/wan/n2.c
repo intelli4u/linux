@@ -54,7 +54,7 @@ static const char* devname = "RISCom/N2";
 #define NEED_SCA_MSCI_INTR
 #define MAX_TX_BUFFERS 10
 
-static char *hw;	/* pointer to hw=xxx command line string */
+static char *hw;
 
 /* RISCom/N2 Board Registers */
 
@@ -345,7 +345,7 @@ static int __init n2_run(unsigned long io, unsigned long irq,
 		return -ENODEV;
 	}
 
-	if (irq < 3 || irq > 15 || irq == 6) /* FIXME */ {
+	if (irq < 3 || irq > 15 || irq == 6) {
 		printk(KERN_ERR "n2: invalid IRQ value\n");
 		return -ENODEV;
 	}

@@ -24,6 +24,8 @@
 
 #include "xhci.h"
 
+extern int usb2mode;
+
 static void xhci_hub_descriptor(struct xhci_hcd *xhci,
 		struct usb_hub_descriptor *desc)
 {
@@ -45,7 +47,6 @@ static void xhci_hub_descriptor(struct xhci_hcd *xhci,
 	memset(&desc->DeviceRemovable[0], 0, temp);
 	memset(&desc->DeviceRemovable[temp], 0xff, temp);
 
-	/* Ugh, these should be #defines, FIXME */
 	/* Using table 11-13 in USB 2.0 spec. */
 	temp = 0;
 	/* Bits 1:0 - support port power switching, or power always on */
@@ -69,11 +70,6 @@ static unsigned int xhci_port_speed(unsigned int port_status)
 		return USB_PORT_STAT_HIGH_SPEED;
 	if (DEV_SUPERSPEED(port_status))
 		return USB_PORT_STAT_SUPER_SPEED;
-	/*
-	 * FIXME: Yes, we should check for full speed, but the core uses that as
-	 * a default in portspeed() in usb/core/hub.c (which is the only place
-	 * USB_PORT_STAT_*_SPEED is used).
-	 */
 	return 0;
 }
 
@@ -217,10 +213,6 @@ int xhci_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 			status |= USB_PORT_STAT_C_ENABLE << 16;
 		if ((temp & PORT_OCC))
 			status |= USB_PORT_STAT_C_OVERCURRENT << 16;
-		/*
-		 * FIXME ignoring suspend, reset, and USB 2.1/3.0 specific
-		 * changes
-		 */
 		if (temp & PORT_CONNECT) {
 			status |= USB_PORT_STAT_CONNECTION;
 			status |= xhci_port_speed(temp);
@@ -246,13 +238,23 @@ int xhci_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 		temp = xhci_port_state_to_neutral(temp);
 		switch (wValue) {
 		case USB_PORT_FEAT_POWER:
+			printk(KERN_INFO "[xhci-hub] usb2mode:[%d]\n", usb2mode);
 			/*
 			 * Turn on ports, even if there isn't per-port switching.
 			 * HC will report connect events even before this is set.
 			 * However, khubd will ignore the roothub events until
 			 * the roothub is registered.
 			 */
-			xhci_writel(xhci, temp | PORT_POWER, addr);
+			if(usb2mode != 0){
+				xhci_writel(xhci, 0x0, addr);
+
+				if(usb2mode == 1){ // 0bc2:a0a1
+					xhci_writel(xhci, 0x0 & ~PORT_PE | PORT_POWER | PORT_LINK_STROBE & ~PORT_PLS_MASK, addr);
+				}
+			}
+			else{
+				xhci_writel(xhci, temp | PORT_POWER, addr);
+			}
 
 			temp = xhci_readl(xhci, addr);
 			xhci_dbg(xhci, "set port power, actual port %d status  = 0x%x\n", wIndex, temp);

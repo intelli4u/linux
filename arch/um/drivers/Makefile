@@ -29,7 +29,6 @@ $(obj)/pcap.o: $(obj)/pcap_kern.o $(obj)/pcap_user.o
 $(obj)/vde.o: $(obj)/vde_kern.o $(obj)/vde_user.o
 	$(LD) -r -dp -o $@ $^ $(LDFLAGS) $(LDFLAGS_vde.o)
 
-#XXX: The call below does not work because the flags are added before the
 # object name, so nothing from the library gets linked.
 #$(call if_changed,ld)
 

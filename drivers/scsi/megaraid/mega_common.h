@@ -256,7 +256,7 @@ typedef struct {
  					// mraid_debug_level
 
 #ifdef DEBUG
-#if defined (_ASSERT_PANIC)
+#if defined(_ASSERT_PANIC)
 #define ASSERT_ACTION	panic
 #else
 #define ASSERT_ACTION	printk

@@ -282,10 +282,8 @@ static void source_sink_complete(struct usb_ep *ep, struct usb_request *req)
 					 * buffer.
 					 */
 	default:
-#if 1
 		DBG(cdev, "%s complete --> %d, %d/%d\n", ep->name,
 				status, req->actual, req->length);
-#endif
 	case -EREMOTEIO:		/* short read */
 		break;
 	}
@@ -295,7 +293,6 @@ static void source_sink_complete(struct usb_ep *ep, struct usb_request *req)
 		ERROR(cdev, "kill %s:  resubmit %d bytes --> %d\n",
 				ep->name, req->length, status);
 		usb_ep_set_halt(ep);
-		/* FIXME recover later ... somehow */
 	}
 }
 

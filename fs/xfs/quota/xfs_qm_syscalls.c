@@ -107,7 +107,6 @@ xfs_qm_scall_quotaoff(
 		spin_unlock(&mp->m_sb_lock);
 		mutex_unlock(&q->qi_quotaofflock);
 
-		/* XXX what to do if error ? Revert back to old vals incore ? */
 		error = xfs_qm_write_sb_changes(mp, XFS_SB_QFLAGS);
 		return (error);
 	}

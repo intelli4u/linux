@@ -9,8 +9,7 @@
  * Red Hat Inc. http://www.redhat.com
  */
 
-#if defined(CONFIG_EDAC_MCE) || \
-			(defined(CONFIG_EDAC_MCE_MODULE) && defined(MODULE))
+#if defined(CONFIG_EDAC_MCE) || (defined(CONFIG_EDAC_MCE_MODULE) && defined(MODULE))
 
 #include <asm/mce.h>
 #include <linux/list.h>

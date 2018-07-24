@@ -383,4 +383,3 @@
 #define WPALCON_W0PAL_18BPP			(0x4 << 0)
 #define WPALCON_W0PAL_16BPP_A555		(0x5 << 0)
 #define WPALCON_W0PAL_16BPP_565			(0x6 << 0)
-

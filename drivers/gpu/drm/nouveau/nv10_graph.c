@@ -435,7 +435,6 @@ static void nv10_graph_load_pipe(struct nouveau_channel *chan)
 	int i;
 
 	nouveau_wait_for_idle(dev);
-	/* XXX check haiku comments */
 	xfmode0 = nv_rd32(dev, NV10_PGRAPH_XFMODE0);
 	xfmode1 = nv_rd32(dev, NV10_PGRAPH_XFMODE1);
 	nv_wr32(dev, NV10_PGRAPH_XFMODE0, 0x10000000);

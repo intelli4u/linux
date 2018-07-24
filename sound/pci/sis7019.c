@@ -56,25 +56,6 @@ static DEFINE_PCI_DEVICE_TABLE(snd_sis7019_ids) = {
 
 MODULE_DEVICE_TABLE(pci, snd_sis7019_ids);
 
-/* There are three timing modes for the voices.
- *
- * For both playback and capture, when the buffer is one or two periods long,
- * we use the hardware's built-in Mid-Loop Interrupt and End-Loop Interrupt
- * to let us know when the periods have ended.
- *
- * When performing playback with more than two periods per buffer, we set
- * the "Stop Sample Offset" and tell the hardware to interrupt us when we
- * reach it. We then update the offset and continue on until we are
- * interrupted for the next period.
- *
- * Capture channels do not have a SSO, so we allocate a playback channel to
- * use as a timer for the capture periods. We use the SSO on the playback
- * channel to clock out virtual periods, and adjust the virtual period length
- * to maintain synchronization. This algorithm came from the Trident driver.
- *
- * FIXME: It'd be nice to make use of some of the synth features in the
- * hardware, but a woeful lack of documentation is a significant roadblock.
- */
 struct voice {
 	u16 flags;
 #define 	VOICE_IN_USE		1
@@ -670,9 +651,6 @@ static int sis_capture_open(struct snd_pcm_substream *substream)
 	struct voice *voice = &sis->capture_voice;
 	unsigned long flags;
 
-	/* FIXME: The driver only supports recording from one channel
-	 * at the moment, but it could support more.
-	 */
 	spin_lock_irqsave(&sis->voice_lock, flags);
 	if (voice->flags & VOICE_IN_USE)
 		voice = NULL;
@@ -1157,11 +1135,6 @@ static int sis_chip_init(struct sis7019 *sis)
 				SIS_MIXER_DEST_0, SIS_MIXER_ADDR(ioaddr, i));
 	}
 
-	/* Don't attenuate any audio set for the wave amplifier.
-	 *
-	 * FIXME: Maximum attenuation is set for the music amp, which will
-	 * need to change if we start using the synth engine.
-	 */
 	outl(0xffff0000, io + SIS_WEVCR);
 
 	/* Ensure that the wave engine is in normal operating mode.

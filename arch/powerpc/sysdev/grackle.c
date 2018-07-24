@@ -60,7 +60,4 @@ void __init setup_grackle(struct pci_controller *hose)
 		ppc_pci_add_flags(PPC_PCI_REASSIGN_ALL_BUS);
 	if (of_machine_is_compatible("AAPL,PowerBook1998"))
 		grackle_set_loop_snoop(hose, 1);
-#if 0	/* Disabled for now, HW problems ??? */
-	grackle_set_stg(hose, 1);
-#endif
 }

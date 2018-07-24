@@ -88,26 +88,6 @@ void hubiio_crb_free(struct hubdev_info *hubdev_info, int crbnum)
 
 }
 
-/*
- * hubiio_crb_error_handler
- *
- *	This routine gets invoked when a hub gets an error 
- *	interrupt. So, the routine is running in interrupt context
- *	at error interrupt level.
- * Action:
- *	It's responsible for identifying ALL the CRBs that are marked
- *	with error, and process them. 
- *	
- * 	If you find the CRB that's marked with error, map this to the
- *	reason it caused error, and invoke appropriate error handler.
- *
- *	XXX Be aware of the information in the context register.
- *
- * NOTE:
- *	Use REMOTE_HUB_* macro instead of LOCAL_HUB_* so that the interrupt
- *	handler can be run on any node. (not necessarily the node 
- *	corresponding to the hub that encountered error).
- */
 
 void hubiio_crb_error_handler(struct hubdev_info *hubdev_info)
 {
@@ -123,9 +103,6 @@ void hubiio_crb_error_handler(struct hubdev_info *hubdev_info)
 
 	nasid = hubdev_info->hdi_nasid;
 
-	/*
-	 * XXX - Add locking for any recovery actions
-	 */
 	/*
 	 * Scan through all CRBs in the Hub, and handle the errors
 	 * in any of the CRBs marked.
@@ -215,4 +192,3 @@ void ice_error_init(struct hubdev_info *hubdev_info)
 	}
 	sn_set_err_irq_affinity(SGI_TIO_ERROR);
 }
-

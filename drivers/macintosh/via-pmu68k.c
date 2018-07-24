@@ -572,10 +572,6 @@ pmu_interrupt(int irq, void *dev_id)
 	struct adb_request *req;
 	int timeout, bite = 0;	/* to prevent compiler warning */
 
-#if 0
-	printk("pmu_interrupt: irq %d state %d acr %02X, b %02X data_index %d/%d adb_int_pending %d\n",
-		irq, pmu_state, (uint) via1[ACR], (uint) via2[B], data_index, data_len, adb_int_pending);
-#endif
 
 	if (irq == IRQ_MAC_ADB_CL) {		/* CB1 interrupt */
 		adb_int_pending = 1;
@@ -678,10 +674,6 @@ finish:
 		}
 	}
 
-#if 0
-	printk("pmu_interrupt: exit state %d acr %02X, b %02X data_index %d/%d adb_int_pending %d\n",
-		pmu_state, (uint) via1[ACR], (uint) via2[B], data_index, data_len, adb_int_pending);
-#endif
 	return IRQ_HANDLED;
 }
 

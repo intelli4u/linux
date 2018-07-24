@@ -72,4 +72,3 @@ nvc0_graph_init(struct drm_device *dev)
 	dev_priv->engine.graph.accel_blocked = true;
 	return 0;
 }
-

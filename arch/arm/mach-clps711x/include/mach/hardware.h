@@ -52,13 +52,13 @@
 #define CS7_PHYS_BASE		(0x00000000)
 #endif
 
-#if defined (CONFIG_ARCH_EP7211)
+#if defined(CONFIG_ARCH_EP7211)
 
 #define EP7211_VIRT_BASE	CLPS7111_VIRT_BASE
 #define EP7211_BASE		CLPS7111_VIRT_BASE
 #include <asm/hardware/ep7211.h>
 
-#elif defined (CONFIG_ARCH_EP7212)
+#elif defined(CONFIG_ARCH_EP7212)
 
 #define EP7212_VIRT_BASE	CLPS7111_VIRT_BASE
 #define EP7212_BASE		CLPS7111_VIRT_BASE
@@ -69,7 +69,7 @@
 #define SYSPLD_VIRT_BASE	0xfe000000
 #define SYSPLD_BASE		SYSPLD_VIRT_BASE
 
-#if  defined (CONFIG_ARCH_AUTCPU12)
+#if  defined(CONFIG_ARCH_AUTCPU12)
 
 #define  CS89712_VIRT_BASE	CLPS7111_VIRT_BASE
 #define  CS89712_BASE		CLPS7111_VIRT_BASE
@@ -81,7 +81,7 @@
 #endif
 
 
-#if defined (CONFIG_ARCH_CDB89712)
+#if defined(CONFIG_ARCH_CDB89712)
 
 #include <asm/hardware/clps7111.h>
 #include <asm/hardware/ep7212.h>
@@ -99,7 +99,7 @@
 #endif
 
 
-#if defined (CONFIG_ARCH_EDB7211)
+#if defined(CONFIG_ARCH_EDB7211)
 
 /*
  * The extra 8 lines of the keyboard matrix are wired to chip select 3 (nCS3) 
@@ -152,7 +152,7 @@
 #define EDB_PD3_LCDBL		(1<<3)
 
 
-#if defined (CONFIG_ARCH_CEIVA)
+#if defined(CONFIG_ARCH_CEIVA)
 
 #define  CEIVA_VIRT_BASE	CLPS7111_VIRT_BASE
 #define  CEIVA_BASE		CLPS7111_VIRT_BASE

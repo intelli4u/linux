@@ -155,8 +155,6 @@ struct ssb_bus_ops {
 /* Vendor-ID values */
 #define SSB_VENDOR_BROADCOM	0x4243
 
-/* Some kernel subsystems poke with dev->drvdata, so we must use the
- * following ugly workaround to get from struct device to struct ssb_device */
 struct __ssb_dev_wrapper {
 	struct device dev;
 	struct ssb_device *sdev;

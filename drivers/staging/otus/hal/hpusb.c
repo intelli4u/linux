@@ -95,17 +95,10 @@ void zfAdjustCtrlSetting(zdev_t* dev, u16_t* header, zbuf_t* buf)
 	/* Bandwidth control : Bit[4~3] */
 	if ( oldPhyCtrl&0x800000 )    /* Bit23 : 40M */
 	{
-		#if 0
-		if (oldMT == 0x3)             /* DL-OFDM */
-            phyCtrl |= (0x3<<3);   /* 40M duplicate */
-		else
-			phyCtrl |= (0x2<<3);   /* 40M shared */
-		#else
 		if (oldMT == 0x2 && ((struct zsHpPriv*)wd->hpPrivate)->hwBw40)
 		{
 			phyCtrl |= (0x2<<3);   /* 40M shared */
 		}
-		#endif
 	}
 	else {
         oldPhyCtrl &= ~0x80000000;
@@ -665,7 +658,6 @@ void zfiUsbRecv(zdev_t *dev, zbuf_t *buf)
         }
     }
 
-#if 1
     /* First MPDU or Single MPDU */
     if(((mpduInd & 0x30) == 0x00) || ((mpduInd & 0x30) == 0x20))
     //if ((mpduInd & 0x10) == 0x00)
@@ -698,10 +690,6 @@ void zfiUsbRecv(zdev_t *dev, zbuf_t *buf)
     {
         crcPlusRxStatusLen = 4 + 4;     // Extra 4 bytes + FCS
     }
-#else
-    plcpHdrLen = 12;
-    crcPlusRxStatusLen = EXTRA_INFO_LEN + 4;     // Extra bytes + FCS
-#endif
 
     if (len < (plcpHdrLen+10+crcPlusRxStatusLen))
     {
@@ -754,13 +742,6 @@ void zfiUsbRecv(zdev_t *dev, zbuf_t *buf)
 
     //Store Rx Tail Infomation before Remove--CWYang(+)
 
-#if 0
-    for (i = 0; i < crcPlusRxStatusLen-4; i++)
-    {
-       addInfo.Tail.Byte[i] =
-               zmw_rx_buf_readb(dev, buf, len - crcPlusRxStatusLen + 4 + i);
-    }
-#else
 /*
 * Brief format of OUTS chip
 * ¢z¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢s¢w¢w¢w¢w¢w¢w¢w¢w¢s¢w¢w¢w¢w¢w¢w¢s¢w¢w¢w¢w¢w¢w¢s¢w¢w¢w¢w¢w¢w¢w¢w¢w¢s¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢w¢{
@@ -836,34 +817,6 @@ void zfiUsbRecv(zdev_t *dev, zbuf_t *buf)
             //}
           }
 
-          #if 0
-          /* print */
-            zm_dbg(("MT(%d) MCS(%d) BW(%d) SG(%d) RSSI:%d,%d,%d,%d,%d,%d,%d EVM:(%d,%d,%d,%d,%d,%d)(%d,%d,%d,%d,%d,%d)\n",
-                       rxMT,
-                       rxMCS,
-                       rxBW,
-                       rxSG,
-                       ((struct zsHpPriv*)wd->hpPrivate)->halRxInfo.currentRSSI[0],
-                       ((struct zsHpPriv*)wd->hpPrivate)->halRxInfo.currentRSSI[1],
-                       ((struct zsHpPriv*)wd->hpPrivate)->halRxInfo.currentRSSI[2],
-                       ((struct zsHpPriv*)wd->hpPrivate)->halRxInfo.currentRSSI[3],
-                       ((struct zsHpPriv*)wd->hpPrivate)->halRxInfo.currentRSSI[4],
-                       ((struct zsHpPriv*)wd->hpPrivate)->halRxInfo.currentRSSI[5],
-                       ((struct zsHpPriv*)wd->hpPrivate)->halRxInfo.currentRSSI[6],
-                       ((struct zsHpPriv*)wd->hpPrivate)->halRxInfo.currentRxEVM[0],
-                       ((struct zsHpPriv*)wd->hpPrivate)->halRxInfo.currentRxEVM[1],
-                       ((struct zsHpPriv*)wd->hpPrivate)->halRxInfo.currentRxEVM[2],
-                       ((struct zsHpPriv*)wd->hpPrivate)->halRxInfo.currentRxEVM[3],
-                       ((struct zsHpPriv*)wd->hpPrivate)->halRxInfo.currentRxEVM[4],
-                       ((struct zsHpPriv*)wd->hpPrivate)->halRxInfo.currentRxEVM[5],
-                       ((struct zsHpPriv*)wd->hpPrivate)->halRxInfo.currentRxEVM[6],
-                       ((struct zsHpPriv*)wd->hpPrivate)->halRxInfo.currentRxEVM[7],
-                       ((struct zsHpPriv*)wd->hpPrivate)->halRxInfo.currentRxEVM[8],
-                       ((struct zsHpPriv*)wd->hpPrivate)->halRxInfo.currentRxEVM[9],
-                       ((struct zsHpPriv*)wd->hpPrivate)->halRxInfo.currentRxEVM[10],
-                       ((struct zsHpPriv*)wd->hpPrivate)->halRxInfo.currentRxEVM[11]
-                       ));
-          #endif
       } /* if (wd->enableHALDbgInfo && zfIsDataFrame(dev, buf)) */
 
     }
@@ -881,8 +834,6 @@ void zfiUsbRecv(zdev_t *dev, zbuf_t *buf)
     addInfo.Tail.Data.DAIndex           = zmw_rx_buf_readb(dev, buf, len - 3);
     addInfo.Tail.Data.ErrorIndication   = zmw_rx_buf_readb(dev, buf, len - 2);
     addInfo.Tail.Data.RxMacStatus       = zmw_rx_buf_readb(dev, buf, len - 1);
-
-#endif
     /* Remove CRC and Rx Status */
     zfwBufSetSize(dev, buf, (len-crcPlusRxStatusLen));
     //zfwBufSetSize(dev, buf, payloadLen + plcpHdrLen);    /* payloadLen + PLCP 12 - FCS 4*/
@@ -1027,19 +978,6 @@ void zfiUsbRecv(zdev_t *dev, zbuf_t *buf)
             zm_assert(pktLen < ZM_WLAN_MAX_RX_SIZE);
 
             //printk("Get a packet, pktLen: 0x%04x\n", pktLen);
-            #if 0
-            /* Dump data */
-            for (ii = index; ii < pkt_len+4;)
-            {
-                DbgPrint("0x%02x ",
-                        (zmw_rx_buf_readb(adapter, pUsbRxTransfer->buf, ii) & 0xff));
-
-                if ((++ii % 16) == 0)
-                    DbgPrint("\n");
-            }
-
-            DbgPrint("\n");
-            #endif
 
             /* Calcuate the padding length, in the current design,
                the length should be padded to 4 byte boundray. */
@@ -1122,15 +1060,6 @@ void zfiUsbRecv(zdev_t *dev, zbuf_t *buf)
                 DbgPrint("Can't find tag, pkt_len: 0x%04x, tag: 0x%04x\n",
                         pktLen, pktTag);
 
-                #if 0
-                for(i = 0; i < 32; i++)
-                {
-                    DbgPrint("%02x ", buf->data[index-16+i]);
-
-                    if ((i & 0xf) == 0xf)
-                        DbgPrint("\n");
-                }
-                #endif
 
                 break;
         }
@@ -1275,16 +1204,6 @@ void zfiUsbRegIn(zdev_t* dev, u32_t* rsp, u16_t rspLen)
         }
         else if (type == 0xC1)
         {
-#if 0
-            {
-                u16_t i;
-                DbgPrint("rspLen=%d\n", rspLen);
-                for (i=0; i<(rspLen/4); i++)
-                {
-                    DbgPrint("rsp[%d]=0x%lx\n", i, rsp[i]);
-                }
-            }
-#endif
             status = (u16_t)(rsp[3] >> 16);
 
             ////6789
@@ -1312,28 +1231,12 @@ void zfiUsbRegIn(zdev_t* dev, u32_t* rsp, u16_t rspLen)
         }
         else if (type == 0xC4)
         {
-#if 0
-            {
-                u16_t i;
-                DbgPrint("0xC2:rspLen=%d\n", rspLen);
-                for (i=0; i<(rspLen/4); i++)
-                {
-                    DbgPrint("0xC2:rsp[%d]=0x%lx\n", i, rsp[i]);
-                }
-            }
-#endif
             bitmap = (rsp[1] >> 16) + ((rsp[2] & 0xFFFF) << 16 );
             //zfBawCore(dev, (u16_t)rsp[1] & 0xFFFF, bitmap, (u16_t)(rsp[2] >> 16) & 0xFF);
         }
         else if (type == 0xC5)
         {
             u16_t i;
-#if 0
-
-            for (i=0; i<(rspLen/4); i++) {
-                DbgPrint("0xC5:rsp[%d]=0x%lx\n", i, rsp[i]);
-            }
-#endif
             for (i=1; i<(rspLen/4); i++) {
                 u8rsp = (u8_t *)(rsp+i);
                 //DbgPrint("0xC5:rsp[%d]=0x%lx\n", i, ((u32_t*)u8rsp)[0]);
@@ -1423,18 +1326,6 @@ u16_t zfFirmwareDownload(zdev_t* dev, u32_t* fw, u32_t len, u32_t offset)
         }
     }
 
-#if 0
-    /* PCI code */
-    /* Wait for firmware ready */
-    result = zfwUsbSubmitControl(dev, FIRMWARE_CONFIRM, USB_DIR_IN | 0x40,
-                     0, 0, &ret_value, sizeof(ret_value), HZ);
-
-    if (result != 0)
-    {
-        zm_msg0_init(ZM_LV_0, "Can't receive firmware ready: ", result);
-        ret = 1;
-    }
-#endif
 
 exit:
 
@@ -1586,4 +1477,3 @@ void zfiUsbOutComplete(zdev_t* dev, zbuf_t *buf, u8_t status, u8_t *hdr) {
     return;
 
 }
-

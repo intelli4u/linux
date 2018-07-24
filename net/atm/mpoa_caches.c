@@ -11,25 +11,15 @@
  * handling functions
  */
 
-#if 0
-#define dprintk(format, args...)					\
-	printk(KERN_DEBUG "mpoa:%s: " format, __FILE__, ##args)  /* debug */
-#else
 #define dprintk(format, args...)					\
 	do { if (0)							\
 		printk(KERN_DEBUG "mpoa:%s: " format, __FILE__, ##args);\
 	} while (0)
-#endif
 
-#if 0
-#define ddprintk(format, args...)					\
-	printk(KERN_DEBUG "mpoa:%s: " format, __FILE__, ##args)  /* debug */
-#else
 #define ddprintk(format, args...)					\
 	do { if (0)							\
 		printk(KERN_DEBUG "mpoa:%s: " format, __FILE__, ##args);\
 	} while (0)
-#endif
 
 static in_cache_entry *in_cache_get(__be32 dst_ip,
 				    struct mpoa_client *client)

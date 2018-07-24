@@ -85,4 +85,3 @@
 #define TIOCSER_TEMT    0x01	/* Transmitter physically empty */
 
 #endif /* __ASM_IOCTLS_H__ */
-

@@ -2,10 +2,6 @@
 #define __ASM_ALPHA_AUXVEC_H
 
 /* Reserve these numbers for any future use of a VDSO.  */
-#if 0
-#define AT_SYSINFO		32
-#define AT_SYSINFO_EHDR		33
-#endif
 
 /* More complete cache descriptions than AT_[DIU]CACHEBSIZE.  If the
    value is -1, then the cache doesn't exist.  Otherwise:

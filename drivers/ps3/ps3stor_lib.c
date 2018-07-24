@@ -23,11 +23,6 @@
 #include <asm/lv1call.h>
 #include <asm/ps3stor.h>
 
-/*
- * A workaround for flash memory I/O errors when the internal hard disk
- * has not been formatted for OtherOS use.  Delay disk close until flash
- * memory is closed.
- */
 
 static struct ps3_flash_workaround {
 	int flash_open;

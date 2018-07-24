@@ -86,7 +86,6 @@ static inline void destroy_context(struct mm_struct *mm)
 
 static inline void set_asid(unsigned long asid)
 {
-	/* XXX: We're destroying TLBEHI[8:31] */
 	sysreg_write(TLBEHI, asid & MMU_CONTEXT_ASID_MASK);
 	cpu_sync_pipeline();
 }

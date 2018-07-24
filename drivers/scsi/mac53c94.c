@@ -70,17 +70,6 @@ static int mac53c94_queue(struct scsi_cmnd *cmd, void (*done)(struct scsi_cmnd *
 {
 	struct fsc_state *state;
 
-#if 0
-	if (cmd->sc_data_direction == DMA_TO_DEVICE) {
-		int i;
-		printk(KERN_DEBUG "mac53c94_queue %p: command is", cmd);
-		for (i = 0; i < cmd->cmd_len; ++i)
-			printk(KERN_CONT " %.2x", cmd->cmnd[i]);
-		printk(KERN_CONT "\n");
-		printk(KERN_DEBUG "use_sg=%d request_bufflen=%d request_buffer=%p\n",
-		       scsi_sg_count(cmd), scsi_bufflen(cmd), scsi_sglist(cmd));
-	}
-#endif
 
 	cmd->scsi_done = done;
 	cmd->host_scribble = NULL;
@@ -170,7 +159,6 @@ static void mac53c94_start(struct fsc_state *state)
 	for (i = 0; i < cmd->cmd_len; ++i)
 		writeb(cmd->cmnd[i], &regs->fifo);
 
-	/* do select without ATN XXX */
 	writeb(CMD_SELECT, &regs->command);
 	state->phase = selecting;
 
@@ -205,10 +193,6 @@ static void mac53c94_interrupt(int irq, void *dev_id)
 	stat = readb(&regs->status);
 	intr = readb(&regs->interrupt);
 
-#if 0
-	printk(KERN_DEBUG "mac53c94_intr, intr=%x stat=%x seq=%x phase=%d\n",
-	       intr, stat, seq, state->phase);
-#endif
 
 	if (intr & INTR_RESET) {
 		/* SCSI bus was reset */
@@ -225,11 +209,6 @@ static void mac53c94_interrupt(int irq, void *dev_id)
 		return;
 	}
 	if (stat & STAT_ERROR) {
-#if 0
-		/* XXX these seem to be harmless? */
-		printk("53c94: bad error, intr=%x stat=%x seq=%x phase=%d\n",
-		       intr, stat, seq, state->phase);
-#endif
 		++mac53c94_errors;
 		writeb(CMD_NOP + CMD_DMA_MODE, &regs->command);
 	}
@@ -460,10 +439,6 @@ static int mac53c94_probe(struct macio_dev *mdev, const struct of_device_id *mat
        	} else
        		state->clk_freq = *(int *)clkprop;
 
-       	/* Space for dma command list: +1 for stop command,
-       	 * +1 to allow for aligning.
-	 * XXX FIXME: Use DMA consistent routines
-	 */
        	dma_cmd_space = kmalloc((host->sg_tablesize + 2) *
        				sizeof(struct dbdma_cmd), GFP_KERNEL);
        	if (dma_cmd_space == 0) {

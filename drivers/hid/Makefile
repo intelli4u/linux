@@ -68,4 +68,3 @@ obj-$(CONFIG_HID_WACOM)		+= hid-wacom.o
 obj-$(CONFIG_USB_HID)		+= usbhid/
 obj-$(CONFIG_USB_MOUSE)		+= usbhid/
 obj-$(CONFIG_USB_KBD)		+= usbhid/
-

@@ -235,11 +235,6 @@ struct net_device * __init cops_probe(int unit)
 	} else if (base_addr != 0) { /* Don't probe at all. */
 		err = -ENXIO;
 	} else {
-		/* FIXME  Does this really work for cards which generate irq?
-		 * It's definitely N.G. for polled Tangent. sh
-		 * Dayna cards don't autoprobe well at all, but if your card is
-		 * at IRQ 5 & IO 0x240 we find it every time. ;) JS
-		 */
 		for (port = ports; *port && cops_probe1(dev, *port) < 0; port++)
 			;
 		if (!*port)

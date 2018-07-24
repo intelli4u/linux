@@ -328,7 +328,7 @@ void mb862xxfb_init_accel(struct fb_info *info, int xres)
 	info->flags |=
 	    FBINFO_HWACCEL_COPYAREA | FBINFO_HWACCEL_FILLRECT |
 	    FBINFO_HWACCEL_IMAGEBLIT;
-	info->fix.accel = 0xff;	/*FIXME: add right define */
+	info->fix.accel = 0xff;
 }
 EXPORT_SYMBOL(mb862xxfb_init_accel);
 

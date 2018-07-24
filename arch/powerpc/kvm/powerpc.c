@@ -63,7 +63,6 @@ int kvmppc_emulate_mmio(struct kvm_run *run, struct kvm_vcpu *vcpu)
 		r = RESUME_HOST_NV;
 		break;
 	case EMULATE_FAIL:
-		/* XXX Deliver Program interrupt to guest. */
 		printk(KERN_EMERG "%s: emulation failed (%08x)\n", __func__,
 		       kvmppc_get_last_inst(vcpu));
 		r = RESUME_HOST;

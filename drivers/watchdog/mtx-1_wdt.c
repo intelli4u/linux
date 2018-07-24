@@ -231,7 +231,6 @@ static int __devinit mtx1_wdt_probe(struct platform_device *pdev)
 
 static int __devexit mtx1_wdt_remove(struct platform_device *pdev)
 {
-	/* FIXME: do we need to lock this test ? */
 	if (mtx1_wdt_device.queue) {
 		mtx1_wdt_device.queue = 0;
 		wait_for_completion(&mtx1_wdt_device.stop);

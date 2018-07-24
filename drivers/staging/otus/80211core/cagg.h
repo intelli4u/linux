@@ -432,4 +432,3 @@ void zfAggTxRetransmit(zdev_t* dev, struct bufInfo *buf_info, struct aggControl 
 extern zbuf_t* zfGetVtxq(zdev_t* dev, u8_t ac);
 
 #endif /* #ifndef _CAGG_H */
-

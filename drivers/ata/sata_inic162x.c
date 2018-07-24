@@ -556,13 +556,6 @@ static bool inic_qc_fill_rtf(struct ata_queued_cmd *qc)
 	struct ata_taskfile *rtf = &qc->result_tf;
 	struct ata_taskfile tf;
 
-	/* FIXME: Except for status and error, result TF access
-	 * doesn't work.  I tried reading from BAR0/2, CPB and BAR5.
-	 * None works regardless of which command interface is used.
-	 * For now return true iff status indicates device error.
-	 * This means that we're reporting bogus sector for RW
-	 * failures.  Eeekk....
-	 */
 	inic_tf_read(qc->ap, &tf);
 
 	if (!(tf.command & ATA_ERR))

@@ -263,20 +263,6 @@ static void cx231xx_config_tuner(struct cx231xx *dev)
 
 	tuner_call(dev, tuner, s_type_addr, &tun_setup);
 
-#if 0
-	if (tun_setup.type == TUNER_XC5000) {
-		static struct xc2028_ctrl ctrl = {
-			.fname = XC5000_DEFAULT_FIRMWARE,
-			.max_len = 64,
-			.demod = 0;
-		};
-		struct v4l2_priv_tun_config cfg = {
-			.tuner = dev->tuner_type,
-			.priv = &ctrl,
-		};
-		tuner_call(dev, tuner, s_config, &cfg);
-	}
-#endif
 	/* configure tuner */
 	f.tuner = 0;
 	f.type = V4L2_TUNER_ANALOG_TV;
@@ -338,10 +324,6 @@ void cx231xx_card_setup(struct cx231xx *dev)
 
 	cx231xx_config_tuner(dev);
 
-#if 0
-	/* TBD  IR will be added later */
-	cx231xx_ir_init(dev);
-#endif
 }
 
 /*
@@ -376,10 +358,6 @@ void cx231xx_config_i2c(struct cx231xx *dev)
 void cx231xx_release_resources(struct cx231xx *dev)
 {
 
-#if 0		/* TBD IR related  */
-	if (dev->ir)
-		cx231xx_ir_fini(dev);
-#endif
 
 	cx231xx_release_analog_resources(dev);
 

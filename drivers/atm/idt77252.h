@@ -118,11 +118,7 @@
 #define SAR_FBQ3_LOW		1
 #define SAR_FBQ3_HIGH		2
 
-#if 0
-#define SAR_TST_RESERVED	44	/* Num TST reserved for UBR/ABR/VBR */
-#else
 #define SAR_TST_RESERVED	0	/* Num TST reserved for UBR/ABR/VBR */
-#endif
 
 #define TCT_CBR			0x00000000
 #define TCT_UBR			0x00000000

@@ -13,9 +13,6 @@
  */
 
 #ifndef __ASSEMBLY__
-/* FIXME:
- * Some C functions use non-cache address, so can't define non-cache address.
- */
 #define PLD_BASE		(0x1c000000 /* + NONCACHE_OFFSET */)
 #define __reg8			(volatile unsigned char *)
 #define __reg16			(volatile unsigned short *)
@@ -61,30 +58,6 @@
 #define PLD_IRQ_MMCCARD		(43)	/* MMC Card Insert */
 #define PLD_IRQ_MMCIRQ		(44)	/* MMC Transfer Done */
 
-#if 0
-/* LED Control
- *
- * 1: DIP swich side
- * 2: Reset switch side
- */
-#define PLD_IOLEDCR		__reg16(PLD_BASE + 0x14002)
-#define PLD_IOLED_1_ON		0x001
-#define PLD_IOLED_1_OFF		0x000
-#define PLD_IOLED_2_ON		0x002
-#define PLD_IOLED_2_OFF		0x000
-
-/* DIP Switch
- *  0: Write-protect of Flash Memory (0:protected, 1:non-protected)
- *  1: -
- *  2: -
- *  3: -
- */
-#define PLD_IOSWSTS		__reg16(PLD_BASE + 0x14004)
-#define	PLD_IOSWSTS_IOSW2	0x0200
-#define	PLD_IOSWSTS_IOSW1	0x0100
-#define	PLD_IOSWSTS_IOWP0	0x0001
-
-#endif
 
 /* CRC */
 #define PLD_CRC7DATA		__reg16(PLD_BASE + 0x18000)
@@ -94,47 +67,6 @@
 #define PLD_CRC16ADATA		__reg16(PLD_BASE + 0x18008)
 #define PLD_CRC16AINDATA	__reg16(PLD_BASE + 0x1800a)
 
-#if 0
-/* RTC */
-#define PLD_RTCCR		__reg16(PLD_BASE + 0x1c000)
-#define PLD_RTCBAUR		__reg16(PLD_BASE + 0x1c002)
-#define PLD_RTCWRDATA		__reg16(PLD_BASE + 0x1c004)
-#define PLD_RTCRDDATA		__reg16(PLD_BASE + 0x1c006)
-#define PLD_RTCRSTODT		__reg16(PLD_BASE + 0x1c008)
-
-/* SIO0 */
-#define PLD_ESIO0CR		__reg16(PLD_BASE + 0x20000)
-#define	PLD_ESIO0CR_TXEN	0x0001
-#define	PLD_ESIO0CR_RXEN	0x0002
-#define PLD_ESIO0MOD0		__reg16(PLD_BASE + 0x20002)
-#define	PLD_ESIO0MOD0_CTSS	0x0040
-#define	PLD_ESIO0MOD0_RTSS	0x0080
-#define PLD_ESIO0MOD1		__reg16(PLD_BASE + 0x20004)
-#define	PLD_ESIO0MOD1_LMFS	0x0010
-#define PLD_ESIO0STS		__reg16(PLD_BASE + 0x20006)
-#define	PLD_ESIO0STS_TEMP	0x0001
-#define	PLD_ESIO0STS_TXCP	0x0002
-#define	PLD_ESIO0STS_RXCP	0x0004
-#define	PLD_ESIO0STS_TXSC	0x0100
-#define	PLD_ESIO0STS_RXSC	0x0200
-#define PLD_ESIO0STS_TXREADY	(PLD_ESIO0STS_TXCP | PLD_ESIO0STS_TEMP)
-#define PLD_ESIO0INTCR		__reg16(PLD_BASE + 0x20008)
-#define	PLD_ESIO0INTCR_TXIEN	0x0002
-#define	PLD_ESIO0INTCR_RXCEN	0x0004
-#define PLD_ESIO0BAUR		__reg16(PLD_BASE + 0x2000a)
-#define PLD_ESIO0TXB		__reg16(PLD_BASE + 0x2000c)
-#define PLD_ESIO0RXB		__reg16(PLD_BASE + 0x2000e)
-
-/* SIM Card */
-#define PLD_SCCR		__reg16(PLD_BASE + 0x38000)
-#define PLD_SCMOD		__reg16(PLD_BASE + 0x38004)
-#define PLD_SCSTS		__reg16(PLD_BASE + 0x38006)
-#define PLD_SCINTCR		__reg16(PLD_BASE + 0x38008)
-#define PLD_SCBAUR		__reg16(PLD_BASE + 0x3800a)
-#define PLD_SCTXB		__reg16(PLD_BASE + 0x3800c)
-#define PLD_SCRXB		__reg16(PLD_BASE + 0x3800e)
-
-#endif
 
 /* Reset Control */
 #define PLD_REBOOT		__reg16(PLD_BASE + 0x38000)

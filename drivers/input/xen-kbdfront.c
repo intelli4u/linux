@@ -297,11 +297,6 @@ InitWait:
 		break;
 
 	case XenbusStateConnected:
-		/*
-		 * Work around xenbus race condition: If backend goes
-		 * through InitWait to Connected fast enough, we can
-		 * get Connected twice here.
-		 */
 		if (dev->state != XenbusStateConnected)
 			goto InitWait; /* no InitWait seen yet, fudge it */
 

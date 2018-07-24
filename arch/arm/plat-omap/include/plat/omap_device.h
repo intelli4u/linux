@@ -117,23 +117,6 @@ int omap_device_disable_clocks(struct omap_device *od);
 int omap_device_enable_clocks(struct omap_device *od);
 
 
-/*
- * Entries should be kept in latency order ascending
- *
- * deact_lat is the maximum number of microseconds required to complete
- * deactivate_func() at the device's slowest OPP.
- *
- * act_lat is the maximum number of microseconds required to complete
- * activate_func() at the device's slowest OPP.
- *
- * This will result in some suboptimal power management decisions at fast
- * OPPs, but avoids having to recompute all device power management decisions
- * if the system shifts from a fast OPP to a slow OPP (in order to meet
- * latency requirements).
- *
- * XXX should deactivate_func/activate_func() take platform_device pointers
- * rather than omap_device pointers?
- */
 struct omap_device_pm_latency {
 	u32 deactivate_lat;
 	u32 deactivate_lat_worst;

@@ -572,7 +572,6 @@ int ssb_pcicore_dev_irqvecs_enable(struct ssb_pcicore *pc,
 		WARN_ON(pdev->id.coreid != SSB_DEV_PCIE);
 		//TODO: Better make defines for all these magic PCIE values.
 		if ((pdev->id.revision == 0) || (pdev->id.revision == 1)) {
-			/* TLP Workaround register. */
 			tmp = ssb_pcie_read(pc, 0x4);
 			tmp |= 0x8;
 			ssb_pcie_write(pc, 0x4, tmp);

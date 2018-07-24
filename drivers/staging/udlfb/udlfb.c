@@ -1626,4 +1626,3 @@ MODULE_AUTHOR("Roberto De Ioris <roberto@unbit.it>, "
 	      "Bernie Thompson <bernie@plugable.com>");
 MODULE_DESCRIPTION("DisplayLink kernel framebuffer driver");
 MODULE_LICENSE("GPL");
-

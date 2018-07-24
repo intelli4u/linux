@@ -29,13 +29,7 @@
 #define TLBMISS_HANDLER_SETUP_PGD(pgd)				\
 	tlbmiss_handler_setup_pgd((unsigned long)(pgd))
 
-static inline void tlbmiss_handler_setup_pgd(unsigned long pgd)
-{
-	/* Check for swapper_pg_dir and convert to physical address. */
-	if ((pgd & CKSEG3) == CKSEG0)
-		pgd = CPHYSADDR(pgd);
-	write_c0_context(pgd << 11);
-}
+extern void tlbmiss_handler_setup_pgd(unsigned long pgd);
 
 #define TLBMISS_HANDLER_SETUP()						\
 	do {								\
@@ -97,7 +91,7 @@ extern unsigned long smtc_asid_mask;
 #define ASID_MASK	(smtc_asid_mask)
 #define	HW_ASID_MASK	0xff
 /* End SMTC/34K debug hack */
-#else /* FIXME: not correct for R6000 */
+#else
 
 #define ASID_INC	0x1
 #define ASID_MASK	0xff

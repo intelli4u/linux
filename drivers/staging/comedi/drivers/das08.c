@@ -430,14 +430,6 @@ static const struct das08_board_struct das08_boards[] = {
 	 .i8254_offset = 4,
 	 .iosize = 16,		/*  unchecked */
 	 },
-#if 0
-	{
-	 .name = "das08/f",
-	 },
-	{
-	 .name = "das08jr",
-	 },
-#endif
 	{
 	 .name = "das08jr/16",
 	 .bustype = isa,
@@ -454,21 +446,13 @@ static const struct das08_board_struct das08_boards[] = {
 	 .i8254_offset = 0,
 	 .iosize = 16,		/*  unchecked */
 	 },
-#if 0
-	{
-	 .name = "das48-pga",	/*  cio-das48-pga.pdf */
-	 },
-	{
-	 .name = "das08-pga-g2",	/*  a KM board */
-	 },
-#endif
 };
 
 #ifdef CONFIG_COMEDI_PCMCIA
 struct das08_board_struct das08_cs_boards[NUM_DAS08_CS_BOARDS] = {
 	{
 	 .name = "pcm-das08",
-	 .id = 0x0,		/*  XXX */
+	 .id = 0x0,
 	 .bustype = pcmcia,
 	 .ai = das08_ai_rinsn,
 	 .ai_nbits = 12,
@@ -486,7 +470,7 @@ struct das08_board_struct das08_cs_boards[NUM_DAS08_CS_BOARDS] = {
 	/*  duplicate so driver name can be used also */
 	{
 	 .name = "das08_cs",
-	 .id = 0x0,		/*  XXX */
+	 .id = 0x0,
 	 .bustype = pcmcia,
 	 .ai = das08_ai_rinsn,
 	 .ai_nbits = 12,
@@ -660,13 +644,8 @@ static int das08jr_ao_winsn(struct comedi_device *dev,
 	chan = CR_CHAN(insn->chanspec);
 
 	for (n = 0; n < insn->n; n++) {
-#if 0
-		outb(lsb, dev->iobase + devpriv->ao_offset_lsb[chan]);
-		outb(msb, dev->iobase + devpriv->ao_offset_msb[chan]);
-#else
 		outb(lsb, dev->iobase + DAS08JR_AO_LSB(chan));
 		outb(msb, dev->iobase + DAS08JR_AO_MSB(chan));
-#endif
 
 		/* load DACs */
 		inb(dev->iobase + DAS08JR_DIO);
@@ -695,13 +674,8 @@ static int das08ao_ao_winsn(struct comedi_device *dev,
 	chan = CR_CHAN(insn->chanspec);
 
 	for (n = 0; n < insn->n; n++) {
-#if 0
-		outb(lsb, dev->iobase + devpriv->ao_offset_lsb[chan]);
-		outb(msb, dev->iobase + devpriv->ao_offset_msb[chan]);
-#else
 		outb(lsb, dev->iobase + DAS08AO_AO_LSB(chan));
 		outb(msb, dev->iobase + DAS08AO_AO_MSB(chan));
-#endif
 
 		/* load DACs */
 		inb(dev->iobase + DAS08AO_AO_UPDATE);
@@ -881,11 +855,6 @@ int das08_common_attach(struct comedi_device *dev, unsigned long iobase)
 	/* ai */
 	if (thisboard->ai) {
 		s->type = COMEDI_SUBD_AI;
-		/* XXX some boards actually have differential
-		 * inputs instead of single ended.
-		 * The driver does nothing with arefs though,
-		 * so it's no big deal.
-		 */
 		s->subdev_flags = SDF_READABLE | SDF_GROUND;
 		s->n_chan = 8;
 		s->maxdata = (1 << thisboard->ai_nbits) - 1;
@@ -900,7 +869,6 @@ int das08_common_attach(struct comedi_device *dev, unsigned long iobase)
 	/* ao */
 	if (thisboard->ao) {
 		s->type = COMEDI_SUBD_AO;
-/* XXX lacks read-back insn */
 		s->subdev_flags = SDF_WRITABLE;
 		s->n_chan = 2;
 		s->maxdata = (1 << thisboard->ao_nbits) - 1;
@@ -1028,17 +996,6 @@ static int das08_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 		printk(KERN_INFO "pcibase 0x%lx  iobase 0x%lx\n",
 							pci_iobase, iobase);
 		devpriv->pci_iobase = pci_iobase;
-#if 0
-/* We could enable to pci-das08's interrupt here to make it possible
- * to do timed input in this driver, but there is little point since
- * conversions would have to be started by the interrupt handler
- * so you might as well use comedi_rt_timer to emulate commands
- */
-		/* set source of interrupt trigger to counter2 output */
-		outb(CNTRL_INTR | CNTRL_DIR, pci_iobase + CNTRL);
-		/* Enable local interrupt 1 and pci interrupt */
-		outw(INTR1_ENABLE | PCI_INTR_ENABLE, pci_iobase + INTCSR);
-#endif
 #else /* CONFIG_COMEDI_PCI */
 		printk(KERN_ERR "this driver has not been built with PCI support.\n");
 		return -EINVAL;

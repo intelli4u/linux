@@ -1265,9 +1265,6 @@ static int vidioc_s_std(struct file *file, void *priv, v4l2_std_id * norm)
 	struct au0828_fh *fh = priv;
 	struct au0828_dev *dev = fh->dev;
 
-	/* FIXME: when we support something other than NTSC, we are going to
-	   have to make the au0828 bridge adjust the size of its capture
-	   buffer, which is currently hardcoded at 720x480 */
 
 	v4l2_device_call_all(&dev->v4l2_dev, 0, core, s_std, *norm);
 	return 0;
@@ -1712,8 +1709,6 @@ static int vidioc_dqbuf(struct file *file, void *priv, struct v4l2_buffer *b)
 	if (rc < 0)
 		return rc;
 
-	/* Workaround for a bug in the au0828 hardware design that sometimes
-	   results in the colorspace being inverted */
 	if (dev->greenscreen_detected == 1) {
 		dprintk(1, "Detected green frame.  Resetting stream...\n");
 		au0828_analog_stream_reset(dev);
@@ -1897,4 +1892,3 @@ int au0828_analog_register(struct au0828_dev *dev,
 
 	return 0;
 }
-

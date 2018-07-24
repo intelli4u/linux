@@ -619,10 +619,6 @@ static int i8042_set_mux_mode(bool multiplex, unsigned char *mux_version)
 	if (i8042_command(&param, I8042_CMD_AUX_LOOP) || param == val)
 		return -1;
 
-/*
- * Workaround for interference with USB Legacy emulation
- * that causes a v10.12 MUX to be found.
- */
 	if (param == 0xac)
 		return -1;
 

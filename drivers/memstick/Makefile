@@ -8,4 +8,3 @@ endif
 
 obj-$(CONFIG_MEMSTICK)		+= core/
 obj-$(CONFIG_MEMSTICK)		+= host/
-

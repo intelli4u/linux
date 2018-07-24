@@ -104,7 +104,6 @@ static struct cpia_camera_ops cpia_pp_ops =
 static LIST_HEAD(cam_list);
 static spinlock_t cam_list_lock_pp;
 
-/* FIXME */
 static void cpia_parport_enable_irq( struct parport *port ) {
 	parport_enable_irq(port);
 	mdelay(10);

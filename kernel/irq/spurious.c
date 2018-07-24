@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  * linux/kernel/irq/spurious.c
  *
@@ -14,6 +15,10 @@
 #include <linux/moduleparam.h>
 #include <linux/timer.h>
 
+#if defined(CONFIG_BUZZZ)
+#include <asm/buzzz.h>
+#endif	/*  CONFIG_BUZZZ */
+
 static int irqfixup __read_mostly;
 
 #define POLL_SPURIOUS_IRQ_INTERVAL (HZ/10)
@@ -27,6 +32,10 @@ static int try_one_irq(int irq, struct irq_desc *desc)
 {
 	struct irqaction *action;
 	int ok = 0, work = 0;
+
+#if defined(BUZZZ_KEVT_LVL) && (BUZZZ_KEVT_LVL >= 1)
+	buzzz_kevt_log1(BUZZZ_KEVT_ID_IRQ_MISROUTED, irq);
+#endif	/* BUZZZ_KEVT_LVL */
 
 	raw_spin_lock(&desc->lock);
 	/* Already running on another processor */

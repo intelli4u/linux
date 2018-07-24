@@ -291,17 +291,6 @@ static int hfs_rmdir(struct inode *dir, struct dentry *dentry)
 	return 0;
 }
 
-/*
- * hfs_rename()
- *
- * This is the rename() entry in the inode_operations structure for
- * regular HFS directories.  The purpose is to rename an existing
- * file or directory, given the inode for the current directory and
- * the name (and its length) of the existing file/directory and the
- * inode for the new directory and the name (and its length) of the
- * new file/directory.
- * XXX: how do you handle must_be dir?
- */
 static int hfs_rename(struct inode *old_dir, struct dentry *old_dentry,
 		      struct inode *new_dir, struct dentry *new_dentry)
 {

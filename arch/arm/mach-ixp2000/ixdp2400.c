@@ -178,4 +178,3 @@ MACHINE_START(IXDP2400, "Intel IXDP2400 Development Platform")
 	.timer		= &ixdp2400_timer,
 	.init_machine	= ixdp2x00_init_machine,
 MACHINE_END
-

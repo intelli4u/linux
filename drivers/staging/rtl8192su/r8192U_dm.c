@@ -26,15 +26,12 @@ Major Change History:
 //
 // Indicate different AP vendor for IOT issue.
 //
-#if 1
 		static u32 edca_setting_DL[HT_IOT_PEER_MAX] =
 		// UNKNOWN	REALTEK_90	/*REALTEK_92SE*/	BROADCOM	RALINK		ATHEROS		CISCO		MARVELL		92U_AP		SELF_AP
 		   { 0xa44f, 	0x5ea44f, 	0x5ea44f,		0xa44f,		0xa44f, 		0xa44f, 		0xa630,		0xa42b,		0x5e4322,	0x5e4322};
 		static u32 edca_setting_UL[HT_IOT_PEER_MAX] =
 		// UNKNOWN	REALTEK		/*REALTEK_92SE*/	BROADCOM	RALINK		ATHEROS		CISCO		MARVELL		92U_AP		SELF_AP
 		   { 0x5ea44f, 	0xa44f, 	0x5ea44f,		0x5e4322, 	0x5ea422, 	0x5e4322, 	0x3ea44f,	0x5ea42b,	0x5e4322,	0x5e4322};
-
-#endif
 
 #define RTK_UL_EDCA 0xa44f
 #define RTK_DL_EDCA 0x5e4322
@@ -521,11 +518,9 @@ static void dm_check_rate_adaptive(struct net_device * dev)
 		}
 
 		// 2008.04.01
-#if 1
 		// For RTL819X, if pairwisekey = wep/tkip, we support only MCS0~7.
 		if(priv->ieee80211->GetHalfNmodeSupportByAPsHandler(dev))
 			targetRATR &=  0xf00fffff;
-#endif
 
 		//
 		// Check whether updating of RATR0 is required
@@ -2667,7 +2662,6 @@ extern void dm_init_edca_turbo(struct net_device * dev)
 	priv->bis_cur_rdlstate = false;
 }	// dm_init_edca_turbo
 
-#if 1
 static void dm_check_edca_turbo(
 	struct net_device * dev)
 {
@@ -2682,10 +2676,8 @@ static void dm_check_edca_turbo(
 
 	u32				EDCA_BE_UL = edca_setting_UL[pHTInfo->IOTPeer];
 	u32				EDCA_BE_DL = edca_setting_DL[pHTInfo->IOTPeer];
-	#if 1
 	if(priv->ieee80211->state != IEEE80211_LINKED)
 		goto dm_CheckEdcaTurbo_EXIT;
-	#endif
 	// We do not turn on EDCA turbo mode for some AP that has IOT issue
 	if(priv->ieee80211->pHTInfo->IOTAction & HT_IOT_ACT_DISABLE_EDCA_TURBO)
 		goto dm_CheckEdcaTurbo_EXIT;
@@ -2810,7 +2802,6 @@ dm_CheckEdcaTurbo_EXIT:
 	lastTxOkCnt = priv->stats.txbytesunicast;
 	lastRxOkCnt = priv->stats.rxbytesunicast;
 }
-#endif
 
 extern void DM_CTSToSelfSetting(struct net_device * dev,u32 DM_Type, u32 DM_Value)
 {
@@ -2871,20 +2862,7 @@ static void dm_ctstoself(struct net_device *dev)
 		}
 		else	//uplink
 		{
-		#if 1
 			pHTInfo->IOTAction |= HT_IOT_ACT_FORCED_CTS2SELF;
-		#else
-			if(priv->undecorated_smoothed_pwdb < priv->ieee80211->CTSToSelfTH)	// disable CTS to self
-			{
-				pHTInfo->IOTAction &= ~HT_IOT_ACT_FORCED_CTS2SELF;
-				//DbgPrint("dm_CTSToSelf() ==> CTS to self disabled\n");
-			}
-			else if(priv->undecorated_smoothed_pwdb >= (priv->ieee80211->CTSToSelfTH+5))	// enable CTS to self
-			{
-				pHTInfo->IOTAction |= HT_IOT_ACT_FORCED_CTS2SELF;
-				//DbgPrint("dm_CTSToSelf() ==> CTS to self enabled\n");
-			}
-		#endif
 		}
 
 		lastTxOkCnt = priv->stats.txbytesunicast;
@@ -2908,7 +2886,6 @@ static void dm_ctstoself(struct net_device *dev)
  *	05/28/2008	amy		Create Version 0 porting from windows code.
  *
  *---------------------------------------------------------------------------*/
-#if 1
 static void dm_check_rfctrl_gpio(struct net_device * dev)
 {
 	//struct r8192_priv *priv = ieee80211_priv(dev);
@@ -2930,8 +2907,6 @@ static void dm_check_rfctrl_gpio(struct net_device * dev)
 #endif
 
 }	/* dm_CheckRfCtrlGPIO */
-
-#endif
 /*-----------------------------------------------------------------------------
  * Function:	dm_check_pbc_gpio()
  *
@@ -3979,4 +3954,3 @@ dm_CheckProtection(struct net_device *dev)
 #endif
 
 /*---------------------------Define function prototype------------------------*/
-

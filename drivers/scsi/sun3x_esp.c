@@ -33,22 +33,10 @@
 #define DRV_VERSION		"1.000"
 #define DRV_MODULE_RELDATE	"Nov 1, 2007"
 
-/*
- * m68k always assumes readl/writel operate on little endian
- * mmio space; this is wrong at least for Sun3x, so we
- * need to workaround this until a proper way is found
- */
-#if 0
-#define dma_read32(REG) \
-	readl(esp->dma_regs + (REG))
-#define dma_write32(VAL, REG) \
-	writel((VAL), esp->dma_regs + (REG))
-#else
 #define dma_read32(REG) \
 	*(volatile u32 *)(esp->dma_regs + (REG))
 #define dma_write32(VAL, REG) \
 	do { *(volatile u32 *)(esp->dma_regs + (REG)) = (VAL); } while (0)
-#endif
 
 static void sun3x_esp_write8(struct esp *esp, u8 val, unsigned long reg)
 {

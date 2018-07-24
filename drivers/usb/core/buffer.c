@@ -21,7 +21,6 @@
  * DMA-Coherent Buffers
  */
 
-/* FIXME tune these based on pool statistics ... */
 static const size_t	pool_max [HCD_BUFFER_POOLS] = {
 	/* platforms without dma-friendly caches might need to
 	 * prevent cacheline sharing...

@@ -20,13 +20,6 @@
 
 #include "wusbhc.h"
 
-/*
- * WUSB cluster reservations are multicast reservations with the
- * broadcast cluster ID (BCID) as the target DevAddr.
- *
- * FIXME: consider adjusting the reservation depending on what devices
- * are attached.
- */
 
 static int wusbhc_bwa_set(struct wusbhc *wusbhc, u8 stream,
 	const struct uwb_mas_bm *mas)
@@ -36,14 +29,6 @@ static int wusbhc_bwa_set(struct wusbhc *wusbhc, u8 stream,
 	return wusbhc->bwa_set(wusbhc, stream, mas);
 }
 
-/**
- * wusbhc_rsv_complete_cb - WUSB HC reservation complete callback
- * @rsv:    the reservation
- *
- * Either set or clear the HC's view of the reservation.
- *
- * FIXME: when a reservation is denied the HC should be stopped.
- */
 static void wusbhc_rsv_complete_cb(struct uwb_rsv *rsv)
 {
 	struct wusbhc *wusbhc = rsv->pal_priv;

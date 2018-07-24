@@ -215,7 +215,6 @@ static int slave_tlv_cmd(struct snd_kcontrol *kcontrol,
 			 unsigned int __user *tlv)
 {
 	struct link_slave *slave = snd_kcontrol_chip(kcontrol);
-	/* FIXME: this assumes that the max volume is 0 dB */
 	return slave->slave.tlv.c(&slave->slave, op_flag, size, tlv);
 }
 

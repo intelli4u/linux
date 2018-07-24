@@ -20,9 +20,6 @@
  *
  */
   
-#if 0
-#define PLUGIN_DEBUG
-#endif
 
 #include <linux/slab.h>
 #include <linux/time.h>
@@ -643,7 +640,6 @@ snd_pcm_sframes_t snd_pcm_plug_read_transfer(struct snd_pcm_substream *plug, str
 int snd_pcm_area_silence(const struct snd_pcm_channel_area *dst_area, size_t dst_offset,
 			 size_t samples, int format)
 {
-	/* FIXME: sub byte resolution and odd dst_offset */
 	unsigned char *dst;
 	unsigned int dst_step;
 	int width;
@@ -690,7 +686,6 @@ int snd_pcm_area_copy(const struct snd_pcm_channel_area *src_area, size_t src_of
 		      const struct snd_pcm_channel_area *dst_area, size_t dst_offset,
 		      size_t samples, int format)
 {
-	/* FIXME: sub byte resolution and odd dst_offset */
 	char *src, *dst;
 	int width;
 	int src_step, dst_step;

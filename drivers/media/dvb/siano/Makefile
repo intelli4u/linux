@@ -8,4 +8,3 @@ obj-$(CONFIG_SMS_SDIO_DRV) += smssdio.o
 EXTRA_CFLAGS += -Idrivers/media/dvb/dvb-core
 
 EXTRA_CFLAGS += $(extra-cflags-y) $(extra-cflags-m)
-

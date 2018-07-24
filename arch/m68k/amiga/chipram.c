@@ -134,4 +134,3 @@ unsigned long amiga_chip_avail(void)
 	return chipavail;
 }
 EXPORT_SYMBOL(amiga_chip_avail);
-

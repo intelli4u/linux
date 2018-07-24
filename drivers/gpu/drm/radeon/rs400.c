@@ -171,8 +171,6 @@ int rs400_gart_enable(struct radeon_device *rdev)
 	WREG32_MC(RS480_AGP_MODE_CNTL,
 		  (1 << RS480_REQ_TYPE_SNOOP_SHIFT) | RS480_REQ_TYPE_SNOOP_DIS);
 	/* Disable AGP mode */
-	/* FIXME: according to doc we should set HIDE_MMCFG_BAR=0,
-	 * AGPMODE30=0 & AGP30ENHANCED=0 in NB_CNTL */
 	if ((rdev->family == CHIP_RS690) || (rdev->family == CHIP_RS740)) {
 		WREG32_MC(RS480_MC_MISC_CNTL,
 			  (RS480_GART_INDEX_REG_EN | RS690_BLOCK_GFX_D3_EN));
@@ -237,7 +235,6 @@ int rs400_mc_wait_for_idle(struct radeon_device *rdev)
 
 void rs400_gpu_init(struct radeon_device *rdev)
 {
-	/* FIXME: is this correct ? */
 	r420_pipes_init(rdev);
 	if (rs400_mc_wait_for_idle(rdev)) {
 		printk(KERN_WARNING "rs400: Failed to wait MC idle while "

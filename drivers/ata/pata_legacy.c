@@ -378,14 +378,6 @@ static struct ata_port_operations ht6560a_port_ops = {
 	.set_piomode	= ht6560a_set_piomode,
 };
 
-/*
- *	Holtek 6560B support
- *
- *	This controller supports PIO0 to PIO4. We honour the BIOS/jumper FIFO
- *	setting unless we see an ATAPI device in which case we force it off.
- *
- *	FIXME: need to implement 2nd channel support.
- */
 
 static void ht6560b_set_piomode(struct ata_port *ap, struct ata_device *adev)
 {
@@ -596,20 +588,6 @@ static void opti82c46x_set_piomode(struct ata_port *ap, struct ata_device *adev)
 	ap->host->private_data = ap;
 }
 
-/**
- *	opt82c465mv_qc_issue		-	command issue
- *	@qc: command pending
- *
- *	Called when the libata layer is about to issue a command. We wrap
- *	this interface so that we can load the correct ATA timings. The
- *	MVB has a single set of timing registers and these are shared
- *	across channels. As there are two registers we really ought to
- *	track the last two used values as a sort of register window. For
- *	now we just reload on a channel switch. On the single channel
- *	setup this condition never fires so we do nothing extra.
- *
- *	FIXME: dual channel needs ->serialize support
- */
 
 static unsigned int opti82c46x_qc_issue(struct ata_queued_cmd *qc)
 {

@@ -128,10 +128,6 @@ static int query_current_values_with_pending_wait(struct powernow_k8_data *data)
 		i = lo & HW_PSTATE_MASK;
 		data->currpstate = i;
 
-		/*
-		 * a workaround for family 11h erratum 311 might cause
-		 * an "out-of-range Pstate if the core is in Pstate-0
-		 */
 		if ((boot_cpu_data.x86 == 0x11) && (i >= data->numps))
 			data->currpstate = HW_PSTATE_0;
 

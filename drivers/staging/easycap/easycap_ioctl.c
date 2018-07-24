@@ -445,14 +445,6 @@ if (true == peasycap->offerfields) {
 				"please report problems\n", peasycap->field);
 
 
-/*
- *    FIXME ---- THIS IS UNTESTED, MAY BE (AND PROBABLY IS) INCORRECT:
- *
- *    peasycap->frame_buffer_used = peasycap->frame_buffer_used / 2;
- *
- *    SO DO NOT RISK IT YET.
- *
- */
 
 
 
@@ -1429,11 +1421,6 @@ case VIDIOC_QUERYSTD: {
 }
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 /*---------------------------------------------------------------------------*/
-/*
- *  THE MANIPULATIONS INVOLVING last0,last1,last2,last3 CONSTITUTE A WORKAROUND
- *  FOR WHAT APPEARS TO BE A BUG IN 64-BIT mplayer.
- *  NOT NEEDED, BUT HOPEFULLY HARMLESS, FOR 32-BIT mplayer.
- */
 /*---------------------------------------------------------------------------*/
 case VIDIOC_ENUMSTD: {
 	static int last0 = -1, last1 = -1, last2 = -1, last3 = -1;

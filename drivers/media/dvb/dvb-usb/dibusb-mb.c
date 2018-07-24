@@ -159,13 +159,6 @@ static struct usb_device_id dibusb_dib3000mb_table [] = {
 /* 28 */	{ USB_DEVICE(USB_VID_ULTIMA_ELECTRONIC,	USB_PID_ULTIMA_TVBOX_USB2_COLD) },
 /* 29 */	{ USB_DEVICE(USB_VID_ULTIMA_ELECTRONIC,	USB_PID_ULTIMA_TVBOX_USB2_WARM) },
 
-/*
- * XXX: As Artec just 'forgot' to program the EEPROM on some Artec T1 devices
- *      we don't catch these faulty IDs (namely 'Cypress FX1 USB controller') that
- *      have been left on the device. If you don't have such a device but an Artec
- *      device that's supposed to work with this driver but is not detected by it,
- *      free to enable CONFIG_DVB_USB_DIBUSB_MB_FAULTY via your kernel config.
- */
 
 #ifdef CONFIG_DVB_USB_DIBUSB_MB_FAULTY
 /* 30 */	{ USB_DEVICE(USB_VID_ANCHOR,		USB_PID_ULTIMA_TVBOX_ANCHOR_COLD) },

@@ -274,16 +274,15 @@ alphabook1_init_pci(void)
 	/* Do not set *ANY* level triggers for AlphaBook1. */
 	sio_fixup_irq_levels(0);
 
-	/* Make sure that register PR1 indicates 1Mb mem */
-	outb(0x0f, 0x3ce); orig = inb(0x3cf);   /* read PR5  */
-	outb(0x0f, 0x3ce); outb(0x05, 0x3cf);   /* unlock PR0-4 */
-	outb(0x0b, 0x3ce); config = inb(0x3cf); /* read PR1 */
+	outb(0x0f, 0x3ce); orig = inb(0x3cf);
+	outb(0x0f, 0x3ce); outb(0x05, 0x3cf);
+	outb(0x0b, 0x3ce); config = inb(0x3cf);
 	if ((config & 0xc0) != 0xc0) {
 		printk("AlphaBook1 VGA init: setting 1Mb memory\n");
 		config |= 0xc0;
-		outb(0x0b, 0x3ce); outb(config, 0x3cf); /* write PR1 */
+		outb(0x0b, 0x3ce); outb(config, 0x3cf);
 	}
-	outb(0x0f, 0x3ce); outb(orig, 0x3cf); /* (re)lock PR0-4 */
+	outb(0x0f, 0x3ce); outb(orig, 0x3cf);
 }
 
 void

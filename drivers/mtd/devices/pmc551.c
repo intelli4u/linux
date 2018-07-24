@@ -347,18 +347,6 @@ static int pmc551_write(struct mtd_info *mtd, loff_t to, size_t len,
 	return 0;
 }
 
-/*
- * Fixup routines for the V370PDC
- * PCI device ID 0x020011b0
- *
- * This function basicly kick starts the DRAM oboard the card and gets it
- * ready to be used.  Before this is done the device reads VERY erratic, so
- * much that it can crash the Linux 2.2.x series kernels when a user cat's
- * /proc/pci .. though that is mainly a kernel bug in handling the PCI DEVSEL
- * register.  FIXME: stop spinning on registers .. must implement a timeout
- * mechanism
- * returns the size of the memory region found.
- */
 static u32 fixup_pmc551(struct pci_dev *dev)
 {
 #ifdef CONFIG_MTD_PMC551_BUGFIX
@@ -373,10 +361,6 @@ static u32 fixup_pmc551(struct pci_dev *dev)
 		return -ENODEV;
 	}
 
-	/*
-	 * Attempt to reset the card
-	 * FIXME: Stop Spinning registers
-	 */
 	counter = 0;
 	/* unlock registers */
 	pci_write_config_byte(dev, PMC551_SYS_CTRL_REG, 0xA5);
@@ -479,10 +463,6 @@ static u32 fixup_pmc551(struct pci_dev *dev)
 	pci_write_config_word(dev, PMC551_SDRAM_MA, 0x0400);
 	pci_write_config_word(dev, PMC551_SDRAM_CMD, 0x00bf);
 
-	/*
-	 * Wait until command has gone through
-	 * FIXME: register spinning issue
-	 */
 	do {
 		pci_read_config_word(dev, PMC551_SDRAM_CMD, &cmd);
 		if (counter++ > 100)
@@ -498,10 +478,6 @@ static u32 fixup_pmc551(struct pci_dev *dev)
 	for (i = 1; i <= 8; i++) {
 		pci_write_config_word(dev, PMC551_SDRAM_CMD, 0x0df);
 
-		/*
-		 * Make certain command has gone through
-		 * FIXME: register spinning issue
-		 */
 		counter = 0;
 		do {
 			pci_read_config_word(dev, PMC551_SDRAM_CMD, &cmd);
@@ -513,10 +489,6 @@ static u32 fixup_pmc551(struct pci_dev *dev)
 	pci_write_config_word(dev, PMC551_SDRAM_MA, 0x0020);
 	pci_write_config_word(dev, PMC551_SDRAM_CMD, 0x0ff);
 
-	/*
-	 * Wait until command completes
-	 * FIXME: register spinning issue
-	 */
 	counter = 0;
 	do {
 		pci_read_config_word(dev, PMC551_SDRAM_CMD, &cmd);

@@ -394,9 +394,6 @@ struct module
 
 extern struct mutex module_mutex;
 
-/* FIXME: It'd be nice to isolate modules during init, too, so they
-   aren't used before they (may) fail.  But presently too much code
-   (IDE & SCSI) require entry into the module during init.*/
 static inline int module_is_live(struct module *mod)
 {
 	return mod->state != MODULE_STATE_GOING;

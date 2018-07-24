@@ -36,35 +36,6 @@ static void DumpVmbusChannel(struct vmbus_channel *channel);
 static void VmbusChannelSetEvent(struct vmbus_channel *channel);
 
 
-#if 0
-static void DumpMonitorPage(struct hv_monitor_page *MonitorPage)
-{
-	int i = 0;
-	int j = 0;
-
-	DPRINT_DBG(VMBUS, "monitorPage - %p, trigger state - %d",
-		   MonitorPage, MonitorPage->TriggerState);
-
-	for (i = 0; i < 4; i++)
-		DPRINT_DBG(VMBUS, "trigger group (%d) - %llx", i,
-			   MonitorPage->TriggerGroup[i].AsUINT64);
-
-	for (i = 0; i < 4; i++) {
-		for (j = 0; j < 32; j++) {
-			DPRINT_DBG(VMBUS, "latency (%d)(%d) - %llx", i, j,
-				   MonitorPage->Latency[i][j]);
-		}
-	}
-	for (i = 0; i < 4; i++) {
-		for (j = 0; j < 32; j++) {
-			DPRINT_DBG(VMBUS, "param-conn id (%d)(%d) - %d", i, j,
-			       MonitorPage->Parameter[i][j].ConnectionId.Asu32);
-			DPRINT_DBG(VMBUS, "param-flag (%d)(%d) - %d", i, j,
-				MonitorPage->Parameter[i][j].FlagNumber);
-		}
-	}
-}
-#endif
 
 /*
  * VmbusChannelSetEvent - Trigger an event notification on the specified
@@ -92,28 +63,6 @@ static void VmbusChannelSetEvent(struct vmbus_channel *Channel)
 	}
 }
 
-#if 0
-static void VmbusChannelClearEvent(struct vmbus_channel *channel)
-{
-	struct hv_monitor_page *monitorPage;
-
-	if (Channel->OfferMsg.MonitorAllocated) {
-		/* Each u32 represents 32 channels */
-		clear_bit(Channel->OfferMsg.ChildRelId & 31,
-			  (unsigned long *)gVmbusConnection.SendInterruptPage +
-			  (Channel->OfferMsg.ChildRelId >> 5));
-
-		monitorPage =
-			(struct hv_monitor_page *)gVmbusConnection.MonitorPages;
-		monitorPage++; /* Get the child to parent monitor page */
-
-		clear_bit(Channel->MonitorBit,
-			  (unsigned long *)&monitorPage->TriggerGroup
-					[Channel->MonitorGroup].Pending);
-	}
-}
-
-#endif
 /*
  * VmbusChannelGetDebugInfo -Retrieve various channel debug info
  */
@@ -250,7 +199,7 @@ int VmbusChannelOpen(struct vmbus_channel *NewChannel, u32 SendRingBufferSize,
 
 	openMsg = (struct vmbus_channel_open_channel *)openInfo->Msg;
 	openMsg->Header.MessageType = ChannelMessageOpenChannel;
-	openMsg->OpenId = NewChannel->OfferMsg.ChildRelId; /* FIXME */
+	openMsg->OpenId = NewChannel->OfferMsg.ChildRelId;
 	openMsg->ChildRelId = NewChannel->OfferMsg.ChildRelId;
 	openMsg->RingBufferGpadlHandle = NewChannel->RingBufferGpadlHandle;
 	openMsg->DownstreamRingBufferPageOffset = SendRingBufferSize >>
@@ -279,7 +228,6 @@ int VmbusChannelOpen(struct vmbus_channel *NewChannel, u32 SendRingBufferSize,
 		goto Cleanup;
 	}
 
-	/* FIXME: Need to time-out here */
 	osd_WaitEventWait(openInfo->WaitEvent);
 
 	if (openInfo->Response.OpenResult.Status == 0)
@@ -423,7 +371,6 @@ static int VmbusChannelCreateGpadlHeader(void *Kbuffer, u32 Size,
 				  sizeof(struct vmbus_channel_gpadl_body) +
 				  pfnCurr * sizeof(u64);
 			msgBody = kzalloc(msgSize, GFP_KERNEL);
-			/* FIXME: we probably need to more if this fails */
 			if (!msgBody)
 				goto nomem;
 			msgBody->MessageSize = msgSize;
@@ -431,11 +378,6 @@ static int VmbusChannelCreateGpadlHeader(void *Kbuffer, u32 Size,
 			gpadlBody =
 				(struct vmbus_channel_gpadl_body *)msgBody->Msg;
 
-			/*
-			 * FIXME:
-			 * Gpadl is u32 and we are using a pointer which could
-			 * be 64-bit
-			 */
 			/* gpadlBody->Gpadl = kbuffer; */
 			for (i = 0; i < pfnCurr; i++)
 				gpadlBody->Pfn[i] = pfn + pfnSum + i;
@@ -539,7 +481,6 @@ int VmbusChannelEstablishGpadl(struct vmbus_channel *Channel, void *Kbuffer,
 	if (msgCount > 1) {
 		list_for_each(curr, &msgInfo->SubMsgList) {
 
-			/* FIXME: should this use list_entry() instead ? */
 			subMsgInfo = (struct vmbus_channel_msginfo *)curr;
 			gpadlBody =
 			     (struct vmbus_channel_gpadl_body *)subMsgInfo->Msg;
@@ -652,8 +593,6 @@ void VmbusChannelClose(struct vmbus_channel *Channel)
 	/* Send a closing message */
 	info = kmalloc(sizeof(*info) +
 		       sizeof(struct vmbus_channel_close_channel), GFP_KERNEL);
-        /* FIXME: can't do anything other than return here because the
-	 *        function is void */
 	if (!info)
 		return;
 

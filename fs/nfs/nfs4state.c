@@ -1423,8 +1423,7 @@ static void nfs4_set_lease_expired(struct nfs_client *clp, int status)
 		case -EKEYEXPIRED:
 			break;
 
-		case -NFS4ERR_NOT_SAME: /* FixMe: implement recovery
-					 * in nfs4_exchange_id */
+		case -NFS4ERR_NOT_SAME:
 		default:
 			return;
 		}

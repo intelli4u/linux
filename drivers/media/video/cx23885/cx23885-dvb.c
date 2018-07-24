@@ -1088,13 +1088,6 @@ int cx23885_dvb_unregister(struct cx23885_tsport *port)
 {
 	struct videobuf_dvb_frontend *fe0;
 
-	/* FIXME: in an error condition where the we have
-	 * an expected number of frontends (attach problem)
-	 * then this might not clean up correctly, if 1
-	 * is invalid.
-	 * This comment only applies to future boards IF they
-	 * implement MFE support.
-	 */
 	fe0 = videobuf_dvb_get_frontend(&port->frontends, 1);
 	if (fe0->dvb.frontend)
 		videobuf_dvb_unregister_bus(&port->frontends);
@@ -1107,4 +1100,3 @@ int cx23885_dvb_unregister(struct cx23885_tsport *port)
 
 	return 0;
 }
-

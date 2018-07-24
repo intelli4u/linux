@@ -21,25 +21,13 @@
  * file system statistics
  */
 
-#if 1
 #define dprintk(format, args...)					\
 	printk(KERN_DEBUG "mpoa:%s: " format, __FILE__, ##args)  /* debug */
-#else
-#define dprintk(format, args...)					\
-	do { if (0)							\
-		printk(KERN_DEBUG "mpoa:%s: " format, __FILE__, ##args);\
-	} while (0)
-#endif
 
-#if 0
-#define ddprintk(format, args...)					\
-	printk(KERN_DEBUG "mpoa:%s: " format, __FILE__, ##args)  /* debug */
-#else
 #define ddprintk(format, args...)					\
 	do { if (0)							\
 		printk(KERN_DEBUG "mpoa:%s: " format, __FILE__, ##args);\
 	} while (0)
-#endif
 
 #define STAT_FILE_NAME "mpc"     /* Our statistic file's name */
 
@@ -100,9 +88,6 @@ static const char *egress_state_string(int state)
 	return "";
 }
 
-/*
- * FIXME: mpcs (and per-mpc lists) have no locking whatsoever.
- */
 
 static void *mpc_start(struct seq_file *m, loff_t *pos)
 {
@@ -304,9 +289,3 @@ void mpc_proc_clean(void)
 }
 
 #endif /* CONFIG_PROC_FS */
-
-
-
-
-
-

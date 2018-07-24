@@ -45,10 +45,6 @@ static void omap1_mcbsp_request(unsigned int id)
 				clk_enable(api_clk);
 				clk_enable(dsp_clk);
 
-				/*
-				 * DSP external peripheral reset
-				 * FIXME: This should be moved to dsp code
-				 */
 				__raw_writew(__raw_readw(DSP_RSTCT2) | DPS_RSTCT2_PER_EN |
 						DSP_RSTCT2_WD_PER_EN, DSP_RSTCT2);
 			}

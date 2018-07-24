@@ -458,19 +458,6 @@ kernel_execve:
 
 	.globl	pgm_check_handler
 pgm_check_handler:
-/*
- * First we need to check for a special case:
- * Single stepping an instruction that disables the PER event mask will
- * cause a PER event AFTER the mask has been set. Example: SVC or LPSW.
- * For a single stepped SVC the program check handler gets control after
- * the SVC new PSW has been loaded. But we want to execute the SVC first and
- * then handle the PER event. Therefore we update the SVC old PSW to point
- * to the pgm_check_handler and branch to the SVC handler after we checked
- * if we have to load the kernel stack register.
- * For every other possible cause for PER event without the PER mask set
- * we just ignore the PER event (FIXME: is there anything we have to do
- * for LPSW?).
- */
 	stpt	__LC_SYNC_ENTER_TIMER
 	SAVE_ALL_BASE __LC_SAVE_AREA
 	tm	__LC_PGM_INT_CODE+1,0x80 # check whether we got a per exception

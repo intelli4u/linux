@@ -529,9 +529,6 @@ static int tmio_resume(struct platform_device *dev)
 {
 	struct mfd_cell *cell = dev_get_platdata(&dev->dev);
 
-	/* FIXME - is this required or merely another attack of the broken
-	 * SHARP platform? Looks suspicious.
-	 */
 	tmio_hw_init(dev, platform_get_drvdata(dev));
 
 	if (cell->resume)

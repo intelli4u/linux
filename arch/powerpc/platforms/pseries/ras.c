@@ -243,7 +243,6 @@ int pSeries_system_reset_exception(struct pt_regs *regs)
 	if (fwnmi_active) {
 		struct rtas_error_log *errhdr = fwnmi_get_errinfo(regs);
 		if (errhdr) {
-			/* XXX Should look at FWNMI information */
 		}
 		fwnmi_release_errinfo();
 	}
@@ -276,7 +275,6 @@ static int recover_mce(struct pt_regs *regs, struct rtas_error_log * err)
 		/* Kill off a user process with an ECC error */
 		printk(KERN_ERR "MCE: uncorrectable ecc error for pid %d\n",
 		       current->pid);
-		/* XXX something better for ECC error? */
 		_exception(SIGBUS, regs, BUS_ADRERR, regs->nip);
 		nonfatal = 1;
 	}

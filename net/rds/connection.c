@@ -334,7 +334,6 @@ static void rds_conn_message_info(struct socket *sock, unsigned int len,
 
 			spin_lock(&conn->c_lock);
 
-			/* XXX too lazy to maintain counts.. */
 			list_for_each_entry(rm, list, m_conn_item) {
 				total++;
 				if (total <= len)
@@ -391,7 +390,6 @@ void rds_for_each_conn_info(struct socket *sock, unsigned int len,
 	     i++, head++) {
 		hlist_for_each_entry_safe(conn, pos, tmp, head, c_hash_node) {
 
-			/* XXX no c_lock usage.. */
 			if (!visitor(conn, buffer))
 				continue;
 
@@ -425,7 +423,6 @@ static int rds_conn_info_visitor(struct rds_connection *conn,
 
 	rds_conn_info_set(cinfo->flags,
 			  rds_conn_is_sending(conn), SENDING);
-	/* XXX Future: return the state rather than these funky bits */
 	rds_conn_info_set(cinfo->flags,
 			  atomic_read(&conn->c_state) == RDS_CONN_CONNECTING,
 			  CONNECTING);

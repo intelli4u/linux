@@ -192,9 +192,6 @@ int btext_initialize(struct device_node *np)
 	if (prop)
 		address = *prop;
 
-	/* FIXME: Add support for PCI reg properties. Right now, only
-	 * reliable on macs
-	 */
 	if (address == 0)
 		return -EINVAL;
 

@@ -285,11 +285,6 @@ static s32 amd8111_access(struct i2c_adapter * adap, u16 addr,
 	amd_ec_write(smbus, AMD_SMB_ADDR, addr << 1);
 	amd_ec_write(smbus, AMD_SMB_PRTCL, protocol);
 
-	/* FIXME this discards status from ec_read(); so temp[0] will
-	 * hold stack garbage ... the rest of this routine will act
-	 * nonsensically.  Ignored ec_write() status might explain
-	 * some such failures...
-	 */
 	amd_ec_read(smbus, AMD_SMB_STS, temp + 0);
 
 	if (~temp[0] & AMD_SMB_STS_DONE) {

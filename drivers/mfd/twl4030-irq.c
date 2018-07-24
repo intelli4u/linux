@@ -663,7 +663,6 @@ static inline int sih_read_isr(const struct sih *sih)
 		u32 word;
 	} isr;
 
-	/* FIXME need retry-on-error ... */
 
 	isr.word = 0;
 	status = twl_i2c_read(sih->module, isr.bytes,
@@ -772,12 +771,10 @@ int twl4030_sih_setup(int module)
 	return status;
 }
 
-/* FIXME need a call to reverse twl4030_sih_setup() ... */
 
 
 /*----------------------------------------------------------------------*/
 
-/* FIXME pass in which interrupt line we'll use ... */
 #define twl_irq_line	0
 
 int twl4030_init_irq(int irq_num, unsigned irq_base, unsigned irq_end)
@@ -862,7 +859,6 @@ fail:
 
 int twl4030_exit_irq(void)
 {
-	/* FIXME undo twl_init_irq() */
 	if (twl4030_irq_base) {
 		pr_err("twl4030: can't yet clean up IRQs?\n");
 		return -ENOSYS;

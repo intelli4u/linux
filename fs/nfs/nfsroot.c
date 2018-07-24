@@ -433,11 +433,6 @@ static int __init root_nfs_getport(int program, int version, int proto)
 }
 
 
-/*
- *  Use portmapper to find mountd and nfsd port numbers if not overriden
- *  by the user. Use defaults if portmapper is not available.
- *  XXX: Is there any nfs server with no portmapper?
- */
 static int __init root_nfs_ports(void)
 {
 	int port;

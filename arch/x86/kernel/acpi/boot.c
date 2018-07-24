@@ -988,7 +988,7 @@ void __init mp_config_acpi_legacy_irqs(void)
 	int i;
 	struct mpc_intsrc mp_irq;
 
-#if defined (CONFIG_MCA) || defined (CONFIG_EISA)
+#if defined(CONFIG_MCA) || defined(CONFIG_EISA)
 	/*
 	 * Fabricate the legacy ISA bus (bus #31).
 	 */
@@ -1612,7 +1612,6 @@ static int __init parse_acpi(char *arg)
 }
 early_param("acpi", parse_acpi);
 
-/* FIXME: Using pci= for an ACPI parameter is a travesty. */
 static int __init parse_pci(char *arg)
 {
 	if (arg && strcmp(arg, "noacpi") == 0)

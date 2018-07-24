@@ -671,7 +671,6 @@ static inline int read_direntry(struct jffs2_sb_info *c, struct jffs2_raw_node_r
 
 	/* Do we need to copy any more of the name directly from the flash? */
 	if (rd->nsize + sizeof(*rd) > read) {
-		/* FIXME: point() */
 		int err;
 		int already = read - sizeof(*rd);
 
@@ -988,8 +987,6 @@ static int jffs2_get_inode_nodes(struct jffs2_sb_info *c, struct jffs2_inode_inf
 
 	dbg_readinode("ino #%u\n", f->inocache->ino);
 
-	/* FIXME: in case of NOR and available ->point() this
-	 * needs to be fixed. */
 	len = sizeof(union jffs2_node_union) + c->wbuf_pagesize;
 	buf = kmalloc(len, GFP_KERNEL);
 	if (!buf)
@@ -1038,7 +1035,6 @@ static int jffs2_get_inode_nodes(struct jffs2_sb_info *c, struct jffs2_inode_inf
 
 		dbg_readinode("read %d bytes at %#08x(%d).\n", len, ref_offset(ref), ref_flags(ref));
 
-		/* FIXME: point() */
 		err = jffs2_flash_read(c, ref_offset(ref), len, &retlen, buf);
 		if (err) {
 			JFFS2_ERROR("can not read %d bytes from 0x%08x, " "error code: %d.\n", len, ref_offset(ref), err);
@@ -1170,7 +1166,6 @@ static int jffs2_do_read_inode_internal(struct jffs2_sb_info *c,
 		if (f->inocache->state == INO_STATE_READING)
 			jffs2_set_inocache_state(c, f->inocache, INO_STATE_CHECKEDABSENT);
 		jffs2_free_tmp_dnode_info_list(&rii.tn_root);
-		/* FIXME: We could at least crc-check them all */
 		if (rii.mdata_tn) {
 			jffs2_free_full_dnode(rii.mdata_tn->fn);
 			jffs2_free_tmp_dnode_info(rii.mdata_tn);
@@ -1219,7 +1214,6 @@ static int jffs2_do_read_inode_internal(struct jffs2_sb_info *c,
 	if (ret || retlen != sizeof(*latest_node)) {
 		JFFS2_ERROR("failed to read from flash: error %d, %zd of %zd bytes read\n",
 			ret, retlen, sizeof(*latest_node));
-		/* FIXME: If this fails, there seems to be a memory leak. Find it. */
 		mutex_unlock(&f->sem);
 		jffs2_do_clear_inode(c, f);
 		return ret?ret:-EIO;
@@ -1255,10 +1249,6 @@ static int jffs2_do_read_inode_internal(struct jffs2_sb_info *c,
 		break;
 
 	case S_IFLNK:
-		/* Hack to work around broken isize in old symlink code.
-		   Remove this when dwmw2 comes to his senses and stops
-		   symlinks from being an entirely gratuitous special
-		   case. */
 		if (!je32_to_cpu(latest_node->isize))
 			latest_node->isize = latest_node->dsize;
 
@@ -1315,7 +1305,6 @@ static int jffs2_do_read_inode_internal(struct jffs2_sb_info *c,
 		if (frag_next(frag_first(&f->fragtree))) {
 			JFFS2_ERROR("Argh. Special inode #%u with mode 0x%x had more than one node\n",
 			       f->inocache->ino, jemode_to_cpu(latest_node->mode));
-			/* FIXME: Deal with it - check crc32, check for duplicate node, check times and discard the older one */
 			mutex_unlock(&f->sem);
 			jffs2_do_clear_inode(c, f);
 			return -EIO;

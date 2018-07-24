@@ -21,7 +21,7 @@
 
 #define FIQ_START	80
 
-#if defined (CONFIG_ARCH_LH7A400)
+#if defined(CONFIG_ARCH_LH7A400)
 
   /* FIQs */
 
@@ -66,7 +66,7 @@
 
 #endif
 
-#if defined (CONFIG_ARCH_LH7A404)
+#if defined(CONFIG_ARCH_LH7A404)
 
 # define IRQ_BROWN	0	/* Brownout */
 # define IRQ_WDTINTR	1	/* Watchdog Timer */
@@ -150,7 +150,7 @@
 
   /* IRQ aliases */
 
-#if !defined (IRQ_GPIO0INTR)
+#if !defined(IRQ_GPIO0INTR)
 # define IRQ_GPIO0INTR	IRQ_GPIO0FIQ
 #endif
 #define IRQ_TICK	IRQ_TINTR
@@ -165,7 +165,7 @@
 # define IRQ_PCC2_CD	IRQ_GPIO_F3	/* PCCard 2 card detect */
 #endif
 
-#if defined (CONFIG_MACH_LPD7A400) || defined (CONFIG_MACH_LPD7A404)
+#if defined(CONFIG_MACH_LPD7A400) || defined(CONFIG_MACH_LPD7A404)
 # define IRQ_CPLD_V28	IRQ_GPIO7INTR	/* CPLD cascade through GPIO_PF7 */
 # define IRQ_CPLD_V34	IRQ_GPIO3INTR	/* CPLD cascade through GPIO_PF3 */
 #endif
@@ -184,14 +184,14 @@
 # define IRQ_KEV7A400_INT	IRQ_KEV7A400_CPLD + 4
 #endif
 
-#if defined (CONFIG_MACH_LPD7A400) || defined (CONFIG_MACH_LPD7A404)
+#if defined(CONFIG_MACH_LPD7A400) || defined(CONFIG_MACH_LPD7A404)
 # define IRQ_LPD7A40X_CPLD	IRQ_BOARD_START
 # define NR_IRQ_BOARD		2
 # define IRQ_LPD7A40X_ETH_INT	IRQ_LPD7A40X_CPLD + 0	/* Ethernet chip */
 # define IRQ_LPD7A400_TS	IRQ_LPD7A40X_CPLD + 1	/* Touch screen */
 #endif
 
-#if defined (CONFIG_MACH_LPD7A400)
+#if defined(CONFIG_MACH_LPD7A400)
 # define IRQ_TOUCH		IRQ_LPD7A400_TS
 #endif
 

@@ -827,7 +827,6 @@ int parport_claim(struct pardevice *dev)
 #ifdef CONFIG_PARPORT_1284
 	/* If it's a mux port, select it. */
 	if (dev->port->muxport >= 0) {
-		/* FIXME */
 		port->muxsel = dev->port->muxport;
 	}
 
@@ -894,14 +893,6 @@ int parport_claim_or_block(struct pardevice *dev)
 #ifdef PARPORT_DEBUG_SHARING
 		printk(KERN_DEBUG "%s: parport_claim() returned -EAGAIN\n", dev->name);
 #endif
-		/*
-		 * FIXME!!! Use the proper locking for dev->waiting,
-		 * and make this use the "wait_event_interruptible()"
-		 * interfaces. The cli/sti that used to be here
-		 * did nothing.
-		 *
-		 * See also parport_release()
-		 */
 
 		/* If dev->waiting is clear now, an interrupt
 		   gave us the port and we would deadlock if we slept.  */
@@ -958,7 +949,6 @@ void parport_release(struct pardevice *dev)
 #ifdef CONFIG_PARPORT_1284
 	/* If this is on a mux port, deselect it. */
 	if (dev->port->muxport >= 0) {
-		/* FIXME */
 		port->muxsel = -1;
 	}
 

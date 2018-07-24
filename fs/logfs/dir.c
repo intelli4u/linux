@@ -279,8 +279,6 @@ static int logfs_rmdir(struct inode *dir, struct dentry *dentry)
 	return logfs_unlink(dir, dentry);
 }
 
-/* FIXME: readdir currently has it's own dir_walk code.  I don't see a good
- * way to combine the two copies */
 #define IMPLICIT_NODES 2
 static int __logfs_readdir(struct file *file, void *buf, filldir_t filldir)
 {
@@ -418,10 +416,6 @@ static int logfs_write_dir(struct inode *dir, struct dentry *dentry,
 			grow_dir(dir, index);
 		return err;
 	}
-	/* FIXME: Is there a better return value?  In most cases neither
-	 * the filesystem nor the directory are full.  But we have had
-	 * too many collisions for this particular hash and no fallback.
-	 */
 	return -ENOSPC;
 }
 
@@ -457,7 +451,6 @@ static int __logfs_create(struct inode *dir, struct dentry *dentry,
 	if (ret) {
 		abort_transaction(inode, ta);
 		li->li_flags |= LOGFS_IF_STILLBORN;
-		/* FIXME: truncate symlink */
 		inode->i_nlink--;
 		iput(inode);
 		goto out;
@@ -488,11 +481,6 @@ static int logfs_mkdir(struct inode *dir, struct dentry *dentry, int mode)
 {
 	struct inode *inode;
 
-	/*
-	 * FIXME: why do we have to fill in S_IFDIR, while the mode is
-	 * correct for mknod, creat, etc.?  Smells like the vfs *should*
-	 * do it for us but for some reason fails to do so.
-	 */
 	inode = logfs_new_inode(dir, S_IFDIR | mode);
 	if (IS_ERR(inode))
 		return PTR_ERR(inode);

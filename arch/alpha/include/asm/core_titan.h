@@ -16,7 +16,6 @@
  *
  */
 
-/* XXX: Do we need to conditionalize on this?  */
 #ifdef USE_48_BIT_KSEG
 #define TI_BIAS 0x80000000000UL
 #else

@@ -65,14 +65,6 @@ EXPORT_SYMBOL(iowrite16be);
 EXPORT_SYMBOL(iowrite32);
 EXPORT_SYMBOL(iowrite32be);
 
-/*
- * These are the "repeat read/write" functions. Note the
- * non-CPU byte order. We do things in "IO byteorder"
- * here.
- *
- * FIXME! We could make these do EEH handling if we really
- * wanted. Not clear if we do.
- */
 void ioread8_rep(void __iomem *addr, void *dst, unsigned long count)
 {
 	_insb((u8 __iomem *) addr, dst, count);

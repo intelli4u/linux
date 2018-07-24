@@ -103,7 +103,6 @@ void zfPowerSavingMgrSetMode(zdev_t* dev, u8_t mode)
 
     zmw_enter_critical_section(dev);
 
-    #if 1
     switch(mode)
     {
         case ZM_STA_PS_NONE:
@@ -121,22 +120,6 @@ void zfPowerSavingMgrSetMode(zdev_t* dev, u8_t mode)
             zfPowerSavingMgrHandlePs(dev);
             break;
     }
-    #else
-    switch(wd->sta.psMgr.state)
-    {
-        case ZM_PS_MSG_STATE_ACTIVE:
-            if ( mode != ZM_STA_PS_NONE )
-            {
-zm_debug_msg0("zfPowerSavingMgrSetMode: switch from ZM_PS_MSG_STATE_ACTIVE to ZM_PS_MSG_STATE_T1\n");
-                // Stall the TX & start to wait the pending TX to be completed
-                wd->sta.psMgr.state = ZM_PS_MSG_STATE_T1;
-            }
-            break;
-
-        case ZM_PS_MSG_STATE_SLEEP:
-            break;
-    }
-    #endif
 
     wd->sta.powerSaveMode = mode;
     zmw_leave_critical_section(dev);
@@ -490,7 +473,6 @@ static void zfPowerSavingMgrIBSSMain(zdev_t* dev)
     return;
 }
 
-#if 1
 void zfPowerSavingMgrMain(zdev_t* dev)
 {
     zmw_get_wlan_dev(dev);
@@ -514,45 +496,6 @@ void zfPowerSavingMgrMain(zdev_t* dev)
         break;
     }
 }
-#else
-void zfPowerSavingMgrMain(zdev_t* dev)
-{
-    zmw_get_wlan_dev(dev);
-
-    if ( wd->wlanMode != ZM_MODE_INFRASTRUCTURE )
-    {
-        return;
-    }
-
-    switch(wd->sta.psMgr.state)
-    {
-        case ZM_PS_MSG_STATE_ACTIVE:
-            goto check_sleep;
-            break;
-
-        case ZM_PS_MSG_STATE_SLEEP:
-            goto sleeping;
-            break;
-
-        case ZM_PS_MSG_STATE_T1:
-            zfPowerSavingMgrOnHandleT1(dev);
-            break;
-
-        case ZM_PS_MSG_STATE_T2:
-            zfPowerSavingMgrOnHandleT2(dev);
-            break;
-    }
-
-    return;
-
-sleeping:
-    return;
-
-check_sleep:
-    zfPowerSavingMgrSleepIfIdle(dev);
-    return;
-}
-#endif
 
 #ifdef ZM_ENABLE_POWER_SAVE
 void zfPowerSavingMgrWakeup(zdev_t* dev)
@@ -727,4 +670,3 @@ void zfPowerSavingMgrPreTBTTInterrupt(zdev_t *dev)
 }
 
 /* Leave an empty line below to remove warning message on some compiler */
-

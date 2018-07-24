@@ -164,15 +164,8 @@ static void qube_raq_galileo_fixup(struct pci_dev *dev)
 
  	printk(KERN_INFO "Galileo: revision %u\n", dev->revision);
 
-#if 0
-	if (dev->revision >= 0x10) {
-		/* New Galileo, assumes PCI stop line to VIA is connected. */
-		GT_WRITE(GT_PCI0_TOR_OFS, 0x4020);
-	} else if (dev->revision == 0x1 || dev->revision == 0x2)
-#endif
 	{
 		signed int timeo;
-		/* XXX WE MUST DO THIS ELSE GALILEO LOCKS UP! -DaveM */
 		timeo = GT_READ(GT_PCI0_TOR_OFS);
 		/* Old Galileo, assumes PCI STOP line to VIA is disconnected. */
 		GT_WRITE(GT_PCI0_TOR_OFS,

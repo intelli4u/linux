@@ -421,7 +421,6 @@ int c67x00_urb_enqueue(struct usb_hcd *hcd,
 		if (c67x00->urb_iso_count == 0)
 			c67x00->max_frame_bw = MAX_FRAME_BW_ISO;
 		c67x00->urb_iso_count++;
-		/* Assume always URB_ISO_ASAP, FIXME */
 		if (list_empty(&urbp->ep_data->queue))
 			urb->start_frame = urbp->ep_data->next_frame;
 		else {

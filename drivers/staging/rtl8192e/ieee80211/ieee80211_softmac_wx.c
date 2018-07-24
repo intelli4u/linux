@@ -18,7 +18,6 @@
 #ifdef ENABLE_DOT11D
 #include "dot11d.h"
 #endif
-/* FIXME: add A freqs */
 
 const long ieee80211_wlan_frequencies[] = {
 	2412, 2417, 2422, 2427,
@@ -222,7 +221,6 @@ int ieee80211_wx_set_rate(struct ieee80211_device *ieee,
 	u32 target_rate = wrqu->bitrate.value;
 
 	ieee->rate = target_rate/100000;
-	//FIXME: we might want to limit rate also in management protocols.
 	return 0;
 }
 
@@ -233,23 +231,7 @@ int ieee80211_wx_get_rate(struct ieee80211_device *ieee,
 			     union iwreq_data *wrqu, char *extra)
 {
 	u32 tmp_rate;
-#if 0
-	printk("===>mode:%d, halfNmode:%d\n", ieee->mode, ieee->bHalfWirelessN24GMode);
-	if (ieee->mode & (IEEE_A | IEEE_B | IEEE_G))
-		tmp_rate = ieee->rate;
-	else if (ieee->mode & IEEE_N_5G)
-		tmp_rate = 580;
-	else if (ieee->mode & IEEE_N_24G)
-	{
-		if (ieee->GetHalfNmodeSupportByAPsHandler(ieee->dev))
-			tmp_rate = HTHalfMcsToDataRate(ieee, 15);
-		else
-			tmp_rate = HTMcsToDataRate(ieee, 15);
-	}
-#else
 	tmp_rate = TxCountToDataRate(ieee, ieee->softmac_stats.CurrentShowTxate);
-
-#endif
 	wrqu->bitrate.value = tmp_rate * 500000;
 
 	return 0;
@@ -531,7 +513,6 @@ int ieee80211_wx_set_power(struct ieee80211_device *ieee,
 				 union iwreq_data *wrqu, char *extra)
 {
 	int ret = 0;
-#if 1
 	if(
 		(!ieee->sta_wake_up) ||
 	//	(!ieee->ps_request_tx_ack) ||
@@ -542,7 +523,6 @@ int ieee80211_wx_set_power(struct ieee80211_device *ieee,
 
 		return -1;
 	}
-#endif
 	down(&ieee->wx_sem);
 
 	if (wrqu->power.disabled){
@@ -626,4 +606,3 @@ exit:
 	return ret;
 
 }
-

@@ -589,10 +589,7 @@ END(ia64_trace_syscall)
 	 */
 GLOBAL_ENTRY(ia64_strace_leave_kernel)
 	PT_REGS_UNWIND_INFO(0)
-{	/*
-	 * Some versions of gas generate bad unwind info if the first instruction of a
-	 * procedure doesn't go into the first slot of a bundle.  This is a workaround.
-	 */
+{
 	nop.m 0
 	nop.i 0
 	br.call.sptk.many rp=syscall_trace_leave // give parent a chance to catch return value
@@ -602,10 +599,7 @@ END(ia64_strace_leave_kernel)
 
 GLOBAL_ENTRY(ia64_ret_from_clone)
 	PT_REGS_UNWIND_INFO(0)
-{	/*
-	 * Some versions of gas generate bad unwind info if the first instruction of a
-	 * procedure doesn't go into the first slot of a bundle.  This is a workaround.
-	 */
+{
 	nop.m 0
 	nop.i 0
 	/*

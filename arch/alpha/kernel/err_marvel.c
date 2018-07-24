@@ -963,22 +963,6 @@ marvel_process_io_error(struct ev7_lf_subpackets *lf_subpackets, int print)
 	if (lf_subpackets->io->po7_error_sum & IO7__PO7_ERRSUM__ERR_MASK) {
 		marvel_print_po7_err_sum(io);
 
-#if 0
-		printk("%s  PORT 7 ERROR:\n"
-		       "%s    PO7_ERROR_SUM: %016llx\n"
-		       "%s    PO7_UNCRR_SYM: %016llx\n"
-		       "%s    PO7_CRRCT_SYM: %016llx\n"
-		       "%s    PO7_UGBGE_SYM: %016llx\n"
-		       "%s    PO7_ERR_PKT0:  %016llx\n"
-		       "%s    PO7_ERR_PKT1:  %016llx\n",
-		       err_print_prefix,
-		       err_print_prefix, io->po7_error_sum,
-		       err_print_prefix, io->po7_uncrr_sym,
-		       err_print_prefix, io->po7_crrct_sym,
-		       err_print_prefix, io->po7_ugbge_sym,
-		       err_print_prefix, io->po7_err_pkt0,
-		       err_print_prefix, io->po7_err_pkt1);
-#endif
 	}
 
 	/*

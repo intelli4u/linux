@@ -291,12 +291,6 @@ static inline int interface_to_infnum(struct usb_interface *interface)
 	return interface->cur_altsetting->desc.bInterfaceNumber;
 }
 
-#if 0
-int setnodelay(struct socket *);
-int setquickack(struct socket *);
-int setkeepalive(struct socket *socket);
-void setreuse(struct socket *);
-#endif
 
 struct socket *sockfd_to_socket(unsigned int);
 int set_sockaddr(struct socket *socket, struct sockaddr_storage *ss);

@@ -1871,7 +1871,6 @@ static int ip6mr_forward2(struct net *net, struct mr6_table *mrt,
 	vif->bytes_out += skb->len;
 
 	/* We are about to write */
-	/* XXX: extension headers? */
 	if (skb_cow(skb, sizeof(*ipv6h) + LL_RESERVED_SPACE(dev)))
 		goto out_free;
 

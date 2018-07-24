@@ -105,7 +105,7 @@ static struct platform_device davinci_nand_device = {
 };
 
 #if defined(CONFIG_BLK_DEV_PALMCHIP_BK3710) || \
-    defined(CONFIG_BLK_DEV_PALMCHIP_BK3710_MODULE)
+	defined(CONFIG_BLK_DEV_PALMCHIP_BK3710_MODULE)
 #define HAS_ATA 1
 #else
 #define HAS_ATA 0
@@ -804,4 +804,3 @@ MACHINE_START(DAVINCI_DM6467TEVM, "DaVinci DM6467T EVM")
 	.timer        = &davinci_timer,
 	.init_machine = evm_init,
 MACHINE_END
-

@@ -1337,13 +1337,7 @@ xfs_fs_remount(
 			 * every remount request, and silently ignore all
 			 * options that we can't actually change.
 			 */
-#if 0
-			printk(KERN_INFO
-	"XFS: mount option \"%s\" not supported for remount\n", p);
-			return -EINVAL;
-#else
 			break;
-#endif
 		}
 	}
 

@@ -292,10 +292,6 @@ static const u8 qtable_creative_pccam[2][64] = {
 	 0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e}
 };
 
-/* FIXME: This Q-table is identical to the Creative PC-CAM one,
- *		except for one byte. Possibly a typo?
- *		NWG: 18/05/2003.
- */
 static const u8 qtable_spca504_default[2][64] = {
 	{				/* Q-table Y-components */
 	 0x05, 0x03, 0x03, 0x05, 0x07, 0x0c, 0x0f, 0x12,

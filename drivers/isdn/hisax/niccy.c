@@ -1,4 +1,4 @@
-/* $Id: niccy.c,v 1.21.2.4 2004/01/13 23:48:39 keil Exp $
+/* $Id: niccy.c,v 1.21.2.4 2004/01/13 23:48:39 Exp $
  *
  * low level stuff for Dr. Neuhaus NICCY PnP and NICCY PCI and
  * compatible (SAGEM cybermodem)

@@ -232,4 +232,3 @@ int adsp_videoenc_verify_cmd(struct msm_adsp_module *module,
 		return 0;
 	}
 }
-

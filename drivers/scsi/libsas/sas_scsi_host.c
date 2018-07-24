@@ -193,13 +193,6 @@ int sas_queue_up(struct sas_task *task)
 	return 0;
 }
 
-/**
- * sas_queuecommand -- Enqueue a command for processing
- * @parameters: See SCSI Core documentation
- *
- * Note: XXX: Remove the host unlock/lock pair when SCSI Core can
- * call us without holding an IRQ spinlock...
- */
 int sas_queuecommand(struct scsi_cmnd *cmd,
 		     void (*scsi_done)(struct scsi_cmnd *))
 	__releases(host->host_lock)

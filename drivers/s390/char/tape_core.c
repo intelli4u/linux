@@ -84,12 +84,6 @@ static int devid_to_int(struct ccw_dev_id *dev_id)
 	return dev_id->devno + (dev_id->ssid << 16);
 }
 
-/*
- * Some channel attached tape specific attributes.
- *
- * FIXME: In the future the first_minor and blocksize attribute should be
- *        replaced by a link to the cdev tree.
- */
 static ssize_t
 tape_medium_state_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
@@ -1074,7 +1068,6 @@ __tape_do_irq (struct ccw_device *cdev, unsigned long intparm, struct irb *irb)
 
 	/* On special conditions irb is an error pointer */
 	if (IS_ERR(irb)) {
-		/* FIXME: What to do with the request? */
 		switch (PTR_ERR(irb)) {
 			case -ETIMEDOUT:
 				DBF_LH(1, "(%s): Request timed out\n",

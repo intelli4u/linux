@@ -7,7 +7,7 @@
 
 #include <asm-generic/futex.h>
 
-#else /* !SMP, we can work around lack of atomic ops by disabling preemption */
+#else
 
 #include <linux/futex.h>
 #include <linux/preempt.h>

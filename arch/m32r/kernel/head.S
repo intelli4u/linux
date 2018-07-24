@@ -103,23 +103,6 @@ ENTRY(_stext)
 
 #endif /* not CONFIG_ISA_DUAL_ISSUE */
 
-#if 0  /* M32R_FIXME */
-/*
- * Copy data segment from ROM to RAM.
- */
-	.global ROM_D, TOP_DATA, END_DATA
-
-	LDIMM	(r1, ROM_D)
-	LDIMM	(r2, TOP_DATA)
-	LDIMM	(r3, END_DATA)
-	addi	r2, #-4
-	addi	r3, #-4
-loop1:
-	ld	r0, @r1+
-	st	r0, @+r2
-	cmp	r2, r3
-	bc	loop1
-#endif /* 0 */
 
 /* Jump to kernel */
 	LDIMM	(r2, start_kernel)

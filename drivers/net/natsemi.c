@@ -851,7 +851,6 @@ static int __devinit natsemi_probe1 (struct pci_dev *pdev,
 		goto err_ioremap;
 	}
 
-	/* Work around the dropped serial bit. */
 	prev_eedata = eeprom_read(ioaddr, 6);
 	for (i = 0; i < 3; i++) {
 		int eedata = eeprom_read(ioaddr, i + 7);
@@ -2834,23 +2833,6 @@ static int netdev_get_ecmd(struct net_device *dev, struct ethtool_cmd *ecmd)
 		SUPPORTED_100baseT_Half | SUPPORTED_100baseT_Full |
 		SUPPORTED_TP | SUPPORTED_MII | SUPPORTED_FIBRE);
 	ecmd->phy_address = np->phy_addr_external;
-	/*
-	 * We intentionally report the phy address of the external
-	 * phy, even if the internal phy is used. This is necessary
-	 * to work around a deficiency of the ethtool interface:
-	 * It's only possible to query the settings of the active
-	 * port. Therefore
-	 * # ethtool -s ethX port mii
-	 * actually sends an ioctl to switch to port mii with the
-	 * settings that are used for the current active port.
-	 * If we would report a different phy address in this
-	 * command, then
-	 * # ethtool -s ethX port tp;ethtool -s ethX port mii
-	 * would unintentionally change the phy address.
-	 *
-	 * Fortunately the phy address doesn't matter with the
-	 * internal phy...
-	 */
 
 	/* set information based on active port type */
 	switch (ecmd->port) {
@@ -3144,12 +3126,6 @@ static int netdev_close(struct net_device *dev)
 
 	napi_disable(&np->napi);
 
-	/*
-	 * FIXME: what if someone tries to close a device
-	 * that is suspended?
-	 * Should we reenable the nic to switch to
-	 * the final WOL settings?
-	 */
 
 	del_timer_sync(&np->timer);
 	disable_irq(dev->irq);
@@ -3276,10 +3252,6 @@ static int natsemi_suspend (struct pci_dev *pdev, pm_message_t state)
 			u32 wol = readl(ioaddr + WOLCmd) & WakeOptsSummary;
 			/* Restore PME enable bit */
 			if (wol) {
-				/* restart the NIC in WOL mode.
-				 * The nic must be stopped for this.
-				 * FIXME: use the WOL interrupt
-				 */
 				enable_wol_mode(dev, 0);
 			} else {
 				/* Restore PME enable bit unmolested */
@@ -3362,4 +3334,3 @@ static void __exit natsemi_exit_mod (void)
 
 module_init(natsemi_init_mod);
 module_exit(natsemi_exit_mod);
-

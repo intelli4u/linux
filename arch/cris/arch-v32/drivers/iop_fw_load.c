@@ -195,23 +195,6 @@ int iop_start_mpu(unsigned int start_addr)
 
 static int __init iop_fw_load_init(void)
 {
-#if 0
-	/*
-	 * static struct devices can not be added directly to sysfs by ignoring
-	 * the driver model infrastructure.  To fix this properly, please use
-	 * the platform_bus to register these devices to be able to properly
-	 * use the firmware infrastructure.
-	 */
-	device_initialize(&iop_spu_device[0]);
-	kobject_set_name(&iop_spu_device[0].kobj, "iop-spu0");
-	kobject_add(&iop_spu_device[0].kobj);
-	device_initialize(&iop_spu_device[1]);
-	kobject_set_name(&iop_spu_device[1].kobj, "iop-spu1");
-	kobject_add(&iop_spu_device[1].kobj);
-	device_initialize(&iop_mpu_device);
-	kobject_set_name(&iop_mpu_device.kobj, "iop-mpu");
-	kobject_add(&iop_mpu_device.kobj);
-#endif
 	return 0;
 }
 

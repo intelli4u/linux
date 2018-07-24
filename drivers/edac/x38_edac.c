@@ -334,7 +334,6 @@ static int x38_probe1(struct pci_dev *pdev, int dev_idx)
 
 	how_many_channel(pdev);
 
-	/* FIXME: unconventional pvt_info usage */
 	mci = edac_mc_alloc(0, X38_RANKS, x38_channel_num, 0);
 	if (!mci)
 		return -ENOMEM;

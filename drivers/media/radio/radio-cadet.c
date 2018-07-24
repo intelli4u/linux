@@ -707,4 +707,3 @@ static void __exit cadet_exit(void)
 
 module_init(cadet_init);
 module_exit(cadet_exit);
-

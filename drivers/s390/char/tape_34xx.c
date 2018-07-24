@@ -330,18 +330,6 @@ tape_34xx_unit_check(struct tape_device *device, struct tape_request *request,
 		}
 	}
 
-	/*
-	 * Special cases for various tape-states when reaching
-	 * end of recorded area
-	 *
-	 * FIXME: Maybe a special case of the special case:
-	 *        sense[0] == SENSE_EQUIPMENT_CHECK &&
-	 *        sense[1] == SENSE_DRIVE_ONLINE    &&
-	 *        sense[3] == 0x47 (Volume Fenced)
-	 *
-	 *        This was caused by continued FSF or FSR after an
-	 *        'End Of Data'.
-	 */
 	if ((
 		sense[0] == SENSE_DATA_CHECK      ||
 		sense[0] == SENSE_EQUIPMENT_CHECK ||

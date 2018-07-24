@@ -2504,10 +2504,6 @@ skip_msi:
 	ha->flags.inta_enabled = 1;
 clear_risc_ints:
 
-	/*
-	 * FIXME: Noted that 8014s were being dropped during NK testing.
-	 * Timing deltas during MSI-X/INTa transitions?
-	 */
 	if (IS_QLA81XX(ha) || IS_QLA82XX(ha))
 		goto fail;
 	spin_lock_irq(&ha->hardware_lock);

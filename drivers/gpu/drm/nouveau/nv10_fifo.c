@@ -211,7 +211,6 @@ nv10_fifo_init_ramxx(struct drm_device *dev)
 	} else {
 		nv_wr32(dev, NV03_PFIFO_RAMFC, (dev_priv->ramfc_offset >> 8) |
 					       (1 << 16) /* 64 Bytes entry*/);
-		/* XXX nvidia blob set bit 18, 21,23 for nv20 & nv30 */
 	}
 }
 

@@ -889,7 +889,6 @@ void dvb_video_add_event(struct av7110 *av7110, struct video_event *event)
 		events->eventr = (events->eventr + 1) % MAX_VIDEO_EVENT;
 	}
 
-	//FIXME: timestamp?
 	memcpy(&events->events[events->eventw], event, sizeof(struct video_event));
 	events->eventw = wp;
 
@@ -1074,7 +1073,6 @@ static int play_iframe(struct av7110 *av7110, char __user *buf, unsigned int len
 	   consisting of I- and P-Frames */
 	n = MIN_IFRAME / len + 1;
 
-	/* FIXME: nonblock? */
 	dvb_play_kernel(av7110, iframe_header, sizeof(iframe_header), 0, 1);
 
 	for (i = 0; i < n; i++)

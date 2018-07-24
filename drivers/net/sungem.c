@@ -1,4 +1,4 @@
-/* $Id: sungem.c,v 1.44.2.22 2002/03/13 01:18:12 davem Exp $
+/* $Id: sungem.c,v 1.44.2.22 2002/03/13 01:18:12 Exp $
  * sungem.c: Sun GEM ethernet driver.
  *
  * Copyright (C) 2000, 2001, 2002, 2003 David S. Miller (davem@redhat.com)
@@ -1283,7 +1283,6 @@ static void gem_stop_dma(struct gem *gp)
 
 
 /* Must be invoked under gp->lock and gp->tx_lock. */
-// XXX dbl check what that function should do when called on PCS PHY
 static void gem_begin_auto_negotiation(struct gem *gp, struct ethtool_cmd *ep)
 {
 	u32 advertise, features;
@@ -1770,7 +1769,6 @@ static void gem_init_phy(struct gem *gp)
 
 	if (gp->phy_type == phy_mii_mdio0 ||
 	    gp->phy_type == phy_mii_mdio1) {
-	    	// XXX check for errors
 		mii_phy_probe(&gp->phy_mii, gp->mii_phy_addr);
 
 		/* Init PHY */
@@ -2614,11 +2612,7 @@ static void gem_set_multicast(struct net_device *dev)
 
 /* Jumbo-grams don't seem to work :-( */
 #define GEM_MIN_MTU	68
-#if 1
 #define GEM_MAX_MTU	1500
-#else
-#define GEM_MAX_MTU	9000
-#endif
 
 static int gem_change_mtu(struct net_device *dev, int new_mtu)
 {
@@ -2672,10 +2666,9 @@ static int gem_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 			cmd->supported = (SUPPORTED_10baseT_Half |
 					  SUPPORTED_10baseT_Full);
 
-		/* XXX hardcoded stuff for now */
 		cmd->port = PORT_MII;
 		cmd->transceiver = XCVR_EXTERNAL;
-		cmd->phy_address = 0; /* XXX fixed PHYAD */
+		cmd->phy_address = 0;
 
 		/* Return current PHY settings */
 		spin_lock_irq(&gp->lock);
@@ -2691,7 +2684,7 @@ static int gem_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 		if (cmd->advertising == 0)
 			cmd->advertising = cmd->supported;
 		spin_unlock_irq(&gp->lock);
-	} else { // XXX PCS ?
+	} else {
 		cmd->supported =
 			(SUPPORTED_10baseT_Half | SUPPORTED_10baseT_Full |
 			 SUPPORTED_100baseT_Half | SUPPORTED_100baseT_Full |

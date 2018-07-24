@@ -324,7 +324,6 @@ module_free (struct module *mod, void *module_region)
 }
 
 /* Have we already seen one of these relocations? */
-/* FIXME: we could look in other sections, too --RR */
 static int
 duplicate_reloc (const Elf64_Rela *rela, unsigned int num)
 {
@@ -823,10 +822,6 @@ apply_relocate_add (Elf64_Shdr *sechdrs, const char *strtab, unsigned int symind
 		return 0;
 
 	if (!mod->arch.gp) {
-		/*
-		 * XXX Should have an arch-hook for running this after final section
-		 *     addresses have been selected...
-		 */
 		uint64_t gp;
 		if (mod->core_size > MAX_LTOFF)
 			/*

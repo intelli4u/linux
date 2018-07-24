@@ -255,8 +255,6 @@ static void logfs_get_wblocks(struct super_block *sb, struct page *page,
 	if (lock) {
 		mutex_lock(&super->s_write_mutex);
 		logfs_gc_pass(sb);
-		/* FIXME: We also have to check for shadowed space
-		 * and mempool fill grade */
 	}
 }
 
@@ -1123,7 +1121,6 @@ int get_page_reserve(struct inode *inode, struct page *page)
  * We are protected by write lock.  Push victims up to superblock level
  * and release transaction when appropriate.
  */
-/* FIXME: This is currently called from the wrong spots. */
 static void logfs_handle_transaction(struct inode *inode,
 		struct logfs_transaction *ta)
 {
@@ -1134,7 +1131,7 @@ static void logfs_handle_transaction(struct inode *inode,
 	logfs_inode(inode)->li_block->ta = NULL;
 
 	if (inode->i_ino != LOGFS_INO_MASTER) {
-		BUG(); /* FIXME: Yes, this needs more thought */
+		BUG();
 		/* just remember the transaction until inode is written */
 		//BUG_ON(logfs_inode(inode)->li_transaction);
 		//logfs_inode(inode)->li_transaction = ta;
@@ -1444,7 +1441,6 @@ static int __logfs_write_rec(struct inode *inode, struct page *page,
 
 	alloc_indirect_block(inode, ipage, page_empty);
 	block_set_pointer(ipage, child_no, child_wc.ofs);
-	/* FIXME: first condition seems superfluous */
 	if (child_wc.ofs || logfs_block(ipage)->partial)
 		this_wc->flags |= WF_WRITE;
 	/* the condition on this_wc->ofs ensures that we won't consume extra
@@ -1715,7 +1711,6 @@ static int logfs_truncate_direct(struct inode *inode, u64 size)
 	return 0;
 }
 
-/* FIXME: these need to become per-sb once we support different blocksizes */
 static u64 __logfs_step[] = {
 	1,
 	I1_BLOCKS,
@@ -1760,7 +1755,7 @@ static int __logfs_truncate_rec(struct inode *inode, struct page *ipage,
 	u64 bix, child_bix, next_bix;
 	level_t level;
 	struct page *page;
-	struct write_control child_wc = { /* FIXME: flags */ };
+	struct write_control child_wc = { };
 
 	logfs_unpack_raw_index(ipage->index, &bix, &level);
 	err = logfs_segment_read(inode, ipage, this_wc->ofs, bix, level);
@@ -1981,7 +1976,6 @@ static int do_write_inode(struct inode *inode)
 	int err;
 
 	BUG_ON(inode->i_ino == LOGFS_INO_MASTER);
-	/* FIXME: lock inode */
 
 	if (i_size_read(master_inode) < size)
 		i_size_write(master_inode, size);
@@ -1992,7 +1986,6 @@ static int do_write_inode(struct inode *inode)
 	if (!page)
 		return -ENOMEM;
 
-	/* FIXME: transaction is part of logfs_block now.  Is that enough? */
 	err = logfs_write_buf(master_inode, page, 0);
 	logfs_put_write_page(page);
 	return err;
@@ -2015,7 +2008,7 @@ static void logfs_mod_segment_entry(struct super_block *sb, u32 segno,
 
 	inode = super->s_segfile_inode;
 	page = logfs_get_write_page(inode, page_no, 0);
-	BUG_ON(!page); /* FIXME: We need some reserve page for this case */
+	BUG_ON(!page);
 	if (!PageUptodate(page))
 		logfs_read_block(inode, page, WRITE);
 
@@ -2171,7 +2164,7 @@ void logfs_evict_inode(struct inode *inode)
 
 	BUG_ON(inode->i_ino < LOGFS_RESERVED_INOS);
 	page = inode_to_page(inode);
-	BUG_ON(!page); /* FIXME: Use emergency page */
+	BUG_ON(!page);
 	logfs_put_write_page(page);
 }
 
@@ -2196,21 +2189,6 @@ void btree_write_block(struct logfs_block *block)
 	logfs_safe_iput(inode, cookie);
 }
 
-/**
- * logfs_inode_write - write inode or dentry objects
- *
- * @inode:		parent inode (ifile or directory)
- * @buf:		object to write (inode or dentry)
- * @n:			object size
- * @_pos:		object number (file position in blocks/objects)
- * @flags:		write flags
- * @lock:		0 if write lock is already taken, 1 otherwise
- * @shadow_tree:	shadow below this inode
- *
- * FIXME: All caller of this put a 200-300 byte variable on the stack,
- * only to call here and do a memcpy from that stack variable.  A good
- * example of wasted performance and stack space.
- */
 int logfs_inode_write(struct inode *inode, const void *buf, size_t count,
 		loff_t bix, long flags, struct shadow_tree *shadow_tree)
 {

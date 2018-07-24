@@ -145,7 +145,6 @@ static void *read_reply(enum xsd_sockmsg_type *type, unsigned int *len)
 
 	while (list_empty(&xs_state.reply_list)) {
 		spin_unlock(&xs_state.reply_lock);
-		/* XXX FIXME: Avoid synchronous wait for response here. */
 		wait_event(xs_state.reply_waitq,
 			   !list_empty(&xs_state.reply_list));
 		spin_lock(&xs_state.reply_lock);

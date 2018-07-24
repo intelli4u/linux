@@ -71,8 +71,6 @@ static void radeon_legacy_rmx_mode_set(struct drm_crtc *crtc,
 	crtc_more_cntl = 0;
 	if ((rdev->family == CHIP_RS100) ||
 	    (rdev->family == CHIP_RS200)) {
-		/* This is to workaround the asic bug for RMX, some versions
-		   of BIOS dosen't have this register initialized correctly. */
 		crtc_more_cntl |= RADEON_CRTC_H_CUTOFF_ACTIVE_EN;
 	}
 
@@ -216,10 +214,6 @@ static void radeon_pll_wait_for_read_update_complete(struct drm_device *dev)
 	struct radeon_device *rdev = dev->dev_private;
 	int i = 0;
 
-	/* FIXME: Certain revisions of R300 can't recover here.  Not sure of
-	   the cause yet, but this workaround will mask the problem for now.
-	   Other chips usually will pass at the very first test, so the
-	   workaround shouldn't have any effect on them. */
 	for (i = 0;
 	     (i < 10000 &&
 	      RREG32_PLL(RADEON_PPLL_REF_DIV) & RADEON_PPLL_ATOMIC_UPDATE_R);
@@ -243,10 +237,6 @@ static void radeon_pll2_wait_for_read_update_complete(struct drm_device *dev)
 	int i = 0;
 
 
-	/* FIXME: Certain revisions of R300 can't recover here.  Not sure of
-	   the cause yet, but this workaround will mask the problem for now.
-	   Other chips usually will pass at the very first test, so the
-	   workaround shouldn't have any effect on them. */
 	for (i = 0;
 	     (i < 10000 &&
 	      RREG32_PLL(RADEON_P2PLL_REF_DIV) & RADEON_P2PLL_ATOMIC_UPDATE_R);
@@ -779,12 +769,6 @@ static void radeon_set_pll(struct drm_crtc *crtc, struct drm_display_mode *mode)
 			  post_divider);
 
 		pll_ref_div   = reference_div;
-#if defined(__powerpc__) && (0) /* TODO */
-		/* apparently programming this otherwise causes a hang??? */
-		if (info->MacModel == RADEON_MAC_IBOOK)
-			pll_fb_post_div = 0x000600ad;
-		else
-#endif
 			pll_fb_post_div     = (feedback_div | (post_div->bitvalue << 16));
 
 		htotal_cntl    = mode->htotal & 0x7;
@@ -870,12 +854,6 @@ static void radeon_set_pll(struct drm_crtc *crtc, struct drm_display_mode *mode)
 		}
 
 		if (rdev->flags & RADEON_IS_MOBILITY) {
-			/* A temporal workaround for the occational blanking on certain laptop panels.
-			   This appears to related to the PLL divider registers (fail to lock?).
-			   It occurs even when all dividers are the same with their old settings.
-			   In this case we really don't need to fiddle with PLL registers.
-			   By doing this we can avoid the blanking problem with some panels.
-			*/
 			if ((pll_ref_div == (RREG32_PLL(RADEON_PPLL_REF_DIV) & RADEON_PPLL_REF_DIV_MASK)) &&
 			    (pll_fb_post_div == (RREG32_PLL(RADEON_PPLL_DIV_3) &
 						 (RADEON_PPLL_POST3_DIV_MASK | RADEON_PPLL_FB3_DIV_MASK)))) {
@@ -999,9 +977,6 @@ static int radeon_crtc_mode_set(struct drm_crtc *crtc,
 		radeon_legacy_rmx_mode_set(crtc, adjusted_mode);
 	} else {
 		if (radeon_crtc->rmx_type != RMX_OFF) {
-			/* FIXME: only first crtc has rmx what should we
-			 * do ?
-			 */
 			DRM_ERROR("Mode need scaling but only first crtc can do that.\n");
 		}
 	}

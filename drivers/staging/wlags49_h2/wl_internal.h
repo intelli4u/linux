@@ -119,12 +119,7 @@
 
 
 /* Min/Max/Default Parameter Values */
-#if 0 //;? (HCF_TYPE) & HCF_TYPE_AP
-//;? why this difference depending on compile option, seems to me it should depend on runtime if anything
-#define PARM_DEFAULT_SSID                       "LinuxAP"
-#else
 #define PARM_DEFAULT_SSID                       "ANY"
-#endif // HCF_TYPE_AP
 
 #define PARM_MIN_NAME_LEN                       1
 #define PARM_MAX_NAME_LEN                       32

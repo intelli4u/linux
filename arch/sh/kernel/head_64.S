@@ -62,12 +62,12 @@
 #endif
 #define	ICCR1_INIT_VAL	ICCR1_NOLOCK			/* No locking */
 
-#if defined (CONFIG_CACHE_OFF)
+#if defined(CONFIG_CACHE_OFF)
 #define	OCCR0_INIT_VAL	OCCR0_OFF			   /* D-cache: off  */
-#elif defined (CONFIG_CACHE_WRITETHROUGH)
+#elif defined(CONFIG_CACHE_WRITETHROUGH)
 #define	OCCR0_INIT_VAL	OCCR0_ON | OCCR0_OCI | OCCR0_WT	   /* D-cache: on,   */
 							   /* WT, invalidate */
-#elif defined (CONFIG_CACHE_WRITEBACK)
+#elif defined(CONFIG_CACHE_WRITEBACK)
 #define	OCCR0_INIT_VAL	OCCR0_ON | OCCR0_OCI | OCCR0_WB	   /* D-cache: on,   */
 							   /* WB, invalidate */
 #else

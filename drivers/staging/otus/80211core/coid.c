@@ -490,7 +490,6 @@ u8_t zfiWlanQueryIsPKInstalled(zdev_t *dev, u8_t *staMacAddr)
 {
     u8_t isInstalled = 0;
 
-#if 1
 //#ifdef ZM_ENABLE_IBSS_WPA2PSK
     u8_t   res, peerIdx;
 
@@ -506,7 +505,6 @@ u8_t zfiWlanQueryIsPKInstalled(zdev_t *dev, u8_t *staMacAddr)
     }
     zmw_leave_critical_section(dev);
 //#endif
-#endif
 
     return isInstalled;
 }
@@ -1017,14 +1015,6 @@ u8_t zfiWlanSetKey(zdev_t* dev, struct zsKeyInfo keyInfo)
             else if ( keyInfo.keyLength == 32 )
             {
                 /* TKIP */
-                #if 0
-                // Don't reset the IV since some AP would fail in IV check and drop our connection
-                if ( wd->sta.wpaState != ZM_STA_WPA_STATE_PK_OK )
-                {
-                    wd->sta.iv16 = 0;
-                    wd->sta.iv32 = 0;
-                }
-                #endif
 
                 encryMode = ZM_TKIP;
 
@@ -1036,16 +1026,6 @@ u8_t zfiWlanSetKey(zdev_t* dev, struct zsKeyInfo keyInfo)
             else if ( keyInfo.keyLength == 16 )
             {
                 /* AES */
-                #if 0
-                // Don't reset the IV since some AP would fail in IV check and drop our connection
-                if ( wd->sta.wpaState != ZM_STA_WPA_STATE_PK_OK )
-                {
-                    /* broadcast -- > group key */
-                    /* Only initialize when set our default key ! */
-                    wd->sta.iv16 = 0;
-                    wd->sta.iv32 = 0;
-                }
-                #endif
 
                 encryMode = ZM_AES;
             }
@@ -1237,23 +1217,6 @@ u8_t zfiWlanPSEUDOSetKey(zdev_t* dev, struct zsKeyInfo keyInfo)
 
 void zfiWlanSetPowerSaveMode(zdev_t* dev, u8_t mode)
 {
-#if 0
-    zmw_get_wlan_dev(dev);
-
-    wd->sta.powerSaveMode = mode;
-
-    /* send null data with PwrBit to inform AP */
-    if ( mode > ZM_STA_PS_NONE )
-    {
-        if ( wd->wlanMode == ZM_MODE_INFRASTRUCTURE )
-        {
-            zfSendNullData(dev, 1);
-        }
-
-        /* device into PS mode */
-        zfPSDeviceSleep(dev);
-    }
-#endif
 
     zfPowerSavingMgrSetMode(dev, mode);
 }

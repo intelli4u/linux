@@ -312,8 +312,8 @@ nouveau_connector_detect_lvds(struct drm_connector *connector, bool force)
 	}
 
 out:
-#if defined(CONFIG_ACPI_BUTTON) || \
-	(defined(CONFIG_ACPI_BUTTON_MODULE) && defined(MODULE))
+#if defined(CONFIG_ACPI_BUTTON) || (defined(CONFIG_ACPI_BUTTON_MODULE) && \
+	defined(MODULE))
 	if (status == connector_status_connected &&
 	    !nouveau_ignorelid && !acpi_lid_open())
 		status = connector_status_unknown;

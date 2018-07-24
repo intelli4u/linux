@@ -58,7 +58,7 @@ static void *DISP_DATA_PORT;
 #define DISP_DATA_OUT(data) OUTPORT(DISP_DATA_PORT, data)
 #define DISP_DATA_IN() INPORT(DISP_DATA_PORT)
 
-#if (defined(TMD20QVGA_LCD_18BPP))
+#if defined(TMD20QVGA_LCD_18BPP)
 #define DISP_DATA_OUT_16TO18BPP(x) \
 	DISP_DATA_OUT((((x)&0xf800)<<2|((x)&0x80000)>>3) \
 		     | (((x)&0x7e0)<<1) \
@@ -1008,7 +1008,7 @@ static int tmd20qvga_disp_on(struct platform_device *pdev)
 
 static void tmd20qvga_disp_set_contrast(void)
 {
-#if (defined(TMD20QVGA_LCD_18BPP))
+#if defined(TMD20QVGA_LCD_18BPP)
 
 	DISP_WRITE_OUT(DISP_GAMMA_CONTROL_1_ADDR, 0x0403);
 	DISP_WRITE_OUT(DISP_GAMMA_CONTROL_2_ADDR, 0x0302);

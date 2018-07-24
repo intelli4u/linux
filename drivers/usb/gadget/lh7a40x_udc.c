@@ -44,7 +44,7 @@
 #define	DRIVER_DESC			"LH7A40x USB Device Controller"
 #define	DRIVER_VERSION		__DATE__
 
-#ifndef _BIT			/* FIXME - what happended to _BIT in 2.6.7bk18? */
+#ifndef _BIT
 #define _BIT(x) (1<<(x))
 #endif
 
@@ -886,33 +886,6 @@ static void stop_activity(struct lh7a40x_udc *dev,
  */
 static void lh7a40x_reset_intr(struct lh7a40x_udc *dev)
 {
-#if 0				/* def CONFIG_ARCH_LH7A404 */
-	/* Does not work always... */
-
-	DEBUG("%s: %d\n", __func__, dev->usb_address);
-
-	if (!dev->usb_address) {
-		/*usb_set(USB_RESET_IO, USB_RESET);
-		   mdelay(5);
-		   usb_clear(USB_RESET_IO, USB_RESET); */
-		return;
-	}
-	/* Put the USB controller into reset. */
-	usb_set(USB_RESET_IO, USB_RESET);
-
-	/* Set Device ID to 0 */
-	udc_set_address(dev, 0);
-
-	/* Let PLL2 settle down */
-	mdelay(5);
-
-	/* Release the USB controller from reset */
-	usb_clear(USB_RESET_IO, USB_RESET);
-
-	/* Re-enable UDC */
-	udc_enable(dev);
-
-#endif
 	dev->gadget.speed = USB_SPEED_FULL;
 }
 
@@ -2123,7 +2096,6 @@ static int lh7a40x_udc_remove(struct platform_device *pdev)
 static struct platform_driver udc_driver = {
 	.probe = lh7a40x_udc_probe,
 	.remove = lh7a40x_udc_remove,
-	    /* FIXME power management support */
 	    /* .suspend = ... disable UDC */
 	    /* .resume = ... re-enable UDC */
 	.driver	= {

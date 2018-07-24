@@ -939,7 +939,6 @@ static void __devexit asd_pci_remove(struct pci_dev *dev)
 
 	asd_remove_dev_attrs(asd_ha);
 
-	/* XXX more here as needed */
 
 	free_irq(dev->irq, asd_ha);
 	if (use_msi)

@@ -515,12 +515,6 @@ static int au1k_irda_hard_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	pDB = aup->tx_db_inuse[aup->tx_head];
 
-#if 0
-	if (read_ir_reg(IR_RX_BYTE_CNT) != 0) {
-		printk("tx warning: rx byte cnt %x\n", 
-				read_ir_reg(IR_RX_BYTE_CNT));
-	}
-#endif
 	
 	if (aup->speed == 4000000) {
 		/* FIR */

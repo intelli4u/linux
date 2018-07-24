@@ -60,8 +60,8 @@ struct au8522_config {
 	enum au8522_if_freq qam_if;
 };
 
-#if defined(CONFIG_DVB_AU8522) || 				\
-	    (defined(CONFIG_DVB_AU8522_MODULE) && defined(MODULE))
+#if defined(CONFIG_DVB_AU8522) || (defined(CONFIG_DVB_AU8522_MODULE) && \
+	defined(MODULE))
 extern struct dvb_frontend *au8522_attach(const struct au8522_config *config,
 					  struct i2c_adapter *i2c);
 #else

@@ -55,10 +55,6 @@
 #include <asm/unaligned.h>
 
 /* List of available DOI definitions */
-/* XXX - This currently assumes a minimal number of different DOIs in use,
- * if in practice there are a lot of different DOIs this list should
- * probably be turned into a hash table or something similar so we
- * can do quick lookups. */
 static DEFINE_SPINLOCK(cipso_v4_doi_list_lock);
 static LIST_HEAD(cipso_v4_doi_list);
 
@@ -1812,9 +1808,6 @@ static int cipso_v4_genopt(unsigned char *buf, u32 buf_len,
 	if (buf_len <= CIPSO_V4_HDR_LEN)
 		return -ENOSPC;
 
-	/* XXX - This code assumes only one tag per CIPSO option which isn't
-	 * really a good assumption to make but since we only support the MAC
-	 * tags right now it is a safe assumption. */
 	iter = 0;
 	do {
 		memset(buf, 0, buf_len);
@@ -2145,9 +2138,6 @@ static int cipso_v4_getattr(const unsigned char *cipso,
 	doi_def = cipso_v4_doi_search(doi);
 	if (doi_def == NULL)
 		goto getattr_return;
-	/* XXX - This code assumes only one tag per CIPSO option which isn't
-	 * really a good assumption to make but since we only support the MAC
-	 * tags right now it is a safe assumption. */
 	switch (cipso[6]) {
 	case CIPSO_V4_TAG_RBITMAP:
 		ret_val = cipso_v4_parsetag_rbm(doi_def, &cipso[6], secattr);

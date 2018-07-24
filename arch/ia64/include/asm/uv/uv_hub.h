@@ -312,4 +312,3 @@ static inline void uv_hub_send_ipi(int pnode, int apicid, int vector)
 
 
 #endif /* __ASM_IA64_UV_HUB__ */
-

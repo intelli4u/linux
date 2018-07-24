@@ -158,7 +158,6 @@ int copy_thread(unsigned long clone_flags, unsigned long usp,
 		childregs->msr |= MSR_UMS;
 	}
 
-	/* FIXME STATE_SAVE_PT_OFFSET; */
 	ti->cpu_context.r1  = (unsigned long)childregs - STATE_SAVE_ARG_SPACE;
 	/* we should consider the fact that childregs is a copy of the parent
 	 * regs which were saved immediately after entering the kernel state

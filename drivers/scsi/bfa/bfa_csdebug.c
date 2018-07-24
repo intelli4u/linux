@@ -54,5 +54,3 @@ bfa_q_is_on_q_func(struct list_head *q, struct list_head *qe)
 	}
 	return 0;
 }
-
-

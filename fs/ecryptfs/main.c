@@ -262,25 +262,6 @@ static void ecryptfs_init_mount_crypt_stat(
 	mount_crypt_stat->flags |= ECRYPTFS_MOUNT_CRYPT_STAT_INITIALIZED;
 }
 
-/**
- * ecryptfs_parse_options
- * @sb: The ecryptfs super block
- * @options: The options pased to the kernel
- *
- * Parse mount options:
- * debug=N 	   - ecryptfs_verbosity level for debug output
- * sig=XXX	   - description(signature) of the key to use
- *
- * Returns the dentry object of the lower-level (lower/interposed)
- * directory; We want to mount our stackable file system on top of
- * that lower directory.
- *
- * The signature of the key to use must be the description of a key
- * already in the keyring. Mounting will fail if the key can not be
- * found.
- *
- * Returns zero on success; non-zero on error
- */
 static int ecryptfs_parse_options(struct ecryptfs_sb_info *sbi, char *options)
 {
 	char *p;

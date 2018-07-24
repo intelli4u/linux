@@ -228,7 +228,6 @@ static int cs4270_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 			if (rate > rate_max)
 				rate_max = rate;
 		}
-		/* FIXME: soc should support a rate list */
 		rates &= ~SNDRV_PCM_RATE_KNOT;
 
 		if (!rates) {

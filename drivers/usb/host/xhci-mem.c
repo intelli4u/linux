@@ -105,7 +105,6 @@ static void xhci_link_segments(struct xhci_hcd *xhci, struct xhci_segment *prev,
 			(unsigned long long)next->dma);
 }
 
-/* XXX: Do we need the hcd structure in all these functions? */
 void xhci_ring_free(struct xhci_hcd *xhci, struct xhci_ring *ring)
 {
 	struct xhci_segment *seg;
@@ -802,13 +801,6 @@ void xhci_copy_ep0_dequeue_into_input_ctx(struct xhci_hcd *xhci,
 	virt_dev = xhci->devs[udev->slot_id];
 	ep0_ctx = xhci_get_ep_ctx(xhci, virt_dev->in_ctx, 0);
 	ep_ring = virt_dev->eps[0].ring;
-	/*
-	 * FIXME we don't keep track of the dequeue pointer very well after a
-	 * Set TR dequeue pointer, so we're setting the dequeue pointer of the
-	 * host to our enqueue pointer.  This should only be called after a
-	 * configured device has reset, so all control transfers should have
-	 * been completed or cancelled before the reset.
-	 */
 	ep0_ctx->deq = xhci_trb_virt_to_dma(ep_ring->enq_seg, ep_ring->enqueue);
 	ep0_ctx->deq |= ep_ring->cycle_state;
 }
@@ -882,9 +874,6 @@ int xhci_setup_addressable_virt_dev(struct xhci_hcd *xhci, struct usb_device *ud
 	/* Step 4 - ring already allocated */
 	/* Step 5 */
 	ep0_ctx->ep_info2 = EP_TYPE(CTRL_EP);
-	/*
-	 * XXX: Not sure about wireless USB devices.
-	 */
 	switch (udev->speed) {
 	case USB_SPEED_SUPER:
 		ep0_ctx->ep_info2 |= MAX_PACKET(512);
@@ -1098,7 +1087,6 @@ int xhci_endpoint_init(struct xhci_hcd *xhci,
 	ep_ctx->ep_info = xhci_get_endpoint_interval(udev, ep);
 	ep_ctx->ep_info |= EP_MULT(xhci_get_endpoint_mult(udev, ep));
 
-	/* FIXME dig Mult and streams info out of ep companion desc */
 
 	/* Allow 3 retries for everything but isoc;
 	 * error count = 0 means infinite retries.
@@ -1117,6 +1105,32 @@ int xhci_endpoint_init(struct xhci_hcd *xhci,
 		ep_ctx->ep_info2 |= MAX_PACKET(max_packet);
 		/* dig out max burst from ep companion desc */
 		max_packet = ep->ss_ep_comp.bMaxBurst;
+#ifdef CONFIG_BCM47XX
+		do {
+			const int ext_cap_rbv_id = 255;
+			int ext_cap_rbv_offset;
+			void __iomem *echrbv;
+			u16 version;
+
+			/* find out offset of RBV extended capability header with cid 255 */
+			ext_cap_rbv_offset = xhci_find_ext_cap_by_id((void *)xhci->cap_regs,
+				XHCI_HCC_PARAMS_OFFSET, ext_cap_rbv_id);
+			/* skip if RBV extended capability is not found */
+			if (ext_cap_rbv_offset == 0)
+				break;
+			echrbv = (void *)xhci->cap_regs + ext_cap_rbv_offset;
+			xhci_dbg(xhci, "ECHRBV: 0x%x\n", xhci_readl(xhci, echrbv));
+			/* override max_packet to disable burst on BULK OUT for NS A0/C0 */
+			version = xhci_readl(xhci, echrbv) >> 16;
+			if (((version == 0x1000) || (version == 0x1100)) &&
+				((xhci_get_endpoint_type(udev, ep) == EP_TYPE(BULK_OUT_EP)) ||
+				(xhci_get_endpoint_type(udev, ep) == EP_TYPE(BULK_IN_EP)))) {
+				max_packet = 0;
+				xhci_warn(xhci, "disable burst on ep %d\n",
+					usb_endpoint_num(&ep->desc));
+			}
+		} while (0);
+#endif /* CONFIG_BCM47XX */
 		if (!max_packet)
 			xhci_warn(xhci, "WARN no SS endpoint bMaxBurst\n");
 		ep_ctx->ep_info2 |= MAX_BURST(max_packet);
@@ -1142,24 +1156,8 @@ int xhci_endpoint_init(struct xhci_hcd *xhci,
 	max_esit_payload = xhci_get_max_esit_payload(xhci, udev, ep);
 	ep_ctx->tx_info = MAX_ESIT_PAYLOAD_FOR_EP(max_esit_payload);
 
-	/*
-	 * XXX no idea how to calculate the average TRB buffer length for bulk
-	 * endpoints, as the driver gives us no clue how big each scatter gather
-	 * list entry (or buffer) is going to be.
-	 *
-	 * For isochronous and interrupt endpoints, we set it to the max
-	 * available, until we have new API in the USB core to allow drivers to
-	 * declare how much bandwidth they actually need.
-	 *
-	 * Normally, it would be calculated by taking the total of the buffer
-	 * lengths in the TD and then dividing by the number of TRBs in a TD,
-	 * including link TRBs, No-op TRBs, and Event data TRBs.  Since we don't
-	 * use Event Data TRBs, and we don't chain in a link TRB on short
-	 * transfers, we're basically dividing by 1.
-	 */
 	ep_ctx->tx_info |= AVG_TRB_LENGTH_FOR_EP(max_esit_payload);
 
-	/* FIXME Debug endpoint context */
 	return 0;
 }
 
@@ -1641,7 +1639,6 @@ static void xhci_add_in_port(struct xhci_hcd *xhci, unsigned int num_ports,
 		xhci_warn(xhci, "Ignoring unknown port speed, "
 				"Ext Cap %p, revision = 0x%x\n",
 				addr, major_revision);
-		/* Ignoring port protocol we can't understand. FIXME */
 		return;
 	}
 
@@ -1676,7 +1673,6 @@ static void xhci_add_in_port(struct xhci_hcd *xhci, unsigned int num_ports,
 					xhci->num_usb2_ports--;
 				xhci->port_array[i] = (u8) -1;
 			}
-			/* FIXME: Should we disable the port? */
 			continue;
 		}
 		xhci->port_array[i] = major_revision;
@@ -1685,7 +1681,6 @@ static void xhci_add_in_port(struct xhci_hcd *xhci, unsigned int num_ports,
 		else
 			xhci->num_usb2_ports++;
 	}
-	/* FIXME: Should we disable ports not in the Extended Capabilities? */
 }
 
 /*
@@ -1960,11 +1955,6 @@ int xhci_mem_init(struct xhci_hcd *xhci, gfp_t flags)
 	xhci_dbg(xhci, "Wrote ERST address to ir_set 0.\n");
 	xhci_print_ir_set(xhci, xhci->ir_set, 0);
 
-	/*
-	 * XXX: Might need to set the Interrupter Moderation Register to
-	 * something other than the default (~1ms minimum between interrupts).
-	 * See section 5.5.1.2.
-	 */
 	init_completion(&xhci->addr_dev);
 	for (i = 0; i < MAX_HC_SLOTS; ++i)
 		xhci->devs[i] = NULL;

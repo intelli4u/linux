@@ -227,7 +227,6 @@ snd_vortex_create(struct snd_card *card, struct pci_dev *pci, vortex_t ** rchip)
 	pci_release_regions(chip->pci_dev);
       regions_out:
 	pci_disable_device(chip->pci_dev);
-	//FIXME: this not the right place to unregister the gameport
 	vortex_gameport_unregister(chip);
 	kfree(chip);
 	return err;
@@ -311,22 +310,6 @@ snd_vortex_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
 
 	vortex_gameport_register(chip);
 
-#if 0
-	if (snd_seq_device_new(card, 1, SNDRV_SEQ_DEV_ID_VORTEX_SYNTH,
-			       sizeof(snd_vortex_synth_arg_t), &wave) < 0
-	    || wave == NULL) {
-		snd_printk(KERN_ERR "Can't initialize Aureal wavetable synth\n");
-	} else {
-		snd_vortex_synth_arg_t *arg;
-
-		arg = SNDRV_SEQ_DEVICE_ARGPTR(wave);
-		strcpy(wave->name, "Aureal Synth");
-		arg->hwptr = vortex;
-		arg->index = 1;
-		arg->seq_ports = seq_ports[dev];
-		arg->max_voices = max_synth_voices[dev];
-	}
-#endif
 
 	// (5)
 	if ((err = pci_read_config_word(pci, PCI_DEVICE_ID,

@@ -428,7 +428,7 @@ static const struct {
 } rtl_chip_info[] = {
 	{ "RTL-8139",
 	  0x40,
-	  0xf0fe0040, /* XXX copied from RTL8139A, verify */
+	  0xf0fe0040,
 	},
 
 	{ "RTL-8139 rev K",
@@ -448,12 +448,12 @@ static const struct {
 
 	{ "RTL-8130",
 	  0x7C,
-	  0xf0fe0040, /* XXX copied from RTL8139A, verify */
+	  0xf0fe0040,
 	},
 
 	{ "RTL-8139C",
 	  0x74,
-	  0xf0fc0040, /* XXX copied from RTL8139B, verify */
+	  0xf0fc0040,
 	},
 
 };
@@ -1426,7 +1426,7 @@ static void netdrv_tx_interrupt(struct net_device *dev,
 		tp->tx_info[entry].skb = NULL;
 		dirty_tx++;
 		if (dirty_tx < 0) { /* handle signed int overflow */
-			atomic_sub(cur_tx, &tp->cur_tx); /* XXX racy? */
+			atomic_sub(cur_tx, &tp->cur_tx);
 			dirty_tx = cur_tx - tx_left + 1;
 		}
 		if (netif_queue_stopped(dev))
@@ -1478,8 +1478,6 @@ static void netdrv_rx_err(u32 rx_status, struct net_device *dev,
 	/* A.C.: Reset the multicast list. */
 	netdrv_set_rx_mode(dev);
 
-	/* XXX potentially temporary hack to
-	 * restart hung receiver */
 	while (--tmp_work > 0) {
 		tmp8 = NETDRV_R8(ChipCmd);
 		if ((tmp8 & CmdRxEnb) && (tmp8 & CmdTxEnb))
@@ -1489,7 +1487,6 @@ static void netdrv_rx_err(u32 rx_status, struct net_device *dev,
 	}
 
 	/* G.S.: Re-enable receiver */
-	/* XXX temporary hack to work around receiver hang */
 	netdrv_set_rx_mode(dev);
 
 	if (tmp_work <= 0)
@@ -1614,7 +1611,6 @@ static void netdrv_weird_interrupt(struct net_device *dev,
 		status &= ~RxUnderrun;
 	}
 
-	/* XXX along with netdrv_rx_err, are we double-counting errors? */
 	if (status & (RxUnderrun | RxOverflow | RxErr | RxFIFOOver))
 		dev->stats.rx_errors++;
 

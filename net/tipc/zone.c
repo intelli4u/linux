@@ -170,4 +170,3 @@ u32 tipc_zone_next_node(u32 addr)
 		return tipc_cltr_next_node(c_ptr, addr);
 	return 0;
 }
-

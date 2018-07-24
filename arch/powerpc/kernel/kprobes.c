@@ -546,11 +546,6 @@ int __kprobes longjmp_break_handler(struct kprobe *p, struct pt_regs *regs)
 {
 	struct kprobe_ctlblk *kcb = get_kprobe_ctlblk();
 
-	/*
-	 * FIXME - we should ideally be validating that we got here 'cos
-	 * of the "trap" in jprobe_return() above, before restoring the
-	 * saved regs...
-	 */
 	memcpy(regs, &kcb->jprobe_saved_regs, sizeof(struct pt_regs));
 	preempt_enable_no_resched();
 	return 1;

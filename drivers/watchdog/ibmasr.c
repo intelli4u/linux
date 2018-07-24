@@ -169,18 +169,6 @@ static int __init asr_get_base_address(void)
 
 	case ASMTYPE_JASPER:
 		type = "Jaspers ";
-#if 0
-		u32 r;
-		/* Suggested fix */
-		pdev = pci_get_bus_and_slot(0, DEVFN(0x1f, 0));
-		if (pdev == NULL)
-			return -ENODEV;
-		pci_read_config_dword(pdev, 0x58, &r);
-		asr_base = r & 0xFFFE;
-		pci_dev_put(pdev);
-#else
-		/* FIXME: need to use pci_config_lock here,
-		   but it's not exported */
 
 /*		spin_lock_irqsave(&pci_config_lock, flags);*/
 
@@ -197,7 +185,6 @@ static int __init asr_get_base_address(void)
 		asr_base = inl(0xcfc) & 0xfffe;
 
 /*		spin_unlock_irqrestore(&pci_config_lock, flags);*/
-#endif
 		asr_read_addr = asr_write_addr =
 			asr_base + JASPER_ASR_REG_OFFSET;
 		asr_toggle_mask = JASPER_ASR_TOGGLE_MASK;

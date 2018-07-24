@@ -139,7 +139,7 @@ ufs_get_de_namlen(struct super_block *sb, struct ufs_dir_entry *de)
 	if ((UFS_SB(sb)->s_flags & UFS_DE_MASK) == UFS_DE_OLD)
 		return fs16_to_cpu(sb, de->d_u.d_namlen);
 	else
-		return de->d_u.d_44.d_namlen; /* XXX this seems wrong */
+		return de->d_u.d_44.d_namlen;
 }
 
 static inline void
@@ -148,7 +148,7 @@ ufs_set_de_namlen(struct super_block *sb, struct ufs_dir_entry *de, u16 value)
 	if ((UFS_SB(sb)->s_flags & UFS_DE_MASK) == UFS_DE_OLD)
 		de->d_u.d_namlen = cpu_to_fs16(sb, value);
 	else
-		de->d_u.d_44.d_namlen = value; /* XXX this seems wrong */
+		de->d_u.d_44.d_namlen = value;
 }
 
 static inline void

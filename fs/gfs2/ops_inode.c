@@ -1071,9 +1071,6 @@ int gfs2_permission(struct inode *inode, int mask)
 	return error;
 }
 
-/*
- * XXX(truncate): the truncate_setsize calls should be moved to the end.
- */
 static int setattr_size(struct inode *inode, struct iattr *attr)
 {
 	struct gfs2_inode *ip = GFS2_I(inode);
@@ -1387,4 +1384,3 @@ const struct inode_operations gfs2_symlink_iops = {
 	.removexattr = gfs2_removexattr,
 	.fiemap = gfs2_fiemap,
 };
-

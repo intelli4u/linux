@@ -30,10 +30,6 @@
 extern int ioat_pending_level;
 extern int ioat_ring_alloc_order;
 
-/*
- * workaround for IOAT ver.3.0 null descriptor issue
- * (channel returns error when size is 0)
- */
 #define NULL_DESC_BUFFER_SIZE 1
 
 #define IOAT_MAX_ORDER 16

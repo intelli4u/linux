@@ -1028,7 +1028,6 @@ static void cm_format_req(struct cm_req_msg *req_msg,
 		req_msg->primary_local_lid = pri_path->slid;
 		req_msg->primary_remote_lid = pri_path->dlid;
 	} else {
-		/* Work-around until there's a way to obtain remote LID info */
 		req_msg->primary_local_lid = IB_LID_PERMISSIVE;
 		req_msg->primary_remote_lid = IB_LID_PERMISSIVE;
 	}
@@ -1479,11 +1478,6 @@ out:
 	return listen_cm_id_priv;
 }
 
-/*
- * Work-around for inter-subnet connections.  If the LIDs are permissive,
- * we need to override the LID/SL data in the REQ with the LID information
- * in the work completion.
- */
 static void cm_process_routed_req(struct cm_req_msg *req_msg, struct ib_wc *wc)
 {
 	if (!cm_req_get_primary_subnet_local(req_msg)) {
@@ -3845,4 +3839,3 @@ static void __exit ib_cm_cleanup(void)
 
 module_init(ib_cm_init);
 module_exit(ib_cm_cleanup);
-

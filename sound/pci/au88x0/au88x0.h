@@ -249,11 +249,6 @@ static void vortex_wt_init(vortex_t * vortex);
 
 static void vortex_route(vortex_t * vortex, int en, unsigned char channel,
 			 unsigned char source, unsigned char dest);
-#if 0
-static void vortex_routes(vortex_t * vortex, int en, unsigned char channel,
-			  unsigned char source, unsigned char dest0,
-			  unsigned char dest1);
-#endif
 static void vortex_connection_mixin_mix(vortex_t * vortex, int en,
 					unsigned char mixin,
 					unsigned char mix, int a);

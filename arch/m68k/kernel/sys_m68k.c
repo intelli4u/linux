@@ -218,7 +218,7 @@ cache_flush_040 (unsigned long addr, int scope, int cache, unsigned long len)
 			".chip 68k"			\
 			: "=a" (paddr)			\
 			: "0" (vaddr));			\
-  (paddr); /* XXX */					\
+  (paddr);					\
 })
 
 static inline int
@@ -336,8 +336,7 @@ cache_flush_060 (unsigned long addr, int scope, int cache, unsigned long len)
     default:
     case FLUSH_SCOPE_PAGE:
       len += (addr & ~PAGE_MASK) + (PAGE_SIZE - 1);
-      addr &= PAGE_MASK;	/* Workaround for bug in some
-				   revisions of the 68060 */
+      addr &= PAGE_MASK;
       for (len >>= PAGE_SHIFT; len--; addr += PAGE_SIZE)
 	{
 	  if (!(paddr = virt_to_phys_060(addr)))

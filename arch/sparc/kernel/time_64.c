@@ -70,10 +70,6 @@ EXPORT_SYMBOL(profile_pc);
 
 static void tick_disable_protection(void)
 {
-	/* Set things up so user can access tick register for profiling
-	 * purposes.  Also workaround BB_ERRATA_1 by doing a dummy
-	 * read back of %tick after writing it.
-	 */
 	__asm__ __volatile__(
 	"	ba,pt	%%xcc, 1f\n"
 	"	 nop\n"
@@ -126,15 +122,6 @@ static int tick_add_compare(unsigned long adj)
 
 	orig_tick &= ~TICKCMP_IRQ_BIT;
 
-	/* Workaround for Spitfire Errata (#54 I think??), I discovered
-	 * this via Sun BugID 4008234, mentioned in Solaris-2.5.1 patch
-	 * number 103640.
-	 *
-	 * On Blackbird writes to %tick_cmpr can fail, the
-	 * workaround seems to be to execute the wr instruction
-	 * at the start of an I-cache line, and perform a dummy
-	 * read back from %tick_cmpr right after writing to it. -DaveM
-	 */
 	__asm__ __volatile__("ba,pt	%%xcc, 1f\n\t"
 			     " add	%1, %2, %0\n\t"
 			     ".align	64\n"
@@ -343,11 +330,6 @@ static void hbtick_init_tick(void)
 {
 	tick_disable_protection();
 
-	/* XXX This seems to be necessary to 'jumpstart' Hummingbird
-	 * XXX into actually sending STICK interrupts.  I think because
-	 * XXX of how we store %tick_cmpr in head.S this somehow resets the
-	 * XXX {TICK + STICK} interrupt mux.  -DaveM
-	 */
 	__hbird_write_stick(__hbird_read_stick());
 
 	hbtick_disable_irq();

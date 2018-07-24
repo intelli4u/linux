@@ -144,8 +144,6 @@ static struct hexium_data hexium_input_select[] = {
 	{ 0x02, 0x6A },
 };
 
-/* fixme: h_offset = 0 for Hexium Gemini *Dual*, which
-   are currently *not* supported*/
 static struct saa7146_standard hexium_standards[] = {
 	{
 		.name	= "PAL", 	.id	= V4L2_STD_PAL,
@@ -339,7 +337,6 @@ static int vidioc_s_ctrl(struct file *file, void *fh, struct v4l2_control *vc)
 		return 0;
 	}
 	if (1 == hexium->cur_bw && V4L2_STD_SECAM == hexium->cur_std)
-		/* fixme: is there no bw secam mode? */
 		return -EINVAL;
 
 	return -EINVAL;

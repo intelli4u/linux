@@ -410,9 +410,6 @@ static int snd_ca0106_spdif_put_default(struct snd_kcontrol *kcontrol,
 	val = encode_spdif_bits(ucontrol->value.iec958.status);
 	if (val != emu->spdif_bits[idx]) {
 		emu->spdif_bits[idx] = val;
-		/* FIXME: this isn't safe, but needed to keep the compatibility
-		 * with older alsa-lib config
-		 */
 		emu->spdif_str_bits[idx] = val;
 		ca0106_set_spdif_bits(emu, idx);
 		return 1;
@@ -711,7 +708,6 @@ static struct snd_kcontrol __devinit *ctl_find(struct snd_card *card, const char
 {
 	struct snd_ctl_elem_id sid;
 	memset(&sid, 0, sizeof(sid));
-	/* FIXME: strcpy is bad. */
 	strcpy(sid.name, name);
 	sid.iface = SNDRV_CTL_ELEM_IFACE_MIXER;
 	return snd_ctl_find_id(card, &sid);
@@ -815,12 +811,10 @@ int __devinit snd_ca0106_mixer(struct snd_ca0106 *emu)
 		"Mic Boost (+20dB)", "AC97 Mic Boost (+20dB)",
 		NULL
 	};
-#if 1
 	for (c = ca0106_remove_ctls; *c; c++)
 		remove_ctl(card, *c);
 	for (c = ca0106_rename_ctls; *c; c += 2)
 		rename_ctl(card, c[0], c[1]);
-#endif
 
 	ADD_CTLS(emu, snd_ca0106_volume_ctls);
 	if (emu->details->i2c_adc == 1) {

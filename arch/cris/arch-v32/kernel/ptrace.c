@@ -321,9 +321,6 @@ static unsigned long get_pseudo_pc(struct task_struct *child)
 		/* Delay slot bit set. Report as stopped on proper
 		   instruction. */
 		if (spc) {
-			/* Rely on SPC if set. FIXME: We might want to check
-			   that EXS indicates we stopped due to a single-step
-			   exception. */
 			pc = spc;
 		} else {
 			/* Calculate the PC from the size of the instruction

@@ -2192,4 +2192,3 @@ dword DivaSTraceGetMemotyRequirement (int channels) {
   return (sizeof(diva_strace_context_t) + \
           (parse_entries * sizeof(diva_strace_path2action_t)));
 }
-

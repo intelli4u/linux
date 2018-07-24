@@ -123,7 +123,6 @@ static int __devinit mcu_probe(struct i2c_client *client,
 	if (ret)
 		goto err;
 
-	/* XXX: this is potentially racy, but there is no lock for ppc_md */
 	if (!ppc_md.power_off) {
 		glob_mcu = mcu;
 		ppc_md.power_off = mcu_power_off;

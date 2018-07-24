@@ -239,9 +239,6 @@ extern void setup_secondary_APIC_clock(void);
 extern int APIC_init_uniprocessor(void);
 extern void enable_NMI_through_LVT0(void);
 
-/*
- * On 32bit this is mach-xxx local
- */
 #ifdef CONFIG_X86_64
 extern void early_init_lapic_mapping(void);
 extern int apic_is_clustered_box(void);

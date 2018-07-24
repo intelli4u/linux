@@ -1489,31 +1489,6 @@ static int agg_device_up(const struct aggregator *agg)
 		netif_carrier_ok(agg->slave->dev));
 }
 
-/**
- * ad_agg_selection_logic - select an aggregation group for a team
- * @aggregator: the aggregator we're looking at
- *
- * It is assumed that only one aggregator may be selected for a team.
- *
- * The logic of this function is to select the aggregator according to
- * the ad_select policy:
- *
- * BOND_AD_STABLE: select the aggregator with the most ports attached to
- * it, and to reselect the active aggregator only if the previous
- * aggregator has no more ports related to it.
- *
- * BOND_AD_BANDWIDTH: select the aggregator with the highest total
- * bandwidth, and reselect whenever a link state change takes place or the
- * set of slaves in the bond changes.
- *
- * BOND_AD_COUNT: select the aggregator with largest number of ports
- * (slaves), and reselect whenever a link state change takes place or the
- * set of slaves in the bond changes.
- *
- * FIXME: this function MUST be called with the first agg in the bond, or
- * __get_active_agg() won't work correctly. This function should be better
- * called with the bond itself, and retrieve the first agg from it.
- */
 static void ad_agg_selection_logic(struct aggregator *agg)
 {
 	struct aggregator *best, *active, *origin;
@@ -1762,44 +1737,6 @@ static void ad_disable_collecting_distributing(struct port *port)
 	}
 }
 
-#if 0
-/**
- * ad_marker_info_send - send a marker information frame
- * @port: the port we're looking at
- *
- * This function does nothing since we decided not to implement send and handle
- * response for marker PDU's, in this stage, but only to respond to marker
- * information.
- */
-static void ad_marker_info_send(struct port *port)
-{
-	struct bond_marker marker;
-	u16 index;
-
-	// fill the marker PDU with the appropriate values
-	marker.subtype = 0x02;
-	marker.version_number = 0x01;
-	marker.tlv_type = AD_MARKER_INFORMATION_SUBTYPE;
-	marker.marker_length = 0x16;
-	// convert requester_port to Big Endian
-	marker.requester_port = (((port->actor_port_number & 0xFF) << 8) |((u16)(port->actor_port_number & 0xFF00) >> 8));
-	marker.requester_system = port->actor_system;
-	// convert requester_port(u32) to Big Endian
-	marker.requester_transaction_id = (((++port->transaction_id & 0xFF) << 24) |((port->transaction_id & 0xFF00) << 8) |((port->transaction_id & 0xFF0000) >> 8) |((port->transaction_id & 0xFF000000) >> 24));
-	marker.pad = 0;
-	marker.tlv_type_terminator = 0x00;
-	marker.terminator_length = 0x00;
-	for (index=0; index<90; index++) {
-		marker.reserved_90[index]=0;
-	}
-
-	// send the marker information
-	if (ad_marker_send(port, &marker) >= 0) {
-		pr_debug("Sent Marker Information on port %d\n",
-			 port->actor_port_number);
-	}
-}
-#endif
 
 /**
  * ad_marker_info_received - handle receive of a Marker information frame

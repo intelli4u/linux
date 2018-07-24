@@ -49,11 +49,6 @@
 #define _ex_dmult _ex_workaround_261
 
 ENTRY(_ex_workaround_261)
-	/*
-	 * Work around an anomaly: if we see a new DCPLB fault, return
-	 * without doing anything.  Then, if we get the same fault again,
-	 * handle it.
-	 */
 	P4 = R7;	/* Store EXCAUSE */
 
 	GET_PDA(p5, r7);
@@ -485,12 +480,6 @@ ENTRY(_trap) /* Exception: 4th entry into system event table(supervisor mode)*/
 	ANOMALY_283_315_WORKAROUND(p5, r7)
 
 #ifdef CONFIG_EXACT_HWERR
-	/* Make sure all pending read/writes complete. This will ensure any
-	 * accesses which could cause hardware errors completes, and signal
-	 * the the hardware before we do something silly, like crash the
-	 * kernel. We don't need to work around anomaly 05000312, since
-	 * we are already atomic
-	 */
 	ssync;
 #endif
 

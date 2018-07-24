@@ -165,9 +165,9 @@ static ssize_t sync_serial_read(struct file *file, char *buf,
 	size_t count, loff_t *ppos);
 
 #if ((defined(CONFIG_ETRAX_SYNCHRONOUS_SERIAL_PORT0) && \
-     defined(CONFIG_ETRAX_SYNCHRONOUS_SERIAL0_DMA)) || \
-    (defined(CONFIG_ETRAX_SYNCHRONOUS_SERIAL_PORT1) && \
-     defined(CONFIG_ETRAX_SYNCHRONOUS_SERIAL1_DMA)))
+	defined(CONFIG_ETRAX_SYNCHRONOUS_SERIAL0_DMA)) || \
+	(defined(CONFIG_ETRAX_SYNCHRONOUS_SERIAL_PORT1) && \
+	defined(CONFIG_ETRAX_SYNCHRONOUS_SERIAL1_DMA)))
 #define SYNC_SER_DMA
 #endif
 
@@ -179,9 +179,9 @@ static irqreturn_t tr_interrupt(int irq, void *dev_id);
 static irqreturn_t rx_interrupt(int irq, void *dev_id);
 #endif
 #if ((defined(CONFIG_ETRAX_SYNCHRONOUS_SERIAL_PORT0) && \
-     !defined(CONFIG_ETRAX_SYNCHRONOUS_SERIAL0_DMA)) || \
-    (defined(CONFIG_ETRAX_SYNCHRONOUS_SERIAL_PORT1) && \
-     !defined(CONFIG_ETRAX_SYNCHRONOUS_SERIAL1_DMA)))
+	!defined(CONFIG_ETRAX_SYNCHRONOUS_SERIAL0_DMA)) || \
+	(defined(CONFIG_ETRAX_SYNCHRONOUS_SERIAL_PORT1) && \
+	!defined(CONFIG_ETRAX_SYNCHRONOUS_SERIAL1_DMA)))
 #define SYNC_SER_MANUAL
 #endif
 #ifdef SYNC_SER_MANUAL
@@ -901,27 +901,6 @@ static int sync_serial_ioctl_unlocked(struct file *file,
 		}
 		break;
 	case SSP_INBUFCHUNK:
-#if 0
-		if (arg > port->in_buffer_size/NUM_IN_DESCR)
-			return -EINVAL;
-		port->inbufchunk = arg;
-		/* Make sure in_buffer_size is a multiple of inbufchunk */
-		port->in_buffer_size =
-			(port->in_buffer_size/port->inbufchunk) *
-			port->inbufchunk;
-		DEBUG(printk(KERN_DEBUG "inbufchunk %i in_buffer_size: %i\n",
-			port->inbufchunk, port->in_buffer_size));
-		if (port->use_dma) {
-			if (port->port_nbr == 0) {
-				RESET_DMA(9);
-				WAIT_DMA(9);
-			} else {
-				RESET_DMA(5);
-				WAIT_DMA(5);
-			}
-			start_dma_in(port);
-		}
-#endif
 		break;
 	default:
 		return_val = -1;

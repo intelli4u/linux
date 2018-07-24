@@ -203,11 +203,6 @@ static void cypress_atacb_passthrough(struct scsi_cmnd *srb, struct us_data *us)
 		sb[2] = 0; /* ATA PASS THROUGH INFORMATION AVAILABLE */
 		sb[3] = 0x1D;
 
-		/* XXX we should generate sk, asc, ascq from status and error
-		 * regs
-		 * (see 11.1 Error translation ATA device error to SCSI error
-		 *  map, and ata_to_sense_error from libata.)
-		 */
 
 		/* Sense data is current and format is descriptor. */
 		sb[0] = 0x72;

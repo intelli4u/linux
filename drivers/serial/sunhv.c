@@ -340,7 +340,6 @@ static void sunhv_set_termios(struct uart_port *port, struct ktermios *termios,
 	if ((cflag & CREAD) == 0)
 		port->ignore_status_mask |= IGNORE_ALL;
 
-	/* XXX */
 	uart_update_timeout(port, cflag,
 			    (port->uartclk / (16 * quot)));
 

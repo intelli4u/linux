@@ -132,8 +132,6 @@ static int cy82c693_init_one(struct pci_dev *pdev, const struct pci_device_id *i
 	};
 	const struct ata_port_info *ppi[] = { &info, &ata_dummy_port_info };
 
-	/* Devfn 1 is the ATA primary. The secondary is magic and on devfn2.
-	   For the moment we don't handle the secondary. FIXME */
 
 	if (PCI_FUNC(pdev->devfn) != 1)
 		return -ENODEV;

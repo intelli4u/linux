@@ -15,8 +15,7 @@
  * 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#if defined(CONFIG_USB_STORAGE_ONETOUCH) || \
-		defined(CONFIG_USB_STORAGE_ONETOUCH_MODULE)
+#if defined(CONFIG_USB_STORAGE_ONETOUCH) || defined(CONFIG_USB_STORAGE_ONETOUCH_MODULE)
 
 /* Submitted by: Nick Sillik <n.sillik@temple.edu>
  * Needed for OneTouch extension to usb-storage

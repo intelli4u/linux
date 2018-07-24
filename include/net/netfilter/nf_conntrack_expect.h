@@ -105,4 +105,3 @@ static inline int nf_ct_expect_related(struct nf_conntrack_expect *expect)
 }
 
 #endif /*_NF_CONNTRACK_EXPECT_H*/
-

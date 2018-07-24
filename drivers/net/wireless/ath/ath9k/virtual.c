@@ -313,7 +313,6 @@ void ath9k_wiphy_chan_work(struct work_struct *work)
 
 	/* Change channels */
 	mutex_lock(&sc->mutex);
-	/* XXX: remove me eventually */
 	ath9k_update_ichannel(sc, aphy->hw,
 			      &sc->sc_ah->channels[sc->chan_idx]);
 
@@ -513,15 +512,6 @@ int ath9k_wiphy_select(struct ath_wiphy *aphy)
 			printk(KERN_DEBUG "ath9k: Previous wiphy select timed "
 			       "out; disable/enable hw to recover\n");
 			__ath9k_wiphy_mark_all_paused(sc);
-			/*
-			 * TODO: this workaround to fix hardware is unlikely to
-			 * be specific to virtual wiphy changes. It can happen
-			 * on normal channel change, too, and as such, this
-			 * should really be made more generic. For example,
-			 * tricker radio disable/enable on GTT interrupt burst
-			 * (say, 10 GTT interrupts received without any TX
-			 * frame being completed)
-			 */
 			spin_unlock_bh(&sc->wiphy_lock);
 			ath_radio_disable(sc, aphy->hw);
 			ath_radio_enable(sc, aphy->hw);

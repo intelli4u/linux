@@ -538,7 +538,7 @@ static void myri_rx(struct myri_eth *mp, struct net_device *dev)
 
 		/* Just like the happy meal we get checksums from this card. */
 		skb->csum = csum;
-		skb->ip_summed = CHECKSUM_UNNECESSARY; /* XXX */
+		skb->ip_summed = CHECKSUM_UNNECESSARY;
 
 		skb->protocol = myri_type_trans(skb, dev);
 		DRX(("prot[%04x] netif_rx ", skb->protocol));
@@ -650,7 +650,6 @@ static int myri_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	dump_ehdr_and_myripad(((unsigned char *) skb->data));
 #endif
 
-	/* XXX Maybe this can go as well. */
 	len = skb->len;
 	if (len & 3) {
 		DTX(("len&3 "));
@@ -1009,10 +1008,6 @@ static int __devinit myri_sbus_probe(struct platform_device *op, const struct of
 
 	/* Map in the MyriCOM register/localram set. */
 	if (mp->eeprom.cpuvers < CPUVERS_4_0) {
-		/* XXX Makes no sense, if control reg is non-existant this
-		 * XXX driver cannot function at all... maybe pre-4.0 is
-		 * XXX only a valid version for PCI cards?  Ask feldy...
-		 */
 		DET(("Mapping regs for cpuvers < CPUVERS_4_0\n"));
 		mp->regs = of_ioremap(&op->resource[0], 0,
 				      mp->reg_size, "MyriCOM Regs");

@@ -11,13 +11,7 @@
 
 #include <rxrpc/packet.h>
 
-#if 0
-#define CHECK_SLAB_OKAY(X)				     \
-	BUG_ON(atomic_read((X)) >> (sizeof(atomic_t) - 2) == \
-	       (POISON_FREE << 8 | POISON_FREE))
-#else
 #define CHECK_SLAB_OKAY(X) do {} while(0)
-#endif
 
 #define FCRYPT_BSIZE 8
 struct rxrpc_crypt {
@@ -659,7 +653,6 @@ do {							\
 /*
  * debug assertion checking
  */
-#if 1 // defined(__KDEBUGALL)
 
 #define ASSERT(X)						\
 do {								\
@@ -704,26 +697,6 @@ do {									\
 		BUG();							\
 	}								\
 } while(0)
-
-#else
-
-#define ASSERT(X)				\
-do {						\
-} while(0)
-
-#define ASSERTCMP(X, OP, Y)			\
-do {						\
-} while(0)
-
-#define ASSERTIF(C, X)				\
-do {						\
-} while(0)
-
-#define ASSERTIFCMP(C, X, OP, Y)		\
-do {						\
-} while(0)
-
-#endif /* __KDEBUGALL */
 
 /*
  * socket buffer accounting / leak finding

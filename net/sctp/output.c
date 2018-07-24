@@ -572,13 +572,6 @@ no_route:
 	kfree_skb(nskb);
 	IP_INC_STATS_BH(&init_net, IPSTATS_MIB_OUTNOROUTES);
 
-	/* FIXME: Returning the 'err' will effect all the associations
-	 * associated with a socket, although only one of the paths of the
-	 * association is unreachable.
-	 * The real failure of a transport or association can be passed on
-	 * to the user via notifications. So setting this error may not be
-	 * required.
-	 */
 	 /* err = -EHOSTUNREACH; */
 err:
 	/* Control chunks are unreliable so just drop them.  DATA chunks

@@ -37,7 +37,7 @@ static int show_version(struct seq_file *m, struct super_block *sb)
 	}
 
 	seq_printf(m, "%s format\twith checks %s\n", format,
-#if defined( CONFIG_REISERFS_CHECK )
+#if defined(CONFIG_REISERFS_CHECK)
 		   "on"
 #else
 		   "off"
@@ -280,7 +280,7 @@ static int show_oidmap(struct seq_file *m, struct super_block *sb)
 			total_used += right - MAP(i);
 		}
 	}
-#if defined( REISERFS_USE_OIDMAPF )
+#if defined(REISERFS_USE_OIDMAPF)
 	if (sb_info->oidmap.use_file && (sb_info->oidmap.mapf != NULL)) {
 		loff_t size = sb_info->oidmap.mapf->f_path.dentry->d_inode->i_size;
 		total_used += size / sizeof(reiserfs_oidinterval_d_t);

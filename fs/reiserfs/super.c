@@ -1438,7 +1438,6 @@ static int reread_meta_blocks(struct super_block *s)
 
 // if root directory is empty - we set default - Yura's - hash and
 // warn about it
-// FIXME: we look for only one name in a directory. If tea and yura
 // bith have the same value - we ask user to send report to the
 // mailing list
 static __u32 find_hash_out(struct super_block *s)

@@ -907,9 +907,6 @@ unwrap_priv_data(struct svc_rqst *rqstp, struct xdr_buf *buf, u32 seq, struct gs
 	/* The upper layers assume the buffer is aligned on 4-byte boundaries.
 	 * In the krb5p case, at least, the data ends up offset, so we need to
 	 * move it around. */
-	/* XXX: This is very inefficient.  It would be better to either do
-	 * this while we encrypt, or maybe in the receive code, if we can peak
-	 * ahead and work out the service and mechanism there. */
 	offset = buf->head[0].iov_len % 4;
 	if (offset) {
 		buf->buflen = RPCSVC_MAXPAYLOAD;
@@ -1313,8 +1310,6 @@ svcauth_gss_wrap_resp_priv(struct svc_rqst *rqstp)
 	offset = (u8 *)p - (u8 *)resbuf->head[0].iov_base;
 	*p++ = htonl(gc->gc_seq);
 	inpages = resbuf->pages;
-	/* XXX: Would be better to write some xdr helper functions for
-	 * nfs{2,3,4}xdr.c that place the data right, instead of copying: */
 
 	/*
 	 * If there is currently tail data, make sure there is
@@ -1374,8 +1369,6 @@ svcauth_gss_release(struct svc_rqst *rqstp)
 	if (gsd->verf_start == NULL)
 		goto out;
 	/* normally not set till svc_send, but we need it here: */
-	/* XXX: what for?  Do we mess it up the moment we call svc_putu32
-	 * or whatever? */
 	resbuf->len = total_buf_len(resbuf);
 	switch (gc->gc_svc) {
 	case RPC_GSS_SVC_NONE:

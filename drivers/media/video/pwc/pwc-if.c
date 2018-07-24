@@ -1291,17 +1291,6 @@ static int pwc_video_close(struct file *file)
 	return 0;
 }
 
-/*
- *	FIXME: what about two parallel reads ????
- *      ANSWER: Not supported. You can't open the device more than once,
-		despite what the V4L1 interface says. First, I don't see
-		the need, second there's no mechanism of alerting the
-		2nd/3rd/... process of events like changing image size.
-		And I don't see the point of blocking that for the
-		2nd/3rd/... process.
-		In multi-threaded environments reading parallel from any
-		device is tricky anyhow.
- */
 
 static ssize_t pwc_video_read(struct file *file, char __user *buf,
 			  size_t count, loff_t *ppos)

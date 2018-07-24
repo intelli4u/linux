@@ -262,7 +262,7 @@ create_elf_tables(struct linux_binprm *bprm, struct elfhdr *exec,
 	/* Point sp at the lowest address on the stack */
 #ifdef CONFIG_STACK_GROWSUP
 	sp = (elf_addr_t __user *)bprm->p - items - ei_index;
-	bprm->exec = (unsigned long)sp; /* XXX: PARISC HACK */
+	bprm->exec = (unsigned long)sp;
 #else
 	sp = (elf_addr_t __user *)bprm->p;
 #endif

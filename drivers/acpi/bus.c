@@ -79,10 +79,6 @@ static int set_copy_dsdt(const struct dmi_system_id *id)
 }
 
 static struct dmi_system_id dsdt_dmi_table[] __initdata = {
-	/*
-	 * Invoke DSDT corruption work-around on all Toshiba Satellite.
-	 * https://bugzilla.kernel.org/show_bug.cgi?id=14679
-	 */
 	{
 	 .callback = set_copy_dsdt,
 	 .ident = "TOSHIBA Satellite",
@@ -516,8 +512,8 @@ static void acpi_bus_osc_support(void)
 
 	capbuf[OSC_QUERY_TYPE] = OSC_QUERY_ENABLE;
 	capbuf[OSC_SUPPORT_TYPE] = OSC_SB_PR3_SUPPORT; /* _PR3 is in use */
-#if defined(CONFIG_ACPI_PROCESSOR_AGGREGATOR) ||\
-			defined(CONFIG_ACPI_PROCESSOR_AGGREGATOR_MODULE)
+#if defined(CONFIG_ACPI_PROCESSOR_AGGREGATOR) || \
+	defined(CONFIG_ACPI_PROCESSOR_AGGREGATOR_MODULE)
 	capbuf[OSC_SUPPORT_TYPE] |= OSC_SB_PAD_SUPPORT;
 #endif
 

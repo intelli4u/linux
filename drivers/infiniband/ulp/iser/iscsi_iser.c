@@ -297,10 +297,6 @@ iscsi_iser_conn_create(struct iscsi_cls_session *cls_session, uint32_t conn_idx)
 		return NULL;
 	conn = cls_conn->dd_data;
 
-	/*
-	 * due to issues with the login code re iser sematics
-	 * this not set in iscsi_conn_setup - FIXME
-	 */
 	conn->max_recv_dlength = ISER_RECV_DATA_SEG_LEN;
 
 	iser_conn = conn->dd_data;

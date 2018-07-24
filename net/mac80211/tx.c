@@ -215,19 +215,6 @@ ieee80211_tx_h_dynamic_ps(struct ieee80211_tx_data *tx)
 
 	ifmgd = &tx->sdata->u.mgd;
 
-	/*
-	 * Don't wakeup from power save if u-apsd is enabled, voip ac has
-	 * u-apsd enabled and the frame is in voip class. This effectively
-	 * means that even if all access categories have u-apsd enabled, in
-	 * practise u-apsd is only used with the voip ac. This is a
-	 * workaround for the case when received voip class packets do not
-	 * have correct qos tag for some reason, due the network or the
-	 * peer application.
-	 *
-	 * Note: local->uapsd_queues access is racy here. If the value is
-	 * changed via debugfs, user needs to reassociate manually to have
-	 * everything in sync.
-	 */
 	if ((ifmgd->flags & IEEE80211_STA_UAPSD_ENABLED)
 	    && (local->uapsd_queues & IEEE80211_WMM_IE_STA_QOSINFO_AC_VO)
 	    && skb_get_queue_mapping(tx->skb) == 0)
@@ -663,18 +650,9 @@ ieee80211_tx_h_rate_ctrl(struct ieee80211_tx_data *tx)
 		info->control.rates[0].count = 1;
 
 	if (is_multicast_ether_addr(hdr->addr1)) {
-		/*
-		 * XXX: verify the rate is in the basic rateset
-		 */
 		return TX_CONTINUE;
 	}
 
-	/*
-	 * set up the RTS/CTS rate as the fastest basic rate
-	 * that is not faster than the data rate
-	 *
-	 * XXX: Should this check all retry rates?
-	 */
 	if (!(info->control.rates[0].flags & IEEE80211_TX_RC_MCS)) {
 		s8 baserate = 0;
 

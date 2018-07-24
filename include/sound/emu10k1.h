@@ -50,9 +50,8 @@
 #define NUM_FXSENDS     4
 #define NUM_EFX_PLAYBACK    16
 
-/* FIXME? - according to the OSS driver the EMU10K1 needs a 29 bit DMA mask */
 #define EMU10K1_DMA_MASK	0x7fffffffUL	/* 31bit */
-#define AUDIGY_DMA_MASK		0x7fffffffUL	/* 31bit FIXME - 32 should work? */
+#define AUDIGY_DMA_MASK		0x7fffffffUL
 						/* See ALSA bug #1276 - rlrevell */
 
 #define TMEMSIZE        256*1024
@@ -1082,12 +1081,6 @@
 
 /* 0x14 - 0x1f Unused R/W registers */
 #define EMU_HANA_IRQ_STATUS	0x20	/* 000xxxx  4 bits IRQ Status  */
-#if 0  /* Already defined for reg 0x09 IRQ_ENABLE */
-#define EMU_HANA_IRQ_WCLK_CHANGED	0x01
-#define EMU_HANA_IRQ_ADAT		0x02
-#define EMU_HANA_IRQ_DOCK		0x04
-#define EMU_HANA_IRQ_DOCK_LOST		0x08
-#endif
 
 #define EMU_HANA_OPTION_CARDS	0x21	/* 000xxxx  4 bits Presence of option cards */
 #define EMU_HANA_OPTION_HAMOA	0x01	/* HAMOA card present */

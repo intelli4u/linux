@@ -30,4 +30,3 @@ zImage zImage.initrd Image Image.initrd: $(bootdir-y)
 $(bootdir-y): $(addprefix $(obj)/,$(subdir-y)) \
 	      $(addprefix $(obj)/,$(host-progs))
 	$(Q)$(MAKE) $(build)=$(obj)/$@ $(MAKECMDGOALS)
-

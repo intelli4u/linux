@@ -398,7 +398,6 @@ ep_read (struct file *fd, char __user *buf, size_t len, loff_t *ptr)
 		return -EBADMSG;
 	}
 
-	/* FIXME readahead for O_NONBLOCK and poll(); careful with ZLPs */
 
 	value = -ENOMEM;
 	kbuf = kmalloc (len, GFP_KERNEL);
@@ -441,7 +440,6 @@ ep_write (struct file *fd, const char __user *buf, size_t len, loff_t *ptr)
 		return -EBADMSG;
 	}
 
-	/* FIXME writebehind for O_NONBLOCK and poll(), qlen = 1 */
 
 	value = -ENOMEM;
 	kbuf = kmalloc (len, GFP_KERNEL);
@@ -1029,7 +1027,6 @@ ep0_read (struct file *fd, char __user *buf, size_t len, loff_t *ptr)
 			retval = wait_event_interruptible (dev->wait,
 					dev->setup_out_ready != 0);
 
-			/* FIXME state could change from under us */
 			spin_lock_irq (&dev->lock);
 			if (retval)
 				goto done;
@@ -1044,7 +1041,6 @@ ep0_read (struct file *fd, char __user *buf, size_t len, loff_t *ptr)
 				retval = -EIO;
 			else {
 				len = min (len, (size_t)dev->req->actual);
-// FIXME don't call this with the spinlock held ...
 				if (copy_to_user (buf, dev->req->buf, len))
 					retval = -EFAULT;
 				clean_req (dev->gadget->ep0, dev->req);
@@ -1841,8 +1837,6 @@ static int is_valid_config (struct usb_config_descriptor *config)
 		&& config->bConfigurationValue != 0
 		&& (config->bmAttributes & USB_CONFIG_ATT_ONE) != 0
 		&& (config->bmAttributes & USB_CONFIG_ATT_WAKEUP) == 0;
-	/* FIXME if gadget->is_otg, _must_ include an otg descriptor */
-	/* FIXME check lengths: walk to end */
 }
 
 static ssize_t
@@ -1973,9 +1967,6 @@ static const struct file_operations dev_init_operations = {
  */
 
 
-/* FIXME PAM etc could set this security policy without mount options
- * if epfiles inherited ownership and permissons from ep0 ...
- */
 
 static unsigned default_uid;
 static unsigned default_gid;
@@ -2145,4 +2136,3 @@ static void __exit cleanup (void)
 	unregister_filesystem (&gadgetfs_type);
 }
 module_exit (cleanup);
-

@@ -98,15 +98,6 @@ void __init lh7a40x_init_board_irq (void)
 	GPIO_GPIOINTEN = 0;		/* Disable all GPIO interrupts */
 	barrier();
 
-#if 0
-	GPIO_INTTYPE1
-		= (GPIO_INTR_PCC1_CD | GPIO_INTR_PCC1_CD); /* Edge trig. */
-	GPIO_INTTYPE2 = 0;		/* Falling edge & low-level */
-	GPIO_GPIOFEOI = 0xff;		/* Clear all GPIO interrupts */
-	GPIO_GPIOINTEN = 0xff;		/* Enable all GPIO interrupts */
-
-	init_FIQ();
-#endif
 }
 
 MACHINE_START (KEV7A400, "Sharp KEV7a400")

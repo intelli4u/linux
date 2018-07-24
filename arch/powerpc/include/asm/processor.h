@@ -267,7 +267,7 @@ struct thread_struct {
 #define INIT_THREAD  { \
 	.ksp = INIT_SP, \
 	.ksp_limit = INIT_SP_LIMIT, \
-	.regs = (struct pt_regs *)INIT_SP - 1, /* XXX bogus, I think */ \
+	.regs = (struct pt_regs *)INIT_SP - 1, \
 	.fs = KERNEL_DS, \
 	.fpr = {{0}}, \
 	.fpscr = { .val = 0, }, \

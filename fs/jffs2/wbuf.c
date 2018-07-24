@@ -664,7 +664,6 @@ static int __jffs2_flush_wbuf(struct jffs2_sb_info *c, int pad)
 		spin_lock(&c->erase_completion_lock);
 
 		jffs2_link_node_ref(c, wbuf_jeb, (c->wbuf_ofs + c->wbuf_len) | REF_OBSOLETE, waste, NULL);
-		/* FIXME: that made it count as dirty. Convert to wasted */
 		wbuf_jeb->dirty_size -= waste;
 		c->dirty_size -= waste;
 		wbuf_jeb->wasted_size += waste;

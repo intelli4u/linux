@@ -109,7 +109,7 @@ void __init prom_init(void)
 
 	/* Set memory regions */
 	ioport_resource.start = 0;
-	ioport_resource.end = 0xffffffff;	/* Wrong, fixme.  */
+	ioport_resource.end = 0xffffffff;
 
 	add_memory_region(0, lasat_board_info.li_memsize, BOOT_MEM_RAM);
 }

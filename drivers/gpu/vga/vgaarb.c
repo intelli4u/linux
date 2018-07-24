@@ -99,7 +99,6 @@ static int vga_str_to_iostate(char *buf, int str_size, int *io_state)
 		return 1;
 	}
 
-	/* XXX We're not chekcing the str_size! */
 	if (strncmp(buf, "io+mem", 6) == 0)
 		goto both;
 	else if (strncmp(buf, "io", 2) == 0)
@@ -617,10 +616,6 @@ static void __vga_set_legacy_decoding(struct pci_dev *pdev, unsigned int decodes
 	/* update the device decodes + counter */
 	vga_update_device_decodes(vgadev, decodes);
 
-	/* XXX if somebody is going from "doesn't decode" to "decodes" state
-	 * here, additional care must be taken as we may have pending owner
-	 * ship of non-legacy region ...
-	 */
 bail:
 	spin_unlock_irqrestore(&vga_lock, flags);
 }
@@ -1037,7 +1032,6 @@ static ssize_t vga_arb_write(struct file *file, const char __user * buf,
 			pr_err("vgaarb: maximum user cards (%d) number reached!\n",
 				MAX_USER_CARDS);
 			pci_dev_put(pdev);
-			/* XXX: which value to return? */
 			ret_val =  -ENOMEM;
 			goto done;
 		}

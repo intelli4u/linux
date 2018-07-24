@@ -1,10 +1,6 @@
 #ifndef __ASM_GENERIC_MMAN_COMMON_H
 #define __ASM_GENERIC_MMAN_COMMON_H
 
-/*
- Author: Michael S. Tsirkin <mst@mellanox.co.il>, Mellanox Technologies Ltd.
- Based on: asm-xxx/mman.h
-*/
 
 #define PROT_READ	0x1		/* page can be read */
 #define PROT_WRITE	0x2		/* page can be written */

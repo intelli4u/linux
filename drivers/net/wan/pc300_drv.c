@@ -2,215 +2,6 @@
 static char rcsid[] = 
 "Revision: 3.4.5 Date: 2002/03/07 ";
 
-/*
- * pc300.c	Cyclades-PC300(tm) Driver.
- *
- * Author:	Ivan Passos <ivan@cyclades.com>
- * Maintainer:	PC300 Maintainer <pc300@cyclades.com>
- *
- * Copyright:	(c) 1999-2003 Cyclades Corp.
- *
- *	This program is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU General Public License
- *	as published by the Free Software Foundation; either version
- *	2 of the License, or (at your option) any later version.
- *	
- *	Using tabstop = 4.
- * 
- * $Log: pc300_drv.c,v $
- * Revision 3.23  2002/03/20 13:58:40  henrique
- * Fixed ortographic mistakes
- *
- * Revision 3.22  2002/03/13 16:56:56  henrique
- * Take out the debug messages
- *
- * Revision 3.21  2002/03/07 14:17:09  henrique
- * License data fixed
- *
- * Revision 3.20  2002/01/17 17:58:52  ivan
- * Support for PC300-TE/M (PMC).
- *
- * Revision 3.19  2002/01/03 17:08:47  daniela
- * Enables DMA reception when the SCA-II disables it improperly.
- *
- * Revision 3.18  2001/12/03 18:47:50  daniela
- * Esthetic changes.
- *
- * Revision 3.17  2001/10/19 16:50:13  henrique
- * Patch to kernel 2.4.12 and new generic hdlc.
- *
- * Revision 3.16  2001/10/16 15:12:31  regina
- * clear statistics
- *
- * Revision 3.11 to 3.15  2001/10/11 20:26:04  daniela
- * More DMA fixes for noisy lines.
- * Return the size of bad frames in dma_get_rx_frame_size, so that the Rx buffer
- * descriptors can be cleaned by dma_buf_read (called in cpc_net_rx).
- * Renamed dma_start routine to rx_dma_start. Improved Rx statistics.
- * Fixed BOF interrupt treatment. Created dma_start routine.
- * Changed min and max to cpc_min and cpc_max.
- *
- * Revision 3.10  2001/08/06 12:01:51  regina
- * Fixed problem in DSR_DE bit.
- *
- * Revision 3.9  2001/07/18 19:27:26  daniela
- * Added some history comments.
- *
- * Revision 3.8  2001/07/12 13:11:19  regina
- * bug fix - DCD-OFF in pc300 tty driver
- *
- * Revision 3.3 to 3.7  2001/07/06 15:00:20  daniela
- * Removing kernel 2.4.3 and previous support.
- * DMA transmission bug fix.
- * MTU check in cpc_net_rx fixed.
- * Boot messages reviewed.
- * New configuration parameters (line code, CRC calculation and clock).
- *
- * Revision 3.2 2001/06/22 13:13:02  regina
- * MLPPP implementation. Changed the header of message trace to include
- * the device name. New format : "hdlcX[R/T]: ".
- * Default configuration changed.
- *
- * Revision 3.1 2001/06/15 regina
- * in cpc_queue_xmit, netif_stop_queue is called if don't have free descriptor
- * upping major version number
- *
- * Revision 1.1.1.1  2001/06/13 20:25:04  daniela
- * PC300 initial CVS version (3.4.0-pre1)
- *
- * Revision 3.0.1.2 2001/06/08 daniela
- * Did some changes in the DMA programming implementation to avoid the 
- * occurrence of a SCA-II bug when CDA is accessed during a DMA transfer.
- *
- * Revision 3.0.1.1 2001/05/02 daniela
- * Added kernel 2.4.3 support.
- * 
- * Revision 3.0.1.0 2001/03/13 daniela, henrique
- * Added Frame Relay Support.
- * Driver now uses HDLC generic driver to provide protocol support.
- * 
- * Revision 3.0.0.8 2001/03/02 daniela
- * Fixed ram size detection. 
- * Changed SIOCGPC300CONF ioctl, to give hw information to pc300util.
- * 
- * Revision 3.0.0.7 2001/02/23 daniela
- * netif_stop_queue called before the SCA-II transmition commands in 
- * cpc_queue_xmit, and with interrupts disabled to avoid race conditions with 
- * transmition interrupts.
- * Fixed falc_check_status for Unframed E1.
- * 
- * Revision 3.0.0.6 2000/12/13 daniela
- * Implemented pc300util support: trace, statistics, status and loopback
- * tests for the PC300 TE boards.
- * 
- * Revision 3.0.0.5 2000/12/12 ivan
- * Added support for Unframed E1.
- * Implemented monitor mode.
- * Fixed DCD sensitivity on the second channel.
- * Driver now complies with new PCI kernel architecture.
- *
- * Revision 3.0.0.4 2000/09/28 ivan
- * Implemented DCD sensitivity.
- * Moved hardware-specific open to the end of cpc_open, to avoid race
- * conditions with early reception interrupts.
- * Included code for [request|release]_mem_region().
- * Changed location of pc300.h .
- * Minor code revision (contrib. of Jeff Garzik).
- *
- * Revision 3.0.0.3 2000/07/03 ivan
- * Previous bugfix for the framing errors with external clock made X21
- * boards stop working. This version fixes it.
- *
- * Revision 3.0.0.2 2000/06/23 ivan
- * Revisited cpc_queue_xmit to prevent race conditions on Tx DMA buffer
- * handling when Tx timeouts occur.
- * Revisited Rx statistics.
- * Fixed a bug in the SCA-II programming that would cause framing errors
- * when external clock was configured.
- *
- * Revision 3.0.0.1 2000/05/26 ivan
- * Added logic in the SCA interrupt handler so that no board can monopolize
- * the driver.
- * Request PLX I/O region, although driver doesn't use it, to avoid
- * problems with other drivers accessing it.
- *
- * Revision 3.0.0.0 2000/05/15 ivan
- * Did some changes in the DMA programming implementation to avoid the
- * occurrence of a SCA-II bug in the second channel.
- * Implemented workaround for PLX9050 bug that would cause a system lockup
- * in certain systems, depending on the MMIO addresses allocated to the
- * board.
- * Fixed the FALC chip programming to avoid synchronization problems in the
- * second channel (TE only).
- * Implemented a cleaner and faster Tx DMA descriptor cleanup procedure in
- * cpc_queue_xmit().
- * Changed the built-in driver implementation so that the driver can use the
- * general 'hdlcN' naming convention instead of proprietary device names.
- * Driver load messages are now device-centric, instead of board-centric.
- * Dynamic allocation of net_device structures.
- * Code is now compliant with the new module interface (module_[init|exit]).
- * Make use of the PCI helper functions to access PCI resources.
- *
- * Revision 2.0.0.0 2000/04/15 ivan
- * Added support for the PC300/TE boards (T1/FT1/E1/FE1).
- *
- * Revision 1.1.0.0 2000/02/28 ivan
- * Major changes in the driver architecture.
- * Softnet compliancy implemented.
- * Driver now reports physical instead of virtual memory addresses.
- * Added cpc_change_mtu function.
- *
- * Revision 1.0.0.0 1999/12/16 ivan
- * First official release.
- * Support for 1- and 2-channel boards (which use distinct PCI Device ID's).
- * Support for monolythic installation (i.e., drv built into the kernel).
- * X.25 additional checking when lapb_[dis]connect_request returns an error.
- * SCA programming now covers X.21 as well.
- *
- * Revision 0.3.1.0 1999/11/18 ivan
- * Made X.25 support configuration-dependent (as it depends on external 
- * modules to work).
- * Changed X.25-specific function names to comply with adopted convention.
- * Fixed typos in X.25 functions that would cause compile errors (Daniela).
- * Fixed bug in ch_config that would disable interrupts on a previously 
- * enabled channel if the other channel on the same board was enabled later.
- *
- * Revision 0.3.0.0 1999/11/16 daniela
- * X.25 support.
- *
- * Revision 0.2.3.0 1999/11/15 ivan
- * Function cpc_ch_status now provides more detailed information.
- * Added support for X.21 clock configuration.
- * Changed TNR1 setting in order to prevent Tx FIFO overaccesses by the SCA.
- * Now using PCI clock instead of internal oscillator clock for the SCA.
- *
- * Revision 0.2.2.0 1999/11/10 ivan
- * Changed the *_dma_buf_check functions so that they would print only 
- * the useful info instead of the whole buffer descriptor bank.
- * Fixed bug in cpc_queue_xmit that would eventually crash the system 
- * in case of a packet drop.
- * Implemented TX underrun handling.
- * Improved SCA fine tuning to boost up its performance.
- *
- * Revision 0.2.1.0 1999/11/03 ivan
- * Added functions *dma_buf_pt_init to allow independent initialization 
- * of the next-descr. and DMA buffer pointers on the DMA descriptors.
- * Kernel buffer release and tbusy clearing is now done in the interrupt 
- * handler.
- * Fixed bug in cpc_open that would cause an interface reopen to fail.
- * Added a protocol-specific code section in cpc_net_rx.
- * Removed printk level defs (they might be added back after the beta phase).
- *
- * Revision 0.2.0.0 1999/10/28 ivan
- * Revisited the code so that new protocols can be easily added / supported. 
- *
- * Revision 0.1.0.1 1999/10/20 ivan
- * Mostly "esthetic" changes.
- *
- * Revision 0.1.0.0 1999/10/11 ivan
- * Initial version.
- *
- */
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -2539,10 +2330,10 @@ static int cpc_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 		case SIOCGPC300CONF:
 #ifdef CONFIG_PC300_MLPPP
 			if (conf->proto != PC300_PROTO_MLPPP) {
-				conf->proto = /* FIXME hdlc->proto.id */ 0;
+				conf->proto = 0;
 			}
 #else
-			conf->proto = /* FIXME hdlc->proto.id */ 0;
+			conf->proto = 0;
 #endif
 			memcpy(&conf_aux.conf, conf, sizeof(pc300chconf_t));
 			memcpy(&conf_aux.hw, &card->hw, sizeof(pc300hw_t));
@@ -2575,12 +2366,10 @@ static int cpc_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 					}
 				} else {
 					memcpy(conf, &conf_aux.conf, sizeof(pc300chconf_t));
-					/* FIXME hdlc->proto.id = conf->proto; */
 				}
 			}
 #else
 			memcpy(conf, &conf_aux.conf, sizeof(pc300chconf_t));
-			/* FIXME hdlc->proto.id = conf->proto; */
 #endif
 			return 0;
 		case SIOCGPC300STATUS:
@@ -3675,4 +3464,3 @@ MODULE_DESCRIPTION("Cyclades-PC300 cards driver");
 MODULE_AUTHOR(  "Author: Ivan Passos <ivan@cyclades.com>\r\n"
                 "Maintainer: PC300 Maintainer <pc300@cyclades.com");
 MODULE_LICENSE("GPL");
-

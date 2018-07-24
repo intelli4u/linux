@@ -118,7 +118,7 @@ static void ps3_panic(char *str)
 }
 
 #if defined(CONFIG_FB_PS3) || defined(CONFIG_FB_PS3_MODULE) || \
-    defined(CONFIG_PS3_FLASH) || defined(CONFIG_PS3_FLASH_MODULE)
+	defined(CONFIG_PS3_FLASH) || defined(CONFIG_PS3_FLASH_MODULE)
 static void __init prealloc(struct ps3_prealloc *p)
 {
 	if (!p->size)

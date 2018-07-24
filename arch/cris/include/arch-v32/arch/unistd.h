@@ -1,7 +1,6 @@
 #ifndef _ASM_CRIS_ARCH_UNISTD_H_
 #define _ASM_CRIS_ARCH_UNISTD_H_
 
-/* XXX - _foo needs to be __foo, while __NR_bar could be _NR_bar. */
 /*
  * Don't remove the .ifnc tests; they are an insurance against
  * any hard-to-spot gcc register allocation bugs.

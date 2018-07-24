@@ -27,4 +27,3 @@ exclusively used by this driver.
 For more information about the driver look at the wlags49_h2 direcory.
 
 =======================================================================
-

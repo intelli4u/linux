@@ -159,7 +159,6 @@ static int configure_dma(const unsigned char *buf)
 	for (i=0;i<HPEE_DMA_MAX_ENT;i++) {
 		c = get_8(buf+len);
 		printk("DMA %d ", c&HPEE_DMA_CHANNEL_MASK);
-		/* fixme: maybe initialize the dma channel withthe timing ? */
 		len+=2;      
 		if (!(c & HPEE_DMA_MORE)) {
 			break;
@@ -518,4 +517,3 @@ int eisa_enumerator(unsigned long eeprom_addr,
 	}
 	return eh->num_slots;
 }
-

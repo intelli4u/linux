@@ -1653,4 +1653,3 @@ void i2400m_fw_uncache(struct i2400m *i2400m)
 	if (i2400m_fw != NULL && i2400m_fw != (void *) ~0)
 		i2400m_fw_put(i2400m_fw);
 }
-

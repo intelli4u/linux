@@ -3700,7 +3700,6 @@ static void hotkey_notify(struct ibm_struct *ibm, u32 event)
 				known_ev = true;
 				break;
 			case TP_HKEY_EV_OPTDRV_EJ:
-				/* FIXME: kick libata if SATA link offline */
 				known_ev = true;
 				break;
 			default:
@@ -8130,7 +8129,6 @@ static void fan_exit(void)
 	vdbg_printk(TPACPI_DBG_EXIT | TPACPI_DBG_FAN,
 		    "cancelling any pending fan watchdog tasks\n");
 
-	/* FIXME: can we really do this unconditionally? */
 	sysfs_remove_group(&tpacpi_sensors_pdev->dev.kobj, &fan_attr_group);
 	driver_remove_file(&tpacpi_hwmon_pdriver.driver,
 			   &driver_attr_fan_watchdog);

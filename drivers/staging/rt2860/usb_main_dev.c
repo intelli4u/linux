@@ -673,7 +673,6 @@ void RTUSBWatchDog(struct rt_rtmp_adapter *pAd)
 			       fRTMP_ADAPTER_NIC_NOT_EXIST |
 			       fRTMP_ADAPTER_BULKOUT_RESET)))
 			    ) {
-				/* FIXME: Following code just support single bulk out. If you wanna support multiple bulk out. Modify it! */
 				pHTTXContext =
 				    (struct rt_ht_tx_context *)(&pAd->TxContext[idx]);
 				if (pHTTXContext->IRPPending) {	/* Check TxContext. */
@@ -825,7 +824,6 @@ static void rt2870_disconnect(struct usb_device *dev, struct rt_rtmp_adapter *pA
 
 	RtmpPhyNetDevExit(pAd, pAd->net_dev);
 
-	/* FIXME: Shall we need following delay and flush the schedule?? */
 	udelay(1);
 	flush_scheduled_work();
 	udelay(1);

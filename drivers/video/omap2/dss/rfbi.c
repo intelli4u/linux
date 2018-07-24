@@ -67,7 +67,6 @@ struct rfbi_reg { u16 idx; };
 #define REG_FLD_MOD(idx, val, start, end) \
 	rfbi_write_reg(idx, FLD_MOD(rfbi_read_reg(idx), val, start, end))
 
-/* To work around an RFBI transfer rate limitation */
 #define OMAP_RFBI_RATE_LIMIT    1
 
 enum omap_rfbi_cycleformat {
@@ -349,7 +348,6 @@ static void framedone_callback(void *data, u32 mask)
 	atomic_set(&rfbi.cmd_pending, 0);
 }
 
-#if 1 /* VERBOSE */
 static void rfbi_print_timings(void)
 {
 	u32 l;
@@ -373,9 +371,6 @@ static void rfbi_print_timings(void)
 		(l & 0x3f), (l >> 6) & 0x3f, (l >> 12) & 0x3f,
 		(l >> 22) & 0x3f);
 }
-#else
-static void rfbi_print_timings(void) {}
-#endif
 
 
 
@@ -620,7 +615,6 @@ static int rfbi_convert_timings(struct rfbi_timings *t)
 	return 0;
 }
 
-/* xxx FIX module selection missing */
 int omap_rfbi_setup_te(enum omap_rfbi_te_mode mode,
 			     unsigned hs_pulse_time, unsigned vs_pulse_time,
 			     int hs_pol_inv, int vs_pol_inv, int extif_div)
@@ -664,7 +658,6 @@ int omap_rfbi_setup_te(enum omap_rfbi_te_mode mode,
 }
 EXPORT_SYMBOL(omap_rfbi_setup_te);
 
-/* xxx FIX module selection missing */
 int omap_rfbi_enable_te(bool enable, unsigned line)
 {
 	u32 l;
@@ -689,42 +682,6 @@ int omap_rfbi_enable_te(bool enable, unsigned line)
 }
 EXPORT_SYMBOL(omap_rfbi_enable_te);
 
-#if 0
-static void rfbi_enable_config(int enable1, int enable2)
-{
-	u32 l;
-	int cs = 0;
-
-	if (enable1)
-		cs |= 1<<0;
-	if (enable2)
-		cs |= 1<<1;
-
-	rfbi_enable_clocks(1);
-
-	l = rfbi_read_reg(RFBI_CONTROL);
-
-	l = FLD_MOD(l, cs, 3, 2);
-	l = FLD_MOD(l, 0, 1, 1);
-
-	rfbi_write_reg(RFBI_CONTROL, l);
-
-
-	l = rfbi_read_reg(RFBI_CONFIG(0));
-	l = FLD_MOD(l, 0, 3, 2); /* TRIGGERMODE: ITE */
-	/*l |= FLD_VAL(2, 8, 7); */ /* L4FORMAT, 2pix/L4 */
-	/*l |= FLD_VAL(0, 8, 7); */ /* L4FORMAT, 1pix/L4 */
-
-	l = FLD_MOD(l, 0, 16, 16); /* A0POLARITY */
-	l = FLD_MOD(l, 1, 20, 20); /* TE_VSYNC_POLARITY */
-	l = FLD_MOD(l, 1, 21, 21); /* HSYNCPOLARITY */
-
-	l = FLD_MOD(l, OMAP_DSS_RFBI_PARALLELMODE_8, 1, 0);
-	rfbi_write_reg(RFBI_CONFIG(0), l);
-
-	rfbi_enable_clocks(0);
-}
-#endif
 
 int rfbi_configure(int rfbi_module, int bpp, int lines)
 {

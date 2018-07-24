@@ -1,4 +1,4 @@
-/* $Id: isdnloop.c,v 1.11.6.7 2001/11/11 19:54:31 kai Exp $
+/* $Id: isdnloop.c,v 1.11.6.7 2001/11/11 19:54:31 Exp $
  *
  * ISDN low-level module implementing a dummy loop driver.
  *

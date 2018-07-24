@@ -113,7 +113,6 @@ static bool crystalhd_bring_out_of_rst(struct crystalhd_adp *adp)
 	crystalhd_reg_wr(adp, PCIE_TL_TRANSACTION_CONFIGURATION, temp);
 
 	/* 2.5V regulator must be set to 2.6 volts (+6%) */
-	/* FIXME: jarod: what's the point of this reg read? */
 	temp = crystalhd_reg_rd(adp, MISC_PERST_VREG_CTRL);
 	crystalhd_reg_wr(adp, MISC_PERST_VREG_CTRL, 0xF3);
 
@@ -212,7 +211,6 @@ static void crystalhd_clear_errors(struct crystalhd_adp *adp)
 {
 	uint32_t reg;
 
-	/* FIXME: jarod: wouldn't we want to write a 0 to the reg? Or does the write clear the bits specified? */
 	reg = crystalhd_reg_rd(adp, MISC1_Y_RX_ERROR_STATUS);
 	if (reg)
 		crystalhd_reg_wr(adp, MISC1_Y_RX_ERROR_STATUS, reg);
@@ -265,7 +263,6 @@ static bool crystalhd_load_firmware_config(struct crystalhd_adp *adp)
 	crystalhd_reg_wr(adp, AES_CONFIG_INFO, (BC_DRAM_FW_CFG_ADDR & 0x7FFFF));
 	crystalhd_reg_wr(adp, AES_CMD, 0x1);
 
-	/* FIXME: jarod: I've seen this fail, and introducing extra delays helps... */
 	for (i = 0; i < 100; ++i) {
 		reg = crystalhd_reg_rd(adp, AES_STATUS);
 		if (reg & 0x1)
@@ -662,8 +659,6 @@ static void crystalhd_hw_dump_desc(struct dma_descriptor *p_dma_desc,
 	if (!p_dma_desc || !cnt)
 		return;
 
-	/* FIXME: jarod: perhaps a modparam desc_debug to enable this, rather than
-	 * setting ll (log level, I presume) to non-zero? */
 	if (!ll)
 		return;
 
@@ -868,7 +863,6 @@ static enum BC_STATUS crystalhd_stop_tx_dma_engine(struct crystalhd_hw *hw)
 
 	BCMLOG(BCMLOG_DBG, "Stopping TX DMA Engine..\n");
 
-	/* FIXME: jarod: invert dma_ctrl and check bit? or are there missing parens? */
 	if (!dma_cntrl & DMA_START_BIT) {
 		BCMLOG(BCMLOG_DBG, "Already Stopped\n");
 		return BC_STS_SUCCESS;
@@ -1186,7 +1180,6 @@ static enum BC_STATUS crystalhd_hw_prog_rxdma(struct crystalhd_hw *hw, struct cr
 	}
 
 	spin_lock_irqsave(&hw->rx_lock, flags);
-	/* FIXME: jarod: sts_free is an enum for 0, in crystalhd_hw.h... yuk... */
 	if (sts_free != hw->rx_list_sts[hw->rx_list_post_index]) {
 		spin_unlock_irqrestore(&hw->rx_lock, flags);
 		return BC_STS_BUSY;
@@ -1501,7 +1494,6 @@ static void crystalhd_rx_isr(struct crystalhd_hw *hw, uint32_t intr_sts)
 				/* We got error on both or Y or uv. */
 				hw->stats.rx_errors++;
 				crystalhd_get_dnsz(hw, i, &y_dn_sz, &uv_dn_sz);
-				/* FIXME: jarod: this is where my mini pci-e card is tripping up */
 				BCMLOG(BCMLOG_DBG, "list_index:%x rx[%d] Y:%x "
 				       "UV:%x Int:%x YDnSz:%x UVDnSz:%x\n",
 				       i, hw->stats.rx_errors, y_err_sts,
@@ -1831,7 +1823,6 @@ bool crystalhd_hw_interrupt(struct crystalhd_adp *adp, struct crystalhd_hw *hw)
 			crystalhd_hw_proc_pib(hw);
 
 		bc_dec_reg_wr(adp, Stream2Host_Intr_Sts, deco_intr);
-		/* FIXME: jarod: No udelay? might this be the real reason mini pci-e cards were stalling out? */
 		bc_dec_reg_wr(adp, Stream2Host_Intr_Sts, 0);
 		rc = 1;
 	}
@@ -1870,7 +1861,6 @@ enum BC_STATUS crystalhd_hw_open(struct crystalhd_hw *hw, struct crystalhd_adp *
 	hw->adp = adp;
 	spin_lock_init(&hw->lock);
 	spin_lock_init(&hw->rx_lock);
-	/* FIXME: jarod: what are these magic numbers?!? */
 	hw->tx_ioq_tag_seed = 0x70023070;
 	hw->rx_pkt_tag_seed = 0x70029070;
 
@@ -2335,7 +2325,6 @@ enum BC_STATUS crystalhd_hw_set_core_clock(struct crystalhd_hw *hw)
 		return BC_STS_INV_ARG;
 	}
 
-	/* FIXME: jarod: wha? */
 	/*n = (hw->core_clock_mhz * 3) / 20 + 1; */
 	n = hw->core_clock_mhz/5;
 
@@ -2380,7 +2369,6 @@ enum BC_STATUS crystalhd_hw_set_core_clock(struct crystalhd_hw *hw)
 
 		if (reg & 0x00020000) {
 			hw->prev_n = n;
-			/* FIXME: jarod: outputting a random "C" is... confusing... */
 			BCMLOG(BCMLOG_INFO, "C");
 			return BC_STS_SUCCESS;
 		} else {

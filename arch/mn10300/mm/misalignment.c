@@ -35,11 +35,7 @@
 #include <asm/gdb-stub.h>
 #include <asm/asm-offsets.h>
 
-#if 0
-#define kdebug(FMT, ...) printk(KERN_DEBUG "MISALIGN: "FMT"\n", ##__VA_ARGS__)
-#else
 #define kdebug(FMT, ...) do {} while (0)
-#endif
 
 static int misalignment_addr(unsigned long *registers, unsigned long sp,
 			     unsigned params, unsigned opcode,

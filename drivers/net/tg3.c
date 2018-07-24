@@ -149,19 +149,8 @@
 #define TG3_RX_JMB_BUFF_RING_SIZE \
 	(sizeof(struct ring_info) * TG3_RX_JUMBO_RING_SIZE)
 
-/* Due to a hardware bug, the 5701 can only DMA to memory addresses
- * that are at least dword aligned when used in PCIX mode.  The driver
- * works around this bug by double copying the packet.  This workaround
- * is built into the normal double copy length check for efficiency.
- *
- * However, the double copy is only necessary on those architectures
- * where unaligned memory accesses are inefficient.  For those architectures
- * where unaligned memory accesses incur little penalty, we can reintegrate
- * the 5701 in the normal rx path.  Doing so saves a device structure
- * dereference by hardcoding the double copy threshold in place.
- */
 #define TG3_RX_COPY_THRESHOLD		256
-#if NET_IP_ALIGN == 0 || defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS)
+#if NET_IP_ALIGN == defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS)
 	#define TG3_RX_COPY_THRESH(tp)	TG3_RX_COPY_THRESHOLD
 #else
 	#define TG3_RX_COPY_THRESH(tp)	((tp)->rx_copy_thresh)
@@ -2117,7 +2106,6 @@ static void tg3_frob_aux_power(struct tg3 *tp)
 			    (tp_peer->tg3_flags & TG3_FLAG_INIT_COMPLETE) != 0)
 				return;
 
-			/* Workaround to prevent overdrawing Amps. */
 			if (GET_ASIC_REV(tp->pci_chip_rev_id) ==
 			    ASIC_REV_5714) {
 				grc_local_ctrl |= GRC_LCLCTRL_GPIO_OE3;
@@ -2756,7 +2744,6 @@ static int tg3_set_power_state(struct tg3 *tp, pci_power_t state)
 
 	tg3_frob_aux_power(tp);
 
-	/* Workaround for unstable PLL clock */
 	if ((GET_CHIP_REV(tp->pci_chip_rev_id) == CHIPREV_5750_AX) ||
 	    (GET_CHIP_REV(tp->pci_chip_rev_id) == CHIPREV_5750_BX)) {
 		u32 val = tr32(0x7d00);
@@ -3132,7 +3119,6 @@ static int tg3_setup_copper_phy(struct tg3 *tp, int force_reset)
 		}
 	} else if (tp->pci_chip_rev_id == CHIPREV_ID_5701_A0 ||
 		   tp->pci_chip_rev_id == CHIPREV_ID_5701_B0) {
-		/* 5701 {A0,B0} CRC bug workaround */
 		tg3_writephy(tp, 0x15, 0x0a75);
 		tg3_writephy(tp, MII_TG3_MISC_SHDW, 0x8c68);
 		tg3_writephy(tp, MII_TG3_MISC_SHDW, 0x8d68);
@@ -3627,7 +3613,6 @@ static int tg3_fiber_aneg_smachine(struct tg3 *tp,
 		}
 		delta = ap->cur_time - ap->link_time;
 		if (delta > ANEG_STATE_SETTLE_TIME) {
-			/* XXX another gem from the Broadcom driver :( */
 			ap->state = ANEG_STATE_LINK_OK;
 		}
 		break;
@@ -3715,7 +3700,6 @@ static void tg3_init_bcm8002(struct tg3 *tp)
 	tg3_writephy(tp, MII_BMCR, BMCR_RESET);
 
 	/* Wait for reset to complete. */
-	/* XXX schedule_timeout() ... */
 	for (i = 0; i < 500; i++)
 		udelay(10);
 
@@ -3738,7 +3722,6 @@ static void tg3_init_bcm8002(struct tg3 *tp)
 	tg3_writephy(tp, 0x11, 0x0a10);
 
 	/* Wait for signal to stabilize */
-	/* XXX schedule_timeout() ... */
 	for (i = 0; i < 15000; i++)
 		udelay(10);
 
@@ -5423,7 +5406,6 @@ static inline int tg3_40bit_overflow_test(struct tg3 *tp, dma_addr_t mapping,
 
 static void tg3_set_txd(struct tg3_napi *, int, dma_addr_t, int, u32, u32);
 
-/* Workaround 4GB and 40-bit hardware DMA bugs. */
 static int tigon3_dma_hwbug_workaround(struct tg3_napi *tnapi,
 				       struct sk_buff *skb, u32 last_plus_one,
 				       u32 *start, u32 base_flags, u32 mss)
@@ -5703,9 +5685,6 @@ dma_error:
 static netdev_tx_t tg3_start_xmit_dma_bug(struct sk_buff *,
 					  struct net_device *);
 
-/* Use GSO to workaround a rare TSO bug that may be triggered when the
- * TSO header is greater than 80 bytes.
- */
 static int tg3_tso_bug(struct tg3 *tp, struct sk_buff *skb)
 {
 	struct sk_buff *segs, *nskb;
@@ -5940,9 +5919,6 @@ static netdev_tx_t tg3_start_xmit_dma_bug(struct sk_buff *skb,
 		start = entry - 1 - skb_shinfo(skb)->nr_frags;
 		start &= (TG3_TX_RING_SIZE - 1);
 
-		/* If the workaround fails due to memory/mapping
-		 * failure, silently drop this packet.
-		 */
 		if (tigon3_dma_hwbug_workaround(tnapi, skb, last_plus_one,
 						&start, base_flags, mss))
 			goto out_unlock;
@@ -6899,12 +6875,6 @@ static int tg3_chip_reset(struct tg3 *tp)
 	    (tp->tg3_flags3 & TG3_FLG3_5755_PLUS))
 		tw32(GRC_FASTBOOT_PC, 0);
 
-	/*
-	 * We must avoid the readl() that normally takes place.
-	 * It locks machines, causes machine checks, and other
-	 * fun things.  So, temporarily disable the 5701
-	 * hardware workaround, while we do the reset.
-	 */
 	write_op = tp->write32;
 	if (write_op == tg3_write_flush_reg32)
 		tp->write32 = tg3_write32;
@@ -6965,7 +6935,6 @@ static int tg3_chip_reset(struct tg3 *tp)
 
 	tw32(GRC_MISC_CFG, val);
 
-	/* restore 5701 hardware bug workaround write method */
 	tp->write32 = write_op;
 
 	/* Unfortunately, we have to delay before the PCI read back.
@@ -12814,23 +12783,10 @@ static int __devinit tg3_get_invariants(struct tg3 *tp)
 	u16 pci_cmd;
 	int err;
 
-	/* Force memory write invalidate off.  If we leave it on,
-	 * then on 5700_BX chips we have to enable a workaround.
-	 * The workaround is to set the TG3PCI_DMA_RW_CTRL boundary
-	 * to match the cacheline size.  The Broadcom driver have this
-	 * workaround but turns MWI off all the times so never uses
-	 * it.  This seems to suggest that the workaround is insufficient.
-	 */
 	pci_read_config_word(tp->pdev, PCI_COMMAND, &pci_cmd);
 	pci_cmd &= ~PCI_COMMAND_INVALIDATE;
 	pci_write_config_word(tp->pdev, PCI_COMMAND, pci_cmd);
 
-	/* It is absolutely critical that TG3PCI_MISC_HOST_CTRL
-	 * has the register indirect write enable bit set before
-	 * we try to access any of the MMIO registers.  It is also
-	 * critical that the PCI-X hw workaround situation is decided
-	 * before that as well.
-	 */
 	pci_read_config_dword(tp->pdev, TG3PCI_MISC_HOST_CTRL,
 			      &misc_ctrl_reg);
 
@@ -12868,23 +12824,6 @@ static int __devinit tg3_get_invariants(struct tg3 *tp)
 	if (tp->pci_chip_rev_id == CHIPREV_ID_5752_A0_HW)
 		tp->pci_chip_rev_id = CHIPREV_ID_5752_A0;
 
-	/* If we have 5702/03 A1 or A2 on certain ICH chipsets,
-	 * we need to disable memory and use config. cycles
-	 * only to access all registers. The 5702/03 chips
-	 * can mistakenly decode the special cycles from the
-	 * ICH chipsets as memory write cycles, causing corruption
-	 * of register and memory space. Only certain ICH bridges
-	 * will drive special cycles with non-zero data during the
-	 * address phase which can fall within the 5703's address
-	 * range. This is not an ICH bug as the PCI spec allows
-	 * non-zero address during special cycles. However, only
-	 * these ICH bridges are known to drive non-zero addresses
-	 * during special cycles.
-	 *
-	 * Since special cycles do not cross PCI bridges, we only
-	 * enable this workaround if the 5703 is on the secondary
-	 * bus of these ICH bridges.
-	 */
 	if ((tp->pci_chip_rev_id == CHIPREV_ID_5703_A1) ||
 	    (tp->pci_chip_rev_id == CHIPREV_ID_5703_A2)) {
 		static struct tg3_dev_id {
@@ -12959,12 +12898,6 @@ static int __devinit tg3_get_invariants(struct tg3 *tp)
 		}
 	}
 
-	/* The EPB bridge inside 5714, 5715, and 5780 cannot support
-	 * DMA addresses > 40-bit. This bridge may have other additional
-	 * 57xx devices behind it in some 4-port NIC designs for example.
-	 * Any tg3 device found behind the bridge will also need the 40-bit
-	 * DMA workaround.
-	 */
 	if (GET_ASIC_REV(tp->pci_chip_rev_id) == ASIC_REV_5780 ||
 	    GET_ASIC_REV(tp->pci_chip_rev_id) == ASIC_REV_5714) {
 		tp->tg3_flags2 |= TG3_FLG2_5780_CLASS;
@@ -13163,16 +13096,8 @@ static int __devinit tg3_get_invariants(struct tg3 *tp)
 	}
 
 	if (GET_CHIP_REV(tp->pci_chip_rev_id) == CHIPREV_5700_BX) {
-		/* 5700 BX chips need to have their TX producer index
-		 * mailboxes written twice to workaround a bug.
-		 */
 		tp->tg3_flags |= TG3_FLAG_TXD_MBOX_HWBUG;
 
-		/* If we are in PCI-X mode, enable register write workaround.
-		 *
-		 * The workaround is to use indirect register accesses
-		 * for all chip writes not to mailbox registers.
-		 */
 		if (tp->tg3_flags & TG3_FLAG_PCIX_MODE) {
 			u32 pm_reg;
 
@@ -13218,19 +13143,11 @@ static int __devinit tg3_get_invariants(struct tg3 *tp)
 	tp->write32_tx_mbox = tg3_write32;
 	tp->write32_rx_mbox = tg3_write32;
 
-	/* Various workaround register access methods */
 	if (tp->tg3_flags & TG3_FLAG_PCIX_TARGET_HWBUG)
 		tp->write32 = tg3_write_indirect_reg32;
 	else if (GET_ASIC_REV(tp->pci_chip_rev_id) == ASIC_REV_5701 ||
 		 ((tp->tg3_flags2 & TG3_FLG2_PCI_EXPRESS) &&
 		  tp->pci_chip_rev_id == CHIPREV_ID_5750_A0)) {
-		/*
-		 * Back to back register writes can cause problems on these
-		 * chips, the workaround is to read back all reg writes
-		 * except those to mailbox regs.
-		 *
-		 * See tg3_write_indirect_reg32().
-		 */
 		tp->write32 = tg3_write_flush_reg32;
 	}
 
@@ -13438,10 +13355,6 @@ static int __devinit tg3_get_invariants(struct tg3 *tp)
 		    chiprevid == CHIPREV_ID_5701_B5) {
 			void __iomem *sram_base;
 
-			/* Write some dummy words into the SRAM status block
-			 * area, see if it reads back correctly.  If the return
-			 * value is bad, force enable the PCIX workaround.
-			 */
 			sram_base = tp->regs + NIC_SRAM_WIN_BASE + NIC_SRAM_STATS_BLK;
 
 			writel(0x00000000, sram_base);
@@ -13557,9 +13470,6 @@ static int __devinit tg3_get_invariants(struct tg3 *tp)
 
 	tp->rx_std_max_post = TG3_RX_RING_SIZE;
 
-	/* Increment the rx prod index on the rx std ring by at most
-	 * 8 for these chips to workaround hw errata.
-	 */
 	if (GET_ASIC_REV(tp->pci_chip_rev_id) == ASIC_REV_5750 ||
 	    GET_ASIC_REV(tp->pci_chip_rev_id) == ASIC_REV_5752 ||
 	    GET_ASIC_REV(tp->pci_chip_rev_id) == ASIC_REV_5755)
@@ -13939,10 +13849,6 @@ static int __devinit tg3_test_dma(struct tg3 *tp)
 			u32 ccval = (tr32(TG3PCI_CLOCK_CTRL) & 0x1f);
 			u32 read_water = 0x7;
 
-			/* If the 5704 is behind the EPB bridge, we can
-			 * do the less restrictive ONE_DMA workaround for
-			 * better performance.
-			 */
 			if ((tp->tg3_flags & TG3_FLAG_40BIT_DMA_BUG) &&
 			    GET_ASIC_REV(tp->pci_chip_rev_id) == ASIC_REV_5704)
 				tp->dma_rwctrl |= 0x8000;
@@ -13976,25 +13882,11 @@ static int __devinit tg3_test_dma(struct tg3 *tp)
 		/* Remove this if it causes problems for some boards. */
 		tp->dma_rwctrl |= DMA_RWCTRL_USE_MEM_READ_MULT;
 
-		/* On 5700/5701 chips, we need to set this bit.
-		 * Otherwise the chip will issue cacheline transactions
-		 * to streamable DMA memory with not all the byte
-		 * enables turned on.  This is an error on several
-		 * RISC PCI controllers, in particular sparc64.
-		 *
-		 * On 5703/5704 chips, this bit has been reassigned
-		 * a different meaning.  In particular, it is used
-		 * on those chips to enable a PCI-X workaround.
-		 */
 		tp->dma_rwctrl |= DMA_RWCTRL_ASSERT_ALL_BE;
 	}
 
 	tw32(TG3PCI_DMA_RW_CTRL, tp->dma_rwctrl);
 
-#if 0
-	/* Unneeded, already done by tg3_get_invariants.  */
-	tg3_switch_clocks(tp);
-#endif
 
 	if (GET_ASIC_REV(tp->pci_chip_rev_id) != ASIC_REV_5700 &&
 	    GET_ASIC_REV(tp->pci_chip_rev_id) != ASIC_REV_5701)
@@ -14022,20 +13914,6 @@ static int __devinit tg3_test_dma(struct tg3 *tp)
 			break;
 		}
 
-#if 0
-		/* validate data reached card RAM correctly. */
-		for (i = 0; i < TEST_BUFFER_SIZE / sizeof(u32); i++) {
-			u32 val;
-			tg3_read_mem(tp, 0x2100 + (i*4), &val);
-			if (le32_to_cpu(val) != p[i]) {
-				dev_err(&tp->pdev->dev,
-					"%s: Buffer corrupted on device! "
-					"(%d != %d)\n", __func__, val, i);
-				/* ret = -ENODEV here? */
-			}
-			p[i] = 0;
-		}
-#endif
 		/* Now read it back. */
 		ret = tg3_do_test_dma(tp, buf, buf_dma, TEST_BUFFER_SIZE, 0);
 		if (ret) {

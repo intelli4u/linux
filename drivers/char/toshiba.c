@@ -541,4 +541,3 @@ static void __exit toshiba_exit(void)
 
 module_init(toshiba_init);
 module_exit(toshiba_exit);
-

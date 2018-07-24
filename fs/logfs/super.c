@@ -112,9 +112,6 @@ void *memchr_inv(const void *s, int c, size_t n)
 	return NULL;
 }
 
-/*
- * FIXME: There should be a reserve for root, similar to ext2.
- */
 int logfs_statfs(struct dentry *dentry, struct kstatfs *stats)
 {
 	struct super_block *sb = dentry->d_sb;
@@ -185,7 +182,7 @@ static void logfs_write_ds(struct super_block *sb, struct logfs_disk_super *ds,
 
 	ds->ds_ifile_levels	= super->s_ifile_levels;
 	ds->ds_iblock_levels	= super->s_iblock_levels;
-	ds->ds_data_levels	= super->s_data_levels; /* XXX: Remove */
+	ds->ds_data_levels	= super->s_data_levels;
 	ds->ds_segment_shift	= super->s_segshift;
 	ds->ds_block_shift	= sb->s_blocksize_bits;
 	ds->ds_write_shift	= super->s_writeshift;
@@ -348,7 +345,6 @@ static int logfs_get_sb_final(struct super_block *sb, struct vfsmount *mnt)
 		return -ENOMEM;
 	memset(page_address(super->s_erase_page), 0xFF, PAGE_SIZE);
 
-	/* FIXME: check for read-only mounts */
 	err = logfs_make_writeable(sb);
 	if (err) {
 		__free_page(super->s_erase_page);

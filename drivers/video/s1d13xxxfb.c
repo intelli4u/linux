@@ -43,20 +43,12 @@
 /*
  * set this to enable debugging on general functions
  */
-#if 0
-#define dbg(fmt, args...) do { printk(KERN_INFO fmt, ## args); } while(0)
-#else
 #define dbg(fmt, args...) do { } while (0)
-#endif
 
 /*
  * set this to enable debugging on 2D acceleration
  */
-#if 0
-#define dbg_blit(fmt, args...) do { printk(KERN_INFO BLIT fmt, ## args); } while (0)
-#else
 #define dbg_blit(fmt, args...) do { } while (0)
-#endif
 
 /*
  * we make sure only one bitblt operation is running
@@ -97,7 +89,8 @@ static struct fb_fix_screeninfo __devinitdata s1d13xxxfb_fix = {
 static inline u8
 s1d13xxxfb_readreg(struct s1d13xxxfb_par *par, u16 regno)
 {
-#if defined(CONFIG_PLAT_M32700UT) || defined(CONFIG_PLAT_OPSPUT) || defined(CONFIG_PLAT_MAPPI3)
+#if defined(CONFIG_PLAT_M32700UT) || defined(CONFIG_PLAT_OPSPUT) || \
+	defined(CONFIG_PLAT_MAPPI3)
 	regno=((regno & 1) ? (regno & ~1L) : (regno + 1));
 #endif
 	return readb(par->regs + regno);
@@ -106,7 +99,8 @@ s1d13xxxfb_readreg(struct s1d13xxxfb_par *par, u16 regno)
 static inline void
 s1d13xxxfb_writereg(struct s1d13xxxfb_par *par, u16 regno, u8 value)
 {
-#if defined(CONFIG_PLAT_M32700UT) || defined(CONFIG_PLAT_OPSPUT) || defined(CONFIG_PLAT_MAPPI3)
+#if defined(CONFIG_PLAT_M32700UT) || defined(CONFIG_PLAT_OPSPUT) || \
+	defined(CONFIG_PLAT_MAPPI3)
 	regno=((regno & 1) ? (regno & ~1L) : (regno + 1));
 #endif
 	writeb(value, par->regs + regno);
@@ -188,20 +182,6 @@ s1d13xxxfb_setup_truecolour(struct fb_info *info)
 	info->var.blue.offset = 0;
 }
 
-/**
- *      s1d13xxxfb_set_par - Alters the hardware state.
- *      @info: frame buffer structure
- *
- *	Using the fb_var_screeninfo in fb_info we set the depth of the
- *	framebuffer. This function alters the par AND the
- *	fb_fix_screeninfo stored in fb_info. It doesn't not alter var in
- *	fb_info since we are using that data. This means we depend on the
- *	data in var inside fb_info to be supported by the hardware.
- *	xxxfb_check_var is always called before xxxfb_set_par to ensure this.
- *
- *	XXX TODO: write proper s1d13xxxfb_check_var(), without which that
- *	function is quite useless.
- */
 static int
 s1d13xxxfb_set_par(struct fb_info *info)
 {
@@ -978,19 +958,7 @@ static int s1d13xxxfb_suspend(struct platform_device *dev, pm_message_t state)
 	if (dev->dev.platform_data)
 		pdata = dev->dev.platform_data;
 
-#if 0
-	if (!s1dfb->disp_save)
-		s1dfb->disp_save = kmalloc(info->fix.smem_len, GFP_KERNEL);
-
-	if (!s1dfb->disp_save) {
-		printk(KERN_ERR PFX "no memory to save screen");
-		return -ENOMEM;
-	}
-
-	memcpy_fromio(s1dfb->disp_save, info->screen_base, info->fix.smem_len);
-#else
 	s1dfb->disp_save = NULL;
-#endif
 
 	if (!s1dfb->regs_save)
 		s1dfb->regs_save = kmalloc(info->fix.mmio_len, GFP_KERNEL);
@@ -1037,7 +1005,7 @@ static int s1d13xxxfb_resume(struct platform_device *dev)
 	if (s1dfb->disp_save) {
 		memcpy_toio(info->screen_base, s1dfb->disp_save,
 				info->fix.smem_len);
-		kfree(s1dfb->disp_save);	/* XXX kmalloc()'d when? */
+		kfree(s1dfb->disp_save);
 	}
 
 	if ((s1dfb->display & 0x01) != 0)

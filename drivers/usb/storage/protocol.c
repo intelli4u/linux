@@ -89,7 +89,6 @@ void usb_stor_ufi_command(struct scsi_cmnd *srb, struct us_data *us)
 	/* set command length to 12 bytes (this affects the transport layer) */
 	srb->cmd_len = 12;
 
-	/* XXX We should be constantly re-evaluating the need for these */
 
 	/* determine the correct data length for these commands */
 	switch (srb->cmnd[0]) {

@@ -688,5 +688,3 @@ void tipc_bearer_stop(void)
 	}
 	media_count = 0;
 }
-
-

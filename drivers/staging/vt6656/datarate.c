@@ -428,4 +428,3 @@ RATEuSetIE (
     }
     return (BYTE)uRateCnt;
 }
-

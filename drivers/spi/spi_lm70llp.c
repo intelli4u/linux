@@ -154,10 +154,6 @@ static inline void setsck(struct spi_device *s, int is_on)
 
 static inline void setmosi(struct spi_device *s, int is_on)
 {
-	/* FIXME update D7 ... this way we can put the chip
-	 * into shutdown mode and read the manufacturer ID,
-	 * but we can't put it back into operational mode.
-	 */
 }
 
 /*

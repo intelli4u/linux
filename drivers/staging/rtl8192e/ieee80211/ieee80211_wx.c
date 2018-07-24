@@ -36,11 +36,6 @@
 #include <linux/module.h>
 
 #include "ieee80211.h"
-#if 0
-static const char *ieee80211_modes[] = {
-	"?", "a", "b", "ab", "g", "ag", "bg", "abg"
-};
-#endif
 struct modes_unit {
 	char *mode_string;
 	int mode_size;
@@ -513,15 +508,6 @@ int ieee80211_wx_get_encode(struct ieee80211_device *ieee,
 		erq->flags |= IW_ENCODE_DISABLED;
 		return 0;
 	}
-#if 0
-	if (strcmp(crypt->ops->name, "WEP") != 0) {
-		/* only WEP is supported with wireless extensions, so just
-		 * report that encryption is used */
-		erq->length = 0;
-		erq->flags |= IW_ENCODE_ENABLED;
-		return 0;
-	}
-#endif
 	len = crypt->ops->get_key(keybuf, SCM_KEY_LEN, NULL, crypt->priv);
 	erq->length = (len >= 0 ? len : 0);
 
@@ -603,12 +589,6 @@ int ieee80211_wx_set_encode_ext(struct ieee80211_device *ieee,
 
 	sec.enabled = 1;
     //    sec.encrypt = 1;
-#if 0
-        if (group_key ? !ieee->host_mc_decrypt :
-            !(ieee->host_encrypt || ieee->host_decrypt ||
-              ieee->host_encrypt_msdu))
-                goto skip_host_crypt;
-#endif
         switch (ext->alg) {
         case IW_ENCODE_ALG_WEP:
                 alg = "WEP";
@@ -673,7 +653,6 @@ int ieee80211_wx_set_encode_ext(struct ieee80211_device *ieee,
                 ret = -EINVAL;
                 goto done;
         }
-#if 1
  //skip_host_crypt:
 	//printk("skip_host_crypt:ext_flags:%x\n", ext->ext_flags);
         if (ext->ext_flags & IW_ENCODE_EXT_SET_TX_KEY) {
@@ -703,7 +682,6 @@ int ieee80211_wx_set_encode_ext(struct ieee80211_device *ieee,
                 if (group_key)
                         sec.flags &= ~SEC_LEVEL;
         }
-#endif
 done:
         if (ieee->set_security)
                 ieee->set_security(ieee->dev, &sec);
@@ -833,13 +811,10 @@ int ieee80211_wx_set_auth(struct ieee80211_device *ieee,
 		//printk("open_wep:%d\n", ieee->open_wep);
 		break;
 
-#if 1
 	case IW_AUTH_WPA_ENABLED:
 		ieee->wpa_enabled = (data->value)?1:0;
 		//printk("enable wpa:%d\n", ieee->wpa_enabled);
 		break;
-
-#endif
 	case IW_AUTH_RX_UNENCRYPTED_EAPOL:
                 ieee->ieee802_1x = data->value;
 		break;
@@ -852,7 +827,6 @@ int ieee80211_wx_set_auth(struct ieee80211_device *ieee,
 	return 0;
 }
 #endif
-#if 1
 int ieee80211_wx_set_gen_ie(struct ieee80211_device *ieee, u8 *ie, size_t len)
 {
 	u8 *buf;
@@ -887,4 +861,3 @@ int ieee80211_wx_set_gen_ie(struct ieee80211_device *ieee, u8 *ie, size_t len)
 	return 0;
 
 }
-#endif

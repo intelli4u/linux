@@ -297,7 +297,6 @@ static char *storenote(struct memelfnote *men, char *bufp)
 	DUMP_WRITE(&en, sizeof(en));
 	DUMP_WRITE(men->name, en.n_namesz);
 
-	/* XXX - cast from long long to long to avoid need for libgcc.a */
 	bufp = (char*) roundup((unsigned long)bufp,4);
 	DUMP_WRITE(men->data, men->datasz);
 	bufp = (char*) roundup((unsigned long)bufp,4);

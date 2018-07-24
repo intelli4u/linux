@@ -1851,7 +1851,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
 		.pvr_mask		= 0xfff00000,
 		.pvr_value		= 0x81000000,
 		.cpu_name		= "e200z5",
-		/* xxx - galak: add CPU_FTR_MAYBE_CAN_DOZE */
 		.cpu_features		= CPU_FTRS_E200,
 		.cpu_user_features	= COMMON_USER_BOOKE |
 			PPC_FEATURE_HAS_EFP_SINGLE |
@@ -1865,7 +1864,6 @@ static struct cpu_spec __initdata cpu_specs[] = {
 		.pvr_mask		= 0xfff00000,
 		.pvr_value		= 0x81100000,
 		.cpu_name		= "e200z6",
-		/* xxx - galak: add CPU_FTR_MAYBE_CAN_DOZE */
 		.cpu_features		= CPU_FTRS_E200,
 		.cpu_user_features	= COMMON_USER_BOOKE |
 			PPC_FEATURE_HAS_SPE_COMP |

@@ -140,4 +140,3 @@ void __lockfunc _unlock_kernel(const char *func, const char *file, int line)
 
 EXPORT_SYMBOL(_lock_kernel);
 EXPORT_SYMBOL(_unlock_kernel);
-

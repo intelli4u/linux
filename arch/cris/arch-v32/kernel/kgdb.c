@@ -19,99 +19,7 @@
  *  Copyright (C) 1995 Andreas Busse
  */
 
-/* FIXME: Check the documentation. */
 
-/*
- *  kgdb usage notes:
- *  -----------------
- *
- * If you select CONFIG_ETRAX_KGDB in the configuration, the kernel will be
- * built with different gcc flags: "-g" is added to get debug infos, and
- * "-fomit-frame-pointer" is omitted to make debugging easier. Since the
- * resulting kernel will be quite big (approx. > 7 MB), it will be stripped
- * before compresion. Such a kernel will behave just as usually, except if
- * given a "debug=<device>" command line option. (Only serial devices are
- * allowed for <device>, i.e. no printers or the like; possible values are
- * machine depedend and are the same as for the usual debug device, the one
- * for logging kernel messages.) If that option is given and the device can be
- * initialized, the kernel will connect to the remote gdb in trap_init(). The
- * serial parameters are fixed to 8N1 and 115200 bps, for easyness of
- * implementation.
- *
- * To start a debugging session, start that gdb with the debugging kernel
- * image (the one with the symbols, vmlinux.debug) named on the command line.
- * This file will be used by gdb to get symbol and debugging infos about the
- * kernel. Next, select remote debug mode by
- *    target remote <device>
- * where <device> is the name of the serial device over which the debugged
- * machine is connected. Maybe you have to adjust the baud rate by
- *    set remotebaud <rate>
- * or also other parameters with stty:
- *    shell stty ... </dev/...
- * If the kernel to debug has already booted, it waited for gdb and now
- * connects, and you'll see a breakpoint being reported. If the kernel isn't
- * running yet, start it now. The order of gdb and the kernel doesn't matter.
- * Another thing worth knowing about in the getting-started phase is how to
- * debug the remote protocol itself. This is activated with
- *    set remotedebug 1
- * gdb will then print out each packet sent or received. You'll also get some
- * messages about the gdb stub on the console of the debugged machine.
- *
- * If all that works, you can use lots of the usual debugging techniques on
- * the kernel, e.g. inspecting and changing variables/memory, setting
- * breakpoints, single stepping and so on. It's also possible to interrupt the
- * debugged kernel by pressing C-c in gdb. Have fun! :-)
- *
- * The gdb stub is entered (and thus the remote gdb gets control) in the
- * following situations:
- *
- *  - If breakpoint() is called. This is just after kgdb initialization, or if
- *    a breakpoint() call has been put somewhere into the kernel source.
- *    (Breakpoints can of course also be set the usual way in gdb.)
- *    In eLinux, we call breakpoint() in init/main.c after IRQ initialization.
- *
- *  - If there is a kernel exception, i.e. bad_super_trap() or die_if_kernel()
- *    are entered. All the CPU exceptions are mapped to (more or less..., see
- *    the hard_trap_info array below) appropriate signal, which are reported
- *    to gdb. die_if_kernel() is usually called after some kind of access
- *    error and thus is reported as SIGSEGV.
- *
- *  - When panic() is called. This is reported as SIGABRT.
- *
- *  - If C-c is received over the serial line, which is treated as
- *    SIGINT.
- *
- * Of course, all these signals are just faked for gdb, since there is no
- * signal concept as such for the kernel. It also isn't possible --obviously--
- * to set signal handlers from inside gdb, or restart the kernel with a
- * signal.
- *
- * Current limitations:
- *
- *  - While the kernel is stopped, interrupts are disabled for safety reasons
- *    (i.e., variables not changing magically or the like). But this also
- *    means that the clock isn't running anymore, and that interrupts from the
- *    hardware may get lost/not be served in time. This can cause some device
- *    errors...
- *
- *  - When single-stepping, only one instruction of the current thread is
- *    executed, but interrupts are allowed for that time and will be serviced
- *    if pending. Be prepared for that.
- *
- *  - All debugging happens in kernel virtual address space. There's no way to
- *    access physical memory not mapped in kernel space, or to access user
- *    space. A way to work around this is using get_user_long & Co. in gdb
- *    expressions, but only for the current process.
- *
- *  - Interrupting the kernel only works if interrupts are currently allowed,
- *    and the interrupt of the serial line isn't blocked by some other means
- *    (IPL too high, disabled, ...)
- *
- *  - The gdb stub is currently not reentrant, i.e. errors that happen therein
- *    (e.g. accessing invalid memory) may not be caught correctly. This could
- *    be removed in future by introducing a stack of struct registers.
- *
- */
 
 /*
  *  To enable debugger support, two things need to happen.  One, a
@@ -450,7 +358,6 @@ void breakpoint(void);
 /********************************** Packet I/O ******************************/
 /* BUFMAX defines the maximum number of characters in
    inbound/outbound buffers */
-/* FIXME: How do we know it's enough? */
 #define BUFMAX 512
 
 /* Run-length encoding maximum length. Send 64 at most. */
@@ -478,9 +385,6 @@ static char *error_message[] =
 };
 
 /********************************** Breakpoint *******************************/
-/* Use an internal stack in the breakpoint and interrupt response routines.
-   FIXME: How do we know the size of this stack is enough?
-   Global so it can be reached from assembler code. */
 #define INTERNAL_STACK_SIZE 1024
 char internal_stack[INTERNAL_STACK_SIZE];
 
@@ -898,7 +802,6 @@ stub_is_stopped(int sigval)
 
 		if (S & 1) {
 			/* Instruction watchpoint. */
-			/* FIXME: Check against, and possibly adjust reported EDA. */
 		} else {
 			/* Data watchpoint.  Find the one that triggered. */
 			for (bp = 0; bp < 6; bp++) {
@@ -1423,7 +1326,6 @@ handle_exception(int sigval)
 				   Failure: will never know. */
 
 				if (input_buffer[1] != '\0') {
-					/* FIXME: Doesn't handle address argument. */
 					gdb_cris_strcpy(output_buffer, error_message[E04]);
 					break;
 				}
@@ -1448,7 +1350,6 @@ handle_exception(int sigval)
 				   executing thread. Failure: will never know. */
 
 				if (input_buffer[1] != '\0') {
-					/* FIXME: Doesn't handle address argument. */
 					gdb_cris_strcpy(output_buffer, error_message[E04]);
 					break;
 				}
@@ -1532,8 +1433,6 @@ handle_exception(int sigval)
 				   Search backwards. tAA:PP,MM
 				   Not supported: E04 */
 
-				/* FIXME: What's the difference between not supported
-				   and ignored (below)? */
 				gdb_cris_strcpy(output_buffer, error_message[E04]);
 				break;
 

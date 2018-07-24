@@ -311,7 +311,6 @@ static struct b43legacy_dmaring *priority_to_txring(
 {
 	struct b43legacy_dmaring *ring;
 
-/*FIXME: For now we always run on TX-ring-1 */
 return dev->dma.tx_ring1;
 
 	/* 0 = highest priority */
@@ -348,7 +347,6 @@ static inline int txring_to_priority(struct b43legacy_dmaring *ring)
 	static const u8 idx_to_prio[] =
 		{ 3, 2, 1, 0, 4, 5, };
 
-/*FIXME: have only one queue, for now */
 return 0;
 
 	return idx_to_prio[ring->index];

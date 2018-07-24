@@ -140,18 +140,6 @@ cabriolet_init_irq(void)
 #endif
 
 #if defined(CONFIG_ALPHA_GENERIC) || defined(CONFIG_ALPHA_PC164)
-/* In theory, the PC164 has the same interrupt hardware as the other
-   Cabriolet based systems.  However, something got screwed up late
-   in the development cycle which broke the interrupt masking hardware.
-   Repeat, it is not possible to mask and ack interrupts.  At all.
-
-   In an attempt to work around this, while processing interrupts,
-   we do not allow the IPL to drop below what it is currently.  This
-   prevents the possibility of recursion.  
-
-   ??? Another option might be to force all PCI devices to use edge
-   triggered rather than level triggered interrupts.  That might be
-   too invasive though.  */
 
 static void
 pc164_srm_device_interrupt(unsigned long v)

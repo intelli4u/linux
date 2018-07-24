@@ -1,9 +1,4 @@
-/*
- *
- * FIXME: Properly make this race free with refcounting etc...
- *
- * FIXME: LOCKING !!!
- */
+
 
 #include <linux/init.h>
 #include <linux/delay.h>
@@ -76,18 +71,6 @@ struct pmf_cmd {
 	int			error;
 };
 
-#if 0
-/* Debug output */
-static void print_blob(const char *title, const void *blob, int bytes)
-{
-	printk("%s", title);
-	while(bytes--) {
-		printk("%02x ", *((u8 *)blob));
-		blob += 1;
-	}
-	printk("\n");
-}
-#endif
 
 /*
  * Parser helpers
@@ -1016,4 +999,3 @@ int pmf_call_function(struct device_node *target, const char *name,
 	return rc;
 }
 EXPORT_SYMBOL_GPL(pmf_call_function);
-

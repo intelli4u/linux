@@ -63,8 +63,7 @@ struct prom_pmemblock mdesc[PROM_MAX_PMEMBLOCKS];
 
 /* default feature sets */
 static char msp_default_features[] =
-#if defined(CONFIG_PMC_MSP4200_EVAL) \
- || defined(CONFIG_PMC_MSP4200_GW)
+#if defined(CONFIG_PMC_MSP4200_EVAL) || defined(CONFIG_PMC_MSP4200_GW)
 	"ERER";
 #elif defined(CONFIG_PMC_MSP7120_EVAL) \
  || defined(CONFIG_PMC_MSP7120_GW)

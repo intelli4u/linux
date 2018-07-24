@@ -126,12 +126,6 @@ SECTIONS {
 		__initramfs_end = .;
 		. = ALIGN(4);
 		LONG(0);
-/*
- * FIXME this can break initramfs for MMU.
- * Pad init.ramfs up to page boundary,
- * so that __init_end == __bss_start. This will make image.elf
- * consistent with the image.bin
- */
 		/* . = ALIGN(PAGE_SIZE); */
 	}
 	__init_end = .;

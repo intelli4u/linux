@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.12 2004/10/19 13:07:43 starvik Exp $
+# $Id: Makefile,v 1.12 2004/10/19 13:07:43 Exp $
 #
 # Makefile for the linux kernel.
 #
@@ -13,4 +13,3 @@ obj-$(CONFIG_MODULES)	 += module.o
 obj-$(CONFIG_SYSTEM_PROFILER)   += profile.o
 
 clean:
-

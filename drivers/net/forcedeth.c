@@ -66,11 +66,7 @@
 #include <asm/uaccess.h>
 #include <asm/system.h>
 
-#if 0
-#define dprintk			printk
-#else
 #define dprintk(x...)		do { } while (0)
-#endif
 
 #define TX_WORK_PER_LOOP  64
 #define RX_WORK_PER_LOOP  64
@@ -103,9 +99,9 @@
 #define DEV_NEED_TX_LIMIT          0x0080000  /* device needs to limit tx */
 #define DEV_NEED_TX_LIMIT2         0x0180000  /* device needs to limit tx, expect for some revs */
 #define DEV_HAS_GEAR_MODE          0x0200000  /* device supports gear mode */
-#define DEV_NEED_PHY_INIT_FIX      0x0400000  /* device needs specific phy workaround */
-#define DEV_NEED_LOW_POWER_FIX     0x0800000  /* device needs special power up workaround */
-#define DEV_NEED_MSI_FIX           0x1000000  /* device needs msi workaround */
+#define DEV_NEED_PHY_INIT_FIX      0x0400000
+#define DEV_NEED_LOW_POWER_FIX     0x0800000
+#define DEV_NEED_MSI_FIX           0x1000000
 
 enum {
 	NvRegIrqStatus = 0x000,
@@ -801,9 +797,6 @@ struct fe_priv {
 	u32 nic_poll_irq;
 	int rx_ring_size;
 
-	/* media detection workaround.
-	 * Locking: Within irq hander or disable_irq+spin_lock(&np->lock);
-	 */
 	int need_linktimer;
 	unsigned long link_timeout;
 	/*
@@ -1185,7 +1178,6 @@ static int phy_reset(struct net_device *dev, u32 bmcr_setup)
 	while (miicontrol & BMCR_RESET) {
 		msleep(10);
 		miicontrol = mii_rw(dev, np->phyaddr, MII_BMCR, MII_READ);
-		/* FIXME: 100 tries seem excessive */
 		if (tries++ > 100)
 			return -1;
 	}
@@ -3212,7 +3204,6 @@ static int nv_update_linkspeed(struct net_device *dev)
 		}
 	}
 
-	/* FIXME: handle parallel detection properly */
 	adv_lpa = lpa & adv;
 	if (adv_lpa & LPA_100FULL) {
 		newls = NVREG_LINKSPEED_FORCE|NVREG_LINKSPEED_100;
@@ -4208,14 +4199,6 @@ static int nv_set_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
 		/* with plain spinlock lockdep complains */
 		spin_lock_irqsave(&np->lock, flags);
 		/* stop engines */
-		/* FIXME:
-		 * this can take some time, and interrupts are disabled
-		 * due to spin_lock_irqsave, but let's hope no daemon
-		 * is going to change the settings very often...
-		 * Worst case:
-		 * NV_RXSTOP_DELAY1MAX + NV_TXSTOP_DELAY1MAX
-		 * + some minor delays, which is up to a second approximately
-		 */
 		nv_stop_rxtx(dev);
 		spin_unlock_irqrestore(&np->lock, flags);
 		netif_addr_unlock(dev);
@@ -5374,7 +5357,6 @@ static int nv_close(struct net_device *dev)
 		nv_txrx_gate(dev, true);
 	}
 
-	/* FIXME: power down nic */
 
 	return 0;
 }
@@ -5588,7 +5570,6 @@ static int __devinit nv_probe(struct pci_dev *pci_dev, const struct pci_device_i
 	np->orig_mac[0] = readl(base + NvRegMacAddrA);
 	np->orig_mac[1] = readl(base + NvRegMacAddrB);
 
-	/* check the workaround bit for correct mac address order */
 	txreg = readl(base + NvRegTransmitPoll);
 	if (id->driver_data & DEV_HAS_CORRECT_MACADDR) {
 		/* mac address is already in correct order */
@@ -5646,9 +5627,6 @@ static int __devinit nv_probe(struct pci_dev *pci_dev, const struct pci_device_i
 	/* set mac address */
 	nv_copy_mac_to_hw(dev);
 
-	/* Workaround current PCI init glitch:  wakeup bits aren't
-	 * being set from PCI PM capability.
-	 */
 	device_init_wakeup(&pci_dev->dev, 1);
 
 	/* disable WOL */
@@ -5680,9 +5658,6 @@ static int __devinit nv_probe(struct pci_dev *pci_dev, const struct pci_device_i
 		/* msix has had reported issues when modifying irqmask
 		   as in the case of napi, therefore, disable for now
 		*/
-#if 0
-		np->msi_flags |= NV_MSI_X_CAPABLE;
-#endif
 	}
 
 	if (optimization_mode == NV_OPTIMIZATION_MODE_CPU) {

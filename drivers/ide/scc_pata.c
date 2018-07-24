@@ -373,7 +373,6 @@ static int scc_dma_end(ide_drive_t *drive)
 	int dma_stat, data_loss = 0;
 	static int retry = 0;
 
-	/* errata A308 workaround: Step5 (check data loss) */
 	/* We don't check non ide_disk because it is limited to UDMA4 */
 	if (!(in_be32((void __iomem *)hwif->io_ports.ctl_addr)
 	      & ATA_ERR) &&
@@ -479,13 +478,11 @@ static int scc_dma_test_irq(ide_drive_t *drive)
 	ide_hwif_t *hwif = drive->hwif;
 	u32 int_stat = in_be32((void __iomem *)hwif->dma_base + 0x014);
 
-	/* SCC errata A252,A308 workaround: Step4 */
 	if ((in_be32((void __iomem *)hwif->io_ports.ctl_addr)
 	     & ATA_ERR) &&
 	    (int_stat & INTSTS_INTRQ))
 		return 1;
 
-	/* SCC errata A308 workaround: Step5 (polling IOIRQS) */
 	if (int_stat & INTSTS_IOIRQS)
 		return 1;
 
@@ -497,7 +494,6 @@ static u8 scc_udma_filter(ide_drive_t *drive)
 	ide_hwif_t *hwif = drive->hwif;
 	u8 mask = hwif->ultra_mask;
 
-	/* errata A308 workaround: limit non ide_disk drive to UDMA4 */
 	if ((drive->media != ide_disk) && (mask & 0xE0)) {
 		printk(KERN_INFO "%s: limit %s to UDMA4\n",
 		       SCC_PATA_NAME, drive->name);

@@ -1043,21 +1043,6 @@ static void hifn_init_registers(struct hifn_device *dev)
 				offsetof(struct hifn_dma, resr[0]));
 
 	mdelay(2);
-#if 0
-	hifn_write_1(dev, HIFN_1_DMA_CSR,
-	    HIFN_DMACSR_D_CTRL_DIS | HIFN_DMACSR_R_CTRL_DIS |
-	    HIFN_DMACSR_S_CTRL_DIS | HIFN_DMACSR_C_CTRL_DIS |
-	    HIFN_DMACSR_D_ABORT | HIFN_DMACSR_D_DONE | HIFN_DMACSR_D_LAST |
-	    HIFN_DMACSR_D_WAIT | HIFN_DMACSR_D_OVER |
-	    HIFN_DMACSR_R_ABORT | HIFN_DMACSR_R_DONE | HIFN_DMACSR_R_LAST |
-	    HIFN_DMACSR_R_WAIT | HIFN_DMACSR_R_OVER |
-	    HIFN_DMACSR_S_ABORT | HIFN_DMACSR_S_DONE | HIFN_DMACSR_S_LAST |
-	    HIFN_DMACSR_S_WAIT |
-	    HIFN_DMACSR_C_ABORT | HIFN_DMACSR_C_DONE | HIFN_DMACSR_C_LAST |
-	    HIFN_DMACSR_C_WAIT |
-	    HIFN_DMACSR_ENGINE |
-	    HIFN_DMACSR_PUBDONE);
-#else
 	hifn_write_1(dev, HIFN_1_DMA_CSR,
 	    HIFN_DMACSR_C_CTRL_ENA | HIFN_DMACSR_S_CTRL_ENA |
 	    HIFN_DMACSR_D_CTRL_ENA | HIFN_DMACSR_R_CTRL_ENA |
@@ -1071,7 +1056,6 @@ static void hifn_init_registers(struct hifn_device *dev)
 	    HIFN_DMACSR_C_WAIT |
 	    HIFN_DMACSR_ENGINE |
 	    HIFN_DMACSR_PUBDONE);
-#endif
 	hifn_read_1(dev, HIFN_1_DMA_CSR);
 
 	dev->dmareg |= HIFN_DMAIER_R_DONE | HIFN_DMAIER_C_ABORT |
@@ -1082,14 +1066,7 @@ static void hifn_init_registers(struct hifn_device *dev)
 
 	hifn_write_1(dev, HIFN_1_DMA_IER, dev->dmareg);
 	hifn_read_1(dev, HIFN_1_DMA_IER);
-#if 0
-	hifn_write_0(dev, HIFN_0_PUCNFG, HIFN_PUCNFG_ENCCNFG |
-		    HIFN_PUCNFG_DRFR_128 | HIFN_PUCNFG_TCALLPHASES |
-		    HIFN_PUCNFG_TCDRVTOTEM | HIFN_PUCNFG_BUS32 |
-		    HIFN_PUCNFG_DRAM);
-#else
 	hifn_write_0(dev, HIFN_0_PUCNFG, 0x10342);
-#endif
 	hifn_init_pll(dev);
 
 	hifn_write_0(dev, HIFN_0_PUISR, HIFN_PUISR_DSTOVER);

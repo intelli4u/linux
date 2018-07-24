@@ -17,21 +17,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-/*
- * BCM1x80/1x55-specific PCI support
- *
- * This module provides the glue between Linux's PCI subsystem
- * and the hardware.  We basically provide glue for accessing
- * configuration space, and set up the translation for I/O
- * space accesses.
- *
- * To access configuration space, we use ioremap.  In the 32-bit
- * kernel, this consumes either 4 or 8 page table pages, and 16MB of
- * kernel mapped memory.  Hopefully neither of these should be a huge
- * problem.
- *
- * XXX: AT THIS TIME, ONLY the NATIVE PCI-X INTERFACE IS SUPPORTED.
- */
 #include <linux/types.h>
 #include <linux/pci.h>
 #include <linux/kernel.h>
@@ -229,7 +214,7 @@ static int __init bcm1480_pcibios_init(void)
 			printk
 			    ("PCI: Skipping PCI probe.  Bus is not initialized.\n");
 			iounmap(cfg_space);
-			return 1; /* XXX */
+			return 1;
 		}
 		bcm1480_bus_status |= PCI_BUS_ENABLED;
 	}
@@ -240,14 +225,6 @@ static int __init bcm1480_pcibios_init(void)
 			cmdreg | 0x10);
 	cmdreg = READCFG32(CFGOFFSET(0, PCI_DEVFN(PCI_BRIDGE_DEVICE, 0), 0x40));
 
-	/*
-	 * Establish mappings in KSEG2 (kernel virtual) to PCI I/O
-	 * space.  Use "match bytes" policy to make everything look
-	 * little-endian.  So, you need to also set
-	 * CONFIG_SWAP_IO_SPACE, but this is the combination that
-	 * works correctly with most of Linux's drivers.
-	 * XXX ehs: Should this happen in PCI Device mode?
-	 */
 
 	bcm1480_controller.io_map_base = (unsigned long)
 		ioremap(A_BCM1480_PHYS_PCI_IO_MATCH_BYTES, 65536);

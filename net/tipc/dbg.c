@@ -424,4 +424,3 @@ struct sk_buff *tipc_log_dump(void)
 	}
 	return reply;
 }
-

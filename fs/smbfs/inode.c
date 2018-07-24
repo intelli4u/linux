@@ -546,7 +546,6 @@ static int smb_fill_super(struct super_block *sb, void *raw_data, int silent)
 	server->generation = 0;
 
 	/* Allocate the global temp buffer and some superblock helper structs */
-	/* FIXME: move these to the smb_sb_info struct */
 	VERBOSE("alloc chunk = %lu\n", sizeof(struct smb_ops) +
 		sizeof(struct smb_mount_data_kernel));
 	mem = kmalloc(sizeof(struct smb_ops) +
@@ -721,7 +720,6 @@ smb_notify_change(struct dentry *dentry, struct iattr *attr)
 	if (server->opt.capabilities & SMB_CAP_UNIX) {
 		/* For now we don't want to set the size with setattr_unix */
 		attr->ia_valid &= ~ATTR_SIZE;
-		/* FIXME: only call if we actually want to set something? */
 		error = smb_proc_setattr_unix(dentry, attr, 0, 0);
 		if (!error)
 			refresh = 1;

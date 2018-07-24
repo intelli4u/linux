@@ -89,7 +89,6 @@ typedef unsigned long pte_basic_t;
 typedef struct page *pgtable_t;
 typedef struct { unsigned long	pte; }		pte_t;
 typedef struct { unsigned long	pgprot; }	pgprot_t;
-/* FIXME this can depend on linux kernel version */
 #   ifdef CONFIG_MMU
 typedef struct { unsigned long pmd; } pmd_t;
 typedef struct { unsigned long pgd; } pgd_t;

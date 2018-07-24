@@ -408,4 +408,3 @@ $(wrapper-installed): $(DESTDIR)$(WRAPPER_BINDIR) $(srctree)/$(obj)/wrapper | $(
 	$(call cmd,install_wrapper)
 
 $(obj)/bootwrapper_install: $(all-installed)
-

@@ -453,5 +453,3 @@ MACHINE_START(IXDP28X5, "Intel IXDP2805/2855 Development Platform")
 	.init_machine	= ixdp2x01_init_machine,
 MACHINE_END
 #endif
-
-

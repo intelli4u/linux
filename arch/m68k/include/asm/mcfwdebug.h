@@ -103,16 +103,8 @@ static inline void wdebug(int reg, unsigned long data) {
 	dbg[3] = 0;
 
 	// Perform the wdebug instruction
-#if 0
-	// This strain is for gas which doesn't have the wdebug instructions defined
-	asm(	"move.l	%0, %%a0\n\t"
-		".word	0xfbd0\n\t"
-		".word	0x0003\n\t"
-	    :: "g" (dbg) : "a0");
-#else
 	// And this is for when it does
 	asm(	"wdebug	(%0)" :: "a" (dbg));
-#endif
 }
 
 #endif

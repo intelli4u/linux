@@ -330,4 +330,3 @@ struct __attribute__ ((__packed__)) vmcb {
 #define SVM_INVLPGA ".byte 0x0f, 0x01, 0xdf"
 
 #endif
-

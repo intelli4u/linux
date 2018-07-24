@@ -86,10 +86,6 @@ error:
 void module_free(struct module *mod, void *module_region)
 {
 	vfree(module_region);
-	/*
-	 * FIXME: If module_region == mod->init_region, trim exception
-	 * table entries.
-	 */
 }
 
 /* We don't need anything special. */
@@ -248,7 +244,6 @@ int module_finalize(const Elf_Ehdr *hdr,
 		    const Elf_Shdr *sechdrs,
 		    struct module *me)
 {
-	/* FIXME: perhaps remove the "writable" bit from the TLB? */
 	return 0;
 }
 

@@ -1280,12 +1280,6 @@ static inline void pci_resource_to_user(const struct pci_dev *dev, int bar,
 #endif /* HAVE_ARCH_PCI_RESOURCE_TO_USER */
 
 
-/*
- *  The world is not perfect and supplies us with broken PCI devices.
- *  For at least a part of these bugs we need a work-around, so both
- *  generic (drivers/pci/quirks.c) and per-architecture code can define
- *  fixup hooks to be called for particular buggy devices.
- */
 
 struct pci_fixup {
 	u16 vendor, device;	/* You can use PCI_ANY_ID here of course */

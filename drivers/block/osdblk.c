@@ -698,4 +698,3 @@ static void __exit osdblk_exit(void)
 
 module_init(osdblk_init);
 module_exit(osdblk_exit);
-

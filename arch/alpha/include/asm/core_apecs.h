@@ -20,55 +20,6 @@
  *
  */
 
-/*
-   An AVANTI *might* be an XL, and an XL has only 27 bits of ISA address
-   that get passed through the PCI<->ISA bridge chip. So we've gotta use
-   both windows to max out the physical memory we can DMA to. Sigh...
-
-   If we try a window at 0 for 1GB as a work-around, we run into conflicts
-   with ISA/PCI bus memory which can't be relocated, like VGA aperture and
-   BIOS ROMs. So we must put the windows high enough to avoid these areas.
-
-   We put window 1 at BUS 64Mb for 64Mb, mapping physical 0 to 64Mb-1,
-   and window 2 at BUS 1Gb for 1Gb, mapping physical 0 to 1Gb-1.
-   Yes, this does map 0 to 64Mb-1 twice, but only window 1 will actually
-   be used for that range (via virt_to_bus()).
-
-   Note that we actually fudge the window 1 maximum as 48Mb instead of 64Mb,
-   to keep virt_to_bus() from returning an address in the first window, for
-   a data area that goes beyond the 64Mb first DMA window.  Sigh...
-   The fudge factor MUST match with <asm/dma.h> MAX_DMA_ADDRESS, but
-   we can't just use that here, because of header file looping... :-(
-
-   Window 1 will be used for all DMA from the ISA bus; yes, that does
-   limit what memory an ISA floppy or sound card or Ethernet can touch, but
-   it's also a known limitation on other platforms as well. We use the
-   same technique that is used on INTEL platforms with similar limitation:
-   set MAX_DMA_ADDRESS and clear some pages' DMAable flags during mem_init().
-   We trust that any ISA bus device drivers will *always* ask for DMAable
-   memory explicitly via kmalloc()/get_free_pages() flags arguments.
-
-   Note that most PCI bus devices' drivers do *not* explicitly ask for
-   DMAable memory; they count on being able to DMA to any memory they
-   get from kmalloc()/get_free_pages(). They will also use window 1 for
-   any physical memory accesses below 64Mb; the rest will be handled by
-   window 2, maxing out at 1Gb of memory. I trust this is enough... :-)
-
-   We hope that the area before the first window is large enough so that
-   there will be no overlap at the top end (64Mb). We *must* locate the
-   PCI cards' memory just below window 1, so that there's still the
-   possibility of being able to access it via SPARSE space. This is
-   important for cards such as the Matrox Millennium, whose Xserver
-   wants to access memory-mapped registers in byte and short lengths.
-
-   Note that the XL is treated differently from the AVANTI, even though
-   for most other things they are identical. It didn't seem reasonable to
-   make the AVANTI support pay for the limitations of the XL. It is true,
-   however, that an XL kernel will run on an AVANTI without problems.
-
-   %%% All of this should be obviated by the ability to route
-   everything through the iommu.
-*/
 
 /*
  * 21071-DA Control and Status registers.

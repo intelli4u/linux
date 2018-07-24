@@ -153,7 +153,6 @@ lubbock_pcmcia_configure_socket(struct soc_pcmcia_socket *skt,
 		sa1111_set_io(s->dev, pa_dwr_mask, pa_dwr_set);
 	}
 
-#if 1
 	if (ret == 0 && state->Vcc == 33) {
 		struct pcmcia_state new_state;
 
@@ -183,18 +182,11 @@ lubbock_pcmcia_configure_socket(struct soc_pcmcia_socket *skt,
 			 */
 			mdelay(100);
 
-			/*
-			 * We need to hack around the const qualifier as
-			 * well to keep this ugly workaround localized and
-			 * not force it to the rest of the code. Barf bags
-			 * avaliable in the seat pocket in front of you!
-			 */
 			((socket_state_t *)state)->Vcc = 50;
 			((socket_state_t *)state)->Vpp = 50;
 			goto again;
 		}
 	}
-#endif
 
 	return ret;
 }

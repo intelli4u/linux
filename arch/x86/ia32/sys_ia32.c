@@ -181,7 +181,6 @@ asmlinkage long sys32_rt_sigaction(int sig, struct sigaction32 __user *act,
 	int ret;
 	compat_sigset_t set32;
 
-	/* XXX: Don't preclude handling different sized sigset_t's.  */
 	if (sigsetsize != sizeof(compat_sigset_t))
 		return -EINVAL;
 
@@ -198,10 +197,6 @@ asmlinkage long sys32_rt_sigaction(int sig, struct sigaction32 __user *act,
 		new_ka.sa.sa_handler = compat_ptr(handler);
 		new_ka.sa.sa_restorer = compat_ptr(restorer);
 
-		/*
-		 * FIXME: here we rely on _COMPAT_NSIG_WORS to be >=
-		 * than _NSIG_WORDS << 1
-		 */
 		switch (_NSIG_WORDS) {
 		case 4: new_ka.sa.sa_mask.sig[3] = set32.sig[6]
 				| (((long)set32.sig[7]) << 32);
@@ -217,10 +212,6 @@ asmlinkage long sys32_rt_sigaction(int sig, struct sigaction32 __user *act,
 	ret = do_sigaction(sig, act ? &new_ka : NULL, oact ? &old_ka : NULL);
 
 	if (!ret && oact) {
-		/*
-		 * FIXME: here we rely on _COMPAT_NSIG_WORS to be >=
-		 * than _NSIG_WORDS << 1
-		 */
 		switch (_NSIG_WORDS) {
 		case 4:
 			set32.sig[7] = (old_ka.sa.sa_mask.sig[3] >> 32);

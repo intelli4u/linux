@@ -386,10 +386,6 @@ xfs_qm_mount_quotas(
 		mp->m_qflags &= ~XFS_OQUOTA_CHKD;
 
  write_changes:
-	/*
-	 * We actually don't have to acquire the m_sb_lock at all.
-	 * This can only be called from mount, and that's single threaded. XXX
-	 */
 	spin_lock(&mp->m_sb_lock);
 	sbf = mp->m_sb.sb_qflags;
 	mp->m_sb.sb_qflags = mp->m_qflags & XFS_MOUNT_QUOTA_ALL;
@@ -481,7 +477,6 @@ again:
 			continue;
 		}
 
-		/* XXX a sentinel would be better */
 		recl = q->qi_dqreclaims;
 		if (!xfs_dqflock_nowait(dqp)) {
 			/*
@@ -506,7 +501,6 @@ again:
 		mutex_lock(&q->qi_dqlist_lock);
 		if (recl != q->qi_dqreclaims) {
 			mutex_unlock(&q->qi_dqlist_lock);
-			/* XXX restart limit */
 			goto again;
 		}
 	}
@@ -976,7 +970,6 @@ xfs_qm_sync(
 			continue;
 		}
 
-		/* XXX a sentinel would be better */
 		recl = q->qi_dqreclaims;
 		if (!xfs_dqflock_nowait(dqp)) {
 			if (flags & SYNC_TRYLOCK) {
@@ -2165,11 +2158,6 @@ xfs_qm_dqalloc_incore(
 		 */
 		if ((dqp = xfs_qm_dqreclaim_one())) {
 			XQM_STATS_INC(xqmstats.xs_qm_dqreclaims);
-			/*
-			 * Just zero the core here. The rest will get
-			 * reinitialized by caller. XXX we shouldn't even
-			 * do this zero ...
-			 */
 			memset(&dqp->q_core, 0, sizeof(dqp->q_core));
 			*O_dqpp = dqp;
 			return B_FALSE;
@@ -2563,4 +2551,3 @@ xfs_qm_vop_create_dqattach(
 		xfs_trans_mod_dquot(tp, gdqp, XFS_TRANS_DQ_ICOUNT, 1);
 	}
 }
-

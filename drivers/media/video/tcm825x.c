@@ -924,10 +924,6 @@ static void __exit tcm825x_exit(void)
 	i2c_del_driver(&tcm825x_i2c_driver);
 }
 
-/*
- * FIXME: Menelaus isn't ready (?) at module_init stage, so use
- * late_initcall for now.
- */
 late_initcall(tcm825x_init);
 module_exit(tcm825x_exit);
 

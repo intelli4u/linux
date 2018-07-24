@@ -106,4 +106,3 @@ struct ocfs1_vol_label
 
 
 #endif /* _OCFS1_FS_COMPAT_H */
-

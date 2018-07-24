@@ -582,7 +582,6 @@ static int matroxfb_decode_var(const struct matrox_fb_info *minfo,
 		memlen = var->xres_virtual * bpp * var->yres_virtual / 8;
 	}
 	/* There is hardware bug that no line can cross 4MB boundary */
-	/* give up for CFB24, it is impossible to easy workaround it */
 	/* for other try to do something */
 	if (!minfo->capable.cross4MB && (memlen > 0x400000)) {
 		if (bpp == 24) {
@@ -1281,9 +1280,9 @@ static unsigned int fv;			/* "matrox:fv:xxxxx" */
 static unsigned int fh;			/* "matrox:fh:xxxxxk" */
 static unsigned int maxclk;		/* "matrox:maxclk:xxxxM" */
 static int dfp;				/* "matrox:dfp */
-static int dfp_type = -1;		/* "matrox:dfp:xxx */
-static int memtype = -1;		/* "matrox:memtype:xxx" */
-static char outputs[8];			/* "matrox:outputs:xxx" */
+static int dfp_type = -1;
+static int memtype = -1;
+static char outputs[8];
 
 #ifndef MODULE
 static char videomode[64];		/* "matrox:mode:xxxxx" or "matrox:xxxxx" */
@@ -1851,7 +1850,6 @@ static int initMatrox2(struct matrox_fb_info *minfo, struct board *b)
 		vesafb_defined.pixclock = pixclock;
 	}
 
-	/* FIXME: Where to move this?! */
 #if defined(CONFIG_PPC_PMAC)
 #ifndef MODULE
 	if (machine_is(powermac)) {
@@ -2596,4 +2594,3 @@ EXPORT_SYMBOL(matroxfb_enable_irq);
  * c-basic-offset: 8
  * End:
  */
-

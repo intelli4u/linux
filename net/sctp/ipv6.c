@@ -387,7 +387,7 @@ static void sctp_v6_from_skb(union sctp_addr *addr,struct sk_buff *skb,
 
 	port = &addr->v6.sin6_port;
 	addr->v6.sin6_family = AF_INET6;
-	addr->v6.sin6_flowinfo = 0; /* FIXME */
+	addr->v6.sin6_flowinfo = 0;
 	addr->v6.sin6_scope_id = ((struct inet6_skb_parm *)skb->cb)->iif;
 
 	sh = sctp_hdr(skb);
@@ -691,7 +691,7 @@ static void sctp_inet6_msgname(char *msgname, int *addr_len)
 	sin6 = (struct sockaddr_in6 *)msgname;
 	sin6->sin6_family = AF_INET6;
 	sin6->sin6_flowinfo = 0;
-	sin6->sin6_scope_id = 0; /*FIXME */
+	sin6->sin6_scope_id = 0;
 	*addr_len = sizeof(struct sockaddr_in6);
 }
 

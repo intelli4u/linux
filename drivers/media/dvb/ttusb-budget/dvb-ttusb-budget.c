@@ -131,7 +131,6 @@ struct ttusb {
 	struct dvb_frontend* fe;
 };
 
-/* ugly workaround ... don't know why it's necessary to read */
 /* all result codes. */
 
 #define DEBUG 0
@@ -528,19 +527,6 @@ static int ttusb_set_tone(struct dvb_frontend* fe, fe_sec_tone_mode_t tone)
 #endif
 
 
-#if 0
-static void ttusb_set_led_freq(struct ttusb *ttusb, u8 freq)
-{
-	u8 b[] = { 0xaa, ++ttusb->c, 0x19, 1, freq };
-	int err, actual_len;
-
-	err = ttusb_cmd(ttusb, b, sizeof(b), 0);
-	if (err) {
-		dprintk("%s: usb_bulk_msg() failed, return value %i!\n",
-			__func__, err);
-	}
-}
-#endif
 
 /*****************************************************************************/
 
@@ -747,11 +733,6 @@ static void ttusb_iso_irq(struct urb *urb)
 	if (!ttusb->iso_streaming)
 		return;
 
-#if 0
-	printk("%s: status %d, errcount == %d, length == %i\n",
-	       __func__,
-	       urb->status, urb->error_count, urb->actual_length);
-#endif
 
 	if (!urb->status) {
 		int i;
@@ -979,41 +960,6 @@ static int ttusb_setup_interfaces(struct ttusb *ttusb)
 	return 0;
 }
 
-#if 0
-static u8 stc_firmware[8192];
-
-static int stc_open(struct inode *inode, struct file *file)
-{
-	struct ttusb *ttusb = file->private_data;
-	int addr;
-
-	for (addr = 0; addr < 8192; addr += 16) {
-		u8 snd_buf[2] = { addr >> 8, addr & 0xFF };
-		ttusb_i2c_msg(ttusb, 0x50, snd_buf, 2, stc_firmware + addr,
-			      16);
-	}
-
-	return 0;
-}
-
-static ssize_t stc_read(struct file *file, char *buf, size_t count,
-		 loff_t *offset)
-{
-	return simple_read_from_buffer(buf, count, offset, stc_firmware, 8192);
-}
-
-static int stc_release(struct inode *inode, struct file *file)
-{
-	return 0;
-}
-
-static const struct file_operations stc_fops = {
-	.owner = THIS_MODULE,
-	.read = stc_read,
-	.open = stc_open,
-	.release = stc_release,
-};
-#endif
 
 static u32 functionality(struct i2c_adapter *adapter)
 {
@@ -1726,7 +1672,6 @@ static int ttusb_probe(struct usb_interface *intf, const struct usb_device_id *i
 		dvb_unregister_adapter (&ttusb->adapter);
 		return -ENODEV;
 	}
-//FIXME dmxdev (nur WAS?)
 	ttusb->dmxdev.filternum = ttusb->dvb_demux.filternum;
 	ttusb->dmxdev.demux = &ttusb->dvb_demux.dmx;
 	ttusb->dmxdev.capabilities = 0;

@@ -77,9 +77,6 @@ unsigned short coda_flags_to_cflags(unsigned short flags)
 void coda_vattr_to_iattr(struct inode *inode, struct coda_vattr *attr)
 {
         int inode_type;
-        /* inode's i_flags, i_ino are set by iget 
-           XXX: is this all we need ??
-           */
         switch (attr->va_type) {
         case C_VNON:
                 inode_type  = 0;
@@ -152,19 +149,6 @@ void coda_iattr_to_vattr(struct iattr *iattr, struct coda_vattr *vattr)
         vattr->va_flags = 0;
 
         /* determine the type */
-#if 0
-        mode = iattr->ia_mode;
-                if ( S_ISDIR(mode) ) {
-                vattr->va_type = C_VDIR; 
-        } else if ( S_ISREG(mode) ) {
-                vattr->va_type = C_VREG;
-        } else if ( S_ISLNK(mode) ) {
-                vattr->va_type = C_VLNK;
-        } else {
-                /* don't do others */
-                vattr->va_type = C_VNON;
-        }
-#endif 
 
         /* set those vattrs that need change */
         valid = iattr->ia_valid;
@@ -190,4 +174,3 @@ void coda_iattr_to_vattr(struct iattr *iattr, struct coda_vattr *vattr)
                 vattr->va_ctime = iattr->ia_ctime;
 	}
 }
-

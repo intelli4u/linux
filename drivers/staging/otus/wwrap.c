@@ -298,13 +298,6 @@ void zfLnxUsbDataIn_callback(urb_t *urb)
 	/* Dequeue skb buffer */
 	buf = zfLnxGetUsbRxBuffer(dev);
 	dev_kfree_skb_any(buf);
-	#if 0
-	/* Enqueue skb buffer */
-	zfLnxPutUsbRxBuffer(dev, buf);
-
-	/* Submit a Rx urb */
-	zfLnxUsbIn(dev, urb, buf);
-	#endif
 	return;
 	}
 
@@ -352,17 +345,6 @@ void zfLnxUsbDataIn_callback(urb_t *urb)
 		int pad_len;
 
 		/*printk("Get a packet, index: %d, pkt_len: 0x%04x\n", index, pkt_len);*/
-		#if 0
-		/* Dump data */
-		for (ii = index; ii < pkt_len+4;) {
-			printk("%02x ", (buf->data[ii] & 0xff));
-
-			if ((++ii % 16) == 0)
-			printk("\n");
-			}
-
-			printk("\n");
-		#endif
 
 		pad_len = 4 - (pkt_len & 0x3);
 
@@ -629,35 +611,6 @@ u32_t zfLnxUsbSubmitTxData(zdev_t *dev)
 
     len = TxData->hdrlen+TxData->snapLen+TxData->buf->len+TxData->tailLen-TxData->offset;
 
-    #if 0
-    if (TxData->hdrlen != 0) {
-	puTxBuf = macp->txUsbBuf[freeTxUrb];
-	for (i = 0; i < len; i++) {
-		printk("%02x ", puTxBuf[i]);
-		if (i % 16 == 15)
-		printk("\n");
-		}
-		printk("\n");
-	}
-    #endif
-    #if 0
-    /* For debug purpose */
-    if (TxData->hdr[9] & 0x40) {
-	int i;
-	u16_t ctrlLen = TxData->hdr[0] + (TxData->hdr[1] << 8);
-
-	if (ctrlLen != len + 4) {
-	/* Dump control setting */
-	for (i = 0; i < 8; i++) {
-		printk(KERN_ERR "0x%02x ", TxData->hdr[i]);
-	}
-	printk(KERN_ERR "\n");
-
-	printk(KERN_ERR "ctrLen: %d, hdrLen: %d, snapLen: %d\n", ctrlLen, TxData->hdrlen, TxData->snapLen);
-	printk(KERN_ERR "bufLen: %d, tailLen: %d, len: %d\n", TxData->buf->len, TxData->tailLen, len);
-	}
-    }
-    #endif
 
 #if ZM_USB_TX_STREAM_MODE == 1
     /* Add the Length and Tag*/
@@ -1045,4 +998,3 @@ void zfwGetShowZeroLengthSSID(zdev_t *dev, u8_t *Dur)
 {
     *Dur = 0;
 }
-

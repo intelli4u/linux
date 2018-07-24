@@ -132,7 +132,6 @@ static inline struct omap_dss_device *fb2display(struct fb_info *fbi)
 	struct omapfb_info *ofbi = FB2OFB(fbi);
 	int i;
 
-	/* XXX: returns the display connected to first attached overlay */
 	for (i = 0; i < ofbi->num_overlays; i++) {
 		if (ofbi->overlays[i]->manager)
 			return ofbi->overlays[i]->manager->device;

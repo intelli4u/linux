@@ -678,13 +678,6 @@ int perf_file_header__read(struct perf_file_header *self,
 
 	memcpy(&ph->adds_features, &self->adds_features,
 	       sizeof(ph->adds_features));
-	/*
-	 * FIXME: hack that assumes that if we need swap the perf.data file
-	 * may be coming from an arch with a different word-size, ergo different
-	 * DEFINE_BITMAP format, investigate more later, but for now its mostly
-	 * safe to assume that we have a build-id section. Trace files probably
-	 * have several other issues in this realm anyway...
-	 */
 	if (ph->needs_swap) {
 		memset(&ph->adds_features, 0, sizeof(ph->adds_features));
 		perf_header__set_feat(ph, HEADER_BUILD_ID);

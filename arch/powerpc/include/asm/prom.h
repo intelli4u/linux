@@ -23,10 +23,6 @@
 #define HAVE_ARCH_DEVTREE_FIXUPS
 
 #ifdef CONFIG_PPC32
-/*
- * PCI <-> OF matching functions
- * (XXX should these be here?)
- */
 struct pci_bus;
 struct pci_dev;
 extern int pci_device_from_OF_node(struct device_node *node,

@@ -1074,7 +1074,6 @@ static struct isa_driver snd_msnd_driver = {
 	.match		= snd_msnd_isa_match,
 	.probe		= snd_msnd_isa_probe,
 	.remove		= __devexit_p(snd_msnd_isa_remove),
-	/* FIXME: suspend, resume */
 	.driver		= {
 		.name	= DEV_NAME
 	},
@@ -1242,4 +1241,3 @@ static void __exit snd_msnd_exit(void)
 
 module_init(snd_msnd_init);
 module_exit(snd_msnd_exit);
-

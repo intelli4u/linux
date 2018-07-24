@@ -205,33 +205,6 @@ static struct uart_port __pminitdata __frv_uart1 = {
 	.flags			= UPF_BOOT_AUTOCONF | UPF_SKIP_TEST,
 };
 
-#if 0
-static void __init printk_xampr(unsigned long ampr, unsigned long amlr, char i_d, int n)
-{
-	unsigned long phys, virt, cxn, size;
-
-#ifdef CONFIG_MMU
-	virt = amlr & 0xffffc000;
-	cxn = amlr & 0x3fff;
-#else
-	virt = ampr & 0xffffc000;
-	cxn = 0;
-#endif
-	phys = ampr & xAMPRx_PPFN;
-	size = 1 << (((ampr & xAMPRx_SS) >> 4) + 17);
-
-	printk("%cAMPR%d: va %08lx-%08lx [pa %08lx] %c%c%c%c [cxn:%04lx]\n",
-	       i_d, n,
-	       virt, virt + size - 1,
-	       phys,
-	       ampr & xAMPRx_S  ? 'S' : '-',
-	       ampr & xAMPRx_C  ? 'C' : '-',
-	       ampr & DAMPRx_WP ? 'W' : '-',
-	       ampr & xAMPRx_V  ? 'V' : '-',
-	       cxn
-	       );
-}
-#endif
 
 /*****************************************************************************/
 /*
@@ -240,75 +213,8 @@ static void __init printk_xampr(unsigned long ampr, unsigned long amlr, char i_d
 static void __init dump_memory_map(void)
 {
 
-#if 0
-	/* dump the protection map */
-	printk_xampr(__get_IAMPR(0),  __get_IAMLR(0),  'I', 0);
-	printk_xampr(__get_IAMPR(1),  __get_IAMLR(1),  'I', 1);
-	printk_xampr(__get_IAMPR(2),  __get_IAMLR(2),  'I', 2);
-	printk_xampr(__get_IAMPR(3),  __get_IAMLR(3),  'I', 3);
-	printk_xampr(__get_IAMPR(4),  __get_IAMLR(4),  'I', 4);
-	printk_xampr(__get_IAMPR(5),  __get_IAMLR(5),  'I', 5);
-	printk_xampr(__get_IAMPR(6),  __get_IAMLR(6),  'I', 6);
-	printk_xampr(__get_IAMPR(7),  __get_IAMLR(7),  'I', 7);
-	printk_xampr(__get_IAMPR(8),  __get_IAMLR(8),  'I', 8);
-	printk_xampr(__get_IAMPR(9),  __get_IAMLR(9),  'i', 9);
-	printk_xampr(__get_IAMPR(10), __get_IAMLR(10), 'I', 10);
-	printk_xampr(__get_IAMPR(11), __get_IAMLR(11), 'I', 11);
-	printk_xampr(__get_IAMPR(12), __get_IAMLR(12), 'I', 12);
-	printk_xampr(__get_IAMPR(13), __get_IAMLR(13), 'I', 13);
-	printk_xampr(__get_IAMPR(14), __get_IAMLR(14), 'I', 14);
-	printk_xampr(__get_IAMPR(15), __get_IAMLR(15), 'I', 15);
 
-	printk_xampr(__get_DAMPR(0),  __get_DAMLR(0),  'D', 0);
-	printk_xampr(__get_DAMPR(1),  __get_DAMLR(1),  'D', 1);
-	printk_xampr(__get_DAMPR(2),  __get_DAMLR(2),  'D', 2);
-	printk_xampr(__get_DAMPR(3),  __get_DAMLR(3),  'D', 3);
-	printk_xampr(__get_DAMPR(4),  __get_DAMLR(4),  'D', 4);
-	printk_xampr(__get_DAMPR(5),  __get_DAMLR(5),  'D', 5);
-	printk_xampr(__get_DAMPR(6),  __get_DAMLR(6),  'D', 6);
-	printk_xampr(__get_DAMPR(7),  __get_DAMLR(7),  'D', 7);
-	printk_xampr(__get_DAMPR(8),  __get_DAMLR(8),  'D', 8);
-	printk_xampr(__get_DAMPR(9),  __get_DAMLR(9),  'D', 9);
-	printk_xampr(__get_DAMPR(10), __get_DAMLR(10), 'D', 10);
-	printk_xampr(__get_DAMPR(11), __get_DAMLR(11), 'D', 11);
-	printk_xampr(__get_DAMPR(12), __get_DAMLR(12), 'D', 12);
-	printk_xampr(__get_DAMPR(13), __get_DAMLR(13), 'D', 13);
-	printk_xampr(__get_DAMPR(14), __get_DAMLR(14), 'D', 14);
-	printk_xampr(__get_DAMPR(15), __get_DAMLR(15), 'D', 15);
-#endif
 
-#if 0
-	/* dump the bus controller registers */
-	printk("LGCR: %08lx\n", __get_LGCR());
-	printk("Master: %08lx-%08lx CR=%08lx\n",
-	       __get_LEMBR(), __get_LEMBR() + __get_LEMAM(),
-	       __get_LMAICR());
-
-	int loop;
-	for (loop = 1; loop <= 7; loop++) {
-		unsigned long lcr = __get_LCR(loop), lsbr = __get_LSBR(loop);
-		printk("CS#%d: %08lx-%08lx %c%c%c%c%c%c%c%c%c\n",
-		       loop,
-		       lsbr, lsbr + __get_LSAM(loop),
-		       lcr & 0x80000000 ? 'r' : '-',
-		       lcr & 0x40000000 ? 'w' : '-',
-		       lcr & 0x08000000 ? 'b' : '-',
-		       lcr & 0x04000000 ? 'B' : '-',
-		       lcr & 0x02000000 ? 'C' : '-',
-		       lcr & 0x01000000 ? 'D' : '-',
-		       lcr & 0x00800000 ? 'W' : '-',
-		       lcr & 0x00400000 ? 'R' : '-',
-		       (lcr & 0x00030000) == 0x00000000 ? '4' :
-		       (lcr & 0x00030000) == 0x00010000 ? '2' :
-		       (lcr & 0x00030000) == 0x00020000 ? '1' :
-		       '-'
-		       );
-	}
-#endif
-
-#if 0
-	printk("\n");
-#endif
 } /* end dump_memory_map() */
 
 /*****************************************************************************/
@@ -730,9 +636,6 @@ static void __init parse_cmdline_early(char *cmdline)
 		if (*cmdline == ' ')
 			cmdline++;
 
-		/* "mem=XXX[kKmM]" sets SDRAM size to <mem>, overriding the value we worked
-		 * out from the SDRAM controller mask register
-		 */
 		if (!memcmp(cmdline, "mem=", 4)) {
 			unsigned long long mem_size;
 
@@ -805,11 +708,7 @@ void __init setup_arch(char **cmdline_p)
 	init_mm.start_code = (unsigned long) &_stext;
 	init_mm.end_code = (unsigned long) &_etext;
 	init_mm.end_data = (unsigned long) &_edata;
-#if 0 /* DAVIDM - don't set brk just incase someone decides to use it */
-	init_mm.brk = (unsigned long) &_end;
-#else
 	init_mm.brk = (unsigned long) 0;
-#endif
 
 #ifdef DEBUG
 	printk("KERNEL -> TEXT=0x%06x-0x%06x DATA=0x%06x-0x%06x BSS=0x%06x-0x%06x\n",
@@ -847,26 +746,6 @@ void __init setup_arch(char **cmdline_p)
 
 } /* end setup_arch() */
 
-#if 0
-/*****************************************************************************/
-/*
- *
- */
-static int __devinit setup_arch_serial(void)
-{
-	/* register those serial ports that are available */
-#ifndef CONFIG_GDBSTUB_UART0
-	early_serial_setup(&__frv_uart0);
-#endif
-#ifndef CONFIG_GDBSTUB_UART1
-	early_serial_setup(&__frv_uart1);
-#endif
-
-	return 0;
-} /* end setup_arch_serial() */
-
-late_initcall(setup_arch_serial);
-#endif
 
 /*****************************************************************************/
 /*

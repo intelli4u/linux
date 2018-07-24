@@ -80,13 +80,6 @@ static struct vme_bridge *find_bridge(struct vme_resource *resource)
 	}
 }
 
-/*
- * Allocate a contiguous block of memory for use by the driver. This is used to
- * create the buffers for the slave windows.
- *
- * XXX VME bridges could be available on buses other than PCI. At the momment
- *     this framework only supports PCI devices.
- */
 void *vme_alloc_consistent(struct vme_resource *resource, size_t size,
 	dma_addr_t *dma)
 {
@@ -115,12 +108,6 @@ void *vme_alloc_consistent(struct vme_resource *resource, size_t size,
 }
 EXPORT_SYMBOL(vme_alloc_consistent);
 
-/*
- * Free previously allocated contiguous block of memory.
- *
- * XXX VME bridges could be available on buses other than PCI. At the momment
- *     this framework only supports PCI devices.
- */
 void vme_free_consistent(struct vme_resource *resource, size_t size,
 	void *vaddr, dma_addr_t dma)
 {
@@ -652,7 +639,6 @@ struct vme_resource *vme_dma_request(struct device *dev, vme_dma_route_t route)
 	struct vme_dma_resource *dma_ctrlr = NULL;
 	struct vme_resource *resource = NULL;
 
-	/* XXX Not checking resource attributes */
 	printk(KERN_ERR "No VME resource Attribute tests done\n");
 
 	bridge = dev_to_bridge(dev);
@@ -784,7 +770,6 @@ struct vme_dma_attr *vme_dma_pci_attribute(dma_addr_t address)
 	struct vme_dma_attr *attributes;
 	struct vme_dma_pci *pci_attr;
 
-	/* XXX Run some sanity checks here */
 
 	attributes = kmalloc(sizeof(struct vme_dma_attr), GFP_KERNEL);
 	if (attributes == NULL) {
@@ -1272,10 +1257,6 @@ void vme_lm_free(struct vme_resource *resource)
 
 	mutex_lock(&(lm->mtx));
 
-	/* XXX
-	 * Check to see that there aren't any callbacks still attached, if
-	 * there are we should probably be detaching them!
-	 */
 
 	lm->locked = 0;
 

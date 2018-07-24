@@ -1,41 +1,4 @@
-/*
- * WUSB Wire Adapter: Control/Data Streaming Interface (WUSB[8])
- * MMC (Microscheduled Management Command) handling
- *
- * Copyright (C) 2005-2006 Intel Corporation
- * Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
- *
- *
- * WUIEs and MMC IEs...well, they are almost the same at the end. MMC
- * IEs are Wireless USB IEs that go into the MMC period...[what is
- * that? look in Design-overview.txt].
- *
- *
- * This is a simple subsystem to keep track of which IEs are being
- * sent by the host in the MMC period.
- *
- * For each WUIE we ask to send, we keep it in an array, so we can
- * request its removal later, or replace the content. They are tracked
- * by pointer, so be sure to use the same pointer if you want to
- * remove it or update the contents.
- *
- * FIXME:
- *  - add timers that autoremove intervalled IEs?
- */
+
 #include <linux/usb/wusb.h>
 #include <linux/slab.h>
 #include "wusbhc.h"
@@ -213,8 +176,6 @@ int wusbhc_start(struct wusbhc *wusbhc)
 		dev_err(dev, "error starting security in the HC: %d\n", result);
 		goto error_sec_start;
 	}
-	/* FIXME: the choice of the DNTS parameters is somewhat
-	 * arbitrary */
 	result = wusbhc->set_num_dnts(wusbhc, 0, 15);
 	if (result < 0) {
 		dev_err(dev, "Cannot set DNTS parameters: %d\n", result);

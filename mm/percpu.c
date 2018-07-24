@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  * mm/percpu.c - percpu memory allocator
  *
@@ -1232,7 +1233,7 @@ static void pcpu_dump_alloc_info(const char *lvl,
 				 const struct pcpu_alloc_info *ai)
 {
 	int group_width = 1, cpu_width = 1, width;
-	char empty_str[] = "--------";
+	char * empty_str = "--------";
 	int alloc = 0, alloc_end = 0;
 	int group, v;
 	int upa, apl;	/* units per alloc, allocs per line */
@@ -1727,13 +1728,6 @@ int __init pcpu_page_first_chunk(size_t reserved_size,
 		if (rc < 0)
 			panic("failed to map percpu area, err=%d\n", rc);
 
-		/*
-		 * FIXME: Archs with virtual cache should flush local
-		 * cache for the linear mapping here - something
-		 * equivalent to flush_cache_vmap() on the local cpu.
-		 * flush_cache_vmap() can't be used as most supporting
-		 * data structures are not set up yet.
-		 */
 
 		/* copy static data */
 		memcpy((void *)unit_addr, __per_cpu_load, ai->static_size);

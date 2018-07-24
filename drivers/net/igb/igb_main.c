@@ -3336,12 +3336,6 @@ static void igb_set_rx_mode(struct net_device *netdev)
 	}
 	wr32(E1000_RCTL, rctl);
 
-	/*
-	 * In order to support SR-IOV and eventually VMDq it is necessary to set
-	 * the VMOLR to enable the appropriate modes.  Without this workaround
-	 * we will have issues with VLAN tag stripping not being done for frames
-	 * that are only arriving because we are the default pool
-	 */
 	if (hw->mac.type < e1000_82576)
 		return;
 
@@ -3867,7 +3861,6 @@ static inline bool igb_tx_csum_adv(struct igb_ring *tx_ring,
 					tu_cmd |= E1000_ADVTXD_TUCMD_L4T_SCTP;
 				break;
 			case cpu_to_be16(ETH_P_IPV6):
-				/* XXX what about other V6 headers?? */
 				if (ipv6_hdr(skb)->nexthdr == IPPROTO_TCP)
 					tu_cmd |= E1000_ADVTXD_TUCMD_L4T_TCP;
 				else if (ipv6_hdr(skb)->nexthdr == IPPROTO_SCTP)
@@ -5466,11 +5459,6 @@ static inline void igb_rx_checksum_adv(struct igb_ring *ring,
 	/* TCP/UDP checksum error bit is set */
 	if (status_err &
 	    (E1000_RXDEXT_STATERR_TCPE | E1000_RXDEXT_STATERR_IPE)) {
-		/*
-		 * work around errata with sctp packets where the TCPE aka
-		 * L4E bit is set incorrectly on 64 byte (60 byte w/o crc)
-		 * packets, (aka let the stack check the crc32c)
-		 */
 		if ((skb->len == 60) &&
 		    (ring->flags & IGB_RING_FLAG_RX_SCTP_CSUM))
 			ring->rx_stats.csum_err++;

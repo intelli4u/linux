@@ -264,7 +264,6 @@ static int oprofilefs_fill_super(struct super_block *sb, void *data, int silent)
 
 	oprofile_create_files(sb, root_dentry);
 
-	// FIXME: verify kill_litter_super removes our dentries
 	return 0;
 }
 

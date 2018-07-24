@@ -68,4 +68,3 @@ TRACE_EVENT_FN(sys_exit,
 
 /* This part must be outside protection */
 #include <trace/define_trace.h>
-

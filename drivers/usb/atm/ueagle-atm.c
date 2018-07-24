@@ -1459,7 +1459,6 @@ static int uea_stat_e4(struct uea_softc *sc)
 	uea_enters(INS_TO_USBDEV(sc));
 	data = sc->stats.phy.state;
 
-	/* XXX only need to be done before operationnal... */
 	ret = uea_read_cmv_e4(sc, 1, E4_SA_STAT, 0, 0, &sc->stats.phy.state);
 	if (ret < 0)
 		return ret;
@@ -1772,7 +1771,6 @@ static int uea_send_cmvs_e4(struct uea_softc *sc)
 		return ret;
 
 	/* Dump firmware version */
-	/* XXX don't read the 3th byte as it is always 6 */
 	ret = uea_read_cmv_e4(sc, 2, E4_SA_INFO, 55, 0, &sc->stats.phy.firmid);
 	if (ret < 0)
 		return ret;
@@ -1994,9 +1992,6 @@ static void uea_dispatch_cmv_e1(struct uea_softc *sc, struct intr_pkt *intr)
 	if (cmv->bDirection != E1_MODEMTOHOST)
 		goto bad1;
 
-	/* FIXME : ADI930 reply wrong preambule (func = 2, sub = 2) to
-	 * the first MEMACCESS cmv. Ignore it...
-	 */
 	if (cmv->bFunction != dsc->function) {
 		if (UEA_CHIP_VERSION(sc) == ADI930
 				&& cmv->bFunction ==  E1_MAKEFUNCTION(2, 2)) {

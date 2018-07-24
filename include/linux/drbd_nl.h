@@ -7,7 +7,8 @@
    You may never reissue one of the pn arguments
 */
 
-#if !defined(NL_PACKET) || !defined(NL_STRING) || !defined(NL_INTEGER) || !defined(NL_BIT) || !defined(NL_INT64)
+#if !defined(NL_PACKET) || !defined(NL_STRING) || !defined(NL_INTEGER) || \
+	!defined(NL_BIT) || !defined(NL_INT64)
 #error "The macros NL_PACKET, NL_STRING, NL_INTEGER, NL_INT64 and NL_BIT needs to be defined"
 #endif
 
@@ -142,4 +143,3 @@ NL_PACKET(new_c_uuid, 26,
 #undef NL_INT64
 #undef NL_BIT
 #undef NL_STRING
-

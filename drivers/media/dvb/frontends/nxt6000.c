@@ -573,9 +573,9 @@ static struct dvb_frontend_ops nxt6000_ops = {
 		.frequency_min = 0,
 		.frequency_max = 863250000,
 		.frequency_stepsize = 62500,
-		/*.frequency_tolerance = *//* FIXME: 12% of SR */
-		.symbol_rate_min = 0,	/* FIXME */
-		.symbol_rate_max = 9360000,	/* FIXME */
+		/*.frequency_tolerance = */
+		.symbol_rate_min = 0,
+		.symbol_rate_max = 9360000,
 		.symbol_rate_tolerance = 4000,
 		.caps = FE_CAN_FEC_1_2 | FE_CAN_FEC_2_3 | FE_CAN_FEC_3_4 |
 			FE_CAN_FEC_4_5 | FE_CAN_FEC_5_6 | FE_CAN_FEC_6_7 |

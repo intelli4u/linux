@@ -511,9 +511,6 @@ static inline void ni_set_cdo_dma_channel(struct comedi_device *dev,
 	spin_lock_irqsave(&devpriv->soft_reg_copy_lock, flags);
 	devpriv->cdio_dma_select_reg &= ~CDO_DMA_Select_Mask;
 	if (mite_channel >= 0) {
-		/*XXX just guessing ni_stc_dma_channel_select_bitfield() returns the right bits,
-		   under the assumption the cdio dma selection works just like ai/ao/gpct.
-		   Definitely works for dma channels 0 and 1. */
 		devpriv->cdio_dma_select_reg |=
 		    (ni_stc_dma_channel_select_bitfield(mite_channel) <<
 		     CDO_DMA_Select_Shift) & CDO_DMA_Select_Mask;
@@ -726,16 +723,6 @@ static void ni_clear_ai_fifo(struct comedi_device *dev)
 		if (boardtype.reg_type == ni_reg_625x) {
 			ni_writeb(0, M_Offset_Static_AI_Control(0));
 			ni_writeb(1, M_Offset_Static_AI_Control(0));
-#if 0
-			/* the NI example code does 3 convert pulses for 625x boards,
-			   but that appears to be wrong in practice. */
-			devpriv->stc_writew(dev, AI_CONVERT_Pulse,
-					    AI_Command_1_Register);
-			devpriv->stc_writew(dev, AI_CONVERT_Pulse,
-					    AI_Command_1_Register);
-			devpriv->stc_writew(dev, AI_CONVERT_Pulse,
-					    AI_Command_1_Register);
-#endif
 		}
 	}
 }
@@ -2633,7 +2620,6 @@ static int ni_ai_cmd(struct comedi_device *dev, struct comedi_subdevice *s)
 		/* interrupt on nothing */
 		ni_set_bits(dev, Interrupt_A_Enable_Register, ~0, 0);
 
-		/* XXX start polling if necessary */
 		MDPRINTK("interrupting on nothing\n");
 	}
 
@@ -2647,7 +2633,6 @@ static int ni_ai_cmd(struct comedi_device *dev, struct comedi_subdevice *s)
 				    AI_SC_Arm, AI_Command_1_Register);
 		break;
 	case TRIG_EXT:
-		/* XXX AI_SI_Arm? */
 		devpriv->stc_writew(dev,
 				    AI_SI2_Arm | AI_SI_Arm | AI_DIV_Arm |
 				    AI_SC_Arm, AI_Command_1_Register);
@@ -3327,12 +3312,6 @@ static int ni_ao_cmd(struct comedi_device *dev, struct comedi_subdevice *s)
 		bits |= AO_FIFO_Enable;
 	else
 		bits |= AO_DMA_PIO_Control;
-#if 0
-	/* F Hess: windows driver does not set AO_Number_Of_DAC_Packages bit for 6281,
-	   verified with bus analyzer. */
-	if (boardtype.reg_type & ni_reg_m_series_mask)
-		bits |= AO_Number_Of_DAC_Packages;
-#endif
 	devpriv->stc_writew(dev, bits, AO_Personal_Register);
 	/*  enable sending of ao dma requests */
 	devpriv->stc_writew(dev, AO_AOFREQ_Enable, AO_Start_Select_Register);
@@ -3424,7 +3403,7 @@ static int ni_ao_cmdtest(struct comedi_device *dev, struct comedi_subdevice *s,
 			cmd->scan_begin_arg = boardtype.ao_speed;
 			err++;
 		}
-		if (cmd->scan_begin_arg > devpriv->clock_ns * 0xffffff) {	/* XXX check */
+		if (cmd->scan_begin_arg > devpriv->clock_ns * 0xffffff) {
 			cmd->scan_begin_arg = devpriv->clock_ns * 0xffffff;
 			err++;
 		}
@@ -3437,7 +3416,7 @@ static int ni_ao_cmdtest(struct comedi_device *dev, struct comedi_subdevice *s,
 		cmd->scan_end_arg = cmd->chanlist_len;
 		err++;
 	}
-	if (cmd->stop_src == TRIG_COUNT) {	/* XXX check */
+	if (cmd->stop_src == TRIG_COUNT) {
 		if (cmd->stop_arg > 0x00ffffff) {
 			cmd->stop_arg = 0x00ffffff;
 			err++;
@@ -3815,11 +3794,6 @@ static int ni_cdo_inttrig(struct comedi_device *dev, struct comedi_subdevice *s,
 	if (retval < 0)
 		return retval;
 #endif
-/*
-* XXX not sure what interrupt C group does
-* ni_writeb(Interrupt_Group_C_Enable_Bit,
-* M_Offset_Interrupt_C_Enable); wait for dma to fill output fifo
-*/
 	for (i = 0; i < timeout; ++i) {
 		if (ni_readl(M_Offset_CDIO_Status) & CDO_FIFO_Full_Bit)
 			break;
@@ -3842,10 +3816,6 @@ static int ni_cdio_cancel(struct comedi_device *dev, struct comedi_subdevice *s)
 		  CDO_Empty_FIFO_Interrupt_Enable_Clear_Bit |
 		  CDO_FIFO_Request_Interrupt_Enable_Clear_Bit,
 		  M_Offset_CDIO_Command);
-/*
-* XXX not sure what interrupt C group does ni_writeb(0,
-* M_Offset_Interrupt_C_Enable);
-*/
 	ni_writel(0, M_Offset_CDO_Mask_Enable);
 	ni_release_cdo_mite_channel(dev);
 	return 0;
@@ -3880,7 +3850,7 @@ static void handle_cdio_interrupt(struct comedi_device *dev)
 	cdio_status = ni_readl(M_Offset_CDIO_Status);
 	if (cdio_status & (CDO_Overrun_Bit | CDO_Underflow_Bit)) {
 /* printk("cdio error: statux=0x%x\n", cdio_status); */
-		ni_writel(CDO_Error_Interrupt_Confirm_Bit, M_Offset_CDIO_Command);	/*  XXX just guessing this is needed and does something useful */
+		ni_writel(CDO_Error_Interrupt_Confirm_Bit, M_Offset_CDIO_Command);
 		s->async->events |= COMEDI_CB_OVERFLOW;
 	}
 	if (cdio_status & CDO_FIFO_Empty_Bit) {
@@ -4593,7 +4563,7 @@ static int ni_E_init(struct comedi_device *dev, struct comedi_devconfig *it)
 		/*  one channel for each analog output channel */
 		s->n_chan = boardtype.n_aochan;
 		s->maxdata = (1 << 16) - 1;
-		s->range_table = &range_unknown;	/* XXX */
+		s->range_table = &range_unknown;
 		s->insn_read = cs5529_ai_insn_read;
 		s->insn_config = NULL;
 		init_cs5529(dev);
@@ -5103,94 +5073,6 @@ static int pack_ad8842(int addr, int val, int *bitstring)
 	return 12;
 }
 
-#if 0
-/*
- *	Read the GPCTs current value.
- */
-static int GPCT_G_Watch(struct comedi_device *dev, int chan)
-{
-	unsigned int hi1, hi2, lo;
-
-	devpriv->gpct_command[chan] &= ~G_Save_Trace;
-	devpriv->stc_writew(dev, devpriv->gpct_command[chan],
-			    G_Command_Register(chan));
-
-	devpriv->gpct_command[chan] |= G_Save_Trace;
-	devpriv->stc_writew(dev, devpriv->gpct_command[chan],
-			    G_Command_Register(chan));
-
-	/* This procedure is used because the two registers cannot
-	 * be read atomically. */
-	do {
-		hi1 = devpriv->stc_readw(dev, G_Save_Register_High(chan));
-		lo = devpriv->stc_readw(dev, G_Save_Register_Low(chan));
-		hi2 = devpriv->stc_readw(dev, G_Save_Register_High(chan));
-	} while (hi1 != hi2);
-
-	return (hi1 << 16) | lo;
-}
-
-static void GPCT_Reset(struct comedi_device *dev, int chan)
-{
-	int temp_ack_reg = 0;
-
-	/* printk("GPCT_Reset..."); */
-	devpriv->gpct_cur_operation[chan] = GPCT_RESET;
-
-	switch (chan) {
-	case 0:
-		devpriv->stc_writew(dev, G0_Reset, Joint_Reset_Register);
-		ni_set_bits(dev, Interrupt_A_Enable_Register,
-			    G0_TC_Interrupt_Enable, 0);
-		ni_set_bits(dev, Interrupt_A_Enable_Register,
-			    G0_Gate_Interrupt_Enable, 0);
-		temp_ack_reg |= G0_Gate_Error_Confirm;
-		temp_ack_reg |= G0_TC_Error_Confirm;
-		temp_ack_reg |= G0_TC_Interrupt_Ack;
-		temp_ack_reg |= G0_Gate_Interrupt_Ack;
-		devpriv->stc_writew(dev, temp_ack_reg,
-				    Interrupt_A_Ack_Register);
-
-		/* problem...this interferes with the other ctr... */
-		devpriv->an_trig_etc_reg |= GPFO_0_Output_Enable;
-		devpriv->stc_writew(dev, devpriv->an_trig_etc_reg,
-				    Analog_Trigger_Etc_Register);
-		break;
-	case 1:
-		devpriv->stc_writew(dev, G1_Reset, Joint_Reset_Register);
-		ni_set_bits(dev, Interrupt_B_Enable_Register,
-			    G1_TC_Interrupt_Enable, 0);
-		ni_set_bits(dev, Interrupt_B_Enable_Register,
-			    G0_Gate_Interrupt_Enable, 0);
-		temp_ack_reg |= G1_Gate_Error_Confirm;
-		temp_ack_reg |= G1_TC_Error_Confirm;
-		temp_ack_reg |= G1_TC_Interrupt_Ack;
-		temp_ack_reg |= G1_Gate_Interrupt_Ack;
-		devpriv->stc_writew(dev, temp_ack_reg,
-				    Interrupt_B_Ack_Register);
-
-		devpriv->an_trig_etc_reg |= GPFO_1_Output_Enable;
-		devpriv->stc_writew(dev, devpriv->an_trig_etc_reg,
-				    Analog_Trigger_Etc_Register);
-		break;
-	};
-
-	devpriv->gpct_mode[chan] = 0;
-	devpriv->gpct_input_select[chan] = 0;
-	devpriv->gpct_command[chan] = 0;
-
-	devpriv->gpct_command[chan] |= G_Synchronized_Gate;
-
-	devpriv->stc_writew(dev, devpriv->gpct_mode[chan],
-			    G_Mode_Register(chan));
-	devpriv->stc_writew(dev, devpriv->gpct_input_select[chan],
-			    G_Input_Select_Register(chan));
-	devpriv->stc_writew(dev, 0, G_Autoincrement_Register(chan));
-
-	/* printk("exit GPCT_Reset\n"); */
-}
-
-#endif
 
 static int ni_gpct_insn_config(struct comedi_device *dev,
 			       struct comedi_subdevice *s,
@@ -5980,20 +5862,11 @@ static int init_cs5529(struct comedi_device *dev)
 	unsigned int config_bits =
 	    CSCFG_PORT_MODE | CSCFG_WORD_RATE_2180_CYCLES;
 
-#if 1
 	/* do self-calibration */
 	cs5529_config_write(dev, config_bits | CSCFG_SELF_CAL_OFFSET_GAIN,
 			    CSCMD_CONFIG_REGISTER);
 	/* need to force a conversion for calibration to run */
 	cs5529_do_conversion(dev, NULL);
-#else
-	/* force gain calibration to 1 */
-	cs5529_config_write(dev, 0x400000, CSCMD_GAIN_REGISTER);
-	cs5529_config_write(dev, config_bits | CSCFG_SELF_CAL_OFFSET,
-			    CSCMD_CONFIG_REGISTER);
-	if (cs5529_wait_for_idle(dev))
-		comedi_error(dev, "timeout or signal in init_cs5529()\n");
-#endif
 #ifdef NI_CS5529_DEBUG
 	printk("config: 0x%x\n", cs5529_config_read(dev,
 						    CSCMD_CONFIG_REGISTER));

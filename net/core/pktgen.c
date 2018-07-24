@@ -2495,8 +2495,6 @@ static int pktgen_output_ipsec(struct sk_buff *skb, struct pktgen_dev *pkt_dev)
 
 	if (!x)
 		return 0;
-	/* XXX: we dont support tunnel mode for now until
-	 * we resolve the dst issue */
 	if (x->props.mode != XFRM_MODE_TRANSPORT)
 		return 0;
 

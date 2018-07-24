@@ -474,9 +474,6 @@ void zd_mac_tx_to_dev(struct sk_buff *skb, int error)
 	skb_pull(skb, sizeof(struct zd_ctrlset));
 	if (unlikely(error ||
 	    (info->flags & IEEE80211_TX_CTL_NO_ACK))) {
-		/*
-		 * FIXME : do we need to fill in anything ?
-		 */
 		ieee80211_tx_status_irqsafe(hw, skb);
 	} else {
 		struct sk_buff_head *q = &mac->ack_wait_queue;
@@ -568,7 +565,6 @@ static void cs_set_control(struct zd_mac *mac, struct zd_ctrlset *cs,
 	if (info->control.rates[0].flags & IEEE80211_TX_RC_USE_CTS_PROTECT)
 		cs->control |= ZD_CS_SELF_CTS;
 
-	/* FIXME: Management frame? */
 }
 
 static int zd_mac_config_beacon(struct ieee80211_hw *hw, struct sk_buff *beacon)
@@ -860,7 +856,6 @@ int zd_mac_rx(struct ieee80211_hw *hw, const u8 *buffer, unsigned int length)
 		skb_reserve(skb, 2);
 	}
 
-	/* FIXME : could we avoid this big memcpy ? */
 	memcpy(skb_put(skb, length), buffer, length);
 
 	memcpy(IEEE80211_SKB_RXCB(skb), &stats, sizeof(stats));
@@ -1000,7 +995,6 @@ static void zd_op_configure_filter(struct ieee80211_hw *hw,
 	mac->multicast_hash = hash;
 	spin_unlock_irqrestore(&mac->lock, flags);
 
-	/* XXX: these can be called here now, can sleep now! */
 	queue_work(zd_workqueue, &mac->set_multicast_hash_work);
 
 	if (changed_flags & FIF_CONTROL)
@@ -1008,12 +1002,6 @@ static void zd_op_configure_filter(struct ieee80211_hw *hw,
 
 	/* no handling required for FIF_OTHER_BSS as we don't currently
 	 * do BSSID filtering */
-	/* FIXME: in future it would be nice to enable the probe response
-	 * filter (so that the driver doesn't see them) until
-	 * FIF_BCN_PRBRESP_PROMISC is set. however due to atomicity here, we'd
-	 * have to schedule work to enable prbresp reception, which might
-	 * happen too late. For now we'll just listen and forward them all the
-	 * time. */
 }
 
 static void set_rts_cts_work(struct work_struct *work)
@@ -1082,8 +1070,6 @@ static void zd_op_bss_info_changed(struct ieee80211_hw *hw,
 		mac->short_preamble = bss_conf->use_short_preamble;
 		if (!mac->updating_rts_rate) {
 			mac->updating_rts_rate = 1;
-			/* FIXME: should disable TX here, until work has
-			 * completed and RTS_CTS reg is updated */
 			queue_work(zd_workqueue, &mac->set_rts_cts_work);
 		}
 		spin_unlock_irqrestore(&mac->lock, flags);

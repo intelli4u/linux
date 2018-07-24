@@ -347,7 +347,6 @@ static int __init celleb_epci_init(struct pci_controller *hose)
 	val |= SCC_EPCI_CNTOPT_O2PMB;
 	out_be32(reg, val);
 
-	/* XXX: temporay: set registers for address conversion setup */
 	reg = epci_base + SCC_EPCI_CNF10_REG;
 	out_be32(reg, 0x80000008);
 	reg = epci_base + SCC_EPCI_CNF14_REG;

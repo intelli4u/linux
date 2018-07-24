@@ -133,13 +133,6 @@ E1000_PARAM(IntMode, "Interrupt Mode");
  */
 E1000_PARAM(SmartPowerDownEnable, "Enable PHY smart power down");
 
-/*
- * Enable Kumeran Lock Loss workaround
- *
- * Valid Range: 0, 1
- *
- * Default Value: 1 (enabled)
- */
 E1000_PARAM(KumeranLockLoss, "Enable Kumeran lock loss workaround");
 
 /*
@@ -436,7 +429,7 @@ void __devinit e1000e_check_options(struct e1000_adapter *adapter)
 			adapter->flags2 |= FLAG2_CRC_STRIPPING;
 		}
 	}
-	{ /* Kumeran Lock Loss Workaround */
+	{
 		static const struct e1000_option opt = {
 			.type = enable_option,
 			.name = "Kumeran Lock Loss Workaround",

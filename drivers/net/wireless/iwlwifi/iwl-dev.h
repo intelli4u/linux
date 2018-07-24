@@ -697,21 +697,6 @@ struct iwl_hw_params {
 };
 
 
-/******************************************************************************
- *
- * Functions implemented in core module which are forward declared here
- * for use by iwl-[4-5].c
- *
- * NOTE:  The implementation of these functions are not hardware specific
- * which is why they are in the core module files.
- *
- * Naming convention --
- * iwl_         <-- Is part of iwlwifi
- * iwlXXXX_     <-- Hardware specific (implemented in iwl-XXXX.c for XXXX)
- * iwl4965_bg_      <-- Called from work queue context
- * iwl4965_mac_     <-- mac80211 callback
- *
- ****************************************************************************/
 extern void iwl_update_chain_flags(struct iwl_priv *priv);
 extern int iwl_set_pwr_src(struct iwl_priv *priv, enum iwl_pwr_src src);
 extern const u8 iwl_bcast_addr[ETH_ALEN];

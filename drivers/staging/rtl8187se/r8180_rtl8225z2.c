@@ -190,7 +190,6 @@ static void rtl8225_SetTXPowerLevel(struct net_device *dev, short ch)
 		write_phy_cck(dev, 0x44 + i, power);
 	}
 
-	/* FIXME Is this delay really needeed ? */
 	force_pci_posting(dev);
 	mdelay(1);
 
@@ -688,10 +687,6 @@ void rtl8225z2_rf_init(struct net_device *dev)
 
 	write_rtl8225(dev, 0x2, 0xc4d);
 
-	/* FIXME!! rtl8187 we have to check if calibrarion
-	 * is successful and eventually cal. again (repeat
-	 * the two write on reg 2)
-	 */
 	data = read_rtl8225(dev, 6);
 	if (!(data & 0x00000080)) {
 		write_rtl8225(dev, 0x02, 0x0c4d);
@@ -756,7 +751,7 @@ void rtl8225z2_rf_init(struct net_device *dev)
 	write_phy_ofdm(dev, 0x20, 0x1f); mdelay(1);
 	write_phy_ofdm(dev, 0x21, 0x17); mdelay(1);
 	write_phy_ofdm(dev, 0x22, 0x16); mdelay(1);
-	write_phy_ofdm(dev, 0x23, 0x80); mdelay(1); /* FIXME maybe not needed */
+	write_phy_ofdm(dev, 0x23, 0x80); mdelay(1);
 	write_phy_ofdm(dev, 0x24, 0x46); mdelay(1);
 	write_phy_ofdm(dev, 0x25, 0x00); mdelay(1);
 	write_phy_ofdm(dev, 0x26, 0x90); mdelay(1);

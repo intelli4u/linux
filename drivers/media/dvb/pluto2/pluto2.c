@@ -181,8 +181,6 @@ static void pluto_setscl(void *data, int state)
 	else
 		pluto_rw(pluto, REG_SLCS, SLCS_SCL, 0);
 
-	/* try to detect i2c_inb() to workaround hardware bug:
-	 * reset SDA to high after SCL has been set to low */
 	if ((state) && (pluto->i2cbug == 0)) {
 		pluto->i2cbug = 1;
 	} else {
@@ -292,16 +290,6 @@ static void pluto_dma_end(struct pluto *pluto, unsigned int nbpackets)
 	pci_dma_sync_single_for_cpu(pluto->pdev, pluto->dma_addr,
 			TS_DMA_BYTES, PCI_DMA_FROMDEVICE);
 
-	/* Workaround for broken hardware:
-	 * [1] On startup NBPACKETS seems to contain an uninitialized value,
-	 *     but no packets have been transfered.
-	 * [2] Sometimes (actually very often) NBPACKETS stays at zero
-	 *     although one packet has been transfered.
-	 * [3] Sometimes (actually rarely), the card gets into an erroneous
-	 *     mode where it continuously generates interrupts, claiming it
-	 *     has recieved nbpackets>TS_DMA_PACKETS packets, but no packet
-	 *     has been transfered. Only a reset seems to solve this
-	 */
 	if ((nbpackets == 0) || (nbpackets > TS_DMA_PACKETS)) {
 		unsigned int i = 0;
 		while (pluto->dma_buf[i] == 0x47)

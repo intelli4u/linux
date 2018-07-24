@@ -900,5 +900,3 @@ out:
 	mlog_exit(rc);
 	return rc;
 }
-
-

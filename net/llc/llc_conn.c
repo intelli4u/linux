@@ -23,11 +23,7 @@
 #include <net/llc_c_st.h>
 #include <net/llc_pdu.h>
 
-#if 0
-#define dprintk(args...) printk(KERN_DEBUG args)
-#else
 #define dprintk(args...)
-#endif
 
 static int llc_find_offset(int state, int ev_type);
 static void llc_conn_send_pdus(struct sock *sk);
@@ -125,10 +121,6 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
 		sock_put(sk);
 		break;
 	case LLC_RESET_PRIM:
-		/*
-		 * FIXME:
-		 * RESET is not being notified to upper layers for now
-		 */
 		printk(KERN_INFO "%s: received a reset ind!\n", __func__);
 		kfree_skb(skb);
 		break;
@@ -172,10 +164,6 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
 		sock_put(sk);
 		break;
 	case LLC_RESET_PRIM:
-		/*
-		 * FIXME:
-		 * RESET is not being notified to upper layers for now
-		 */
 		printk(KERN_INFO "%s: received a reset conf!\n", __func__);
 		break;
 	default:

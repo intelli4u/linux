@@ -239,10 +239,6 @@ struct lm4550_reg lm4550_regfile[64] = {
 						| LM4550_REG_NOSHADOW \
 						| LM4550_REG_NOSAVE,
 					 .wmask = 0xFF00},
-					/* may not write ones to
-					 * REF/ANL/DAC/ADC bits
-					 * FIXME: Is this ok?
-					 */
 	[AC97_EXTENDED_ID / 2]        = {.flag = LM4550_REG_OK \
 						| LM4550_REG_FAKEREAD \
 						| LM4550_REG_READONLY,

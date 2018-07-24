@@ -275,7 +275,7 @@ struct reiserfs_bitmap_info {
 
 struct proc_dir_entry;
 
-#if defined( CONFIG_PROC_FS ) && defined( CONFIG_REISERFS_PROC_INFO )
+#if defined(CONFIG_PROC_FS) && defined(CONFIG_REISERFS_PROC_INFO)
 typedef unsigned long int stat_cnt_t;
 typedef struct reiserfs_proc_info_data {
 	spinlock_t lock;
@@ -298,18 +298,18 @@ typedef struct reiserfs_proc_info_data {
 	stat_cnt_t leaves_removable;
 
 	/* balances per level. Use explicit 5 as MAX_HEIGHT is not visible yet. */
-	stat_cnt_t balance_at[5];	/* XXX */
+	stat_cnt_t balance_at[5];
 	/* sbk == search_by_key */
-	stat_cnt_t sbk_read_at[5];	/* XXX */
+	stat_cnt_t sbk_read_at[5];
 	stat_cnt_t sbk_fs_changed[5];
 	stat_cnt_t sbk_restarted[5];
-	stat_cnt_t items_at[5];	/* XXX */
-	stat_cnt_t free_at[5];	/* XXX */
-	stat_cnt_t can_node_be_removed[5];	/* XXX */
-	long int lnum[5];	/* XXX */
-	long int rnum[5];	/* XXX */
-	long int lbytes[5];	/* XXX */
-	long int rbytes[5];	/* XXX */
+	stat_cnt_t items_at[5];
+	stat_cnt_t free_at[5];
+	stat_cnt_t can_node_be_removed[5];
+	long int lnum[5];
+	long int rnum[5];
+	long int lbytes[5];
+	long int rbytes[5];
 	stat_cnt_t get_neighbors[5];
 	stat_cnt_t get_neighbors_restart[5];
 	stat_cnt_t need_l_neighbor[5];

@@ -351,10 +351,6 @@ static struct isa_driver snd_gusextreme_driver = {
 	.match		= snd_gusextreme_match,
 	.probe		= snd_gusextreme_probe,
 	.remove		= __devexit_p(snd_gusextreme_remove),
-#if 0	/* FIXME */
-	.suspend	= snd_gusextreme_suspend,
-	.resume		= snd_gusextreme_resume,
-#endif
 	.driver		= {
 		.name	= DEV_NAME
 	}

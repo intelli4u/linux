@@ -63,7 +63,6 @@ static int snd_us428ctls_mmap(struct snd_hwdep * hw, struct file *filp, struct v
 	unsigned long	size = (unsigned long)(area->vm_end - area->vm_start);
 	struct usX2Ydev	*us428 = hw->private_data;
 
-	// FIXME this hwdep interface is used twice: fpga download and mmap for controlling Lights etc. Maybe better using 2 hwdep devs?
 	// so as long as the device isn't fully initialised yet we return -EBUSY here.
  	if (!(us428->chip_status & USX2Y_STAT_CHIP_INIT))
 		return -EBUSY;
@@ -262,4 +261,3 @@ int usX2Y_hwdep_new(struct snd_card *card, struct usb_device* device)
 	sprintf(hw->name, "/proc/bus/usb/%03d/%03d", device->bus->busnum, device->devnum);
 	return 0;
 }
-

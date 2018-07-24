@@ -244,7 +244,7 @@
 	/* Kernel-mode state save.  */					\
 	/* Reload kernel stack-ptr. */					\
 	lwi	r1, r0, TOPHYS(PER_CPU(ENTRY_SP));			\
-	/* FIXME: I can add these two lines to one */			\
+			\
 	/* tophys(r1,r1); */						\
 	/* addik	r1, r1, -STATE_SAVE_SIZE; */			\
 	addik	r1, r1, CONFIG_KERNEL_BASE_ADDR - CONFIG_KERNEL_START - STATE_SAVE_SIZE; \
@@ -371,7 +371,6 @@ C_ENTRY(ret_from_trap):
 
 	/* We're returning to user mode, so check for various conditions that
 	 * trigger rescheduling. */
-	/* FIXME: Restructure all these flag checks. */
 	lwi	r11, CURRENT_TASK, TS_THREAD_INFO;	/* get thread info */
 	lwi	r11, r11, TI_FLAGS;		/* get flags in thread info */
 	andi	r11, r11, _TIF_WORK_SYSCALL_MASK
@@ -478,8 +477,6 @@ C_ENTRY(full_exception_trap):
 	/* PC, before IRQ/trap - this is one instruction above */
 	swi	r17, r1, PTO+PT_PC;
 	tovirt(r1,r1)
-	/* FIXME this can be store directly in PT_ESR reg.
-	 * I tested it but there is a fault */
 	/* where the trap should return need -8 to adjust for rtsd r15, 8 */
 	addik	r15, r0, ret_from_exc - 8
 	mfs	r6, resr

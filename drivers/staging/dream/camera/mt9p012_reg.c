@@ -569,5 +569,3 @@ struct mt9p012_reg mt9p012_regs = {
 	.rftbl = &mt9p012_rolloff_tbl[0],
 	.rftbl_size = ARRAY_SIZE(mt9p012_rolloff_tbl)
 };
-
-

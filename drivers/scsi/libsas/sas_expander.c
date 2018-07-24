@@ -168,7 +168,6 @@ static void sas_set_ex_phy(struct domain_device *dev, int phy_id,
 	if (!rediscover) {
 		phy->phy = sas_phy_alloc(&rphy->dev, phy_id);
 
-		/* FIXME: error_handling */
 		BUG_ON(!phy->phy);
 	}
 
@@ -709,7 +708,6 @@ static struct domain_device *sas_ex_discover_end_dev(
 	  if (phy->attached_tproto & SAS_PROTOCOL_SSP) {
 		child->dev_type = SAS_END_DEV;
 		rphy = sas_end_device_alloc(phy->port);
-		/* FIXME: error handling */
 		if (unlikely(!rphy))
 			goto out_free;
 		child->tproto = phy->attached_tproto;
@@ -800,7 +798,6 @@ static struct domain_device *sas_ex_discover_expander(
 		return NULL;
 
 	phy->port = sas_port_alloc(&parent->rphy->dev, phy_id);
-	/* FIXME: better error handling */
 	BUG_ON(sas_port_add(phy->port) != 0);
 
 

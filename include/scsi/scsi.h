@@ -202,16 +202,10 @@ scsi_command_size(const unsigned char *cmnd)
  */
 static inline int scsi_status_is_good(int status)
 {
-	/*
-	 * FIXME: bit0 is listed as reserved in SCSI-2, but is
-	 * significant in SCSI-3.  For now, we follow the SCSI-2
-	 * behaviour and ignore reserved bits.
-	 */
 	status &= 0xfe;
 	return ((status == SAM_STAT_GOOD) ||
 		(status == SAM_STAT_INTERMEDIATE) ||
 		(status == SAM_STAT_INTERMEDIATE_CONDITION_MET) ||
-		/* FIXME: this is obsolete in SAM-3 */
 		(status == SAM_STAT_COMMAND_TERMINATED));
 }
 

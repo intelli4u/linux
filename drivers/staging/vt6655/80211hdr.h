@@ -349,5 +349,3 @@ typedef union tagUWLAN_80211HDR {
 
 
 #endif /* __80211HDR_H__ */
-
-

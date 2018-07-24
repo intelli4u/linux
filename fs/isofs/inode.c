@@ -533,13 +533,6 @@ static unsigned int isofs_get_last_session(struct super_block *sb, s32 session)
 	i = ioctl_by_bdev(bdev, CDROMMULTISESSION, (unsigned long) &ms_info);
 	if (session > 0)
 		printk(KERN_ERR "ISOFS: Invalid session number\n");
-#if 0
-	printk(KERN_DEBUG "isofs.inode: CDROMMULTISESSION: rc=%d\n",i);
-	if (i==0) {
-		printk(KERN_DEBUG "isofs.inode: XA disk: %s\n",ms_info.xa_flag?"yes":"no");
-		printk(KERN_DEBUG "isofs.inode: vol_desc_start = %d\n", ms_info.addr.lba);
-	}
-#endif
 	if (i==0)
 #if WE_OBEY_THE_WRITTEN_STANDARDS
 		if (ms_info.xa_flag) /* necessary for a valid ms_info.addr */
@@ -1395,7 +1388,6 @@ static int isofs_read_inode(struct inode *inode)
 		inode->i_op = &page_symlink_inode_operations;
 		inode->i_data.a_ops = &isofs_symlink_aops;
 	} else
-		/* XXX - parse_rock_ridge_inode() had already set i_rdev. */
 		init_special_inode(inode, inode->i_mode, inode->i_rdev);
 
 	ret = 0;

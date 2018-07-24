@@ -347,22 +347,6 @@ __jffs2_dbg_acct_paranoia_check_nolock(struct jffs2_sb_info *c,
 		goto error;
 	}
 
-#if 0
-	/* This should work when we implement ref->__totlen elemination */
-	if (my_dirty_size != jeb->dirty_size + jeb->wasted_size) {
-		JFFS2_ERROR("Calculated dirty+wasted size %#08x != stored dirty + wasted size %#08x\n",
-			my_dirty_size, jeb->dirty_size + jeb->wasted_size);
-		goto error;
-	}
-
-	if (jeb->free_size == 0
-		&& my_used_size + my_unchecked_size + my_dirty_size != c->sector_size) {
-		JFFS2_ERROR("The sum of all nodes in block (%#x) != size of block (%#x)\n",
-			my_used_size + my_unchecked_size + my_dirty_size,
-			c->sector_size);
-		goto error;
-	}
-#endif
 
 	if (!(c->flags & (JFFS2_SB_FLAG_BUILDING|JFFS2_SB_FLAG_SCANNING)))
 		__jffs2_dbg_superblock_counts(c);

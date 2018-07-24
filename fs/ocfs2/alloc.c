@@ -3210,14 +3210,6 @@ rightmost_no_delete:
 			goto out;
 		}
 
-		/*
-		 * XXX: The caller can not trust "path" any more after
-		 * this as it will have been deleted. What do we do?
-		 *
-		 * In theory the rotate-for-merge code will never get
-		 * here because it'll always ask for a rotate in a
-		 * nonempty list.
-		 */
 
 		ret = ocfs2_remove_rightmost_path(handle, et, path,
 						  dealloc);
@@ -4187,12 +4179,6 @@ static int ocfs2_insert_path(handle_t *handle,
 	ocfs2_journal_dirty(handle, leaf_bh);
 
 	if (left_path) {
-		/*
-		 * The rotate code has indicated that we need to fix
-		 * up portions of the tree after the insert.
-		 *
-		 * XXX: Should we extend the transaction here?
-		 */
 		subtree_index = ocfs2_find_subtree_root(et, left_path,
 							right_path);
 		ocfs2_complete_edge_insert(handle, left_path, right_path,
@@ -4254,18 +4240,6 @@ static int ocfs2_do_insert_extent(handle_t *handle,
 		goto out;
 	}
 
-	/*
-	 * Rotations and appends need special treatment - they modify
-	 * parts of the tree's above them.
-	 *
-	 * Both might pass back a path immediate to the left of the
-	 * one being inserted to. This will be cause
-	 * ocfs2_insert_path() to modify the rightmost records of
-	 * left_path to account for an edge insert.
-	 *
-	 * XXX: When modifying this code, keep in mind that an insert
-	 * can wind up skipping both of these two special cases...
-	 */
 	if (rotate) {
 		ret = ocfs2_rotate_tree_right(handle, et, type->ins_split,
 					      le32_to_cpu(insert_rec->e_cpos),
@@ -4570,14 +4544,6 @@ static int ocfs2_figure_insert_type(struct ocfs2_extent_tree *et,
 		el = &eb->h_list;
 	}
 
-	/*
-	 * Unless we have a contiguous insert, we'll need to know if
-	 * there is room left in our allocation tree for another
-	 * extent record.
-	 *
-	 * XXX: This test is simplistic, we can search for empty
-	 * extent records too.
-	 */
 	*free_records = le16_to_cpu(el->l_count) -
 		le16_to_cpu(el->l_next_free_rec);
 
@@ -5205,10 +5171,6 @@ int ocfs2_mark_extent_written(struct inode *inode,
 		goto out;
 	}
 
-	/*
-	 * XXX: This should be fixed up so that we just re-insert the
-	 * next extent records.
-	 */
 	ocfs2_et_extent_map_truncate(et, 0);
 
 	ret = ocfs2_change_extent_flag(handle, et, cpos,
@@ -5460,10 +5422,6 @@ int ocfs2_remove_extent(handle_t *handle,
 	struct ocfs2_extent_list *el;
 	struct ocfs2_path *path = NULL;
 
-	/*
-	 * XXX: Why are we truncating to 0 instead of wherever this
-	 * affects us?
-	 */
 	ocfs2_et_extent_map_truncate(et, 0);
 
 	path = ocfs2_new_path_from_et(et);

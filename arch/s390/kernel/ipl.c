@@ -1995,4 +1995,3 @@ void s390_reset_system(void)
 
 	do_reset_calls();
 }
-

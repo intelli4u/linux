@@ -461,7 +461,7 @@ static void ohci_initialize(struct ti_ohci *ohci)
 		buf &= ~0x80000000;
 	else
 		buf |=  0x80000000; /* Enable IRMC */
-	buf &= ~0x00ff0000; /* XXX: Set cyc_clk_acc to zero for now */
+	buf &= ~0x00ff0000;
 	buf &= ~0x18000000; /* Disable PMC and BMC */
 	reg_write(ohci, OHCI1394_BusOptions, buf);
 
@@ -615,13 +615,6 @@ static void ohci_initialize(struct ti_ohci *ohci)
 	}
 }
 
-/*
- * Insert a packet in the DMA fifo and generate the DMA prg
- * FIXME: rewrite the program in order to accept packets crossing
- *        page boundaries.
- *        check also that a single dma descriptor doesn't cross a
- *        page boundary.
- */
 static void insert_packet(struct ti_ohci *ohci,
 			  struct dma_trm_ctx *d, struct hpsb_packet *packet)
 {
@@ -690,24 +683,6 @@ static void insert_packet(struct ti_ohci *ohci,
 					    DMA_CTL_IRQ |
 					    DMA_CTL_BRANCH |
 					    packet->data_size);
-                        /*
-                         * Check that the packet data buffer
-                         * does not cross a page boundary.
-			 *
-			 * XXX Fix this some day. eth1394 seems to trigger
-			 * it, but ignoring it doesn't seem to cause a
-			 * problem.
-                         */
-#if 0
-                        if (cross_bound((unsigned long)packet->data,
-                                        packet->data_size)>0) {
-                                /* FIXME: do something about it */
-                                PRINT(KERN_ERR,
-                                      "%s: packet data addr: %p size %Zd bytes "
-				      "cross page boundary", __func__,
-                                      packet->data, packet->data_size);
-                        }
-#endif
                         d->prg_cpu[idx]->end.address = cpu_to_le32(
                                 pci_map_single(ohci->dev, packet->data,
                                                packet->data_size,
@@ -1800,7 +1775,6 @@ static void ohci_iso_xmit_stop(struct hpsb_iso *iso)
 
 	/* halt DMA */
 	if (ohci1394_stop_context(xmit->ohci, xmit->ContextControlClear, NULL)) {
-		/* XXX the DMA context will lock up if you try to send too much data! */
 		PRINT(KERN_ERR,
 		      "you probably exceeded the OHCI card's bandwidth limit - "
 		      "reload the module and reduce xmit bandwidth");
@@ -3077,11 +3051,6 @@ static int __devinit ohci1394_pci_probe(struct pci_dev *dev,
 	/* Some oddball Apple controllers do not order the selfid
 	 * properly, so we make up for it here.  */
 #ifndef __LITTLE_ENDIAN
-	/* XXX: Need a better way to check this. I'm wondering if we can
-	 * read the values of the OHCI1394_PCI_HCI_Control and the
-	 * noByteSwapData registers to see if they were not cleared to
-	 * zero. Should this work? Obviously it's not defined what these
-	 * registers will read when they aren't supported. Bleh! */
 	if (dev->vendor == PCI_VENDOR_ID_APPLE &&
 	    dev->device == PCI_DEVICE_ID_APPLE_UNI_N_FW) {
 		ohci->no_swap_incoming = 1;

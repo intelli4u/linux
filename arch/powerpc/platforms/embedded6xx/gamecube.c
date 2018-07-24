@@ -115,4 +115,3 @@ static int __init gamecube_device_probe(void)
 	return 0;
 }
 device_initcall(gamecube_device_probe);
-

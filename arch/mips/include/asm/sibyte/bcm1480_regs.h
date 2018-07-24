@@ -754,7 +754,6 @@
 #define R_BCM1480_HSP_RX_PKT_RAMALLOC_7       0x0000020058
 #define R_BCM1480_HSP_RX_PKT_RAMALLOC(idx)    (R_BCM1480_HSP_RX_PKT_RAMALLOC_0 + 8*(idx))
 
-/* XXX Following registers were shuffled.  Renamed/renumbered per errata. */
 #define R_BCM1480_HSP_RX_HT_RAMALLOC_0      0x0000020078
 #define R_BCM1480_HSP_RX_HT_RAMALLOC_1      0x0000020080
 #define R_BCM1480_HSP_RX_HT_RAMALLOC_2      0x0000020088

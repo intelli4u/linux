@@ -818,20 +818,6 @@ static snd_pcm_uframes_t snd_vt1724_playback_pro_pointer(struct snd_pcm_substrea
 
 	if (!(inl(ICEMT1724(ice, DMA_CONTROL)) & VT1724_PDMA0_START))
 		return 0;
-#if 0 /* read PLAYBACK_ADDR */
-	ptr = inl(ICEMT1724(ice, PLAYBACK_ADDR));
-	if (ptr < substream->runtime->dma_addr) {
-		snd_printd("ice1724: invalid negative ptr\n");
-		return 0;
-	}
-	ptr -= substream->runtime->dma_addr;
-	ptr = bytes_to_frames(substream->runtime, ptr);
-	if (ptr >= substream->runtime->buffer_size) {
-		snd_printd("ice1724: invalid ptr %d (size=%d)\n",
-			   (int)ptr, (int)substream->runtime->period_size);
-		return 0;
-	}
-#else /* read PLAYBACK_SIZE */
 	ptr = inl(ICEMT1724(ice, PLAYBACK_SIZE)) & 0xffffff;
 	ptr = (ptr + 1) << 2;
 	ptr = bytes_to_frames(substream->runtime, ptr);
@@ -844,7 +830,6 @@ static snd_pcm_uframes_t snd_vt1724_playback_pro_pointer(struct snd_pcm_substrea
 			   (int)ptr, (int)substream->runtime->buffer_size);
 		ptr = 0;
 	}
-#endif
 	return ptr;
 }
 
@@ -871,11 +856,6 @@ static snd_pcm_uframes_t snd_vt1724_pcm_pointer(struct snd_pcm_substream *substr
 
 	if (!(inl(ICEMT1724(ice, DMA_CONTROL)) & reg->start))
 		return 0;
-#if 0 /* use ADDR register */
-	ptr = inl(ice->profi_port + reg->addr);
-	ptr -= substream->runtime->dma_addr;
-	return bytes_to_frames(substream->runtime, ptr);
-#else /* use SIZE register */
 	ptr = inw(ice->profi_port + reg->size);
 	ptr = (ptr + 1) << 2;
 	ptr = bytes_to_frames(substream->runtime, ptr);
@@ -889,7 +869,6 @@ static snd_pcm_uframes_t snd_vt1724_pcm_pointer(struct snd_pcm_substream *substr
 		ptr = 0;
 	}
 	return ptr;
-#endif
 }
 
 static const struct vt1724_pcm_reg vt1724_pdma0_reg = {
@@ -937,7 +916,7 @@ static const struct snd_pcm_hardware snd_vt1724_playback_pro = {
 	.channels_min =		2,
 	.channels_max =		8,
 	.buffer_bytes_max =	(1UL << 21),	/* 19bits dword */
-	.period_bytes_min =	8 * 4 * 2,	/* FIXME: constraints needed */
+	.period_bytes_min =	8 * 4 * 2,
 	.period_bytes_max =	(1UL << 21),
 	.periods_min =		2,
 	.periods_max =		1024,
@@ -1383,7 +1362,7 @@ static int snd_vt1724_playback_indep_open(struct snd_pcm_substream *substream)
 	/* already used by PDMA0? */
 	if (ice->pcm_reserved[substream->number]) {
 		mutex_unlock(&ice->open_mutex);
-		return -EBUSY; /* FIXME: should handle blocking mode properly */
+		return -EBUSY;
 	}
 	mutex_unlock(&ice->open_mutex);
 	runtime->private_data = (void *)&vt1724_playback_dma_regs[substream->number];
@@ -1468,7 +1447,7 @@ static int __devinit snd_vt1724_ac97_mixer(struct snd_ice1712 *ice)
 
 		/* cold reset */
 		outb(inb(ICEMT1724(ice, AC97_CMD)) | 0x80, ICEMT1724(ice, AC97_CMD));
-		mdelay(5); /* FIXME */
+		mdelay(5);
 		outb(inb(ICEMT1724(ice, AC97_CMD)) & ~0x80, ICEMT1724(ice, AC97_CMD));
 
 		err = snd_ac97_bus(ice->card, 0, &ops, NULL, &pbus);
@@ -1763,7 +1742,6 @@ static int snd_vt1724_spdif_sw_put(struct snd_kcontrol *kcontrol,
 static struct snd_kcontrol_new snd_vt1724_spdif_switch __devinitdata =
 {
 	.iface =	SNDRV_CTL_ELEM_IFACE_MIXER,
-	/* FIXME: the following conflict with IEC958 Playback Route */
 	/* .name =         SNDRV_CTL_NAME_IEC958("", PLAYBACK, SWITCH), */
 	.name =         SNDRV_CTL_NAME_IEC958("Output ", NONE, SWITCH),
 	.info =		snd_vt1724_spdif_sw_info,
@@ -1772,47 +1750,6 @@ static struct snd_kcontrol_new snd_vt1724_spdif_switch __devinitdata =
 };
 
 
-#if 0 /* NOT USED YET */
-/*
- * GPIO access from extern
- */
-
-#define snd_vt1724_gpio_info		snd_ctl_boolean_mono_info
-
-int snd_vt1724_gpio_get(struct snd_kcontrol *kcontrol,
-			struct snd_ctl_elem_value *ucontrol)
-{
-	struct snd_ice1712 *ice = snd_kcontrol_chip(kcontrol);
-	int shift = kcontrol->private_value & 0xff;
-	int invert = (kcontrol->private_value & (1<<24)) ? 1 : 0;
-
-	snd_ice1712_save_gpio_status(ice);
-	ucontrol->value.integer.value[0] =
-		(snd_ice1712_gpio_read(ice) & (1 << shift) ? 1 : 0) ^ invert;
-	snd_ice1712_restore_gpio_status(ice);
-	return 0;
-}
-
-int snd_ice1712_gpio_put(struct snd_kcontrol *kcontrol,
-			 struct snd_ctl_elem_value *ucontrol)
-{
-	struct snd_ice1712 *ice = snd_kcontrol_chip(kcontrol);
-	int shift = kcontrol->private_value & 0xff;
-	int invert = (kcontrol->private_value & (1<<24)) ? mask : 0;
-	unsigned int val, nval;
-
-	if (kcontrol->private_value & (1 << 31))
-		return -EPERM;
-	nval = (ucontrol->value.integer.value[0] ? (1 << shift) : 0) ^ invert;
-	snd_ice1712_save_gpio_status(ice);
-	val = snd_ice1712_gpio_read(ice);
-	nval |= val & ~(1 << shift);
-	if (val != nval)
-		snd_ice1712_gpio_write(ice, nval);
-	snd_ice1712_restore_gpio_status(ice);
-	return val != nval;
-}
-#endif /* NOT USED YET */
 
 /*
  *  rate
@@ -2137,7 +2074,7 @@ static int snd_vt1724_pro_peak_info(struct snd_kcontrol *kcontrol,
 				    struct snd_ctl_elem_info *uinfo)
 {
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_INTEGER;
-	uinfo->count = 22; /* FIXME: for compatibility with ice1712... */
+	uinfo->count = 22;
 	uinfo->value.integer.min = 0;
 	uinfo->value.integer.max = 255;
 	return 0;
@@ -2385,13 +2322,6 @@ static int __devinit snd_vt1724_spdif_build_controls(struct snd_ice1712 *ice)
 	if (err < 0)
 		return err;
 	kctl->id.device = ice->pcm->device;
-#if 0 /* use default only */
-	err = snd_ctl_add(ice->card, kctl = snd_ctl_new1(&snd_vt1724_spdif_stream, ice));
-	if (err < 0)
-		return err;
-	kctl->id.device = ice->pcm->device;
-	ice->spdif.stream_ctl = kctl;
-#endif
 	return 0;
 }
 

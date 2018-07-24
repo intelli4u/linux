@@ -4156,9 +4156,6 @@ i915_gem_pin_ioctl(struct drm_device *dev, void *data,
 		}
 	}
 
-	/* XXX - flush the CPU caches for pinned objects
-	 * as the X server doesn't manage domains yet
-	 */
 	i915_gem_object_flush_cpu_write_domain(obj);
 	args->offset = obj_priv->gtt_offset;
 	drm_gem_object_unreference(obj);

@@ -200,7 +200,6 @@ static int w83977af_open(int i, unsigned int iobase, unsigned int irq,
 	
 	/* The only value we must override it the baudrate */
 
-	/* FIXME: The HP HDLS-1100 does not support 1152000! */
 	self->qos.baud_rate.bits = IR_9600|IR_19200|IR_38400|IR_57600|
 		IR_115200|IR_576000|IR_1152000|(IR_4000000 << 8);
 

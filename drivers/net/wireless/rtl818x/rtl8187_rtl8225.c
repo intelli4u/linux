@@ -307,7 +307,7 @@ static void rtl8225_rf_set_tx_power(struct ieee80211_hw *dev, int channel)
 	for (i = 0; i < 8; i++)
 		rtl8225_write_phy_cck(dev, 0x44 + i, *tmp++);
 
-	msleep(1); // FIXME: optional?
+	msleep(1);
 
 	/* anaparam2 on */
 	rtl818x_iowrite8(priv, &priv->map->EEPROM_CMD, RTL818X_EEPROM_CMD_CONFIG);

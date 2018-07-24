@@ -34,9 +34,6 @@ static DEFINE_MUTEX(write_lock);
  *
  * Otherwise the fifo storage will be a part of the fifo structure.
  */
-#if 0
-#define DYNAMIC
-#endif
 
 #ifdef DYNAMIC
 static DECLARE_KFIFO_PTR(test, int);

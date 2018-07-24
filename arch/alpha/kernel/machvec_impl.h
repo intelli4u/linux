@@ -31,7 +31,7 @@
    seems like such a pain.  Define this to get things to compile.  */
 #define JENSEN_IACK_SC		1
 #define T2_IACK_SC		1
-#define WILDFIRE_IACK_SC	1 /* FIXME */
+#define WILDFIRE_IACK_SC	1
 
 /*
  * Some helpful macros for filling in the blanks.
@@ -142,11 +142,6 @@
 /* GCC actually has a syntax for defining aliases, but is under some
    delusion that you shouldn't be able to declare it extern somewhere
    else beforehand.  Fine.  We'll do it ourselves.  */
-#if 0
-#define ALIAS_MV(system) \
-  struct alpha_machine_vector alpha_mv __attribute__((alias(#system "_mv")));
-#else
 #define ALIAS_MV(system) \
   asm(".global alpha_mv\nalpha_mv = " #system "_mv");
-#endif
 #endif /* GENERIC */

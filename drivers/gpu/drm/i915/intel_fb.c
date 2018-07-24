@@ -169,7 +169,6 @@ static int intelfb_create(struct intel_fbdev *ifbdev,
 	drm_fb_helper_fill_fix(info, fb->pitch, fb->depth);
 	drm_fb_helper_fill_var(info, &ifbdev->helper, sizes->fb_width, sizes->fb_height);
 
-	/* FIXME: we really shouldn't expose mmio space at all */
 	info->fix.mmio_start = pci_resource_start(dev->pdev, mmio_bar);
 	info->fix.mmio_len = pci_resource_len(dev->pdev, mmio_bar);
 

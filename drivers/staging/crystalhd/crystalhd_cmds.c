@@ -779,26 +779,6 @@ static const struct crystalhd_cmd_tbl	g_crystalhd_cproc_tbl[] = {
 
 /*=============== Cmd Proc Functions.. ===================================*/
 
-/**
- * crystalhd_suspend - Power management suspend request.
- * @ctx: Command layer context.
- * @idata: Iodata - required for internal use.
- *
- * Return:
- *	status
- *
- * 1. Set the state to Suspend.
- * 2. Flush the Rx Buffers it will unmap all the buffers and
- *    stop the RxDMA engine.
- * 3. Cancel The TX Io and Stop Dma Engine.
- * 4. Put the DDR in to deep sleep.
- * 5. Stop the hardware putting it in to Reset State.
- *
- * Current gstreamer frame work does not provide any power management
- * related notification to user mode decoder plug-in. As a work-around
- * we pass on the power mangement notification to our plug-in by completing
- * all outstanding requests with BC_STS_IO_USER_ABORT return code.
- */
 enum BC_STATUS crystalhd_suspend(struct crystalhd_cmd *ctx,
 				struct crystalhd_ioctl_data *idata)
 {

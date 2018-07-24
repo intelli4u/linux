@@ -557,10 +557,6 @@ long lirc_dev_fop_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		result = get_user(mode, (unsigned long *)arg);
 		if (!result && !(LIRC_MODE2REC(mode) & ir->d.features))
 			result = -EINVAL;
-		/*
-		 * FIXME: We should actually set the mode somehow but
-		 * for now, lirc_serial doesn't support mode changing either
-		 */
 		break;
 	case LIRC_GET_LENGTH:
 		result = put_user(ir->d.code_length, (unsigned long *)arg);

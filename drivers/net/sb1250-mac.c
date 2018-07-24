@@ -585,10 +585,6 @@ static void sbdma_initctx(struct sbmacdma *d, struct sbmac_softc *s, int chan,
 	d->sbdma_channel   = chan;
 	d->sbdma_txdir     = txrx;
 
-#if 0
-	/* RMON clearing */
-	s->sbe_idx =(s->sbm_base - A_MAC_BASE_0)/MAC_SPACING;
-#endif
 
 	__raw_writeq(0, s->sbm_base + R_MAC_RMON_TX_BYTES);
 	__raw_writeq(0, s->sbm_base + R_MAC_RMON_COLLISIONS);
@@ -1634,7 +1630,6 @@ static void sbmac_channel_stop(struct sbmac_softc *s)
 
 	/* Turn off ticker */
 
-	/* XXX */
 
 	/* turn off receiver and transmitter */
 
@@ -2061,7 +2056,6 @@ static int sbmac_start_tx(struct sk_buff *skb, struct net_device *dev)
 	 */
 
 	if (sbdma_add_txbuffer(&(sc->sbm_txdma),skb)) {
-		/* XXX save skb that we could not send */
 		netif_stop_queue(dev);
 		spin_unlock_irqrestore(&sc->sbm_lock, flags);
 
@@ -2137,8 +2131,6 @@ static void sbmac_setmulti(struct sbmac_softc *sc)
 	 * hash filter if the perfect filter overflows
 	 */
 
-	/* XXX only using perfect filter for now, need to use hash
-	 * XXX if the table overflows */
 
 	idx = 1;		/* skip station address */
 	netdev_for_each_mc_addr(ha, dev) {

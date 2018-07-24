@@ -771,15 +771,6 @@ static int ide_init_queue(ide_drive_t *drive)
 	blk_queue_max_hw_sectors(q, max_sectors);
 
 #ifdef CONFIG_PCI
-	/* When we have an IOMMU, we may have a problem where pci_map_sg()
-	 * creates segments that don't completely match our boundary
-	 * requirements and thus need to be broken up again. Because it
-	 * doesn't align properly either, we may actually have to break up
-	 * to more segments than what was we got in the first place, a max
-	 * worst case is twice as many.
-	 * This will be fixed once we teach pci_map_sg() about our boundary
-	 * requirements, hopefully soon. *FIXME*
-	 */
 	if (!PCI_DMA_BUS_IS_PHYS)
 		max_sg_entries >>= 1;
 #endif /* CONFIG_PCI */
@@ -875,7 +866,6 @@ out_up:
 
 static int ata_lock(dev_t dev, void *data)
 {
-	/* FIXME: we want to pin hwif down */
 	return 0;
 }
 

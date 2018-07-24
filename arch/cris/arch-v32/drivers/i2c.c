@@ -255,20 +255,6 @@ i2c_getack(void)
 	 * generate ACK clock pulse
 	 */
 	i2c_clk(I2C_CLOCK_HIGH);
-#if 0
-	/*
-	 * Use PORT PB instead of I2C
-	 * for input. (I2C not working)
-	 */
-	i2c_clk(1);
-	i2c_data(1);
-	/*
-	 * switch off I2C
-	 */
-	i2c_data(1);
-	i2c_disable();
-	i2c_dir_in();
-#endif
 
 	/*
 	 * now wait for ack
@@ -291,15 +277,6 @@ i2c_getack(void)
     * before we enable our output. If we keep data high
     * and enable output, we would generate a stop condition.
     */
-#if 0
-   i2c_data(I2C_DATA_LOW);
-
-	/*
-	 * end clock pulse
-	 */
-	i2c_enable();
-	i2c_dir_out();
-#endif
 	i2c_clk(I2C_CLOCK_LOW);
 	i2c_delay(CLOCK_HIGH_TIME/4);
 	/*

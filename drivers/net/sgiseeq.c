@@ -666,9 +666,6 @@ static void sgiseeq_set_multicast(struct net_device *dev)
 	else
 		sp->mode = SEEQ_RCMD_RBCAST;
 
-	/* XXX I know this sucks, but is there a better way to reprogram
-	 * XXX the receiver? At least, this shouldn't happen too often.
-	 */
 
 	if (oldmode != sp->mode)
 		sgiseeq_reset(dev);

@@ -25,7 +25,6 @@ MODULE_AUTHOR("Rusty Russell <rusty@rustcorp.com.au>");
 MODULE_DESCRIPTION("ftp NAT helper");
 MODULE_ALIAS("ip_nat_ftp");
 
-/* FIXME: Time out? --RR */
 
 static int nf_nat_ftp_fmt_cmd(enum nf_ct_ftp_type type,
 			      char *buffer, size_t buflen,

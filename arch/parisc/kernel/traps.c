@@ -239,7 +239,6 @@ void die_if_kernel(char *str, struct pt_regs *regs, long err)
 		printk(KERN_CRIT "%s (pid %d): %s (code %ld) at " RFMT "\n",
 			current->comm, task_pid_nr(current), str, err, regs->iaoq[0]);
 #ifdef PRINT_USER_FAULTS
-		/* XXX for debugging only */
 		show_regs(regs);
 #endif
 		return;
@@ -484,15 +483,6 @@ void parisc_terminate(char *msg, struct pt_regs *regs, int code, unsigned long o
 	 * system will shut down immediately right here. */
 	pdc_soft_power_button(0);
 	
-	/* Call kernel panic() so reboot timeouts work properly 
-	 * FIXME: This function should be on the list of
-	 * panic notifiers, and we should call panic
-	 * directly from the location that we wish. 
-	 * e.g. We should not call panic from
-	 * parisc_terminate, but rather the oter way around.
-	 * This hack works, prints the panic message twice,
-	 * and it enables reboot timers!
-	 */
 	panic(msg);
 }
 
@@ -537,9 +527,6 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
 		return;
 	}
 	
-#if 0
-	printk(KERN_CRIT "Interruption # %d\n", code);
-#endif
 
 	switch(code) {
 
@@ -666,16 +653,6 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
 		/* Fall through */
 	case 17:
 		/* Non-access data TLB miss fault/Non-access data page fault */
-		/* FIXME: 
-		 	 Still need to add slow path emulation code here!
-		         If the insn used a non-shadow register, then the tlb
-			 handlers could not have their side-effect (e.g. probe
-			 writing to a target register) emulated since rfir would
-			 erase the changes to said register. Instead we have to
-			 setup everything, call this function we are in, and emulate
-			 by hand. Technically we need to emulate:
-			 fdc,fdce,pdc,"fic,4f",prober,probeir,probew, probeiw
-		*/			  
 		fault_address = regs->ior;
 		fault_space = regs->isr;
 		break;

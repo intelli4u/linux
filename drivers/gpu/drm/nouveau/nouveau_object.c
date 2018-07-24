@@ -611,7 +611,6 @@ nouveau_gpuobj_class_instmem_size(struct drm_device *dev, int class)
 {
 	struct drm_nouveau_private *dev_priv = dev->dev_private;
 
-	/*XXX: dodgy hack for now */
 	if (dev_priv->card_type >= NV_50)
 		return 24;
 	if (dev_priv->card_type >= NV_40)

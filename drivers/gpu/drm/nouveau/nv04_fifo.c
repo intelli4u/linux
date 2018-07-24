@@ -303,4 +303,3 @@ nv04_fifo_init(struct drm_device *dev)
 
 	return 0;
 }
-

@@ -134,7 +134,6 @@ static inline void sas_fill_in_rphy(struct domain_device *dev,
 	rphy->identify.target_port_protocols = dev->tproto;
 	switch (dev->dev_type) {
 	case SATA_DEV:
-		/* FIXME: need sata device type */
 	case SAS_END_DEV:
 		rphy->identify.device_type = SAS_END_DEVICE;
 		break;
@@ -157,7 +156,6 @@ static inline void sas_add_parent_port(struct domain_device *dev, int phy_id)
 
 	if (!ex->parent_port) {
 		ex->parent_port = sas_port_alloc(&dev->rphy->dev, phy_id);
-		/* FIXME: error handling */
 		BUG_ON(!ex->parent_port);
 		BUG_ON(sas_port_add(ex->parent_port));
 		sas_port_mark_backlink(ex->parent_port);

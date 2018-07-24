@@ -144,13 +144,6 @@ static int __init edac_init(void)
 
 	edac_printk(KERN_INFO, EDAC_MC, EDAC_VERSION "\n");
 
-	/*
-	 * Harvest and clear any boot/initialization PCI parity errors
-	 *
-	 * FIXME: This only clears errors logged by devices present at time of
-	 *      module initialization.  We should also do an initial clear
-	 *      of each newly hotplugged device.
-	 */
 	edac_pci_clear_parity_errors();
 
 	/*

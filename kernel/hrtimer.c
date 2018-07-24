@@ -993,12 +993,6 @@ int __hrtimer_start_range_ns(struct hrtimer *timer, ktime_t tim,
 
 	leftmost = enqueue_hrtimer(timer, new_base);
 
-	/*
-	 * Only allow reprogramming if the new base is on this CPU.
-	 * (it might still be on another CPU if the timer was pending)
-	 *
-	 * XXX send_remote_softirq() ?
-	 */
 	if (leftmost && new_base->cpu_base == &__get_cpu_var(hrtimer_bases))
 		hrtimer_enqueue_reprogram(timer, new_base, wakeup);
 

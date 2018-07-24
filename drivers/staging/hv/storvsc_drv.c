@@ -39,8 +39,6 @@
 
 
 struct host_device_context {
-	/* must be 1st field
-	 * FIXME this is a bug */
 	/* point back to our device context */
 	struct vm_device *device_ctx;
 	struct kmem_cache *request_pool;
@@ -65,7 +63,6 @@ struct storvsc_cmd_request {
 
 struct storvsc_driver_context {
 	/* !! These must be the first 2 fields !! */
-	/* FIXME this is a bug... */
 	struct driver_context drv_ctx;
 	struct storvsc_driver_object drv_obj;
 };
@@ -370,7 +367,6 @@ static void storvsc_commmand_completion(struct hv_storvsc_request *request)
 		/* using bounce buffer */
 		/* printk("copy_from_bounce_buffer\n"); */
 
-		/* FIXME: We can optimize on writes by just skipping this */
 		copy_from_bounce_buffer(scsi_sglist(scmnd),
 					cmd_request->bounce_sgl,
 					scsi_sg_count(scmnd));
@@ -725,10 +721,6 @@ static int storvsc_queuecommand(struct scsi_cmnd *scmnd,
 				ALIGN_UP(scsi_bufflen(scmnd), PAGE_SIZE) >>
 					PAGE_SHIFT;
 
-			/*
-			 * FIXME: We can optimize on reads by just skipping
-			 * this
-			 */
 			copy_to_bounce_buffer(sgl, cmd_request->bounce_sgl,
 					      scsi_sg_count(scmnd));
 
@@ -763,10 +755,6 @@ retry_request:
 			   scmnd);
 
 		if (cmd_request->bounce_sgl_count) {
-			/*
-			 * FIXME: We can optimize on writes by just skipping
-			 * this
-			 */
 			copy_from_bounce_buffer(scsi_sglist(scmnd),
 						cmd_request->bounce_sgl,
 						scsi_sg_count(scmnd));

@@ -216,20 +216,6 @@ static int via_pre_reset(struct ata_link *link, unsigned long deadline)
 }
 
 
-/**
- *	via_do_set_mode	-	set transfer mode data
- *	@ap: ATA interface
- *	@adev: ATA device
- *	@mode: ATA mode being programmed
- *	@set_ast: Set to program address setup
- *	@udma_type: UDMA mode/format of registers
- *
- *	Program the VIA registers for DMA and PIO modes. Uses the ata timing
- *	support in order to compute modes.
- *
- *	FIXME: Hotplug will require we serialize multiple mode changes
- *	on the two channels.
- */
 
 static void via_do_set_mode(struct ata_port *ap, struct ata_device *adev,
 			    int mode, int set_ast, int udma_type)
@@ -545,7 +531,7 @@ static int via_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
 		.flags = ATA_FLAG_SLAVE_POSS,
 		.pio_mask = ATA_PIO4,
 		.mwdma_mask = ATA_MWDMA2,
-		.udma_mask = ATA_UDMA6,	/* FIXME: should check north bridge */
+		.udma_mask = ATA_UDMA6,
 		.port_ops = &via_port_ops
 	};
 	const struct ata_port_info *ppi[] = { NULL, NULL };

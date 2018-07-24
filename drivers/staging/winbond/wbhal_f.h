@@ -87,5 +87,3 @@ u32 hal_get_bss_pk_cnt(struct hw_data *hw_data);
 #define hal_join_request_stop(_A)
 #define hw_get_cxx_reg(_A, _B, _C)
 #define hw_set_cxx_reg(_A, _B, _C)
-
-

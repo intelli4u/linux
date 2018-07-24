@@ -766,10 +766,6 @@ static struct net_device *c2_pseudo_netdev_init(struct c2_dev *c2dev)
 		netdev->dev_addr[0], netdev->dev_addr[1], netdev->dev_addr[2],
 		netdev->dev_addr[3], netdev->dev_addr[4], netdev->dev_addr[5]);
 
-#if 0
-	/* Disable network packets */
-	netif_stop_queue(netdev);
-#endif
 	return netdev;
 }
 

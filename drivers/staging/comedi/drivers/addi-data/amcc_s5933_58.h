@@ -267,9 +267,6 @@ void v_pci_card_list_init(unsigned short pci_vendor, char display)
 
 			amcc->vendor = pcidev->vendor;
 			amcc->device = pcidev->device;
-#if 0
-			amcc->master = pcidev->master;	/*  how get this information under 2.4 kernels? */
-#endif
 			amcc->pci_bus = pcidev->bus->number;
 			amcc->pci_slot = PCI_SLOT(pcidev->devfn);
 			amcc->pci_func = PCI_FUNC(pcidev->devfn);

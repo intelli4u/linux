@@ -313,4 +313,3 @@ int __devinit ca_midi_init(void *dev_id, struct snd_ca_midi *midi, int device, c
 	midi->rmidi = rmidi;
 	return 0;
 }
-

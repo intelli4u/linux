@@ -155,13 +155,11 @@ static int ultracam_veio(
 			cp,
 			sizeof(cp),
 			1000);
-#if 1
 		dev_info(&uvd->dev->dev,
 			 "USB => %02x%02x%02x%02x%02x%02x%02x%02x "
 			 "(req=$%02x val=$%04x ind=$%04x)\n",
 			 cp[0],cp[1],cp[2],cp[3],cp[4],cp[5],cp[6],cp[7],
 			 req, value, index);
-#endif
 	} else {
 		i = usb_control_msg(
 			uvd->dev,
@@ -616,7 +614,7 @@ static int ultracam_probe(struct usb_interface *intf, const struct usb_device_id
 		uvd->iso_packet_len = maxPS;
 		uvd->paletteBits = 1L << VIDEO_PALETTE_RGB24;
 		uvd->defaultPalette = VIDEO_PALETTE_RGB24;
-		uvd->canvas = VIDEOSIZE(640, 480);	/* FIXME */
+		uvd->canvas = VIDEOSIZE(640, 480);
 		uvd->videosize = uvd->canvas; /* ultracam_size_to_videosize(size);*/
 
 		/* Initialize ibmcam-specific data */

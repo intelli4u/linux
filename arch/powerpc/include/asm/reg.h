@@ -1,10 +1,4 @@
-/*
- * Contains the definition of registers common to all PowerPC variants.
- * If a register definition has been changed in a different PowerPC
- * variant, we will case it in #ifndef XXX ... #endif, and have the
- * number used in the Programming Environments Manual For 32-Bit
- * Implementations of the PowerPC Architecture (a.k.a. Green Book) here.
- */
+
 
 #ifndef _ASM_POWERPC_REG_H
 #define _ASM_POWERPC_REG_H
@@ -868,7 +862,6 @@
 #define PVR_476_ISS	0x00052000
 
 /* 64-bit processors */
-/* XXX the prefix should be PVR_, we'll do a global sweep to fix it one day */
 #define PV_NORTHSTAR	0x0033
 #define PV_PULSAR	0x0034
 #define PV_POWER4	0x0035

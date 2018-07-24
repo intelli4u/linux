@@ -1120,4 +1120,3 @@ struct nouveau_pgraph_object_class nv04_graph_grclass[] = {
 	{ 0x506e, true, nv04_graph_mthds_sw },
 	{}
 };
-

@@ -1059,11 +1059,6 @@ int ttm_bo_move_buffer(struct ttm_buffer_object *bo,
 
 	BUG_ON(!atomic_read(&bo->reserved));
 
-	/*
-	 * FIXME: It's possible to pipeline buffer moves.
-	 * Have the driver move function wait for idle when necessary,
-	 * instead of doing it here.
-	 */
 	spin_lock(&bo->lock);
 	ret = ttm_bo_wait(bo, false, interruptible, no_wait_gpu);
 	spin_unlock(&bo->lock);

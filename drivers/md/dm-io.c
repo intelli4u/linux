@@ -41,11 +41,6 @@ struct io {
 
 static struct kmem_cache *_dm_io_cache;
 
-/*
- * io contexts are only dynamically allocated for asynchronous
- * io.  Since async io is likely to be the majority of io we'll
- * have the same number of io contexts as bios! (FIXME: must reduce this).
- */
 
 static unsigned int pages_to_ios(unsigned int pages)
 {

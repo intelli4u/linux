@@ -752,4 +752,3 @@ int __init omap_mux_init(u32 mux_pbase, u32 mux_size,
 
 	return 0;
 }
-

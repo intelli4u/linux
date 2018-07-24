@@ -4073,7 +4073,6 @@ static void ipmi_timeout(unsigned long data)
 static atomic_t smi_msg_inuse_count = ATOMIC_INIT(0);
 static atomic_t recv_msg_inuse_count = ATOMIC_INIT(0);
 
-/* FIXME - convert these to slabs. */
 static void free_smi_msg(struct ipmi_smi_msg *msg)
 {
 	atomic_dec(&smi_msg_inuse_count);
@@ -4315,7 +4314,7 @@ static void send_panic_events(char *str)
 			 */
 			ipmb = (struct ipmi_ipmb_addr *) &addr;
 			ipmb->addr_type = IPMI_IPMB_ADDR_TYPE;
-			ipmb->channel = 0; /* FIXME - is this right? */
+			ipmb->channel = 0;
 			ipmb->lun = intf->event_receiver_lun;
 			ipmb->slave_addr = intf->event_receiver;
 		} else if (intf->local_sel_device) {

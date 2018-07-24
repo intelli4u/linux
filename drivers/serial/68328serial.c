@@ -76,7 +76,7 @@ m68328_uart *uart_addr = (m68328_uart *)USTCNT_ADDR;
 struct tty_struct m68k_ttys;
 struct m68k_serial *m68k_consinfo = 0;
 
-#define M68K_CLOCK (16667000) /* FIXME: 16MHz is likely wrong */
+#define M68K_CLOCK (16667000)
 
 struct tty_driver *serial_driver;
 
@@ -235,22 +235,6 @@ static void batten_down_hatches(void)
 
 static void status_handle(struct m68k_serial *info, unsigned short status)
 {
-#if 0
-	if(status & DCD) {
-		if((info->port.tty->termios->c_cflag & CRTSCTS) &&
-		   ((info->curregs[3] & AUTO_ENAB)==0)) {
-			info->curregs[3] |= AUTO_ENAB;
-			info->pendregs[3] |= AUTO_ENAB;
-			write_zsreg(info->m68k_channel, 3, info->curregs[3]);
-		}
-	} else {
-		if((info->curregs[3] & AUTO_ENAB)) {
-			info->curregs[3] &= ~AUTO_ENAB;
-			info->pendregs[3] &= ~AUTO_ENAB;
-			write_zsreg(info->m68k_channel, 3, info->curregs[3]);
-		}
-	}
-#endif
 	/* If this is console input and this is a
 	 * 'break asserted' status change interrupt
 	 * see if we can drop into the debugger
@@ -386,11 +370,6 @@ static void do_softint(struct work_struct *work)
 	tty = info->port.tty;
 	if (!tty)
 		return;
-#if 0
-	if (clear_bit(RS_EVENT_WRITE_WAKEUP, &info->event)) {
-		tty_wakeup(tty);
-	}
-#endif   
 }
 
 /*
@@ -1106,16 +1085,6 @@ static void rs_close(struct tty_struct *tty, struct file * filp)
 	info->event = 0;
 	info->port.tty = NULL;
 #warning "This is not and has never been valid so fix it"	
-#if 0
-	if (tty->ldisc.num != ldiscs[N_TTY].num) {
-		if (tty->ldisc.close)
-			(tty->ldisc.close)(tty);
-		tty->ldisc = ldiscs[N_TTY];
-		tty->termios->c_line = N_TTY;
-		if (tty->ldisc.open)
-			(tty->ldisc.open)(tty);
-	}
-#endif	
 	if (info->blocked_open) {
 		if (info->close_delay) {
 			msleep_interruptible(jiffies_to_msecs(info->close_delay));

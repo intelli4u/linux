@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  *  linux/arch/arm/kernel/smp_twd.c
  *
@@ -98,7 +99,7 @@ static void __cpuinit twd_calibrate_rate(void)
 			udelay(10);
 
 		/* OK, now the tick has started, let's get the timer going */
-		waitjiffies += 5;
+		waitjiffies += 8;
 
 				 /* enable, no interrupt or reload */
 		__raw_writel(0x1, twd_base + TWD_TIMER_CONTROL);
@@ -111,10 +112,10 @@ static void __cpuinit twd_calibrate_rate(void)
 
 		count = __raw_readl(twd_base + TWD_TIMER_COUNTER);
 
-		twd_timer_rate = (0xFFFFFFFFU - count) * (HZ / 5);
+		twd_timer_rate = ((u64)(0xFFFFFFFFUL - count) * HZ) / 8;
 
-		printk("%lu.%02luMHz.\n", twd_timer_rate / 1000000,
-			(twd_timer_rate / 100000) % 100);
+		printk("%lu.%03luMHz.\n", twd_timer_rate / 1000000,
+			(twd_timer_rate / 1000) % 1000);
 	}
 
 	load = twd_timer_rate / HZ;
@@ -142,13 +143,13 @@ void __cpuinit twd_timer_setup(struct clock_event_device *clk)
 	clk->max_delta_ns = clockevent_delta2ns(0xffffffff, clk);
 	clk->min_delta_ns = clockevent_delta2ns(0xf, clk);
 
+	clockevents_register_device(clk);
+
 	/* Make sure our local interrupt controller has this enabled */
 	local_irq_save(flags);
 	irq_to_desc(clk->irq)->status |= IRQ_NOPROBE;
 	get_irq_chip(clk->irq)->unmask(clk->irq);
 	local_irq_restore(flags);
-
-	clockevents_register_device(clk);
 }
 
 #ifdef CONFIG_HOTPLUG_CPU

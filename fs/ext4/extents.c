@@ -829,7 +829,6 @@ static int ext4_ext_split(handle_t *handle, struct inode *inode,
 	int err = 0;
 
 	/* make decision: where to split? */
-	/* FIXME: now decision is simplest: at current extent */
 
 	/* if current leaf will be split, then we should use
 	 * border from split point */
@@ -2540,7 +2539,6 @@ static void bi_complete(struct bio *bio, int error)
 	complete((struct completion *)bio->bi_private);
 }
 
-/* FIXME!! we need to try to merge to left or right after zero-out  */
 static int ext4_ext_zeroout(struct inode *inode, struct ext4_extent *ex)
 {
 	int ret;
@@ -3859,14 +3857,6 @@ static int ext4_ext_fiemap_cb(struct inode *inode, struct ext4_ext_path *path,
 	if (ex && ext4_ext_is_uninitialized(ex))
 		flags |= FIEMAP_EXTENT_UNWRITTEN;
 
-	/*
-	 * If this extent reaches EXT_MAX_BLOCK, it must be last.
-	 *
-	 * Or if ext4_ext_next_allocated_block is EXT_MAX_BLOCK,
-	 * this also indicates no more allocated blocks.
-	 *
-	 * XXX this might miss a single-block extent at EXT_MAX_BLOCK
-	 */
 	if (ext4_ext_next_allocated_block(path) == EXT_MAX_BLOCK ||
 	    newex->ec_block + newex->ec_len - 1 == EXT_MAX_BLOCK) {
 		loff_t size = i_size_read(inode);
@@ -3962,4 +3952,3 @@ int ext4_fiemap(struct inode *inode, struct fiemap_extent_info *fieinfo,
 
 	return error;
 }
-

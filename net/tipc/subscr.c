@@ -606,4 +606,3 @@ int tipc_ispublished(struct tipc_name const *name)
 
 	return(tipc_nametbl_translate(name->type, name->instance,&domain) != 0);
 }
-

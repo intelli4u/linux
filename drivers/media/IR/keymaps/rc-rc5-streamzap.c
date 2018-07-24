@@ -12,12 +12,6 @@
 #include <media/rc-map.h>
 
 static struct ir_scancode rc5_streamzap[] = {
-/*
- * FIXME: The Streamzap remote isn't actually true RC-5, it has an extra
- * bit in it, which presently throws the in-kernel RC-5 decoder for a loop.
- * We either have to enhance the decoder to support it, add a new decoder,
- * or just rely on lirc userspace decoding.
- */
 	{ 0x00, KEY_NUMERIC_0 },
 	{ 0x01, KEY_NUMERIC_1 },
 	{ 0x02, KEY_NUMERIC_2 },

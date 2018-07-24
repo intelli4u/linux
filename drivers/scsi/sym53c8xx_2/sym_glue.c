@@ -210,20 +210,6 @@ void sym_set_cam_result_error(struct sym_hcb *np, struct sym_ccb *cp, int resid)
 			memset(cmd->sense_buffer, 0, SCSI_SENSE_BUFFERSIZE);
 			memcpy(cmd->sense_buffer, cp->sns_bbuf,
 			       min(SCSI_SENSE_BUFFERSIZE, SYM_SNS_BBUF_LEN));
-#if 0
-			/*
-			 *  If the device reports a UNIT ATTENTION condition 
-			 *  due to a RESET condition, we should consider all 
-			 *  disconnect CCBs for this unit as aborted.
-			 */
-			if (1) {
-				u_char *p;
-				p  = (u_char *) cmd->sense_data;
-				if (p[0]==0x70 && p[2]==0x6 && p[12]==0x29)
-					sym_clear_tasks(np, DID_ABORT,
-							cp->target,cp->lun, -1);
-			}
-#endif
 		} else {
 			/*
 			 * Error return from our internal request sense.  This
@@ -411,15 +397,6 @@ int sym_setup_data_and_start(struct sym_hcb *np, struct scsi_cmnd *cmd, struct s
 	 *  It is the first test we want to do after a driver 
 	 *  change that does not seem obviously safe. :)
 	 */
-#if 0
-	switch (cp->cdb_buf[0]) {
-	case 0x0A: case 0x2A: case 0xAA:
-		panic("XXXXXXXXXXXXX WRITE NOT YET ALLOWED XXXXXXXXXXXXXX\n");
-		break;
-	default:
-		break;
-	}
-#endif
 
 	/*
 	 *	activate this job.
@@ -1567,17 +1544,6 @@ static int __devinit sym_set_workarounds(struct sym_device *device)
 			return -ENODEV;
 	}
 
-	/*
-	 *  Work around for errant bit in 895A. The 66Mhz
-	 *  capable bit is set erroneously. Clear this bit.
-	 *  (Item 1 DEL 533)
-	 *
-	 *  Make sure Config space and Features agree.
-	 *
-	 *  Recall: writes are not normal to status register -
-	 *  write a 1 to clear and a 0 to leave unchanged.
-	 *  Can only reset bits.
-	 */
 	pci_read_config_word(pdev, PCI_STATUS, &status_reg);
 	if (chip->features & FE_66MHZ) {
 		if (!(status_reg & PCI_STATUS_66MHZ))
@@ -1874,9 +1840,6 @@ static void sym2_reset_workarounds(struct pci_dev *pdev)
 
 	chip = sym_lookup_chip_table(pdev->device, pdev->revision);
 
-	/* Work around for errant bit in 895A, in a fashion
-	 * similar to what is done in sym_set_workarounds().
-	 */
 	pci_read_config_word(pdev, PCI_STATUS, &status_reg);
 	if (!(chip->features & FE_66MHZ) && (status_reg & PCI_STATUS_66MHZ)) {
 		status_reg = PCI_STATUS_66MHZ;
@@ -2025,33 +1988,6 @@ static void sym2_set_dt(struct scsi_target *starget, int dt)
 	tp->tgoal.check_nego = 1;
 }
 
-#if 0
-static void sym2_set_iu(struct scsi_target *starget, int iu)
-{
-	struct Scsi_Host *shost = dev_to_shost(starget->dev.parent);
-	struct sym_hcb *np = sym_get_hcb(shost);
-	struct sym_tcb *tp = &np->target[starget->id];
-
-	if (iu)
-		tp->tgoal.iu = tp->tgoal.dt = 1;
-	else
-		tp->tgoal.iu = 0;
-	tp->tgoal.check_nego = 1;
-}
-
-static void sym2_set_qas(struct scsi_target *starget, int qas)
-{
-	struct Scsi_Host *shost = dev_to_shost(starget->dev.parent);
-	struct sym_hcb *np = sym_get_hcb(shost);
-	struct sym_tcb *tp = &np->target[starget->id];
-
-	if (qas)
-		tp->tgoal.dt = tp->tgoal.qas = 1;
-	else
-		tp->tgoal.qas = 0;
-	tp->tgoal.check_nego = 1;
-}
-#endif
 
 static struct spi_function_template sym2_transport_functions = {
 	.set_offset	= sym2_set_offset,
@@ -2062,12 +1998,6 @@ static struct spi_function_template sym2_transport_functions = {
 	.show_width	= 1,
 	.set_dt		= sym2_set_dt,
 	.show_dt	= 1,
-#if 0
-	.set_iu		= sym2_set_iu,
-	.show_iu	= 1,
-	.set_qas	= sym2_set_qas,
-	.show_qas	= 1,
-#endif
 	.get_signalling	= sym2_get_signalling,
 };
 

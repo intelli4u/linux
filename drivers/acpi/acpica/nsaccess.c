@@ -155,7 +155,7 @@ acpi_status acpi_ns_root_initialize(void)
 				    (u8) ACPI_TO_INTEGER(val);
 				obj_desc->common.flags |= AOPOBJ_DATA_VALID;
 
-#if defined (ACPI_ASL_COMPILER)
+#if defined(ACPI_ASL_COMPILER)
 
 				/* Save the parameter count for the i_aSL compiler */
 

@@ -92,7 +92,7 @@ enum dload_actions {
 #define RFV_STK(iii) (((iii) >> 6) & 0x3)
 #define RFV_ACCS(iii) ((iii) & 0x3)
 
-#if (TMS32060)
+#if TMS32060
 #define RFV_SCALE(iii) ((iii) >> 11)
 #define RFV_BIGOFF(iii) (((iii) >> 8) & 0x7)
 #else

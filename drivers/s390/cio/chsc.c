@@ -251,7 +251,6 @@ __get_chpid_from_lir(void *data)
 		/* node descriptor not valid */
 		return -EINVAL;
 	if (!(lir->indesc[0]&0x10000000))
-		/* don't handle device-type nodes - FIXME */
 		return -EINVAL;
 	/* Byte 3 contains the chpid. Could also be CTCA, but we don't care */
 

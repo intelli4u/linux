@@ -72,8 +72,5 @@ static inline void cypress_flush_context(void)
 			     "i" (ASI_M_FLUSH_CTX));
 }
 
-/* XXX Displacement flushes for buggy chips and initial testing
- * XXX go here.
- */
 
 #endif /* !(_SPARC_CYPRESS_H) */

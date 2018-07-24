@@ -269,11 +269,6 @@ ahc_print_path(struct ahc_softc *ahc, struct scb *scb)
 	       scb != NULL ? SCB_GET_LUN(scb) : -1);
 }
 
-/*
- * XXX - these options apply unilaterally to _all_ 274x/284x/294x
- *       cards in the system.  This should be fixed.  Exceptions to this
- *       rule are noted in the comments.
- */
 
 /*
  * Skip the scsi bus reset.  Non 0 make us skip the reset at startup.  This
@@ -1053,10 +1048,6 @@ aic7xxx_setup(char *s)
 
 	end = strchr(s, '\0');
 
-	/*
-	 * XXX ia64 gcc isn't smart enough to know that ARRAY_SIZE
-	 * will never be 0 in this case.
-	 */
 	n = 0;
 
 	while ((p = strsep(&s, ",.")) != NULL) {
@@ -1109,7 +1100,6 @@ ahc_linux_register_host(struct ahc_softc *ahc, struct scsi_host_template *templa
 	ahc->platform_data->host = host;
 	host->can_queue = AHC_MAX_QUEUE;
 	host->cmd_per_lun = 2;
-	/* XXX No way to communicate the ID for multiple channels */
 	host->this_id = ahc->our_id;
 	host->irq = ahc->platform_data->irq;
 	host->max_id = (ahc->features & AHC_WIDE) ? 16 : 8;
@@ -2043,7 +2033,6 @@ ahc_linux_freeze_simq(struct ahc_softc *ahc)
 	if (ahc->platform_data->qfrozen == 1) {
 		scsi_block_requests(ahc->platform_data->host);
 
-		/* XXX What about Twin channels? */
 		ahc_platform_abort_scbs(ahc, CAM_TARGET_WILDCARD, ALL_CHANNELS,
 					CAM_LUN_WILDCARD, SCB_LIST_NULL,
 					ROLE_INITIATOR, CAM_REQUEUE_REQ);
@@ -2477,67 +2466,6 @@ static void ahc_linux_set_dt(struct scsi_target *starget, int dt)
 	ahc_unlock(ahc, &flags);
 }
 
-#if 0
-/* FIXME: This code claims to support IU and QAS.  However, the actual
- * sequencer code and aic7xxx_core have no support for these parameters and
- * will get into a bad state if they're negotiated.  Do not enable this
- * unless you know what you're doing */
-static void ahc_linux_set_qas(struct scsi_target *starget, int qas)
-{
-	struct Scsi_Host *shost = dev_to_shost(starget->dev.parent);
-	struct ahc_softc *ahc = *((struct ahc_softc **)shost->hostdata);
-	struct ahc_tmode_tstate *tstate;
-	struct ahc_initiator_tinfo *tinfo 
-		= ahc_fetch_transinfo(ahc,
-				      starget->channel + 'A',
-				      shost->this_id, starget->id, &tstate);
-	struct ahc_devinfo devinfo;
-	unsigned int ppr_options = tinfo->goal.ppr_options
-		& ~MSG_EXT_PPR_QAS_REQ;
-	unsigned int period = tinfo->goal.period;
-	unsigned long flags;
-	struct ahc_syncrate *syncrate;
-
-	if (qas)
-		ppr_options |= MSG_EXT_PPR_QAS_REQ;
-
-	ahc_compile_devinfo(&devinfo, shost->this_id, starget->id, 0,
-			    starget->channel + 'A', ROLE_INITIATOR);
-	syncrate = ahc_find_syncrate(ahc, &period, &ppr_options, AHC_SYNCRATE_DT);
-	ahc_lock(ahc, &flags);
-	ahc_set_syncrate(ahc, &devinfo, syncrate, period, tinfo->goal.offset,
-			 ppr_options, AHC_TRANS_GOAL, FALSE);
-	ahc_unlock(ahc, &flags);
-}
-
-static void ahc_linux_set_iu(struct scsi_target *starget, int iu)
-{
-	struct Scsi_Host *shost = dev_to_shost(starget->dev.parent);
-	struct ahc_softc *ahc = *((struct ahc_softc **)shost->hostdata);
-	struct ahc_tmode_tstate *tstate;
-	struct ahc_initiator_tinfo *tinfo 
-		= ahc_fetch_transinfo(ahc,
-				      starget->channel + 'A',
-				      shost->this_id, starget->id, &tstate);
-	struct ahc_devinfo devinfo;
-	unsigned int ppr_options = tinfo->goal.ppr_options
-		& ~MSG_EXT_PPR_IU_REQ;
-	unsigned int period = tinfo->goal.period;
-	unsigned long flags;
-	struct ahc_syncrate *syncrate;
-
-	if (iu)
-		ppr_options |= MSG_EXT_PPR_IU_REQ;
-
-	ahc_compile_devinfo(&devinfo, shost->this_id, starget->id, 0,
-			    starget->channel + 'A', ROLE_INITIATOR);
-	syncrate = ahc_find_syncrate(ahc, &period, &ppr_options, AHC_SYNCRATE_DT);
-	ahc_lock(ahc, &flags);
-	ahc_set_syncrate(ahc, &devinfo, syncrate, period, tinfo->goal.offset,
-			 ppr_options, AHC_TRANS_GOAL, FALSE);
-	ahc_unlock(ahc, &flags);
-}
-#endif
 
 static void ahc_linux_get_signalling(struct Scsi_Host *shost)
 {
@@ -2577,12 +2505,6 @@ static struct spi_function_template ahc_linux_transport_functions = {
 	.show_width	= 1,
 	.set_dt		= ahc_linux_set_dt,
 	.show_dt	= 1,
-#if 0
-	.set_iu		= ahc_linux_set_iu,
-	.show_iu	= 1,
-	.set_qas	= ahc_linux_set_qas,
-	.show_qas	= 1,
-#endif
 	.get_signalling	= ahc_linux_get_signalling,
 };
 

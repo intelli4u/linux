@@ -118,7 +118,6 @@ static struct irq_chip msi_irq = {
 	.unmask		= unmask_msi_irq,
 	.enable		= unmask_msi_irq,
 	.disable	= mask_msi_irq,
-	/* XXX affinity XXX */
 };
 
 static int sparc64_setup_msi_irq(unsigned int *virt_irq_p,

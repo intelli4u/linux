@@ -623,10 +623,6 @@ static struct ieee80211_regdomain *regdom_intersect(
 	return rd;
 }
 
-/*
- * XXX: add support for the rest of enum nl80211_reg_rule_flags, we may
- * want to just have the channel structure use these
- */
 static u32 map_regdom_flags(u32 rd_flags)
 {
 	u32 channel_flags = 0;

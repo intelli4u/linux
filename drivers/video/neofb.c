@@ -140,7 +140,6 @@ static biosMode bios24[] = {
 };
 
 #ifdef NO_32BIT_SUPPORT_YET
-/* FIXME: guessed values, wrong */
 static biosMode bios32[] = {
 	{640, 480, 0x33},
 	{800, 600, 0x36},
@@ -494,25 +493,6 @@ static inline void neo2200_wait_fifo(struct fb_info *info,
 	//  ndev->neo.waitfifo_calls++;
 	//  ndev->neo.waitfifo_sum += requested_fifo_space;
 
-	/* FIXME: does not work
-	   if (neo_fifo_space < requested_fifo_space)
-	   {
-	   neo_fifo_waitcycles++;
-
-	   while (1)
-	   {
-	   neo_fifo_space = (neo2200->bltStat >> 8);
-	   if (neo_fifo_space >= requested_fifo_space)
-	   break;
-	   }
-	   }
-	   else
-	   {
-	   neo_fifo_cache_hits++;
-	   }
-
-	   neo_fifo_space -= requested_fifo_space;
-	 */
 
 	neo2200_sync(info);
 }
@@ -773,7 +753,7 @@ static int neofb_set_par(struct fb_info *info)
 		par->ExtColorModeSelect = 0x14;
 		break;
 #ifdef NO_32BIT_SUPPORT_YET
-	case 32:		/* FIXME: guessed values */
+	case 32:
 		par->CRTC[0x13] = info->var.xres_virtual >> 1;
 		par->ExtCRTOffset = info->var.xres_virtual >> 9;
 		par->ExtColorModeSelect = 0x15;
@@ -1448,11 +1428,6 @@ neo2200_imageblit(struct fb_info *info, const struct fb_image *image)
 
 	if (image->depth == 1) {
 		if (info->var.bits_per_pixel == 24 && image->width < 16) {
-			/* FIXME. There is a bug with accelerated color-expanded
-			 * transfers in 24 bit mode if the image being transferred
-			 * is less than 16 bits wide. This is due to insufficient
-			 * padding when writing the image. We need to adjust
-			 * struct fb_pixmap. Not yet done. */
 			cfb_imageblit(info, image);
 			return;
 		}
@@ -1864,15 +1839,6 @@ static int __devinit neo_init_hw(struct fb_info *info)
 
 	neoUnlock();
 
-#if 0
-	printk(KERN_DEBUG "--- Neo extended register dump ---\n");
-	for (int w = 0; w < 0x85; w++)
-		printk(KERN_DEBUG "CR %p: %p\n", (void *) w,
-		       (void *) vga_rcrt(NULL, w));
-	for (int w = 0; w < 0xC7; w++)
-		printk(KERN_DEBUG "GR %p: %p\n", (void *) w,
-		       (void *) vga_rgfx(NULL, w));
-#endif
 	switch (info->fix.accel) {
 	case FB_ACCEL_NEOMAGIC_NM2070:
 		videoRam = 896;

@@ -430,16 +430,6 @@ again:
 	end = bitmap_info->offset +
 		(u64)(BITS_PER_BITMAP * block_group->sectorsize) - 1;
 
-	/*
-	 * XXX - this can go away after a few releases.
-	 *
-	 * since the only user of btrfs_remove_free_space is the tree logging
-	 * stuff, and the only way to test that is under crash conditions, we
-	 * want to have this debug stuff here just in case somethings not
-	 * working.  Search the bitmap for the space we are trying to use to
-	 * make sure its actually there.  If its not there then we need to stop
-	 * because something has gone wrong.
-	 */
 	search_start = *offset;
 	search_bytes = *bytes;
 	ret = search_bitmap(block_group, bitmap_info, &search_start,
@@ -1362,4 +1352,3 @@ void btrfs_init_free_cluster(struct btrfs_free_cluster *cluster)
 	INIT_LIST_HEAD(&cluster->block_group_list);
 	cluster->block_group = NULL;
 }
-

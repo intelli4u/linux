@@ -599,7 +599,6 @@ list_start:
 	return genlmsg_reply(ans_skb, info);
 
 list_retry:
-	/* XXX - this limit is a guesstimate */
 	if (nlsze_mult < 4) {
 		rcu_read_unlock();
 		kfree_skb(ans_skb);

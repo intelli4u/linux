@@ -591,15 +591,6 @@ static void run_one_test(void)
 	printf("cpu: %0.2f / %0.2f",
 		(double)cpu_usage/1e6, (double)runavg_cpu_usage/1e6);
 
-#if 0
-	/*
-	 * rusage statistics done by the parent, these are less
-	 * accurate than the sum_exec_runtime based statistics:
-	 */
-	printf(" [%0.2f / %0.2f]",
-		(double)parent_cpu_usage/1e6,
-		(double)runavg_parent_cpu_usage/1e6);
-#endif
 
 	printf("\n");
 

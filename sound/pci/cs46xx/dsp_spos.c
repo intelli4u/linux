@@ -457,10 +457,6 @@ cs46xx_dsp_lookup_symbol (struct snd_cs46xx * chip, char * symbol_name, int symb
 		}
 	}
 
-#if 0
-	printk ("dsp_spos: symbol <%s> type %02x not found\n",
-		symbol_name,symbol_type);
-#endif
 
 	return NULL;
 }
@@ -743,22 +739,6 @@ static void cs46xx_dsp_proc_sample_dump_read (struct snd_info_entry *entry,
 
 		snd_iprintf(buffer,"%08X ",readl(dst + i));
 	}
-#if 0
-	snd_iprintf(buffer,"\nWRITE_BACK_BUF1: \n");
-	col = 0;
-	for (i = WRITE_BACK_BUF1;i < WRITE_BACK_BUF1 + 0x40; i += sizeof(u32),col ++) {
-		if (col == 4) {
-			snd_iprintf(buffer,"\n");
-			col = 0;
-		}
-
-		if (col == 0) {
-			snd_iprintf(buffer, "%04X ",i);
-		}
-
-		snd_iprintf(buffer,"%08X ",readl(dst + i));
-	}
-#endif
 
 	snd_iprintf(buffer,"\nSPDIFI_IP_OUTPUT_BUFFER1: \n");
 	col = 0;

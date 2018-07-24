@@ -197,7 +197,6 @@ static u32 asle_set_pwm_freq(struct drm_device *dev, u32 pfmb)
 		u32 pwm = pfmb & ASLE_PFMB_PWM_MASK;
 		blc_pwm_ctl &= BACKLIGHT_DUTY_CYCLE_MASK;
 		pwm = pwm >> 9;
-		/* FIXME - what do we do with the PWM? */
 	}
 	return 0;
 }

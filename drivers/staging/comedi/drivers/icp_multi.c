@@ -226,11 +226,6 @@ struct icp_multi_private {
 ==============================================================================
 */
 
-#if 0
-static int check_channel_list(struct comedi_device *dev,
-			      struct comedi_subdevice *s,
-			      unsigned int *chanlist, unsigned int n_chan);
-#endif
 static void setup_channel_list(struct comedi_device *dev,
 			       struct comedi_subdevice *s,
 			       unsigned int *chanlist, unsigned int n_chan);
@@ -704,62 +699,6 @@ static irqreturn_t interrupt_service_icp_multi(int irq, void *d)
 	return IRQ_HANDLED;
 }
 
-#if 0
-/*
-==============================================================================
-
-Name:	check_channel_list
-
-Description:
-	This function checks if the channel list, provided by user
-	is built correctly
-
-Parameters:
-	struct comedi_device *dev	Pointer to current sevice structure
-	struct comedi_subdevice *s	Pointer to current subdevice structure
-	unsigned int *chanlist	Pointer to packed channel list
-	unsigned int n_chan	Number of channels to scan
-
-Returns:int 0 = failure
-	    1 = success
-
-==============================================================================
-*/
-static int check_channel_list(struct comedi_device *dev,
-			      struct comedi_subdevice *s,
-			      unsigned int *chanlist, unsigned int n_chan)
-{
-	unsigned int i;
-
-#ifdef ICP_MULTI_EXTDEBUG
-	printk(KERN_DEBUG
-	       "icp multi EDBG:  check_channel_list(...,%d)\n", n_chan);
-#endif
-	/*  Check that we at least have one channel to check */
-	if (n_chan < 1) {
-		comedi_error(dev, "range/channel list is empty!");
-		return 0;
-	}
-	/*  Check all channels */
-	for (i = 0; i < n_chan; i++) {
-		/*  Check that channel number is < maximum */
-		if (CR_AREF(chanlist[i]) == AREF_DIFF) {
-			if (CR_CHAN(chanlist[i]) > this_board->n_aichand) {
-				comedi_error(dev,
-					     "Incorrect differential ai ch-nr");
-				return 0;
-			}
-		} else {
-			if (CR_CHAN(chanlist[i]) > this_board->n_aichan) {
-				comedi_error(dev,
-					     "Incorrect ai channel number");
-				return 0;
-			}
-		}
-	}
-	return 1;
-}
-#endif
 
 /*
 ==============================================================================

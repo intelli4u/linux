@@ -271,7 +271,6 @@ static void __devinit init_hwif_trm290(ide_hwif_t *hwif)
 		/* legacy mode */
 		hwif->irq = hwif->channel ? 15 : 14;
 
-#if 1
 	{
 	/*
 	 * My trm290-based card doesn't seem to work with all possible values
@@ -297,7 +296,6 @@ static void __devinit init_hwif_trm290(ide_hwif_t *hwif)
 				hwif->name, old, new & ~1);
 		}
 	}
-#endif
 }
 
 static const struct ide_tp_ops trm290_tp_ops = {
@@ -331,9 +329,6 @@ static const struct ide_port_info trm290_chipset __devinitdata = {
 	.dma_ops	= &trm290_dma_ops,
 	.host_flags	= IDE_HFLAG_TRM290 |
 			  IDE_HFLAG_NO_ATAPI_DMA |
-#if 0 /* play it safe for now */
-			  IDE_HFLAG_TRUST_BIOS_FOR_DMA |
-#endif
 			  IDE_HFLAG_NO_AUTODMA |
 			  IDE_HFLAG_NO_LBA48,
 };

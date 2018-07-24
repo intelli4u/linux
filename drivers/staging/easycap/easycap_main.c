@@ -138,7 +138,7 @@ return easycap_open((struct inode *)NULL, file);
 int
 easycap_open(struct inode *inode, struct file *file)
 {
-#if (!defined(EASYCAP_IS_VIDEODEV_CLIENT))
+#if !defined(EASYCAP_IS_VIDEODEV_CLIENT)
 struct usb_interface *pusb_interface;
 #endif /*EASYCAP_IS_VIDEODEV_CLIENT*/
 struct usb_device *p;
@@ -149,7 +149,7 @@ JOT(4, "\n");
 SAY("==========OPEN=========\n");
 
 peasycap = (struct easycap *)NULL;
-#if (!defined(EASYCAP_IS_VIDEODEV_CLIENT))
+#if !defined(EASYCAP_IS_VIDEODEV_CLIENT)
 if ((struct inode *)NULL == inode) {
 	SAY("ERROR: inode is NULL.\n");
 	return -EFAULT;
@@ -522,7 +522,7 @@ return easycap_release((struct inode *)NULL, file);
 int
 easycap_release(struct inode *inode, struct file *file)
 {
-#if (!defined(EASYCAP_IS_VIDEODEV_CLIENT))
+#if !defined(EASYCAP_IS_VIDEODEV_CLIENT)
 struct easycap *peasycap;
 
 JOT(4, "\n");
@@ -2972,17 +2972,6 @@ return;
 }
 /*****************************************************************************/
 /*---------------------------------------------------------------------------*/
-/*
- *
- *                                  FIXME
- *
- *
- *  THIS FUNCTION ASSUMES THAT, ON EACH AND EVERY OCCASION THAT THE DEVICE IS
- *  PHYSICALLY PLUGGED IN, INTERFACE 0 IS PROBED FIRST.
- *  IF THIS IS NOT TRUE, THERE IS THE POSSIBILITY OF AN Oops.
- *
- *  THIS HAS NEVER BEEN A PROBLEM IN PRACTICE, BUT SOMETHING SEEMS WRONG HERE.
- */
 /*---------------------------------------------------------------------------*/
 int
 easycap_usb_probe(struct usb_interface *pusb_interface, \
@@ -3771,7 +3760,7 @@ case 0: {
  *  THE VIDEO DEVICE CAN BE REGISTERED NOW, AS IT IS READY.
  */
 /*--------------------------------------------------------------------------*/
-#if (!defined(EASYCAP_IS_VIDEODEV_CLIENT))
+#if !defined(EASYCAP_IS_VIDEODEV_CLIENT)
 	if (0 != (usb_register_dev(pusb_interface, &easycap_class))) {
 		err("Not able to get a minor for this device");
 		usb_set_intfdata(pusb_interface, NULL);
@@ -4231,7 +4220,7 @@ else {
 /*--------------------------------------------------------------------------*/
 switch (bInterfaceNumber) {
 case 0: {
-#if (!defined(EASYCAP_IS_VIDEODEV_CLIENT))
+#if !defined(EASYCAP_IS_VIDEODEV_CLIENT)
 	if ((struct easycap *)NULL == peasycap) {
 		SAY("ERROR: peasycap has become NULL\n");
 	} else {

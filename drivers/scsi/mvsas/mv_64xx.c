@@ -376,7 +376,6 @@ static int __devinit mvs_64xx_init(struct mvs_info *mvi)
 		mvs_update_phyinfo(mvi, i, 1);
 	}
 
-	/* FIXME: update wide port bitmaps */
 
 	/* little endian for open address and command table, etc. */
 	/*
@@ -629,7 +628,6 @@ static void mvs_64xx_phy_work_around(struct mvs_info *mvi, int i)
 {
 	u32 tmp;
 	struct mvs_phy *phy = &mvi->phy[i];
-	/* workaround for HW phy decoding error on 1.5g disk drive */
 	mvs_write_port_vsr_addr(mvi, i, VSR_PHY_MODE6);
 	tmp = mvs_read_port_vsr_data(mvi, i);
 	if (((phy->phy_status & PHY_NEG_SPP_PHYS_LINK_RATE_MASK) >>
@@ -811,4 +809,3 @@ const struct mvs_dispatch mvs_64xx_dispatch = {
 	mvs_64xx_fix_dma,
 #endif
 };
-

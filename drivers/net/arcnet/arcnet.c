@@ -513,9 +513,6 @@ static int arcnet_header(struct sk_buff *skb, struct net_device *dev,
 		 * real header when we do rebuild_header.
 		 */
 		*(uint16_t *) skb_push(skb, 2) = type;
-		/*
-		 * XXX: Why not use skb->mac_len?
-		 */
 		if (skb->network_header - skb->mac_header != 2)
 			BUGMSG(D_NORMAL, "arcnet_header: Yikes!  diff (%d) is not 2!\n",
 			       (int)(skb->network_header - skb->mac_header));
@@ -551,9 +548,6 @@ static int arcnet_rebuild_header(struct sk_buff *skb)
 	unsigned short type;
 	uint8_t daddr=0;
 	struct ArcProto *proto;
-	/*
-	 * XXX: Why not use skb->mac_len?
-	 */
 	if (skb->network_header - skb->mac_header != 2) {
 		BUGMSG(D_NORMAL,
 		       "rebuild_header: shouldn't be here! (hdrsize=%d)\n",

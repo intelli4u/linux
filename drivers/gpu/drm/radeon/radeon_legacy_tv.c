@@ -317,27 +317,6 @@ static void radeon_legacy_tv_write_fifo(struct radeon_encoder *radeon_encoder,
 	WREG32(RADEON_TV_HOST_RD_WT_CNTL, 0);
 }
 
-#if 0 /* included for completeness */
-static uint32_t radeon_legacy_tv_read_fifo(struct radeon_encoder *radeon_encoder, uint16_t addr)
-{
-	struct drm_device *dev = radeon_encoder->base.dev;
-	struct radeon_device *rdev = dev->dev_private;
-	uint32_t tmp;
-	int i = 0;
-
-	WREG32(RADEON_TV_HOST_RD_WT_CNTL, addr);
-	WREG32(RADEON_TV_HOST_RD_WT_CNTL, addr | RADEON_HOST_FIFO_RD);
-
-	do {
-		tmp = RREG32(RADEON_TV_HOST_RD_WT_CNTL);
-		if ((tmp & RADEON_HOST_FIFO_RD_ACK) == 0)
-			break;
-		i++;
-	} while (i < 10000);
-	WREG32(RADEON_TV_HOST_RD_WT_CNTL, 0);
-	return RREG32(RADEON_TV_HOST_READ_DATA);
-}
-#endif
 
 static uint16_t radeon_get_htiming_tables_addr(uint32_t tv_uv_adr)
 {
@@ -920,4 +899,3 @@ void radeon_legacy_tv_adjust_pll2(struct drm_encoder *encoder,
 	*pixclks_cntl &= ~RADEON_PIX2CLK_SRC_SEL_MASK;
 	*pixclks_cntl |= RADEON_PIX2CLK_SRC_SEL_P2PLLCLK | RADEON_PIXCLK_TV_SRC_SEL;
 }
-

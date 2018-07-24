@@ -991,7 +991,6 @@ long arch_ptrace(struct task_struct *child, long request, long addr, long data)
 					  15 * sizeof(u64),
 					  &pregs->u_regs[0]);
 		if (!ret) {
-			/* XXX doesn't handle 'y' register correctly XXX */
 			ret = copy_regset_to_user(child, view, REGSET_GENERAL,
 						  32 * sizeof(u64),
 						  4 * sizeof(u64),
@@ -1005,7 +1004,6 @@ long arch_ptrace(struct task_struct *child, long request, long addr, long data)
 					    15 * sizeof(u64),
 					    &pregs->u_regs[0]);
 		if (!ret) {
-			/* XXX doesn't handle 'y' register correctly XXX */
 			ret = copy_regset_from_user(child, view, REGSET_GENERAL,
 						    32 * sizeof(u64),
 						    4 * sizeof(u64),

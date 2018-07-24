@@ -98,13 +98,6 @@ int mvme147_detect(struct scsi_host_template *tpnt)
 	if (request_irq(MVME147_IRQ_SCSI_DMA, mvme147_intr, 0,
 			"MVME147 SCSI DMA", instance))
 		goto err_free_irq;
-#if 0	/* Disabled; causes problems booting */
-	m147_pcc->scsi_interrupt = 0x10;	/* Assert SCSI bus reset */
-	udelay(100);
-	m147_pcc->scsi_interrupt = 0x00;	/* Negate SCSI bus reset */
-	udelay(2000);
-	m147_pcc->scsi_interrupt = 0x40;	/* Clear bus reset interrupt */
-#endif
 	m147_pcc->scsi_interrupt = 0x09;	/* Enable interrupt */
 
 	m147_pcc->dma_cntrl = 0x00;	/* ensure DMA is stopped */
@@ -122,10 +115,7 @@ err_out:
 
 static int mvme147_bus_reset(struct scsi_cmnd *cmd)
 {
-	/* FIXME perform bus-specific reset */
 
-	/* FIXME 2: kill this function, and let midlayer fallback to
-	   the same result, calling wd33c93_host_reset() */
 
 	spin_lock_irq(cmd->device->host->host_lock);
 	wd33c93_host_reset(cmd);
@@ -157,7 +147,6 @@ static struct scsi_host_template driver_template = {
 int mvme147_release(struct Scsi_Host *instance)
 {
 #ifdef MODULE
-	/* XXX Make sure DMA is stopped! */
 	free_irq(MVME147_IRQ_SCSI_PORT, mvme147_intr);
 	free_irq(MVME147_IRQ_SCSI_DMA, mvme147_intr);
 #endif

@@ -466,7 +466,6 @@ static void via_set_ddma(struct via_crdr_mmc_host *host,
 	writel(0x01, addrbase + VIA_CRDR_DMASTART);
 
 	/* It seems that our DMA can not work normally with 375kHz clock */
-	/* FIXME: don't brute-force 8MHz but use PIO at 375kHz !! */
 	addrbase = host->pcictrl_mmiobase;
 	if (readb(addrbase + VIA_CRDR_PCISDCCLK) == PCI_CLK_375K) {
 		dev_info(host->mmc->parent, "forcing card speed to 8MHz\n");

@@ -140,7 +140,6 @@ static void intel_lvds_dpms(struct drm_encoder *encoder, int mode)
 	else
 		intel_lvds_set_power(dev, false);
 
-	/* XXX: We never power down the LVDS pairs. */
 }
 
 static int intel_lvds_mode_valid(struct drm_connector *connector,
@@ -373,11 +372,6 @@ out:
 	intel_lvds->pfit_pgm_ratios = pfit_pgm_ratios;
 	dev_priv->lvds_border_bits = border;
 
-	/*
-	 * XXX: It would be nice to support lower refresh rates on the
-	 * panels to reduce power consumption, and perhaps match the
-	 * user's requested refresh rate.
-	 */
 
 	return true;
 }
@@ -960,7 +954,6 @@ void intel_lvds_init(struct drm_device *dev)
 	 * correct mode.
 	 */
 
-	/* Ironlake: FIXME if still fail, not try pipe mode now */
 	if (HAS_PCH_SPLIT(dev))
 		goto failed;
 

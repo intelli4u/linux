@@ -274,7 +274,6 @@ static int ieee802154_create(struct net *net, struct socket *sock,
 	sock->ops = ops;
 
 	sock_init_data(sock, sk);
-	/* FIXME: sk->sk_destruct */
 	sk->sk_family = PF_IEEE802154;
 
 	/* Checksums on by default */

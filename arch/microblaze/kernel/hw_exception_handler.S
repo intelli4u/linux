@@ -102,9 +102,6 @@
 	bri	ex_handler_unhandled;	\
 	nop;
 
-/* FIXME this is weird - for noMMU kernel is not possible to use brid
- * instruction which can shorten executed time
- */
 
 /* r3 is the source */
 #define R3_TO_LWREG_V(regnum)				\
@@ -815,7 +812,6 @@ ex_handler_done:
 		lwi	r5, r0, TOPHYS(tlb_index)
 		addik	r5, r5, 1 /* MS: inc tlb_index -> use next one */
 
-/* MS: FIXME this is potential fault, because this is mask not count */
 		andi	r5, r5, (MICROBLAZE_TLB_SIZE-1)
 		ori	r6, r0, 1
 		cmp	r31, r5, r6
@@ -987,7 +983,6 @@ ex_unaligned_fixup:
 
 .global ex_handler_unhandled
 ex_handler_unhandled:
-/* FIXME add handle function for unhandled exception - dump register */
 	bri 0
 
 /*

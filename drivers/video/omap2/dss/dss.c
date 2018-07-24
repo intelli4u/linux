@@ -404,7 +404,6 @@ retry:
 
 	if (cpu_is_omap24xx()) {
 		struct dispc_clock_info cur_dispc;
-		/* XXX can we change the clock on omap2? */
 		fck = dss_clk_get_rate(DSS_CLK_FCK1);
 		fck_div = 1;
 
@@ -638,4 +637,3 @@ void dss_exit(void)
 
 	iounmap(dss.base);
 }
-

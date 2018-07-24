@@ -116,7 +116,8 @@ struct hpi_entity_str {
 
 struct hpi_entity {
 	struct hpi_entity_str header;
-#if ! defined(HPI_OS_DSP_C6000) || (defined(HPI_OS_DSP_C6000) && (__TI_COMPILER_VERSION__ > 6000008))
+#if !defined(HPI_OS_DSP_C6000) || (defined(HPI_OS_DSP_C6000) && \
+	(__TI_COMPILER_VERSION__ > 6000008))
 	/* DSP C6000 compiler v6.0.8 and lower
 	   do not support  flexible array member */
 	u8 value[];
@@ -1394,25 +1395,8 @@ struct hpi_res_adapter_program_flash {
 		sizeof(struct hpi_response_header) - sizeof(u16)];
 };
 
-#if 1
 #define hpi_message_header_v1 hpi_message_header
 #define hpi_response_header_v1 hpi_response_header
-#else
-/* V1 headers in Addition to v0 headers */
-struct hpi_message_header_v1 {
-	struct hpi_message_header h0;
-/* struct {
-} h1; */
-};
-
-struct hpi_response_header_v1 {
-	struct hpi_response_header h0;
-	struct {
-		u16 adapter_index;	/* the adapter index */
-		u16 obj_index;	/* object index */
-	} h1;
-};
-#endif
 
 /* STRV HPI Packet */
 struct hpi_msg_strv {

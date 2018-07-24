@@ -34,7 +34,6 @@ static void cp_intc_ack_irq(unsigned int irq)
 /* Disable interrupt */
 static void cp_intc_mask_irq(unsigned int irq)
 {
-	/* XXX don't know why we need to disable nIRQ here... */
 	cp_intc_write(1, CP_INTC_HOST_ENABLE_IDX_CLR);
 	cp_intc_write(irq, CP_INTC_SYS_ENABLE_IDX_CLR);
 	cp_intc_write(1, CP_INTC_HOST_ENABLE_IDX_SET);

@@ -444,11 +444,6 @@ static int mpc83xx_pcie_exclude_device(struct pci_bus *bus, unsigned int devfn)
 
 	if (hose->indirect_type & PPC_INDIRECT_TYPE_NO_PCIE_LINK)
 		return PCIBIOS_DEVICE_NOT_FOUND;
-	/*
-	 * Workaround for the HW bug: for Type 0 configure transactions the
-	 * PCI-E controller does not check the device number bits and just
-	 * assumes that the device number bits are 0.
-	 */
 	if (bus->number == hose->first_busno ||
 			bus->primary == hose->first_busno) {
 		if (devfn & 0xf8)

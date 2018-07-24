@@ -965,7 +965,6 @@ static void __devinit pata_macio_invariants(struct pata_macio_priv *priv)
 		priv->timings = pata_macio_ohare_timings;
 	}
 
-	/* XXX FIXME --- setup priv->mediabay here */
 
 	/* Get Apple bus ID (for clock and ASIC control) */
 	bidp = of_get_property(priv->node, "AAPL,bus-id", NULL);

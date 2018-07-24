@@ -12,7 +12,7 @@
 #define B43_LPPHY_B_CRS_THRESH			B43_PHY_CCK(0x06) /* B PHY CRS Thresh */
 #define B43_LPPHY_B_TXERROR			B43_PHY_CCK(0x07) /* B PHY TxError */
 #define B43_LPPHY_B_CHANNEL			B43_PHY_CCK(0x08) /* B PHY Channel */
-#define B43_LPPHY_B_WORKAROUND			B43_PHY_CCK(0x09) /* B PHY workaround */
+#define B43_LPPHY_B_WORKAROUND			B43_PHY_CCK(0x09)
 #define B43_LPPHY_B_TEST			B43_PHY_CCK(0x0A) /* B PHY Test */
 #define B43_LPPHY_B_FOURWIRE_ADDR		B43_PHY_CCK(0x0B) /* B PHY Fourwire Address */
 #define B43_LPPHY_B_FOURWIRE_DATA_HI		B43_PHY_CCK(0x0C) /* B PHY Fourwire Data Hi */
@@ -56,7 +56,7 @@
 #define B43_LPPHY_RX_DELAYCOMP			B43_PHY_CCK(0x44) /* RX DelayComp */
 #define B43_LPPHY_CRSDROPOUTTO			B43_PHY_CCK(0x45) /* CRSDropoutTimeout */
 #define B43_LPPHY_PSEUDOSHORTTO			B43_PHY_CCK(0x46) /* PseudoShortTimeout */
-#define B43_LPPHY_PR3931			B43_PHY_CCK(0x47) /* PR3931 */
+#define B43_LPPHY_PR3931			B43_PHY_CCK(0x47)
 #define B43_LPPHY_DSSSCOEFF1			B43_PHY_CCK(0x48) /* DSSSCoeff1 */
 #define B43_LPPHY_DSSSCOEFF2			B43_PHY_CCK(0x49) /* DSSSCoeff2 */
 #define B43_LPPHY_CCKCOEFF1			B43_PHY_CCK(0x4A) /* CCKCoeff1 */
@@ -96,7 +96,7 @@
 #define B43_LPPHY_RX_STAT1			B43_PHY_OFDM(0x05) /* RX Status1 */
 #define B43_LPPHY_TX_ERROR			B43_PHY_OFDM(0x07) /* TX Error */
 #define B43_LPPHY_CHANNEL			B43_PHY_OFDM(0x08) /* Channel */
-#define B43_LPPHY_WORKAROUND			B43_PHY_OFDM(0x09) /* workaround */
+#define B43_LPPHY_WORKAROUND			B43_PHY_OFDM(0x09)
 #define B43_LPPHY_FOURWIRE_ADDR			B43_PHY_OFDM(0x0B) /* Fourwire Address */
 #define B43_LPPHY_FOURWIREDATAHI		B43_PHY_OFDM(0x0C) /* FourwireDataHi */
 #define B43_LPPHY_FOURWIREDATALO		B43_PHY_OFDM(0x0D) /* FourwireDataLo */
@@ -839,8 +839,6 @@ struct b43_phy_lp {
 	/* Max transmit power high band */
 	u16 max_tx_pwr_hi_band;
 
-	/* FIXME What are these used for? */
-	/* FIXME Is 15 the correct array size? */
 	u16 tx_max_rate[15];
 	u16 tx_max_ratel[15];
 	u16 tx_max_rateh[15];
@@ -854,15 +852,15 @@ struct b43_phy_lp {
 	/* TSSI transmit count */
 	u16 tssi_tx_count;
 	/* TSSI index */
-	u16 tssi_idx; /* FIXME initial value? */
+	u16 tssi_idx;
 	/* TSSI npt */
-	u16 tssi_npt; /* FIXME initial value? */
+	u16 tssi_npt;
 
 	/* Target TX frequency */
-	u16 tgt_tx_freq; /* FIXME initial value? */
+	u16 tgt_tx_freq;
 
 	/* Transmit power index override */
-	s8 tx_pwr_idx_over; /* FIXME initial value? */
+	s8 tx_pwr_idx_over;
 
 	/* RSSI vf */
 	u8 rssi_vf;

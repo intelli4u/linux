@@ -704,7 +704,6 @@ void __init native_machine_early_platform_add_devices(void)
 
 void native_machine_restart(char *cmd)
 {
-	/* workaround pull up on cpld / flash pin not being strong enough */
 	bfin_write_FIO_INEN(~PF0);
 	bfin_write_FIO_DIR(PF0);
 	bfin_write_FIO_FLAG_C(PF0);

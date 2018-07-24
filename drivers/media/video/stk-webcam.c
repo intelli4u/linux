@@ -234,7 +234,6 @@ static int stk_initialise(struct stk_camera *dev)
 #ifdef CONFIG_VIDEO_V4L1_COMPAT
 
 /* sysfs functions */
-/*FIXME cleanup this */
 
 static ssize_t show_brightness(struct device *class,
 			struct device_attribute *attr, char *buf)
@@ -385,7 +384,6 @@ static void stk_isoc_handler(struct urb *urb)
 	}
 
 	if (list_empty(&dev->sio_avail)) {
-		/*FIXME Stop streaming after a while */
 		(void) (printk_ratelimit() &&
 		STK_ERROR("isoc_handler without available buffer!\n"));
 		goto resubmit;
@@ -452,7 +450,6 @@ static void stk_isoc_handler(struct urb *urb)
 		if (framelen + fb->v4lbuf.bytesused > dev->frame_size) {
 			(void) (printk_ratelimit() &&
 			STK_ERROR("Frame buffer overflow, lost sync\n"));
-			/*FIXME Do something here? */
 			continue;
 		}
 		spin_unlock_irqrestore(&dev->spinlock, flags);
@@ -1120,7 +1117,6 @@ static int stk_vidioc_reqbufs(struct file *filp,
 		return -EBUSY;
 	dev->owner = filp;
 
-	/*FIXME If they ask for zero, we must stop streaming and free */
 	if (rb->count < 3)
 		rb->count = 3;
 	/* Arbitrary limit */
@@ -1236,7 +1232,6 @@ static int stk_vidioc_streamoff(struct file *filp,
 static int stk_vidioc_g_parm(struct file *filp,
 		void *priv, struct v4l2_streamparm *sp)
 {
-	/*FIXME This is not correct */
 	sp->parm.capture.timeperframe.numerator = 1;
 	sp->parm.capture.timeperframe.denominator = 30;
 	sp->parm.capture.readbuffers = 2;
@@ -1480,5 +1475,3 @@ static void __exit stk_camera_exit(void)
 
 module_init(stk_camera_init);
 module_exit(stk_camera_exit);
-
-

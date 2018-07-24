@@ -161,7 +161,6 @@ struct wl1271_partition_set {
 
 struct wl1271;
 
-/* FIXME: I'm not sure about this structure name */
 struct wl1271_chip {
 	u32 id;
 	char fw_ver[21];
@@ -499,7 +498,6 @@ int wl1271_plt_stop(struct wl1271 *wl);
 
 static inline bool wl1271_11a_enabled(void)
 {
-	/* FIXME: this could be determined based on the NVS-INI file */
 #ifdef WL1271_80211A_ENABLED
 	return true;
 #else

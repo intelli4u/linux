@@ -66,4 +66,3 @@ extern const struct clkops clk_pxa3xx_cken_ops;
 extern void clk_pxa3xx_cken_enable(struct clk *);
 extern void clk_pxa3xx_cken_disable(struct clk *);
 #endif
-

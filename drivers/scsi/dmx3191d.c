@@ -42,9 +42,6 @@
 #define NCR5380_local_declare()		NCR5380_implementation_fields
 #define NCR5380_setup(instance)		port = instance->io_port
 
-/*
- * Includes needed for NCR5380.[ch] (XXX: Move them to NCR5380.h)
- */
 #include <linux/delay.h>
 #include "scsi.h"
 

@@ -90,8 +90,6 @@ static int cx8802_start_dma(struct cx8802_dev    *dev,
 	/* write TS length to chip */
 	cx_write(MO_TS_LNGTH, buf->vb.width);
 
-	/* FIXME: this needs a review.
-	 * also: move to cx88-blackbird + cx88-dvb source files? */
 
 	dprintk( 1, "core->active_type_id = 0x%08x\n", core->active_type_id);
 
@@ -533,7 +531,6 @@ static int cx8802_suspend_common(struct pci_dev *pci_dev, pm_message_t state)
 	}
 	spin_unlock(&dev->slock);
 
-	/* FIXME -- shutdown device */
 	cx88_shutdown(dev->core);
 
 	pci_save_state(pci_dev);
@@ -570,7 +567,6 @@ static int cx8802_resume_common(struct pci_dev *pci_dev)
 	}
 	pci_restore_state(pci_dev);
 
-	/* FIXME: re-initialize hardware */
 	cx88_reset(dev->core);
 
 	/* restart video+vbi capture */

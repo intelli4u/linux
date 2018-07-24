@@ -659,7 +659,6 @@ unmap:
 	spin_lock(&qp->r_lock);
 	spin_lock(&qp->s_lock);
 	if (qp->ibqp.qp_type == IB_QPT_RC) {
-		/* XXX what about error sending RDMA read responses? */
 		if (ib_qib_state_ops[qp->state] & QIB_PROCESS_RECV_OK)
 			qib_error_qp(qp, IB_WC_GENERAL_ERR);
 	} else if (qp->s_wqe)

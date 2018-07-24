@@ -250,7 +250,7 @@ static void b43_radio_init2055(struct b43_wldev *dev)
 	if (b43_status(dev) < B43_STAT_INITIALIZED)
 		b2055_upload_inittab(dev, 0, 1);
 	else
-		b2055_upload_inittab(dev, 0/*FIXME on 5ghz band*/, 0);
+		b2055_upload_inittab(dev, 0, 0);
 	b43_radio_init2055_post(dev);
 }
 
@@ -677,7 +677,7 @@ static void b43_nphy_superswitch_init(struct b43_wldev *dev, bool init)
 	if (dev->phy.rev >= 3) {
 		if (!init)
 			return;
-		if (0 /* FIXME */) {
+		if (0) {
 			b43_ntab_write(dev, B43_NTAB16(9, 2), 0x211);
 			b43_ntab_write(dev, B43_NTAB16(9, 3), 0x222);
 			b43_ntab_write(dev, B43_NTAB16(9, 8), 0x144);
@@ -805,7 +805,7 @@ static void b43_nphy_spur_workaround(struct b43_wldev *dev)
 			tone[0] = 0x20;
 			noise[0] = 0x25F;
 		} else if (channel == 38 || channel == 102 || channel == 118) {
-			if (0 /* FIXME */) {
+			if (0) {
 				tone[0] = 0x20;
 				noise[0] = 0x21F;
 			} else {

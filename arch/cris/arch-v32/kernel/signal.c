@@ -609,9 +609,6 @@ ugdb_trap_user(struct thread_info *ti, int sig)
 		   reliable. */
 		user_regs(ti)->spc = 0;
 	}
-	/* FIXME: Filter out false h/w breakpoint hits (i.e. EDA
-	   not withing any configured h/w breakpoint range). Synchronize with
-	   what already exists for kernel debugging.  */
 	if (((user_regs(ti)->exs & 0xff00) >> 8) == BREAK_8_INTR_VECT) {
 		/* Break 8: subtract 2 from ERP unless in a delay slot. */
 		if (!(user_regs(ti)->erp & 0x1))

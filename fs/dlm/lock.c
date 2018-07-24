@@ -925,10 +925,6 @@ static int _remove_from_waiters(struct dlm_lkb *lkb, int mstype,
 	return -1;
 
  out_del:
-	/* the force-unlock/cancel has completed and we haven't recvd a reply
-	   to the op that was in progress prior to the unlock/cancel; we
-	   give up on any reply to the earlier op.  FIXME: not sure when/how
-	   this would happen */
 
 	if (overlap_done && lkb->lkb_wait_type) {
 		log_error(ls, "remwait error %x reply %d wait_type %d overlap",
@@ -989,8 +985,6 @@ static void dir_remove(struct dlm_rsb *r)
 				     r->res_name, r->res_length);
 }
 
-/* FIXME: shouldn't this be able to exit as soon as one non-due rsb is
-   found since they are in order of newest to oldest? */
 
 static int shrink_bucket(struct dlm_ls *ls, int b)
 {
@@ -1079,11 +1073,6 @@ static void del_timeout(struct dlm_lkb *lkb)
 	mutex_unlock(&ls->ls_timeout_mutex);
 }
 
-/* FIXME: is it safe to look at lkb_exflags, lkb_flags, lkb_timestamp, and
-   lkb_lksb_timeout without lock_rsb?  Note: we can't lock timeout_mutex
-   and then lock rsb because of lock ordering in add_timeout.  We may need
-   to specify some special timeout-related bits in the lkb that are just to
-   be accessed under the timeout_mutex. */
 
 void dlm_scan_timeout(struct dlm_ls *ls)
 {
@@ -1696,12 +1685,6 @@ static int can_be_granted(struct dlm_rsb *r, struct dlm_lkb *lkb, int now,
 	return rv;
 }
 
-/* FIXME: I don't think that can_be_granted() can/will demote or find deadlock
-   for locks pending on the convert list.  Once verified (watch for these
-   log_prints), we should be able to just call _can_be_granted() and not
-   bother with the demote/deadlk cases here (and there's no easy way to deal
-   with a deadlk here, we'd have to generate something like grant_lock with
-   the deadlk error.) */
 
 /* Returns the highest requested mode of all blocked conversions; sets
    cw if there's a blocked conversion to DLM_LOCK_CW. */
@@ -2891,9 +2874,6 @@ static int send_convert(struct dlm_rsb *r, struct dlm_lkb *lkb)
 	return error;
 }
 
-/* FIXME: if this lkb is the only lock we hold on the rsb, then set
-   MASTER_UNCERTAIN to force the next request on the rsb to confirm
-   that the master is still correct. */
 
 static int send_unlock(struct dlm_rsb *r, struct dlm_lkb *lkb)
 {
@@ -3790,8 +3770,6 @@ static void receive_lookup_reply(struct dlm_ls *ls, struct dlm_message *ms)
 		return;
 	}
 
-	/* ms->m_result is the value returned by dlm_dir_lookup on dir node
-	   FIXME: will a non-zero error ever be returned? */
 
 	r = lkb->lkb_resource;
 	hold_rsb(r);
@@ -4875,11 +4853,6 @@ static struct dlm_lkb *del_proc_lock(struct dlm_ls *ls,
    1) references lkb->ua which we free here and 2) adds lkbs to proc->asts,
    which we clear here. */
 
-/* proc CLOSING flag is set so no more device_reads should look at proc->asts
-   list, and no more device_writes should add lkb's to proc->locks list; so we
-   shouldn't need to take asts_spin or locks_spin here.  this assumes that
-   device reads/writes/closes are serialized -- FIXME: we may need to serialize
-   them ourself. */
 
 void dlm_clear_proc_locks(struct dlm_ls *ls, struct dlm_user_proc *proc)
 {
@@ -5011,4 +4984,3 @@ int dlm_user_purge(struct dlm_ls *ls, struct dlm_user_proc *proc,
 	}
 	return error;
 }
-

@@ -1429,7 +1429,6 @@ static int __devinit atl2_probe(struct pci_dev *pdev,
 	/* copy the MAC address out of the EEPROM */
 	atl2_read_mac_addr(&adapter->hw);
 	memcpy(netdev->dev_addr, adapter->hw.mac_addr, netdev->addr_len);
-/* FIXME: do we still need this? */
 #ifdef ETHTOOL_GPERMADDR
 	memcpy(netdev->perm_addr, adapter->hw.mac_addr, netdev->addr_len);
 
@@ -1491,8 +1490,6 @@ err_dma:
  * Hot-Plug event, or because the driver is going to be removed from
  * memory.
  */
-/* FIXME: write the original MAC address back in case it was changed from a
- * BIOS-set value, as in atl1 -- CHS */
 static void __devexit atl2_remove(struct pci_dev *pdev)
 {
 	struct net_device *netdev = pci_get_drvdata(pdev);
@@ -2136,7 +2133,6 @@ static s32 atl2_reset_hw(struct atl2_hw *hw)
 	u16 pci_cfg_cmd_word;
 	int i;
 
-	/* Workaround for PCI problem when BIOS sets MMRBC incorrectly. */
 	atl2_read_pci_cfg(hw, PCI_REG_COMMAND, &pci_cfg_cmd_word);
 	if ((pci_cfg_cmd_word &
 		(CMD_IO_SPACE|CMD_MEMORY_SPACE|CMD_BUS_MASTER)) !=
@@ -2149,7 +2145,6 @@ static s32 atl2_reset_hw(struct atl2_hw *hw)
 	/* Clear Interrupt mask to stop board from generating
 	 * interrupts & Clear any pending interrupt events
 	 */
-	/* FIXME */
 	/* ATL2_WRITE_REG(hw, REG_IMR, 0); */
 	/* ATL2_WRITE_REG(hw, REG_ISR, 0xffffffff); */
 
@@ -2346,7 +2341,6 @@ static s32 atl2_read_mac_addr(struct atl2_hw *hw)
 
 	if (get_permanent_address(hw)) {
 		/* for test */
-		/* FIXME: shouldn't we use random_ether_addr() here? */
 		hw->perm_mac_addr[0] = 0x00;
 		hw->perm_mac_addr[1] = 0x13;
 		hw->perm_mac_addr[2] = 0x74;
@@ -2774,7 +2768,6 @@ static int atl2_check_eeprom_exist(struct atl2_hw *hw)
 	return ((value & 0xFF00) == 0x6C00) ? 0 : 1;
 }
 
-/* FIXME: This doesn't look right. -- CHS */
 static bool atl2_write_eeprom(struct atl2_hw *hw, u32 offset, u32 value)
 {
 	return true;
@@ -3042,7 +3035,6 @@ static void __devinit atl2_check_options(struct atl2_adapter *adapter)
 		val = RxMemBlock[bd];
 		atl2_validate_option(&val, &opt);
 		adapter->rxd_ring_size = (u32)val;
-		/* FIXME */
 		/* ((u16)val)&~1; */	/* even number */
 #ifdef module_param_array
 	} else

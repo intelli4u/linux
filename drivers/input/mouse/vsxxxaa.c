@@ -560,4 +560,3 @@ static void __exit vsxxxaa_exit(void)
 
 module_init(vsxxxaa_init);
 module_exit(vsxxxaa_exit);
-

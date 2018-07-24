@@ -1053,10 +1053,6 @@ emulate_load_floatpair (unsigned long ifa, load_store_t ld, struct pt_regs *regs
 
 		DPRINT("ld.r1=%d ld.imm=%d x6_sz=%d\n", ld.r1, ld.imm, ld.x6_sz);
 		DDUMP("frp_init =", &fpr_init, 2*len);
-		/*
-		 * XXX fixme
-		 * Could optimize inlines by using ldfpX & 2 spills
-		 */
 		switch( ld.x6_sz ) {
 			case 0:
 				mem2float_extended(&fpr_init[0], &fpr_final[0]);
@@ -1076,13 +1072,6 @@ emulate_load_floatpair (unsigned long ifa, load_store_t ld, struct pt_regs *regs
 				break;
 		}
 		DDUMP("fpr_final =", &fpr_final, 2*len);
-		/*
-		 * XXX fixme
-		 *
-		 * A possible optimization would be to drop fpr_final and directly
-		 * use the storage from the saved context i.e., the actual final
-		 * destination (pt_regs, switch_stack or thread structure).
-		 */
 		setfpreg(ld.r1, &fpr_final[0], regs);
 		setfpreg(ld.imm, &fpr_final[1], regs);
 	}
@@ -1172,13 +1161,6 @@ emulate_load_float (unsigned long ifa, load_store_t ld, struct pt_regs *regs)
 				break;
 		}
 		DDUMP("fpr_final =", &fpr_final, len);
-		/*
-		 * XXX fixme
-		 *
-		 * A possible optimization would be to drop fpr_final and directly
-		 * use the storage from the saved context i.e., the actual final
-		 * destination (pt_regs, switch_stack or thread structure).
-		 */
 		setfpreg(ld.r1, &fpr_final, regs);
 	}
 
@@ -1385,40 +1367,6 @@ ia64_handle_unaligned (unsigned long ifa, struct pt_regs *regs)
 	       "ld.x6=0x%x ld.m=%d ld.op=%d\n", opcode, u.insn.qp, u.insn.r1, u.insn.imm,
 	       u.insn.r3, u.insn.x, u.insn.hint, u.insn.x6_sz, u.insn.m, u.insn.op);
 
-	/*
-	 * IMPORTANT:
-	 * Notice that the switch statement DOES not cover all possible instructions
-	 * that DO generate unaligned references. This is made on purpose because for some
-	 * instructions it DOES NOT make sense to try and emulate the access. Sometimes it
-	 * is WRONG to try and emulate. Here is a list of instruction we don't emulate i.e.,
-	 * the program will get a signal and die:
-	 *
-	 *	load/store:
-	 *		- ldX.spill
-	 *		- stX.spill
-	 *	Reason: RNATs are based on addresses
-	 *		- ld16
-	 *		- st16
-	 *	Reason: ld16 and st16 are supposed to occur in a single
-	 *		memory op
-	 *
-	 *	synchronization:
-	 *		- cmpxchg
-	 *		- fetchadd
-	 *		- xchg
-	 *	Reason: ATOMIC operations cannot be emulated properly using multiple
-	 *	        instructions.
-	 *
-	 *	speculative loads:
-	 *		- ldX.sZ
-	 *	Reason: side effects, code must be ready to deal with failure so simpler
-	 *		to let the load fail.
-	 * ---------------------------------------------------------------------------------
-	 * XXX fixme
-	 *
-	 * I would like to get rid of this switch case and do something
-	 * more elegant.
-	 */
 	switch (opcode) {
 	      case LDS_OP:
 	      case LDSA_OP:

@@ -295,4 +295,3 @@ EXPORT_SYMBOL(tipc_send_buf_fast);
 EXPORT_SYMBOL(tipc_acknowledge);
 EXPORT_SYMBOL(tipc_get_port);
 EXPORT_SYMBOL(tipc_get_handle);
-

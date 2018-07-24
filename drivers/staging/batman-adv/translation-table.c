@@ -60,7 +60,6 @@ int hna_local_init(void)
 
 void hna_local_add(uint8_t *addr)
 {
-	/* FIXME: each orig_node->batman_if will be attached to a softif */
 	struct bat_priv *bat_priv = netdev_priv(soft_device);
 	struct hna_local_entry *hna_local_entry;
 	struct hna_global_entry *hna_global_entry;
@@ -224,7 +223,6 @@ static void _hna_local_del(void *data)
 static void hna_local_del(struct hna_local_entry *hna_local_entry,
 			  char *message)
 {
-	/* FIXME: each orig_node->batman_if will be attached to a softif */
 	struct bat_priv *bat_priv = netdev_priv(soft_device);
 	bat_dbg(DBG_ROUTES, bat_priv, "Deleting local hna entry (%pM): %s\n",
 		hna_local_entry->addr, message);
@@ -296,7 +294,6 @@ int hna_global_init(void)
 void hna_global_add_orig(struct orig_node *orig_node,
 			 unsigned char *hna_buff, int hna_buff_len)
 {
-	/* FIXME: each orig_node->batman_if will be attached to a softif */
 	struct bat_priv *bat_priv = netdev_priv(soft_device);
 	struct hna_global_entry *hna_global_entry;
 	struct hna_local_entry *hna_local_entry;
@@ -432,7 +429,6 @@ int hna_global_seq_print_text(struct seq_file *seq, void *offset)
 static void _hna_global_del_orig(struct hna_global_entry *hna_global_entry,
 				 char *message)
 {
-	/* FIXME: each orig_node->batman_if will be attached to a softif */
 	struct bat_priv *bat_priv = netdev_priv(soft_device);
 	bat_dbg(DBG_ROUTES, bat_priv,
 		"Deleting global hna entry %pM (via %pM): %s\n",

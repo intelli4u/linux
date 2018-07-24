@@ -230,7 +230,6 @@ static int omap_ep_enable(struct usb_ep *_ep,
 
 	/* maybe assign a DMA channel to this endpoint */
 	if (use_dma && desc->bmAttributes == USB_ENDPOINT_XFER_BULK)
-		/* FIXME ISO can dma, but prefers first channel */
 		dma_channel_claim(ep, 0);
 
 	/* PIO OUT may RX packets */
@@ -375,7 +374,6 @@ write_packet(u8 *buf, struct omap_req *req, unsigned max)
 	return len;
 }
 
-// FIXME change r/w fifo calling convention
 
 
 // return:  0 = still running, 1 = completed, negative = errno
@@ -1699,7 +1697,6 @@ ep0out_status_stage:
 			if (ep->bmAttributes == USB_ENDPOINT_XFER_ISOC)
 				goto zero_status;
 
-			/* FIXME don't assume non-halted endpoints!! */
 			ERR("%s status, can't report\n", ep->ep.name);
 			goto do_stall;
 
@@ -1831,7 +1828,6 @@ static void devstate_irq(struct omap_udc *udc, u16 irq_src)
 	}
 	if (change & UDC_SUS) {
 		if (udc->gadget.speed != USB_SPEED_UNKNOWN) {
-			// FIXME tell isp1301 to suspend/resume (?)
 			if (devstat & UDC_SUS) {
 				VDBG("suspend\n");
 				update_otg(udc);
@@ -1910,7 +1906,6 @@ static irqreturn_t omap_udc_irq(int irq, void *_udc)
 	return status;
 }
 
-/* workaround for seemingly-lost IRQs for RX ACKs... */
 #define PIO_OUT_TIMEOUT	(jiffies + HZ/3)
 #define HALF_FULL(f)	(!((f)&(UDC_NON_ISO_FIFO_FULL|UDC_NON_ISO_FIFO_EMPTY)))
 
@@ -2112,7 +2107,6 @@ int usb_gadget_register_driver (struct usb_gadget_driver *driver)
 	if (!udc)
 		return -ENODEV;
 	if (!driver
-			// FIXME if otg, check:  driver->is_otg
 			|| driver->speed < USB_SPEED_FULL
 			|| !driver->bind
 			|| !driver->setup)
@@ -2859,12 +2853,6 @@ static int __init omap_udc_probe(struct platform_device *pdev)
 		type = "(unknown)";
 
 		if (machine_without_vbus_sense()) {
-			/* just set up software VBUS detect, and then
-			 * later rig it so we always report VBUS.
-			 * FIXME without really sensing VBUS, we can't
-			 * know when to turn PULLUP_EN on/off; and that
-			 * means we always "need" the 48MHz clock.
-			 */
 			u32 tmp = omap_readl(FUNC_MUX_CTRL_0);
 			tmp &= ~VBUS_CTRL_1510;
 			omap_writel(tmp, FUNC_MUX_CTRL_0);
@@ -2991,11 +2979,6 @@ known:
 	if (cpu_is_omap24xx()) {
 		udc->dc_clk = dc_clk;
 		udc->hhc_clk = hhc_clk;
-		/* FIXME OMAP2 don't release hhc & dc clock */
-#if 0
-		clk_disable(hhc_clk);
-		clk_disable(dc_clk);
-#endif
 	}
 
 	create_proc_file();

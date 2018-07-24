@@ -360,13 +360,6 @@ acpi_ps_next_parse_state(struct acpi_walk_state *walk_state,
 		parser_state->aml = walk_state->aml_last_while;
 		break;
 
-#if 0
-	case AE_CTRL_SKIP:
-
-		parser_state->aml = parser_state->scope->parse_scope.pkg_end;
-		status = AE_OK;
-		break;
-#endif
 
 	case AE_CTRL_TRUE:
 		/*
@@ -545,15 +538,6 @@ acpi_status acpi_ps_parse_aml(struct acpi_walk_state *walk_state)
 					   walk_state->method_node->name.
 					   ascii));
 
-				/*
-				 * Method tried to create an object twice. The probable cause is
-				 * that the method cannot handle reentrancy.
-				 *
-				 * The method is marked not_serialized, but it tried to create
-				 * a named object, causing the second thread entrance to fail.
-				 * Workaround this problem by marking the method permanently
-				 * as Serialized.
-				 */
 				walk_state->method_desc->method.method_flags |=
 				    AML_METHOD_SERIALIZED;
 				walk_state->method_desc->method.sync_level = 0;

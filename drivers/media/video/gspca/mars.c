@@ -259,8 +259,6 @@ static int sd_start(struct gspca_dev *gspca_dev)
 	data[1] = 0;		/* reg 94, Y Gain (auto) */
 /*jfm: from win trace*/
 				/* reg 0x5f/0x60 (LE) = saturation */
-				/* h (60): xxxx x100
-				 * l (5f): xxxx x000 */
 	data[2] = sd->colors << 3;
 	data[3] = ((sd->colors >> 2) & 0xf8) | 0x04;
 	data[4] = sd->brightness; /* reg 0x61 = brightness */

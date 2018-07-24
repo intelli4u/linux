@@ -2075,14 +2075,6 @@ void btrfs_orphan_post_snapshot(struct btrfs_trans_handle *trans,
 				      block_rsv, num_bytes);
 	BUG_ON(ret);
 
-#if 0
-	/* insert orphan item for the snapshot */
-	WARN_ON(!root->orphan_item_inserted);
-	ret = btrfs_insert_orphan_item(trans, root->fs_info->tree_root,
-				       snap->root_key.objectid);
-	BUG_ON(ret);
-	snap->orphan_item_inserted = 1;
-#endif
 }
 
 enum btrfs_orphan_cleanup_state {
@@ -2149,17 +2141,6 @@ int btrfs_orphan_add(struct btrfs_trans_handle *trans, struct inode *inode)
 
 	if (list_empty(&BTRFS_I(inode)->i_orphan)) {
 		list_add(&BTRFS_I(inode)->i_orphan, &root->orphan_list);
-#if 0
-		/*
-		 * For proper ENOSPC handling, we should do orphan
-		 * cleanup when mounting. But this introduces backward
-		 * compatibility issue.
-		 */
-		if (!xchg(&root->orphan_item_inserted, 1))
-			insert = 2;
-		else
-			insert = 1;
-#endif
 		insert = 1;
 	} else {
 		WARN_ON(!BTRFS_I(inode)->orphan_meta_reserved);
@@ -2986,177 +2967,6 @@ out:
 	return err;
 }
 
-#if 0
-/*
- * when truncating bytes in a file, it is possible to avoid reading
- * the leaves that contain only checksum items.  This can be the
- * majority of the IO required to delete a large file, but it must
- * be done carefully.
- *
- * The keys in the level just above the leaves are checked to make sure
- * the lowest key in a given leaf is a csum key, and starts at an offset
- * after the new  size.
- *
- * Then the key for the next leaf is checked to make sure it also has
- * a checksum item for the same file.  If it does, we know our target leaf
- * contains only checksum items, and it can be safely freed without reading
- * it.
- *
- * This is just an optimization targeted at large files.  It may do
- * nothing.  It will return 0 unless things went badly.
- */
-static noinline int drop_csum_leaves(struct btrfs_trans_handle *trans,
-				     struct btrfs_root *root,
-				     struct btrfs_path *path,
-				     struct inode *inode, u64 new_size)
-{
-	struct btrfs_key key;
-	int ret;
-	int nritems;
-	struct btrfs_key found_key;
-	struct btrfs_key other_key;
-	struct btrfs_leaf_ref *ref;
-	u64 leaf_gen;
-	u64 leaf_start;
-
-	path->lowest_level = 1;
-	key.objectid = inode->i_ino;
-	key.type = BTRFS_CSUM_ITEM_KEY;
-	key.offset = new_size;
-again:
-	ret = btrfs_search_slot(trans, root, &key, path, -1, 1);
-	if (ret < 0)
-		goto out;
-
-	if (path->nodes[1] == NULL) {
-		ret = 0;
-		goto out;
-	}
-	ret = 0;
-	btrfs_node_key_to_cpu(path->nodes[1], &found_key, path->slots[1]);
-	nritems = btrfs_header_nritems(path->nodes[1]);
-
-	if (!nritems)
-		goto out;
-
-	if (path->slots[1] >= nritems)
-		goto next_node;
-
-	/* did we find a key greater than anything we want to delete? */
-	if (found_key.objectid > inode->i_ino ||
-	   (found_key.objectid == inode->i_ino && found_key.type > key.type))
-		goto out;
-
-	/* we check the next key in the node to make sure the leave contains
-	 * only checksum items.  This comparison doesn't work if our
-	 * leaf is the last one in the node
-	 */
-	if (path->slots[1] + 1 >= nritems) {
-next_node:
-		/* search forward from the last key in the node, this
-		 * will bring us into the next node in the tree
-		 */
-		btrfs_node_key_to_cpu(path->nodes[1], &found_key, nritems - 1);
-
-		/* unlikely, but we inc below, so check to be safe */
-		if (found_key.offset == (u64)-1)
-			goto out;
-
-		/* search_forward needs a path with locks held, do the
-		 * search again for the original key.  It is possible
-		 * this will race with a balance and return a path that
-		 * we could modify, but this drop is just an optimization
-		 * and is allowed to miss some leaves.
-		 */
-		btrfs_release_path(root, path);
-		found_key.offset++;
-
-		/* setup a max key for search_forward */
-		other_key.offset = (u64)-1;
-		other_key.type = key.type;
-		other_key.objectid = key.objectid;
-
-		path->keep_locks = 1;
-		ret = btrfs_search_forward(root, &found_key, &other_key,
-					   path, 0, 0);
-		path->keep_locks = 0;
-		if (ret || found_key.objectid != key.objectid ||
-		    found_key.type != key.type) {
-			ret = 0;
-			goto out;
-		}
-
-		key.offset = found_key.offset;
-		btrfs_release_path(root, path);
-		cond_resched();
-		goto again;
-	}
-
-	/* we know there's one more slot after us in the tree,
-	 * read that key so we can verify it is also a checksum item
-	 */
-	btrfs_node_key_to_cpu(path->nodes[1], &other_key, path->slots[1] + 1);
-
-	if (found_key.objectid < inode->i_ino)
-		goto next_key;
-
-	if (found_key.type != key.type || found_key.offset < new_size)
-		goto next_key;
-
-	/*
-	 * if the key for the next leaf isn't a csum key from this objectid,
-	 * we can't be sure there aren't good items inside this leaf.
-	 * Bail out
-	 */
-	if (other_key.objectid != inode->i_ino || other_key.type != key.type)
-		goto out;
-
-	leaf_start = btrfs_node_blockptr(path->nodes[1], path->slots[1]);
-	leaf_gen = btrfs_node_ptr_generation(path->nodes[1], path->slots[1]);
-	/*
-	 * it is safe to delete this leaf, it contains only
-	 * csum items from this inode at an offset >= new_size
-	 */
-	ret = btrfs_del_leaf(trans, root, path, leaf_start);
-	BUG_ON(ret);
-
-	if (root->ref_cows && leaf_gen < trans->transid) {
-		ref = btrfs_alloc_leaf_ref(root, 0);
-		if (ref) {
-			ref->root_gen = root->root_key.offset;
-			ref->bytenr = leaf_start;
-			ref->owner = 0;
-			ref->generation = leaf_gen;
-			ref->nritems = 0;
-
-			btrfs_sort_leaf_ref(ref);
-
-			ret = btrfs_add_leaf_ref(root, ref, 0);
-			WARN_ON(ret);
-			btrfs_free_leaf_ref(root, ref);
-		} else {
-			WARN_ON(1);
-		}
-	}
-next_key:
-	btrfs_release_path(root, path);
-
-	if (other_key.objectid == inode->i_ino &&
-	    other_key.type == key.type && other_key.offset > key.offset) {
-		key.offset = other_key.offset;
-		cond_resched();
-		goto again;
-	}
-	ret = 0;
-out:
-	/* fixup any changes we've made to the path */
-	path->lowest_level = 0;
-	path->keep_locks = 0;
-	btrfs_release_path(root, path);
-	return ret;
-}
-
-#endif
 
 /*
  * this can truncate away extent items, csum items and directory items.
@@ -3266,7 +3076,6 @@ search_again:
 				del_item = 0;
 		}
 		found_extent = 0;
-		/* FIXME, shrink the extent if the ref count is only 1 */
 		if (found_type != BTRFS_EXTENT_DATA_KEY)
 			goto delete;
 
@@ -3294,7 +3103,6 @@ search_again:
 				extent_offset = found_key.offset -
 					btrfs_file_extent_offset(leaf, fi);
 
-				/* FIXME blocksize != 4096 */
 				num_dec = btrfs_file_extent_num_bytes(leaf, fi);
 				if (extent_start != 0) {
 					found_extent = 1;
@@ -4148,7 +3956,6 @@ static int btrfs_real_readdir(struct file *filp, void *dirent,
 	char *name_ptr;
 	int name_len;
 
-	/* FIXME, use a real flag for deciding about the key type */
 	if (root->fs_info->tree_root == root)
 		key_type = BTRFS_DIR_ITEM_KEY;
 
@@ -4294,12 +4101,6 @@ int btrfs_write_inode(struct inode *inode, struct writeback_control *wbc)
 	return ret;
 }
 
-/*
- * This is somewhat expensive, updating the tree every time the
- * inode changes.  But, it is most likely to find the inode in cache.
- * FIXME, needs more benchmarking...there are no reasons other than performance
- * to keep or drop this code.
- */
 void btrfs_dirty_inode(struct inode *inode)
 {
 	struct btrfs_root *root = BTRFS_I(inode)->root;
@@ -4363,7 +4164,6 @@ static int btrfs_set_inode_index_count(struct inode *inode)
 	ret = btrfs_search_slot(NULL, root, &key, path, 0, 0);
 	if (ret < 0)
 		goto out;
-	/* FIXME: we should be able to handle this */
 	if (ret == 0)
 		goto out;
 	ret = 0;
@@ -6049,13 +5849,6 @@ again:
 		goto again;
 	}
 
-	/*
-	 * XXX - page_mkwrite gets called every time the page is dirtied, even
-	 * if it was already dirty, so for space accounting reasons we need to
-	 * clear any delalloc bits for the range we are fixing to save.  There
-	 * is probably a better way to do this, but for now keep consistent with
-	 * prepare_pages in the normal write path.
-	 */
 	clear_extent_bit(&BTRFS_I(inode)->io_tree, page_start, page_end,
 			  EXTENT_DIRTY | EXTENT_DELALLOC | EXTENT_DO_ACCOUNTING,
 			  0, 0, &cached_state, GFP_NOFS);

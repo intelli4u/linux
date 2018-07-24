@@ -109,4 +109,3 @@ module_exit(wf_cpufreq_clamp_exit);
 MODULE_AUTHOR("Benjamin Herrenschmidt <benh@kernel.crashing.org>");
 MODULE_DESCRIPTION("CPU frequency clamp for PowerMacs thermal control");
 MODULE_LICENSE("GPL");
-

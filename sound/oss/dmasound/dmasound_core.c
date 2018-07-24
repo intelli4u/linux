@@ -579,11 +579,6 @@ static ssize_t sq_write(struct file *file, const char __user *src, size_t uLeft,
 		uWritten = 0 ;
 	}
 
-/* FIXME: I think that this may be the wrong behaviour when we get strapped
-	for time and the cpu is close to being (or actually) behind in sending data.
-	- because we've lost the time that the N samples, already in the buffer,
-	would have given us to get here with the next lot from the user.
-*/
 	/* The interrupt doesn't start to play the last, incomplete frame.
 	 * Thus we can append to it without disabling the interrupts! (Note
 	 * also that write_sq.rear isn't affected by the interrupt.)
@@ -683,16 +678,6 @@ static inline void sq_init_waitqueue(struct sound_queue *sq)
 	sq->busy = 0;
 }
 
-#if 0 /* blocking open() */
-static inline void sq_wake_up(struct sound_queue *sq, struct file *file,
-			      fmode_t mode)
-{
-	if (file->f_mode & mode) {
-		sq->busy = 0; /* CHECK: IS THIS OK??? */
-		WAKE_UP(sq->open_queue);
-	}
-}
-#endif
 
 static int sq_open2(struct sound_queue *sq, struct file *file, fmode_t mode,
 		    int numbufs, int bufsize)
@@ -701,23 +686,10 @@ static int sq_open2(struct sound_queue *sq, struct file *file, fmode_t mode,
 
 	if (file->f_mode & mode) {
 		if (sq->busy) {
-#if 0 /* blocking open() */
-			rc = -EBUSY;
-			if (file->f_flags & O_NONBLOCK)
-				return rc;
-			rc = -EINTR;
-			while (sq->busy) {
-				SLEEP(sq->open_queue);
-				if (signal_pending(current))
-					return rc;
-			}
-			rc = 0;
-#else
 			/* OSS manual says we will return EBUSY regardless
 			   of O_NOBLOCK.
 			*/
 			return -EBUSY ;
-#endif
 		}
 		sq->busy = 1; /* Let's play spot-the-race-condition */
 
@@ -727,11 +699,7 @@ static int sq_open2(struct sound_queue *sq, struct file *file, fmode_t mode,
 		   in the setfragments ioctl.
 		*/
 		if (( rc = sq_allocate_buffers(sq, numbufs, bufsize))) {
-#if 0 /* blocking open() */
-			sq_wake_up(sq, file, mode);
-#else
 			sq->busy = 0 ;
-#endif
 			return rc;
 		}
 
@@ -741,9 +709,6 @@ static int sq_open2(struct sound_queue *sq, struct file *file, fmode_t mode,
 }
 
 #define write_sq_init_waitqueue()	sq_init_waitqueue(&write_sq)
-#if 0 /* blocking open() */
-#define write_sq_wake_up(file)		sq_wake_up(&write_sq, file, FMODE_WRITE)
-#endif
 #define write_sq_release_buffers()	sq_release_buffers(&write_sq)
 #define write_sq_open(file)	\
 	sq_open2(&write_sq, file, FMODE_WRITE, numWriteBufs, writeBufSize )
@@ -888,17 +853,6 @@ static int sq_release(struct inode *inode, struct file *file)
 
 	module_put(dmasound.mach.owner);
 
-#if 0 /* blocking open() */
-	/* Wake up a process waiting for the queue being released.
-	 * Note: There may be several processes waiting for a call
-	 * to open() returning. */
-
-	/* Iain: hmm I don't understand this next comment ... */
-	/* There is probably a DOS atack here. They change the mode flag. */
-	/* XXX add check here,*/
-	read_sq_wake_up(file); /* checks f_mode */
-	write_sq_wake_up(file); /* checks f_mode */
-#endif /* blocking open() */
 
 	unlock_kernel();
 
@@ -1454,9 +1408,6 @@ static int dmasound_setup(char *str)
 
 	/* check the bootstrap parameter for "dmasound=" */
 
-	/* FIXME: other than in the most naive of cases there is no sense in these
-	 *	  buffers being other than powers of two.  This is not checked yet.
-	 */
 
 	switch (ints[0]) {
 	case 3:

@@ -1941,9 +1941,6 @@ static int snd_seq_ioctl_remove_events(struct snd_seq_client *client,
 	if (copy_from_user(&info, arg, sizeof(info)))
 		return -EFAULT;
 
-	/*
-	 * Input mostly not implemented XXX.
-	 */
 	if (info.remove_mode & SNDRV_SEQ_REMOVE_INPUT) {
 		/*
 		 * No restrictions so for a user client we can clear

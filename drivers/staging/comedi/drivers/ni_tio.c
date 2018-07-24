@@ -751,7 +751,6 @@ static int ni_tio_set_clock_src(struct ni_gpct *counter,
 	unsigned input_select_bits = 0;
 	static const uint64_t pico_per_nano = 1000;
 
-/*FIXME: validate clock source */
 	switch (counter_dev->variant) {
 	case ni_gpct_variant_660x:
 		input_select_bits |= ni_660x_source_select_bits(clock_source);
@@ -1202,8 +1201,6 @@ static int ni_m_series_set_second_gate(struct ni_gpct *counter,
 	static const unsigned selected_second_gate_mask = 0x1f;
 	unsigned ni_m_series_second_gate_select;
 
-	/* FIXME: We don't know what the m-series second gate codes are, so we'll just pass
-	   the bits through for now. */
 	switch (selected_second_gate) {
 	default:
 		ni_m_series_second_gate_select =
@@ -1478,8 +1475,6 @@ static unsigned ni_660x_second_gate_to_generic_gate_source(unsigned
 static unsigned ni_m_series_second_gate_to_generic_gate_source(unsigned
 							       ni_m_series_gate_select)
 {
-	/*FIXME: the second gate sources for the m series are undocumented, so we just return
-	 * the raw bits for now. */
 	switch (ni_m_series_gate_select) {
 	default:
 		return ni_m_series_gate_select;

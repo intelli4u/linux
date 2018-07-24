@@ -658,18 +658,10 @@ sa1100fb_check_var(struct fb_var_screeninfo *var, struct fb_info *info)
 static inline void sa1100fb_set_truecolor(u_int is_true_color)
 {
 	if (machine_is_assabet()) {
-#if 1		// phase 4 or newer Assabet's
 		if (is_true_color)
 			ASSABET_BCR_set(ASSABET_BCR_LCD_12RGB);
 		else
 			ASSABET_BCR_clear(ASSABET_BCR_LCD_12RGB);
-#else
-		// older Assabet's
-		if (is_true_color)
-			ASSABET_BCR_clear(ASSABET_BCR_LCD_12RGB);
-		else
-			ASSABET_BCR_set(ASSABET_BCR_LCD_12RGB);
-#endif
 	}
 }
 
@@ -718,22 +710,6 @@ static int sa1100fb_set_par(struct fb_info *info)
 	return 0;
 }
 
-#if 0
-static int
-sa1100fb_set_cmap(struct fb_cmap *cmap, int kspc, int con,
-		  struct fb_info *info)
-{
-	struct sa1100fb_info *fbi = (struct sa1100fb_info *)info;
-
-	/*
-	 * Make sure the user isn't doing something stupid.
-	 */
-	if (!kspc && (fbi->fb.var.bits_per_pixel == 16 || fbi->cmap_static))
-		return -EINVAL;
-
-	return gen_set_cmap(cmap, kspc, con, info);
-}
-#endif
 
 /*
  * Formal definition of the VESA spec:
@@ -1200,35 +1176,7 @@ static void sa1100fb_task(struct work_struct *w)
  */
 static unsigned int sa1100fb_min_dma_period(struct sa1100fb_info *fbi)
 {
-#if 0
-	unsigned int min_period = (unsigned int)-1;
-	int i;
-
-	for (i = 0; i < MAX_NR_CONSOLES; i++) {
-		struct display *disp = &fb_display[i];
-		unsigned int period;
-
-		/*
-		 * Do we own this display?
-		 */
-		if (disp->fb_info != &fbi->fb)
-			continue;
-
-		/*
-		 * Ok, calculate its DMA period
-		 */
-		period = sa1100fb_display_dma_period(&disp->var);
-		if (period < min_period)
-			min_period = period;
-	}
-
-	return min_period;
-#else
-	/*
-	 * FIXME: we need to verify _all_ consoles.
-	 */
 	return sa1100fb_display_dma_period(&fbi->fb.var);
-#endif
 }
 
 /*
@@ -1331,12 +1279,6 @@ static int __init sa1100fb_map_video_memory(struct sa1100fb_info *fbi)
 	if (fbi->map_cpu) {
 		fbi->fb.screen_base = fbi->map_cpu + PAGE_SIZE;
 		fbi->screen_dma = fbi->map_dma + PAGE_SIZE;
-		/*
-		 * FIXME: this is actually the wrong thing to place in
-		 * smem_start.  But fbdev suffers from the problem that
-		 * it needs an API which doesn't exist (in this case,
-		 * dma_writecombine_mmap)
-		 */
 		fbi->fb.fix.smem_start = fbi->screen_dma;
 	}
 
@@ -1519,42 +1461,6 @@ int __init sa1100fb_init(void)
 
 int __init sa1100fb_setup(char *options)
 {
-#if 0
-	char *this_opt;
-
-	if (!options || !*options)
-		return 0;
-
-	while ((this_opt = strsep(&options, ",")) != NULL) {
-
-		if (!strncmp(this_opt, "bpp:", 4))
-			current_par.max_bpp =
-			    simple_strtoul(this_opt + 4, NULL, 0);
-
-		if (!strncmp(this_opt, "lccr0:", 6))
-			lcd_shadow.lccr0 =
-			    simple_strtoul(this_opt + 6, NULL, 0);
-		if (!strncmp(this_opt, "lccr1:", 6)) {
-			lcd_shadow.lccr1 =
-			    simple_strtoul(this_opt + 6, NULL, 0);
-			current_par.max_xres =
-			    (lcd_shadow.lccr1 & 0x3ff) + 16;
-		}
-		if (!strncmp(this_opt, "lccr2:", 6)) {
-			lcd_shadow.lccr2 =
-			    simple_strtoul(this_opt + 6, NULL, 0);
-			current_par.max_yres =
-			    (lcd_shadow.
-			     lccr0 & LCCR0_SDS) ? ((lcd_shadow.
-						    lccr2 & 0x3ff) +
-						   1) *
-			    2 : ((lcd_shadow.lccr2 & 0x3ff) + 1);
-		}
-		if (!strncmp(this_opt, "lccr3:", 6))
-			lcd_shadow.lccr3 =
-			    simple_strtoul(this_opt + 6, NULL, 0);
-	}
-#endif
 	return 0;
 }
 

@@ -308,10 +308,8 @@ struct cs4297a_state {
         volatile u64 reg_request;
 };
 
-#if 1
 #define prog_codec(a,b)
 #define dealloc_dmabuf(a,b);
-#endif
 
 static int prog_dmabuf_adc(struct cs4297a_state *s)
 {
@@ -619,7 +617,6 @@ static int init_serdma(serdma_t *dma)
                 return -1;
         }
         dma->descrtab_end = dma->descrtab + dma->ringsz;
-	/* XXX bloddy mess, use proper DMA API here ...  */
 	dma->descrtab_phys = CPHYSADDR((long)dma->descrtab);
         dma->descr_add = dma->descr_rem = dma->descrtab;
 
@@ -802,13 +799,6 @@ static void stop_dac(struct cs4297a_state *s)
 	CS_DBGOUT(CS_WAVE_WRITE, 3, printk(KERN_INFO "cs4297a: stop_dac():\n"));
 	spin_lock_irqsave(&s->lock, flags);
 	s->ena &= ~FMODE_WRITE;
-#if 0
-        /* XXXKW what do I really want here?  My theory for now is
-           that I just flip the "ena" bit, and the interrupt handler
-           will stop processing the xmit channel */
-        __raw_writeq((s->ena & FMODE_READ) ? M_SYNCSER_DMA_RX_EN : 0,
-              SS_CSR(R_SER_DMA_ENABLE));
-#endif
 
 	spin_unlock_irqrestore(&s->lock, flags);
 }
@@ -2541,14 +2531,6 @@ static void cs4297a_interrupt(int irq, void *dev_id)
         CS_DBGOUT(CS_INTERRUPT, 6, printk(KERN_INFO
                  "cs4297a: cs4297a_interrupt() HISR=0x%.8x\n", status));
 
-#if 0
-        /* XXXKW what check *should* be done here? */
-        if (!(status & (M_SYNCSER_RX_EOP_COUNT | M_SYNCSER_RX_OVERRUN | M_SYNCSER_RX_SYNC_ERR))) {
-                status = __raw_readq(SS_CSR(R_SER_STATUS));
-                printk(KERN_ERR "cs4297a: unexpected interrupt (status %08x)\n", status);
-                return;
-        }
-#endif
 
         if (status & M_SYNCSER_RX_SYNC_ERR) {
                 status = __raw_readq(SS_CSR(R_SER_STATUS));
@@ -2584,23 +2566,6 @@ static void cs4297a_interrupt(int irq, void *dev_id)
 		  "cs4297a: cs4297a_interrupt()-\n"));
 }
 
-#if 0
-static struct initvol {
-	int mixch;
-	int vol;
-} initvol[] __initdata = {
-
-  	{SOUND_MIXER_WRITE_VOLUME, 0x4040},
-        {SOUND_MIXER_WRITE_PCM, 0x4040},
-        {SOUND_MIXER_WRITE_SYNTH, 0x4040},
-	{SOUND_MIXER_WRITE_CD, 0x4040},
-	{SOUND_MIXER_WRITE_LINE, 0x4040},
-	{SOUND_MIXER_WRITE_LINE1, 0x4040},
-	{SOUND_MIXER_WRITE_RECLEV, 0x0000},
-	{SOUND_MIXER_WRITE_SPEAKER, 0x4040},
-	{SOUND_MIXER_WRITE_MIC, 0x0000}
-};
-#endif
 
 static int __init cs4297a_init(void)
 {
@@ -2698,19 +2663,9 @@ static int __init cs4297a_init(void)
 
                 fs = get_fs();
                 set_fs(KERNEL_DS);
-#if 0
-                val = SOUND_MASK_LINE;
-                mixer_ioctl(s, SOUND_MIXER_WRITE_RECSRC, (unsigned long) &val);
-                for (i = 0; i < ARRAY_SIZE(initvol); i++) {
-                        val = initvol[i].vol;
-                        mixer_ioctl(s, initvol[i].mixch, (unsigned long) &val);
-                }
-//                cs4297a_write_ac97(s, 0x18, 0x0808);
-#else
                 //                cs4297a_write_ac97(s, 0x5e, 0x180);
                 cs4297a_write_ac97(s, 0x02, 0x0808);
                 cs4297a_write_ac97(s, 0x18, 0x0808);
-#endif
                 set_fs(fs);
 
                 list_add(&s->list, &cs4297a_devs);

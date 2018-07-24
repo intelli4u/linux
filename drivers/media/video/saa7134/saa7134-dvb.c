@@ -35,7 +35,7 @@
 #include <dvb_frontend.h>
 
 #include "mt352.h"
-#include "mt352_priv.h" /* FIXME */
+#include "mt352_priv.h"
 #include "tda1004x.h"
 #include "nxt200x.h"
 #include "tuner-xc2028.h"
@@ -1091,7 +1091,6 @@ static int dvb_init(struct saa7134_dev *dev)
 	int attach_xc3028 = 0;
 	struct videobuf_dvb_frontend *fe0;
 
-	/* FIXME: add support for multi-frontend */
 	mutex_init(&dev->frontends.lock);
 	INIT_LIST_HEAD(&dev->frontends.felist);
 
@@ -1674,10 +1673,6 @@ static int dvb_fini(struct saa7134_dev *dev)
 	if (!fe0)
 		return -EINVAL;
 
-	/* FIXME: I suspect that this code is bogus, since the entry for
-	   Pinnacle 300I DVB-T PAL already defines the proper init to allow
-	   the detection of mt2032 (TDA9887_PORT2_INACTIVE)
-	 */
 	if (dev->board == SAA7134_BOARD_PINNACLE_300I_DVBT_PAL) {
 		struct v4l2_priv_tun_config tda9887_cfg;
 		static int on  = TDA9887_PRESENT | TDA9887_PORT2_INACTIVE;

@@ -142,7 +142,7 @@
 #define	SH4A_PCIEPHYSR		(0x010010)	/* R/W - 0x0000 0000 32 */	// Rev1.171 end.
 
 /*	PCIEPHYDATAR	*/
-#define	SH4A_PCIEPHYDATAR	(0x00008)	/* R/W - 0xxxxx xxxx 32 */
+#define	SH4A_PCIEPHYDATAR	(0x00008)
 #define		BITS_DATA	(0)
 #define		MASK_DATA	(0xffffffff<<BITS_DATA)
 
@@ -237,13 +237,13 @@
 #define		MASK_INTPM			(1<<BITS_INTPM)
 
 /*	PCIEAIR	 */
-#define	SH4A_PCIEAIR		(SH4A_PCIE_BASE + 0x020010)	/* R/W R/W 0xxxxx xxxx 32 */
+#define	SH4A_PCIEAIR		(SH4A_PCIE_BASE + 0x020010)
 
 /*	 PCIECIR	 */
-#define	SH4A_PCIECIR		(SH4A_PCIE_BASE)	/* R/W R/W 0xxxxx xxxx 32 */
+#define	SH4A_PCIECIR		(SH4A_PCIE_BASE)
 
 /*	 PCIEERRFR	 */								// Rev1.18
-#define	SH4A_PCIEERRFR		(0x020020)		/* R/W R/W 0xxxxx xxxx 32 */	// Rev1.18
+#define	SH4A_PCIEERRFR		(0x020020)	// Rev1.18
 											// Rev1.18
 /*	PCIELAR0	*/
 #define	SH4A_PCIELAR0		(0x020200)	/* R/W R/W 0x0000 0000 32 */
@@ -505,7 +505,6 @@
 #define	SH4A_PCIEVCXCHRXR	(0x046278)	/* R H'00000000_00000000 32/64 */
 #define	SH4A_PCIEVCXCERR	(0x046280)	/* R H'00000000_00000000 32/64 */
 
-/* SSI Register Definition for MSI WORK AROUND --hamada */
 #define SH4A_PCI_SSI_BASE	0xFFE00000	/* spw config address	*/
 #define SH4A_PCI_SSI_BASE_LEN	0x00100000	/* 1MB			*/
 

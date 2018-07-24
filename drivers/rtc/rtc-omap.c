@@ -458,10 +458,6 @@ static int omap_rtc_suspend(struct platform_device *pdev, pm_message_t state)
 {
 	irqstat = rtc_read(OMAP_RTC_INTERRUPTS_REG);
 
-	/* FIXME the RTC alarm is not currently acting as a wakeup event
-	 * source, and in fact this enable() call is just saving a flag
-	 * that's never used...
-	 */
 	if (device_may_wakeup(&pdev->dev))
 		enable_irq_wake(omap_rtc_alarm);
 	else

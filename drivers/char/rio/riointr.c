@@ -642,4 +642,3 @@ static void RIOReceive(struct rio_info *p, struct Port *PortP)
 
 	return;
 }
-

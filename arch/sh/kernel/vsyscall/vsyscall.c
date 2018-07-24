@@ -45,10 +45,6 @@ int __init vsyscall_init(void)
 	void *syscall_page = (void *)get_zeroed_page(GFP_ATOMIC);
 	syscall_pages[0] = virt_to_page(syscall_page);
 
-	/*
-	 * XXX: Map this page to a fixmap entry if we get around
-	 * to adding the page to ELF core dumps
-	 */
 
 	memcpy(syscall_page,
 	       &vsyscall_trapa_start,

@@ -616,7 +616,7 @@ struct ivtv {
 	const char *card_name;          /* full name of the card */
 	const struct ivtv_card_tuner_i2c *card_i2c; /* i2c addresses to probe for tuner */
 	u8 has_cx23415;			/* 1 if it is a cx23415 based card, 0 for cx23416 */
-	u8 pvr150_workaround;           /* 1 if the cx25840 needs to workaround a PVR150 bug */
+	u8 pvr150_workaround;
 	u8 nof_inputs;			/* number of video inputs */
 	u8 nof_audio_inputs;		/* number of audio inputs */
 	u32 v4l2_cap;			/* V4L2 capabilities of card */

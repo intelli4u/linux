@@ -256,8 +256,6 @@ static int hci_uart_tty_open(struct tty_struct *tty)
 
 	BT_DBG("tty %p", tty);
 
-	/* FIXME: This btw is bogus, nothing requires the old ldisc to clear
-	   the pointer */
 	if (hu)
 		return -EEXIST;
 
@@ -279,8 +277,6 @@ static int hci_uart_tty_open(struct tty_struct *tty)
 
 	/* Flush any pending characters in the driver and line discipline. */
 
-	/* FIXME: why is this needed. Note don't use ldisc_ref here as the
-	   open path is before the ldisc is referencable */
 
 	if (tty->ldisc->ops->flush_buffer)
 		tty->ldisc->ops->flush_buffer(tty);

@@ -54,7 +54,7 @@
 #include "mmu_decl.h"
 
 #ifndef CPU_FTR_COHERENT_ICACHE
-#define CPU_FTR_COHERENT_ICACHE	0	/* XXX for now */
+#define CPU_FTR_COHERENT_ICACHE	0
 #define CPU_FTR_NOEXECUTE	0
 #endif
 
@@ -78,7 +78,7 @@ static inline pte_t *virt_to_kpte(unsigned long vaddr)
 
 int page_is_ram(unsigned long pfn)
 {
-#ifndef CONFIG_PPC64	/* XXX for now */
+#ifndef CONFIG_PPC64
 	return pfn < max_pfn;
 #else
 	unsigned long paddr = (pfn << PAGE_SHIFT);
@@ -242,7 +242,6 @@ void __init do_init_bootmem(void)
 				BOOTMEM_DEFAULT);
 
 #endif
-	/* XXX need to clip this if using highmem? */
 	sparse_memory_present_with_active_regions(0);
 
 	init_bootmem_done = 1;
@@ -284,11 +283,11 @@ void __init paging_init(void)
 	unsigned long end = __fix_to_virt(FIX_HOLE);
 
 	for (; v < end; v += PAGE_SIZE)
-		map_page(v, 0, 0); /* XXX gross */
+		map_page(v, 0, 0);
 #endif
 
 #ifdef CONFIG_HIGHMEM
-	map_page(PKMAP_BASE, 0, 0);	/* XXX gross */
+	map_page(PKMAP_BASE, 0, 0);
 	pkmap_page_table = virt_to_kpte(PKMAP_BASE);
 
 	kmap_pte = virt_to_kpte(__fix_to_virt(FIX_KMAP_BEGIN));
@@ -473,10 +472,6 @@ void copy_user_page(void *vto, void *vfrom, unsigned long vaddr,
 	 * not marked executable.
 	 * - Anton
 	 */
-#if 0
-	if (!vma->vm_file && ((vma->vm_flags & VM_EXEC) == 0))
-		return;
-#endif
 
 	flush_dcache_page(pg);
 }

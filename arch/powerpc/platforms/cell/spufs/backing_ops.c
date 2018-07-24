@@ -339,7 +339,6 @@ static int spu_backing_set_mfc_query(struct spu_context * ctx, u32 mask,
 	if (prob->dma_querytype_RW)
 		goto out;
 	ret = 0;
-	/* FIXME: what are the side-effects of this? */
 	prob->dma_querymask_RW = mask;
 	prob->dma_querytype_RW = mode;
 	/* In the current implementation, the SPU context is always
@@ -371,7 +370,6 @@ static int spu_backing_send_mfc_command(struct spu_context *ctx,
 
 	spin_lock(&ctx->csa.register_lock);
 	ret = -EAGAIN;
-	/* FIXME: set up priv2->puq */
 	spin_unlock(&ctx->csa.register_lock);
 
 	return ret;

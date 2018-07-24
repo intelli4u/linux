@@ -121,12 +121,6 @@ static void async_complete(struct urb *urb)
 		err("async_complete: urb error %d", status);
 	} else if (rq->dr.bRequest == 3) {
 		memcpy(priv->reg, rq->reg, sizeof(priv->reg));
-#if 0
-		dbg("async_complete regs %02x %02x %02x %02x %02x %02x %02x",
-		    (unsigned int)priv->reg[0], (unsigned int)priv->reg[1], (unsigned int)priv->reg[2],
-		    (unsigned int)priv->reg[3], (unsigned int)priv->reg[4], (unsigned int)priv->reg[5],
-		    (unsigned int)priv->reg[6]);
-#endif
 		/* if nAck interrupts are enabled and we have an interrupt, call the interrupt procedure */
 		if (rq->reg[2] & rq->reg[1] & 0x10 && pp)
 			parport_generic_irq(pp);
@@ -328,21 +322,6 @@ static int clear_epp_timeout(struct parport *pp)
 /*
  * Access functions.
  */
-#if 0
-static int uss720_irq(int usbstatus, void *buffer, int len, void *dev_id)
-{
-	struct parport *pp = (struct parport *)dev_id;
-	struct parport_uss720_private *priv = pp->private_data;	
-
-	if (usbstatus != 0 || len < 4 || !buffer)
-		return 1;
-	memcpy(priv->reg, buffer, 4);
-	/* if nAck interrupts are enabled and we have an interrupt, call the interrupt procedure */
-	if (priv->reg[2] & priv->reg[1] & 0x10)
-		parport_generic_irq(pp);
-	return 1;
-}
-#endif
 
 static void parport_uss720_write_data(struct parport *pp, unsigned char d)
 {
@@ -451,10 +430,6 @@ static void parport_uss720_save_state(struct parport *pp, struct parport_state *
 {
 	struct parport_uss720_private *priv = pp->private_data;	
 
-#if 0
-	if (get_1284_register(pp, 2, NULL, GFP_ATOMIC))
-		return;
-#endif
 	s->u.pc.ctr = priv->reg[1];
 	s->u.pc.ecr = priv->reg[2];
 }
@@ -492,26 +467,6 @@ static size_t parport_uss720_epp_read_data(struct parport *pp, void *buf, size_t
 
 static size_t parport_uss720_epp_write_data(struct parport *pp, const void *buf, size_t length, int flags)
 {
-#if 0
-	struct parport_uss720_private *priv = pp->private_data;	
-	size_t written = 0;
-
-	if (change_mode(pp, ECR_EPP))
-		return 0;
-	for (; written < length; written++) {
-		if (set_1284_register(pp, 4, (char *)buf, GFP_KERNEL))
-			break;
-		((char*)buf)++;
-		if (get_1284_register(pp, 1, NULL, GFP_KERNEL))
-			break;
-		if (priv->reg[0] & 0x01) {
-			clear_epp_timeout(pp);
-			break;
-		}
-	}
-	change_mode(pp, ECR_PS2);
-	return written;
-#else
 	struct parport_uss720_private *priv = pp->private_data;
 	struct usb_device *usbdev = priv->usbdev;
 	int rlen;
@@ -526,7 +481,6 @@ static size_t parport_uss720_epp_write_data(struct parport *pp, const void *buf,
 		printk(KERN_ERR "uss720: sendbulk ep 1 buf %p len %Zu rlen %u\n", buf, length, rlen);
 	change_mode(pp, ECR_PS2);
 	return rlen;
-#endif
 }
 
 static size_t parport_uss720_epp_read_addr(struct parport *pp, void *buf, size_t length, int flags)

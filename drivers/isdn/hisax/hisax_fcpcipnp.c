@@ -718,7 +718,7 @@ static int __devinit fcpcipnp_setup(struct fritz_adapter *adapter)
 
 	DBG(1,"");
 
-	isac_init(&adapter->isac); // FIXME is this okay now
+	isac_init(&adapter->isac);
 
 	retval = -EBUSY;
 	if (!request_region(adapter->io, 32, "fcpcipnp"))

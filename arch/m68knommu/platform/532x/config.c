@@ -584,7 +584,6 @@ int clock_pll(int fsys, int flags)
 		/* Exit self refresh mode */
 		MCF_SDRAMC_SDCR |= MCF_SDRAMC_SDCR_CKE;
 
-	/* Errata - workaround for SDRAM opeartion after exiting LIMP mode */
 	MCF_SDRAMC_LIMP_FIX = MCF_SDRAMC_REFRESH;
 
 	/* wait for DQS logic to relock */

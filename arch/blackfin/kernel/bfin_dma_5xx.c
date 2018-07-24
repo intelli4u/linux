@@ -22,10 +22,6 @@
 #include <asm/uaccess.h>
 #include <asm/early_printk.h>
 
-/*
- * To make sure we work around 05000119 - we always check DMA_DONE bit,
- * never the DMA_RUN bit
- */
 
 struct dma_channel dma_ch[MAX_DMA_CHANNELS];
 EXPORT_SYMBOL(dma_ch);
@@ -292,7 +288,6 @@ void __init early_dma_memcpy(void *pdst, const void *psrc, size_t size)
 	bfin_write16(&src_ch->cfg, DMAEN | WDSIZE_32);
 	bfin_write16(&dst_ch->cfg, WNR | DI_EN | DMAEN | WDSIZE_32);
 
-	/* Since we are atomic now, don't use the workaround ssync */
 	__builtin_bfin_ssync();
 }
 

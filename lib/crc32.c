@@ -340,17 +340,6 @@ EXPORT_SYMBOL(crc32_be);
 #include <stdlib.h>
 #include <stdio.h>
 
-#if 0				/*Not used at present */
-static void
-buf_dump(char const *prefix, unsigned char const *buf, size_t len)
-{
-	fputs(prefix, stdout);
-	while (len--)
-		printf(" %02x", *buf++);
-	putchar('\n');
-
-}
-#endif
 
 static void bytereverse(unsigned char *buf, size_t len)
 {
@@ -366,15 +355,6 @@ static void random_garbage(unsigned char *buf, size_t len)
 		*buf++ = (unsigned char) random();
 }
 
-#if 0				/* Not used at present */
-static void store_le(u32 x, unsigned char *buf)
-{
-	buf[0] = (unsigned char) x;
-	buf[1] = (unsigned char) (x >> 8);
-	buf[2] = (unsigned char) (x >> 16);
-	buf[3] = (unsigned char) (x >> 24);
-}
-#endif
 
 static void store_be(u32 x, unsigned char *buf)
 {

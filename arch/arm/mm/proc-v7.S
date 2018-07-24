@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  *  linux/arch/arm/mm/proc-v7.S
  *
@@ -12,6 +13,7 @@
 #include <linux/init.h>
 #include <linux/linkage.h>
 #include <asm/assembler.h>
+#include <asm/memory.h>
 #include <asm/asm-offsets.h>
 #include <asm/hwcap.h>
 #include <asm/pgtable-hwdef.h>
@@ -194,7 +196,24 @@ __v7_ca9mp_setup:
 	mcreq	p15, 0, r0, c1, c0, 1		@ TLB ops broadcasting
 #endif
 __v7_setup:
-	adr	r12, __v7_setup_stack		@ the local stack
+	@ temporary local stack in RAM, physical address, MMU is off
+#ifdef CONFIG_SPARSEMEM
+	ldr	r0, =(PAGE_OFFSET+SZ_128M)
+	ldr	r1, =__v7_setup_stack
+	cmp	r1, r0
+	bge	1f
+	ldr	r0, =PAGE_OFFSET
+	sub	r12, r1, r0
+	b	2f
+1:
+	sub	r1, r1, r0
+	ldr	r0, =PHYS_OFFSET2
+	add	r12, r1, r0
+2:
+#else
+	ldr	r12, =__virt_to_phys(__v7_setup_stack)
+#endif
+
 	stmia	r12, {r0-r5, r7, r9, r11, lr}
 	bl	v7_flush_dcache_all
 	ldmia	r12, {r0-r5, r7, r9, r11, lr}
@@ -318,19 +337,11 @@ __v7_setup:
  THUMB(	orr	r0, r0, #1 << 30	)	@ Thumb exceptions
 	mov	pc, lr				@ return to head.S:__ret
 ENDPROC(__v7_setup)
+	.ltorg
 
-	/*   AT
-	 *  TFR   EV X F   I D LR    S
-	 * .EEE ..EE PUI. .T.T 4RVI ZWRS BLDP WCAM
-	 * rxxx rrxx xxx0 0101 xxxx xxxx x111 xxxx < forced
-	 *    1    0 110       0011 1100 .111 1101 < we want
-	 */
 	.type	v7_crval, #object
 v7_crval:
 	crval	clear=0x0120c302, mmuset=0x10c03c7d, ucset=0x00c01c7c
-
-__v7_setup_stack:
-	.space	4 * 11				@ 11 registers
 
 	.type	v7_processor_functions, #object
 ENTRY(v7_processor_functions)
@@ -406,3 +417,8 @@ __v7_proc_info:
 	.long	v6_user_fns
 	.long	v7_cache_fns
 	.size	__v7_proc_info, . - __v7_proc_info
+
+	.bss
+	.align
+__v7_setup_stack:
+	.space	4 * 11				@ 11 registers

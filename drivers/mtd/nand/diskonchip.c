@@ -38,7 +38,7 @@
 #endif
 
 static unsigned long __initdata doc_locations[] = {
-#if defined (__alpha__) || defined(__i386__) || defined(__x86_64__)
+#if defined(__alpha__) || defined(__i386__) || defined(__x86_64__)
 #ifdef CONFIG_MTD_NAND_DISKONCHIP_PROBE_HIGH
 	0xfffc8000, 0xfffca000, 0xfffcc000, 0xfffce000,
 	0xfffd0000, 0xfffd2000, 0xfffd4000, 0xfffd6000,
@@ -938,25 +938,6 @@ static int doc200x_calculate_ecc(struct mtd_info *mtd, const u_char *dat, unsign
 		WriteDOC(DOC_ECC_DIS, docptr, Mplus_ECCConf);
 	else
 		WriteDOC(DOC_ECC_DIS, docptr, ECCConf);
-#if 0
-	/* If emptymatch=1, we might have an all-0xff data buffer.  Check. */
-	if (emptymatch) {
-		/* Note: this somewhat expensive test should not be triggered
-		   often.  It could be optimized away by examining the data in
-		   the writebuf routine, and remembering the result. */
-		for (i = 0; i < 512; i++) {
-			if (dat[i] == 0xff)
-				continue;
-			emptymatch = 0;
-			break;
-		}
-	}
-	/* If emptymatch still =1, we do have an all-0xff data buffer.
-	   Return all-0xff ecc value instead of the computed one, so
-	   it'll look just like a freshly-erased page. */
-	if (emptymatch)
-		memset(ecc_code, 0xff, 6);
-#endif
 	return 0;
 }
 

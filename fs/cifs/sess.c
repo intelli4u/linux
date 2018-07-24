@@ -213,8 +213,6 @@ static void unicode_ssetup_strings(char **pbcc_area, struct cifsSesInfo *ses,
 	char *bcc_ptr = *pbcc_area;
 	int bytes_ret = 0;
 
-	/* BB FIXME add check that strings total less
-	than 335 or will need to send them as arrays */
 
 	/* unicode strings, must be word aligned before the call */
 /*	if ((long) bcc_ptr % 2)	{
@@ -711,8 +709,6 @@ ssetup_ntlmssp_authenticate:
 		char *v2_sess_key =
 			kmalloc(sizeof(struct ntlmv2_resp), GFP_KERNEL);
 
-		/* BB FIXME change all users of v2_sess_key to
-		   struct ntlmv2_resp */
 
 		if (v2_sess_key == NULL) {
 			rc = -ENOMEM;
@@ -730,7 +726,6 @@ ssetup_ntlmssp_authenticate:
 
 		/* calculate session key */
 		setup_ntlmv2_rsp(ses, v2_sess_key, nls_cp);
-		/* FIXME: calculate MAC key */
 		memcpy(bcc_ptr, (char *)v2_sess_key,
 		       sizeof(struct ntlmv2_resp));
 		bcc_ptr += sizeof(struct ntlmv2_resp);

@@ -54,12 +54,6 @@
 #include "spu_save_dump.h"
 #include "spu_restore_dump.h"
 
-#if 0
-#define POLL_WHILE_TRUE(_c) {				\
-    do {						\
-    } while (_c);					\
-  }
-#else
 #define RELAX_SPIN_COUNT				1000
 #define POLL_WHILE_TRUE(_c) {				\
     do {						\
@@ -71,7 +65,6 @@
 	else break;					\
     } while (_c);					\
   }
-#endif				/* debug */
 
 #define POLL_WHILE_FALSE(_c)	POLL_WHILE_TRUE(!(_c))
 

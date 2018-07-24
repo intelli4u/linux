@@ -402,4 +402,3 @@ unsigned long thread_saved_pc(struct task_struct *tsk)
 	else
 		return sw->retpc;
 }
-

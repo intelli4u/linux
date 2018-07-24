@@ -623,7 +623,6 @@ pulldown:
 		pr_debug("  --> a_wait_vfall\n");
 		/* FALLTHROUGH */
 	case OTG_STATE_A_WAIT_VFALL:
-		/* FIXME usbcore thinks port power is still on ... */
 		clr |= OTG1_VBUS_DRV;
 		break;
 	case OTG_STATE_A_IDLE:
@@ -1219,7 +1218,6 @@ static void isp1301_release(struct device *dev)
 
 	isp = dev_get_drvdata(dev);
 
-	/* FIXME -- not with a "new style" driver, it doesn't!! */
 
 	/* ugly -- i2c hijacks our memory hook to wait_for_completion() */
 	if (isp->i2c_release)
@@ -1317,7 +1315,6 @@ isp1301_set_host(struct otg_transceiver *otg, struct usb_bus *host)
 	return 0;
 
 #elif	!defined(CONFIG_USB_GADGET_OMAP)
-	// FIXME update its refcount
 	isp->otg.host = host;
 
 	power_up(isp);
@@ -1380,7 +1377,6 @@ isp1301_set_peripheral(struct otg_transceiver *otg, struct usb_gadget *gadget)
 
 #elif	!defined(CONFIG_USB_OHCI_HCD) && !defined(CONFIG_USB_OHCI_HCD_MODULE)
 	isp->otg.gadget = gadget;
-	// FIXME update its refcount
 
 	l = omap_readl(OTG_CTRL) & OTG_CTRL_MASK;
 	l &= ~(OTG_XCEIV_OUTPUTS|OTG_CTRL_BITS);
@@ -1480,11 +1476,6 @@ isp1301_start_hnp(struct otg_transceiver *dev)
 		/* caller will suspend next */
 		break;
 	case OTG_STATE_A_HOST:
-#if 0
-		/* autoconnect mode avoids irq latency bugs */
-		isp1301_set_bits(isp, ISP1301_MODE_CONTROL_1,
-				MC1_BDIS_ACON_EN);
-#endif
 		/* caller must suspend then clear A_BUSREQ */
 		usb_gadget_vbus_connect(isp->otg.gadget);
 		l = omap_readl(OTG_CTRL);
@@ -1663,4 +1654,3 @@ static void __exit isp_exit(void)
 	i2c_del_driver(&isp1301_driver);
 }
 module_exit(isp_exit);
-

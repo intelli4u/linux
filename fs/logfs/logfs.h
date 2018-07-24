@@ -77,7 +77,6 @@
 #define SetPagePreLocked(page)	set_bit(PG_pre_locked, &(page)->flags)
 #define ClearPagePreLocked(page) clear_bit(PG_pre_locked, &(page)->flags)
 
-/* FIXME: This should really be somewhere in the 64bit area. */
 #define LOGFS_LINK_MAX		(1<<30)
 
 /* Read-only filesystem */

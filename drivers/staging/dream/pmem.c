@@ -1207,12 +1207,6 @@ static struct file_operations debug_fops = {
 };
 #endif
 
-#if 0
-static struct miscdevice pmem_dev = {
-	.name = "pmem",
-	.fops = &pmem_fops,
-};
-#endif
 
 int pmem_setup(struct android_pmem_platform_data *pdata,
 	       long (*ioctl)(struct file *, unsigned int, unsigned long),
@@ -1328,4 +1322,3 @@ static void __exit pmem_exit(void)
 
 module_init(pmem_init);
 module_exit(pmem_exit);
-

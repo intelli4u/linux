@@ -69,9 +69,6 @@ static struct ir_scancode ir_codes_haupp_table[] = {
 	{ 0x1e3d, KEY_POWER },
 };
 
-/* Firmware bug? sometimes, when a new key is pressed, the previous pressed key
- * is delivered. No workaround yet, maybe a new firmware.
- */
 static int nova_t_rc_query(struct dvb_usb_device *d, u32 *event, int *state)
 {
 	u8 key[5],cmd[2] = { DIBUSB_REQ_POLL_REMOTE, 0x35 }, data,toggle,custom;

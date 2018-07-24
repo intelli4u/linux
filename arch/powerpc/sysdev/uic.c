@@ -191,8 +191,6 @@ static int uic_host_map(struct irq_host *h, unsigned int virq,
 	struct uic *uic = h->host_data;
 
 	set_irq_chip_data(virq, uic);
-	/* Despite the name, handle_level_irq() works for both level
-	 * and edge irqs on UIC.  FIXME: check this is correct */
 	set_irq_chip_and_handler(virq, &uic_irq_chip, handle_level_irq);
 
 	/* Set default irq type */
@@ -260,7 +258,7 @@ static struct uic * __init uic_init_one(struct device_node *node)
 
 	uic = kzalloc(sizeof(*uic), GFP_KERNEL);
 	if (! uic)
-		return NULL; /* FIXME: panic? */
+		return NULL;
 
 	spin_lock_init(&uic->lock);
 	indexp = of_get_property(node, "cell-index", &len);
@@ -282,7 +280,7 @@ static struct uic * __init uic_init_one(struct device_node *node)
 	uic->irqhost = irq_alloc_host(node, IRQ_HOST_MAP_LINEAR,
 				      NR_UIC_INTS, &uic_host_ops, -1);
 	if (! uic->irqhost)
-		return NULL; /* FIXME: panic? */
+		return NULL;
 
 	uic->irqhost->host_data = uic;
 
@@ -338,7 +336,6 @@ void __init uic_init_tree(void)
 			set_irq_data(cascade_virq, uic);
 			set_irq_chained_handler(cascade_virq, uic_irq_cascade);
 
-			/* FIXME: setup critical cascade?? */
 		}
 	}
 }

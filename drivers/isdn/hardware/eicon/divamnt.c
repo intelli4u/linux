@@ -1,4 +1,4 @@
-/* $Id: divamnt.c,v 1.32.6.10 2005/02/11 19:40:25 armin Exp $
+/* $Id: divamnt.c,v 1.32.6.10 2005/02/11 19:40:25 Exp $
  *
  * Driver for Eicon DIVA Server ISDN cards.
  * Maint module
@@ -255,4 +255,3 @@ static void DIVA_EXIT_FUNCTION maint_exit(void)
 
 module_init(maint_init);
 module_exit(maint_exit);
-

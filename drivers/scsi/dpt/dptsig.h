@@ -45,7 +45,7 @@ typedef unsigned int sigINT;
  *      dsOS
  * so that the sig can be standardised to Little Endian
  */
-#if (defined(_DPT_BIG_ENDIAN))
+#if defined(_DPT_BIG_ENDIAN)
 # define sigWORDLittleEndian(x) ((((x)&0xFF)<<8)|(((x)>>8)&0xFF))
 # define sigLONGLittleEndian(x) \
         ((((x)&0xFF)<<24) |             \
@@ -65,7 +65,7 @@ typedef unsigned int sigINT;
 /* is not checked.  If using BCC, do not use the -a option.             */
 
 #ifndef NO_PACK
-#if defined (_DPT_AIX)
+#if defined(_DPT_AIX)
 #pragma options align=packed
 #else
 #pragma pack(1)
@@ -285,7 +285,7 @@ typedef unsigned int sigINT;
  * You may adjust dsDescription_size with an override to a value less than
  * 50 so that the structure allocates less real space.
  */
-#if (!defined(dsDescription_size))
+#if !defined(dsDescription_size)
 # define dsDescription_size 50
 #endif
 
@@ -320,9 +320,9 @@ typedef struct dpt_sig {
 /* restore it. */
 
 #ifndef NO_UNPACK
-#if defined (_DPT_AIX)
+#if defined(_DPT_AIX)
 #pragma options align=reset
-#elif defined (UNPACK_FOUR)
+#elif defined(UNPACK_FOUR)
 #pragma pack(4)
 #else
 #pragma pack()

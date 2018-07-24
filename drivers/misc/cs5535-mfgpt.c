@@ -59,11 +59,6 @@ int cs5535_mfgpt_toggle_event(struct cs5535_mfgpt_timer *timer, int cmp,
 	 */
 	switch (event) {
 	case MFGPT_EVENT_RESET:
-		/*
-		 * XXX: According to the docs, we cannot reset timers above
-		 * 6; that is, resets for 7 and 8 will be ignored.  Is this
-		 * a problem?   -dilinger
-		 */
 		msr = MSR_MFGPT_NR;
 		mask = 1 << (timer->nr + 24);
 		break;
@@ -105,14 +100,6 @@ int cs5535_mfgpt_set_irq(struct cs5535_mfgpt_timer *timer, int cmp, int *irq,
 		return -EIO;
 	}
 
-	/*
-	 * Unfortunately, MFGPTs come in pairs sharing their IRQ lines. If VSA
-	 * is using the same CMP of the timer's Siamese twin, the IRQ is set to
-	 * 2, and we mustn't use nor change it.
-	 * XXX: Likewise, 2 Linux drivers might clash if the 2nd overwrites the
-	 * IRQ of the 1st. This can only happen if forcing an IRQ, calling this
-	 * with *irq==0 is safe. Currently there _are_ no 2 drivers.
-	 */
 	rdmsr(MSR_PIC_ZSEL_LOW, zsel, dummy);
 	shift = ((cmp == MFGPT_CMP1 ? 0 : 4) + timer->nr % 4) * 4;
 	if (((zsel >> shift) & 0xF) == 2)
@@ -204,11 +191,6 @@ done:
 }
 EXPORT_SYMBOL_GPL(cs5535_mfgpt_alloc_timer);
 
-/*
- * XXX: This frees the timer memory, but never resets the actual hardware
- * timer.  The old geode_mfgpt code did this; it would be good to figure
- * out a way to actually release the hardware timer.  See comments below.
- */
 void cs5535_mfgpt_free_timer(struct cs5535_mfgpt_timer *timer)
 {
 	unsigned long flags;
@@ -271,7 +253,6 @@ static int __init scan_timers(struct cs5535_mfgpt_chip *mfgpt)
 	uint16_t val;
 	int i;
 
-	/* bios workaround */
 	if (mfgpt_reset_timers)
 		reset_all_timers();
 

@@ -37,6 +37,14 @@ ifeq ($(CONFIG_PXA_SHARPSL_DETECT_MACH_ID),y)
 OBJS		+= head-sharpsl.o
 endif
 
+ifeq ($(CONFIG_MACH_BRCM_NS),y)
+OBJS		+= head-mpcore.o
+OBJS		+= mpcore_cache.o
+
+$(obj)/mpcore_cache.S: arch/$(SRCARCH)/plat-brcm/mpcore_cache.S FORCE
+	$(call cmd,shipped)
+endif
+
 ifeq ($(CONFIG_CPU_ENDIAN_BE32),y)
 ifeq ($(CONFIG_CPU_CP15),y)
 OBJS		+= big-endian.o
@@ -49,7 +57,6 @@ endif
 # We now have a PIC decompressor implementation.  Decompressors running
 # from RAM should not define ZTEXTADDR.  Decompressors running directly
 # from ROM or Flash must define ZTEXTADDR (preferably via the config)
-# FIXME: Previous assignment to ztextaddr-y is lost here. See SHARK
 ifeq ($(CONFIG_ZBOOT_ROM),y)
 ZTEXTADDR	:= $(CONFIG_ZBOOT_ROM_TEXT)
 ZBSSADDR	:= $(CONFIG_ZBOOT_ROM_BSS)

@@ -61,9 +61,9 @@ u32 arch_gettimeoffset(void)
 {
 	unsigned long  elapsed_time = 0;  /* [us] */
 
-#if defined(CONFIG_CHIP_M32102) || defined(CONFIG_CHIP_XNUX2) \
-	|| defined(CONFIG_CHIP_VDEC2) || defined(CONFIG_CHIP_M32700) \
-	|| defined(CONFIG_CHIP_OPSP) || defined(CONFIG_CHIP_M32104)
+#if defined(CONFIG_CHIP_M32102) || defined(CONFIG_CHIP_XNUX2) || \
+	defined(CONFIG_CHIP_VDEC2) || defined(CONFIG_CHIP_M32700) || defined(CONFIG_CHIP_OPSP) \
+	|| defined(CONFIG_CHIP_M32104)
 #ifndef CONFIG_SMP
 
 	unsigned long count;
@@ -114,7 +114,6 @@ static irqreturn_t timer_interrupt(int irq, void *dev_id)
 #ifndef CONFIG_SMP
 	profile_tick(CPU_PROFILING);
 #endif
-	/* XXX FIXME. Uh, the xtime_lock should be held here, no? */
 	do_timer(1);
 
 #ifndef CONFIG_SMP
@@ -166,9 +165,9 @@ void read_persistent_clock(struct timespec *ts)
 
 void __init time_init(void)
 {
-#if defined(CONFIG_CHIP_M32102) || defined(CONFIG_CHIP_XNUX2) \
-	|| defined(CONFIG_CHIP_VDEC2) || defined(CONFIG_CHIP_M32700) \
-	|| defined(CONFIG_CHIP_OPSP) || defined(CONFIG_CHIP_M32104)
+#if defined(CONFIG_CHIP_M32102) || defined(CONFIG_CHIP_XNUX2) || \
+	defined(CONFIG_CHIP_VDEC2) || defined(CONFIG_CHIP_M32700) || defined(CONFIG_CHIP_OPSP) \
+	|| defined(CONFIG_CHIP_M32104)
 
 	/* M32102 MFT setup */
 	setup_irq(M32R_IRQ_MFT2, &irq0);

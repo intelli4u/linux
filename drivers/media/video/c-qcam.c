@@ -76,7 +76,6 @@ static int probe = 2;
 static int force_rgb;
 static int video_nr = -1;
 
-/* FIXME: parport=auto would never have worked, surely? --RR */
 MODULE_PARM_DESC(parport, "parport=<auto|n[,n]...> for port detection method\n"
 			  "probe=<0|1|2> for camera detection method\n"
 			  "force_rgb=<0|1> for RGB data format (default BGR)");
@@ -210,9 +209,6 @@ static int qc_detect(struct qcam *qcam)
 
 	/* The probe routine below is not very reliable.  The IEEE-1284
 	   probe takes precedence. */
-	/* XXX Currently parport provides no way to distinguish between
-	   "the IEEE probe was not done" and "the probe was done, but
-	   no device was found".  Fix this one day. */
 	if (qcam->pport->probe_info[0].class == PARPORT_CLASS_MEDIA
 	    && qcam->pport->probe_info[0].model
 	    && !strcmp(qcam->pdev->port->probe_info[0].model,

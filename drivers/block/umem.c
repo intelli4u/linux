@@ -230,26 +230,6 @@ static void dump_dmastat(struct cardinfo *card, unsigned int dmastat)
 	printk("\n");
 }
 
-/*
- * Theory of request handling
- *
- * Each bio is assigned to one mm_dma_desc - which may not be enough FIXME
- * We have two pages of mm_dma_desc, holding about 64 descriptors
- * each.  These are allocated at init time.
- * One page is "Ready" and is either full, or can have request added.
- * The other page might be "Active", which DMA is happening on it.
- *
- * Whenever IO on the active page completes, the Ready page is activated
- * and the ex-Active page is clean out and made Ready.
- * Otherwise the Ready page is only activated when it becomes full, or
- * when mm_unplug_device is called via the unplug_io_fn.
- *
- * If a request arrives while both pages a full, it is queued, and b_rdev is
- * overloaded to record whether it was a read or a write.
- *
- * The interrupt handler only polls the device to clear the interrupt.
- * The processing of the result is done in a tasklet.
- */
 
 static void mm_start_io(struct cardinfo *card)
 {

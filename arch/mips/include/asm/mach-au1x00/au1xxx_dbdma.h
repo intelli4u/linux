@@ -281,10 +281,6 @@ typedef volatile struct au1xxx_ddma_desc {
 /* The number of DBDMA channels. */
 #define NUM_DBDMA_CHANS	16
 
-/*
- * DDMA API definitions
- * FIXME: may not fit to this header file
- */
 typedef struct dbdma_device_table {
 	u32	dev_id;
 	u32	dev_flags;

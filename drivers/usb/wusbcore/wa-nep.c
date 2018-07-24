@@ -100,11 +100,6 @@ static void wa_notif_dispatch(struct work_struct *ws)
 
 	struct device *dev = &wa->usb_iface->dev;
 
-#if 0
-	/* FIXME: need to check for this??? */
-	if (usb_hcd->state == HC_STATE_QUIESCING)	/* Going down? */
-		goto out;				/* screw it */
-#endif
 	atomic_dec(&wa->notifs_queued);		/* Throttling ctl */
 	dev = &wa->usb_iface->dev;
 	size = nw->size;
@@ -137,7 +132,6 @@ static void wa_notif_dispatch(struct work_struct *ws)
 		case DWA_NOTIF_RWAKE:
 		case DWA_NOTIF_PORTSTATUS:
 		case HWA_NOTIF_BPST_ADJ:
-			/* FIXME: unimplemented WA NOTIFs */
 			/* fallthru */
 		default:
 			dev_err(dev, "HWA: unknown notification 0x%x, "

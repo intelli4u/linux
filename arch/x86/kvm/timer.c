@@ -31,7 +31,6 @@ static int __kvm_timer_fn(struct kvm_vcpu *vcpu, struct kvm_timer *ktimer)
 	 */
 	if (ktimer->reinject || !atomic_read(&ktimer->pending)) {
 		atomic_inc(&ktimer->pending);
-		/* FIXME: this code should not know anything about vcpus */
 		kvm_make_request(KVM_REQ_PENDING_TIMER, vcpu);
 	}
 
@@ -62,4 +61,3 @@ enum hrtimer_restart kvm_timer_fn(struct hrtimer *data)
 	else
 		return HRTIMER_NORESTART;
 }
-

@@ -402,21 +402,6 @@ static int ck_13MHz_set_rate(struct clk *clk, u32 rate)
 
 static int pll1_set_rate(struct clk *clk, u32 rate)
 {
-#if 0 /* doesn't work on some boards, probably a HW BUG */
-	if (rate) {
-		clk_reg_disable(clk);	/*enable bit is inverted */
-		if (!clk_wait_for_pll_lock(clk)) {
-			clk->rate = CLK_RATE_13MHZ;
-		} else {
-			clk_reg_enable(clk);
-			clk->rate = 0;
-		}
-
-	} else {
-		clk_reg_enable(clk);
-		clk->rate = 0;
-	}
-#endif
 	return 0;
 }
 

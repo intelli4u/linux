@@ -194,11 +194,6 @@ static struct file_perms compute_perms(struct aa_dfa *dfa, unsigned int state,
 {
 	struct file_perms perms;
 
-	/* FIXME: change over to new dfa format
-	 * currently file perms are encoded in the dfa, new format
-	 * splits the permissions from the dfa.  This mapping can be
-	 * done at profile load
-	 */
 	perms.kill = 0;
 
 	if (current_fsuid() == cond->uid) {

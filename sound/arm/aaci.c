@@ -378,13 +378,6 @@ static int __aaci_pcm_open(struct aaci *aaci,
 	    aacirun->pcm->r[1].slots)
 		snd_ac97_pcm_double_rate_rules(runtime);
 
-	/*
-	 * FIXME: ALSA specifies fifo_size in bytes.  If we're in normal
-	 * mode, each 32-bit word contains one sample.  If we're in
-	 * compact mode, each 32-bit word contains two samples, effectively
-	 * halving the FIFO size.  However, we don't know for sure which
-	 * we'll be using at this point.  We set this to the lower limit.
-	 */
 	runtime->hw.fifo_size = aaci->fifosize * 2;
 
 	ret = request_irq(aaci->dev->irq[0], aaci_irq, IRQF_SHARED|IRQF_DISABLED,
@@ -570,10 +563,6 @@ static int aaci_pcm_playback_hw_params(struct snd_pcm_substream *substream,
 
 	ret = aaci_pcm_hw_params(substream, aacirun, params);
 
-	/*
-	 * Enable FIFO, compact mode, 16 bits per sample.
-	 * FIXME: double rate slots?
-	 */
 	if (ret >= 0)
 		aacirun->cr |= channels_to_txmask[channels];
 

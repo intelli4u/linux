@@ -171,13 +171,6 @@ int i2o_msg_post_wait_mem(struct i2o_controller *c, struct i2o_message *msg,
 	if (wait->complete)
 		rc = le32_to_cpu(wait->msg->body[0]) >> 24;
 	else {
-		/*
-		 * We cannot remove it now. This is important. When it does
-		 * terminate (which it must do if the controller has not
-		 * died...) then it will otherwise scribble on stuff.
-		 *
-		 * FIXME: try abort message
-		 */
 		if (dma)
 			dma->virt = NULL;
 

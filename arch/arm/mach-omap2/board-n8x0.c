@@ -45,8 +45,7 @@ static struct device *mmc_device;
 #define TUSB6010_GPIO_ENABLE	0
 #define TUSB6010_DMACHAN	0x3f
 
-#if defined(CONFIG_USB_TUSB6010) || \
-	defined(CONFIG_USB_TUSB6010_MODULE)
+#if defined(CONFIG_USB_TUSB6010) || defined(CONFIG_USB_TUSB6010_MODULE)
 /*
  * Enable or disable power to TUSB6010. When enabling, turn on 3.3 V and
  * 1.5 V voltage regulators of PM companion chip. Companion chip will then
@@ -151,8 +150,7 @@ static struct spi_board_info n800_spi_board_info[] __initdata = {
 	},
 };
 
-#if defined(CONFIG_MTD_ONENAND_OMAP2) || \
-	defined(CONFIG_MTD_ONENAND_OMAP2_MODULE)
+#if defined(CONFIG_MTD_ONENAND_OMAP2) || defined(CONFIG_MTD_ONENAND_OMAP2_MODULE)
 
 static struct mtd_partition onenand_partitions[] = {
 	{
@@ -202,8 +200,8 @@ static void __init n8x0_onenand_init(void) {}
 
 #endif
 
-#if defined(CONFIG_MENELAUS) &&						\
-	(defined(CONFIG_MMC_OMAP) || defined(CONFIG_MMC_OMAP_MODULE))
+#if defined(CONFIG_MENELAUS) && (defined(CONFIG_MMC_OMAP) || \
+	defined(CONFIG_MMC_OMAP_MODULE))
 
 /*
  * On both N800 and N810, only the first of the two MMC controllers is in use.
@@ -662,7 +660,6 @@ static struct omap_board_mux board_mux[] __initdata = {
 static void __init n8x0_init_machine(void)
 {
 	omap2420_mux_init(board_mux, OMAP_PACKAGE_ZAC);
-	/* FIXME: add n810 spi devices */
 	spi_register_board_info(n800_spi_board_info,
 				ARRAY_SIZE(n800_spi_board_info));
 

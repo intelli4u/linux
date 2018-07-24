@@ -25,7 +25,6 @@
 #include <linux/lguest.h>
 #include "../../../drivers/lguest/lg.h"
 
-/* workaround for a warning with -Wmissing-prototypes */
 void foo(void);
 
 void foo(void)
@@ -123,7 +122,8 @@ void foo(void)
 	OFFSET(XEN_vcpu_info_pending, vcpu_info, evtchn_upcall_pending);
 #endif
 
-#if defined(CONFIG_LGUEST) || defined(CONFIG_LGUEST_GUEST) || defined(CONFIG_LGUEST_MODULE)
+#if defined(CONFIG_LGUEST) || defined(CONFIG_LGUEST_GUEST) || \
+	defined(CONFIG_LGUEST_MODULE)
 	BLANK();
 	OFFSET(LGUEST_DATA_irq_enabled, lguest_data, irq_enabled);
 	OFFSET(LGUEST_DATA_irq_pending, lguest_data, irq_pending);

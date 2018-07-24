@@ -834,7 +834,6 @@ void rtl8192_BBConfig(struct net_device* dev)
 {
 	rtl8192_InitBBRFRegDef(dev);
 	//config BB&RF. As hardCode based initialization has not been well
-	//implemented, so use file first.FIXME:should implement it for hardcode?
 	rtl8192_BB_Config_ParaFile(dev);
 	return;
 }
@@ -1264,7 +1263,6 @@ u8 rtl8192_phy_SwChnlStepByStep(struct net_device *dev, u8 channel, u8* stage, u
 		return true; //return true to tell upper caller function this channel setting is finished! Or it will in while loop.
 	}
 #endif
-//FIXME:need to check whether channel is legal or not here.WB
 
 
 	//for(eRFPath = RF90_PATH_A; eRFPath <pHalData->NumTotalRFPath; eRFPath++)
@@ -1774,4 +1772,3 @@ extern void InitialGainOperateWorkItemCallBack(struct work_struct *work)
 			break;
 	}
 }
-

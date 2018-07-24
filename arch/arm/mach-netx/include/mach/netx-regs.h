@@ -120,7 +120,6 @@
 #define NETX_SYSTEM_IOC_CR          NETX_SYSTEM_REG(0x04)
 #define NETX_SYSTEM_IOC_MR          NETX_SYSTEM_REG(0x08)
 
-/* FIXME: Docs are not consistent */
 /* #define NETX_SYSTEM_RES_CR          NETX_SYSTEM_REG(0x08) */
 #define NETX_SYSTEM_RES_CR          NETX_SYSTEM_REG(0x0c)
 
@@ -220,7 +219,7 @@
 #define NETX_GPIO_COUNTER_CTRL_CNT_EVENT             (1<<4)
 #define NETX_GPIO_COUNTER_CTRL_RST_EN                (1<<5)
 #define NETX_GPIO_COUNTER_CTRL_SEL_EVENT             (1<<6)
-#define NETX_GPIO_COUNTER_CTRL_GPIO_REF /* FIXME */
+#define NETX_GPIO_COUNTER_CTRL_GPIO_REF
 
 #define GPIO_BIT(gpio)                     (1<<(gpio))
 #define COUNTER_BIT(counter)               ((1<<16)<<(counter))

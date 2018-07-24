@@ -101,7 +101,7 @@ int mp_irq_entries;
 /* GSI interrupts */
 static int nr_irqs_gsi = NR_IRQS_LEGACY;
 
-#if defined (CONFIG_MCA) || defined (CONFIG_EISA)
+#if defined(CONFIG_MCA) || defined(CONFIG_EISA)
 int mp_bus_id_to_type[MAX_MP_BUSSES];
 #endif
 
@@ -2181,14 +2181,6 @@ static int __init notimercheck(char *s)
 }
 __setup("no_timer_check", notimercheck);
 
-/*
- * There is a nasty bug in some older SMP boards, their mptable lies
- * about the timer IRQ. We do the following to work around the situation:
- *
- *	- timer IRQ defaults to IO-APIC IRQ
- *	- if this function detects that timer IRQs are defunct, then we fall
- *	  back to ISA timer IRQs
- */
 static int __init timer_irq_works(void)
 {
 	unsigned long t1 = jiffies;
@@ -2627,38 +2619,6 @@ static void ack_apic_level(unsigned int irq)
 	}
 #endif
 
-	/*
-	 * It appears there is an erratum which affects at least version 0x11
-	 * of I/O APIC (that's the 82093AA and cores integrated into various
-	 * chipsets).  Under certain conditions a level-triggered interrupt is
-	 * erroneously delivered as edge-triggered one but the respective IRR
-	 * bit gets set nevertheless.  As a result the I/O unit expects an EOI
-	 * message but it will never arrive and further interrupts are blocked
-	 * from the source.  The exact reason is so far unknown, but the
-	 * phenomenon was observed when two consecutive interrupt requests
-	 * from a given source get delivered to the same CPU and the source is
-	 * temporarily disabled in between.
-	 *
-	 * A workaround is to simulate an EOI message manually.  We achieve it
-	 * by setting the trigger mode to edge and then to level when the edge
-	 * trigger mode gets detected in the TMR of a local APIC for a
-	 * level-triggered interrupt.  We mask the source for the time of the
-	 * operation to prevent an edge-triggered interrupt escaping meanwhile.
-	 * The idea is from Manfred Spraul.  --macro
-	 *
-	 * Also in the case when cpu goes offline, fixup_irqs() will forward
-	 * any unhandled interrupt on the offlined cpu to the new cpu
-	 * destination that is handling the corresponding interrupt. This
-	 * interrupt forwarding is done via IPI's. Hence, in this case also
-	 * level-triggered io-apic interrupt will be seen as an edge
-	 * interrupt in the IRR. And we can't rely on the cpu's EOI
-	 * to be broadcasted to the IO-APIC's which will clear the remoteIRR
-	 * corresponding to the level-triggered interrupt. Hence on IO-APIC's
-	 * supporting EOI register, we do an explicit EOI to clear the
-	 * remote IRR and on IO-APIC's which don't have an EOI register,
-	 * we use the above logic (mask+edge followed by unmask+level) from
-	 * Manfred Spraul to clear the remote IRR.
-	 */
 	cfg = desc->chip_data;
 	i = cfg->vector;
 	v = apic_read(APIC_TMR + ((i & ~0x1f) >> 1));
@@ -2921,14 +2881,6 @@ early_param("disable_timer_pin_1", disable_timer_pin_setup);
 
 int timer_through_8259 __initdata;
 
-/*
- * This code may look a bit paranoid, but it's supposed to cooperate with
- * a wide range of boards and BIOS bugs.  Fortunately only the timer IRQ
- * is so screwy.  Thanks to Brian Perkins for testing/hacking this beast
- * fanatically on his truly buggy board.
- *
- * FIXME: really need to revamp this for all platforms.
- */
 static inline void __init check_timer(void)
 {
 	struct irq_desc *desc = irq_to_desc(0);
@@ -3606,7 +3558,7 @@ void arch_teardown_msi_irq(unsigned int irq)
 	destroy_irq(irq);
 }
 
-#if defined (CONFIG_DMAR) || defined (CONFIG_INTR_REMAP)
+#if defined(CONFIG_DMAR) || defined(CONFIG_INTR_REMAP)
 #ifdef CONFIG_SMP
 static int dmar_msi_set_affinity(unsigned int irq, const struct cpumask *mask)
 {

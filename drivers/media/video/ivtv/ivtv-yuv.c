@@ -476,8 +476,6 @@ static void ivtv_yuv_handle_vertical(struct ivtv *itv, struct yuv_frame_info *f)
 		reg_296c = 0x00000102;
 	}
 
-	/* FIXME These registers change depending on scaled / unscaled output
-	   We really need to work out what they should be */
 	if (f->src_h == f->dst_h) {
 		reg_2934 = 0x00020000;
 		reg_293c = 0x00100000;

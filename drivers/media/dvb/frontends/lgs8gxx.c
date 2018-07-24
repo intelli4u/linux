@@ -727,7 +727,6 @@ static
 int lgs8gxx_get_tune_settings(struct dvb_frontend *fe,
 			      struct dvb_frontend_tune_settings *fesettings)
 {
-	/* FIXME: copy from tda1004x.c */
 	fesettings->min_delay_ms = 800;
 	fesettings->step_size = 0;
 	fesettings->max_drift = 0;

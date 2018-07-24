@@ -183,10 +183,6 @@ static void ldisc_receive(struct tty_struct *tty, const u8 *data,
 	 */
 
 
-	/*
-	 * Workaround for garbage at start of transmission,
-	 * only enable if STX handling is not enabled.
-	 */
 	if (!ser->common.use_stx && !ser->tx_started) {
 		dev_info(&ser->dev->dev,
 			"Bytes received before initial transmission -"

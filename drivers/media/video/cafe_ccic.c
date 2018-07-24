@@ -833,10 +833,6 @@ static int cafe_cam_configure(struct cafe_camera *cam)
  * DMA buffer management.  These functions need s_mutex held.
  */
 
-/* FIXME: this is inefficient as hell, since dma_alloc_coherent just
- * does a get_free_pages() call, and we waste a good chunk of an orderN
- * allocation.  Should try to allocate the whole set in one chunk.
- */
 static int cafe_alloc_dma_bufs(struct cafe_camera *cam, int loadtime)
 {
 	int i;
@@ -1012,10 +1008,6 @@ static ssize_t cafe_v4l_read(struct file *filp,
 		if (ret)
 			goto out_unlock;
 	}
-	/*
-	 * Wait for something to happen.  This should probably
-	 * be interruptible (FIXME).
-	 */
 	wait_event_timeout(cam->iowait, cam->next_buf >= 0, HZ);
 	if (cam->next_buf < 0) {
 		cam_err(cam, "read() operation timed out\n");
@@ -1381,7 +1373,6 @@ static int cafe_v4l_open(struct file *filp)
 		cafe_ctlr_power_up(cam);
 		__cafe_cam_reset(cam);
 		cafe_set_config_needed(cam, 1);
-	/* FIXME make sure this is complete */
 	}
 	(cam->users)++;
 	mutex_unlock(&cam->s_mutex);
@@ -1818,14 +1809,6 @@ static void cafe_frame_complete(struct cafe_camera *cam, int frame)
 		}
 		wake_up(&cam->iowait);
 		break;
-	/*
-	 * For the streaming case, we defer the real work to the
-	 * camera tasklet.
-	 *
-	 * FIXME: if the application is not consuming the buffers,
-	 * we should eventually put things on hold and restart in
-	 * vidioc_dqbuf().
-	 */
 	    case S_STREAMING:
 		tasklet_schedule(&cam->s_tasklet);
 		break;
@@ -2010,7 +1993,6 @@ out:
  */
 static void cafe_shutdown(struct cafe_camera *cam)
 {
-/* FIXME: Make sure we take care of everything here */
 	if (cam->n_sbufs > 0)
 		/* What if they are still mapped?  Shouldn't be, but... */
 		cafe_free_sio_buffers(cam);

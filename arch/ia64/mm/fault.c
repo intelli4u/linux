@@ -134,8 +134,8 @@ ia64_do_page_fault (unsigned long address, unsigned long isr, struct pt_regs *re
 #	define VM_WRITE_BIT	1
 #	define VM_EXEC_BIT	2
 
-#	if (((1 << VM_READ_BIT) != VM_READ || (1 << VM_WRITE_BIT) != VM_WRITE) \
-	    || (1 << VM_EXEC_BIT) != VM_EXEC)
+#	if (((1 << VM_READ_BIT) != VM_READ || (1 << VM_WRITE_BIT) != VM_WRITE) || (1 << \
+	VM_EXEC_BIT) != VM_EXEC)
 #		error File is out of sync with <linux/mm.h>.  Please update.
 #	endif
 

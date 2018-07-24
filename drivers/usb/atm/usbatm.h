@@ -65,7 +65,6 @@
 	do {} while (0)
 #endif
 
-/* FIXME: move to dev_* once ATM is driver model aware */
 #define atm_printk(level, instance, format, arg...)	\
 	printk(level "ATM dev %d: " format ,		\
 	(instance)->atm_dev->number , ## arg)

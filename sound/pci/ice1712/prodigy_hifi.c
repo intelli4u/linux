@@ -1002,18 +1002,13 @@ static int __devinit prodigy_hifi_init(struct snd_ice1712 *ice)
 		WM_DAC_ATTEN_R,	0x0000,	/* DAC 0dB */
 		WM_DAC_ATTEN_R,	0x0100,	/* DAC 0dB */
 		WM_PHASE_SWAP,	0x0000,	/* phase normal */
-#if 0
-		WM_DAC_MASTER,	0x0100,	/* DAC master muted */
-#endif
 		WM_DAC_CTRL2,	0x0000,	/* no deemphasis, no ZFLG */
 		WM_ADC_ATTEN_L,	0x0000,	/* ADC muted */
 		WM_ADC_ATTEN_R,	0x0000,	/* ADC muted */
-#if 1
 		WM_ALC_CTRL1,	0x007b,	/* */
 		WM_ALC_CTRL2,	0x0000,	/* */
 		WM_ALC_CTRL3,	0x0000,	/* */
 		WM_NOISE_GATE,	0x0000,	/* */
-#endif
 		WM_DAC_MUTE,	0x0000,	/* DAC unmute */
 		WM_ADC_MUX,	0x0003,	/* ADC unmute, both CD/Line On */
 	};
@@ -1233,4 +1228,3 @@ struct snd_ice1712_card_info snd_vt1724_prodigy_hifi_cards[] __devinitdata = {
 	},
 	{ } /* terminator */
 };
-

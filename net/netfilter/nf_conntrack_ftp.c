@@ -275,16 +275,6 @@ static int find_pattern(const char *data, size_t dlen,
 	}
 
 	if (strnicmp(data, pattern, plen) != 0) {
-#if 0
-		size_t i;
-
-		pr_debug("ftp: string mismatch\n");
-		for (i = 0; i < plen; i++) {
-			pr_debug("ftp:char %u `%c'(%u) vs `%c'(%u)\n",
-				 i, data[i], data[i],
-				 pattern[i], pattern[i]);
-		}
-#endif
 		return 0;
 	}
 
@@ -550,8 +540,6 @@ static int __init nf_conntrack_ftp_init(void)
 	if (ports_c == 0)
 		ports[ports_c++] = FTP_PORT;
 
-	/* FIXME should be configurable whether IPv4 and IPv6 FTP connections
-		 are tracked or not - YK */
 	for (i = 0; i < ports_c; i++) {
 		ftp[i][0].tuple.src.l3num = PF_INET;
 		ftp[i][1].tuple.src.l3num = PF_INET6;

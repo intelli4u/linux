@@ -522,7 +522,8 @@ static void rp_handle_port(struct r_port *info)
 		rp_do_receive(info, tty, cp, ChanStatus);
 	}
 	if (IntMask & DELTA_CD) {	/* CD change  */
-#if (defined(ROCKET_DEBUG_OPEN) || defined(ROCKET_DEBUG_INTR) || defined(ROCKET_DEBUG_HANGUP))
+#if (defined(ROCKET_DEBUG_OPEN) || defined(ROCKET_DEBUG_INTR) || \
+	defined(ROCKET_DEBUG_HANGUP))
 		printk(KERN_INFO "ttyR%d CD now %s...\n", info->line,
 		       (ChanStatus & CD_ACT) ? "on" : "off");
 #endif
@@ -770,7 +771,6 @@ static void configure_r_port(struct tty_struct *tty, struct r_port *info,
 	info->cps = baud / bits;
 	sSetBaud(cp, divisor);
 
-	/* FIXME: Should really back compute a baud rate from the divisor */
 	tty_encode_baud_rate(tty, baud, baud);
 
 	if (cflag & CRTSCTS) {
@@ -2503,21 +2503,8 @@ static int sInitController(CONTROLLER_T * CtlP, int CtlNum, ByteIO_t MudbacIO,
 	CtlP->MReg1IO = MudbacIO + 1;
 	CtlP->MReg2IO = MudbacIO + 2;
 	CtlP->MReg3IO = MudbacIO + 3;
-#if 1
 	CtlP->MReg2 = 0;	/* interrupt disable */
 	CtlP->MReg3 = 0;	/* no periodic interrupts */
-#else
-	if (sIRQMap[IRQNum] == 0) {	/* interrupts globally disabled */
-		CtlP->MReg2 = 0;	/* interrupt disable */
-		CtlP->MReg3 = 0;	/* no periodic interrupts */
-	} else {
-		CtlP->MReg2 = sIRQMap[IRQNum];	/* set IRQ number */
-		CtlP->MReg3 = Frequency;	/* set frequency */
-		if (PeriodicOnly) {	/* periodic interrupt only */
-			CtlP->MReg3 |= PERIODIC_ONLY;
-		}
-	}
-#endif
 	sOutB(CtlP->MReg2IO, CtlP->MReg2);
 	sOutB(CtlP->MReg3IO, CtlP->MReg3);
 	sControllerEOI(CtlP);	/* clear EOI if warm init */

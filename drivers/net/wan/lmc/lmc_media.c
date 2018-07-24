@@ -1,4 +1,4 @@
-/* $Id: lmc_media.c,v 1.13 2000/04/11 05:25:26 asj Exp $ */
+/* $Id: lmc_media.c,v 1.13 2000/04/11 05:25:26 Exp $ */
 
 #include <linux/kernel.h>
 #include <linux/string.h>
@@ -837,10 +837,6 @@ static void write_av9110(lmc_softc_t *sc, u32 n, u32 m, u32 v, u32 x, u32 r)
 {
   int i;
 
-#if 0
-  printk (LMC_PRINTF_FMT ": speed %u, %d %d %d %d %d\n",
-	  LMC_PRINTF_ARGS, sc->ictl.clock_rate, n, m, v, x, r);
-#endif
 
   sc->lmc_gpio |= LMC_GEP_SSI_GENERATOR;
   sc->lmc_gpio &= ~(LMC_GEP_DATA | LMC_GEP_CLK);

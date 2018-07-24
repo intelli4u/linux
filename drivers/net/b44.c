@@ -389,11 +389,6 @@ static void b44_wap54g10_workaround(struct b44 *bp)
 	u32 val;
 	int err;
 
-	/*
-	 * workaround for bad hardware design in Linksys WAP54G v1.0
-	 * see https://dev.openwrt.org/ticket/146
-	 * check and reset bit "isolate"
-	 */
 	str = nvram_get("boardnum");
 	if (!str)
 		return;
@@ -598,7 +593,6 @@ static void b44_tx(struct b44 *bp)
 	cur  = br32(bp, B44_DMATX_STAT) & DMATX_STAT_CDMASK;
 	cur /= sizeof(struct dma_desc);
 
-	/* XXX needs updating when NETIF_F_SG is supported */
 	for (cons = bp->tx_cons; cons != cur; cons = NEXT_TX(cons)) {
 		struct ring_info *rp = &bp->tx_buffers[cons];
 		struct sk_buff *skb = rp->skb;
@@ -649,8 +643,6 @@ static int b44_alloc_rx_skb(struct b44 *bp, int src_idx, u32 dest_idx_unmasked)
 				 RX_PKT_BUF_SZ,
 				 DMA_FROM_DEVICE);
 
-	/* Hardware bug work-around, the chip is unable to do PCI DMA
-	   to/from anything above 1GB :-( */
 	if (dma_mapping_error(bp->sdev->dma_dev, mapping) ||
 		mapping + RX_PKT_BUF_SZ > DMA_BIT_MASK(30)) {
 		/* Sigh... */
@@ -1080,7 +1072,6 @@ static void b44_free_rings(struct b44 *bp)
 		rp->skb = NULL;
 	}
 
-	/* XXX needs changes once NETIF_F_SG is set... */
 	for (i = 0; i < B44_TX_RING_SIZE; i++) {
 		rp = &bp->tx_buffers[i];
 
@@ -1396,7 +1387,7 @@ static void b44_init_hw(struct b44 *bp, int reset_kind)
 	bw32(bp, B44_RXMAXLEN, bp->dev->mtu + ETH_HLEN + 8 + RX_HEADER_LEN);
 	bw32(bp, B44_TXMAXLEN, bp->dev->mtu + ETH_HLEN + 8 + RX_HEADER_LEN);
 
-	bw32(bp, B44_TX_WMARK, 56); /* XXX magic */
+	bw32(bp, B44_TX_WMARK, 56);
 	if (reset_kind == B44_PARTIAL_RESET) {
 		bw32(bp, B44_DMARX_CTRL, (DMARX_CTRL_ENABLE |
 				      (RX_PKT_OFFSET << DMARX_CTRL_ROSHIFT)));
@@ -1671,10 +1662,6 @@ static struct net_device_stats *b44_get_stats(struct net_device *dev)
 				   hwstat->rx_symbol_errs);
 
 	nstat->tx_aborted_errors = hwstat->tx_underruns;
-#if 0
-	/* Carrier lost counter seems to be broken for some devices */
-	nstat->tx_carrier_errors = hwstat->tx_carrier_lost;
-#endif
 
 	return nstat;
 }
@@ -1896,7 +1883,6 @@ static void b44_get_ringparam(struct net_device *dev,
 	ering->rx_max_pending = B44_RX_RING_SIZE - 1;
 	ering->rx_pending = bp->rx_pending;
 
-	/* XXX ethtool lacks a tx_max_pending, oops... */
 }
 
 static int b44_set_ringparam(struct net_device *dev,
@@ -2100,9 +2086,6 @@ static int __devinit b44_get_invariants(struct b44 *bp)
 
 	bp->imask = IMASK_DEF;
 
-	/* XXX - really required?
-	   bp->flags |= B44_FLAG_BUGGY_TXPTR;
-	*/
 
 	if (bp->sdev->id.revision >= 7)
 		bp->flags |= B44_FLAG_B0_ANDLATER;
@@ -2367,4 +2350,3 @@ static void __exit b44_cleanup(void)
 
 module_init(b44_init);
 module_exit(b44_cleanup);
-

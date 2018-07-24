@@ -26,4 +26,3 @@ static inline int acpi_video_get_edid(struct acpi_device *device, int type,
 #endif
 
 #endif
-

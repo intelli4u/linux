@@ -92,8 +92,8 @@ struct af9013_config {
 };
 
 
-#if defined(CONFIG_DVB_AF9013) || \
-	(defined(CONFIG_DVB_AF9013_MODULE) && defined(MODULE))
+#if defined(CONFIG_DVB_AF9013) || (defined(CONFIG_DVB_AF9013_MODULE) && \
+	defined(MODULE))
 extern struct dvb_frontend *af9013_attach(const struct af9013_config *config,
 	struct i2c_adapter *i2c);
 #else

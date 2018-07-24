@@ -214,7 +214,6 @@ on_hca_fail:
 				    ah_attr->grh.flow_label);
 		memcpy(av->dgid, ah_attr->grh.dgid.raw, 16);
 	} else {
-		/* Arbel workaround -- low byte of GID must be 2 */
 		av->dgid[3] = cpu_to_be32(2);
 	}
 

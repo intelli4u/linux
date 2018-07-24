@@ -189,7 +189,6 @@ static void unset_locked_termios(struct ktermios *termios,
 	for (i = 0; i < NCCS; i++)
 		termios->c_cc[i] = locked->c_cc[i] ?
 			old->c_cc[i] : termios->c_cc[i];
-	/* FIXME: What should we do for i/ospeed */
 }
 
 /*
@@ -508,8 +507,6 @@ static void change_termios(struct tty_struct *tty, struct ktermios *new_termios)
 	 */
 
 
-	/* FIXME: we need to decide on some locking/ordering semantics
-	   for the set_termios notification eventually */
 	mutex_lock(&tty->termios_mutex);
 	old_termios = *tty->termios;
 	*tty->termios = *new_termios;
@@ -622,10 +619,6 @@ static int set_termios(struct tty_struct *tty, void __user *arg, int opt)
 
 	change_termios(tty, &tmp_termios);
 
-	/* FIXME: Arguably if tmp_termios == tty->termios AND the
-	   actual requested termios was not tmp_termios then we may
-	   want to return an error as no user requested change has
-	   succeeded */
 	return 0;
 }
 

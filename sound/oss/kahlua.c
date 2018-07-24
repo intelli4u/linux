@@ -228,4 +228,3 @@ static void __devexit kahlua_cleanup_module(void)
 
 module_init(kahlua_init_module);
 module_exit(kahlua_cleanup_module);
-

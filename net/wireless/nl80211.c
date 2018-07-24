@@ -827,10 +827,6 @@ static int nl80211_set_wiphy(struct sk_buff *skb, struct genl_info *info)
 	else
 		wdev = NULL;
 
-	/*
-	 * end workaround code, by now the rdev is available
-	 * and locked, and wdev may or may not be NULL.
-	 */
 
 	if (info->attrs[NL80211_ATTR_WIPHY_NAME])
 		result = cfg80211_dev_rename(

@@ -26,7 +26,6 @@
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 
-/* XXX */
 #include <linux/errno.h>
 #include <linux/types.h>
 #include <linux/kernel.h>

@@ -1361,7 +1361,6 @@ static void mos7840_break(struct tty_struct *tty, int break_state)
 	else
 		data = mos7840_port->shadowLCR & ~LCR_SET_BREAK;
 
-	/* FIXME: no locking on shadowLCR anywhere in driver */
 	mos7840_port->shadowLCR = data;
 	dbg("mcs7840_break mos7840_port->shadowLCR is %x",
 	    mos7840_port->shadowLCR);
@@ -1693,7 +1692,6 @@ static int mos7840_tiocmset(struct tty_struct *tty, struct file *file,
 	if (mos7840_port == NULL)
 		return -ENODEV;
 
-	/* FIXME: What locks the port registers ? */
 	mcr = mos7840_port->shadowMCR;
 	if (clear & TIOCM_RTS)
 		mcr &= ~MCR_RTS;

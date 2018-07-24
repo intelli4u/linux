@@ -52,16 +52,6 @@ static void omap_hsmmc1_before_set_reg(struct device *dev, int slot,
 	if (mmc->slots[0].remux)
 		mmc->slots[0].remux(dev, slot, power_on);
 
-	/*
-	 * Assume we power both OMAP VMMC1 (for CMD, CLK, DAT0..3) and the
-	 * card with Vcc regulator (from twl4030 or whatever).  OMAP has both
-	 * 1.8V and 3.0V modes, controlled by the PBIAS register.
-	 *
-	 * In 8-bit modes, OMAP VMMC1A (for DAT4..7) needs a supply, which
-	 * is most naturally TWL VSIM; those pins also use PBIAS.
-	 *
-	 * FIXME handle VMMC1A as needed ...
-	 */
 	if (power_on) {
 		if (cpu_is_omap2430()) {
 			reg = omap_ctrl_readl(OMAP243X_CONTROL_DEVCONF1);
@@ -125,16 +115,6 @@ static void omap4_hsmmc1_before_set_reg(struct device *dev, int slot,
 {
 	u32 reg;
 
-	/*
-	 * Assume we power both OMAP VMMC1 (for CMD, CLK, DAT0..3) and the
-	 * card with Vcc regulator (from twl4030 or whatever).  OMAP has both
-	 * 1.8V and 3.0V modes, controlled by the PBIAS register.
-	 *
-	 * In 8-bit modes, OMAP VMMC1A (for DAT4..7) needs a supply, which
-	 * is most naturally TWL VSIM; those pins also use PBIAS.
-	 *
-	 * FIXME handle VMMC1A as needed ...
-	 */
 	reg = omap_ctrl_readl(control_pbias_offset);
 	reg &= ~(OMAP4_MMC1_PBIASLITE_PWRDNZ | OMAP4_MMC1_PWRDNZ |
 					OMAP4_USBC1_ICUSB_PWRDNZ);

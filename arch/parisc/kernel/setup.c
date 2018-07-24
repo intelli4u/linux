@@ -228,9 +228,6 @@ static void __init parisc_proc_mkdir(void)
                 }
                 break;
 	default:
-		/* FIXME: this was added to prevent the compiler 
-		 * complaining about missing pcx, pcxs and pcxt
-		 * I'm assuming they have neither gsc nor runway */
 		break;
 	}
 }

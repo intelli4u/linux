@@ -30,7 +30,7 @@ struct dtc_file {
 	FILE *file;
 };
 
-#if ! defined(YYLTYPE) && ! defined(YYLTYPE_IS_DECLARED)
+#if !defined(YYLTYPE) && !defined(YYLTYPE_IS_DECLARED)
 typedef struct YYLTYPE {
     int first_line;
     int first_column;

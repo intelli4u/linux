@@ -2417,4 +2417,3 @@ MODULE_PARM_DESC(dongle_id, "Type-id of used dongle");
 
 module_init(nsc_ircc_init);
 module_exit(nsc_ircc_cleanup);
-

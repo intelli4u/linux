@@ -849,4 +849,3 @@ static inline void remove_debug_files (struct ohci_hcd *ohci)
 #endif
 
 /*-------------------------------------------------------------------------*/
-

@@ -956,7 +956,6 @@ enum ath5k_capability_type {
 };
 
 
-/* XXX: we *may* move cap_range stuff to struct wiphy */
 struct ath5k_capabilities {
 	/*
 	 * Supported PHY modes

@@ -768,7 +768,6 @@ found:
 	if (!swap_regbase_tmp)
 		printk(KERN_ERR "comedi%d: Swap not present\n", dev->minor);
 
-	/*---------------------------------------------- Workaround start ---*/
 	if (plx_regbase_tmp & 0x0080) {
 		printk(KERN_ERR "comedi%d: PLX-Bug detected\n", dev->minor);
 
@@ -797,7 +796,6 @@ found:
 				return -EIO;
 		}
 	}
-	/*--------------------------------------------- Workaround end -----*/
 
 	/* Read Meilhaus register base address [PCI_BASE_ADDRESS #2]. */
 

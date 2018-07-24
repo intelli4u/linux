@@ -214,7 +214,6 @@ static int qtd_copy_status (
 	/* serious "can't proceed" faults reported by the hardware */
 	if (token & QTD_STS_HALT) {
 		if (token & QTD_STS_BABBLE) {
-			/* FIXME "must" disable babbling device's port too */
 			status = -EOVERFLOW;
 		/* CERR nonzero + halt --> stall */
 		} else if (QTD_CERR(token)) {
@@ -861,7 +860,6 @@ qh_make (
 			qh->gap_uf = 1 + usb_calc_bus_time (urb->dev->speed,
 					is_input, 0, maxp) / (125 * 1000);
 
-			/* FIXME this just approximates SPLIT/CSPLIT times */
 			if (is_input) {		// SPLIT, gap, CSPLIT+DATA
 				qh->c_usecs = qh->usecs + HS_USECS (0);
 				qh->usecs = HS_USECS (1);

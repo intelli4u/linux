@@ -355,10 +355,6 @@ nx_fw_cmd_create_tx_ctx(struct netxen_adapter *adapter)
 		temp = le32_to_cpu(prsp->cds_ring.host_producer_crb);
 		tx_ring->crb_cmd_producer = netxen_get_ioaddr(adapter,
 				NETXEN_NIC_REG(temp - 0x200));
-#if 0
-		adapter->tx_state =
-			le32_to_cpu(prsp->host_ctx_state);
-#endif
 		adapter->tx_context_id =
 			le16_to_cpu(prsp->context_id);
 	} else {
@@ -790,4 +786,3 @@ done:
 		}
 	}
 }
-

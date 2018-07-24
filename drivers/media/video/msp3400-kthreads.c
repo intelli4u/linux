@@ -1120,4 +1120,3 @@ int msp_detect_stereo(struct i2c_client *client)
 	}
 	return 0;
 }
-

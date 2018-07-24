@@ -37,9 +37,7 @@
 #ifndef __RTMP_OS_H__
 #define __RTMP_OS_H__
 
-#ifdef LINUX
 #include "rt_linux.h"
-#endif /* LINUX // */
 
 /*
 	This data structure mainly strip some callback function defined in

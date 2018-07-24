@@ -409,9 +409,6 @@ static void rt2800usb_fill_rxdone(struct queue_entry *entry,
 	 */
 	skb_pull(entry->skb, RXINFO_DESC_SIZE);
 
-	/*
-	 * FIXME: we need to check for rx_pkt_len validity
-	 */
 	rxd = (__le32 *)(entry->skb->data + rx_pkt_len);
 
 	/*

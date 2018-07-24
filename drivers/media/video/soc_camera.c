@@ -981,10 +981,6 @@ static int soc_camera_probe(struct device *dev)
 		if (ret < 0)
 			goto eadddev;
 
-		/*
-		 * FIXME: this is racy, have to use driver-binding notification,
-		 * when it is available
-		 */
 		control = to_soc_camera_control(icd);
 		if (!control || !control->driver || !dev_get_drvdata(control) ||
 		    !try_module_get(control->driver->owner)) {

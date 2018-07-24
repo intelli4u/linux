@@ -422,7 +422,6 @@ cvmx_helper_link_info_t __cvmx_helper_sgmii_link_get(int ipd_port)
 	    cvmx_read_csr(CVMX_PCSX_MISCX_CTL_REG(index, interface));
 	if (pcs_misc_ctl_reg.s.mode) {
 		/* 1000BASE-X */
-		/* FIXME */
 	} else {
 		union cvmx_pcsx_miscx_ctl_reg pcsx_miscx_ctl_reg;
 		pcsx_miscx_ctl_reg.u64 =

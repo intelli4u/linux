@@ -188,13 +188,6 @@ lan_reply (MPT_ADAPTER *ioc, MPT_FRAME_HDR *mf, MPT_FRAME_HDR *reply)
 		// NOTE!  (Optimization) First case here is now caught in
 		//  mptbase.c::mpt_interrupt() routine and callcack here
 		//  is now skipped for this case!
-#if 0
-		case LAN_REPLY_FORM_MESSAGE_CONTEXT:
-//			dioprintk((KERN_INFO MYNAM "/lan_reply: "
-//				  "MessageContext turbo reply received\n"));
-			FreeReqFrame = 1;
-			break;
-#endif
 
 		case LAN_REPLY_FORM_SEND_SINGLE:
 //			dioprintk((MYNAM "/lan_reply: "

@@ -118,12 +118,6 @@ static void nbd_end_request(struct request *req)
 
 static void sock_shutdown(struct nbd_device *lo, int lock)
 {
-	/* Forcibly shutdown the socket causing all listeners
-	 * to error
-	 *
-	 * FIXME: This code is duplicated from sys_shutdown, but
-	 * there should be a more generic interface rather than
-	 * calling socket ops directly here */
 	if (lock)
 		mutex_lock(&lo->tx_lock);
 	if (lo->sock) {

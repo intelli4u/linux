@@ -194,5 +194,3 @@ unsigned long CRCdwGetCrc32Ex(unsigned char *pbyData, unsigned int cbByte, unsig
 {
     return CRCdwCrc32(pbyData, cbByte, dwPreCRC);
 }
-
-

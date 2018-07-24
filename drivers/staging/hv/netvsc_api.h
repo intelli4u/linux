@@ -83,7 +83,6 @@ struct hv_netvsc_packet {
 /* Represents the net vsc driver */
 struct netvsc_driver {
 	/* Must be the first field */
-	/* Which is a bug FIXME! */
 	struct hv_driver Base;
 
 	u32 RingBufferSize;

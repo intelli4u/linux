@@ -187,8 +187,6 @@ static void cafe_nand_cmdfunc(struct mtd_info *mtd, unsigned command,
 		command = NAND_CMD_READ0;
 	}
 
-	/* FIXME: Do we need to send read command before sending data
-	   for small-page chips, to position the buffer correctly? */
 
 	if (column != -1) {
 		cafe_writel(cafe, column, NAND_ADDR1);

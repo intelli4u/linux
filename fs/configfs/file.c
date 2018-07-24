@@ -341,4 +341,3 @@ int configfs_create_file(struct config_item * item, const struct configfs_attrib
 	return configfs_add_file(item->ci_dentry, attr,
 				 CONFIGFS_ITEM_ATTR);
 }
-

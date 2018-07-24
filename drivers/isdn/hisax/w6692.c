@@ -1,4 +1,4 @@
-/* $Id: w6692.c,v 1.18.2.4 2004/02/11 13:21:34 keil Exp $
+/* $Id: w6692.c,v 1.18.2.4 2004/02/11 13:21:34 Exp $
  *
  * Winbond W6692 specific routines
  *

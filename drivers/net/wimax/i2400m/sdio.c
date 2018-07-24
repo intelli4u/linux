@@ -115,19 +115,10 @@ int i2400ms_enable_function(struct i2400ms *i2400ms, unsigned maxtries)
 	unsigned tries = 0;
 
 	d_fnstart(3, dev, "(func %p)\n", func);
-	/* Setup timeout (FIXME: This needs to read the CIS table to
-	 * get a real timeout) and then wait for the device to signal
-	 * it is ready */
 	timeout = get_jiffies_64() + ioe_timeout * HZ;
 	err = -ENODEV;
 	while (err != 0 && time_before64(get_jiffies_64(), timeout)) {
 		sdio_claim_host(func);
-		/*
-		 * There is a sillicon bug on the IWMC3200, where the
-		 * IOE timeout will cause problems on Moorestown
-		 * platforms (system hang). We explicitly overwrite
-		 * func->enable_timeout here to work around the issue.
-		 */
 		if (i2400ms->iwmc3200)
 			func->enable_timeout = IWMC3200_IOR_TIMEOUT;
 		err = sdio_enable_func(func);
@@ -291,40 +282,6 @@ error_kzalloc:
 }
 
 
-/*
- * Reset a device at different levels (warm, cold or bus)
- *
- * @i2400ms: device descriptor
- * @reset_type: soft, warm or bus reset (I2400M_RT_WARM/SOFT/BUS)
- *
- * FIXME: not tested -- need to confirm expected effects
- *
- * Warm and cold resets get an SDIO reset if they fail (unimplemented)
- *
- * Warm reset:
- *
- * The device will be fully reset internally, but won't be
- * disconnected from the bus (so no reenumeration will
- * happen). Firmware upload will be necessary.
- *
- * The device will send a reboot barker that will trigger the driver
- * to reinitialize the state via __i2400m_dev_reset_handle.
- *
- *
- * Cold and bus reset:
- *
- * The device will be fully reset internally, disconnected from the
- * bus an a reenumeration will happen. Firmware upload will be
- * necessary. Thus, we don't do any locking or struct
- * reinitialization, as we are going to be fully disconnected and
- * reenumerated.
- *
- * Note we need to return -ENODEV if a warm reset was requested and we
- * had to resort to a bus reset. See i2400m_op_reset(), wimax_reset()
- * and wimax_dev->op_reset.
- *
- * WARNING: no driver state saved/fixed
- */
 static
 int i2400ms_bus_reset(struct i2400m *i2400m, enum i2400m_reset_type rt)
 {

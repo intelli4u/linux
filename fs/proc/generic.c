@@ -221,7 +221,6 @@ proc_file_write(struct file *file, const char __user *buffer,
 		pde->pde_users++;
 		spin_unlock(&pde->pde_unload_lock);
 
-		/* FIXME: does this routine need ppos?  probably... */
 		rv = pde->write_proc(file, buffer, count, pde->data);
 		pde_users_dec(pde);
 	}

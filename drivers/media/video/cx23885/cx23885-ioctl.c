@@ -150,7 +150,6 @@ int cx23885_g_register(struct file *file, void *fh,
 		}
 	}
 
-	/* FIXME - any error returns should not be ignored */
 	call_all(dev, core, g_register, reg);
 	return 0;
 }
@@ -201,7 +200,6 @@ int cx23885_s_register(struct file *file, void *fh,
 		}
 	}
 
-	/* FIXME - any error returns should not be ignored */
 	call_all(dev, core, s_register, reg);
 	return 0;
 }

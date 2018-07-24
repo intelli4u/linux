@@ -158,4 +158,3 @@ MODULE_VERSION(DRV_VERSION);
 
 module_init(rz1000_init);
 module_exit(rz1000_exit);
-

@@ -34,9 +34,6 @@ static DEFINE_MUTEX(write_lock);
  *
  * Otherwise the fifo storage will be a part of the fifo structure.
  */
-#if 0
-#define DYNAMIC
-#endif
 
 /*
  * struct kfifo_rec_ptr_1 and  STRUCT_KFIFO_REC_1 can handle records of a

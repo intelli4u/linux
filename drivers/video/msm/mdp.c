@@ -285,7 +285,6 @@ int mdp_blit(struct mdp_device *mdp_dev, struct fb_info *fb,
 	struct mdp_info *mdp = container_of(mdp_dev, struct mdp_info, mdp_dev);
 	struct file *src_file = 0, *dst_file = 0;
 
-	/* WORKAROUND FOR HARDWARE BUG IN BG TILE FETCH */
 	if (unlikely(req->src_rect.h == 0 ||
 		     req->src_rect.w == 0)) {
 		printk(KERN_ERR "mpd_ppp: src img of zero size!\n");

@@ -42,9 +42,6 @@
 # define LOAD_IPIPE_IPEND
 #endif
 
-/*
- * Workaround for anomalies 05000283 and 05000315
- */
 #if ANOMALY_05000283 || ANOMALY_05000315
 # define ANOMALY_283_315_WORKAROUND(preg, dreg)		\
 	cc = dreg == dreg;				\
@@ -99,20 +96,6 @@
     jump __common_int_entry;
 #else /* CONFIG_EXACT_HWERR is defined */
 
-/* if we want hardware error to be exact, we need to do a SSYNC (which forces
- * read/writes to complete to the memory controllers), and check to see that
- * caused a pending HW error condition. If so, we assume it was caused by user
- * space, by setting the same interrupt that we are in (so it goes off again)
- * and context restore, and a RTI (without servicing anything). This should
- * cause the pending HWERR to fire, and when that is done, this interrupt will
- * be re-serviced properly.
- * As you can see by the code - we actually need to do two SSYNCS - one to
- * make sure the read/writes complete, and another to make sure the hardware
- * error is recognized by the core.
- *
- * The extra nop before the SSYNC is to make sure we work around 05000244,
- * since the 283/315 workaround includes a branch to the end
- */
 #define INTERRUPT_ENTRY(N)						\
     [--sp] = SYSCFG;							\
     [--sp] = P0;	/*orig_p0*/					\

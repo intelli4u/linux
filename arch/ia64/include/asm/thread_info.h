@@ -22,7 +22,7 @@
  * without having to do pointer masking.
  */
 struct thread_info {
-	struct task_struct *task;	/* XXX not really needed, except for dup_task_struct() */
+	struct task_struct *task;
 	struct exec_domain *exec_domain;/* execution domain */
 	__u32 flags;			/* thread_info flags (see TIF_*) */
 	__u32 cpu;			/* current CPU */

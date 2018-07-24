@@ -174,11 +174,7 @@ static int gvp11_bus_reset(struct scsi_cmnd *cmd)
 {
 	struct Scsi_Host *instance = cmd->device->host;
 
-	/* FIXME perform bus-specific reset */
 
-	/* FIXME 2: shouldn't we no-op this function (return
-	   FAILED), and fall back to host reset function,
-	   wd33c93_host_reset ? */
 
 	spin_lock_irq(instance->host_lock);
 	wd33c93_host_reset(cmd);

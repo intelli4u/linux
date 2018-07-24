@@ -112,33 +112,6 @@ hdw_sn_get (hdw_info_t * hi, int brdno)
     /* read EEPROM with largest known format size... */
     pmc_eeprom_read_buffer (addr, 0, (char *) hi->mfg_info.data, sizeof (FLD_TYPE2));
 
-#if 0
-    {
-        unsigned char *ucp = (unsigned char *) &hi->mfg_info.data;
-
-        pr_info("eeprom[00]:  %02x %02x %02x %02x  %02x %02x %02x %02x\n",
-                *(ucp + 0), *(ucp + 1), *(ucp + 2), *(ucp + 3), *(ucp + 4), *(ucp + 5), *(ucp + 6), *(ucp + 7));
-        pr_info("eeprom[08]:  %02x %02x %02x %02x  %02x %02x %02x %02x\n",
-                *(ucp + 8), *(ucp + 9), *(ucp + 10), *(ucp + 11), *(ucp + 12), *(ucp + 13), *(ucp + 14), *(ucp + 15));
-        pr_info("eeprom[16]:  %02x %02x %02x %02x  %02x %02x %02x %02x\n",
-                *(ucp + 16), *(ucp + 17), *(ucp + 18), *(ucp + 19), *(ucp + 20), *(ucp + 21), *(ucp + 22), *(ucp + 23));
-        pr_info("eeprom[24]:  %02x %02x %02x %02x  %02x %02x %02x %02x\n",
-                *(ucp + 24), *(ucp + 25), *(ucp + 26), *(ucp + 27), *(ucp + 28), *(ucp + 29), *(ucp + 30), *(ucp + 31));
-        pr_info("eeprom[32]:  %02x %02x %02x %02x  %02x %02x %02x %02x\n",
-                *(ucp + 32), *(ucp + 33), *(ucp + 34), *(ucp + 35), *(ucp + 36), *(ucp + 37), *(ucp + 38), *(ucp + 39));
-        pr_info("eeprom[40]:  %02x %02x %02x %02x  %02x %02x %02x %02x\n",
-                *(ucp + 40), *(ucp + 41), *(ucp + 42), *(ucp + 43), *(ucp + 44), *(ucp + 45), *(ucp + 46), *(ucp + 47));
-    }
-#endif
-#if 0
-    pr_info("sn: %x %x %x %x %x %x\n",
-            hi->mfg_info.Serial[0],
-            hi->mfg_info.Serial[1],
-            hi->mfg_info.Serial[2],
-            hi->mfg_info.Serial[3],
-            hi->mfg_info.Serial[4],
-            hi->mfg_info.Serial[5]);
-#endif
 
     if ((hi->promfmt = pmc_verify_cksum (&hi->mfg_info.data)) == PROM_FORMAT_Unk)
     {
@@ -383,9 +356,6 @@ c4hw_attach_all (void)
             drvr_state = SBE_DRVR_DOWN;
             cleanup_ioremap ();
             /* NOTE: c4_add_dev() does its own device cleanup */
-#if 0
-            cleanup_devs ();
-#endif
             return error_flag;      /* error_flag set w/in add_dev() */
         }
         show_two (hi, i);           /* displays found information */

@@ -79,7 +79,6 @@ int os_access(const char *file, int mode)
 	return 0;
 }
 
-/* FIXME? required only by hostaudio (because it passes ioctls verbatim) */
 int os_ioctl_generic(int fd, unsigned int cmd, unsigned long arg)
 {
 	int err;
@@ -91,7 +90,6 @@ int os_ioctl_generic(int fd, unsigned int cmd, unsigned long arg)
 	return err;
 }
 
-/* FIXME: ensure namebuf in os_get_if_name is big enough */
 int os_get_ifname(int fd, char* namebuf)
 {
 	if (ioctl(fd, SIOCGIFNAME, namebuf) < 0)

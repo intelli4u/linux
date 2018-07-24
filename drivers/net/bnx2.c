@@ -6091,7 +6091,6 @@ bnx2_timer(unsigned long data)
 	bp->stats_blk->stat_FwRxDrop =
 		bnx2_reg_rd_ind(bp, BNX2_FW_RX_DROP_COUNT);
 
-	/* workaround occasional corrupted counters */
 	if ((bp->flags & BNX2_FLAG_BROKEN_STATS) && bp->stats_ticks)
 		REG_WR(bp, BNX2_HC_COMMAND, bp->hc_cmd |
 					    BNX2_HC_COMMAND_STATS_NOW);
@@ -8596,6 +8595,3 @@ static void __exit bnx2_cleanup(void)
 
 module_init(bnx2_init);
 module_exit(bnx2_cleanup);
-
-
-

@@ -99,23 +99,23 @@ extern void machvec_setup (char **);
 extern void machvec_timer_interrupt (int, void *);
 extern void machvec_tlb_migrate_finish (struct mm_struct *);
 
-# if defined (CONFIG_IA64_HP_SIM)
+# if defined(CONFIG_IA64_HP_SIM)
 #  include <asm/machvec_hpsim.h>
-# elif defined (CONFIG_IA64_DIG)
+# elif defined(CONFIG_IA64_DIG)
 #  include <asm/machvec_dig.h>
 # elif defined(CONFIG_IA64_DIG_VTD)
 #  include <asm/machvec_dig_vtd.h>
-# elif defined (CONFIG_IA64_HP_ZX1)
+# elif defined(CONFIG_IA64_HP_ZX1)
 #  include <asm/machvec_hpzx1.h>
-# elif defined (CONFIG_IA64_HP_ZX1_SWIOTLB)
+# elif defined(CONFIG_IA64_HP_ZX1_SWIOTLB)
 #  include <asm/machvec_hpzx1_swiotlb.h>
-# elif defined (CONFIG_IA64_SGI_SN2)
+# elif defined(CONFIG_IA64_SGI_SN2)
 #  include <asm/machvec_sn2.h>
-# elif defined (CONFIG_IA64_SGI_UV)
+# elif defined(CONFIG_IA64_SGI_UV)
 #  include <asm/machvec_uv.h>
-# elif defined (CONFIG_IA64_XEN_GUEST)
+# elif defined(CONFIG_IA64_XEN_GUEST)
 #  include <asm/machvec_xen.h>
-# elif defined (CONFIG_IA64_GENERIC)
+# elif defined(CONFIG_IA64_GENERIC)
 
 # ifdef MACHVEC_PLATFORM_HEADER
 #  include MACHVEC_PLATFORM_HEADER

@@ -1238,5 +1238,3 @@ bfa_fcs_port_ns_boot_target_disc(struct bfa_fcs_port_s *port)
 		bfa_assert(rport);
 	}
 }
-
-

@@ -529,11 +529,6 @@ static int __devinit hp100_probe1(struct net_device *dev, int ioaddr,
 	 *   0x2260 -> EISA HP, BusMaster (Shasta Chip)
 	 */
 
-#if 0
-	local_mode = 0x2270;
-	hp100_outw(0xfefe, OPTION_LSW);
-	hp100_outw(local_mode | HP100_SET_LB | HP100_SET_HB, OPTION_LSW);
-#endif
 
 	/* hp100_mode value maybe used in future by another card */
 	local_mode = hp100_mode;
@@ -2538,7 +2533,6 @@ static int hp100_down_vg_link(struct net_device *dev)
 
 	/* To prevent condition where Rev 1 VG MAC and old hubs do not complete */
 	/* logout under traffic (even though all the status bits are cleared),  */
-	/* do this workaround to get the Rev 1 MAC in its idle state */
 	if (lp->chip == HP100_CHIPID_LASSEN) {
 		/* Reset VG MAC to insure it leaves the logoff state even if */
 		/* the Hub is still emitting tones */

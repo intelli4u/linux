@@ -312,10 +312,6 @@ int netlbl_domhsh_add(struct netlbl_dom_map *entry,
 	struct netlbl_af6list *tmp6;
 #endif /* IPv6 */
 
-	/* XXX - we can remove this RCU read lock as the spinlock protects the
-	 *       entire function, but before we do we need to fixup the
-	 *       netlbl_af[4,6]list RCU functions to do "the right thing" with
-	 *       respect to rcu_dereference() when only a spinlock is held. */
 	rcu_read_lock();
 	spin_lock(&netlbl_domhsh_lock);
 	if (entry->domain != NULL)

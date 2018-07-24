@@ -73,7 +73,6 @@ static void prom_sync_me(void)
 {
 	unsigned long prom_tbr, flags;
 
-	/* XXX Badly broken. FIX! - Anton */
 	local_irq_save(flags);
 	__asm__ __volatile__("rd %%tbr, %0\n\t" : "=r" (prom_tbr));
 	__asm__ __volatile__("wr %0, 0x0, %%tbr\n\t"
@@ -159,10 +158,6 @@ static void __init boot_flags_init(char *commands)
 			continue;
 		}
 		if (!strncmp(commands, "mem=", 4)) {
-			/*
-			 * "mem=XXX[kKmM] overrides the PROM-reported
-			 * memory size.
-			 */
 			cmdline_memory_size = simple_strtoul(commands + 4,
 						     &commands, 0);
 			if (*commands == 'K' || *commands == 'k') {

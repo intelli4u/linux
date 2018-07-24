@@ -384,11 +384,6 @@ static int hist_browser__show_callchain_node(struct hist_browser *self,
 	list_for_each_entry(chain, &node->val, list) {
 		char ipstr[BITS_PER_LONG / 4 + 1], *s;
 		int color;
-		/*
-		 * FIXME: This should be moved to somewhere else,
-		 * probably when the callchain is created, so as not to
-		 * traverse it all over again
-		 */
 		chain->ms.has_children = rb_first(&node->rb_root) != NULL;
 		folded_sign = callchain_list__folded(chain);
 

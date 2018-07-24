@@ -117,7 +117,7 @@ are not supported.
 
 static const struct ni_board_struct ni_boards[] = {
 	{.device_id = 44,
-	 .isapnp_id = 0x0000,	/* XXX unknown */
+	 .isapnp_id = 0x0000,
 	 .name = "at-mio-16e-1",
 	 .n_adchan = 16,
 	 .adbits = 12,
@@ -231,7 +231,7 @@ static const struct ni_board_struct ni_boards[] = {
 	 .has_8255 = 0,
 	 },
 	{.device_id = 50,
-	 .isapnp_id = 0x0000,	/* XXX unknown */
+	 .isapnp_id = 0x0000,
 	 .name = "at-mio-16xe-10",
 	 .n_adchan = 16,
 	 .adbits = 16,
@@ -250,7 +250,7 @@ static const struct ni_board_struct ni_boards[] = {
 	 .has_8255 = 0,
 	 },
 	{.device_id = 51,
-	 .isapnp_id = 0x0000,	/* XXX unknown */
+	 .isapnp_id = 0x0000,
 	 .name = "at-ai-16xe-10",
 	 .n_adchan = 16,
 	 .adbits = 16,

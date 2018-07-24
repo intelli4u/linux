@@ -107,4 +107,3 @@ extern struct bfa_module_s hal_mod_fcpim;
 extern struct bfa_module_s hal_mod_pbind;
 
 #endif /* __BFA_PRIV_H__ */
-

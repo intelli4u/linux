@@ -427,4 +427,3 @@ void __init pci_pcbios_init(void)
 		pci_bios_present = 1;
 	}
 }
-

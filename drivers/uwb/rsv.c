@@ -584,15 +584,6 @@ out:
 }
 EXPORT_SYMBOL_GPL(uwb_rsv_establish);
 
-/**
- * uwb_rsv_modify - modify an already established reservation
- * @rsv: the reservation to modify
- * @max_mas: new maximum MAS to reserve
- * @min_mas: new minimum MAS to reserve
- * @max_interval: new max_interval to use
- *
- * FIXME: implement this once there are PALs that use it.
- */
 int uwb_rsv_modify(struct uwb_rsv *rsv, int max_mas, int min_mas, int max_interval)
 {
 	return -ENOSYS;
@@ -766,10 +757,8 @@ static struct uwb_rsv *uwb_rsv_new_target(struct uwb_rc *rc,
 	state = rsv->state;
 	rsv->state = UWB_RSV_STATE_NONE;
 
-	/* FIXME: do something sensible here */
 	if (state == UWB_RSV_STATE_T_ACCEPTED
 	    && uwb_drp_avail_reserve_pending(rc, &rsv->mas) == -EBUSY) {
-		/* FIXME: do something sensible here */
 	} else {
 		uwb_rsv_set_state(rsv, state);
 	}
@@ -818,13 +807,6 @@ struct uwb_rsv *uwb_rsv_find(struct uwb_rc *rc, struct uwb_dev *src,
 	return NULL;
 }
 
-/*
- * Go through all the reservations and check for timeouts and (if
- * necessary) update their DRP IEs.
- *
- * FIXME: look at building the SET_DRP_IE command here rather than
- * having to rescan the list in uwb_rc_send_all_drp_ie().
- */
 static bool uwb_rsv_update_all(struct uwb_rc *rc)
 {
 	struct uwb_rsv *rsv, *t;
@@ -847,28 +829,6 @@ void uwb_rsv_queue_update(struct uwb_rc *rc)
 	queue_delayed_work(rc->rsv_workq, &rc->rsv_update_work, usecs_to_jiffies(delay_us));
 }
 
-/**
- * uwb_rsv_sched_update - schedule an update of the DRP IEs
- * @rc: the radio controller.
- *
- * To improve performance and ensure correctness with [ECMA-368] the
- * number of SET-DRP-IE commands that are done are limited.
- *
- * DRP IEs update come from two sources: DRP events from the hardware
- * which all occur at the beginning of the superframe ('syncronous'
- * events) and reservation establishment/termination requests from
- * PALs or timers ('asynchronous' events).
- *
- * A delayed work ensures that all the synchronous events result in
- * one SET-DRP-IE command.
- *
- * Additional logic (the set_drp_ie_pending and rsv_updated_postponed
- * flags) will prevent an asynchrous event starting a SET-DRP-IE
- * command if one is currently awaiting a response.
- *
- * FIXME: this does leave a window where an asynchrous event can delay
- * the SET-DRP-IE for a synchronous event by one superframe.
- */
 void uwb_rsv_sched_update(struct uwb_rc *rc)
 {
 	spin_lock_bh(&rc->rsvs_lock);

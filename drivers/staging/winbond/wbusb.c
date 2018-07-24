@@ -808,7 +808,7 @@ static int wb35_probe(struct usb_interface *intf,
 		SET_IEEE80211_PERM_ADDR(dev, dev_addr);
 	}
 
-	dev->extra_tx_headroom = 12;	/* FIXME */
+	dev->extra_tx_headroom = 12;
 	dev->flags = IEEE80211_HW_SIGNAL_UNSPEC;
 	dev->wiphy->interface_modes = BIT(NL80211_IFTYPE_STATION);
 
@@ -836,7 +836,6 @@ error:
 static void hal_halt(struct hw_data *pHwData)
 {
 	del_timer_sync(&pHwData->LEDTimer);
-	/* XXX: Wait for Timer DPC exit. */
 	msleep(100);
 	Wb35Rx_destroy(pHwData);
 	Wb35Tx_destroy(pHwData);

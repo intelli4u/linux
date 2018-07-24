@@ -471,17 +471,8 @@ struct cardstate {
 					   processed */
 	int curchannel;			/* channel those commands are meant
 					   for */
-	int commands_pending;		/* flag(s) in xxx.commands_pending have
-					   been set */
+	int commands_pending;
 	struct tasklet_struct event_tasklet;
-					/* tasklet for serializing AT commands.
-					 * Scheduled
-					 *   -> for modem reponses (and
-					 *      incoming data for M10x)
-					 *   -> on timeout
-					 *   -> after setting bits in
-					 *      xxx.at_state.pending_command
-					 *      (e.g. command from LL) */
 	struct tasklet_struct write_tasklet;
 					/* tasklet for serial output
 					 * (not used in base driver) */
@@ -581,19 +572,14 @@ struct gigaset_ops {
 	 * Should call gigaset_bchannel_down(), when finished. */
 	int (*close_bchannel)(struct bc_state *bcs);
 
-	/* Called by gigaset_initcs() for setting up bcs->hw.xxx */
 	int (*initbcshw)(struct bc_state *bcs);
 
-	/* Called by gigaset_freecs() for freeing bcs->hw.xxx */
 	int (*freebcshw)(struct bc_state *bcs);
 
-	/* Called by gigaset_bchannel_down() for resetting bcs->hw.xxx */
 	void (*reinitbcshw)(struct bc_state *bcs);
 
-	/* Called by gigaset_initcs() for setting up cs->hw.xxx */
 	int (*initcshw)(struct cardstate *cs);
 
-	/* Called by gigaset_freecs() for freeing cs->hw.xxx */
 	void (*freecshw)(struct cardstate *cs);
 
 	/* Called from common.c/interface.c for additional serial port

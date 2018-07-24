@@ -2554,8 +2554,6 @@ static int __devinit qe_udc_probe(struct platform_device *ofdev,
 	 * leave usbintr reg untouched*/
 	qe_udc_reg_init(udc_controller);
 
-	/* here comes the stand operations for probe
-	 * set the qe_udc->gadget.xxx */
 	udc_controller->gadget.ops = &qe_gadget_ops;
 
 	/* gadget.ep0 is a pointer */
@@ -2800,4 +2798,3 @@ module_exit(qe_udc_exit);
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_AUTHOR(DRIVER_AUTHOR);
 MODULE_LICENSE("GPL");
-

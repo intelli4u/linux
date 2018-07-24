@@ -152,8 +152,6 @@ static int s3c_dma_hw_params(struct snd_pcm_substream *substream,
 
 	pr_debug("Entered %s\n", __func__);
 
-	/* return if this is a bufferless transfer e.g.
-	 * codec <--> BT codec or GSM modem -- lg FIXME */
 	if (!dma)
 		return 0;
 
@@ -223,8 +221,6 @@ static int s3c_dma_prepare(struct snd_pcm_substream *substream)
 
 	pr_debug("Entered %s\n", __func__);
 
-	/* return if this is a bufferless transfer e.g.
-	 * codec <--> BT codec or GSM modem -- lg FIXME */
 	if (!prtd->params)
 		return 0;
 

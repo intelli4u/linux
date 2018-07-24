@@ -218,30 +218,6 @@ void irlmp_expire_discoveries(hashbin_t *log, __u32 saddr, int force)
 	kfree(buffer);
 }
 
-#if 0
-/*
- * Function irlmp_dump_discoveries (log)
- *
- *    Print out all discoveries in log
- *
- */
-void irlmp_dump_discoveries(hashbin_t *log)
-{
-	discovery_t *discovery;
-
-	IRDA_ASSERT(log != NULL, return;);
-
-	discovery = (discovery_t *) hashbin_get_first(log);
-	while (discovery != NULL) {
-		IRDA_DEBUG(0, "Discovery:\n");
-		IRDA_DEBUG(0, "  daddr=%08x\n", discovery->data.daddr);
-		IRDA_DEBUG(0, "  saddr=%08x\n", discovery->data.saddr);
-		IRDA_DEBUG(0, "  nickname=%s\n", discovery->data.info);
-
-		discovery = (discovery_t *) hashbin_get_next(log);
-	}
-}
-#endif
 
 /*
  * Function irlmp_copy_discoveries (log, pn, mask)
@@ -364,31 +340,6 @@ static int discovery_seq_show(struct seq_file *seq, void *v)
 			   discovery->data.info,
 			   discovery->data.hints[0],
 			   discovery->data.hints[1]);
-#if 0
-		if ( discovery->data.hints[0] & HINT_PNP)
-			seq_puts(seq, "PnP Compatible ");
-		if ( discovery->data.hints[0] & HINT_PDA)
-			seq_puts(seq, "PDA/Palmtop ");
-		if ( discovery->data.hints[0] & HINT_COMPUTER)
-			seq_puts(seq, "Computer ");
-		if ( discovery->data.hints[0] & HINT_PRINTER)
-			seq_puts(seq, "Printer ");
-		if ( discovery->data.hints[0] & HINT_MODEM)
-			seq_puts(seq, "Modem ");
-		if ( discovery->data.hints[0] & HINT_FAX)
-			seq_puts(seq, "Fax ");
-		if ( discovery->data.hints[0] & HINT_LAN)
-			seq_puts(seq, "LAN Access ");
-
-		if ( discovery->data.hints[1] & HINT_TELEPHONY)
-			seq_puts(seq, "Telephony ");
-		if ( discovery->data.hints[1] & HINT_FILE_SERVER)
-			seq_puts(seq, "File Server ");
-		if ( discovery->data.hints[1] & HINT_COMM)
-			seq_puts(seq, "IrCOMM ");
-		if ( discovery->data.hints[1] & HINT_OBEX)
-			seq_puts(seq, "IrOBEX ");
-#endif
 		seq_printf(seq,", saddr: 0x%08x, daddr: 0x%08x\n\n",
 			       discovery->data.saddr,
 			       discovery->data.daddr);

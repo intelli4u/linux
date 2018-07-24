@@ -300,4 +300,3 @@ int iforce_get_id_packet(struct iforce *iforce, char *packet)
 
 	return -(iforce->edata[0] != packet[0]);
 }
-

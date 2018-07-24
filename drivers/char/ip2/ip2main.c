@@ -1323,7 +1323,6 @@ static void do_input(struct work_struct *work)
 // code duplicated from n_tty (ldisc)
 static inline void  isig(int sig, struct tty_struct *tty, int flush)
 {
-	/* FIXME: This is completely bogus */
 	if (tty->pgrp)
 		kill_pgrp(tty->pgrp, sig, 1);
 	if (flush || !L_NOFLSH(tty)) {
@@ -2043,12 +2042,6 @@ static int ip2_tiocmget(struct tty_struct *tty, struct file *file)
 	if (pCh == NULL)
 		return -ENODEV;
 
-/*
-	FIXME - the following code is causing a NULL pointer dereference in
-	2.3.51 in an interrupt handler.  It's suppose to prompt the board
-	to return the DSS signal status immediately.  Why doesn't it do
-	the same thing in 2.2.14?
-*/
 
 /*	This thing is still busted in the 1.2.12 driver on 2.4.x
 	and even hoses the serial console so the oops can be trapped.

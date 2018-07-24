@@ -3134,5 +3134,3 @@ struct stats_indication_flags {
 	u32 collect_eth;
 	u32 collect_toe;
 };
-
-

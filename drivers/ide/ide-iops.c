@@ -244,12 +244,6 @@ u8 eighty_ninty_three(ide_drive_t *drive)
 	if (hwif->cbl != ATA_CBL_PATA80 && !ivb)
 		goto no_80w;
 
-	/*
-	 * FIXME:
-	 * - change master/slave IDENTIFY order
-	 * - force bit13 (80c cable present) check also for !ivb devices
-	 *   (unless the slave device is pre-ATA3)
-	 */
 	if (id[ATA_ID_HW_CONFIG] & 0x4000)
 		return 1;
 
@@ -490,12 +484,6 @@ void ide_execute_command(ide_drive_t *drive, struct ide_cmd *cmd,
 	    (drive->atapi_flags & IDE_AFLAG_DRQ_INTERRUPT))
 		__ide_set_handler(drive, handler, timeout);
 	hwif->tp_ops->exec_command(hwif, cmd->tf.command);
-	/*
-	 * Drive takes 400nS to respond, we must avoid the IRQ being
-	 * serviced before that.
-	 *
-	 * FIXME: we could skip this delay with care on non shared devices
-	 */
 	ndelay(400);
 	spin_unlock_irqrestore(&hwif->lock, flags);
 }

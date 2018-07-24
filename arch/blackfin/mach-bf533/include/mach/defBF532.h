@@ -64,9 +64,6 @@
 #define BFIN_UART_LCR			0xFFC0040C	/* Line Control Register */
 #define BFIN_UART_MCR			0xFFC00410	/* Modem Control Register */
 #define BFIN_UART_LSR			0xFFC00414	/* Line Status Register */
-#if 0
-#define BFIN_UART_MSR			0xFFC00418	/* Modem Status Register (UNUSED in ADSP-BF532) */
-#endif
 #define BFIN_UART_SCR			0xFFC0041C	/* SCR Scratch Register */
 #define BFIN_UART_GCTL			0xFFC00424	/* Global Control Register */
 

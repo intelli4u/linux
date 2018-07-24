@@ -56,7 +56,7 @@ void __init at91_gpio_leds(struct gpio_led *leds, int nr) {}
 
 /* ------------------------------------------------------------------------- */
 
-#if defined (CONFIG_LEDS_ATMEL_PWM)
+#if defined(CONFIG_LEDS_ATMEL_PWM)
 
 /*
  * PWM Leds

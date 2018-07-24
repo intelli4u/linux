@@ -1,16 +1,4 @@
-/*
- * linux/fs/lockd/svc.c
- *
- * This is the central lockd service.
- *
- * FIXME: Separate the lockd NFS server functionality from the lockd NFS
- * 	  client functionality. Oh why didn't Sun create two separate
- *	  services in the first place?
- *
- * Authors:	Olaf Kirch (okir@monad.swb.de)
- *
- * Copyright (C) 1995, 1996 Olaf Kirch <okir@monad.swb.de>
- */
+
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -130,13 +118,6 @@ lockd(void *vrqstp)
 
 	dprintk("NFS locking service started (ver " LOCKD_VERSION ").\n");
 
-	/*
-	 * FIXME: it would be nice if lockd didn't spend its entire life
-	 * running under the BKL. At the very least, it would be good to
-	 * have someone clarify what it's intended to protect here. I've
-	 * seen some handwavy posts about posix locking needing to be
-	 * done under the BKL, but it's far from clear.
-	 */
 	lock_kernel();
 
 	if (!nlm_timeout)
@@ -524,7 +505,6 @@ static int __init init_nlm(void)
 
 static void __exit exit_nlm(void)
 {
-	/* FIXME: delete all NLM clients */
 	nlm_shutdown_hosts();
 #ifdef CONFIG_SYSCTL
 	unregister_sysctl_table(nlm_sysctl_table);

@@ -947,12 +947,6 @@ void ieee80211_sta_ps_deliver_poll_response(struct sta_info *sta)
 			sta_info_clear_tim_bit(sta);
 #ifdef CONFIG_MAC80211_VERBOSE_PS_DEBUG
 	} else {
-		/*
-		 * FIXME: This can be the result of a race condition between
-		 *	  us expiring a frame and the station polling for it.
-		 *	  Should we send it a null-func frame indicating we
-		 *	  have nothing buffered for it?
-		 */
 		printk(KERN_DEBUG "%s: STA %pM sent PS Poll even "
 		       "though there are no buffered frames for it\n",
 		       sdata->name, sta->sta.addr);

@@ -178,7 +178,6 @@ static void __init celleb_setup_arch_native(void)
 
 	cbe_pervasive_init();
 
-	/* XXX: nvram initialization should be added */
 
 	celleb_setup_arch_common();
 }

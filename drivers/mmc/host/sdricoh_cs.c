@@ -346,7 +346,6 @@ static void sdricoh_request(struct mmc_host *mmc, struct mmc_request *mrq)
 			cmd->error = -EINVAL;
 		}
 	}
-	/* FIXME check busy flag */
 
 	mmc_request_done(mmc, mrq);
 	dev_dbg(dev, "=============================\n");
@@ -437,8 +436,6 @@ static int sdricoh_init_mmc(struct pci_dev *pci_dev,
 
 	mmc->ops = &sdricoh_ops;
 
-	/* FIXME: frequency and voltage handling is done by the controller
-	 */
 	mmc->f_min = 450000;
 	mmc->f_max = 24000000;
 	mmc->ocr_avail = MMC_VDD_32_33 | MMC_VDD_33_34;

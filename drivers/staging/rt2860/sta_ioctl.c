@@ -1472,17 +1472,17 @@ rt_ioctl_giwencode(struct net_device *dev,
 		memcpy(key, pAdapter->SharedKey[BSS0][kid - 1].Key,
 		       erq->length);
 		/*if ((kid == pAdapter->PortCfg.DefaultKeyId)) */
-		/*erq->flags |= IW_ENCODE_ENABLED; */	/* XXX */
+		/*erq->flags |= IW_ENCODE_ENABLED; */
 		if (pAdapter->StaCfg.AuthMode == Ndis802_11AuthModeShared)
-			erq->flags |= IW_ENCODE_RESTRICTED;	/* XXX */
+			erq->flags |= IW_ENCODE_RESTRICTED;
 		else
-			erq->flags |= IW_ENCODE_OPEN;	/* XXX */
+			erq->flags |= IW_ENCODE_OPEN;
 
 	} else if (kid == 0) {
 		if (pAdapter->StaCfg.AuthMode == Ndis802_11AuthModeShared)
-			erq->flags |= IW_ENCODE_RESTRICTED;	/* XXX */
+			erq->flags |= IW_ENCODE_RESTRICTED;
 		else
-			erq->flags |= IW_ENCODE_OPEN;	/* XXX */
+			erq->flags |= IW_ENCODE_OPEN;
 		erq->length =
 		    pAdapter->SharedKey[BSS0][pAdapter->StaCfg.DefaultKeyId].
 		    KeyLen;
@@ -1491,11 +1491,11 @@ rt_ioctl_giwencode(struct net_device *dev,
 		       Key, erq->length);
 		/* copy default key ID */
 		if (pAdapter->StaCfg.AuthMode == Ndis802_11AuthModeShared)
-			erq->flags |= IW_ENCODE_RESTRICTED;	/* XXX */
+			erq->flags |= IW_ENCODE_RESTRICTED;
 		else
-			erq->flags |= IW_ENCODE_OPEN;	/* XXX */
+			erq->flags |= IW_ENCODE_OPEN;
 		erq->flags = pAdapter->StaCfg.DefaultKeyId + 1;	/* NB: base 1 */
-		erq->flags |= IW_ENCODE_ENABLED;	/* XXX */
+		erq->flags |= IW_ENCODE_ENABLED;
 	}
 
 	return 0;

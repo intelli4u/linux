@@ -264,4 +264,3 @@
 	.macro	copy_abort_end
 	ldmfd	sp!, {r4, pc}
 	.endm
-

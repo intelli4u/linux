@@ -40,7 +40,6 @@ static struct v4l2_file_operations cx18_v4l2_enc_fops = {
 	.owner = THIS_MODULE,
 	.read = cx18_v4l2_read,
 	.open = cx18_v4l2_open,
-	/* FIXME change to video_ioctl2 if serialization lock can be removed */
 	.ioctl = cx18_v4l2_ioctl,
 	.release = cx18_v4l2_close,
 	.poll = cx18_v4l2_enc_poll,
@@ -730,7 +729,6 @@ int cx18_start_v4l2_encode_stream(struct cx18_stream *s)
 		else
 			cx18_vapi(cx, CX18_CPU_CAPTURE_STOP, 1, s->handle);
 		clear_bit(CX18_F_S_STREAMING, &s->s_flags);
-		/* FIXME - CX18_F_S_STREAMOFF as well? */
 		cx18_vapi(cx, CX18_CPU_DE_RELEASE_MDL, 1, s->handle);
 		cx18_vapi(cx, CX18_DESTROY_TASK, 1, s->handle);
 		s->handle = CX18_INVALID_TASK_HANDLE;

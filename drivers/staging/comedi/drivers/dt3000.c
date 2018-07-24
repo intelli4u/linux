@@ -386,7 +386,6 @@ static void dt3k_writesingle(struct comedi_device *dev, unsigned int subsys,
 
 static int debug_n_ints = 0;
 
-/* FIXME! Assumes shared interrupt is for this card. */
 /* What's this debug_n_ints stuff? Obviously needs some work... */
 static irqreturn_t dt3k_interrupt(int irq, void *d)
 {
@@ -719,7 +718,6 @@ static int dt3k_ai_insn(struct comedi_device *dev, struct comedi_subdevice *s,
 
 	chan = CR_CHAN(insn->chanspec);
 	gain = CR_RANGE(insn->chanspec);
-	/* XXX docs don't explain how to select aref */
 	aref = CR_AREF(insn->chanspec);
 
 	for (i = 0; i < insn->n; i++)
@@ -759,15 +757,9 @@ static int dt3k_ao_insn_read(struct comedi_device *dev,
 
 static void dt3k_dio_config(struct comedi_device *dev, int bits)
 {
-	/* XXX */
 	writew(SUBS_DOUT, devpriv->io_addr + DPR_SubSys);
 
 	writew(bits, devpriv->io_addr + DPR_Params(0));
-#if 0
-	/* don't know */
-	writew(0, devpriv->io_addr + DPR_Params(1));
-	writew(0, devpriv->io_addr + DPR_Params(2));
-#endif
 
 	dt3k_send_cmd(dev, CMD_CONFIG);
 }
@@ -888,7 +880,7 @@ static int dt3000_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	s->insn_read = dt3k_ai_insn;
 	s->maxdata = (1 << this_board->adbits) - 1;
 	s->len_chanlist = 512;
-	s->range_table = &range_dt3000_ai;	/* XXX */
+	s->range_table = &range_dt3000_ai;
 	s->do_cmd = dt3k_ai_cmd;
 	s->do_cmdtest = dt3k_ai_cmdtest;
 	s->cancel = dt3k_ai_cancel;
@@ -925,11 +917,6 @@ static int dt3000_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	s->len_chanlist = 1;
 	s->range_table = &range_unknown;
 
-#if 0
-	s++;
-	/* proc subsystem */
-	s->type = COMEDI_SUBD_PROC;
-#endif
 
 	return 0;
 }
@@ -948,7 +935,6 @@ static int dt3000_detach(struct comedi_device *dev)
 		if (devpriv->io_addr)
 			iounmap(devpriv->io_addr);
 	}
-	/* XXX */
 
 	return 0;
 }

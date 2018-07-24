@@ -364,16 +364,6 @@ static int ds_recv_data(struct ds_device *dev, unsigned char *buf, int size)
 		return err;
 	}
 
-#if 0
-	{
-		int i;
-
-		printk("%s: count=%d: ", __func__, count);
-		for (i=0; i<count; ++i)
-			printk("%02x ", buf[i]);
-		printk("\n");
-	}
-#endif
 	return count;
 }
 
@@ -392,61 +382,6 @@ static int ds_send_data(struct ds_device *dev, unsigned char *buf, int len)
 	return err;
 }
 
-#if 0
-
-int ds_stop_pulse(struct ds_device *dev, int limit)
-{
-	struct ds_status st;
-	int count = 0, err = 0;
-	u8 buf[0x20];
-
-	do {
-		err = ds_send_control(dev, CTL_HALT_EXE_IDLE, 0);
-		if (err)
-			break;
-		err = ds_send_control(dev, CTL_RESUME_EXE, 0);
-		if (err)
-			break;
-		err = ds_recv_status_nodump(dev, &st, buf, sizeof(buf));
-		if (err)
-			break;
-
-		if ((st.status & ST_SPUA) == 0) {
-			err = ds_send_control_mode(dev, MOD_PULSE_EN, 0);
-			if (err)
-				break;
-		}
-	} while(++count < limit);
-
-	return err;
-}
-
-int ds_detect(struct ds_device *dev, struct ds_status *st)
-{
-	int err;
-
-	err = ds_send_control_cmd(dev, CTL_RESET_DEVICE, 0);
-	if (err)
-		return err;
-
-	err = ds_send_control(dev, COMM_SET_DURATION | COMM_IM, 0);
-	if (err)
-		return err;
-
-	err = ds_send_control(dev, COMM_SET_DURATION | COMM_IM | COMM_TYPE, 0x40);
-	if (err)
-		return err;
-
-	err = ds_send_control_mode(dev, MOD_PULSE_EN, PULSE_PROG);
-	if (err)
-		return err;
-
-	err = ds_dump_status(dev, st);
-
-	return err;
-}
-
-#endif  /*  0  */
 
 static int ds_wait_status(struct ds_device *dev, struct ds_status *st)
 {
@@ -455,15 +390,6 @@ static int ds_wait_status(struct ds_device *dev, struct ds_status *st)
 
 	do {
 		err = ds_recv_status_nodump(dev, st, buf, sizeof(buf));
-#if 0
-		if (err >= 0) {
-			int i;
-			printk("0x%x: count=%d, status: ", dev->ep[EP_STATUS], err);
-			for (i=0; i<err; ++i)
-				printk("%02x ", buf[i]);
-			printk("\n");
-		}
-#endif
 	} while (!(buf[0x08] & ST_IDLE) && !(err < 0) && ++count < 100);
 
 	if (err >= 16 && st->status & ST_EPOF) {
@@ -510,26 +436,6 @@ static int ds_reset(struct ds_device *dev)
 	return 0;
 }
 
-#if 0
-static int ds_set_speed(struct ds_device *dev, int speed)
-{
-	int err;
-
-	if (speed != SPEED_NORMAL && speed != SPEED_FLEXIBLE && speed != SPEED_OVERDRIVE)
-		return -EINVAL;
-
-	if (speed != SPEED_OVERDRIVE)
-		speed = SPEED_FLEXIBLE;
-
-	speed &= 0xff;
-
-	err = ds_send_control_mode(dev, MOD_1WIRE_SPEED, speed);
-	if (err)
-		return err;
-
-	return err;
-}
-#endif  /*  0  */
 
 static int ds_set_pullup(struct ds_device *dev, int delay)
 {
@@ -576,26 +482,6 @@ static int ds_touch_bit(struct ds_device *dev, u8 bit, u8 *tbit)
 	return 0;
 }
 
-#if 0
-static int ds_write_bit(struct ds_device *dev, u8 bit)
-{
-	int err;
-	struct ds_status st;
-
-	/* Set COMM_ICP to write without a readback.  Note, this will
-	 * produce one time slot, a down followed by an up with COMM_D
-	 * only determing the timing.
-	 */
-	err = ds_send_control(dev, COMM_BIT_IO | COMM_IM | COMM_ICP |
-		(bit ? COMM_D : 0), 0);
-	if (err)
-		return err;
-
-	ds_wait_status(dev, &st);
-
-	return 0;
-}
-#endif
 
 static int ds_write_byte(struct ds_device *dev, u8 byte)
 {
@@ -690,82 +576,6 @@ static int ds_write_block(struct ds_device *dev, u8 *buf, int len)
 	return !(err == len);
 }
 
-#if 0
-
-static int ds_search(struct ds_device *dev, u64 init, u64 *buf, u8 id_number, int conditional_search)
-{
-	int err;
-	u16 value, index;
-	struct ds_status st;
-
-	memset(buf, 0, sizeof(buf));
-
-	err = ds_send_data(ds_dev, (unsigned char *)&init, 8);
-	if (err)
-		return err;
-
-	ds_wait_status(ds_dev, &st);
-
-	value = COMM_SEARCH_ACCESS | COMM_IM | COMM_SM | COMM_F | COMM_RTS;
-	index = (conditional_search ? 0xEC : 0xF0) | (id_number << 8);
-	err = ds_send_control(ds_dev, value, index);
-	if (err)
-		return err;
-
-	ds_wait_status(ds_dev, &st);
-
-	err = ds_recv_data(ds_dev, (unsigned char *)buf, 8*id_number);
-	if (err < 0)
-		return err;
-
-	return err/8;
-}
-
-static int ds_match_access(struct ds_device *dev, u64 init)
-{
-	int err;
-	struct ds_status st;
-
-	err = ds_send_data(dev, (unsigned char *)&init, sizeof(init));
-	if (err)
-		return err;
-
-	ds_wait_status(dev, &st);
-
-	err = ds_send_control(dev, COMM_MATCH_ACCESS | COMM_IM | COMM_RST, 0x0055);
-	if (err)
-		return err;
-
-	ds_wait_status(dev, &st);
-
-	return 0;
-}
-
-static int ds_set_path(struct ds_device *dev, u64 init)
-{
-	int err;
-	struct ds_status st;
-	u8 buf[9];
-
-	memcpy(buf, &init, 8);
-	buf[8] = BRANCH_MAIN;
-
-	err = ds_send_data(dev, buf, sizeof(buf));
-	if (err)
-		return err;
-
-	ds_wait_status(dev, &st);
-
-	err = ds_send_control(dev, COMM_SET_PATH | COMM_IM | COMM_RST, 0);
-	if (err)
-		return err;
-
-	ds_wait_status(dev, &st);
-
-	return 0;
-}
-
-#endif  /*  0  */
 
 static u8 ds9490r_touch_bit(void *data, u8 bit)
 {
@@ -778,27 +588,6 @@ static u8 ds9490r_touch_bit(void *data, u8 bit)
 	return ret;
 }
 
-#if 0
-static void ds9490r_write_bit(void *data, u8 bit)
-{
-	struct ds_device *dev = data;
-
-	ds_write_bit(dev, bit);
-}
-
-static u8 ds9490r_read_bit(void *data)
-{
-	struct ds_device *dev = data;
-	int err;
-	u8 bit = 0;
-
-	err = ds_touch_bit(dev, 1, &bit);
-	if (err)
-		return 0;
-
-	return bit & 1;
-}
-#endif
 
 static void ds9490r_write_byte(void *data, u8 byte)
 {
@@ -956,12 +745,6 @@ static int ds_probe(struct usb_interface *intf,
 		endpoint = &iface_desc->endpoint[i].desc;
 
 		dev->ep[i+1] = endpoint->bEndpointAddress;
-#if 0
-		printk("%d: addr=%x, size=%d, dir=%s, type=%x\n",
-			i, endpoint->bEndpointAddress, le16_to_cpu(endpoint->wMaxPacketSize),
-			(endpoint->bEndpointAddress & USB_DIR_IN)?"IN":"OUT",
-			endpoint->bmAttributes & USB_ENDPOINT_XFERTYPE_MASK);
-#endif
 	}
 
 	err = ds_w1_init(dev);

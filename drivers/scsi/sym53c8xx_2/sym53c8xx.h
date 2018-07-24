@@ -54,19 +54,15 @@
 /*
  *  NVRAM support.
  */
-#if 1
 #define SYM_CONF_NVRAM_SUPPORT		(1)
-#endif
 
 /*
  *  These options are not tunable from 'make config'
  */
-#if 1
 #define	SYM_LINUX_PROC_INFO_SUPPORT
 #define SYM_LINUX_USER_COMMAND_SUPPORT
 #define SYM_LINUX_USER_INFO_SUPPORT
 #define SYM_LINUX_DEBUG_CONTROL_SUPPORT
-#endif
 
 /*
  *  Also handle old NCR chips if not (0).

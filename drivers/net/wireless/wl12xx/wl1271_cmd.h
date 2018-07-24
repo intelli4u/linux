@@ -316,7 +316,6 @@ enum wl1271_cmd_key_type {
 	KEY_GEM  = 4
 };
 
-/* FIXME: Add description for key-types */
 
 struct wl1271_cmd_set_keys {
 	struct wl1271_cmd_header header;

@@ -396,13 +396,6 @@ static struct of_device_id of_flash_match[] = {
 		.data		= (void *)"cfi_probe",
 	},
 	{
-		/* FIXME: JEDEC chips can't be safely and reliably
-		 * probed, although the mtd code gets it right in
-		 * practice most of the time.  We should use the
-		 * vendor and device ids specified by the binding to
-		 * bypass the heuristic probe code, but the mtd layer
-		 * provides, at present, no interface for doing so
-		 * :(. */
 		.compatible	= "jedec-flash",
 		.data		= (void *)"jedec_probe",
 	},

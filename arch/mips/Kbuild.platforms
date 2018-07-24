@@ -14,6 +14,7 @@ platforms += lasat
 platforms += loongson
 platforms += mipssim
 platforms += mti-malta
+platforms += mti-sead3
 platforms += pmc-sierra
 platforms += pnx833x
 platforms += pnx8550
@@ -27,6 +28,7 @@ platforms += sni
 platforms += txx9
 platforms += vr41xx
 platforms += wrppmc
+platforms += brcm-boards
 
 # include the platform specific files
 include $(patsubst %, $(srctree)/arch/mips/%/Platform, $(platforms))

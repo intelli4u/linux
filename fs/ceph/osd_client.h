@@ -164,4 +164,3 @@ extern int ceph_osdc_writepages(struct ceph_osd_client *osdc,
 				int flags, int do_sync, bool nofail);
 
 #endif
-

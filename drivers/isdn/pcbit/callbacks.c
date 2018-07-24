@@ -343,6 +343,3 @@ void cb_open(struct pcbit_dev * dev, struct pcbit_chan* chan,
         ictl.arg=chan->id;
         dev->dev_if->statcallb(&ictl);
 }
-
-
-

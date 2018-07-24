@@ -162,4 +162,3 @@ const struct inode_operations ext4_file_inode_operations = {
 	.fallocate	= ext4_fallocate,
 	.fiemap		= ext4_fiemap,
 };
-

@@ -32,7 +32,7 @@
 #endif
 
 #if defined(CONFIG_SBE_HDLC_V7) || defined(CONFIG_SBE_WAN256T3_HDLC_V7) || \
-    defined(CONFIG_SBE_HDLC_V7_MODULE) || defined(CONFIG_SBE_WAN256T3_HDLC_V7_MODULE)
+	defined(CONFIG_SBE_HDLC_V7_MODULE) || defined(CONFIG_SBE_WAN256T3_HDLC_V7_MODULE)
 #define _v7_hdlc_  1
 #else
 #define _v7_hdlc_  0
@@ -58,7 +58,6 @@ extern int  log_level;
 extern int  drvr_state;
 
 
-#if 1
 u_int32_t
 pci_read_32 (u_int32_t *p)
 {
@@ -93,7 +92,6 @@ pci_write_32 (u_int32_t *p, u_int32_t v)
                                      * and code the many other register
                                      * writing routines. */
 }
-#endif
 
 
 void

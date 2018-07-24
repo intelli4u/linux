@@ -264,9 +264,6 @@ musb_start_urb(struct musb *musb, int is_in, struct musb_qh *qh)
 	case USB_ENDPOINT_XFER_INT:
 		DBG(3, "check whether there's still time for periodic Tx\n");
 		frame = musb_readw(mbase, MUSB_FRAME);
-		/* FIXME this doesn't implement that scheduling policy ...
-		 * or handle framecounter wrapping
-		 */
 		if ((urb->transfer_flags & URB_ISO_ASAP)
 				|| (frame >= urb->start_frame)) {
 			/* REVISIT the SOF irq handler shouldn't duplicate
@@ -278,9 +275,7 @@ musb_start_urb(struct musb *musb, int is_in, struct musb_qh *qh)
 			qh->frame = urb->start_frame;
 			/* enable SOF interrupt so we can count down */
 			DBG(1, "SOF for %d\n", epnum);
-#if 1 /* ifndef	CONFIG_ARCH_DAVINCI */
 			musb_writeb(mbase, MUSB_INTRUSBE, 0xff);
-#endif
 		}
 		break;
 	default:
@@ -336,10 +331,6 @@ static inline void musb_save_toggle(struct musb_qh *qh, int is_in,
 	void __iomem		*epio = qh->hw_ep->regs;
 	u16			csr;
 
-	/*
-	 * FIXME: the current Mentor DMA code seems to have
-	 * problems getting toggle correct.
-	 */
 
 	if (is_in)
 		csr = musb_readw(epio, MUSB_RXCSR) & MUSB_RXCSR_H_DATATOGGLE;
@@ -776,7 +767,6 @@ static void musb_ep_program(struct musb *musb, u8 epnum,
 			musb_write_txfunaddr(mbase, epnum, qh->addr_reg);
 			musb_write_txhubaddr(mbase, epnum, qh->h_addr_reg);
 			musb_write_txhubport(mbase, epnum, qh->h_port_reg);
-/* FIXME if !epnum, do the same for RX ... */
 		} else
 			musb_writeb(mbase, MUSB_FADDR, qh->addr_reg);
 
@@ -1545,7 +1535,6 @@ void musb_host_rx(struct musb *musb, u8 epnum)
 	 * while processing this irq for earlier completions.
 	 */
 
-	/* FIXME this is _way_ too much in-line logic for Mentor DMA */
 
 #ifndef CONFIG_USB_INVENTRA_DMA
 	if (rx_csr & MUSB_RXCSR_H_REQPKT)  {
@@ -1624,7 +1613,6 @@ void musb_host_rx(struct musb *musb, u8 epnum)
 			status = -EPROTO;
 			ERR("Rx interrupt with no errors or packet!\n");
 
-			/* FIXME this is another "SHOULD NEVER HAPPEN" */
 
 /* SCRUB (RX) */
 			/* do the proper sequence to abort the transfer */
@@ -2056,9 +2044,6 @@ static int musb_urb_enqueue(
 
 	if (ret == 0) {
 		urb->hcpriv = qh;
-		/* FIXME set urb->start_frame for iso/intr, it's tested in
-		 * musb_start_urb(), but otherwise only konicawc cares ...
-		 */
 	}
 	spin_unlock_irqrestore(&musb->lock, flags);
 

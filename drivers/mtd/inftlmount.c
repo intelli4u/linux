@@ -390,8 +390,6 @@ int INFTL_formatblock(struct INFTLrecord *inftl, int block)
 
 	memset(instr, 0, sizeof(struct erase_info));
 
-	/* FIXME: Shouldn't we be setting the 'discarded' flag to zero
-	   _first_? */
 
 	/* Use async erase interface, test return code */
 	instr->mtd = inftl->mbd.mtd;
@@ -410,11 +408,6 @@ int INFTL_formatblock(struct INFTLrecord *inftl, int block)
 			goto fail;
 		}
 
-		/*
-		 * Check the "freeness" of Erase Unit before updating metadata.
-		 * FixMe: is this check really necessary? Since we have check
-		 * the return code after the erase operation.
-		 */
 		if (check_free_sectors(inftl, instr->addr, instr->len, 1) != 0)
 			goto fail;
 	}

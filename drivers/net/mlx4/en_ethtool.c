@@ -453,8 +453,3 @@ const struct ethtool_ops mlx4_en_ethtool_ops = {
 	.get_flags = ethtool_op_get_flags,
 	.set_flags = mlx4_ethtool_op_set_flags,
 };
-
-
-
-
-

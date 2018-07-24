@@ -56,7 +56,7 @@ int ath_htc_txq_update(struct ath9k_htc_priv *priv, int qnum,
 	ath9k_hw_get_txq_props(ah, qnum, &qi);
 
 	qi.tqi_aifs = qinfo->tqi_aifs;
-	qi.tqi_cwmin = qinfo->tqi_cwmin / 2; /* XXX */
+	qi.tqi_cwmin = qinfo->tqi_cwmin / 2;
 	qi.tqi_cwmax = qinfo->tqi_cwmax;
 	qi.tqi_burstTime = qinfo->tqi_burstTime;
 	qi.tqi_readyTime = qinfo->tqi_readyTime;
@@ -526,7 +526,6 @@ static bool ath9k_rx_prepare(struct ath9k_htc_priv *priv,
 			goto rx_next;
 
 		if (rxbuf->rxstatus.rs_status & ATH9K_RXERR_DECRYPT) {
-			/* FIXME */
 		} else if (rxbuf->rxstatus.rs_status & ATH9K_RXERR_MIC) {
 			if (ieee80211_is_ctl(fc))
 				/*
@@ -605,9 +604,6 @@ rx_next:
 	return false;
 }
 
-/*
- * FIXME: Handle FLUSH later on.
- */
 void ath9k_rx_tasklet(unsigned long data)
 {
 	struct ath9k_htc_priv *priv = (struct ath9k_htc_priv *)data;
@@ -696,7 +692,6 @@ err:
 	dev_kfree_skb_any(skb);
 }
 
-/* FIXME: Locking for cleanup/init */
 
 void ath9k_rx_cleanup(struct ath9k_htc_priv *priv)
 {

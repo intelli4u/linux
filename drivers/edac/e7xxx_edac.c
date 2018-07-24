@@ -18,7 +18,7 @@
  *	That One Guy (Some other place)
  *	Wang Zhenyu (intel.com)
  *
- * $Id: edac_e7xxx.c,v 1.5.2.9 2005/10/05 00:43:44 dsp_llnl Exp $
+ * $Id: edac_e7xxx.c,v 1.5.2.9 2005/10/05 00:43:44 Exp $
  *
  */
 
@@ -71,7 +71,7 @@
 #endif				/* PCI_DEVICE_ID_INTEL_7505_1_ERR */
 
 #define E7XXX_NR_CSROWS		8	/* number of csrows */
-#define E7XXX_NR_DIMMS		8	/* FIXME - is this correct? */
+#define E7XXX_NR_DIMMS		8
 
 /* E7XXX register addresses - device 0 function 0 */
 #define E7XXX_DRB		0x60	/* DRAM row boundary register (8b) */
@@ -160,7 +160,6 @@ static const struct e7xxx_dev_info e7xxx_devs[] = {
 		.ctl_name = "E7205"},
 };
 
-/* FIXME - is this valid for both SECDED and S4ECD4ED? */
 static inline int e7xxx_find_channel(u16 syndrome)
 {
 	debugf3("%s()\n", __func__);
@@ -208,11 +207,9 @@ static void process_ce(struct mem_ctl_info *mci, struct e7xxx_error_info *info)
 	debugf3("%s()\n", __func__);
 	/* read the error address */
 	error_1b = info->dram_celog_add;
-	/* FIXME - should use PAGE_SHIFT */
 	page = error_1b >> 6;	/* convert the address to 4k page */
 	/* read the syndrome */
 	syndrome = info->dram_celog_syndrome;
-	/* FIXME - check for -1 */
 	row = edac_mc_find_csrow_by_page(mci, page);
 	/* convert syndrome to channel */
 	channel = e7xxx_find_channel(syndrome);
@@ -233,7 +230,6 @@ static void process_ue(struct mem_ctl_info *mci, struct e7xxx_error_info *info)
 	debugf3("%s()\n", __func__);
 	/* read the error address */
 	error_2b = info->dram_uelog_add;
-	/* FIXME - should use PAGE_SHIFT */
 	block_page = error_2b >> 6;	/* convert to 4k address */
 	row = edac_mc_find_csrow_by_page(mci, block_page);
 	edac_mc_handle_ue(mci, block_page, 0, row, "e7xxx UE");
@@ -425,7 +421,6 @@ static int e7xxx_probe1(struct pci_dev *pdev, int dev_idx)
 	mci->mtype_cap = MEM_FLAG_RDDR;
 	mci->edac_ctl_cap = EDAC_FLAG_NONE | EDAC_FLAG_SECDED |
 		EDAC_FLAG_S4ECD4ED;
-	/* FIXME - what if different memory types are in different csrows? */
 	mci->mod_name = EDAC_MOD_STR;
 	mci->mod_ver = E7XXX_REVISION;
 	mci->dev = &pdev->dev;

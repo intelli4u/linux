@@ -94,11 +94,6 @@ static int recv_subn_get_nodeinfo(struct ib_smp *smp,
 	nip->base_version = 1;
 	nip->class_version = 1;
 	nip->node_type = 1;	/* channel adapter */
-	/*
-	 * XXX The num_ports value will need a layer function to get
-	 * the value if we ever have more than one IB port on a chip.
-	 * We will also need to get the GUID for the port.
-	 */
 	nip->num_ports = ibdev->phys_port_cnt;
 	/* This is already in network order */
 	nip->sys_guid = to_idev(ibdev)->sys_image_guid;
@@ -520,7 +515,6 @@ static int recv_subn_set_portinfo(struct ib_smp *smp,
 		mtu = 4096;
 		break;
 	default:
-		/* XXX We have already partially updated our state! */
 		goto err;
 	}
 	ipath_set_mtu(dd, mtu);
@@ -605,7 +599,6 @@ static int recv_subn_set_portinfo(struct ib_smp *smp,
 		ipath_set_linkstate(dd, IPATH_IB_LINKACTIVE);
 		break;
 	default:
-		/* XXX We have already partially updated our state! */
 		goto err;
 	}
 

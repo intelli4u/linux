@@ -95,8 +95,6 @@ deny_mask_from_posix(unsigned short perm, u32 flags)
 	return mask;
 }
 
-/* XXX: modify functions to return NFS errors; they're only ever
- * used by nfs code, after all.... */
 
 /* We only map from NFSv4 to POSIX ACLs when setting ACLs, when we err on the
  * side of being more restrictive, so the mode bit mapping below is

@@ -178,7 +178,7 @@ int com20020_found(struct net_device *dev, int shared)
 	lp->hw.close = com20020_close;
 
 	if (!dev->dev_addr[0])
-		dev->dev_addr[0] = inb(ioaddr + BUS_ALIGN*8);	/* FIXME: do this some other way! */
+		dev->dev_addr[0] = inb(ioaddr + BUS_ALIGN*8);
 
 	SET_SUBADR(SUB_SETUP1);
 	outb(lp->setup, _XREG);
@@ -313,13 +313,6 @@ static void com20020_close(struct net_device *dev)
 	SETCONF;
 }
 
-/* Set or clear the multicast filter for this adaptor.
- * num_addrs == -1    Promiscuous mode, receive all packets
- * num_addrs == 0       Normal mode, clear multicast list
- * num_addrs > 0        Multicast mode, receive normal and MC packets, and do
- *                      best-effort filtering.
- *      FIXME - do multicast stuff, not just promiscuous.
- */
 static void com20020_set_mc_list(struct net_device *dev)
 {
 	struct arcnet_local *lp = netdev_priv(dev);
@@ -343,8 +336,7 @@ static void com20020_set_mc_list(struct net_device *dev)
 }
 
 #if defined(CONFIG_ARCNET_COM20020_PCI_MODULE) || \
-    defined(CONFIG_ARCNET_COM20020_ISA_MODULE) || \
-    defined(CONFIG_ARCNET_COM20020_CS_MODULE)
+	defined(CONFIG_ARCNET_COM20020_ISA_MODULE) || defined(CONFIG_ARCNET_COM20020_CS_MODULE)
 EXPORT_SYMBOL(com20020_check);
 EXPORT_SYMBOL(com20020_found);
 EXPORT_SYMBOL(com20020_netdev_ops);

@@ -751,4 +751,3 @@ void conf_printf2(char *name, int base, int irq, int dma, int dma2)
 #endif
 }
 EXPORT_SYMBOL(conf_printf2);
-

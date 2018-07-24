@@ -51,4 +51,3 @@ struct plat_stmmacphy_data {
 	void *priv;
 };
 #endif
-

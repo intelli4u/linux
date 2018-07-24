@@ -1058,7 +1058,6 @@ static int adm8211_set_rate(struct ieee80211_hw *dev)
 		for (i = 0; i < ARRAY_SIZE(adm8211_rates); i++)
 			rate_buf[i + 1] = (adm8211_rates[i].bitrate / 5) | 0x80;
 	} else {
-		/* workaround for rev BA specific bug */
 		rate_buf[0] = 0x04;
 		rate_buf[1] = 0x82;
 		rate_buf[2] = 0x04;
@@ -1864,7 +1863,7 @@ static int __devinit adm8211_probe(struct pci_dev *pdev,
 	dev->wiphy->interface_modes = BIT(NL80211_IFTYPE_STATION);
 
 	dev->channel_change_time = 1000;
-	dev->max_signal = 100;    /* FIXME: find better value */
+	dev->max_signal = 100;
 
 	dev->queues = 1; /* ADM8211C supports more, maybe ADM8211B too */
 

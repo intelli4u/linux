@@ -297,7 +297,6 @@ static __inline__ int radeon_check_and_fixup_packet3(drm_radeon_private_t *
 	}
 
 	switch (*cmd & 0xff00) {
-	/* XXX Are there old drivers needing other packets? */
 
 	case RADEON_3D_DRAW_IMMD:
 	case RADEON_3D_DRAW_VBUF:
@@ -1003,10 +1002,6 @@ static void radeon_cp_dispatch_clear(struct drm_device * dev,
 
 		if ((dev_priv->flags & RADEON_HAS_HIERZ)
 		    && (flags & RADEON_USE_HIERZ)) {
-			/* FIXME : reverse engineer that for Rx00 cards */
-			/* FIXME : the mask supposedly contains low-res z values. So can't set
-			   just to the max (0xff? or actually 0x3fff?), need to take z clear
-			   value into account? */
 			/* pattern seems to work for r100, though get slight
 			   rendering errors with glxgears. If hierz is not enabled for r100,
 			   only 4 bits which indicate clear (15,16,31,32, all zero) matter, the
@@ -1048,13 +1043,6 @@ static void radeon_cp_dispatch_clear(struct drm_device * dev,
 			/* it looks like r200 needs rv-style clears, at least if hierz is not enabled? */
 			if ((dev_priv->flags & RADEON_HAS_HIERZ)
 			    && !(dev_priv->microcode_version == UCODE_R200)) {
-				/* FIXME : figure this out for r200 (when hierz is enabled). Or
-				   maybe r200 actually doesn't need to put the low-res z value into
-				   the tile cache like r100, but just needs to clear the hi-level z-buffer?
-				   Works for R100, both with hierz and without.
-				   R100 seems to operate on 2x1 8x8 tiles, but...
-				   odd: offset/nrtiles need to be 64 pix (4 block) aligned? Potentially
-				   problematic with resolutions which are not 64 pix aligned? */
 				tileoffset =
 				    ((pbox[i].y1 >> 3) * depthpixperline +
 				     pbox[i].x1) >> 6;
@@ -1134,9 +1122,6 @@ static void radeon_cp_dispatch_clear(struct drm_device * dev,
 		    && (dev_priv->microcode_version == UCODE_R200)
 		    && (flags & RADEON_USE_HIERZ))
 			/* r100 and cards without hierarchical z-buffer have no high-level z-buffer */
-			/* FIXME : the mask supposedly contains low-res z values. So can't set
-			   just to the max (0xff? or actually 0x3fff?), need to take z clear
-			   value into account? */
 		{
 			BEGIN_RING(4);
 			OUT_RING(CP_PACKET3(RADEON_3D_CLEAR_HIZ, 2));
@@ -2801,18 +2786,6 @@ static int radeon_emit_packet3_cliprect(struct drm_device *dev,
 		if (i < cmdbuf->nbox) {
 			if (DRM_COPY_FROM_USER(&box, &boxes[i], sizeof(box)))
 				return -EFAULT;
-			/* FIXME The second and subsequent times round
-			 * this loop, send a WAIT_UNTIL_3D_IDLE before
-			 * calling emit_clip_rect(). This fixes a
-			 * lockup on fast machines when sending
-			 * several cliprects with a cmdbuf, as when
-			 * waving a 2D window over a 3D
-			 * window. Something in the commands from user
-			 * space seems to hang the card when they're
-			 * sent several times in a row. That would be
-			 * the correct place to fix it but this works
-			 * around it until I can figure that out - Tim
-			 * Smith */
 			if (i) {
 				BEGIN_RING(2);
 				RADEON_WAIT_UNTIL_3D_IDLE();

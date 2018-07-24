@@ -329,7 +329,6 @@ static int readpage_strip(void *data, struct page *page)
 	size_t len;
 	int ret;
 
-	/* FIXME: Just for debugging, will be removed */
 	if (PageUptodate(page))
 		EXOFS_ERR("PageUptodate(0x%lx, 0x%lx)\n", pcol->inode->i_ino,
 			  page->index);

@@ -708,7 +708,6 @@ int ccw_device_tm_intrg(struct ccw_device *cdev)
 }
 EXPORT_SYMBOL(ccw_device_tm_intrg);
 
-// FIXME: these have to go:
 
 int
 _ccw_device_get_subchannel_number(struct ccw_device *cdev)

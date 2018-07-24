@@ -654,4 +654,3 @@ void st5481_in_mode(struct st5481_in *in, int mode)
 					   0, NULL, NULL);
 	}
 }
-

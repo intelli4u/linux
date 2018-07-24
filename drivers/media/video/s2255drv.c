@@ -465,10 +465,6 @@ static int norm_minh(struct video_device *vdev)
 }
 
 
-/*
- * TODO: fixme: move YUV reordering to hardware
- * converts 2255 planar format to yuyv or uyvy
- */
 static void planar422p_to_yuv_packed(const unsigned char *in,
 				     unsigned char *out,
 				     int width, int height,

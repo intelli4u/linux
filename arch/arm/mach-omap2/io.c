@@ -165,8 +165,8 @@ static struct map_desc omap34xx_io_desc[] __initdata = {
 		.length		= L4_EMU_34XX_SIZE,
 		.type		= MT_DEVICE
 	},
-#if defined(CONFIG_DEBUG_LL) &&							\
-	(defined(CONFIG_MACH_OMAP_ZOOM2) || defined(CONFIG_MACH_OMAP_ZOOM3))
+#if defined(CONFIG_DEBUG_LL) && (defined(CONFIG_MACH_OMAP_ZOOM2) || \
+	defined(CONFIG_MACH_OMAP_ZOOM3))
 	{
 		.virtual	= ZOOM_UART_VIRT,
 		.pfn		= __phys_to_pfn(ZOOM_UART_BASE),
@@ -342,7 +342,7 @@ void __init omap2_init_common_hw(struct omap_sdrc_params *sdrc_cs0,
 #ifndef CONFIG_PM_RUNTIME
 	skip_setup_idle = 1;
 #endif
-	if (cpu_is_omap24xx() || cpu_is_omap34xx())   /* FIXME: OMAP4 */
+	if (cpu_is_omap24xx() || cpu_is_omap34xx())
 		omap_hwmod_late_init(skip_setup_idle);
 
 	if (cpu_is_omap24xx() || cpu_is_omap34xx()) {

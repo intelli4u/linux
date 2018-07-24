@@ -4477,4 +4477,3 @@ memimage fw_image = {
 	(CFG_RANGE20_STRCT *) fw_image_infocompat,
 	(CFG_IDENTITY_STRCT *) fw_image_infoidentity,
 };
-

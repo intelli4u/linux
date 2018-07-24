@@ -885,4 +885,3 @@ struct auth_ops svcauth_unix = {
 	.domain_release	= svcauth_unix_domain_release,
 	.set_client	= svcauth_unix_set_client,
 };
-

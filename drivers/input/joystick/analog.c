@@ -538,7 +538,7 @@ static int analog_init_masks(struct analog_port *port)
 	}
 
 
-	i = analog_options[0]; /* FIXME !!! - need to specify options for different ports */
+	i = analog_options[0];
 
 	analog[0].mask = i & 0xfffff;
 
@@ -619,8 +619,8 @@ static int analog_init_port(struct gameport *gameport, struct gameport_driver *d
 		while ((gameport_read(port->gameport) & port->mask) && (v < t))
 			v++;
 
-		if (v < (u >> 1)) { /* FIXME - more than one port */
-			analog_options[0] |= /* FIXME - more than one port */
+		if (v < (u >> 1)) {
+			analog_options[0] |=
 				ANALOG_SAITEK | ANALOG_BTNS_CHF | ANALOG_HBTN_CHF | ANALOG_HAT1_CHF;
 			return 0;
 		}

@@ -81,9 +81,6 @@ enum drbd_req_event {
 	to_be_send,
 	to_be_submitted,
 
-	/* XXX yes, now I am inconsistent...
-	 * these two are not "events" but "actions"
-	 * oh, well... */
 	queue_for_net_write,
 	queue_for_net_read,
 
@@ -251,7 +248,7 @@ static inline struct drbd_request *drbd_req_new(struct drbd_conf *mdev,
 	struct drbd_request *req =
 		mempool_alloc(drbd_request_mempool, GFP_NOIO);
 	if (likely(req)) {
-		bio = bio_clone(bio_src, GFP_NOIO); /* XXX cannot fail?? */
+		bio = bio_clone(bio_src, GFP_NOIO);
 
 		req->rq_state    = 0;
 		req->mdev        = mdev;

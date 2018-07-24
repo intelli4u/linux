@@ -1269,7 +1269,6 @@ static void dload_data(struct dload_state *dlthis)
 #ifdef OPT_ZERO_COPY_LOADER
 						if (!zero_copy) {
 #endif
-							/* FIXME */
 							if (!dlthis->myio->
 							    writemem(dlthis->
 								myio,

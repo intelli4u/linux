@@ -294,4 +294,3 @@ void input_unregister_polled_device(struct input_polled_dev *dev)
 	input_unregister_device(dev->input);
 }
 EXPORT_SYMBOL(input_unregister_polled_device);
-

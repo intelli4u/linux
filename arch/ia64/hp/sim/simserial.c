@@ -417,11 +417,6 @@ static int rs_ioctl(struct tty_struct *tty, struct file * file,
 
 		case TIOCSERGSTRUCT:
 			printk(KERN_INFO "rs_ioctl: TIOCSERGSTRUCT called\n");
-#if 0
-			if (copy_to_user((struct async_struct *) arg,
-					 info, sizeof(struct async_struct)))
-				return -EFAULT;
-#endif
 			return 0;
 
 		/*
@@ -739,13 +734,6 @@ startup(struct async_struct *info)
 
 	info->xmit.head = info->xmit.tail = 0;
 
-#if 0
-	/*
-	 * Set up serial timers...
-	 */
-	timer_table[RS_TIMER].expires = jiffies + 2*HZ/100;
-	timer_active |= 1 << RS_TIMER;
-#endif
 
 	/*
 	 * Set up the tty->alt_speed kludge

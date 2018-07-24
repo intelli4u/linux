@@ -44,7 +44,7 @@
 #define CEX3A_MAX_MOD_SIZE	CEX2A_MAX_MOD_SIZE
 
 #define CEX2A_SPEED_RATING	970
-#define CEX3A_SPEED_RATING	900 /* Fixme: Needs finetuning */
+#define CEX3A_SPEED_RATING	900
 
 #define CEX2A_MAX_MESSAGE_SIZE	0x390	/* sizeof(struct type50_crb2_msg)    */
 #define CEX2A_MAX_RESPONSE_SIZE 0x110	/* max outputdatalength + type80_hdr */

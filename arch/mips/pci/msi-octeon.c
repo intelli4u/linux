@@ -157,7 +157,6 @@ msi_irq_allocated:
 		break;
 	case OCTEON_DMA_BAR_TYPE_PCIE:
 		/* When using PCIe, Bar 0 is based at 0 */
-		/* FIXME CVMX_NPEI_MSI_RCV* other than 0? */
 		msg.address_lo = (0 + CVMX_NPEI_PCIE_MSI_RCV) & 0xffffffff;
 		msg.address_hi = (0 + CVMX_NPEI_PCIE_MSI_RCV) >> 32;
 		break;

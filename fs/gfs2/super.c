@@ -945,18 +945,6 @@ static int statfs_slow_fill(struct gfs2_rgrpd *rgd,
 	return 0;
 }
 
-/**
- * gfs2_statfs_slow - Stat a filesystem using asynchronous locking
- * @sdp: the filesystem
- * @sc: the sc info that will be returned
- *
- * Any error (other than a signal) will cause this routine to fall back
- * to the synchronous version.
- *
- * FIXME: This really shouldn't busy wait like this.
- *
- * Returns: errno
- */
 
 static int gfs2_statfs_slow(struct gfs2_sbd *sdp, struct gfs2_statfs_change_host *sc)
 {
@@ -1433,4 +1421,3 @@ const struct super_operations gfs2_super_ops = {
 	.drop_inode		= gfs2_drop_inode,
 	.show_options		= gfs2_show_options,
 };
-

@@ -227,14 +227,6 @@ static int atmel_nand_read_page(struct mtd_info *mtd,
 	uint8_t *ecc_pos;
 	int stat;
 
-	/*
-	 * Errata: ALE is incorrectly wired up to the ECC controller
-	 * on the AP7000, so it will include the address cycles in the
-	 * ECC calculation.
-	 *
-	 * Workaround: Reset the parity registers before reading the
-	 * actual data.
-	 */
 	if (cpu_is_at32ap7000()) {
 		struct atmel_nand_host *host = chip->priv;
 		ecc_writel(host->ecc, CR, ATMEL_ECC_RST);

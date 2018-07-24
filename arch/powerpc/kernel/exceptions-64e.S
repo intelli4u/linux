@@ -24,12 +24,6 @@
 #include <asm/ppc-opcode.h>
 #include <asm/mmu.h>
 
-/* XXX This will ultimately add space for a special exception save
- *     structure used to save things like SRR0/SRR1, SPRGs, MAS, etc...
- *     when taking special interrupts. For now we don't support that,
- *     special interrupts from within a non-standard level will probably
- *     blow you up
- */
 #define	SPECIAL_EXC_FRAME_SIZE	INT_FRAME_SIZE
 
 /* Exception prolog code for all exceptions */
@@ -119,9 +113,6 @@
 	std	r14,PACA_EXMC+EX_R14(r13);				    \
 	std	r15,PACA_EXMC+EX_R15(r13)
 
-/* Core exception code for all exceptions except TLB misses.
- * XXX: Needs to make SPRN_SPRG_GEN depend on exception type
- */
 #define EXCEPTION_COMMON(n, excf, ints)					    \
 	std	r0,GPR0(r1);		/* save r0 in stackframe */	    \
 	std	r2,GPR2(r1);		/* save r2 in stackframe */	    \
@@ -171,20 +162,10 @@
 	INTS_DISABLE_SOFT						    \
 	INTS_DISABLE_HARD
 
-/* This is called by exceptions that used INTS_KEEP (that is did not clear
- * neither soft nor hard IRQ indicators in the PACA. This will restore MSR:EE
- * to it's previous value
- *
- * XXX In the long run, we may want to open-code it in order to separate the
- *     load from the wrtee, thus limiting the latency caused by the dependency
- *     but at this point, I'll favor code clarity until we have a near to final
- *     implementation
- */
 #define INTS_RESTORE_HARD						    \
 	ld	r11,_MSR(r1);						    \
 	wrtee	r11;
 
-/* XXX FIXME: Restore r14/r15 when necessary */
 #define BAD_STACK_TRAMPOLINE(n)						    \
 exc_##n##_bad_stack:							    \
 	li	r1,(n);			/* get exception number */	    \
@@ -429,9 +410,6 @@ interrupt_end_book3e:
 	rfci
 
 	/* Normal debug exception */
-	/* XXX We only handle coming from userspace for now since we can't
-	 *     quite save properly an interrupted kernel state yet
-	 */
 1:	andi.	r14,r11,MSR_PR;		/* check for userspace again */
 	beq	kernel_dbg_exc;		/* if from kernel mode */
 
@@ -608,14 +586,13 @@ BAD_STACK_TRAMPOLINE(0x2080)
 
 	.globl	bad_stack_book3e
 bad_stack_book3e:
-	/* XXX: Needs to make SPRN_SPRG_GEN depend on exception type */
 	mfspr	r10,SPRN_SRR0;		  /* read SRR0 before touching stack */
 	ld	r1,PACAEMERGSP(r13)
 	subi	r1,r1,64+INT_FRAME_SIZE
 	std	r10,_NIP(r1)
 	std	r11,_MSR(r1)
-	ld	r10,PACA_EXGEN+EX_R1(r13) /* FIXME for crit & mcheck */
-	lwz	r11,PACA_EXGEN+EX_CR(r13) /* FIXME for crit & mcheck */
+	ld	r10,PACA_EXGEN+EX_R1(r13)
+	lwz	r11,PACA_EXGEN+EX_CR(r13)
 	std	r10,GPR1(r1)
 	std	r11,_CCR(r1)
 	mfspr	r10,SPRN_DEAR
@@ -629,7 +606,7 @@ bad_stack_book3e:
 	std	r9,GPR9(r1);		/* save r9 in stackframe */	    \
 	ld	r3,PACA_EXGEN+EX_R10(r13);/* get back r10 */		    \
 	ld	r4,PACA_EXGEN+EX_R11(r13);/* get back r11 */		    \
-	mfspr	r5,SPRN_SPRG_GEN_SCRATCH;/* get back r13 XXX can be wrong */ \
+	mfspr	r5,SPRN_SPRG_GEN_SCRATCH; \
 	std	r3,GPR10(r1);		/* save r10 to stackframe */	    \
 	std	r4,GPR11(r1);		/* save r11 to stackframe */	    \
 	std	r12,GPR12(r1);		/* save r12 in stackframe */	    \
@@ -884,9 +861,7 @@ have_hes:
 	mtctr	r3
 	bctr
 
-1:	/* We are now running at PAGE_OFFSET, clean the TLB of everything
-	 * else (XXX we should scan for bolted crap from the firmware too)
-	 */
+1:
 	PPC_TLBILX(0,0,0)
 	sync
 	isync

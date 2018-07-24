@@ -150,12 +150,6 @@ static void program_hpp_type2(struct pci_dev *dev, struct hpp_type2 *hpp)
 	reg32 = (reg32 & hpp->adv_err_cap_and) | hpp->adv_err_cap_or;
 	pci_write_config_dword(dev, pos + PCI_ERR_CAP, reg32);
 
-	/*
-	 * FIXME: The following two registers are not supported yet.
-	 *
-	 *   o Secondary Uncorrectable Error Severity Register
-	 *   o Secondary Uncorrectable Error Mask Register
-	 */
 }
 
 void pci_configure_slot(struct pci_dev *dev)

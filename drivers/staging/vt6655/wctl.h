@@ -104,6 +104,3 @@ unsigned int WCTLuSearchDFCB(PSDevice pDevice, PS802_11Header pMACHeader);
 unsigned int WCTLuInsertDFCB(PSDevice pDevice, PS802_11Header pMACHeader);
 
 #endif // __WCTL_H__
-
-
-

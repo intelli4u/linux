@@ -336,4 +336,3 @@ int drm_vma_info(struct seq_file *m, void *data)
 }
 
 #endif
-

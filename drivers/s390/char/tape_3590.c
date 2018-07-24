@@ -1451,7 +1451,6 @@ tape_3590_unit_check(struct tape_device *device, struct tape_request *request,
 		tape_3590_schedule_work(device, TO_CRYPT_OFF);
 		return tape_3590_erp_basic(device, request, irb, -ENOMEDIUM);
 	case 0x4012:		/* Device Long Busy */
-		/* XXX: Also use long busy handling here? */
 		DBF_EVENT(6, "(%08x): LONG BUSY\n", device->cdev_id);
 		tape_3590_print_era_msg(device, irb);
 		return tape_3590_erp_basic(device, request, irb, -EBUSY);

@@ -64,4 +64,3 @@
 	streq	\irqstat, [\base, #GIC_CPU_EOI]
 	cmp	\tmp, #0
 	.endm
-

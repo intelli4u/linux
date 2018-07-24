@@ -463,7 +463,7 @@ int dasd_eer_enable(struct dasd_device *device)
 		return 0;
 
 	if (!device->discipline || strcmp(device->discipline->name, "ECKD"))
-		return -EPERM;	/* FIXME: -EMEDIUMTYPE ? */
+		return -EPERM;
 
 	cqr = dasd_kmalloc_request(DASD_ECKD_MAGIC, 1 /* SNSS */,
 				   SNSS_DATA_SIZE, device);

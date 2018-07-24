@@ -62,4 +62,3 @@ struct hid_debug_list {
 #endif
 
 #endif
-

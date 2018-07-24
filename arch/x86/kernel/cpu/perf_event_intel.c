@@ -485,20 +485,6 @@ static void intel_pmu_enable_all(int added)
 	}
 }
 
-/*
- * Workaround for:
- *   Intel Errata AAK100 (model 26)
- *   Intel Errata AAP53  (model 30)
- *   Intel Errata BD53   (model 44)
- *
- * The official story:
- *   These chips need to be 'reset' when adding counters by programming the
- *   magic three (non-counting) events 0x4300B5, 0x4300D2, and 0x4300B1 either
- *   in sequence on the same PMC or on different PMCs.
- *
- * In practise it appears some of these events do in fact count, and
- * we need to programm all 4 events.
- */
 static void intel_pmu_nhm_workaround(void)
 {
 	struct cpu_hw_events *cpuc = &__get_cpu_var(cpu_hw_events);

@@ -194,7 +194,7 @@ static void vga16fb_pan_var(struct fb_info *info,
 	if (info->var.bits_per_pixel == 8) {
 		pos = (info->var.xres_virtual * var->yoffset + xoffset) >> 2;
 	} else if (par->mode & MODE_TEXT) {
-		int fh = 16; // FIXME !!! font height. Fugde for now.
+		int fh = 16;
 		pos = (info->var.xres_virtual * (var->yoffset / fh) + xoffset) >> 3;
 	} else {
 		if (info->var.nonstd)
@@ -571,7 +571,7 @@ static int vga16fb_set_par(struct fb_info *info)
 	atc[VGA_ATC_COLOR_PAGE] = 0x00;
 	
 	if (par->mode & MODE_TEXT) {
-		fh = 16; // FIXME !!! Fudge font height. 
+		fh = 16;
 		par->crtc[VGA_CRTC_MAX_SCAN] = (par->crtc[VGA_CRTC_MAX_SCAN] 
 					       & ~0x1F) | (fh - 1);
 	}
@@ -1267,7 +1267,6 @@ static void vga16fb_destroy(struct fb_info *info)
 {
 	iounmap(info->screen_base);
 	fb_dealloc_cmap(&info->cmap);
-	/* XXX unshare VGA regions */
 	framebuffer_release(info);
 }
 
@@ -1321,7 +1320,6 @@ static int __devinit vga16fb_probe(struct platform_device *dev)
 		goto err_ioremap;
 	}
 
-	/* XXX share VGA_FB_PHYS and I/O region with vgacon and others */
 	info->screen_base = (void __iomem *)VGA_MAP_MEM(VGA_FB_PHYS, 0);
 
 	if (!info->screen_base) {
@@ -1462,4 +1460,3 @@ module_exit(vga16fb_exit);
  * c-basic-offset: 8
  * End:
  */
-

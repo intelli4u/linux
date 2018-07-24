@@ -14,11 +14,6 @@
 #include <net/netlink.h>
 #include <net/pkt_cls.h>
 
-/*
- * Passing parameters to the root seems to be done more awkwardly than really
- * necessary. At least, u32 doesn't seem to use such dirty hacks. To be
- * verified. FIXME.
- */
 
 #define PERFECT_HASH_THRESHOLD	64	/* use perfect hash if not bigger */
 #define DEFAULT_HASH_SIZE	64	/* optimized for diffserv */

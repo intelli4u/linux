@@ -292,8 +292,6 @@ static int pcmcia_init_one(struct pcmcia_device *pdev)
 	if (is_kme)
 		iowrite8(0x81, ctl_addr + 0x01);
 
-	/* FIXME: Could be more ports at base + 0x10 but we only deal with
-	   one right now */
 	if (resource_size(pdev->resource[0]) >= 0x20)
 		n_ports = 2;
 

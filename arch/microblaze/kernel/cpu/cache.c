@@ -361,12 +361,6 @@ static void __invalidate_dcache_all_noirq_wt(void)
 #endif
 }
 
-/* FIXME It is blindly invalidation as is expected
- * but can't be called on noMMU in microblaze_cache_init below
- *
- * MS: noMMU kernel won't boot if simple wdc is used
- * The reason should be that there are discared data which kernel needs
- */
 static void __invalidate_dcache_all_wb(void)
 {
 #ifndef ASM_LOOP
@@ -655,10 +649,6 @@ void microblaze_cache_init(void)
 			}
 		}
 	}
-/* FIXME Invalidation is done in U-BOOT
- * WT cache: Data is already written to main memory
- * WB cache: Discard data on noMMU which caused that kernel doesn't boot
- */
 	/* invalidate_dcache(); */
 	enable_dcache();
 

@@ -131,11 +131,6 @@ struct pmf_function {
 	/* For internal use by core */
 	struct pmf_device	*dev;
 
-	/* The name is the "xxx" in "platform-do-xxx", this is how
-	 * platform functions are identified by this code. Some functions
-	 * only operate for a given target, in which case the phandle is
-	 * here (or 0 if the filter doesn't apply)
-	 */
 	const char		*name;
 	u32			phandle;
 
@@ -218,14 +213,6 @@ extern int pmf_do_functions(struct device_node *np, const char *name,
 
 
 
-/*
- * High level call to a platform function.
- *
- * This one looks for the platform-xxx first so you should call it to the
- * actual target if any. It will fallback to platform-do-xxx if it can't
- * find one. It will also exclusively target functions that have
- * the "OnDemand" flag.
- */
 
 extern int pmf_call_function(struct device_node *target, const char *name,
 			     struct pmf_args *args);

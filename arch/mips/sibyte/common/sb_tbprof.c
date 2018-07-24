@@ -157,10 +157,6 @@ static void arm_tb(void)
 	u64 next = (1ULL << 40) - tb_period;
 	u64 tb_options = M_SCD_TRACE_CFG_FREEZE_FULL;
 
-	/*
-	 * Generate an SCD_PERFCNT interrupt in TB_PERIOD Zclks to
-	 * trigger start of trace.  XXX vary sampling period
-	 */
 	__raw_writeq(0, IOADDR(A_SCD_PERF_CNT_1));
 	scdperfcnt = __raw_readq(IOADDR(A_SCD_PERF_CNT_CFG));
 
@@ -190,10 +186,6 @@ static void arm_tb(void)
 	__raw_writeq(next, IOADDR(A_SCD_PERF_CNT_1));
 	/* Reset the trace buffer */
 	__raw_writeq(M_SCD_TRACE_CFG_RESET, IOADDR(A_SCD_TRACE_CFG));
-#if 0 && defined(M_SCD_TRACE_CFG_FORCECNT)
-	/* XXXKW may want to expose control to the data-collector */
-	tb_options |= M_SCD_TRACE_CFG_FORCECNT;
-#endif
 	__raw_writeq(tb_options, IOADDR(A_SCD_TRACE_CFG));
 	sbp.tb_armed = 1;
 }
@@ -205,7 +197,6 @@ static irqreturn_t sbprof_tb_intr(int irq, void *dev_id)
 	pr_debug(DEVNAME ": tb_intr\n");
 
 	if (sbp.next_tb_sample < MAX_TB_SAMPLES) {
-		/* XXX should use XKPHYS to make writes bypass L2 */
 		u64 *p = sbp.sbprof_tbbuf[sbp.next_tb_sample++];
 		/* Read out trace */
 		__raw_writeq(M_SCD_TRACE_CFG_START_READ,

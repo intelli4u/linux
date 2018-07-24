@@ -46,8 +46,8 @@
 	.section .text
 	.align	5
 
-#if defined(CONFIG_PM) || defined(CONFIG_CPU_FREQ_PMAC) || \
-    (defined(CONFIG_HOTPLUG_CPU) && defined(CONFIG_PPC32))
+#if defined(CONFIG_PM) || defined(CONFIG_CPU_FREQ_PMAC) || (defined(CONFIG_HOTPLUG_CPU) \
+	&& defined(CONFIG_PPC32))
 
 /* This gets called by via-pmu.c late during the sleep process.
  * The PMU was already send the sleep command and will shut us down
@@ -175,7 +175,6 @@ low_cpu_die:
 	isync
 
 BEGIN_FTR_SECTION
-	/* Flush any pending L2 data prefetches to work around HW bug */
 	sync
 	lis	r3,0xfff0
 	lwz	r0,0(r3)	/* perform cache-inhibited load to ROM */

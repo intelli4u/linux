@@ -1485,7 +1485,6 @@ static int xcvr_diag_bcm870x(struct niu *np)
 	u16 analog_stat0, tx_alarm_status;
 	int err = 0;
 
-#if 1
 	err = mdio_read(np, np->phy_addr, BCM8704_PMA_PMD_DEV_ADDR,
 			MII_STAT1000);
 	if (err < 0)
@@ -1502,9 +1501,7 @@ static int xcvr_diag_bcm870x(struct niu *np)
 	if (err < 0)
 		return err;
 	pr_info("Port %u PHYXS(MII_NWAYTEST) [%04x]\n", np->port, err);
-#endif
 
-	/* XXX dig this out it might not be so useful XXX */
 	err = mdio_read(np, np->phy_addr, BCM8704_USER_DEV3_ADDR,
 			BCM8704_USER_ANALOG_STATUS0);
 	if (err < 0)
@@ -1631,7 +1628,6 @@ static int xcvr_init_10g(struct niu *np)
 	val |= XMAC_CONFIG_FORCE_LED_ON;
 	nw64_mac(XMAC_CONFIG, val);
 
-	/* XXX shared resource, lock parent XXX */
 	val = nr64(MIF_CONFIG);
 	val |= MIF_CONFIG_INDIRECT_MODE;
 	nw64(MIF_CONFIG, val);
@@ -1856,20 +1852,6 @@ static int mii_init_common(struct niu *np)
 	if (err)
 		return err;
 
-#if 0
-	err = mii_read(np, np->phy_addr, MII_BMCR);
-	if (err < 0)
-		return err;
-	bmcr = err;
-
-	err = mii_read(np, np->phy_addr, MII_BMSR);
-	if (err < 0)
-		return err;
-	bmsr = err;
-
-	pr_info("Port %u after MII init bmcr[%04x] bmsr[%04x]\n",
-		np->port, bmcr, bmsr);
-#endif
 
 	return 0;
 }
@@ -1878,7 +1860,6 @@ static int xcvr_init_1g(struct niu *np)
 {
 	u64 val;
 
-	/* XXX shared resource, lock parent XXX */
 	val = nr64(MIF_CONFIG);
 	val &= ~MIF_CONFIG_INDIRECT_MODE;
 	nw64(MIF_CONFIG, val);
@@ -2298,7 +2279,7 @@ static const struct niu_phy_ops phy_ops_niu_10g_hotplug = {
 
 static const struct niu_phy_ops phy_ops_10g_copper = {
 	.serdes_init		= serdes_init_10g,
-	.link_status		= link_status_10g, /* XXX */
+	.link_status		= link_status_10g,
 };
 
 static const struct niu_phy_ops phy_ops_1g_fiber = {
@@ -2827,27 +2808,6 @@ static int tcam_flush(struct niu *np, int index)
 	return tcam_wait_bit(np, TCAM_CTL_STAT);
 }
 
-#if 0
-static int tcam_read(struct niu *np, int index,
-		     u64 *key, u64 *mask)
-{
-	int err;
-
-	nw64(TCAM_CTL, (TCAM_CTL_RWC_TCAM_READ | index));
-	err = tcam_wait_bit(np, TCAM_CTL_STAT);
-	if (!err) {
-		key[0] = nr64(TCAM_KEY_0);
-		key[1] = nr64(TCAM_KEY_1);
-		key[2] = nr64(TCAM_KEY_2);
-		key[3] = nr64(TCAM_KEY_3);
-		mask[0] = nr64(TCAM_KEY_MASK_0);
-		mask[1] = nr64(TCAM_KEY_MASK_1);
-		mask[2] = nr64(TCAM_KEY_MASK_2);
-		mask[3] = nr64(TCAM_KEY_MASK_3);
-	}
-	return err;
-}
-#endif
 
 static int tcam_write(struct niu *np, int index,
 		      u64 *key, u64 *mask)
@@ -2865,19 +2825,6 @@ static int tcam_write(struct niu *np, int index,
 	return tcam_wait_bit(np, TCAM_CTL_STAT);
 }
 
-#if 0
-static int tcam_assoc_read(struct niu *np, int index, u64 *data)
-{
-	int err;
-
-	nw64(TCAM_CTL, (TCAM_CTL_RWC_RAM_READ | index));
-	err = tcam_wait_bit(np, TCAM_CTL_STAT);
-	if (!err)
-		*data = nr64(TCAM_KEY_1);
-
-	return err;
-}
-#endif
 
 static int tcam_assoc_write(struct niu *np, int index, u64 assoc_data)
 {
@@ -2935,27 +2882,6 @@ static int tcam_user_eth_class_enable(struct niu *np, unsigned long class,
 	return 0;
 }
 
-#if 0
-static int tcam_user_eth_class_set(struct niu *np, unsigned long class,
-				   u64 ether_type)
-{
-	unsigned long reg;
-	u64 val;
-
-	if (class < CLASS_CODE_ETHERTYPE1 ||
-	    class > CLASS_CODE_ETHERTYPE2 ||
-	    (ether_type & ~(u64)0xffff) != 0)
-		return -EINVAL;
-
-	reg = L2_CLS(class - CLASS_CODE_ETHERTYPE1);
-	val = nr64(reg);
-	val &= ~L2_CLS_ETYPE;
-	val |= (ether_type << L2_CLS_ETYPE_SHIFT);
-	nw64(reg, val);
-
-	return 0;
-}
-#endif
 
 static int tcam_user_ip_class_enable(struct niu *np, unsigned long class,
 				     int on)
@@ -3047,25 +2973,6 @@ static u64 hash_addr_regval(unsigned long index, unsigned long num_entries)
 			      HASH_TBL_ADDR_AUTOINC : 0));
 }
 
-#if 0
-static int hash_read(struct niu *np, unsigned long partition,
-		     unsigned long index, unsigned long num_entries,
-		     u64 *data)
-{
-	u64 val = hash_addr_regval(index, num_entries);
-	unsigned long i;
-
-	if (partition >= FCRAM_NUM_PARTITIONS ||
-	    index + num_entries > FCRAM_SIZE)
-		return -EINVAL;
-
-	nw64(HASH_TBL_ADDR(partition), val);
-	for (i = 0; i < num_entries; i++)
-		data[i] = nr64(HASH_TBL_DATA(partition));
-
-	return 0;
-}
-#endif
 
 static int hash_write(struct niu *np, unsigned long partition,
 		      unsigned long index, unsigned long num_entries,
@@ -3719,13 +3626,8 @@ static int niu_rx_work(struct napi_struct *napi, struct niu *np,
 	struct rxdma_mailbox *mbox = rp->mbox;
 	u64 stat;
 
-#if 1
 	stat = nr64(RX_DMA_CTL_STAT(rp->rx_channel));
 	qlen = nr64(RCRSTAT_A(rp->rx_channel)) & RCRSTAT_A_QLEN;
-#else
-	stat = le64_to_cpup(&mbox->rx_dma_ctl_stat);
-	qlen = (le64_to_cpup(&mbox->rcrstat_a) & RCRSTAT_A_QLEN);
-#endif
 	mbox->rx_dma_ctl_stat = 0;
 	mbox->rcrstat_a = 0;
 
@@ -4451,7 +4353,6 @@ static int niu_alloc_tx_ring_info(struct niu *np,
 	rp->cons = 0;
 	rp->wrap_bit = 0;
 
-	/* XXX make these configurable... XXX */
 	rp->mark_freq = rp->pending / 4;
 
 	niu_set_max_burst(np, rp);
@@ -4522,7 +4423,6 @@ static int niu_alloc_channels(struct niu *np)
 
 		niu_size_rbr(np, rp);
 
-		/* XXX better defaults, configurable, etc... XXX */
 		rp->nonsyn_window = 64;
 		rp->nonsyn_threshold = rp->rcr_table_size - 64;
 		rp->syn_window = 64;
@@ -4627,7 +4527,6 @@ static int niu_tx_channel_lpage_init(struct niu *np, int channel)
 	val |= (TX_LOG_PAGE_VLD_PAGE0 | TX_LOG_PAGE_VLD_PAGE1);
 	nw64(TX_LOG_PAGE_VLD(channel), val);
 
-	/* XXX TXDMA 32bit mode? XXX */
 
 	return 0;
 }
@@ -4993,7 +4892,6 @@ static int niu_init_rx_channels(struct niu *np)
 	nw64(RED_RAN_INIT, RED_RAN_INIT_OPMODE | (seed & RED_RAN_INIT_VAL));
 	niu_unlock_parent(np, flags);
 
-	/* XXX RXDMA 32bit mode? XXX */
 
 	niu_init_rdc_groups(np);
 	niu_init_drr_weight(np);
@@ -9009,13 +8907,7 @@ static void __devinit niu_link_config_init(struct niu *np)
 	lp->duplex = DUPLEX_FULL;
 	lp->active_duplex = DUPLEX_INVALID;
 	lp->autoneg = 1;
-#if 0
-	lp->loopback_mode = LOOPBACK_MAC;
-	lp->active_speed = SPEED_10000;
-	lp->active_duplex = DUPLEX_FULL;
-#else
 	lp->loopback_mode = LOOPBACK_DISABLED;
-#endif
 }
 
 static int __devinit niu_init_mac_ipp_pcs_base(struct niu *np)
@@ -9145,7 +9037,7 @@ static int __devinit niu_ldg_init(struct niu *np)
 
 		lp->np = np;
 		lp->ldg_num = ldg_num_map[i];
-		lp->timer = 2; /* XXX */
+		lp->timer = 2;
 
 		/* On N2 NIU the firmware has setup the SID mappings so they go
 		 * to the correct values that will route the LDG to the proper

@@ -92,7 +92,6 @@ struct vring_virtqueue
 	/* Last used index we've seen. */
 	u16 last_used_idx;
 
-	/* How to notify other side. FIXME: commonalize hcalls! */
 	void (*notify)(struct virtqueue *vq);
 
 #ifdef DEBUG
@@ -171,8 +170,6 @@ int virtqueue_add_buf_gfp(struct virtqueue *_vq,
 
 	BUG_ON(data == NULL);
 
-	/* If the host supports indirect descriptor tables, and we have multiple
-	 * buffers, then go indirect. FIXME: tune this threshold */
 	if (vq->indirect && (out + in) > 1 && vq->num_free) {
 		head = vring_add_indirect(vq, sg, out, in, gfp);
 		if (likely(head >= 0))
@@ -185,9 +182,6 @@ int virtqueue_add_buf_gfp(struct virtqueue *_vq,
 	if (vq->num_free < out + in) {
 		pr_debug("Can't add buf len %i - avail = %i\n",
 			 out + in, vq->num_free);
-		/* FIXME: for historical reasons, we force a notify here if
-		 * there are outgoing parts to the buffer.  Presumably the
-		 * host should service the ring ASAP. */
 		if (out)
 			vq->notify(&vq->vq);
 		END_USE(vq);
@@ -222,8 +216,6 @@ add_head:
 	/* Set token. */
 	vq->data[head] = data;
 
-	/* Put entry in available array (but don't update avail->idx until they
-	 * do sync).  FIXME: avoid modulus here? */
 	avail = (vq->vring.avail->idx + vq->num_added++) % vq->vring.num;
 	vq->vring.avail->ring[avail] = head;
 

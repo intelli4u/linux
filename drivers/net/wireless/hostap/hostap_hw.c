@@ -1557,15 +1557,6 @@ static void prism2_hw_reset(struct net_device *dev)
 	struct hostap_interface *iface;
 	local_info_t *local;
 
-#if 0
-	static long last_reset = 0;
-
-	/* do not reset card more than once per second to avoid ending up in a
-	 * busy loop reseting the card */
-	if (time_before_eq(jiffies, last_reset + HZ))
-		return;
-	last_reset = jiffies;
-#endif
 
 	iface = netdev_priv(dev);
 	local = iface->local;
@@ -2775,13 +2766,6 @@ static void prism2_check_sta_fw_version(local_info_t *local)
 		local->host_encrypt = 1;
 	}
 
-	/* IEEE 802.11 standard compliant WDS frames (4 addresses) were broken
-	 * in station firmware versions before 1.5.x. With these versions, the
-	 * driver uses a workaround with bogus frame format (4th address after
-	 * the payload). This is not compatible with other AP devices. Since
-	 * the firmware bug is fixed in the latest station firmware versions,
-	 * automatically enable standard compliant mode for cards using station
-	 * firmware version 1.5.0 or newer. */
 	if (local->sta_fw_ver >= PRISM2_FW_VER(1,5,0))
 		local->wds_type |= HOSTAP_WDS_STANDARD_FRAME;
 	else {

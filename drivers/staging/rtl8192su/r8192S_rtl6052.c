@@ -198,7 +198,6 @@ extern void PHY_RF6052SetCckTxPower(struct net_device* dev, u8	powerlevel)
  *						2. We concern with path B legacy/HT OFDM difference.
  * 01/22/2009	MHC		Support new EPRO format from SD3.
  *---------------------------------------------------------------------------*/
- #if 1
 extern void PHY_RF6052SetOFDMTxPower(struct net_device* dev, u8 powerlevel)
 {
 	struct r8192_priv *priv = ieee80211_priv(dev);
@@ -412,80 +411,6 @@ extern void PHY_RF6052SetOFDMTxPower(struct net_device* dev, u8 powerlevel)
 	}
 
 }	/* PHY_RF6052SetOFDMTxPower */
-#else
-extern void PHY_RF6052SetOFDMTxPower(struct net_device* dev, u8 powerlevel)
-{
-	struct r8192_priv *priv = ieee80211_priv(dev);
-	u32 	writeVal, powerBase0, powerBase1;
-	u8 	index = 0;
-	u16 	RegOffset[6] = {0xe00, 0xe04, 0xe10, 0xe14, 0xe18, 0xe1c};
-	u8 	byte0, byte1, byte2, byte3;
-	u8    channel = priv->ieee80211->current_network.channel;
-
-	//Legacy OFDM rates
-	powerBase0 = powerlevel + (priv->LegacyHTTxPowerDiff & 0xf);
-	powerBase0 = (powerBase0<<24) | (powerBase0<<16) |(powerBase0<<8) |powerBase0;
-
-	//MCS rates HT OFDM
-	powerBase1 = powerlevel;
-	powerBase1 = (powerBase1<<24) | (powerBase1<<16) |(powerBase1<<8) |powerBase1;
-
-	//printk("Legacy/HT PWR= %x/%x\n", powerBase0, powerBase1);
-
-	for(index=0; index<6; index++)
-	{
-		//
-		// Index 0 & 1= legacy OFDM, 2-5=HT_MCS rate
-		//
-		writeVal = priv->MCSTxPowerLevelOriginalOffset[index] +  ((index<2)?powerBase0:powerBase1);
-
-		//printk("Index = %d Original=%x writeVal=%x\n", index, priv->MCSTxPowerLevelOriginalOffset[index], writeVal);
-
-		byte0 = (u8)(writeVal & 0x7f);
-		byte1 = (u8)((writeVal & 0x7f00)>>8);
-		byte2 = (u8)((writeVal & 0x7f0000)>>16);
-		byte3 = (u8)((writeVal & 0x7f000000)>>24);
-
-		// Max power index = 0x3F Range = 0-0x3F
-		if(byte0 > RF6052_MAX_TX_PWR)
-			byte0 = RF6052_MAX_TX_PWR;
-		if(byte1 > RF6052_MAX_TX_PWR)
-			byte1 = RF6052_MAX_TX_PWR;
-		if(byte2 > RF6052_MAX_TX_PWR)
-			byte2 = RF6052_MAX_TX_PWR;
-		if(byte3 > RF6052_MAX_TX_PWR)
-			byte3 = RF6052_MAX_TX_PWR;
-
-		//
-		// Add description: PWDB > threshold!!!High power issue!!
-		// We must decrease tx power !! Why is the value ???
-		//
-		if(priv->bDynamicTxHighPower == true)
-		{
-			// For MCS rate
-			if(index > 1)
-			{
-				writeVal = 0x03030303;
-			}
-			// For Legacy rate
-			else
-			{
-				writeVal = (byte3<<24) | (byte2<<16) |(byte1<<8) |byte0;
-			}
-		}
-		else
-		{
-			writeVal = (byte3<<24) | (byte2<<16) |(byte1<<8) |byte0;
-		}
-
-		//
-		// Write different rate set tx power index.
-		//
-		rtl8192_setBBreg(dev, RegOffset[index], 0x7f7f7f7f, writeVal);
-	}
-
-}	/* PHY_RF6052SetOFDMTxPower */
-#endif
 
 RT_STATUS PHY_RF6052_Config(struct net_device* dev)
 {

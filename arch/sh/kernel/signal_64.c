@@ -195,7 +195,6 @@ sys_rt_sigsuspend(sigset_t *unewset, size_t sigsetsize,
 {
 	sigset_t saveset, newset;
 
-	/* XXX: Don't preclude handling different sized sigset_t's.  */
 	if (sigsetsize != sizeof(sigset_t))
 		return -EINVAL;
 
@@ -597,14 +596,6 @@ static int setup_frame(int sig, struct k_sigaction *ka,
 	regs->regs[REG_SP] = neff_sign_extend((unsigned long)frame);
 	regs->regs[REG_ARG1] = signal; /* Arg for signal handler */
 
-        /* FIXME:
-           The glibc profiling support for SH-5 needs to be passed a sigcontext
-           so it can retrieve the PC.  At some point during 2003 the glibc
-           support was changed to receive the sigcontext through the 2nd
-           argument, but there are still versions of libc.so in use that use
-           the 3rd argument.  Until libc.so is stabilised, pass the sigcontext
-           through both 2nd and 3rd arguments.
-        */
 
 	regs->regs[REG_ARG2] = (unsigned long long)(unsigned long)(signed long)&frame->sc;
 	regs->regs[REG_ARG3] = (unsigned long long)(unsigned long)(signed long)&frame->sc;

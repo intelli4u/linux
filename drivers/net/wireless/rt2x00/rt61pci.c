@@ -748,11 +748,6 @@ static void rt61pci_config_antenna_2529(struct rt2x00_dev *rt2x00dev,
 		rt61pci_config_antenna_2529_rx(rt2x00dev, 0, 0);
 		break;
 	case ANTENNA_HW_DIVERSITY:
-		/*
-		 * FIXME: Antenna selection for the rf 2529 is very confusing
-		 * in the legacy driver. Just default to antenna B until the
-		 * legacy code can be properly translated into rt2x00 code.
-		 */
 	case ANTENNA_B:
 	default:
 		rt2x00_set_field8(&r4, BBP_R4_RX_ANTENNA_CONTROL, 1);
@@ -2012,11 +2007,6 @@ static void rt61pci_fill_rxdone(struct queue_entry *entry,
 		 */
 		rxdesc->flags |= RX_FLAG_IV_STRIPPED;
 
-		/*
-		 * FIXME: Legacy driver indicates that the frame does
-		 * contain the Michael Mic. Unfortunately, in rt2x00
-		 * the MIC seems to be missing completely...
-		 */
 		rxdesc->flags |= RX_FLAG_MMIC_STRIPPED;
 
 		if (rxdesc->cipher_status == RX_CRYPTO_SUCCESS)

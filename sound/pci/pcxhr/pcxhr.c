@@ -647,25 +647,6 @@ static int pcxhr_update_r_buffer(struct pcxhr_stream *stream)
 }
 
 
-#if 0
-static int pcxhr_pipe_sample_count(struct pcxhr_stream *stream,
-				   snd_pcm_uframes_t *sample_count)
-{
-	struct pcxhr_rmh rmh;
-	int err;
-	pcxhr_t *chip = snd_pcm_substream_chip(stream->substream);
-	pcxhr_init_rmh(&rmh, CMD_PIPE_SAMPLE_COUNT);
-	pcxhr_set_pipe_cmd_params(&rmh, stream->pipe->is_capture, 0, 0,
-				  1<<stream->pipe->first_audio);
-	err = pcxhr_send_msg(chip->mgr, &rmh);
-	if (err == 0) {
-		*sample_count = ((snd_pcm_uframes_t)rmh.stat[0]) << 24;
-		*sample_count += (snd_pcm_uframes_t)rmh.stat[1];
-	}
-	snd_printdd("PIPE_SAMPLE_COUNT = %lx\n", *sample_count);
-	return err;
-}
-#endif
 
 static inline int pcxhr_stream_scheduled_get_pipe(struct pcxhr_stream *stream,
 						  struct pcxhr_pipe **pipe)

@@ -411,8 +411,8 @@ static struct stv090x_reg stv0900_initval[] = {
 	{ STV090x_RCCFGH,		0x20 },
 	{ STV090x_P1_FECM,		0x01 }, /* disable DSS modes */
 	{ STV090x_P2_FECM,		0x01 }, /* disable DSS modes */
-	{ STV090x_P1_PRVIT,		0x2F }, /* disable PR 6/7 */
-	{ STV090x_P2_PRVIT,		0x2F }, /* disable PR 6/7 */
+	{ STV090x_P1_PRVIT,		0x2F },
+	{ STV090x_P2_PRVIT,		0x2F },
 };
 
 static struct stv090x_reg stv0903_initval[] = {
@@ -4506,7 +4506,6 @@ static int stv090x_setup(struct dvb_frontend *fe)
 	if (stv090x_write_reg(state, STV090x_TSTRES0, 0x00) < 0)
 		goto err;
 
-	/* workaround for stuck DiSEqC output */
 	if (config->diseqc_envelope_mode)
 		stv090x_send_diseqc_burst(fe, SEC_MINI_A);
 

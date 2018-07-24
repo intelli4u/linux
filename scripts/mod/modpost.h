@@ -145,18 +145,6 @@ static inline int is_shndx_special(unsigned int i)
 	return i != SHN_XINDEX && i >= SHN_LORESERVE && i <= SHN_HIRESERVE;
 }
 
-/* shndx is in [0..SHN_LORESERVE) U (SHN_HIRESERVE, 0xfffffff], thus:
- * shndx == 0               <=> sechdrs[0]
- * ......
- * shndx == SHN_LORESERVE-1 <=> sechdrs[SHN_LORESERVE-1]
- * shndx == SHN_HIRESERVE+1 <=> sechdrs[SHN_LORESERVE]
- * shndx == SHN_HIRESERVE+2 <=> sechdrs[SHN_LORESERVE+1]
- * ......
- * fyi: sym->st_shndx is uint16, SHN_LORESERVE = ff00, SHN_HIRESERVE = ffff,
- * so basically we map  0000..feff -> 0000..feff
- *                      ff00..ffff -> (you are a bad boy, dont do it)
- *                     10000..xxxx -> ff00..(xxxx-0x100)
- */
 static inline unsigned int shndx2secindex(unsigned int i)
 {
 	if (i <= SHN_HIRESERVE)

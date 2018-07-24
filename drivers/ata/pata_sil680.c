@@ -236,7 +236,6 @@ static u8 sil680_init_chip(struct pci_dev *pdev, int *try_mmio)
 {
 	u8 tmpbyte	= 0;
 
-        /* FIXME: double check */
 	pci_write_config_byte(pdev, PCI_CACHE_LINE_SIZE,
 			      pdev->revision ? 1 : 255);
 

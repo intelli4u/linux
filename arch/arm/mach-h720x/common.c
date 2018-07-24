@@ -30,11 +30,7 @@
 
 #include <asm/mach/dma.h>
 
-#if 0
-#define IRQDBG(args...) printk(args)
-#else
 #define IRQDBG(args...) do {} while(0)
-#endif
 
 void __init arch_dma_init(dma_t *dma)
 {

@@ -400,4 +400,3 @@ static __init int init_function_trace(void)
 	return register_tracer(&function_trace);
 }
 device_initcall(init_function_trace);
-

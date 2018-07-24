@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 #ifndef _LINUX_JIFFIES_H
 #define _LINUX_JIFFIES_H
 
@@ -15,7 +16,13 @@
  * OSF/1 kernel. The SHIFT_HZ define expresses the same value as the
  * nearest power of two in order to avoid hardware multiply operations.
  */
-#if HZ >= 12 && HZ < 24
+#if HZ < 3
+# define SHIFT_HZ	1
+#elif HZ >= 3 && HZ < 6
+# define SHIFT_HZ	2
+#elif HZ >= 6 && HZ < 12
+# define SHIFT_HZ	3
+#elif HZ >= 12 && HZ < 24
 # define SHIFT_HZ	4
 #elif HZ >= 24 && HZ < 48
 # define SHIFT_HZ	5

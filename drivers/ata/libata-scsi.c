@@ -385,24 +385,6 @@ static void ata_scsi_invalid_field(struct scsi_cmnd *cmd,
 	done(cmd);
 }
 
-/**
- *	ata_std_bios_param - generic bios head/sector/cylinder calculator used by sd.
- *	@sdev: SCSI device for which BIOS geometry is to be determined
- *	@bdev: block device associated with @sdev
- *	@capacity: capacity of SCSI device
- *	@geom: location to which geometry will be output
- *
- *	Generic bios head/sector/cylinder calculator
- *	used by sd. Most BIOSes nowadays expect a XXX/255/16  (CHS)
- *	mapping. Some situations may arise where the disk is not
- *	bootable if this is not used.
- *
- *	LOCKING:
- *	Defined by the SCSI layer.  We don't really care.
- *
- *	RETURNS:
- *	Zero.
- */
 int ata_std_bios_param(struct scsi_device *sdev, struct block_device *bdev,
 		       sector_t capacity, int geom[])
 {
@@ -883,11 +865,11 @@ static void ata_to_sense_error(unsigned id, u8 drv_stat, u8 drv_err, u8 *sk,
 		/* Abort & !ICRC */
 		{0x04, 		ABORTED_COMMAND, 0x00, 0x00}, 	// Aborted command              Aborted command
 		/* Media change request */
-		{0x08, 		NOT_READY, 0x04, 0x00}, 	// Media change request	  FIXME: faking offline
+		{0x08, 		NOT_READY, 0x04, 0x00},
 		/* SRV */
 		{0x10, 		ABORTED_COMMAND, 0x14, 0x00}, 	// ID not found                 Recorded entity not found
 		/* Media change */
-		{0x08,  	NOT_READY, 0x04, 0x00}, 	// Media change		  FIXME: faking offline
+		{0x08,  	NOT_READY, 0x04, 0x00},
 		/* ECC */
 		{0x40, 		MEDIUM_ERROR, 0x11, 0x04}, 	// Uncorrectable ECC error      Unrecovered read error
 		/* BBD - block marked bad */
@@ -2480,11 +2462,6 @@ static unsigned int ata_scsiop_report_luns(struct ata_scsi_args *args, u8 *rbuf)
 static void atapi_sense_complete(struct ata_queued_cmd *qc)
 {
 	if (qc->err_mask && ((qc->err_mask & AC_ERR_DEV) == 0)) {
-		/* FIXME: not quite right; we don't want the
-		 * translation of taskfile registers into
-		 * a sense descriptors, since that's only
-		 * correct for ATA, not ATAPI
-		 */
 		ata_gen_passthru_sense(qc);
 	}
 
@@ -2505,7 +2482,6 @@ static void atapi_request_sense(struct ata_queued_cmd *qc)
 
 	DPRINTK("ATAPI request sense\n");
 
-	/* FIXME: is this needed? */
 	memset(cmd->sense_buffer, 0, SCSI_SENSE_BUFFERSIZE);
 
 #ifdef CONFIG_ATA_SFF
@@ -2560,11 +2536,6 @@ static void atapi_qc_complete(struct ata_queued_cmd *qc)
 		     (err_mask || qc->flags & ATA_QCFLAG_SENSE_VALID))) {
 
 		if (!(qc->flags & ATA_QCFLAG_SENSE_VALID)) {
-			/* FIXME: not quite right; we don't want the
-			 * translation of taskfile registers into a
-			 * sense descriptors, since that's only
-			 * correct for ATA, not ATAPI
-			 */
 			ata_gen_passthru_sense(qc);
 		}
 
@@ -2596,11 +2567,6 @@ static void atapi_qc_complete(struct ata_queued_cmd *qc)
 		atapi_request_sense(qc);
 		return;
 	} else if (unlikely(err_mask)) {
-		/* FIXME: not quite right; we don't want the
-		 * translation of taskfile registers into
-		 * a sense descriptors, since that's only
-		 * correct for ATA, not ATAPI
-		 */
 		ata_gen_passthru_sense(qc);
 	} else {
 		u8 *scsicmd = cmd->cmnd;
@@ -2722,8 +2688,6 @@ static unsigned int atapi_xlat(struct ata_queued_cmd *qc)
 	}
 
 
-	/* FIXME: We need to translate 0x05 READ_BLOCK_LIMITS to a MODE_SENSE
-	   as ATAPI tape drives don't get this right otherwise */
 	return 0;
 }
 

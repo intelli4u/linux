@@ -873,7 +873,6 @@ static int acpi_processor_get_throttling(struct acpi_processor *pr)
 	 * Migrate task to the cpu pointed by pr.
 	 */
 	cpumask_copy(saved_mask, &current->cpus_allowed);
-	/* FIXME: use work_on_cpu() */
 	set_cpus_allowed_ptr(current, cpumask_of(pr->id));
 	ret = pr->throttling.acpi_processor_get_throttling(pr);
 	/* restore the previous state */
@@ -1071,7 +1070,6 @@ int acpi_processor_set_throttling(struct acpi_processor *pr,
 	 * it can be called only for the cpu pointed by pr.
 	 */
 	if (p_throttling->shared_type == DOMAIN_COORD_TYPE_SW_ANY) {
-		/* FIXME: use work_on_cpu() */
 		set_cpus_allowed_ptr(current, cpumask_of(pr->id));
 		ret = p_throttling->acpi_processor_set_throttling(pr,
 						t_state.target_state, force);
@@ -1103,7 +1101,6 @@ int acpi_processor_set_throttling(struct acpi_processor *pr,
 				continue;
 			}
 			t_state.cpu = i;
-			/* FIXME: use work_on_cpu() */
 			set_cpus_allowed_ptr(current, cpumask_of(i));
 			ret = match_pr->throttling.
 				acpi_processor_set_throttling(
@@ -1122,7 +1119,6 @@ int acpi_processor_set_throttling(struct acpi_processor *pr,
 							&t_state);
 	}
 	/* restore the previous state */
-	/* FIXME: use work_on_cpu() */
 	set_cpus_allowed_ptr(current, saved_mask);
 	free_cpumask_var(online_throttling_cpus);
 	free_cpumask_var(saved_mask);

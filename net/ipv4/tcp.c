@@ -277,6 +277,9 @@
 #include <asm/uaccess.h>
 #include <asm/ioctls.h>
 
+#include <typedefs.h>
+#include <bcmdefs.h>
+
 int sysctl_tcp_fin_timeout __read_mostly = TCP_FIN_TIMEOUT;
 
 struct percpu_counter tcp_orphan_count;
@@ -851,7 +854,11 @@ wait_for_memory:
 	}
 
 out:
+#ifdef CONFIG_BCM47XX
+	if (copied && !(flags & MSG_MORE))
+#else
 	if (copied)
+#endif
 		tcp_push(sk, flags, mss_now, tp->nonagle);
 	return copied;
 
@@ -862,7 +869,7 @@ out_err:
 	return sk_stream_error(sk, flags, err);
 }
 
-int tcp_sendpage(struct sock *sk, struct page *page, int offset,
+int BCMFASTPATH_HOST tcp_sendpage(struct sock *sk, struct page *page, int offset,
 		 size_t size, int flags)
 {
 	ssize_t res;
@@ -904,7 +911,7 @@ static inline int select_size(struct sock *sk, int sg)
 	return tmp;
 }
 
-int tcp_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
+int BCMFASTPATH_HOST tcp_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 		size_t size)
 {
 	struct iovec *iov;
@@ -1397,7 +1404,7 @@ EXPORT_SYMBOL(tcp_read_sock);
  *	Probably, code can be easily improved even more.
  */
 
-int tcp_recvmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
+int BCMFASTPATH_HOST tcp_recvmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 		size_t len, int nonblock, int flags, int *addr_len)
 {
 	struct tcp_sock *tp = tcp_sk(sk);
@@ -1460,8 +1467,27 @@ int tcp_recvmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 	do {
 		u32 offset;
 
+#if defined(CONFIG_BCM_RECVFILE)
+		if (flags & MSG_NOCATCHSIG) {
+			if (signal_pending(current)) {
+				if (sigismember(&current->pending.signal, SIGQUIT) ||
+				    sigismember(&current->pending.signal, SIGABRT) ||
+				    sigismember(&current->pending.signal, SIGKILL) ||
+				    sigismember(&current->pending.signal, SIGTERM) ||
+				    sigismember(&current->pending.signal, SIGSTOP)) {
+					if (copied)
+						break;
+					copied = timeo ? sock_intr_errno(timeo) : -EAGAIN;
+					break;
+				}
+			}
+		}
+		else if (tp->urg_data && tp->urg_seq == *seq)
+#else /* !CONFIG_BCM_RECVFILE */
 		/* Are we at urgent data? Stop if we have read anything or have SIGURG pending. */
-		if (tp->urg_data && tp->urg_seq == *seq) {
+		if (tp->urg_data && tp->urg_seq == *seq)
+#endif /* CONFIG_BCM_RECVFILE */
+		{
 			if (copied)
 				break;
 			if (signal_pending(current)) {
@@ -1690,8 +1716,17 @@ do_prequeue:
 			} else
 #endif
 			{
+#if defined(CONFIG_BCM_RECVFILE)
+				if(msg->msg_flags & MSG_KERNSPACE) {
+					err = skb_copy_datagram_to_kernel_iovec(skb,
+							offset, msg->msg_iov, used);
+				}
+				else
+#endif /* CONFIG_BCM_RECVFILE */
+				{
 				err = skb_copy_datagram_iovec(skb, offset,
 						msg->msg_iov, used);
+				}
 				if (err) {
 					/* Exception. Bailout! */
 					if (!copied)
@@ -2646,7 +2681,7 @@ int compat_tcp_getsockopt(struct sock *sk, int level, int optname,
 EXPORT_SYMBOL(compat_tcp_getsockopt);
 #endif
 
-struct sk_buff *tcp_tso_segment(struct sk_buff *skb, int features)
+struct sk_buff BCMFASTPATH_HOST *tcp_tso_segment(struct sk_buff *skb, int features)
 {
 	struct sk_buff *segs = ERR_PTR(-EINVAL);
 	struct tcphdr *th;
@@ -2693,6 +2728,18 @@ struct sk_buff *tcp_tso_segment(struct sk_buff *skb, int features)
 		goto out;
 	}
 
+	/*
+	 * For normal optimized packet handling, it calls skb_tcp_segmented().
+	 * However, packets marked for Netfilter needs to be segmented using
+	 * the old method since the packets are passed up to the application
+	 * layer.
+	 */
+	if (!skb->tcpf_nf && !(skb_shinfo(skb)->frag_list) && (skb->protocol != htons(ETH_P_IPV6))) {
+		return skb_tcp_segment(skb, features, oldlen, thlen);
+	}
+
+	/* Old method */
+	skb->tcpf_nf = 0;
 	segs = skb_segment(skb, features);
 	if (IS_ERR(segs))
 		goto out;
@@ -2734,7 +2781,7 @@ out:
 }
 EXPORT_SYMBOL(tcp_tso_segment);
 
-struct sk_buff **tcp_gro_receive(struct sk_buff **head, struct sk_buff *skb)
+struct sk_buff ** BCMFASTPATH_HOST tcp_gro_receive(struct sk_buff **head, struct sk_buff *skb)
 {
 	struct sk_buff **pp = NULL;
 	struct sk_buff *p;
@@ -2830,7 +2877,7 @@ out:
 }
 EXPORT_SYMBOL(tcp_gro_receive);
 
-int tcp_gro_complete(struct sk_buff *skb)
+int BCMFASTPATH_HOST tcp_gro_complete(struct sk_buff *skb)
 {
 	struct tcphdr *th = tcp_hdr(skb);
 

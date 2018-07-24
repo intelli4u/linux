@@ -1676,4 +1676,3 @@ void bond_prepare_sysfs_group(struct bonding *bond)
 {
 	bond->dev->sysfs_groups[0] = &bonding_group;
 }
-

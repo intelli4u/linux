@@ -699,10 +699,6 @@ static void handle_request(struct fw_card *card, struct fw_request *request,
 	r->length  = length;
 
 	if (is_fcp_request(request)) {
-		/*
-		 * FIXME: Let core-transaction.c manage a
-		 * single reference-counted copy?
-		 */
 		fcp_frame = kmemdup(payload, length, GFP_ATOMIC);
 		if (fcp_frame == NULL)
 			goto failed;
@@ -1644,7 +1640,6 @@ static int fw_device_op_mmap(struct file *file, struct vm_area_struct *vma)
 	if (fw_device_is_shutdown(client->device))
 		return -ENODEV;
 
-	/* FIXME: We could support multiple buffers, but we don't. */
 	if (client->buffer.pages != NULL)
 		return -EBUSY;
 

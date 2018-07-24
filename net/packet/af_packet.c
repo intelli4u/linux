@@ -463,10 +463,6 @@ retry:
 		skb = sock_wmalloc(sk, len + reserved, 0, GFP_KERNEL);
 		if (skb == NULL)
 			return -ENOBUFS;
-		/* FIXME: Save some space for broken drivers that write a hard
-		 * header at transmission time by themselves. PPP is the notable
-		 * one here. This should really be fixed at the driver level.
-		 */
 		skb_reserve(skb, reserved);
 		skb_reset_network_header(skb);
 
@@ -1574,11 +1570,6 @@ static int packet_recvmsg(struct kiocb *iocb, struct socket *sock,
 	if (flags & ~(MSG_PEEK|MSG_DONTWAIT|MSG_TRUNC|MSG_CMSG_COMPAT|MSG_ERRQUEUE))
 		goto out;
 
-#if 0
-	/* What error should we return now? EUNATTACH? */
-	if (pkt_sk(sk)->ifindex < 0)
-		return -ENODEV;
-#endif
 
 	if (flags & MSG_ERRQUEUE) {
 		err = packet_recv_error(sk, msg, len);

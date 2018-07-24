@@ -55,8 +55,8 @@ struct stv0900_config {
 	int (*set_ts_params)(struct dvb_frontend *fe, int is_punctured);
 };
 
-#if defined(CONFIG_DVB_STV0900) || (defined(CONFIG_DVB_STV0900_MODULE) \
-							&& defined(MODULE))
+#if defined(CONFIG_DVB_STV0900) || (defined(CONFIG_DVB_STV0900_MODULE) && \
+	defined(MODULE))
 extern struct dvb_frontend *stv0900_attach(const struct stv0900_config *config,
 					struct i2c_adapter *i2c, int demod);
 #else
@@ -69,4 +69,3 @@ static inline struct dvb_frontend *stv0900_attach(const struct stv0900_config *c
 #endif
 
 #endif
-

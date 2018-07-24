@@ -115,7 +115,8 @@ struct drx397xD_config
 	u16	ss76;	// 820
 };
 
-#if defined(CONFIG_DVB_DRX397XD) || (defined(CONFIG_DVB_DRX397XD_MODULE) && defined(MODULE))
+#if defined(CONFIG_DVB_DRX397XD) || (defined(CONFIG_DVB_DRX397XD_MODULE) && \
+	defined(MODULE))
 extern struct dvb_frontend* drx397xD_attach(const struct drx397xD_config *config,
 					   struct i2c_adapter *i2c);
 #else

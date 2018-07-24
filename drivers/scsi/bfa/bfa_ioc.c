@@ -795,7 +795,7 @@ bfa_ioc_lmem_init(struct bfa_ioc_s *ioc)
 	pss_ctl = bfa_reg_read(ioc->ioc_regs.pss_ctl_reg);
 	pss_ctl &= ~__PSS_LMEM_RESET;
 	pss_ctl |= __PSS_LMEM_INIT_EN;
-	pss_ctl |= __PSS_I2C_CLK_DIV(3UL); /* i2c workaround 12.5khz clock */
+	pss_ctl |= __PSS_I2C_CLK_DIV(3UL);
 	bfa_reg_write(ioc->ioc_regs.pss_ctl_reg, pss_ctl);
 
 	/**

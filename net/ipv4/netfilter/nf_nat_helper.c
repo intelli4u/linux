@@ -153,14 +153,6 @@ void nf_nat_set_seq_adjust(struct nf_conn *ct, enum ip_conntrack_info ctinfo,
 }
 EXPORT_SYMBOL_GPL(nf_nat_set_seq_adjust);
 
-/* Generic function for mangling variable-length address changes inside
- * NATed TCP connections (like the PORT XXX,XXX,XXX,XXX,XXX,XXX
- * command in FTP).
- *
- * Takes care about all the nasty sequence number changes, checksumming,
- * skb enlargement, ...
- *
- * */
 int __nf_nat_mangle_tcp_packet(struct sk_buff *skb,
 			       struct nf_conn *ct,
 			       enum ip_conntrack_info ctinfo,
@@ -221,16 +213,6 @@ int __nf_nat_mangle_tcp_packet(struct sk_buff *skb,
 }
 EXPORT_SYMBOL(__nf_nat_mangle_tcp_packet);
 
-/* Generic function for mangling variable-length address changes inside
- * NATed UDP connections (like the CONNECT DATA XXXXX MESG XXXXX INDEX XXXXX
- * command in the Amanda protocol)
- *
- * Takes care about all the nasty sequence number changes, checksumming,
- * skb enlargement, ...
- *
- * XXX - This function could be merged with nf_nat_mangle_tcp_packet which
- *       should be fairly easy to do.
- */
 int
 nf_nat_mangle_udp_packet(struct sk_buff *skb,
 			 struct nf_conn *ct,

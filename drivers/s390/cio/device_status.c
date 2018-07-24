@@ -173,7 +173,6 @@ ccw_device_accumulate_esw(struct ccw_device *cdev, struct irb *irb)
 			cdev_irb->esw.esw0.saddr = irb->esw.esw0.saddr;
 		
 	}
-	/* FIXME: DCTI for format 2? */
 
 	/* Copy authorization bit. */
 	cdev_irb->esw.esw0.erw.auth = irb->esw.esw0.erw.auth;
@@ -397,4 +396,3 @@ ccw_device_accumulate_and_sense(struct ccw_device *cdev, struct irb *irb)
 	}
 	return 0;
 }
-

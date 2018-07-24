@@ -924,7 +924,6 @@ static int sh_mobile_ceu_get_formats(struct soc_camera_device *icd, unsigned int
 		struct v4l2_rect rect;
 		int shift = 0;
 
-		/* FIXME: subwindow is lost between close / open */
 
 		/* Cache current client geometry */
 		ret = client_g_rect(sd, &rect);
@@ -1660,7 +1659,6 @@ static int sh_mobile_ceu_try_fmt(struct soc_camera_device *icd,
 		return -EINVAL;
 	}
 
-	/* FIXME: calculate using depth and bus width */
 
 	v4l_bound_align_image(&pix->width, 2, 2560, 1,
 			      &pix->height, 4, 1920, 2, 0);
@@ -1694,7 +1692,6 @@ static int sh_mobile_ceu_try_fmt(struct soc_camera_device *icd,
 	case V4L2_PIX_FMT_NV21:
 	case V4L2_PIX_FMT_NV16:
 	case V4L2_PIX_FMT_NV61:
-		/* FIXME: check against rect_max after converting soc-camera */
 		/* We can scale precisely, need a bigger image from camera */
 		if (pix->width < width || pix->height < height) {
 			/*

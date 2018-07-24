@@ -164,16 +164,6 @@ int PhyMiRead(struct et131x_adapter *etdev, u8 xcvrAddr,
 	return status;
 }
 
-/**
- * MiWrite - Write to a PHY register through the MII interface of the MAC
- * @etdev: pointer to our private adapter structure
- * @xcvrReg: the register to read
- * @value: 16-bit value to write
- *
- * FIXME: one caller in netdev still
- *
- * Return 0 on success, errno on failure (as defined in errno.h)
- */
 int MiWrite(struct et131x_adapter *etdev, u8 xcvrReg, u16 value)
 {
 	struct _MAC_t __iomem *mac = &etdev->regs->mac;
@@ -975,4 +965,3 @@ void ET1310_PhyInit(struct et131x_adapter *etdev)
 	MiWrite(etdev, PHY_CONTROL, 0x1040);
 	MiWrite(etdev, PHY_MPHY_CONTROL_REG, 0x0002);
 }
-

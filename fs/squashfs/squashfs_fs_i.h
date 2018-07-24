@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 #ifndef SQUASHFS_FS_I
 #define SQUASHFS_FS_I
 /*
@@ -45,4 +46,10 @@ struct squashfs_inode_info {
 	};
 	struct inode	vfs_inode;
 };
+
+
+static inline struct squashfs_inode_info *squashfs_i(struct inode *inode)
+{
+	return list_entry(inode, struct squashfs_inode_info, vfs_inode);
+}
 #endif

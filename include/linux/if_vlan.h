@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  * VLAN		An implementation of 802.1Q VLAN tagging.
  *
@@ -116,6 +117,7 @@ static inline void vlan_group_set_device(struct vlan_group *vg,
 #if defined(CONFIG_VLAN_8021Q) || defined(CONFIG_VLAN_8021Q_MODULE)
 extern struct net_device *vlan_dev_real_dev(const struct net_device *dev);
 extern u16 vlan_dev_vlan_id(const struct net_device *dev);
+extern u16 vlan_dev_vlan_flags(const struct net_device *dev);
 
 extern int __vlan_hwaccel_rx(struct sk_buff *skb, struct vlan_group *grp,
 			     u16 vlan_tci, int polling);
@@ -365,5 +367,12 @@ struct vlan_ioctl_args {
 
 	short vlan_qos;   
 };
+
+#ifdef HNDCTF
+extern void vlan_rxstats_upd(struct net_device *vldev,
+	struct sk_buff *skb, int packets, int bytes);
+extern void vlan_txstats_upd(struct net_device *vldev,
+	struct sk_buff *skb, int packets, int bytes);
+#endif /* HNDCTF */
 
 #endif /* !(_LINUX_IF_VLAN_H_) */

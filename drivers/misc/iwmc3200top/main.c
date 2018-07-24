@@ -516,7 +516,6 @@ static int iwmct_probe(struct sdio_func *func,
 	init_waitqueue_head(&priv->wait_q);
 
 	sdio_claim_host(func);
-	/* FIXME: Remove after it is fixed in the Boot ROM upgrade */
 	func->enable_timeout = 10;
 
 	/* In our HW, setting the block size also wakes up the boot rom. */
@@ -663,4 +662,3 @@ static void __exit iwmct_exit(void)
 
 module_init(iwmct_init);
 module_exit(iwmct_exit);
-

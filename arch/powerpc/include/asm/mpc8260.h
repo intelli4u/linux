@@ -12,7 +12,7 @@
 
 #ifdef CONFIG_8260
 
-#if defined(CONFIG_PQ2ADS) || defined (CONFIG_PQ2FADS)
+#if defined(CONFIG_PQ2ADS) || defined(CONFIG_PQ2FADS)
 #include <platforms/82xx/pq2ads.h>
 #endif
 

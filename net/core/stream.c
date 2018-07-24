@@ -19,12 +19,6 @@
 #include <linux/wait.h>
 #include <net/sock.h>
 
-/**
- * sk_stream_write_space - stream socket write_space callback.
- * @sk: socket
- *
- * FIXME: write proper description
- */
 void sk_stream_write_space(struct sock *sk)
 {
 	struct socket *sock = sk->sk_socket;

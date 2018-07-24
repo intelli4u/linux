@@ -1248,5 +1248,3 @@ bfad_os_get_linkup_delay(struct bfad_s *bfad)
 
 	return ldelay;
 }
-
-

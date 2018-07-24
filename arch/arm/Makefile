@@ -20,6 +20,7 @@ GZFLAGS		:=-9
 #KBUILD_CFLAGS	+=-pipe
 # Explicitly specifiy 32-bit ARM ISA since toolchain default can be -mthumb:
 KBUILD_CFLAGS	+=$(call cc-option,-marm,)
+KBUILD_CFLAGS	+=$(call cc-option,-ffreestanding,)
 
 # Never generate .eh_frame
 KBUILD_CFLAGS	+= $(call cc-option,-fno-dwarf2-cfi-asm)
@@ -111,6 +112,12 @@ endif
 KBUILD_CFLAGS	+=$(CFLAGS_ABI) $(CFLAGS_THUMB2) $(arch-y) $(tune-y) $(call cc-option,-mshort-load-bytes,$(call cc-option,-malignment-traps,)) -msoft-float -Uarm
 KBUILD_AFLAGS	+=$(CFLAGS_ABI) $(AFLAGS_THUMB2) $(arch-y) $(tune-y) -include asm/unified.h -msoft-float
 
+# Always compile with debug symbols. They will be stripped by the router
+# makefile to produce the final kernel. Debug versions of kernel and brcm
+# kernel modules will be kept with the extension dbgsym attached to their
+# names.
+KBUILD_CFLAGS += -ggdb
+
 CHECKFLAGS	+= -D__arm__
 
 #Default value
@@ -122,6 +129,10 @@ textofs-$(CONFIG_PM_H1940)      := 0x00108000
 # SA1111 DMA bug: we don't want the kernel to live in precious DMA-able memory
 ifeq ($(CONFIG_ARCH_SA1100),y)
 textofs-$(CONFIG_SA1111) := 0x00208000
+endif
+# Kona u-Boot reserves memory below this address, and puts tags here
+ifeq ($(CONFIG_MACH_BRCM_GEN),y)
+textofs-$(CONFIG_MACH_BRCM_GEN) := 0x00208000
 endif
 
 # Machine directory name.  This list is sorted alphanumerically
@@ -195,6 +206,7 @@ machine-$(CONFIG_MACH_SPEAR300)		:= spear3xx
 machine-$(CONFIG_MACH_SPEAR310)		:= spear3xx
 machine-$(CONFIG_MACH_SPEAR320)		:= spear3xx
 machine-$(CONFIG_MACH_SPEAR600)		:= spear6xx
+machine-$(CONFIG_ARCH_BRCM)		:= brcm-hnd
 
 # Platform directory name.  This list is sorted alphanumerically
 # by CONFIG_* macro name.
@@ -203,6 +215,8 @@ plat-$(CONFIG_ARCH_OMAP)	:= omap
 plat-$(CONFIG_ARCH_S3C64XX)	:= samsung
 plat-$(CONFIG_ARCH_STMP3XXX)	:= stmp3xxx
 plat-$(CONFIG_PLAT_IOP)		:= iop
+plat-$(CONFIG_PLAT_MPCORE)	:= brcm
+plat-$(CONFIG_PLAT_IPROC)	:= brcm
 plat-$(CONFIG_PLAT_NOMADIK)	:= nomadik
 plat-$(CONFIG_PLAT_ORION)	:= orion
 plat-$(CONFIG_PLAT_PXA)		:= pxa

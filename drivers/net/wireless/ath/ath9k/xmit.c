@@ -332,7 +332,6 @@ static void ath_tx_complete_aggr(struct ath_softc *sc, struct ath_txq *txq,
 
 	rcu_read_lock();
 
-	/* XXX: use ieee80211_find_sta! */
 	sta = ieee80211_find_sta_by_hw(hw, hdr->addr1);
 	if (!sta) {
 		rcu_read_unlock();
@@ -978,11 +977,6 @@ int ath_txq_update(struct ath_softc *sc, int qnum,
 	struct ath9k_tx_queue_info qi;
 
 	if (qnum == sc->beacon.beaconq) {
-		/*
-		 * XXX: for beacon queue, we just save the parameter.
-		 * It will be picked up by ath_beaconq_config when
-		 * it's necessary.
-		 */
 		sc->beacon.beacon_qi = *qinfo;
 		return 0;
 	}
@@ -1696,7 +1690,6 @@ static int ath_tx_setup_buffer(struct ieee80211_hw *hw, struct ath_buf *bf,
 	return 0;
 }
 
-/* FIXME: tx power */
 static void ath_tx_start_dma(struct ath_softc *sc, struct ath_buf *bf,
 			     struct ath_tx_control *txctl)
 {
@@ -1833,11 +1826,6 @@ void ath_tx_cabq(struct ieee80211_hw *hw, struct sk_buff *skb)
 
 	memset(&txctl, 0, sizeof(struct ath_tx_control));
 
-	/*
-	 * As a temporary workaround, assign seq# here; this will likely need
-	 * to be cleaned up to work better with Beacon transmission and virtual
-	 * BSSes.
-	 */
 	if (info->flags & IEEE80211_TX_CTL_ASSIGN_SEQ) {
 		if (info->flags & IEEE80211_TX_CTL_FIRST_FRAGMENT)
 			sc->tx.seq_no += 0x10;

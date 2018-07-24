@@ -18,7 +18,6 @@
 #ifdef ENABLE_DOT11D
 #include "dot11d.h"
 #endif
-/* FIXME: add A freqs */
 
 const long ieee80211_wlan_frequencies[] = {
 	2412, 2417, 2422, 2427,
@@ -223,7 +222,6 @@ int ieee80211_wx_set_rate(struct ieee80211_device *ieee,
 	u32 target_rate = wrqu->bitrate.value;
 
 	ieee->rate = target_rate/100000;
-	//FIXME: we might want to limit rate also in management protocols.
 	return 0;
 }
 

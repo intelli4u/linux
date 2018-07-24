@@ -373,4 +373,3 @@ struct bnx2x_bd_chain_next {
 #define CNIC_E1HVN(cp)			((cp)->func >> 1)
 
 #endif
-

@@ -31,16 +31,6 @@
 #include <asm/nmi.h>
 #include <asm/compat.h>
 
-#if 0
-#undef wrmsrl
-#define wrmsrl(msr, val) 					\
-do {								\
-	trace_printk("wrmsrl(%lx, %lx)\n", (unsigned long)(msr),\
-			(unsigned long)(val));			\
-	native_write_msr((msr), (u32)((u64)(val)), 		\
-			(u32)((u64)(val) >> 32));		\
-} while (0)
-#endif
 
 /*
  * best effort, GUP based copy_from_user() that assumes IRQ or NMI context

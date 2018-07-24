@@ -105,4 +105,3 @@ static inline void eventpoll_release(struct file *file) {}
 #endif /* #ifdef __KERNEL__ */
 
 #endif /* #ifndef _LINUX_EVENTPOLL_H */
-

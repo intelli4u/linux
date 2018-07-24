@@ -612,5 +612,3 @@ static inline void m66592_mdfy(struct m66592 *m66592, u16 val, u16 pat,
 			m66592_mdfy(m66592, val, 0, offset)
 
 #endif	/* ifndef __M66592_UDC_H__ */
-
-

@@ -1234,7 +1234,7 @@ int enable_cmf(struct ccw_device *cdev)
 	ret = sysfs_create_group(&cdev->dev.kobj, cmbops->attr_group);
 	if (!ret)
 		return 0;
-	cmbops->set(cdev, 0);  //FIXME: this can fail
+	cmbops->set(cdev, 0);
 	cmbops->free(cdev);
 	return ret;
 }

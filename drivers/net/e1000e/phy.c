@@ -2906,10 +2906,6 @@ static s32 __e1000_write_phy_reg_hv(struct e1000_hw *hw, u32 offset, u16 data,
 	if (page == HV_INTC_FC_PAGE_START)
 		page = 0;
 
-	/*
-	 * Workaround MDIO accesses being disabled after entering IEEE Power
-	 * Down (whenever bit 11 of the PHY Control register is set)
-	 */
 	if ((hw->phy.type == e1000_phy_82578) &&
 	    (hw->phy.revision >= 1) &&
 	    (hw->phy.addr == 2) &&
@@ -3037,17 +3033,6 @@ out:
 	return ret_val;
 }
 
-/**
- *  e1000_link_stall_workaround_hv - Si workaround
- *  @hw: pointer to the HW structure
- *
- *  This function works around a Si bug where the link partner can get
- *  a link up indication before the PHY does.  If small packets are sent
- *  by the link partner they can be placed in the packet buffer without
- *  being properly accounted for by the PHY and will stall preventing
- *  further packets from being received.  The workaround is to clear the
- *  packet buffer after the PHY detects link up.
- **/
 s32 e1000_link_stall_workaround_hv(struct e1000_hw *hw)
 {
 	s32 ret_val = 0;
@@ -3056,7 +3041,6 @@ s32 e1000_link_stall_workaround_hv(struct e1000_hw *hw)
 	if (hw->phy.type != e1000_phy_82578)
 		goto out;
 
-	/* Do not apply workaround if in PHY loopback bit 14 set */
 	hw->phy.ops.read_reg(hw, PHY_CONTROL, &data);
 	if (data & PHY_CONTROL_LB)
 		goto out;

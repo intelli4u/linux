@@ -121,4 +121,3 @@ int mxc_iomux_v3_setup_multiple_pads(struct pad_desc *pad_list, unsigned count);
 void mxc_iomux_v3_init(void __iomem *iomux_v3_base);
 
 #endif /* __MACH_IOMUX_V3_H__*/
-

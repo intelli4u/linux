@@ -230,7 +230,6 @@
 
 #define MAX_DOMAIN_ID 65536
 
-/* FIXME: move this macro to <linux/pci.h> */
 #define PCI_BUS(x) (((x) >> 8) & 0xff)
 
 /* Protection domain flags */
@@ -415,13 +414,6 @@ struct amd_iommu {
 	/* default dma_ops domain for that IOMMU */
 	struct dma_ops_domain *default_dom;
 
-	/*
-	 * This array is required to work around a potential BIOS bug.
-	 * The BIOS may miss to restore parts of the PCI configuration
-	 * space when the system resumes from S3. The result is that the
-	 * IOMMU does not execute commands anymore which leads to system
-	 * failure.
-	 */
 	u32 cache_cfg[4];
 };
 
@@ -515,8 +507,6 @@ extern unsigned long *amd_iommu_pd_alloc_bitmap;
  */
 extern bool amd_iommu_unmap_flush;
 
-/* takes bus and device/function and returns the device id
- * FIXME: should that be in generic PCI code? */
 static inline u16 calc_devid(u8 bus, u8 devfn)
 {
 	return (((u16)bus) << 8) | devfn;

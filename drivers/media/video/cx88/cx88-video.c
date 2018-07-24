@@ -898,7 +898,6 @@ static int video_release(struct file *file)
 
 	/* turn off overlay */
 	if (res_check(fh, RESOURCE_OVERLAY)) {
-		/* FIXME */
 		res_free(dev,fh,RESOURCE_OVERLAY);
 	}
 
@@ -1503,7 +1502,6 @@ static int radio_g_audio (struct file *file, void *priv, struct v4l2_audio *a)
 	return 0;
 }
 
-/* FIXME: Should add a standard for radio */
 
 static int radio_s_tuner (struct file *file, void *priv,
 				struct v4l2_tuner *t)
@@ -1983,7 +1981,7 @@ static void __devexit cx8800_finidev(struct pci_dev *pci_dev)
 	if (core->ir)
 		cx88_ir_stop(core);
 
-	cx88_shutdown(core); /* FIXME */
+	cx88_shutdown(core);
 	pci_disable_device(pci_dev);
 
 	/* unregister stuff */
@@ -2020,7 +2018,6 @@ static int cx8800_suspend(struct pci_dev *pci_dev, pm_message_t state)
 
 	if (core->ir)
 		cx88_ir_stop(core);
-	/* FIXME -- shutdown device */
 	cx88_shutdown(core);
 
 	pci_save_state(pci_dev);
@@ -2057,7 +2054,6 @@ static int cx8800_resume(struct pci_dev *pci_dev)
 	}
 	pci_restore_state(pci_dev);
 
-	/* FIXME: re-initialize hardware */
 	cx88_reset(core);
 	if (core->ir)
 		cx88_ir_start(core);

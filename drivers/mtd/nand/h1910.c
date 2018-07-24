@@ -71,12 +71,6 @@ static void h1910_hwcontrol(struct mtd_info *mtd, int cmd,
 /*
  *	read device ready pin
  */
-#if 0
-static int h1910_device_ready(struct mtd_info *mtd)
-{
-	return (GPLR(55) & GPIO_bit(55));
-}
-#endif
 
 /*
  * Main initialization routine

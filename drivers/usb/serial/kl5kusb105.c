@@ -235,9 +235,6 @@ static int klsi_105_startup(struct usb_serial *serial)
 	struct klsi_105_private *priv;
 	int i;
 
-	/* check if we support the product id (see keyspan.c)
-	 * FIXME
-	 */
 
 	/* allocate the private data structure */
 	for (i = 0; i < serial->num_ports; i++) {
@@ -298,13 +295,6 @@ static int  klsi_105_open(struct tty_struct *tty, struct usb_serial_port *port)
 
 	dbg("%s port %d", __func__, port->number);
 
-	/* Do a defined restart:
-	 * Set up sane default baud rate and send the 'READ_ON'
-	 * vendor command.
-	 * FIXME: set modem line control (how?)
-	 * Then read the modem line control and store values in
-	 * priv->line_state.
-	 */
 	cfg = kmalloc(sizeof(*cfg), GFP_KERNEL);
 	if (!cfg) {
 		dev_err(&port->dev, "%s - out of memory for config buffer.\n",
@@ -483,13 +473,6 @@ static void klsi_105_set_termios(struct tty_struct *tty,
 		/* reassert DTR and (maybe) RTS on transition from B0 */
 		if ((old_cflag & CBAUD) == B0) {
 			dbg("%s: baud was B0", __func__);
-#if 0
-			priv->control_state |= TIOCM_DTR;
-			/* don't set RTS if using hardware flow control */
-			if (!(old_cflag & CRTSCTS))
-				priv->control_state |= TIOCM_RTS;
-			mct_u232_set_modem_ctrl(serial, priv->control_state);
-#endif
 		}
 	}
 	switch (baud) {
@@ -533,10 +516,6 @@ static void klsi_105_set_termios(struct tty_struct *tty,
 		 * disable and read enable messages?
 		 */
 		;
-#if 0
-		priv->control_state &= ~(TIOCM_DTR | TIOCM_RTS);
-		mct_u232_set_modem_ctrl(serial, priv->control_state);
-#endif
 	}
 	tty_encode_baud_rate(tty, baud, baud);
 
@@ -572,22 +551,6 @@ static void klsi_105_set_termios(struct tty_struct *tty,
 	    || (cflag & CSTOPB) != (old_cflag & CSTOPB)) {
 		/* Not currently supported */
 		tty->termios->c_cflag &= ~(PARENB|PARODD|CSTOPB);
-#if 0
-		priv->last_lcr = 0;
-
-		/* set the parity */
-		if (cflag & PARENB)
-			priv->last_lcr |= (cflag & PARODD) ?
-				MCT_U232_PARITY_ODD : MCT_U232_PARITY_EVEN;
-		else
-			priv->last_lcr |= MCT_U232_PARITY_NONE;
-
-		/* set the number of stop bits */
-		priv->last_lcr |= (cflag & CSTOPB) ?
-			MCT_U232_STOP_BITS_2 : MCT_U232_STOP_BITS_1;
-
-		mct_u232_set_line_ctrl(serial, priv->last_lcr);
-#endif
 		;
 	}
 	/*
@@ -600,13 +563,6 @@ static void klsi_105_set_termios(struct tty_struct *tty,
 		/* Not currently supported */
 		tty->termios->c_cflag &= ~CRTSCTS;
 		/* Drop DTR/RTS if no flow control otherwise assert */
-#if 0
-		if ((iflag & IXOFF) || (iflag & IXON) || (cflag & CRTSCTS))
-			priv->control_state |= TIOCM_DTR | TIOCM_RTS;
-		else
-			priv->control_state &= ~(TIOCM_DTR | TIOCM_RTS);
-		mct_u232_set_modem_ctrl(serial, priv->control_state);
-#endif
 		;
 	}
 	memcpy(cfg, &priv->cfg, sizeof(*cfg));
@@ -618,24 +574,6 @@ err:
 	kfree(cfg);
 }
 
-#if 0
-static void mct_u232_break_ctl(struct tty_struct *tty, int break_state)
-{
-	struct usb_serial_port *port = tty->driver_data;
-	struct usb_serial *serial = port->serial;
-	struct mct_u232_private *priv =
-				(struct mct_u232_private *)port->private;
-	unsigned char lcr = priv->last_lcr;
-
-	dbg("%sstate=%d", __func__, break_state);
-
-	/* LOCKING */
-	if (break_state)
-		lcr |= MCT_U232_SET_BREAK;
-
-	mct_u232_set_line_ctrl(serial, lcr);
-}
-#endif
 
 static int klsi_105_tiocmget(struct tty_struct *tty, struct file *file)
 {

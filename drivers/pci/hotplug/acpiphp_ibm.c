@@ -133,15 +133,6 @@ static struct acpiphp_attention_info ibm_attention_info =
 	.owner = THIS_MODULE,
 };
 
-/**
- * ibm_slot_from_id - workaround for bad ibm hardware
- * @id: the slot number that linux refers to the slot by
- *
- * Description: This method returns the aCPI slot descriptor
- * corresponding to the Linux slot number.  This descriptor
- * has info about the aPCI slot id and attention status.
- * This descriptor must be freed using kfree when done.
- */
 static union apci_descriptor *ibm_slot_from_id(int id)
 {
 	int ind = 0, size;

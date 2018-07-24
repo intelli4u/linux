@@ -1092,12 +1092,6 @@ static short hpi6000_adapter_boot_load_dsp(struct hpi_adapter_obj *pao,
 
 			if (read)
 				break;
-			/* The following is a workaround for bug #94:
-			 * Bluescreen on install and subsequent boots on a
-			 * DELL PowerEdge 600SC PC with 1.8GHz P4 and
-			 * ServerWorks chipset. Without this delay the system
-			 * locks up with a bluescreen (NOT GPF or pagefault).
-			 */
 			else
 				hpios_delay_micro_seconds(1000);
 		}

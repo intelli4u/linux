@@ -1,4 +1,4 @@
-/* $Id: capi.c,v 1.9.6.2 2001/09/23 22:24:32 kai Exp $
+/* $Id: capi.c,v 1.9.6.2 2001/09/23 22:24:32 Exp $
  *
  * ISDN lowlevel-module for the IBM ISDN-S0 Active 2000.
  * CAPI encoder/decoder
@@ -223,26 +223,6 @@ actcapi_manufacturer_req_net(act2000_card *card)
 /*
  * Switch V.42 on or off
  */
-#if 0
-int
-actcapi_manufacturer_req_v42(act2000_card *card, ulong arg)
-{
-	actcapi_msg *m;
-	struct sk_buff *skb;
-
-	ACTCAPI_MKHDR(8, 0xff, 0x00);
-        if (!skb) {
-
-                printk(KERN_WARNING "actcapi: alloc_skb failed\n");
-                return -ENOMEM;
-        }
-	m->msg.manufacturer_req_v42.manuf_msg = 0x10;
-	m->msg.manufacturer_req_v42.controller = 0;
-	m->msg.manufacturer_req_v42.v42control = (arg?1:0);
-	ACTCAPI_QUEUE_TX;
-        return 0;
-}
-#endif  /*  0  */
 
 /*
  * Set error-handler

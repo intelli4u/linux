@@ -581,13 +581,6 @@ int vkdb_printf(const char *fmt, va_list ap)
 	}
 	vsnprintf(next_avail, size_avail, fmt, ap);
 
-	/*
-	 * If kdb_parse() found that the command was cmd xxx | grep yyy
-	 * then kdb_grepping_flag is set, and kdb_grep_string contains yyy
-	 *
-	 * Accumulate the print data up to a newline before searching it.
-	 * (vsnprintf does null-terminate the string that it generates)
-	 */
 
 	/* skip the search if prints are temporarily unconditional */
 	if (!suspend_grep && kdb_grepping_flag) {
@@ -823,4 +816,3 @@ int kdb_printf(const char *fmt, ...)
 
 	return r;
 }
-

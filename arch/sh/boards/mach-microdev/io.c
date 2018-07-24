@@ -72,16 +72,6 @@ static unsigned long microdev_isa_port2addr(unsigned long offset)
 			 *	Configuration Registers
 			 */
 		result = IO_SUPERIO_PHYS + (offset << 1);
-#if 0
-	} else if (offset == KBD_DATA_REG || offset == KBD_CNTL_REG ||
-		   offset == KBD_STATUS_REG) {
-			/*
-			 *	SMSC FDC37C93xAPM SuperIO chip
-			 *
-			 *	PS/2 Keyboard + Mouse (ports 0x60 and 0x64).
-			 */
-	        result = IO_SUPERIO_PHYS + (offset << 1);
-#endif
 	} else if (((offset >= IO_IDE1_BASE) &&
 		    (offset <  IO_IDE1_BASE + IO_IDE_EXTENT)) ||
 		    (offset == IO_IDE1_MISC)) {

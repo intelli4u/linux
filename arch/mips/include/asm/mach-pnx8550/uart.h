@@ -3,7 +3,6 @@
 
 #include <int.h>
 
-/* early macros for kgdb use. fixme: clean this up */
 
 #define UART_BASE		0xbbe4a000	/* PNX8550 */
 

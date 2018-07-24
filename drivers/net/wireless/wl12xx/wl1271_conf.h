@@ -419,11 +419,6 @@ struct conf_rx_settings {
 	 */
 	u32 rx_msdu_life_time;
 
-	/*
-	 * Packet detection threshold in the PHY.
-	 *
-	 * FIXME: details unknown.
-	 */
 	u32 packet_detection_threshold;
 
 	/*

@@ -172,7 +172,6 @@ struct fid;
 
 // to be ok for alpha and others we have to align structures to 8 byte
 // boundary.
-// FIXME: do not change 4 by anything else: there is code which relies on that
 #define ROUND_UP(x) _ROUND_UP(x,8LL)
 
 /* debug levels.  Right now, CONFIG_REISERFS_CHECK means print all debug
@@ -198,7 +197,7 @@ do {									\
 
 #define RASSERT(cond, format, args...) __RASSERT(cond, #cond, format, ##args)
 
-#if defined( CONFIG_REISERFS_CHECK )
+#if defined(CONFIG_REISERFS_CHECK)
 #define RFALSE(cond, format, args...) __RASSERT(!(cond), "!(" #cond ")", format, ##args)
 #else
 #define RFALSE( cond, format, args... ) do {;} while( 0 )
@@ -476,7 +475,7 @@ static inline int bmap_would_wrap(unsigned bmap_nr)
 #define TYPE_DIRECT 2
 #define TYPE_DIRENTRY 3
 #define TYPE_MAXTYPE 3
-#define TYPE_ANY 15		// FIXME: comment is required
+#define TYPE_ANY 15
 
 /***************************************************************************/
 /*                       KEY & ITEM HEAD                                   */
@@ -647,7 +646,7 @@ struct item_head {
 #define V1_INDIRECT_UNIQUENESS 0xfffffffe
 #define V1_DIRECT_UNIQUENESS 0xffffffff
 #define V1_DIRENTRY_UNIQUENESS 500
-#define V1_ANY_UNIQUENESS 555	// FIXME: comment is required
+#define V1_ANY_UNIQUENESS 555
 
 //
 // here are conversion routines

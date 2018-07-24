@@ -348,7 +348,6 @@ int     xgiCmdQueLen;
    from 300 series and certainly wrong...)
 */
 
-/* TW: FIXME: xgiCmdQueLen is... where....? */
 #define XGI310Idle \
   { \
   while( (MMIO_IN16(xgi_video_info.mmio_vbase, Q_STATUS+2) & 0x8000) != 0x8000){}; \

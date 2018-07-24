@@ -59,8 +59,8 @@ extern int _ramstart, _ramend;
 extern char _target_name[];
 extern void h8300_gpio_init(void);
 
-#if (defined(CONFIG_H8300H_SIM) || defined(CONFIG_H8S_SIM)) \
-    && defined(CONFIG_GDB_MAGICPRINT)
+#if (defined(CONFIG_H8300H_SIM) || defined(CONFIG_H8S_SIM)) && \
+	defined(CONFIG_GDB_MAGICPRINT)
 /* printk with gdb service */
 static void gdb_console_output(struct console *c, const char *msg, unsigned len)
 {
@@ -124,7 +124,8 @@ void __init setup_arch(char **cmdline_p)
 	init_mm.end_data = (unsigned long) &_edata;
 	init_mm.brk = (unsigned long) 0; 
 
-#if (defined(CONFIG_H8300H_SIM) || defined(CONFIG_H8S_SIM)) && defined(CONFIG_GDB_MAGICPRINT)
+#if (defined(CONFIG_H8300H_SIM) || defined(CONFIG_H8S_SIM)) && \
+	defined(CONFIG_GDB_MAGICPRINT)
 	register_console((struct console *)&gdb_console);
 #endif
 

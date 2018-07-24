@@ -505,7 +505,6 @@ static int uw2453_switch_radio_off(struct zd_rf *rf)
 	};
 
 	/* enter IDLE mode */
-	/* FIXME: shouldn't we go to SLEEP? sent email to zydas */
 	r = zd_rfwrite_locked(chip, UW2453_REGWRITE(0, 0x25f90), RF_RV_BITS);
 	if (r)
 		return r;
@@ -535,4 +534,3 @@ int zd_rf_init_uw2453(struct zd_rf *rf)
 
 	return 0;
 }
-

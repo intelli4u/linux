@@ -1105,7 +1105,6 @@ int rv770_suspend(struct radeon_device *rdev)
 	int r;
 
 	r600_audio_fini(rdev);
-	/* FIXME: we should wait for ring to be empty */
 	r700_cp_stop(rdev);
 	rdev->cp.ready = false;
 	r600_irq_suspend(rdev);

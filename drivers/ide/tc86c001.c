@@ -47,20 +47,6 @@ static void tc86c001_set_pio_mode(ide_hwif_t *hwif, ide_drive_t *drive)
 	tc86c001_set_mode(hwif, drive);
 }
 
-/*
- * HACKITY HACK
- *
- * This is a workaround for the limitation 5 of the TC86C001 IDE controller:
- * if a DMA transfer terminates prematurely, the controller leaves the device's
- * interrupt request (INTRQ) pending and does not generate a PCI interrupt (or
- * set the interrupt bit in the DMA status register), thus no PCI interrupt
- * will occur until a DMA transfer has been successfully completed.
- *
- * We work around this by initiating dummy, zero-length DMA transfer on
- * a DMA timeout expiration. I found no better way to do this with the current
- * IDE core than to temporarily replace a higher level driver's timer expiry
- * handler with our own backing up to that handler in case our recovery fails.
- */
 static int tc86c001_timer_expiry(ide_drive_t *drive)
 {
 	ide_hwif_t *hwif	= drive->hwif;

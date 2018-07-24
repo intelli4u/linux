@@ -273,11 +273,6 @@ render_ring_add_request(struct drm_device *dev,
 	} else if (HAS_PIPE_CONTROL(dev)) {
 		u32 scratch_addr = dev_priv->seqno_gfx_addr + 128;
 
-		/*
-		 * Workaround qword write incoherence by flushing the
-		 * PIPE_NOTIFY buffers out to memory before requesting
-		 * an interrupt.
-		 */
 		BEGIN_LP_RING(32);
 		OUT_RING(GFX_OP_PIPE_CONTROL | PIPE_CONTROL_QW_WRITE |
 			 PIPE_CONTROL_WC_FLUSH | PIPE_CONTROL_TC_FLUSH);
@@ -547,7 +542,6 @@ render_ring_dispatch_gem_execbuffer(struct drm_device *dev,
 		intel_ring_emit(dev, ring, MI_NOOP);
 		intel_ring_advance(dev, ring);
 	}
-	/* XXX breadcrumb */
 
 	return 0;
 }

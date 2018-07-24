@@ -150,10 +150,6 @@ static void __cpa_flush_all(void *arg)
 {
 	unsigned long cache = (unsigned long)arg;
 
-	/*
-	 * Flush all to work around Errata in early athlons regarding
-	 * large page flushing.
-	 */
 	__flush_tlb_all();
 
 	if (cache && boot_cpu_data.x86 >= 4)
@@ -569,14 +565,6 @@ static int split_large_page(pte_t *kpte, unsigned long address)
 	 */
 	__set_pmd_pte(kpte, address, mk_pte(base, __pgprot(_KERNPG_TABLE)));
 
-	/*
-	 * Intel Atom errata AAH41 workaround.
-	 *
-	 * The real fix should be in hw or in a microcode update, but
-	 * we also probabilistically try to reduce the window of having
-	 * a large TLB mixed with 4K TLBs while instruction fetches are
-	 * going on.
-	 */
 	__flush_tlb_all();
 
 	base = NULL;

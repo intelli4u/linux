@@ -37,6 +37,9 @@
 #include <linux/if_vlan.h>
 #include "vlan.h"
 #include "vlanproc.h"
+#ifdef HNDCTF
+#include <ctf/hndctf.h>
+#endif /* HNDCTF */
 
 #define DRV_VERSION "1.8"
 
@@ -167,6 +170,10 @@ void unregister_vlan_dev(struct net_device *dev, struct list_head *head)
 	if (!grp->killall)
 		synchronize_net();
 
+#ifdef HNDCTF
+	(void)ctf_dev_vlan_delete(kcih, real_dev, vlan_id);
+#endif /* HNDCTF */
+
 	unregister_netdevice_queue(dev, head);
 
 	/* If the group is now empty, kill off the group. */
@@ -251,6 +258,8 @@ int register_vlan_dev(struct net_device *dev)
 	 */
 	vlan_group_set_device(grp, vlan_id, dev);
 	grp->nr_vlans++;
+
+	dev->features |= (real_dev->features & (NETIF_F_SG | NETIF_F_FRAGLIST | NETIF_F_ALL_CSUM));
 
 	if (ngrp && real_dev->features & NETIF_F_HW_VLAN_RX)
 		ops->ndo_vlan_rx_register(real_dev, ngrp);
@@ -337,6 +346,10 @@ static int register_vlan_device(struct net_device *real_dev, u16 vlan_id)
 	err = register_vlan_dev(new_dev);
 	if (err < 0)
 		goto out_free_newdev;
+
+#ifdef HNDCTF
+	(void)ctf_dev_vlan_add(kcih, real_dev, vlan_id, new_dev);
+#endif /* HNDCTF */
 
 	return 0;
 

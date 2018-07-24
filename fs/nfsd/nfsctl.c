@@ -555,15 +555,6 @@ static ssize_t write_unlock_fs(struct file *file, char *buf, size_t size)
 	if (error)
 		return error;
 
-	/*
-	 * XXX: Needs better sanity checking.  Otherwise we could end up
-	 * releasing locks on the wrong file system.
-	 *
-	 * For example:
-	 * 1.  Does the path refer to a directory?
-	 * 2.  Is that directory a mount point, or
-	 * 3.  Is that directory the root of an exported file system?
-	 */
 	error = nlmsvc_unlock_all_by_sb(path.mnt->mnt_sb);
 
 	path_put(&path);

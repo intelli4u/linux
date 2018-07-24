@@ -145,9 +145,6 @@ error_cache:
 	return ret;
 }
 
-/* XXX late_initcall is kludgy, but the only alternative seems to create
- * a transport upon the first mount, which is worse. Or is it?
- */
 late_initcall(afs_init);	/* must be called after net/ to create socket */
 
 /*

@@ -790,7 +790,6 @@ void rv515_crtc_bandwidth_compute(struct radeon_device *rdev,
 	fixed20_12 consumption_time, line_time, chunk_time, read_delay_latency;
 
 	if (!crtc->base.enabled) {
-		/* FIXME: wouldn't it better to set priority mark to maximum */
 		wm->lb_request_fifo_depth = 4;
 		return;
 	}

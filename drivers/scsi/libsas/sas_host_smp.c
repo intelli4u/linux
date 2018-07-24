@@ -196,7 +196,6 @@ int sas_smp_host_handler(struct Scsi_Host *shost, struct request *req,
 		break;
 
 	case SMP_READ_GPIO_REG:
-		/* FIXME: need GPIO support in the transport class */
 		break;
 
 	case SMP_DISCOVER:
@@ -211,8 +210,6 @@ int sas_smp_host_handler(struct Scsi_Host *shost, struct request *req,
 		break;
 
 	case SMP_REPORT_PHY_ERR_LOG:
-		/* FIXME: could implement this with additional
-		 * libsas callbacks providing the HW supports it */
 		break;
 
 	case SMP_REPORT_PHY_SATA:
@@ -231,7 +228,6 @@ int sas_smp_host_handler(struct Scsi_Host *shost, struct request *req,
 		break;
 
 	case SMP_WRITE_GPIO_REG:
-		/* FIXME: need GPIO support in the transport class */
 		break;
 
 	case SMP_CONF_ROUTE_INFO:
@@ -252,7 +248,6 @@ int sas_smp_host_handler(struct Scsi_Host *shost, struct request *req,
 		break;
 
 	case SMP_PHY_TEST_FUNCTION:
-		/* FIXME: should this be implemented? */
 		break;
 
 	default:

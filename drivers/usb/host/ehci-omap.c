@@ -161,19 +161,10 @@ struct ehci_hcd_omap {
 	struct clk		*usbtll_fck;
 	struct clk		*usbtll_ick;
 
-	/* FIXME the following two workarounds are
-	 * board specific not silicon-specific so these
-	 * should be moved to board-file instead.
-	 *
-	 * Maybe someone from TI will know better which
-	 * board is affected and needs the workarounds
-	 * to be applied
-	 */
 
 	/* gpio for resetting phy */
 	int			reset_gpio_port[OMAP3_HS_USB_PORTS];
 
-	/* phy reset workaround */
 	int			phy_reset;
 
 	/* desired phy_mode: TLL, PHY */
@@ -844,4 +835,3 @@ static const struct hc_driver ehci_omap_hc_driver = {
 MODULE_ALIAS("platform:omap-ehci");
 MODULE_AUTHOR("Texas Instruments, Inc.");
 MODULE_AUTHOR("Felipe Balbi <felipe.balbi@nokia.com>");
-

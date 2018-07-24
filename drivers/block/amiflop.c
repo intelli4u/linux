@@ -354,13 +354,7 @@ static int fd_motor_on(int nr)
 
 	if (on_attempts == 0) {
 		on_attempts = -1;
-#if 0
-		printk (KERN_ERR "motor_on failed, turning motor off\n");
-		fd_motor_off (nr);
-		return 0;
-#else
 		printk (KERN_WARNING "DSKRDY not set after 1.5 seconds - assuming drive is spinning notwithstanding\n");
-#endif
 	}
 
 	return 1;
@@ -1242,9 +1236,6 @@ static void dos_write(int disk)
  * different kernel versions.
  */
 
-/* FIXME: this assumes the drive is still spinning -
- * which is only true if we complete writing a track within three seconds
- */
 static void flush_track_callback(unsigned long nr)
 {
 	nr&=3;
@@ -1803,27 +1794,6 @@ out_blkdev:
 	return ret;
 }
 
-#if 0 /* not safe to unload */
-static int __exit amiga_floppy_remove(struct platform_device *pdev)
-{
-	int i;
-
-	for( i = 0; i < FD_MAX_UNITS; i++) {
-		if (unit[i].type->code != FD_NODRIVE) {
-			del_gendisk(unit[i].gendisk);
-			put_disk(unit[i].gendisk);
-			kfree(unit[i].trackbuf);
-		}
-	}
-	blk_unregister_region(MKDEV(FLOPPY_MAJOR, 0), 256);
-	free_irq(IRQ_AMIGA_CIAA_TB, NULL);
-	free_irq(IRQ_AMIGA_DSKBLK, NULL);
-	custom.dmacon = DMAF_DISK; /* disable DMA */
-	amiga_chip_free(raw_buf);
-	blk_cleanup_queue(floppy_queue);
-	unregister_blkdev(FLOPPY_MAJOR, "fd");
-}
-#endif
 
 static struct platform_driver amiga_floppy_driver = {
 	.driver   = {

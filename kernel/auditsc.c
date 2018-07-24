@@ -1969,8 +1969,6 @@ void __audit_inode(const char *name, const struct dentry *dentry)
 		 && context->names[context->name_count-2].name == name)
 		idx = context->name_count - 2;
 	else {
-		/* FIXME: how much do we care about inodes that have no
-		 * associated name? */
 		if (audit_inc_name_count(context, inode))
 			return;
 		idx = context->name_count - 1;

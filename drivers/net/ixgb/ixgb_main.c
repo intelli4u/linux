@@ -1299,8 +1299,6 @@ ixgb_tx_map(struct ixgb_adapter *adapter, struct sk_buff *skb,
 	while (len) {
 		buffer_info = &tx_ring->buffer_info[i];
 		size = min(len, IXGB_MAX_DATA_PER_TXD);
-		/* Workaround for premature desc write-backs
-		 * in TSO mode.  Append 4-byte sentinel desc */
 		if (unlikely(mss && !nr_frags && size == len && size > 8))
 			size -= 4;
 
@@ -1340,8 +1338,6 @@ ixgb_tx_map(struct ixgb_adapter *adapter, struct sk_buff *skb,
 			buffer_info = &tx_ring->buffer_info[i];
 			size = min(len, IXGB_MAX_DATA_PER_TXD);
 
-			/* Workaround for premature desc write-backs
-			 * in TSO mode.  Append 4-byte sentinel desc */
 			if (unlikely(mss && (f == (nr_frags - 1))
 				     && size == len && size > 8))
 				size -= 4;
@@ -1469,7 +1465,7 @@ static int ixgb_maybe_stop_tx(struct net_device *netdev,
 			 (((S) & (IXGB_MAX_DATA_PER_TXD - 1)) ? 1 : 0))
 #define DESC_NEEDED TXD_USE_COUNT(IXGB_MAX_DATA_PER_TXD) /* skb->date */ + \
 	MAX_SKB_FRAGS * TXD_USE_COUNT(PAGE_SIZE) + 1 /* for context */ \
-	+ 1 /* one more needed for sentinel TSO workaround */
+	+ 1
 
 static netdev_tx_t
 ixgb_xmit_frame(struct sk_buff *skb, struct net_device *netdev)
@@ -2115,9 +2111,6 @@ map_skb:
 
 		rx_desc = IXGB_RX_DESC(*rx_ring, i);
 		rx_desc->buff_addr = cpu_to_le64(buffer_info->dma);
-		/* guarantee DD bit not set now before h/w gets descriptor
-		 * this is the rest of the workaround for h/w double
-		 * writeback. */
 		rx_desc->status = 0;
 
 

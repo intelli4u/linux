@@ -1613,5 +1613,3 @@ void RXvMngWorkItem(void *Context)
     spin_unlock_irq(&pDevice->lock);
 
 }
-
-

@@ -267,30 +267,11 @@ nv_crtc_mode_set_vga(struct drm_crtc *crtc, struct drm_display_mode *mode)
 		horizStart = horizTotal - 5;
 		horizEnd = horizTotal - 2;
 		horizBlankEnd = horizTotal + 4;
-#if 0
-		if (dev->overlayAdaptor && dev_priv->card_type >= NV_10)
-			/* This reportedly works around some video overlay bandwidth problems */
-			horizTotal += 2;
-#endif
 	}
 
 	if (mode->flags & DRM_MODE_FLAG_INTERLACE)
 		vertTotal |= 1;
 
-#if 0
-	ErrorF("horizDisplay: 0x%X \n", horizDisplay);
-	ErrorF("horizStart: 0x%X \n", horizStart);
-	ErrorF("horizEnd: 0x%X \n", horizEnd);
-	ErrorF("horizTotal: 0x%X \n", horizTotal);
-	ErrorF("horizBlankStart: 0x%X \n", horizBlankStart);
-	ErrorF("horizBlankEnd: 0x%X \n", horizBlankEnd);
-	ErrorF("vertDisplay: 0x%X \n", vertDisplay);
-	ErrorF("vertStart: 0x%X \n", vertStart);
-	ErrorF("vertEnd: 0x%X \n", vertEnd);
-	ErrorF("vertTotal: 0x%X \n", vertTotal);
-	ErrorF("vertBlankStart: 0x%X \n", vertBlankStart);
-	ErrorF("vertBlankEnd: 0x%X \n", vertBlankEnd);
-#endif
 
 	/*
 	* compute correct Hsync & Vsync polarity
@@ -488,14 +469,6 @@ nv_crtc_mode_set_regs(struct drm_crtc *crtc, struct drm_display_mode * mode)
 	/* Except for rare conditions I2C is enabled on the primary crtc */
 	if (nv_crtc->index == 0)
 		regp->crtc_eng_ctrl |= NV_CRTC_FSEL_I2C;
-#if 0
-	/* Set overlay to desired crtc. */
-	if (dev->overlayAdaptor) {
-		NVPortPrivPtr pPriv = GET_OVERLAY_PRIVATE(dev);
-		if (pPriv->overlayCRTC == nv_crtc->index)
-			regp->crtc_eng_ctrl |= NV_CRTC_FSEL_OVERLAY;
-	}
-#endif
 
 	/* ADDRESS_SPACE_PNVM is the same as setting HCUR_ASI */
 	regp->cursor_cfg = NV_PCRTC_CURSOR_CONFIG_CUR_LINES_64 |
@@ -1003,4 +976,3 @@ nv04_crtc_create(struct drm_device *dev, int crtc_num)
 
 	return 0;
 }
-

@@ -16,9 +16,6 @@ struct kbd_data;
 
 typedef void (fn_handler_fn)(struct kbd_data *);
 
-/*
- * FIXME: explain key_maps tricks.
- */
 
 struct kbd_data {
 	struct tty_struct *tty;

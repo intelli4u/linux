@@ -33,4 +33,3 @@ static int i82092aa_set_mem_map(struct pcmcia_socket *socket, struct pccard_mem_
 static int i82092aa_init(struct pcmcia_socket *socket);
 
 #endif
-

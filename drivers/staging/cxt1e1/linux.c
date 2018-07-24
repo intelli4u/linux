@@ -45,7 +45,7 @@
 #error Sorry, your GCC is too old. It builds incorrect kernels.
 #endif
 
-#if __GNUC__ == 4 && __GNUC_MINOR__ == 1 && __GNUC_PATCHLEVEL__ == 0
+#if __GNUC__ == 4 && __GNUC_MINOR__ == __GNUC_PATCHLEVEL__ == 0
 #warning gcc-4.1.0 is known to miscompile the kernel.  A different compiler version is recommended.
 #endif
 
@@ -91,7 +91,7 @@ extern ci_t *CI;
 extern struct s_hdw_info hdw_info[];
 
 #if defined(CONFIG_SBE_HDLC_V7) || defined(CONFIG_SBE_WAN256T3_HDLC_V7) || \
-    defined(CONFIG_SBE_HDLC_V7_MODULE) || defined(CONFIG_SBE_WAN256T3_HDLC_V7_MODULE)
+	defined(CONFIG_SBE_HDLC_V7_MODULE) || defined(CONFIG_SBE_WAN256T3_HDLC_V7_MODULE)
 #define _v7_hdlc_  1
 #else
 #define _v7_hdlc_  0
@@ -859,16 +859,7 @@ c4_ioctl (struct net_device * ndev, struct ifreq * ifr, int cmd)
         return -ENODEV;
     if (copy_from_user (&iocmd, ifr->ifr_data, sizeof (iocmd)))
         return -EFAULT;
-#if 0
-    if (copy_from_user (&len, ifr->ifr_data + sizeof (iocmd), sizeof (len)))
-        return -EFAULT;
-#endif
 
-#if 0
-    pr_info("c4_ioctl: iocmd %x, dir %x type %x nr %x iolen %d.\n", iocmd,
-            _IOC_DIR (iocmd), _IOC_TYPE (iocmd), _IOC_NR (iocmd),
-            _IOC_SIZE (iocmd));
-#endif
     iolen = _IOC_SIZE (iocmd);
     data = ifr->ifr_data + sizeof (iocmd);
     if (copy_from_user (&arg, data, iolen))
@@ -1074,11 +1065,7 @@ c4_add_dev (hdw_info_t * hi, int brdno, unsigned long f0, unsigned long f1,
             break;
         }
 
-#if 1
         sbeid_set_hdwbid (ci);      /* requires bid to be preset */
-#else
-        sbeid_set_bdtype (ci);      /* requires hdw_bid to be preset */
-#endif
 
     }
 

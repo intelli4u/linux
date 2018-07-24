@@ -1489,11 +1489,6 @@ static inline int ipath_rc_rcv_error(struct ipath_ibdev *dev,
 			qp->r_ack_psn = qp->r_psn - 1;
 			goto send_ack;
 		}
-		/*
-		 * Try to send a simple ACK to work around a Mellanox bug
-		 * which doesn't accept a RDMA read response or atomic
-		 * response as an ACK for earlier SENDs or RDMA writes.
-		 */
 		if (qp->r_head_ack_queue == qp->s_tail_ack_queue &&
 		    !(qp->s_flags & IPATH_S_ACK_PENDING) &&
 		    qp->s_ack_state == OP(ACKNOWLEDGE)) {
@@ -1718,7 +1713,6 @@ void ipath_rc_rcv(struct ipath_ibdev *dev, struct ipath_ib_header *hdr,
 		/* Get the number of bytes the message was padded by. */
 		pad = (be32_to_cpu(ohdr->bth[0]) >> 20) & 3;
 		/* Check for invalid length. */
-		/* XXX LAST len should be >= 1 */
 		if (unlikely(tlen < (hdrsize + pad + 4)))
 			goto nack_inv;
 		/* Don't count the CRC. */

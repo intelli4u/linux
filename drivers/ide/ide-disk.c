@@ -303,10 +303,6 @@ static u64 ide_disk_hpa_get_native_capacity(ide_drive_t *drive, int lba48)
 	set_max  = idedisk_read_native_max_address(drive, lba48);
 
 	if (ide_in_drive_list(drive->id, hpa_list)) {
-		/*
-		 * Since we are inclusive wrt to firmware revisions do this
-		 * extra check and apply the workaround only when needed.
-		 */
 		if (set_max == capacity + 1)
 			set_max--;
 	}
@@ -437,7 +433,6 @@ static int idedisk_prep_fn(struct request_queue *q, struct request *rq)
 
 	cmd = kmalloc(sizeof(*cmd), GFP_ATOMIC);
 
-	/* FIXME: map struct ide_taskfile on rq->cmd[] */
 	BUG_ON(cmd == NULL);
 
 	memset(cmd, 0, sizeof(*cmd));

@@ -338,19 +338,6 @@ static int validate_hwmon_pack(struct atk_data *data, union acpi_object *obj)
 	}
 
 	/* Don't check... we don't know what they're useful for anyway */
-#if 0
-	tmp = &obj->package.elements[HWMON_PACK_UNK1];
-	if (tmp->type != ACPI_TYPE_INTEGER) {
-		dev_warn(dev, "Invalid type (unk1): %d\n", tmp->type);
-		return -EINVAL;
-	}
-
-	tmp = &obj->package.elements[HWMON_PACK_UNK2];
-	if (tmp->type != ACPI_TYPE_INTEGER) {
-		dev_warn(dev, "Invalid type (unk2): %d\n", tmp->type);
-		return -EINVAL;
-	}
-#endif
 
 	tmp = atk_get_pack_member(data, obj, HWMON_PACK_LIMIT1);
 	if (tmp->type != ACPI_TYPE_INTEGER) {

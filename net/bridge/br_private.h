@@ -84,13 +84,13 @@ struct net_bridge_port_group {
 struct net_bridge_mdb_entry
 {
 	struct hlist_node		hlist[2];
-	struct hlist_node		mglist;
 	struct net_bridge		*br;
 	struct net_bridge_port_group	*ports;
 	struct rcu_head			rcu;
 	struct timer_list		timer;
 	struct timer_list		query_timer;
 	struct br_ip			addr;
+	bool				mglist;
 	u32				queries_sent;
 };
 
@@ -229,7 +229,6 @@ struct net_bridge
 	spinlock_t			multicast_lock;
 	struct net_bridge_mdb_htable	*mdb;
 	struct hlist_head		router_list;
-	struct hlist_head		mglist;
 
 	struct timer_list		multicast_router_timer;
 	struct timer_list		multicast_querier_timer;
@@ -342,9 +341,16 @@ extern int br_fdb_fillbuf(struct net_bridge *br, void *buf,
 extern int br_fdb_insert(struct net_bridge *br,
 			 struct net_bridge_port *source,
 			 const unsigned char *addr);
+#ifdef HNDCTF
+extern void br_fdb_update(struct net_bridge *br,
+			  struct net_bridge_port *source,
+			  const unsigned char *addr,
+			  struct sk_buff *skb);
+#else
 extern void br_fdb_update(struct net_bridge *br,
 			  struct net_bridge_port *source,
 			  const unsigned char *addr);
+#endif
 
 /* br_forward.c */
 extern void br_deliver(const struct net_bridge_port *to,

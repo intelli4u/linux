@@ -304,4 +304,3 @@ void __init ixdp2x00_init_machine(void)
 	platform_add_devices(ixdp2x00_devices, ARRAY_SIZE(ixdp2x00_devices));
 	ixp2000_uart_init();
 }
-

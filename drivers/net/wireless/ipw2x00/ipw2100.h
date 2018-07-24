@@ -56,31 +56,6 @@ struct ipw2100_rx_packet;
 #define IPW_DL_NONE      0x00000000
 #define IPW_DL_ALL       0x7FFFFFFF
 
-/*
- * To use the debug system;
- *
- * If you are defining a new debug classification, simply add it to the #define
- * list here in the form of:
- *
- * #define IPW_DL_xxxx VALUE
- *
- * shifting value to the left one bit from the previous entry.  xxxx should be
- * the name of the classification (for example, WEP)
- *
- * You then need to either add a IPW2100_xxxx_DEBUG() macro definition for your
- * classification, or use IPW_DEBUG(IPW_DL_xxxx, ...) whenever you want
- * to send output to that classification.
- *
- * To add your debug level to the list of levels seen when you perform
- *
- * % cat /proc/net/ipw2100/debug_level
- *
- * you simply need to add your entry to the ipw2100_debug_levels array.
- *
- * If you do not see debug_level in /proc/net/ipw2100 then you do not have
- * CONFIG_IPW2100_DEBUG defined in your kernel configuration
- *
- */
 
 #define IPW_DL_ERROR         (1<<0)
 #define IPW_DL_WARNING       (1<<1)

@@ -168,8 +168,7 @@ struct cfi_pri_intelext {
 	uint8_t  pri[3];
 	uint8_t  MajorVersion;
 	uint8_t  MinorVersion;
-	uint32_t FeatureSupport; /* if bit 31 is set then an additional uint32_t feature
-				    block follows - FIXME - not currently supported */
+	uint32_t FeatureSupport;
 	uint8_t  SuspendCmdSupport;
 	uint16_t BlkStatusRegMask;
 	uint8_t  VccOptimal;

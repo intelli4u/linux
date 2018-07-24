@@ -10,18 +10,8 @@
 #include <mach/hardware.h>
 #include <mach/irqs.h>
 
-/* In order to allow there to be support for both of the processor
-   classes at the same time, we make a hack here that isn't very
-   pretty.  At startup, the link pointed to with the
-   branch_irq_lh7a400 symbol is replaced with a NOP when the CPU is
-   detected as a lh7a404.
 
-   *** FIXME: we should clean this up so that there is only one
-	      implementation for each CPU's design.
-
-*/
-
-#if defined (CONFIG_ARCH_LH7A400) && defined (CONFIG_ARCH_LH7A404)
+#if defined(CONFIG_ARCH_LH7A400) && defined(CONFIG_ARCH_LH7A404)
 
 		.macro	disable_fiq
 		.endm
@@ -82,7 +72,7 @@ branch_irq_lh7a400: b 1000f
 
 
 
-#elif defined (CONFIG_ARCH_LH7A400)
+#elif defined(CONFIG_ARCH_LH7A400)
 		.macro	disable_fiq
 		.endm
 
@@ -145,5 +135,3 @@ branch_irq_lh7a400: b 1000f
 1009:
                .endm
 #endif
-
-

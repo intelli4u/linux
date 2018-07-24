@@ -646,7 +646,6 @@ int pdc_lan_station_id(char *lan_addr, unsigned long hpa)
 	retval = mem_pdc_call(PDC_LAN_STATION_ID, PDC_LAN_STATION_ID_READ,
 			__pa(pdc_result), hpa);
 	if (retval < 0) {
-		/* FIXME: else read MAC from NVRAM */
 		memset(lan_addr, 0, PDC_LAN_STATION_ID_SIZE);
 	} else {
 		memcpy(lan_addr, pdc_result, PDC_LAN_STATION_ID_SIZE);
@@ -791,7 +790,6 @@ int pdc_get_initiator(struct hardware_path *hwpath, struct pdc_initiator *initia
 
 	spin_lock_irqsave(&pdc_lock, flags);
 
-/* BCJ-XXXX series boxes. E.G. "9000/785/C3000" */
 #define IS_SPROCKETS() (strlen(boot_cpu_data.pdc.sys_model_name) == 14 && \
 	strncmp(boot_cpu_data.pdc.sys_model_name, "9000/785", 8) == 0)
 
@@ -886,54 +884,6 @@ int pdc_pci_irt(unsigned long num_entries, unsigned long hpa, void *tbl)
 }
 
 
-#if 0	/* UNTEST CODE - left here in case someone needs it */
-
-/** 
- * pdc_pci_config_read - read PCI config space.
- * @hpa		token from PDC to indicate which PCI device
- * @pci_addr	configuration space address to read from
- *
- * Read PCI Configuration space *before* linux PCI subsystem is running.
- */
-unsigned int pdc_pci_config_read(void *hpa, unsigned long cfg_addr)
-{
-	int retval;
-	unsigned long flags;
-
-	spin_lock_irqsave(&pdc_lock, flags);
-	pdc_result[0] = 0;
-	pdc_result[1] = 0;
-	retval = mem_pdc_call(PDC_PCI_INDEX, PDC_PCI_READ_CONFIG, 
-			      __pa(pdc_result), hpa, cfg_addr&~3UL, 4UL);
-	spin_unlock_irqrestore(&pdc_lock, flags);
-
-	return retval ? ~0 : (unsigned int) pdc_result[0];
-}
-
-
-/** 
- * pdc_pci_config_write - read PCI config space.
- * @hpa		token from PDC to indicate which PCI device
- * @pci_addr	configuration space address to write
- * @val		value we want in the 32-bit register
- *
- * Write PCI Configuration space *before* linux PCI subsystem is running.
- */
-void pdc_pci_config_write(void *hpa, unsigned long cfg_addr, unsigned int val)
-{
-	int retval;
-	unsigned long flags;
-
-	spin_lock_irqsave(&pdc_lock, flags);
-	pdc_result[0] = 0;
-	retval = mem_pdc_call(PDC_PCI_INDEX, PDC_PCI_WRITE_CONFIG, 
-			      __pa(pdc_result), hpa,
-			      cfg_addr&~3UL, 4UL, (unsigned long) val);
-	spin_unlock_irqrestore(&pdc_lock, flags);
-
-	return retval;
-}
-#endif /* UNTESTED CODE */
 
 /**
  * pdc_tod_read - Read the Time-Of-Day clock.
@@ -994,10 +944,6 @@ int pdc_mem_mem_table(struct pdc_memory_table_raddr *r_addr,
 }
 #endif /* CONFIG_64BIT */
 
-/* FIXME: Is this pdc used?  I could not find type reference to ftc_bitmap
- * so I guessed at unsigned long.  Someone who knows what this does, can fix
- * it later. :)
- */
 int pdc_do_firm_test_reset(unsigned long ftc_bitmap)
 {
         int retval;
@@ -1492,4 +1438,3 @@ long real64_call(unsigned long fn, ...)
 }
 
 #endif /* CONFIG_64BIT */
-

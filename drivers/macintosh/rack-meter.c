@@ -308,7 +308,6 @@ static int __devinit rackmeter_setup(struct rackmeter *rm)
 	return 0;
 }
 
-/*  XXX FIXME: No PWM yet, this is 0/1 */
 static u32 rackmeter_calc_sample(struct rackmeter *rm, unsigned int index)
 {
 	int led;
@@ -407,24 +406,6 @@ static int __devinit rackmeter_probe(struct macio_dev* mdev,
 	mutex_init(&rm->sem);
 	dev_set_drvdata(&mdev->ofdev.dev, rm);
 	/* Check resources availability. We need at least resource 0 and 1 */
-#if 0 /* Use that when i2s-a is finally an mdev per-se */
-	if (macio_resource_count(mdev) < 2 || macio_irq_count(mdev) < 2) {
-		printk(KERN_ERR
-		       "rackmeter: found match but lacks resources: %s"
-		       " (%d resources, %d interrupts)\n",
-		       mdev->ofdev.node->full_name);
-		rc = -ENXIO;
-		goto bail_free;
-	}
-	if (macio_request_resources(mdev, "rackmeter")) {
-		printk(KERN_ERR
-		       "rackmeter: failed to request resources: %s\n",
-		       mdev->ofdev.node->full_name);
-		rc = -EBUSY;
-		goto bail_free;
-	}
-	rm->irq = macio_irq(mdev, 1);
-#else
 	rm->irq = irq_of_parse_and_map(i2s, 1);
 	if (rm->irq == NO_IRQ ||
 	    of_address_to_resource(i2s, 0, &ri2s) ||
@@ -435,7 +416,6 @@ static int __devinit rackmeter_probe(struct macio_dev* mdev,
 		rc = -ENXIO;
 		goto bail_free;
 	}
-#endif
 
 	pr_debug("  i2s @0x%08x\n", (unsigned int)ri2s.start);
 	pr_debug("  dma @0x%08x\n", (unsigned int)rdma.start);
@@ -458,22 +438,14 @@ static int __devinit rackmeter_probe(struct macio_dev* mdev,
 		rc = -ENOMEM;
 		goto bail_free_samples;
 	}
-#if 0
-	rm->i2s_regs = ioremap(macio_resource_start(mdev, 0), 0x1000);
-#else
 	rm->i2s_regs = ioremap(ri2s.start, 0x1000);
-#endif
 	if (rm->i2s_regs == NULL) {
 		printk(KERN_ERR
 		       "rackmeter: failed to map i2s registers !\n");
 		rc = -ENXIO;
 		goto bail_free_dma;
 	}
-#if 0
-	rm->dma_regs = ioremap(macio_resource_start(mdev, 1), 0x100);
-#else
 	rm->dma_regs = ioremap(rdma.start, 0x100);
-#endif
 	if (rm->dma_regs == NULL) {
 		printk(KERN_ERR
 		       "rackmeter: failed to map dma registers !\n");
@@ -511,9 +483,6 @@ static int __devinit rackmeter_probe(struct macio_dev* mdev,
  bail_free_samples:
 	free_page((unsigned long)rm->ubuf);
  bail_release:
-#if 0
-	macio_release_resources(mdev);
-#endif
  bail_free:
 	kfree(rm);
  bail:
@@ -551,10 +520,6 @@ static int __devexit rackmeter_remove(struct macio_dev* mdev)
 	/* Free samples */
 	free_page((unsigned long)rm->ubuf);
 
-#if 0
-	/* Release resources */
-	macio_release_resources(mdev);
-#endif
 
 	/* Get rid of me */
 	kfree(rm);

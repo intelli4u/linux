@@ -100,5 +100,3 @@ union bfi_lps_i2h_msg_u {
 #pragma pack()
 
 #endif /* __BFI_LPS_H__ */
-
-

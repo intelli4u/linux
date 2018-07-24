@@ -106,12 +106,6 @@ struct zsHpPriv
     struct zsAniState   *curani;    /* cached last reference */
     struct zsAniState   ani[50];   /* per-channel state */
 
-    /*
-     * Ani tables that change between the 5416 and 5312.
-     * These get set at attach time.
-     * XXX don't belong here
-     * XXX need better explanation
-     */
     s32_t     totalSizeDesired[5];
     s32_t     coarseHigh[5];
     s32_t     coarseLow[5];

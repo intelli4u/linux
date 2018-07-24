@@ -787,7 +787,6 @@ static void ironlake_edp_panel_on (struct drm_device *dev)
 
 	pp = I915_READ(PCH_PP_CONTROL);
 
-	/* ILK workaround: disable reset around power sequence */
 	pp &= ~PANEL_POWER_RESET;
 	I915_WRITE(PCH_PP_CONTROL, pp);
 	POSTING_READ(PCH_PP_CONTROL);
@@ -812,7 +811,6 @@ static void ironlake_edp_panel_off (struct drm_device *dev)
 
 	pp = I915_READ(PCH_PP_CONTROL);
 
-	/* ILK workaround: disable reset around power sequence */
 	pp &= ~PANEL_POWER_RESET;
 	I915_WRITE(PCH_PP_CONTROL, pp);
 	POSTING_READ(PCH_PP_CONTROL);
@@ -987,17 +985,6 @@ intel_get_adjust_request_pre_emphasis(uint8_t link_status[DP_LINK_STATUS_SIZE],
 }
 
 
-#if 0
-static char	*voltage_names[] = {
-	"0.4V", "0.6V", "0.8V", "1.2V"
-};
-static char	*pre_emph_names[] = {
-	"0dB", "3.5dB", "6dB", "9.5dB"
-};
-static char	*link_train_names[] = {
-	"pattern 1", "pattern 2", "idle", "off"
-};
-#endif
 
 /*
  * These are source-specific values; current Intel hardware supports

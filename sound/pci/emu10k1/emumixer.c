@@ -784,7 +784,6 @@ static int snd_emu1010_internal_clock_put(struct snd_kcontrol *kcontrol,
 			/* Set LEDs on Audio Dock */
 			snd_emu1010_fpga_write(emu, EMU_HANA_DOCK_LEDS_2,
 				EMU_HANA_DOCK_LEDS_2_EXT | EMU_HANA_DOCK_LEDS_2_LOCK );
-			/* FIXME: We should set EMU_HANA_DOCK_LEDS_2_LOCK only when clock signal is present and valid */	
 			/* Allow DLL to settle */
 			msleep(10);
 			/* Unmute all */
@@ -802,7 +801,6 @@ static int snd_emu1010_internal_clock_put(struct snd_kcontrol *kcontrol,
 				EMU_HANA_WCLOCK_HANA_ADAT_IN | EMU_HANA_WCLOCK_1X );
 			/* Set LEDs on Audio Dock */
 			snd_emu1010_fpga_write(emu, EMU_HANA_DOCK_LEDS_2, EMU_HANA_DOCK_LEDS_2_EXT | EMU_HANA_DOCK_LEDS_2_LOCK );
-			/* FIXME: We should set EMU_HANA_DOCK_LEDS_2_LOCK only when clock signal is present and valid */	
 			/* Allow DLL to settle */
 			msleep(10);
 			/*   Unmute all */
@@ -829,11 +827,6 @@ static struct snd_kcontrol_new snd_emu1010_internal_clock =
 static int snd_audigy_i2c_capture_source_info(struct snd_kcontrol *kcontrol,
 					  struct snd_ctl_elem_info *uinfo)
 {
-#if 0
-	static char *texts[4] = {
-		"Unknown1", "Unknown2", "Mic", "Line"
-	};
-#endif
 	static char *texts[2] = {
 		"Mic", "Line"
 	};
@@ -994,92 +987,6 @@ static struct snd_kcontrol_new snd_audigy_i2c_volume_ctls[] __devinitdata = {
 	I2C_VOLUME("Line Capture Volume", 0)
 };
 
-#if 0
-static int snd_audigy_spdif_output_rate_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
-{
-	static char *texts[] = {"44100", "48000", "96000"};
-
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 3;
-	if (uinfo->value.enumerated.item >= uinfo->value.enumerated.items)
-		uinfo->value.enumerated.item = uinfo->value.enumerated.items - 1;
-	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
-	return 0;
-}
-
-static int snd_audigy_spdif_output_rate_get(struct snd_kcontrol *kcontrol,
-                                 struct snd_ctl_elem_value *ucontrol)
-{
-	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
-	unsigned int tmp;
-	unsigned long flags;
-	
-
-	spin_lock_irqsave(&emu->reg_lock, flags);
-	tmp = snd_emu10k1_ptr_read(emu, A_SPDIF_SAMPLERATE, 0);
-	switch (tmp & A_SPDIF_RATE_MASK) {
-	case A_SPDIF_44100:
-		ucontrol->value.enumerated.item[0] = 0;
-		break;
-	case A_SPDIF_48000:
-		ucontrol->value.enumerated.item[0] = 1;
-		break;
-	case A_SPDIF_96000:
-		ucontrol->value.enumerated.item[0] = 2;
-		break;
-	default:
-		ucontrol->value.enumerated.item[0] = 1;
-	}
-	spin_unlock_irqrestore(&emu->reg_lock, flags);
-	return 0;
-}
-
-static int snd_audigy_spdif_output_rate_put(struct snd_kcontrol *kcontrol,
-                                 struct snd_ctl_elem_value *ucontrol)
-{
-	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
-	int change;
-	unsigned int reg, val, tmp;
-	unsigned long flags;
-
-	switch(ucontrol->value.enumerated.item[0]) {
-	case 0:
-		val = A_SPDIF_44100;
-		break;
-	case 1:
-		val = A_SPDIF_48000;
-		break;
-	case 2:
-		val = A_SPDIF_96000;
-		break;
-	default:
-		val = A_SPDIF_48000;
-		break;
-	}
-
-	
-	spin_lock_irqsave(&emu->reg_lock, flags);
-	reg = snd_emu10k1_ptr_read(emu, A_SPDIF_SAMPLERATE, 0);
-	tmp = reg & ~A_SPDIF_RATE_MASK;
-	tmp |= val;
-	if ((change = (tmp != reg)))
-		snd_emu10k1_ptr_write(emu, A_SPDIF_SAMPLERATE, 0, tmp);
-	spin_unlock_irqrestore(&emu->reg_lock, flags);
-	return change;
-}
-
-static struct snd_kcontrol_new snd_audigy_spdif_output_rate =
-{
-	.access =	SNDRV_CTL_ELEM_ACCESS_READWRITE,
-	.iface =        SNDRV_CTL_ELEM_IFACE_MIXER,
-	.name =         "Audigy SPDIF Output Sample Rate",
-	.count =	1,
-	.info =         snd_audigy_spdif_output_rate_info,
-	.get =          snd_audigy_spdif_output_rate_get,
-	.put =          snd_audigy_spdif_output_rate_put
-};
-#endif
 
 static int snd_emu10k1_spdif_put(struct snd_kcontrol *kcontrol,
                                  struct snd_ctl_elem_value *ucontrol)
@@ -1639,7 +1546,6 @@ static struct snd_kcontrol_new snd_audigy_shared_spdif __devinitdata =
 	.put =		snd_emu10k1_shared_spdif_put
 };
 
-/* workaround for too low volume on Audigy due to 16bit/24bit conversion */
 
 #define snd_audigy_capture_boost_info	snd_ctl_boolean_mono_info
 
@@ -1649,7 +1555,6 @@ static int snd_audigy_capture_boost_get(struct snd_kcontrol *kcontrol,
 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
 	unsigned int val;
 
-	/* FIXME: better to use a cached version */
 	val = snd_ac97_read(emu->ac97, AC97_REC_GAIN);
 	ucontrol->value.integer.value[0] = !!val;
 	return 0;
@@ -1858,7 +1763,7 @@ int __devinit snd_emu10k1_mixer(struct snd_emu10k1 *emu,
 			snd_printd(KERN_INFO "emu10k1: AC97 is optional on this board\n");
 			snd_printd(KERN_INFO"          Proceeding without ac97 mixers...\n");
 			snd_device_free(emu->card, pbus);
-			goto no_ac97; /* FIXME: get rid of ugly gotos.. */
+			goto no_ac97;
 		}
 		if (emu->audigy) {
 			/* set master volume to 0 dB */
@@ -2000,7 +1905,7 @@ int __devinit snd_emu10k1_mixer(struct snd_emu10k1 *emu,
 		mix->attn[0] = 0xffff;
 	}
 	
-	if (! emu->card_capabilities->ecard) { /* FIXME: APS has these controls? */
+	if (! emu->card_capabilities->ecard) {
 		/* sb live! and audigy */
 		if ((kctl = snd_ctl_new1(&snd_emu10k1_spdif_mask_control, emu)) == NULL)
 			return -ENOMEM;
@@ -2023,12 +1928,6 @@ int __devinit snd_emu10k1_mixer(struct snd_emu10k1 *emu,
 			return -ENOMEM;
 		if ((err = snd_ctl_add(card, kctl)))
 			return err;
-#if 0
-		if ((kctl = snd_ctl_new1(&snd_audigy_spdif_output_rate, emu)) == NULL)
-			return -ENOMEM;
-		if ((err = snd_ctl_add(card, kctl)))
-			return err;
-#endif
 	} else if (! emu->card_capabilities->ecard) {
 		/* sb live! */
 		if ((kctl = snd_ctl_new1(&snd_emu10k1_shared_spdif, emu)) == NULL)

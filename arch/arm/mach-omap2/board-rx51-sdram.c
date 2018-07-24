@@ -218,4 +218,3 @@ struct omap_sdrc_params *rx51_get_sdram_timings(void)
 
 	return &rx51_sdrc_params[0];
 }
-

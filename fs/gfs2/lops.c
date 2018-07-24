@@ -696,7 +696,6 @@ static int databuf_lo_scan_elements(struct gfs2_jdesc *jd, unsigned int start,
 	return error;
 }
 
-/* FIXME: sort out accounting for log blocks etc. */
 
 static void databuf_lo_after_scan(struct gfs2_jdesc *jd, int error, int pass)
 {
@@ -773,4 +772,3 @@ const struct gfs2_log_operations *gfs2_log_ops[] = {
 	&gfs2_revoke_lops,
 	NULL,
 };
-

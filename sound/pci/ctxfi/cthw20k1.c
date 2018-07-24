@@ -1277,11 +1277,6 @@ static int hw_trn_init(struct hw *hw, const struct trn_conf *info)
 	ptp_phys_high = upper_32_bits(info->vm_pgt_phys);
 	if (sizeof(void *) == 8) /* 64bit address */
 		trnctl |= (1 << 2);
-#if 0 /* Only 4k h/w pages for simplicitiy */
-#if PAGE_SIZE == 8192
-	trnctl |= (1<<5);
-#endif
-#endif
 	hw_write_20kx(hw, PTPALX, ptp_phys_low);
 	hw_write_20kx(hw, PTPAHX, ptp_phys_high);
 	hw_write_20kx(hw, TRNCTL, trnctl);

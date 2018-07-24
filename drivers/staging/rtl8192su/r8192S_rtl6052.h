@@ -48,7 +48,6 @@
 
 /*--------------------------Exported Function prototype---------------------*/
 //======================================================
-#if 1
 // Function prototypes for HalPhy8225.c
 //1======================================================
 extern void PHY_SetRF0222DBandwidth(struct net_device* dev , HT_CHANNEL_WIDTH Bandwidth);	//20M or 40M;
@@ -69,7 +68,6 @@ extern void PHY_RF8256_Config(struct net_device* dev);
 extern void phy_RF8256_Config_ParaFile(struct net_device* dev);
 extern void PHY_SetRF8256CCKTxPower(struct net_device*	dev, u8	powerlevel);
 extern void PHY_SetRF8256OFDMTxPower(struct net_device* dev, u8 powerlevel);
-#endif
 
 //
 // RF RL6052 Series API

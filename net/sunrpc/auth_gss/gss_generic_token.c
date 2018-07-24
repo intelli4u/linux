@@ -48,10 +48,6 @@
 	memcpy((ptr), (char *) (str), (len)); \
 	(ptr) += (len);
 
-/* XXXX this code currently makes the assumption that a mech oid will
-   never be longer than 127 bytes.  This assumption is not inherent in
-   the interfaces, so the code can be fixed if the OSI namespace
-   balloons unexpectedly. */
 
 /* Each token looks like this:
 
@@ -231,4 +227,3 @@ g_verify_token_header(struct xdr_netobj *mech, int *body_size,
 }
 
 EXPORT_SYMBOL_GPL(g_verify_token_header);
-

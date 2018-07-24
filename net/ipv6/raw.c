@@ -186,12 +186,6 @@ static int ipv6_raw_deliver(struct sk_buff *skb, int nexthdr)
 #if defined(CONFIG_IPV6_MIP6) || defined(CONFIG_IPV6_MIP6_MODULE)
 		case IPPROTO_MH:
 		{
-			/* XXX: To validate MH only once for each packet,
-			 * this is placed here. It should be after checking
-			 * xfrm policy, however it doesn't. The checking xfrm
-			 * policy is placed in rawv6_rcv() because it is
-			 * required for each socket.
-			 */
 			int (*filter)(struct sock *sock, struct sk_buff *skb);
 
 			filter = rcu_dereference(mh_filter);

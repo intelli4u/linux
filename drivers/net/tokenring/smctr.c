@@ -3485,8 +3485,6 @@ static int smctr_open_tr(struct net_device *dev)
         if(tp->status != INITIALIZED)
                 return (-1);
 
-	/* FIXME: it would work a lot better if we masked the irq sources
-	   on the card here, then we could skip the locking and poll nicely */
 	spin_lock_irqsave(&tp->lock, flags);
 	
         smctr_set_page(dev, (__u8 *)tp->ram_access);
@@ -5316,7 +5314,6 @@ static int smctr_status_chg(struct net_device *dev)
                 case CLOSED:
                         break;
 
-                /* Interrupt driven open() completion. XXX */
                 case INITIALIZED:
                         tp->group_address_0 = 0;
                         tp->group_address[0] = 0;

@@ -43,9 +43,6 @@ MODULE_AUTHOR("Jaroslav Kysela <perex@perex.cz>");
 MODULE_DESCRIPTION("Routines for control of CS4231(A)/CS4232/InterWave & compatible chips");
 MODULE_LICENSE("GPL");
 
-#if 0
-#define SNDRV_DEBUG_MCE
-#endif
 
 /*
  *  Some variables
@@ -234,9 +231,6 @@ void snd_cs4236_ext_out(struct snd_wss *chip, unsigned char reg,
 		 reg | (chip->image[CS4236_EXT_REG] & 0x01));
 	wss_outb(chip, CS4231P(REG), val);
 	chip->eimage[CS4236_REG(reg)] = val;
-#if 0
-	printk(KERN_DEBUG "ext out : reg = 0x%x, val = 0x%x\n", reg, val);
-#endif
 }
 EXPORT_SYMBOL(snd_cs4236_ext_out);
 
@@ -245,112 +239,10 @@ unsigned char snd_cs4236_ext_in(struct snd_wss *chip, unsigned char reg)
 	wss_outb(chip, CS4231P(REGSEL), chip->mce_bit | 0x17);
 	wss_outb(chip, CS4231P(REG),
 		 reg | (chip->image[CS4236_EXT_REG] & 0x01));
-#if 1
 	return wss_inb(chip, CS4231P(REG));
-#else
-	{
-		unsigned char res;
-		res = wss_inb(chip, CS4231P(REG));
-		printk(KERN_DEBUG "ext in : reg = 0x%x, val = 0x%x\n",
-		       reg, res);
-		return res;
-	}
-#endif
 }
 EXPORT_SYMBOL(snd_cs4236_ext_in);
 
-#if 0
-
-static void snd_wss_debug(struct snd_wss *chip)
-{
-	printk(KERN_DEBUG
-		"CS4231 REGS:      INDEX = 0x%02x  "
-		"                 STATUS = 0x%02x\n",
-					wss_inb(chip, CS4231P(REGSEL)),
-					wss_inb(chip, CS4231P(STATUS)));
-	printk(KERN_DEBUG
-		"  0x00: left input      = 0x%02x  "
-		"  0x10: alt 1 (CFIG 2)  = 0x%02x\n",
-					snd_wss_in(chip, 0x00),
-					snd_wss_in(chip, 0x10));
-	printk(KERN_DEBUG
-		"  0x01: right input     = 0x%02x  "
-		"  0x11: alt 2 (CFIG 3)  = 0x%02x\n",
-					snd_wss_in(chip, 0x01),
-					snd_wss_in(chip, 0x11));
-	printk(KERN_DEBUG
-		"  0x02: GF1 left input  = 0x%02x  "
-		"  0x12: left line in    = 0x%02x\n",
-					snd_wss_in(chip, 0x02),
-					snd_wss_in(chip, 0x12));
-	printk(KERN_DEBUG
-		"  0x03: GF1 right input = 0x%02x  "
-		"  0x13: right line in   = 0x%02x\n",
-					snd_wss_in(chip, 0x03),
-					snd_wss_in(chip, 0x13));
-	printk(KERN_DEBUG
-		"  0x04: CD left input   = 0x%02x  "
-		"  0x14: timer low       = 0x%02x\n",
-					snd_wss_in(chip, 0x04),
-					snd_wss_in(chip, 0x14));
-	printk(KERN_DEBUG
-		"  0x05: CD right input  = 0x%02x  "
-		"  0x15: timer high      = 0x%02x\n",
-					snd_wss_in(chip, 0x05),
-					snd_wss_in(chip, 0x15));
-	printk(KERN_DEBUG
-		"  0x06: left output     = 0x%02x  "
-		"  0x16: left MIC (PnP)  = 0x%02x\n",
-					snd_wss_in(chip, 0x06),
-					snd_wss_in(chip, 0x16));
-	printk(KERN_DEBUG
-		"  0x07: right output    = 0x%02x  "
-		"  0x17: right MIC (PnP) = 0x%02x\n",
-					snd_wss_in(chip, 0x07),
-					snd_wss_in(chip, 0x17));
-	printk(KERN_DEBUG
-		"  0x08: playback format = 0x%02x  "
-		"  0x18: IRQ status      = 0x%02x\n",
-					snd_wss_in(chip, 0x08),
-					snd_wss_in(chip, 0x18));
-	printk(KERN_DEBUG
-		"  0x09: iface (CFIG 1)  = 0x%02x  "
-		"  0x19: left line out   = 0x%02x\n",
-					snd_wss_in(chip, 0x09),
-					snd_wss_in(chip, 0x19));
-	printk(KERN_DEBUG
-		"  0x0a: pin control     = 0x%02x  "
-		"  0x1a: mono control    = 0x%02x\n",
-					snd_wss_in(chip, 0x0a),
-					snd_wss_in(chip, 0x1a));
-	printk(KERN_DEBUG
-		"  0x0b: init & status   = 0x%02x  "
-		"  0x1b: right line out  = 0x%02x\n",
-					snd_wss_in(chip, 0x0b),
-					snd_wss_in(chip, 0x1b));
-	printk(KERN_DEBUG
-		"  0x0c: revision & mode = 0x%02x  "
-		"  0x1c: record format   = 0x%02x\n",
-					snd_wss_in(chip, 0x0c),
-					snd_wss_in(chip, 0x1c));
-	printk(KERN_DEBUG
-		"  0x0d: loopback        = 0x%02x  "
-		"  0x1d: var freq (PnP)  = 0x%02x\n",
-					snd_wss_in(chip, 0x0d),
-					snd_wss_in(chip, 0x1d));
-	printk(KERN_DEBUG
-		"  0x0e: ply upr count   = 0x%02x  "
-		"  0x1e: ply lwr count   = 0x%02x\n",
-					snd_wss_in(chip, 0x0e),
-					snd_wss_in(chip, 0x1e));
-	printk(KERN_DEBUG
-		"  0x0f: rec upr count   = 0x%02x  "
-		"  0x1f: rec lwr count   = 0x%02x\n",
-					snd_wss_in(chip, 0x0f),
-					snd_wss_in(chip, 0x1f));
-}
-
-#endif
 
 /*
  *  CS4231 detection / MCE routines
@@ -518,9 +410,6 @@ static int snd_wss_trigger(struct snd_pcm_substream *substream,
 	}
 	snd_wss_out(chip, CS4231_IFACE_CTRL, chip->image[CS4231_IFACE_CTRL]);
 	spin_unlock(&chip->reg_lock);
-#if 0
-	snd_wss_debug(chip);
-#endif
 	return result;
 }
 
@@ -555,9 +444,6 @@ static unsigned char snd_wss_get_format(struct snd_wss *chip,
 	}
 	if (channels > 1)
 		rformat |= CS4231_STEREO;
-#if 0
-	snd_printk(KERN_DEBUG "get_format: 0x%x (mode=0x%x)\n", format, mode);
-#endif
 	return rformat;
 }
 
@@ -1027,9 +913,6 @@ static int snd_wss_playback_prepare(struct snd_pcm_substream *substream)
 	snd_wss_out(chip, CS4231_PLY_LWR_CNT, (unsigned char) count);
 	snd_wss_out(chip, CS4231_PLY_UPR_CNT, (unsigned char) (count >> 8));
 	spin_unlock_irqrestore(&chip->reg_lock, flags);
-#if 0
-	snd_wss_debug(chip);
-#endif
 	return 0;
 }
 
@@ -1657,28 +1540,7 @@ static void snd_wss_resume(struct snd_wss *chip)
 		}
 	}
 	spin_unlock_irqrestore(&chip->reg_lock, flags);
-#if 1
 	snd_wss_mce_down(chip);
-#else
-	/* The following is a workaround to avoid freeze after resume on TP600E.
-	   This is the first half of copy of snd_wss_mce_down(), but doesn't
-	   include rescheduling.  -- iwai
-	   */
-	snd_wss_busy_wait(chip);
-	spin_lock_irqsave(&chip->reg_lock, flags);
-	chip->mce_bit &= ~CS4231_MCE;
-	timeout = wss_inb(chip, CS4231P(REGSEL));
-	wss_outb(chip, CS4231P(REGSEL), chip->mce_bit | (timeout & 0x1f));
-	spin_unlock_irqrestore(&chip->reg_lock, flags);
-	if (timeout == 0x80)
-		snd_printk(KERN_ERR "down [0x%lx]: serious init problem "
-			   "- codec still busy\n", chip->port);
-	if ((timeout & CS4231_MCE) == 0 ||
-	    !(chip->hardware & (WSS_HW_CS4231_MASK | WSS_HW_CS4232_MASK))) {
-		return;
-	}
-	snd_wss_busy_wait(chip);
-#endif
 }
 #endif /* CONFIG_PM */
 
@@ -1871,13 +1733,6 @@ int snd_wss_create(struct snd_card *card,
 	}
 	snd_wss_init(chip);
 
-#if 0
-	if (chip->hardware & WSS_HW_CS4232_MASK) {
-		if (chip->res_cport == NULL)
-			snd_printk(KERN_ERR "CS4232 control port features are "
-				   "not accessible\n");
-	}
-#endif
 
 	/* Register device */
 	err = snd_device_new(card, SNDRV_DEV_LOWLEVEL, chip, &ops);

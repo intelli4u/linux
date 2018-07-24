@@ -1,14 +1,4 @@
-/*
- * Save/restore floating point context for signal handlers.
- *
- * Copyright (C) 1999, 2000  Kaz Kojima & Niibe Yutaka
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * FIXME! These routines can be optimized in big endian case.
- */
+
 #include <linux/sched.h>
 #include <linux/signal.h>
 #include <asm/processor.h>
@@ -112,7 +102,6 @@ static int denormal_mulf(int hx, int hy)
 	w = -1;
 	while (n) { n >>= 1; w++; }
 
-	/* FIXME: use guard bits */
 	exp += w - 126 - 46;
 	if (exp > 0)
 		ix = ((int) (m >> (w - 23)) & 0x007fffff) | (exp << 23);
@@ -184,7 +173,6 @@ static long long denormal_muld(long long hx, long long hy)
 	} else
 		while (nl) { nl >>= 1; w++;}
 
-	/* FIXME: use guard bits */
 	exp += w - 1022 - 52 * 2;
 	if (exp > 0)
 		ix = (rshift64(mh, ml, w - 52) & 0x000fffffffffffffLL)

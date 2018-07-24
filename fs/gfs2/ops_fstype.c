@@ -1467,4 +1467,3 @@ struct file_system_type gfs2meta_fs_type = {
 	.get_sb = gfs2_get_sb_meta,
 	.owner = THIS_MODULE,
 };
-

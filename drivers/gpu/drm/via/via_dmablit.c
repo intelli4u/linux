@@ -27,12 +27,6 @@
  */
 
 
-/*
- * Unmaps the DMA mappings.
- * FIXME: Is this a NoOp on x86? Also
- * FIXME: What happens if this one is called and a pending blit has previously done
- * the same DMA mappings?
- */
 
 #include "drmP.h"
 #include "via_drm.h"

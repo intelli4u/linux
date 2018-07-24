@@ -56,7 +56,7 @@
 #define IRQ_U300_GPIO_PORT2		34
 
 #if defined(CONFIG_MACH_U300_BS2X) || defined(CONFIG_MACH_U300_BS330) || \
-    defined(CONFIG_MACH_U300_BS335)
+	defined(CONFIG_MACH_U300_BS335)
 /* These are for DB3150, DB3200 and DB3350 */
 #define IRQ_U300_WDOG			35
 #define IRQ_U300_EVHIST			36

@@ -213,5 +213,3 @@ bfa_fcs_modexit_comp(struct bfa_fcs_s *fcs)
 {
 	bfa_wc_down(&fcs->wc);
 }
-
-

@@ -55,17 +55,9 @@
 /*
  * Debugging.
  */
-#if 0
-#define DEBUG_AUTOCONF(fmt...)	printk(fmt)
-#else
 #define DEBUG_AUTOCONF(fmt...)	do { } while (0)
-#endif
 
-#if 0
-#define DEBUG_INTR(fmt...)	printk(fmt)
-#else
 #define DEBUG_INTR(fmt...)	do { } while (0)
-#endif
 
 #define PASS_LIMIT	256
 
@@ -402,7 +394,7 @@ static void transmit_chars(struct uart_sio_port *up)
 	int count;
 
 	if (up->port.x_char) {
-#ifndef CONFIG_SERIAL_M32R_PLDSIO	/* XXX */
+#ifndef CONFIG_SERIAL_M32R_PLDSIO
 		serial_out(up, UART_TX, up->port.x_char);
 #endif
 		up->port.icount.tx++;

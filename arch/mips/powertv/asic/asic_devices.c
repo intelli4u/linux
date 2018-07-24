@@ -464,11 +464,7 @@ static long pmemlen __initdata;
 static int __init early_param_pmemlen(char *p)
 {
 /* TODO: we can use this code when and if the bootloader ever changes this */
-#if 0
-	pmemlen = (unsigned long)simple_strtoul(p, NULL, 0);
-#else
 	pmemlen = 0x20000;
-#endif
 	return 0;
 }
 early_param("pmemlen", early_param_pmemlen);

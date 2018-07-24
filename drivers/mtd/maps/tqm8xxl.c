@@ -135,7 +135,6 @@ static int __init init_tqm_mtd(void)
 		map_banks[idx] = kzalloc(sizeof(struct map_info), GFP_KERNEL);
 		if(map_banks[idx] == NULL) {
 			ret = -ENOMEM;
-			/* FIXME: What if some MTD devices were probed already? */
 			goto error_mem;
 		}
 
@@ -143,7 +142,6 @@ static int __init init_tqm_mtd(void)
 
 		if (!map_banks[idx]->name) {
 			ret = -ENOMEM;
-			/* FIXME: What if some MTD devices were probed already? */
 			goto error_mem;
 		}
 		sprintf(map_banks[idx]->name, "TQM8xxL%d", idx);
@@ -155,13 +153,6 @@ static int __init init_tqm_mtd(void)
 
 		map_banks[idx]->virt = start_scan_addr;
 		map_banks[idx]->phys = flash_addr;
-		/* FIXME: This looks utterly bogus, but I'm trying to
-		   preserve the behaviour of the original (shown here)...
-
-		map_banks[idx]->map_priv_1 =
-		start_scan_addr + ((idx > 0) ?
-		(mtd_banks[idx-1] ? mtd_banks[idx-1]->size : 0) : 0);
-		*/
 
 		if (idx && mtd_banks[idx-1]) {
 			map_banks[idx]->virt += mtd_banks[idx-1]->size;

@@ -817,4 +817,3 @@ static int dynamic_ipg[MAX_UNITS] = {0,0,0,0,0,0,0,0};
 static unsigned int chip_version;
 
 #endif /* _AMD8111E_H */
-

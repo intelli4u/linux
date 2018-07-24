@@ -51,7 +51,6 @@ struct errormap {
 #define ERRHASHSZ		32
 static struct hlist_head hash_errmap[ERRHASHSZ];
 
-/* FixMe - reduce to a reasonable size */
 static struct errormap errmap[] = {
 	{"Operation not permitted", EPERM},
 	{"wstat prohibited", EPERM},

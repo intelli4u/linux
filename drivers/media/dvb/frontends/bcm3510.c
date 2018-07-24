@@ -229,25 +229,6 @@ error:
 	return ret;
 }
 
-#if 0
-/* not needed, we use a semaphore to prevent HAB races */
-static int bcm3510_is_ap_ready(struct bcm3510_state *st)
-{
-	bcm3510_register_value ap,hab;
-	int ret;
-
-	if ((ret = bcm3510_readB(st,0xa8,&hab)) < 0 ||
-		(ret = bcm3510_readB(st,0xa2,&ap) < 0))
-		return ret;
-
-	if (ap.APSTAT1_a2.RESET || ap.APSTAT1_a2.IDLE || ap.APSTAT1_a2.STOP || hab.HABSTAT_a8.HABR) {
-		deb_info("AP is busy\n");
-		return -EBUSY;
-	}
-
-	return 0;
-}
-#endif
 
 static int bcm3510_bert_reset(struct bcm3510_state *st)
 {

@@ -99,7 +99,7 @@ int of_workarounds;
 #endif
 
 #define OF_WA_CLAIM	1	/* do phys/virt claim separately, then map */
-#define OF_WA_LONGTRAIL	2	/* work around longtrail bugs */
+#define OF_WA_LONGTRAIL	2
 
 #define PROM_BUG() do {						\
         prom_printf("kernel BUG at %s line 0x%x!\n",		\
@@ -1089,14 +1089,6 @@ static unsigned long __init prom_next_cell(int s, cell_t **cellp)
 	return r;
 }
 
-/*
- * Very dumb function for adding to the memory reserve list, but
- * we don't need anything smarter at this point
- *
- * XXX Eventually check for collisions.  They should NEVER happen.
- * If problems seem to show up, it would be a good start to track
- * them down.
- */
 static void __init reserve_mem(u64 base, u64 size)
 {
 	u64 top = base + size;
@@ -1225,14 +1217,6 @@ static void __init prom_init_mem(void)
 		}
 	}
 
-	/*
-	 * Setup our top alloc point, that is top of RMO or top of
-	 * segment 0 when running non-LPAR.
-	 * Some RS64 machines have buggy firmware where claims up at
-	 * 1GB fail.  Cap at 768MB as a workaround.
-	 * Since 768MB is plenty of room, and we need to cap to something
-	 * reasonable on 32-bit, cap at 768MB on all machines.
-	 */
 	if (!RELOC(rmo_top))
 		RELOC(rmo_top) = RELOC(ram_top);
 	RELOC(rmo_top) = min(0x30000000ul, RELOC(rmo_top));
@@ -1562,11 +1546,6 @@ static void __init prom_init_client_services(unsigned long pp)
 }
 
 #ifdef CONFIG_PPC32
-/*
- * For really old powermacs, we need to map things we claim.
- * For that, we need the ihandle of the mmu.
- * Also, on the longtrail, we need to work around other bugs.
- */
 static void __init prom_find_mmu(void)
 {
 	struct prom_t *_prom = &RELOC(prom);
@@ -1579,7 +1558,6 @@ static void __init prom_find_mmu(void)
 	if (prom_getprop(oprom, "model", version, sizeof(version)) <= 0)
 		return;
 	version[sizeof(version) - 1] = 0;
-	/* XXX might need to add other versions here */
 	if (strcmp(version, "Open Firmware, 1.0.5") == 0)
 		of_workarounds = OF_WA_CLAIM;
 	else if (strncmp(version, "FirmWorks,3.", 12) == 0) {

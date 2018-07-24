@@ -211,14 +211,6 @@ static void tx_timeout(struct net_device *dev);
 /* A list of all installed ATP devices, for removing the driver module. */
 static struct net_device *root_atp_dev;
 
-/* Check for a network adapter of this type, and return '0' iff one exists.
-   If dev->base_addr == 0, probe all likely locations.
-   If dev->base_addr == 1, always return failure.
-   If dev->base_addr == 2, allocate space for the device and return success
-   (detachable devices only).
-
-   FIXME: we should use the parport layer for this
-   */
 static int __init atp_init(void)
 {
 	int *port, ports[] = {0x378, 0x278, 0x3bc, 0};
@@ -692,9 +684,6 @@ static irqreturn_t atp_interrupt(int irq, void *dev_instance)
 		int i;
 		for (i = 0; i < 6; i++)
 			write_reg_byte(ioaddr, PAR0 + i, dev->dev_addr[i]);
-#if 0 && defined(TIMED_CHECKER)
-		mod_timer(&lp->timer, jiffies + TIMED_CHECKER);
-#endif
 	}
 
 	/* Tell the adapter that it can go back to using the output line as IRQ. */
@@ -724,26 +713,9 @@ static void atp_timed_checker(unsigned long data)
 
 	spin_lock(&lp->lock);
 	if (tickssofar > 2*HZ) {
-#if 1
 		for (i = 0; i < 6; i++)
 			write_reg_byte(ioaddr, PAR0 + i, dev->dev_addr[i]);
 		lp->last_rx_time = jiffies;
-#else
-		for (i = 0; i < 6; i++)
-			if (read_cmd_byte(ioaddr, PAR0 + i) != atp_timed_dev->dev_addr[i])
-				{
-			struct net_local *lp = netdev_priv(atp_timed_dev);
-			write_reg_byte(ioaddr, PAR0 + i, atp_timed_dev->dev_addr[i]);
-			if (i == 2)
-			  dev->stats.tx_errors++;
-			else if (i == 3)
-			  dev->stats.tx_dropped++;
-			else if (i == 4)
-			  dev->stats.collisions++;
-			else
-			  dev->stats.rx_errors++;
-		  }
-#endif
 	}
 	spin_unlock(&lp->lock);
 	lp->timer.expires = jiffies + TIMED_CHECKER;

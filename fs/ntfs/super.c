@@ -497,19 +497,6 @@ static int ntfs_remount(struct super_block *sb, int *flags, char *opt)
 			unlock_kernel();
 			return -EROFS;
 		}
-#if 0
-		// TODO: Enable this code once we start modifying anything that
-		//	 is different between NTFS 1.2 and 3.x...
-		/* Set NT4 compatibility flag on newer NTFS version volumes. */
-		if ((vol->major_ver > 1)) {
-			if (ntfs_set_volume_flags(vol, VOLUME_MOUNTED_ON_NT4)) {
-				ntfs_error(sb, "Failed to set NT4 "
-						"compatibility flag%s", es);
-				NVolSetErrors(vol);
-				return -EROFS;
-			}
-		}
-#endif
 		if (!ntfs_empty_logfile(vol->logfile_ino)) {
 			ntfs_error(sb, "Failed to empty journal $LogFile%s",
 					es);
@@ -707,16 +694,6 @@ static struct buffer_head *read_ntfs_boot_sector(struct super_block *sb,
 	return NULL;
 hotfix_primary_boot_sector:
 	if (bh_primary) {
-		/*
-		 * If we managed to read sector zero and the volume is not
-		 * read-only, copy the found, valid backup boot sector to the
-		 * primary boot sector.  Note we only copy the actual boot
-		 * sector structure, not the actual whole device sector as that
-		 * may be bigger and would potentially damage the $Boot system
-		 * file (FIXME: Would be nice to know if the backup boot sector
-		 * on a large sector device contains the whole boot loader or
-		 * just the first 512 bytes).
-		 */
 		if (!(sb->s_flags & MS_RDONLY)) {
 			ntfs_warning(sb, "Hot-fix: Recovering invalid primary "
 					"boot sector from backup copy.");
@@ -2035,31 +2012,6 @@ get_ctx_vol_failed:
 		 * to set the dirty flag in which case all would be well.
 		 */
 	}
-#if 0
-	// TODO: Enable this code once we start modifying anything that is
-	//	 different between NTFS 1.2 and 3.x...
-	/*
-	 * If (still) a read-write mount, set the NT4 compatibility flag on
-	 * newer NTFS version volumes.
-	 */
-	if (!(sb->s_flags & MS_RDONLY) && (vol->major_ver > 1) &&
-			ntfs_set_volume_flags(vol, VOLUME_MOUNTED_ON_NT4)) {
-		static const char *es1 = "Failed to set NT4 compatibility flag";
-		static const char *es2 = ".  Run chkdsk.";
-
-		/* Convert to a read-only mount. */
-		if (!(vol->on_errors & (ON_ERRORS_REMOUNT_RO |
-				ON_ERRORS_CONTINUE))) {
-			ntfs_error(sb, "%s and neither on_errors=continue nor "
-					"on_errors=remount-ro was specified%s",
-					es1, es2);
-			goto iput_root_err_out;
-		}
-		ntfs_error(sb, "%s.  Mounting read-only%s", es1, es2);
-		sb->s_flags |= MS_RDONLY;
-		NVolSetErrors(vol);
-	}
-#endif
 	/* If (still) a read-write mount, empty the logfile. */
 	if (!(sb->s_flags & MS_RDONLY) &&
 			!ntfs_empty_logfile(vol->logfile_ino)) {
@@ -2947,7 +2899,6 @@ static int ntfs_fill_super(struct super_block *sb, void *opt, const int silent)
 	ntfs_error(sb, "Failed to allocate root directory.");
 	/* Clean up after the successful load_system_files() call from above. */
 	// TODO: Use ntfs_put_super() instead of repeating all this code...
-	// FIXME: Should mark the volume clean as the error is most likely
 	// 	  -ENOMEM.
 	iput(vol->vol_ino);
 	vol->vol_ino = NULL;
@@ -3040,14 +2991,6 @@ iput_tmp_ino_err_out_now:
 	if (vol->mft_ino && vol->mft_ino != tmp_ino)
 		iput(vol->mft_ino);
 	vol->mft_ino = NULL;
-	/*
-	 * This is needed to get ntfs_clear_extent_inode() called for each
-	 * inode we have ever called ntfs_iget()/iput() on, otherwise we A)
-	 * leak resources and B) a subsequent mount fails automatically due to
-	 * ntfs_iget() never calling down into our ntfs_read_locked_inode()
-	 * method again... FIXME: Do we need to do this twice now because of
-	 * attribute inodes? I think not, so leave as is for now... (AIA)
-	 */
 	if (invalidate_inodes(sb)) {
 		ntfs_error(sb, "Busy inodes left. This is most likely a NTFS "
 				"driver bug.");

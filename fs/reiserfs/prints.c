@@ -542,7 +542,6 @@ static int print_super_block(struct buffer_head *bh)
 	printk("Block count %u\n", sb_block_count(rs));
 	printk("Blocksize %d\n", sb_blocksize(rs));
 	printk("Free blocks %u\n", sb_free_blocks(rs));
-	// FIXME: this would be confusing if
 	// someone stores reiserfs super block in some data block ;)
 //    skipped = (bh->b_blocknr * bh->b_size) / sb_blocksize(rs);
 	skipped = bh->b_blocknr;

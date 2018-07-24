@@ -818,7 +818,6 @@ PMP_RFD nic_rx_pkts(struct et131x_adapter *etdev)
 	word0 = psr->word0;
 
 	/* Indicate that we have used this PSR entry. */
-	/* FIXME wrap 12 */
 	add_12bit(&rx_local->local_psr_full, 1);
 	if ((rx_local->local_psr_full & 0xFFF)  > rx_local->PsrNumEntries - 1) {
 		/* Clear psr full and toggle the wrap bit */

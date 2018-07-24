@@ -137,4 +137,3 @@ MODULE_VERSION(DRV_VERSION);
 
 module_init(ata_tosh_init);
 module_exit(ata_tosh_exit);
-

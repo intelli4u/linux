@@ -297,7 +297,6 @@ nv40_graph_init(struct drm_device *dev)
 		break;
 	case 0x41:
 	case 0x42: /* pciid also 0x00Cx */
-	/* case 0x0120: XXX (pciid) */
 		nv_wr32(dev, 0x400828, 0x007596ff);
 		nv_wr32(dev, 0x40082c, 0x00000108);
 		break;
@@ -414,4 +413,3 @@ struct nouveau_pgraph_object_class nv40_graph_grclass[] = {
 	{ 0x4497, false, NULL }, /* curie (nv44) */
 	{}
 };
-

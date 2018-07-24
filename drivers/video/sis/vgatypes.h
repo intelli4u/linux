@@ -104,4 +104,3 @@ typedef enum _SIS_CHIP_TYPE {
 
 
 #endif
-

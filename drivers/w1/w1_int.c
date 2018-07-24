@@ -178,10 +178,6 @@ int w1_add_master_device(struct w1_bus_master *master)
 
 	return 0;
 
-#if 0 /* Thread cleanup code, not required currently. */
-err_out_kill_thread:
-	kthread_stop(dev->thread);
-#endif
 err_out_rm_attr:
 	w1_destroy_master_attributes(dev);
 err_out_free_dev:

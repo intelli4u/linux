@@ -1301,7 +1301,7 @@ enum {
 	ACX_FW_REV                  = 0x000D,
 	ACX_MEDIUM_USAGE            = 0x000F,
 	ACX_RX_CFG                  = 0x0010,
-	ACX_TX_QUEUE_CFG            = 0x0011, /* FIXME: only used by wl1251 */
+	ACX_TX_QUEUE_CFG            = 0x0011,
 	ACX_BSS_IN_PS               = 0x0012, /* for AP only */
 	ACX_STATISTICS              = 0x0013, /* Debug API */
 	ACX_FEATURE_CFG             = 0x0015,

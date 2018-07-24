@@ -40,13 +40,8 @@
 #include <asm/dma.h>
 #include <asm/byteorder.h>
 
-#if 0
-#define DEBUG(n, args...) printk(KERN_INFO args)
-#define CHECK_LOST	1
-#else
 #define DEBUG(n, args...)
 #define CHECK_LOST	0
-#endif
 
 /*
  * USE_INT is always 0, interrupt mode is not available
@@ -249,7 +244,7 @@ static inline void clear_dma_status(void)
 static void wait_for_vertical_sync(struct ar *ar, int exp_line)
 {
 #if CHECK_LOST
-	int tmout = 10000;	/* FIXME */
+	int tmout = 10000;
 	int l;
 
 	/*
@@ -548,13 +543,7 @@ static void ar_interrupt(int irq, void *dev)
 		 * we have to start capture.
 		 */
 		disable_dma();
-#if 0
-		ar_outl(ar->line_buff, M32R_DMA0CDA_PORTL);	/* needless? */
-#endif
 		memcpy(ar->frame[0], ar->line_buff, ar->line_bytes);
-#if 0
-		ar_outl(0xa1861300, M32R_DMA0CR0_PORTL);
-#endif
 		enable_dma();
 		ar->start_capture = 1;			/* during capture */
 		return;
@@ -578,10 +567,6 @@ static void ar_interrupt(int irq, void *dev)
 			ar_outl(arvcr1, ARVCR1);	/* disable */
 			wake_up_interruptible(&ar->wait);
 		} else {
-#if 0
-			ar_outl(ar->line_buff, M32R_DMA0CDA_PORTL);
-			ar_outl(0xa1861300, M32R_DMA0CR0_PORTL);
-#endif
 			enable_dma();
 		}
 	}
@@ -661,9 +646,6 @@ static int ar_initialize(struct ar *ar)
 	printk(KERN_CONT ".");
 	iic(2, 0x78, 0x8e, 0x0c, 0x00);
 	iic(2, 0x78, 0x8f, 0x00, 0x00);
-#if 0
-	iic(2, 0x78, 0x90, 0x00, 0x00);	/* AWB on=1 off=0 */
-#endif
 	iic(2, 0x78, 0x93, 0x01, 0x00);
 	iic(2, 0x78, 0x94, 0xcd, 0x00);
 	iic(2, 0x78, 0x95, 0x00, 0x00);
@@ -680,9 +662,6 @@ static int ar_initialize(struct ar *ar)
 	iic(2, 0x78, 0x9e, 0x2e, 0x00);
 	iic(2, 0x78, 0xb8, 0x78, 0x00);
 	iic(2, 0x78, 0xba, 0x05, 0x00);
-#if 0
-	iic(2, 0x78, 0x83, 0x8c, 0x00);	/* brightness */
-#endif
 	printk(KERN_CONT ".");
 
 	/* color correction */

@@ -1382,7 +1382,6 @@ int llc_conn_ac_upd_vs(struct sock *sk, struct sk_buff *skb)
  */
 int llc_conn_disc(struct sock *sk, struct sk_buff *skb)
 {
-	/* FIXME: this thing seems to want to die */
 	return 0;
 }
 

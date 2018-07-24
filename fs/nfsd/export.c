@@ -469,12 +469,6 @@ static int secinfo_parse(char **mesg, char *buf, struct svc_export *exp)
 		err = get_int(mesg, &f->pseudoflavor);
 		if (err)
 			return err;
-		/*
-		 * XXX: It would be nice to also check whether this
-		 * pseudoflavor is supported, so we can discover the
-		 * problem at export time instead of when a client fails
-		 * to authenticate.
-		 */
 		err = get_int(mesg, &f->flags);
 		if (err)
 			return err;

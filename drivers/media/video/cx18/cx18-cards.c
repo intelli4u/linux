@@ -226,7 +226,6 @@ static const struct cx18_card cx18_card_mpc718 = {
 		/* XC3028 tuner */
 		{ .std = V4L2_STD_ALL, .tuner = TUNER_XC2028 },
 	},
-	/* FIXME - the FM radio is just a guess and driver doesn't use SIF */
 	.radio_input = { CX18_CARD_INPUT_AUD_TUNER, CX18_AV_AUDIO5, 2 },
 	.ddr = {
 		/* Hynix HY5DU283222B DDR RAM */
@@ -239,7 +238,6 @@ static const struct cx18_card cx18_card_mpc718 = {
 	},
 	.gpio_init.initial_value = 0x1,
 	.gpio_init.direction = 0x3,
-	/* FIXME - these GPIO's are just guesses */
 	.gpio_audio_input = { .mask   = 0x3,
 			      .tuner  = 0x1,
 			      .linein = 0x3,

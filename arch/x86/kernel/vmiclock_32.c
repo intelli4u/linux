@@ -251,14 +251,6 @@ void __devinit vmi_time_bsp_init(void)
 	clockevents_notify(CLOCK_EVT_NOTIFY_SUSPEND, NULL);
 	local_irq_disable();
 #ifdef CONFIG_SMP
-	/*
-	 * XXX handle_percpu_irq only defined for SMP; we need to switch over
-	 * to using it, since this is a local interrupt, which each CPU must
-	 * handle individually without locking out or dropping simultaneous
-	 * local timers on other CPUs.  We also don't want to trigger the
-	 * quirk workaround code for interrupts which gets invoked from
-	 * handle_percpu_irq via eoi, so we use our own IRQ chip.
-	 */
 	set_irq_chip_and_handler_name(0, &vmi_chip, handle_percpu_irq, "lvtt");
 #else
 	set_irq_chip_and_handler_name(0, &vmi_chip, handle_edge_irq, "lvtt");

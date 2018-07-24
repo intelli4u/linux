@@ -105,8 +105,6 @@ static int omap_pcm_hw_params(struct snd_pcm_substream *substream,
 
 	dma_data = snd_soc_dai_get_dma_data(rtd->dai->cpu_dai, substream);
 
-	/* return if this is a bufferless transfer e.g.
-	 * codec <--> BT codec or GSM modem -- lg FIXME */
 	if (!dma_data)
 		return 0;
 
@@ -154,8 +152,6 @@ static int omap_pcm_prepare(struct snd_pcm_substream *substream)
 	struct omap_dma_channel_params dma_params;
 	int bytes;
 
-	/* return if this is a bufferless transfer e.g.
-	 * codec <--> BT codec or GSM modem -- lg FIXME */
 	if (!prtd->dma_data)
 		return 0;
 

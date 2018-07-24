@@ -431,10 +431,6 @@ static void wf_smu_slots_fans_tick(struct wf_smu_slots_fans_state *st)
 	DBG("wf_smu: Slots Fans tick ! Slots power: %d.%03d\n",
 	    FIX32TOPRINT(power));
 
-#if 0 /* Check what makes a good overtemp condition */
-	if (power > (st->pid.param.itarget + 0x50000))
-		wf_smu_failure_state |= FAILURE_OVERTEMP;
-#endif
 
 	new_setpoint = wf_pid_run(&st->pid, power);
 
@@ -650,10 +646,6 @@ static int __devexit wf_smu_remove(struct platform_device *ddev)
 {
 	wf_unregister_client(&wf_smu_events);
 
-	/* XXX We don't have yet a guarantee that our callback isn't
-	 * in progress when returning from wf_unregister_client, so
-	 * we add an arbitrary delay. I'll have to fix that in the core
-	 */
 	msleep(1000);
 
 	/* Release all sensors */

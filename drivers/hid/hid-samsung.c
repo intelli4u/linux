@@ -35,25 +35,6 @@
 
 #include "hid-ids.h"
 
-/*
- * There are several variants for 0419:0001:
- *
- * 1. 184 byte report descriptor
- * Vendor specific report #4 has a size of 48 bit,
- * and therefore is not accepted when inspecting the descriptors.
- * As a workaround we reinterpret the report as:
- *   Variable type, count 6, size 8 bit, log. maximum 255
- * The burden to reconstruct the data is moved into user space.
- *
- * 2. 203 byte report descriptor
- * Report #4 has an array field with logical range 0..18 instead of 1..15.
- *
- * 3. 135 byte report descriptor
- * Report #4 has an array field with logical range 0..17 instead of 1..14.
- *
- * 4. 171 byte report descriptor
- * Report #3 has an array field with logical range 0..1 instead of 1..3.
- */
 static inline void samsung_irda_dev_trace(struct hid_device *hdev,
 		unsigned int rsize)
 {

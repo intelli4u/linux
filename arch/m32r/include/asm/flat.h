@@ -83,8 +83,6 @@ static inline unsigned long m32r_flat_get_addr_from_rp (unsigned long *rp,
 		case FLAT_M32R_LO16:
 			return htonl(*rp) & 0xFFFF;
 		case FLAT_M32R_LO16_DATA:
-                        /* FIXME: The return value will decrease by textlen
-			   at m32r_flat_put_addr_at_rp () */
 			textlen_for_m32r_lo16_data = textlen;
 			return (htonl(*rp) & 0xFFFF) + textlen;
 		case FLAT_M32R_16:

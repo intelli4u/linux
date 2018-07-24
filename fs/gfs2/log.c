@@ -945,4 +945,3 @@ int gfs2_logd(void *data)
 
 	return 0;
 }
-

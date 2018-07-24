@@ -92,7 +92,7 @@ static struct usbmix_name_map extigy_map[] = {
 	/* 20: OT headphone */
 	{ 21, NULL }, /* DISABLED: EU (for what?) */
 	{ 22, "Digital Out Playback" }, /* FU */
-	{ 23, "Digital Out1 Playback" }, /* FU */  /* FIXME: corresponds to 24 */
+	{ 23, "Digital Out1 Playback" }, /* FU */
 	/* 24: OT digital out */
 	{ 25, "IEC958 Optical Playback" }, /* FU */
 	{ 26, "IEC958 Optical Playback" }, /* OT */
@@ -288,12 +288,6 @@ static struct usbmix_name_map scratch_live_map[] = {
 	{ 0 } /* terminator */
 };
 
-/* "Gamesurround Muse Pocket LT" looks same like "Sound Blaster MP3+"
- *  most importand difference is SU[8], it should be set to "Capture Source"
- *  to make alsamixer and PA working properly.
- *  FIXME: or mp3plus_map should use "Capture Source" too,
- *  so this maps can be merget
- */
 static struct usbmix_name_map hercules_usb51_map[] = {
 	{ 8, "Capture Source" },	/* SU, default "PCM Capture Source" */
 	{ 9, "Master Playback" },	/* FU, default "Speaker Playback" */
@@ -373,4 +367,3 @@ static struct usbmix_ctl_map usbmix_ctl_maps[] = {
 	},
 	{ 0 } /* terminator */
 };
-

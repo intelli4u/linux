@@ -736,10 +736,6 @@ int vmw_surface_check(struct vmw_private *dev_priv,
 	ret = 0;
 
 out_bad_surface:
-	/**
-	 * FIXME: May deadlock here when called from the
-	 * command parsing code.
-	 */
 
 	ttm_base_object_unref(&base);
 	return ret;

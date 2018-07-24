@@ -202,11 +202,6 @@ void ipath_copy_sge(struct ipath_sge_state *ss, void *data, u32 length)
 	}
 }
 
-/**
- * ipath_skip_sge - skip over SGE memory - XXX almost dup of prev func
- * @ss: the SGE state
- * @length: the number of bytes to skip
- */
 void ipath_skip_sge(struct ipath_sge_state *ss, u32 length)
 {
 	struct ipath_sge *sge = &ss->sge;
@@ -744,7 +739,6 @@ static void ipath_ib_timer(struct ipath_ibdev *dev)
 	}
 	spin_unlock_irqrestore(&dev->pending_lock, flags);
 
-	/* XXX What if timer fires again while this is running? */
 	while (resend != NULL) {
 		qp = resend;
 		resend = qp->timer_next;

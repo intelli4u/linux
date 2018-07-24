@@ -1374,10 +1374,6 @@ static void smc_eph_irq(struct net_device *dev)
     card_stats >>= 4;
     /* multiple collisions */
     dev->stats.collisions += card_stats & 0xF;
-#if 0 		/* These are for when linux supports these statistics */
-    card_stats >>= 4;			/* deferred */
-    card_stats >>= 4;			/* excess deferred */
-#endif
     /* If we had a transmit error we must re-enable the transmitter. */
     outw(inw(ioaddr + TCR) | TCR_ENABLE | smc->duplex, ioaddr + TCR);
 

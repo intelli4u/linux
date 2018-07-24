@@ -364,18 +364,6 @@ no_command_line:
 	move.d	$r0,[R_ATA_CTRL_DATA]
 	move.d	$r0,[R_ATA_TRANSFER_CNT]
 	move.d	$r0,[R_ATA_CONFIG]
-#if 0
-	move.d	R_PORT_G_DATA, $r1
-	move.d	$r0, [$r1]; assert ATA bus-reset
-	nop
-	nop
-	nop
-	nop
-	nop
-	nop
-	move.d	0x08000000,$r0
-	move.d	$r0,[$r1]
-#endif
 #endif
 
 #ifdef CONFIG_JULIETTE
@@ -471,21 +459,6 @@ no_command_line:
 #ifndef CONFIG_SVINTO_SIM
 	move.d	$r0,[R_GEN_CONFIG]
 
-#if 0
-	moveq	4,$r0
-	move.b	$r0,[R_DMA_CH6_CMD]	; reset (ser0 dma out)
-	move.b	$r0,[R_DMA_CH7_CMD]	; reset (ser0 dma in)
-1:	move.b	[R_DMA_CH6_CMD],$r0	; wait for reset cycle to finish
-	and.b	7,$r0
-	cmp.b	4,$r0
-	beq	1b
-	nop
-1:	move.b	[R_DMA_CH7_CMD],$r0	; wait for reset cycle to finish
-	and.b	7,$r0
-	cmp.b	4,$r0
-	beq	1b
-	nop
-#endif
 	
 	moveq	IO_STATE (R_DMA_CH8_CMD, cmd, reset),$r0
 	move.b	$r0,[R_DMA_CH8_CMD]	; reset (ser1 dma out)

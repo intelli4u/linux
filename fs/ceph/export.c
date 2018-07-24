@@ -77,11 +77,6 @@ static int ceph_encode_fh(struct dentry *dentry, u32 *rawfh, int *max_len,
 	return type;
 }
 
-/*
- * convert regular fh to dentry
- *
- * FIXME: we should try harder by querying the mds for the ino.
- */
 static struct dentry *__fh_to_dentry(struct super_block *sb,
 				     struct ceph_nfs_fh *fh)
 {
@@ -178,12 +173,6 @@ static struct dentry *ceph_fh_to_dentry(struct super_block *sb, struct fid *fid,
 		return __cfh_to_dentry(sb, (struct ceph_nfs_confh *)fid->raw);
 }
 
-/*
- * get parent, if possible.
- *
- * FIXME: we could do better by querying the mds to discover the
- * parent.
- */
 static struct dentry *ceph_fh_to_parent(struct super_block *sb,
 					 struct fid *fid,
 					int fh_len, int fh_type)

@@ -600,13 +600,6 @@ static void __init kw_i2c_probe(void)
 		if (host == NULL)
 			continue;
 
-		/* Now check if we have a multibus setup (old style) or if we
-		 * have proper bus nodes. Note that the "new" way (proper bus
-		 * nodes) might cause us to not create some busses that are
-		 * kept hidden in the device-tree. In the future, we might
-		 * want to work around that by creating busses without a node
-		 * but not for now
-		 */
 		child = of_get_next_child(np, NULL);
 		multibus = !child || strcmp(child->name, "i2c-bus");
 		of_node_put(child);
@@ -1162,16 +1155,6 @@ static void pmac_i2c_devscan(void (*callback)(struct device_node *dev,
 		char *compatible;
 		int quirks;
 	} whitelist[] = {
-		/* XXX Study device-tree's & apple drivers are get the quirks
-		 * right !
-		 */
-		/* Workaround: It seems that running the clockspreading
-		 * properties on the eMac will cause lockups during boot.
-		 * The machine seems to work fine without that. So for now,
-		 * let's make sure i2c-hwclock doesn't match about "imic"
-		 * clocks and we'll figure out if we really need to do
-		 * something special about those later.
-		 */
 		{ "i2c-hwclock", "imic5002", pmac_i2c_quirk_skip },
 		{ "i2c-hwclock", "imic5003", pmac_i2c_quirk_skip },
 		{ "i2c-hwclock", NULL, pmac_i2c_quirk_invmask },
@@ -1238,11 +1221,6 @@ static void* pmac_i2c_do_begin(struct pmf_function *func, struct pmf_args *args)
 		return NULL;
 	}
 
-	/* XXX might need GFP_ATOMIC when called during the suspend process,
-	 * but then, there are already lots of issues with suspending when
-	 * near OOM that need to be resolved, the allocator itself should
-	 * probably make GFP_NOIO implicit during suspend
-	 */
 	inst = kzalloc(sizeof(struct pmac_i2c_pf_inst), GFP_KERNEL);
 	if (inst == NULL) {
 		pmac_i2c_close(bus);

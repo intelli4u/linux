@@ -882,7 +882,7 @@ xfs_dir2_leaf_getdents(
 				 * actually passing the error through.
 				 */
 				if (error)
-					break;	/* XXX */
+					break;
 				/*
 				 * If we got all the mappings we asked for,
 				 * set the final map offset based on the
@@ -941,7 +941,7 @@ xfs_dir2_leaf_getdents(
 			 * of giving up.
 			 */
 			if (error)
-				break;	/* XXX */
+				break;
 			/*
 			 * Adjust the current amount of read-ahead: we just
 			 * read a block that was previously ra.

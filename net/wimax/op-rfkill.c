@@ -1,64 +1,4 @@
-/*
- * Linux WiMAX
- * RF-kill framework integration
- *
- *
- * Copyright (C) 2008 Intel Corporation <linux-wimax@intel.com>
- * Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
- *
- *
- * This integrates into the Linux Kernel rfkill susbystem so that the
- * drivers just have to do the bare minimal work, which is providing a
- * method to set the software RF-Kill switch and to report changes in
- * the software and hardware switch status.
- *
- * A non-polled generic rfkill device is embedded into the WiMAX
- * subsystem's representation of a device.
- *
- * FIXME: Need polled support? Let drivers provide a poll routine
- *	  and hand it to rfkill ops then?
- *
- * All device drivers have to do is after wimax_dev_init(), call
- * wimax_report_rfkill_hw() and wimax_report_rfkill_sw() to update
- * initial state and then every time it changes. See wimax.h:struct
- * wimax_dev for more information.
- *
- * ROADMAP
- *
- * wimax_gnl_doit_rfkill()      User space calling wimax_rfkill()
- *   wimax_rfkill()             Kernel calling wimax_rfkill()
- *     __wimax_rf_toggle_radio()
- *
- * wimax_rfkill_set_radio_block()  RF-Kill subsystem calling
- *   __wimax_rf_toggle_radio()
- *
- * __wimax_rf_toggle_radio()
- *   wimax_dev->op_rfkill_sw_toggle() Driver backend
- *   __wimax_state_change()
- *
- * wimax_report_rfkill_sw()     Driver reports state change
- *   __wimax_state_change()
- *
- * wimax_report_rfkill_hw()     Driver reports state change
- *   __wimax_state_change()
- *
- * wimax_rfkill_add()           Initialize/shutdown rfkill support
- * wimax_rfkill_rm()            [called by wimax_dev_add/rm()]
- */
+
 
 #include <net/wimax.h>
 #include <net/genetlink.h>
@@ -465,4 +405,3 @@ struct genl_ops wimax_gnl_rfkill = {
 	.doit = wimax_gnl_doit_rfkill,
 	.dumpit = NULL,
 };
-

@@ -206,10 +206,6 @@ static int wl1251_tx_send_packet(struct wl1251 *wl, struct sk_buff *skb,
 			sizeof(*tx_hdr) + hdrlen);
 	}
 
-	/* Revisit. This is a workaround for getting non-aligned packets.
-	   This happens at least with EAPOL packets from the user space.
-	   Our DMA requires packets to be aligned on a 4-byte boundary.
-	*/
 	if (unlikely((long)skb->data & 0x03)) {
 		int offset = (4 - (long)skb->data) & 0x03;
 		wl1251_debug(DEBUG_TX, "skb offset %d", offset);
@@ -535,7 +531,6 @@ void wl1251_tx_flush(struct wl1251 *wl)
 	struct ieee80211_tx_info *info;
 
 	/* TX failure */
-/* 	control->flags = 0; FIXME */
 
 	while ((skb = skb_dequeue(&wl->tx_queue))) {
 		info = IEEE80211_SKB_CB(skb);

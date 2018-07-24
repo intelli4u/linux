@@ -1056,12 +1056,6 @@ const struct pmu *hw_perf_event_init(struct perf_event *event)
 	if (!firmware_has_feature(FW_FEATURE_LPAR))
 		event->attr.exclude_hv = 0;
 
-	/*
-	 * If this is a per-task event, then we can use
-	 * PM_RUN_* events interchangeably with their non RUN_*
-	 * equivalents, e.g. PM_RUN_CYC instead of PM_CYC.
-	 * XXX we should check if the task is an idle task.
-	 */
 	flags = 0;
 	if (event->ctx->task)
 		flags |= PPMU_ONLY_COUNT_RUN;
@@ -1283,13 +1277,6 @@ static void perf_event_interrupt(struct pt_regs *regs)
 		}
 	}
 
-	/*
-	 * Reset MMCR0 to its normal value.  This will set PMXE and
-	 * clear FC (freeze counters) and PMAO (perf mon alert occurred)
-	 * and thus allow interrupts to occur again.
-	 * XXX might want to use MSR.PM to keep the events frozen until
-	 * we get back out of this interrupt.
-	 */
 	write_mmcr0(cpuhw, cpuhw->mmcr[0]);
 
 	if (nmi)

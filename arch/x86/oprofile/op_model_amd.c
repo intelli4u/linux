@@ -137,19 +137,6 @@ static inline u64 op_amd_randomize_ibs_op(u64 val)
 	unsigned int random = lfsr_random();
 
 	if (!(ibs_caps & IBS_CAPS_RDWROPCNT))
-		/*
-		 * Work around if the hw can not write to IbsOpCurCnt
-		 *
-		 * Randomize the lower 8 bits of the 16 bit
-		 * IbsOpMaxCnt [15:0] value in the range of -128 to
-		 * +127 by adding/subtracting an offset to the
-		 * maximum count (IbsOpMaxCnt).
-		 *
-		 * To avoid over or underflows and protect upper bits
-		 * starting at bit 16, the initial value for
-		 * IbsOpMaxCnt must fit in the range from 0x0081 to
-		 * 0xff80.
-		 */
 		val += (s8)(random >> 4);
 	else
 		val |= (u64)(random & IBS_RANDOM_MASK) << 32;

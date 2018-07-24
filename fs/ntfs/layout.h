@@ -253,42 +253,6 @@ enum {
 
 typedef le16 MFT_RECORD_FLAGS;
 
-/*
- * mft references (aka file references or file record segment references) are
- * used whenever a structure needs to refer to a record in the mft.
- *
- * A reference consists of a 48-bit index into the mft and a 16-bit sequence
- * number used to detect stale references.
- *
- * For error reporting purposes we treat the 48-bit index as a signed quantity.
- *
- * The sequence number is a circular counter (skipping 0) describing how many
- * times the referenced mft record has been (re)used. This has to match the
- * sequence number of the mft record being referenced, otherwise the reference
- * is considered stale and removed (FIXME: only ntfsck or the driver itself?).
- *
- * If the sequence number is zero it is assumed that no sequence number
- * consistency checking should be performed.
- *
- * FIXME: Since inodes are 32-bit as of now, the driver needs to always check
- * for high_part being 0 and if not either BUG(), cause a panic() or handle
- * the situation in some other way. This shouldn't be a problem as a volume has
- * to become HUGE in order to need more than 32-bits worth of mft records.
- * Assuming the standard mft record size of 1kb only the records (never mind
- * the non-resident attributes, etc.) would require 4Tb of space on their own
- * for the first 32 bits worth of records. This is only if some strange person
- * doesn't decide to foul play and make the mft sparse which would be a really
- * horrible thing to do as it would trash our current driver implementation. )-:
- * Do I hear screams "we want 64-bit inodes!" ?!? (-;
- *
- * FIXME: The mft zone is defined as the first 12% of the volume. This space is
- * reserved so that the mft can grow contiguously and hence doesn't become
- * fragmented. Volume free space includes the empty part of the mft zone and
- * when the volume's free 88% are used up, the mft zone is shrunk by a factor
- * of 2, thus making more space available for more files/data. This process is
- * repeated everytime there is no more free space except for the mft zone until
- * there really is no more free space.
- */
 
 /*
  * Typedef the MFT_REF as a 64-bit value for easier handling.
@@ -337,16 +301,7 @@ typedef struct {
 				   above.) NOTE: The increment (skipping zero)
 				   is done when the file is deleted. NOTE: If
 				   this is zero it is left zero. */
-/* 18*/	le16 link_count;	/* Number of hard links, i.e. the number of
-				   directory entries referencing this record.
-				   NOTE: Only used in mft base records.
-				   NOTE: When deleting a directory entry we
-				   check the link_count and if it is 1 we
-				   delete the file. Otherwise we delete the
-				   FILE_NAME_ATTR being referenced by the
-				   directory entry from the mft record and
-				   decrement the link_count.
-				   FIXME: Careful with Win32 + DOS names! */
+/* 18*/	le16 link_count;
 /* 20*/	le16 attrs_offset;	/* Byte offset to the first attribute in this
 				   mft record from the start of the mft record.
 				   NOTE: Must be aligned to 8-byte boundary. */
@@ -406,16 +361,7 @@ typedef struct {
 				   above.) NOTE: The increment (skipping zero)
 				   is done when the file is deleted. NOTE: If
 				   this is zero it is left zero. */
-/* 18*/	le16 link_count;	/* Number of hard links, i.e. the number of
-				   directory entries referencing this record.
-				   NOTE: Only used in mft base records.
-				   NOTE: When deleting a directory entry we
-				   check the link_count and if it is 1 we
-				   delete the file. Otherwise we delete the
-				   FILE_NAME_ATTR being referenced by the
-				   directory entry from the mft record and
-				   decrement the link_count.
-				   FIXME: Careful with Win32 + DOS names! */
+/* 18*/	le16 link_count;
 /* 20*/	le16 attrs_offset;	/* Byte offset to the first attribute in this
 				   mft record from the start of the mft record.
 				   NOTE: Must be aligned to 8-byte boundary. */
@@ -539,14 +485,6 @@ enum {
 
 typedef le32 COLLATION_RULE;
 
-/*
- * The flags (32-bit) describing attribute properties in the attribute
- * definition structure.  FIXME: This information is based on Regis's
- * information and, according to him, it is not certain and probably
- * incomplete.  The INDEXABLE flag is fairly certainly correct as only the file
- * name attribute has this flag set and this is the only attribute indexed in
- * NT4.
- */
 enum {
 	ATTR_DEF_INDEXABLE	= cpu_to_le32(0x02), /* Attribute can be
 					indexed. */
@@ -590,8 +528,7 @@ typedef struct {
 /*  0*/	ntfschar name[0x40];		/* Unicode name of the attribute. Zero
 					   terminated. */
 /* 80*/	ATTR_TYPE type;			/* Type of the attribute. */
-/* 84*/	le32 display_rule;		/* Default display rule.
-					   FIXME: What does it mean? (AIA) */
+/* 84*/	le32 display_rule;
 /* 88*/ COLLATION_RULE collation_rule;	/* Default collation rule. */
 /* 8c*/	ATTR_DEF_FLAGS flags;		/* Flags describing the attribute. */
 /* 90*/	sle64 min_size;			/* Optional minimum attribute size. */
@@ -1558,12 +1495,6 @@ enum {
 
 typedef le32 ACCESS_MASK;
 
-/*
- * The generic mapping array. Used to denote the mapping of each generic
- * access right to a specific access mask.
- *
- * FIXME: What exactly is this and what is it for? (AIA)
- */
 typedef struct {
 	ACCESS_MASK generic_read;
 	ACCESS_MASK generic_write;
@@ -2077,15 +2008,6 @@ typedef struct {
 
 typedef INDEX_BLOCK INDEX_ALLOCATION;
 
-/*
- * The system file FILE_Extend/$Reparse contains an index named $R listing
- * all reparse points on the volume. The index entry keys are as defined
- * below. Note, that there is no index data associated with the index entries.
- *
- * The index entries are sorted by the index key file_id. The collation rule is
- * COLLATION_NTOFS_ULONGS. FIXME: Verify whether the reparse_tag is not the
- * primary key / is not a key at all. (AIA)
- */
 typedef struct {
 	le32 reparse_tag;	/* Reparse point type (inc. flags). */
 	leMFT_REF file_id;	/* Mft record of the file containing the
@@ -2429,7 +2351,6 @@ typedef struct {
 typedef struct {
 	/* Can be anything the creator chooses. */
 	/* EFS uses it as follows: */
-	// FIXME: Type this info, verifying it along the way. (AIA)
 } __attribute__ ((__packed__)) LOGGED_UTILITY_STREAM, EFS_ATTR;
 
 #endif /* _LINUX_NTFS_LAYOUT_H */

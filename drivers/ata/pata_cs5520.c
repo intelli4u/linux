@@ -78,7 +78,6 @@ static void cs5520_set_timings(struct ata_port *ap, struct ata_device *adev, int
 	pci_write_config_byte(pdev, 0x62 + ap->port_no,
 				(cs5520_pio_clocks[pio].recovery << 4) |
 				(cs5520_pio_clocks[pio].assert));
-	/* FIXME: should these use address ? */
 	/* Read command timing */
 	pci_write_config_byte(pdev, 0x64 +  4*ap->port_no + slave,
 				(cs5520_pio_clocks[pio].recovery << 4) |
@@ -321,4 +320,3 @@ MODULE_VERSION(DRV_VERSION);
 
 module_init(cs5520_init);
 module_exit(cs5520_exit);
-

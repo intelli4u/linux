@@ -94,7 +94,6 @@
 /* } */
 
 /* syncer { */
-  /* FIXME allow rate to be zero? */
 #define DRBD_RATE_MIN 1
 /* channel bonding 10 GbE, or other hardware */
 #define DRBD_RATE_MAX (4 << 20)

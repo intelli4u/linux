@@ -248,15 +248,7 @@ int pohmelfs_crypto_process_input_data(struct pohmelfs_crypto_engine *e, u64 cmd
 			dprintk("%s: eng: %p, hash: %p, cipher: %p: iv : %llx, hash mismatch (recv/calc): ",
 					__func__, e, e->hash, e->cipher, cmd_iv);
 			for (i = 0; i < crypto_hash_digestsize(e->hash); ++i) {
-#if 0
-				dprintka("%02x ", recv[i]);
-				if (recv[i] != calc[i]) {
-					dprintka("| calc byte: %02x.\n", calc[i]);
-					break;
-				}
-#else
 				dprintka("%02x/%02x ", recv[i], calc[i]);
-#endif
 			}
 			dprintk("\n");
 #endif

@@ -69,4 +69,3 @@ static inline void signalfd_notify(struct task_struct *tsk, int sig) { }
 #endif /* __KERNEL__ */
 
 #endif /* _LINUX_SIGNALFD_H */
-

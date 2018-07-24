@@ -98,7 +98,6 @@ int of_set_property(struct device_node *dp, const char *name, void *val, int len
 	write_unlock(&devtree_lock);
 	mutex_unlock(&of_set_property_mutex);
 
-	/* XXX Upate procfs if necessary... */
 
 	return err;
 }

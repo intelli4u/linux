@@ -108,7 +108,6 @@ unsigned long get_wchan(struct task_struct *p);
 /* Get the Silicon Revision of the chip */
 static inline uint32_t __pure bfin_revid(void)
 {
-	/* Always use CHIPID, to work around ANOMALY_05000234 */
 	uint32_t revid = (bfin_read_CHIPID() & CHIPID_VERSION) >> 28;
 
 #ifdef _BOOTROM_GET_DXE_ADDRESS_TWI

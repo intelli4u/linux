@@ -18,11 +18,7 @@
 #include <net/llc_pdu.h>
 #include <net/llc_sap.h>
 
-#if 0
-#define dprintk(args...) printk(KERN_DEBUG args)
-#else
 #define dprintk(args...)
-#endif
 
 /*
  * Packet handler for the station, registerable because in the minimal

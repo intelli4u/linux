@@ -1747,4 +1747,3 @@ unsigned long dwData;
     VNSvOutPortW(dwIoBase + MAC_REG_MISCFFCTL, MISCFFCTL_WRITE);
 
 }
-

@@ -21,7 +21,6 @@
 		.endm
 
 		.macro	get_irqnr_and_base, irqnr, irqstat, base, tmp
-/* FIXME: should not be using soo many LDRs here */
 		ldr	\base, =IO_ADDRESS(INTEGRATOR_IC_BASE)
 		mov	\irqnr, #IRQ_PIC_START
 		ldr	\irqstat, [\base, #IRQ_STATUS]		@ get masked status
@@ -42,4 +41,3 @@
 		bne	1002b
 1003:		/* EQ will be set if no irqs pending */
 		.endm
-

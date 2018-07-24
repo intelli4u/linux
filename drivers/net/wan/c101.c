@@ -51,7 +51,7 @@ static const char* devname = "C101";
 #define CLOCK_BASE 9830400	/* 9.8304 MHz */
 #define PAGE0_ALWAYS_MAPPED
 
-static char *hw;		/* pointer to hw=xxx command line string */
+static char *hw;
 
 
 typedef struct card_s {
@@ -312,7 +312,7 @@ static int __init c101_run(unsigned long irq, unsigned long winbase)
 	card_t *card;
 	int result;
 
-	if (irq<3 || irq>15 || irq == 6) /* FIXME */ {
+	if (irq<3 || irq>15 || irq == 6) {
 		printk(KERN_ERR "c101: invalid IRQ value\n");
 		return -ENODEV;
 	}

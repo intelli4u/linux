@@ -255,10 +255,6 @@ static int ariadne_open(struct net_device *dev)
 	       "number = %ld)\n", (version & 0x0ffff000)>>12);
 	return -EAGAIN;
     }
-#if 0
-    printk(KERN_DEBUG "ariadne_open: Am79C960 (PCnet-ISA) Revision %ld\n",
-	   (version & 0xf0000000)>>28);
-#endif
 
     ariadne_init_ring(dev);
 
@@ -355,10 +351,6 @@ static void ariadne_init_ring(struct net_device *dev)
 	t->TMD3 = 0;
 	priv->tx_ring[i] = &lancedata->tx_ring[i];
 	priv->tx_buff[i] = lancedata->tx_buff[i];
-#if 0
-	printk(KERN_DEBUG "TX Entry %2d at %p, Buf at %p\n", i,
-	       &lancedata->tx_ring[i], lancedata->tx_buff[i]);
-#endif
     }
 
     /* Set up RX Ring */
@@ -371,10 +363,6 @@ static void ariadne_init_ring(struct net_device *dev)
 	r->RMD3 = 0x0000;
 	priv->rx_ring[i] = &lancedata->rx_ring[i];
 	priv->rx_buff[i] = lancedata->rx_buff[i];
-#if 0
-	printk(KERN_DEBUG "RX Entry %2d at %p, Buf at %p\n", i,
-	       &lancedata->rx_ring[i], lancedata->rx_buff[i]);
-#endif
     }
 }
 
@@ -442,46 +430,6 @@ static irqreturn_t ariadne_interrupt(int irq, void *data)
 	/* Acknowledge all of the current interrupt sources ASAP. */
 	lance->RDP = csr0 & ~(INEA|TDMD|STOP|STRT|INIT);
 
-#if 0
-	if (ariadne_debug > 5) {
-	    printk(KERN_DEBUG "%s: interrupt  csr0=%#2.2x new csr=%#2.2x.",
-		   dev->name, csr0, lance->RDP);
-	    printk("[");
-	    if (csr0 & INTR)
-		printk(" INTR");
-	    if (csr0 & INEA)
-		printk(" INEA");
-	    if (csr0 & RXON)
-		printk(" RXON");
-	    if (csr0 & TXON)
-		printk(" TXON");
-	    if (csr0 & TDMD)
-		printk(" TDMD");
-	    if (csr0 & STOP)
-		printk(" STOP");
-	    if (csr0 & STRT)
-		printk(" STRT");
-	    if (csr0 & INIT)
-		printk(" INIT");
-	    if (csr0 & ERR)
-		printk(" ERR");
-	    if (csr0 & BABL)
-		printk(" BABL");
-	    if (csr0 & CERR)
-		printk(" CERR");
-	    if (csr0 & MISS)
-		printk(" MISS");
-	    if (csr0 & MERR)
-		printk(" MERR");
-	    if (csr0 & RINT)
-		printk(" RINT");
-	    if (csr0 & TINT)
-		printk(" TINT");
-	    if (csr0 & IDON)
-		printk(" IDON");
-	    printk(" ]\n");
-	}
-#endif
 
 	if (csr0 & RINT) {	/* Rx interrupt */
 	    handled = 1;
@@ -568,11 +516,6 @@ static irqreturn_t ariadne_interrupt(int irq, void *data)
     lance->RAP = CSR0;		/* PCnet-ISA Controller Status */
     lance->RDP = INEA|BABL|CERR|MISS|MERR|IDON;
 
-#if 0
-    if (ariadne_debug > 4)
-	printk(KERN_DEBUG "%s: exiting interrupt, csr%d=%#4.4x.\n", dev->name,
-	       lance->RAP, lance->RDP);
-#endif
     return IRQ_RETVAL(handled);
 }
 
@@ -597,16 +540,7 @@ static netdev_tx_t ariadne_start_xmit(struct sk_buff *skb,
     unsigned long flags;
     int len = skb->len;
 
-#if 0
-    if (ariadne_debug > 3) {
-	lance->RAP = CSR0;	/* PCnet-ISA Controller Status */
-	printk(KERN_DEBUG "%s: ariadne_start_xmit() called, csr0 %4.4x.\n",
-	       dev->name, lance->RDP);
-	lance->RDP = 0x0000;
-    }
-#endif
 
-    /* FIXME: is the 79C960 new enough to do its own padding right ? */
     if (skb->len < ETH_ZLEN)
     {
     	if (skb_padto(skb, ETH_ZLEN))
@@ -616,15 +550,6 @@ static netdev_tx_t ariadne_start_xmit(struct sk_buff *skb,
 
     /* Fill in a Tx ring entry */
 
-#if 0
-{
-    printk(KERN_DEBUG "TX pkt type 0x%04x from %pM to %pM "
-	   " data 0x%08x len %d\n",
-	   ((u_short *)skb->data)[6],
-	   skb->data + 6, skb->data,
-	   (int)skb->data, (int)skb->len);
-}
-#endif
 
     local_irq_save(flags);
 
@@ -637,24 +562,6 @@ static netdev_tx_t ariadne_start_xmit(struct sk_buff *skb,
     priv->tx_ring[entry]->TMD3 = 0x0000;
     memcpyw(priv->tx_buff[entry], (u_short *)skb->data, len);
 
-#if 0
-    {
-	int i, len;
-
-	len = skb->len > 64 ? 64 : skb->len;
-	len >>= 1;
-	for (i = 0; i < len; i += 8) {
-	    int j;
-	    printk(KERN_DEBUG "%04x:", i);
-	    for (j = 0; (j < 8) && ((i+j) < len); j++) {
-		if (!(j & 1))
-		    printk(" ");
-		printk("%04x", priv->tx_buff[entry][i+j]);
-	    }
-	    printk("\n");
-	}
-    }
-#endif
 
     priv->tx_ring[entry]->TMD1 = (priv->tx_ring[entry]->TMD1&0xff00)|TF_OWN|TF_STP|TF_ENP;
 
@@ -663,10 +570,6 @@ static netdev_tx_t ariadne_start_xmit(struct sk_buff *skb,
     priv->cur_tx++;
     if ((priv->cur_tx >= TX_RING_SIZE) && (priv->dirty_tx >= TX_RING_SIZE)) {
 
-#if 0
-	printk(KERN_DEBUG "*** Subtracting TX_RING_SIZE from cur_tx (%d) and "
-	       "dirty_tx (%d)\n", priv->cur_tx, priv->dirty_tx);
-#endif
 
 	priv->cur_tx -= TX_RING_SIZE;
 	priv->dirty_tx -= TX_RING_SIZE;
@@ -740,22 +643,6 @@ static int ariadne_rx(struct net_device *dev)
 	    skb_put(skb,pkt_len);	/* Make room */
 	    skb_copy_to_linear_data(skb, (char *)priv->rx_buff[entry], pkt_len);
 	    skb->protocol=eth_type_trans(skb,dev);
-#if 0
-{
-	    printk(KERN_DEBUG "RX pkt type 0x%04x from ",
-		   ((u_short *)skb->data)[6]);
-	    {
-		u_char *ptr = &((u_char *)skb->data)[6];
-		printk("%pM", ptr);
-	    }
-	    printk(" to ");
-	    {
-		u_char *ptr = (u_char *)skb->data;
-		printk("%pM", ptr);
-	    }
-	    printk(" data 0x%08x len %d\n", (int)skb->data, (int)skb->len);
-}
-#endif
 
 	    netif_rx(skb);
 	    dev->stats.rx_packets++;

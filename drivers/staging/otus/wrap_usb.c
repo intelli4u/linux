@@ -113,13 +113,6 @@ u32_t zfwUsbSubmitControl(zdev_t *dev, u8_t req, u16_t value, u16_t index,
 	} else
 		buf = NULL;
 
-#if 0
-	printk(KERN_ERR "req = 0x%02x\n", req);
-	printk(KERN_ERR "value = 0x%04x\n", value);
-	printk(KERN_ERR "index = 0x%04x\n", index);
-	printk(KERN_ERR "data = 0x%lx\n", (u32_t) data);
-	printk(KERN_ERR "size = %ld\n", size);
-#endif
 
 	result = usb_control_msg(macp->udev, usb_sndctrlpipe(macp->udev, 0),
 			req, USB_DIR_OUT | 0x40, value, index, buf, size, HZ);

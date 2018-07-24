@@ -1015,7 +1015,7 @@ END(ia64_switch_mode_virt)
 
 GLOBAL_ENTRY(ia64_delay_loop)
 	.prologue
-{	nop 0			// work around GAS unwind info generation bug...
+{	nop 0
 	.save ar.lc,r2
 	mov r2=ar.lc
 	.body

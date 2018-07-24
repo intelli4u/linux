@@ -146,16 +146,6 @@ static void sl82c105_reset_engine(struct ata_port *ap)
 	pci_write_config_word(pdev, 0x7E, val & ~4);
 }
 
-/**
- *	sl82c105_bmdma_start		-	DMA engine begin
- *	@qc: ATA command
- *
- *	Reset the DMA engine each use as recommended by the errata
- *	document.
- *
- *	FIXME: if we switch clock at BMDMA start/end we might get better
- *	PIO performance on DMA capable devices.
- */
 
 static void sl82c105_bmdma_start(struct ata_queued_cmd *qc)
 {

@@ -134,7 +134,6 @@ static int dt2814_ns_to_timer(unsigned int *ns, unsigned int flags)
 	int i;
 	unsigned int f;
 
-	/* XXX ignores flags */
 
 	f = 10000;		/* ns */
 	for (i = 0; i < 8; i++) {
@@ -286,26 +285,6 @@ static int dt2814_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	i = inb(dev->iobase + DT2814_DATA);
 
 	irq = it->options[1];
-#if 0
-	if (irq < 0) {
-		save_flags(flags);
-		sti();
-		irqs = probe_irq_on();
-
-		outb(0, dev->iobase + DT2814_CSR);
-
-		udelay(100);
-
-		irq = probe_irq_off(irqs);
-		restore_flags(flags);
-		if (inb(dev->iobase + DT2814_CSR) & DT2814_ERR)
-			printk(KERN_DEBUG "error probing irq (bad)\n");
-
-
-		i = inb(dev->iobase + DT2814_DATA);
-		i = inb(dev->iobase + DT2814_DATA);
-	}
-#endif
 	dev->irq = 0;
 	if (irq > 0) {
 		if (request_irq(irq, dt2814_interrupt, 0, "dt2814", dev)) {
@@ -317,11 +296,7 @@ static int dt2814_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	} else if (irq == 0) {
 		printk(KERN_WARNING "(no irq)\n");
 	} else {
-#if 0
-		printk(KERN_DEBUG "(probe returned multiple irqs--bad)\n");
-#else
 		printk(KERN_WARNING "(irq probe not implemented)\n");
-#endif
 	}
 
 	ret = alloc_subdevices(dev, 1);
@@ -336,13 +311,13 @@ static int dt2814_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	dev->read_subdev = s;
 	s->type = COMEDI_SUBD_AI;
 	s->subdev_flags = SDF_READABLE | SDF_GROUND | SDF_CMD_READ;
-	s->n_chan = 16;		/* XXX */
+	s->n_chan = 16;
 	s->len_chanlist = 1;
 	s->insn_read = dt2814_ai_insn_read;
 	s->do_cmd = dt2814_ai_cmd;
 	s->do_cmdtest = dt2814_ai_cmdtest;
 	s->maxdata = 0xfff;
-	s->range_table = &range_unknown;	/* XXX */
+	s->range_table = &range_unknown;
 
 	return 0;
 }

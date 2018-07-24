@@ -341,39 +341,6 @@ static int do_stop(struct net_device *dev);
 #define PutWord(reg,value) outw((value), ioaddr+(reg))
 
 /*====== Functions used for debugging =================================*/
-#if 0 /* reading regs may change system status */
-static void
-PrintRegisters(struct net_device *dev)
-{
-    unsigned int ioaddr = dev->base_addr;
-
-    if (pc_debug > 1) {
-	int i, page;
-
-	printk(KDBG_XIRC "Register  common: ");
-	for (i = 0; i < 8; i++)
-	    printk(" %2.2x", GetByte(i));
-	printk("\n");
-	for (page = 0; page <= 8; page++) {
-	    printk(KDBG_XIRC "Register page %2x: ", page);
-	    SelectPage(page);
-	    for (i = 8; i < 16; i++)
-		printk(" %2.2x", GetByte(i));
-	    printk("\n");
-	}
-	for (page=0x40 ; page <= 0x5f; page++) {
-		if (page == 0x43 || (page >= 0x46 && page <= 0x4f) ||
-		    (page >= 0x51 && page <=0x5e))
-			continue;
-	    printk(KDBG_XIRC "Register page %2x: ", page);
-	    SelectPage(page);
-	    for (i = 8; i < 16; i++)
-		printk(" %2.2x", GetByte(i));
-	    printk("\n");
-	}
-    }
-}
-#endif /* 0 */
 
 /*============== MII Management functions ===============*/
 
@@ -395,7 +362,6 @@ mii_idle(unsigned int ioaddr)
 static void
 mii_putbit(unsigned int ioaddr, unsigned data)
 {
-  #if 1
     if (data) {
 	PutByte(XIRCREG2_GPR2, 0x0c|2|0); /* set MDIO */
 	udelay(1);
@@ -407,19 +373,6 @@ mii_putbit(unsigned int ioaddr, unsigned data)
 	PutByte(XIRCREG2_GPR2, 0x0c|0|1); /* and drive MDCK high */
 	udelay(1);
     }
-  #else
-    if (data) {
-	PutWord(XIRCREG2_GPR2-1, 0x0e0e);
-	udelay(1);
-	PutWord(XIRCREG2_GPR2-1, 0x0f0f);
-	udelay(1);
-    } else {
-	PutWord(XIRCREG2_GPR2-1, 0x0c0c);
-	udelay(1);
-	PutWord(XIRCREG2_GPR2-1, 0x0d0d);
-	udelay(1);
-    }
-  #endif
 }
 
 /****************
@@ -908,29 +861,6 @@ xirc2ps_config(struct pcmcia_device * link)
 	writeb(ioaddr & 0xff	  , local->dingo_ccr + CISREG_IOBASE_0);
 	writeb((ioaddr >> 8)&0xff , local->dingo_ccr + CISREG_IOBASE_1);
 
-      #if 0
-	{
-	    u_char tmp;
-	    printk(KERN_INFO "ECOR:");
-	    for (i=0; i < 7; i++) {
-		tmp = readb(local->dingo_ccr + i*2);
-		printk(" %02x", tmp);
-	    }
-	    printk("\n");
-	    printk(KERN_INFO "DCOR:");
-	    for (i=0; i < 4; i++) {
-		tmp = readb(local->dingo_ccr + 0x20 + i*2);
-		printk(" %02x", tmp);
-	    }
-	    printk("\n");
-	    printk(KERN_INFO "SCOR:");
-	    for (i=0; i < 10; i++) {
-		tmp = readb(local->dingo_ccr + 0x40 + i*2);
-		printk(" %02x", tmp);
-	    }
-	    printk("\n");
-	}
-      #endif
 
 	writeb(0x01, local->dingo_ccr + 0x20);
 	writeb(0x0c, local->dingo_ccr + 0x22);
@@ -1040,10 +970,7 @@ xirc2ps_interrupt(int irq, void *dev_id)
     unsigned bytes_rcvd;
     unsigned int_status, eth_status, rx_status, tx_status;
     unsigned rsr, pktlen;
-    ulong start_ticks = jiffies; /* fixme: jiffies rollover every 497 days
-				  * is this something to worry about?
-				  * -- on a laptop?
-				  */
+    ulong start_ticks = jiffies;
 
     if (!netif_device_present(dev))
 	return IRQ_HANDLED;
@@ -1103,7 +1030,7 @@ xirc2ps_interrupt(int irq, void *dev_id)
 		dev->stats.rx_dropped++;
 	    } else { /* okay get the packet */
 		skb_reserve(skb, 2);
-		if (lp->silicon == 0 ) { /* work around a hardware bug */
+		if (lp->silicon == 0 ) {
 		    unsigned rhsa; /* receive start address */
 
 		    SelectPage(5);
@@ -1127,29 +1054,6 @@ xirc2ps_interrupt(int irq, void *dev_id)
 				skb_put(skb, pktlen), (pktlen+1)>>1);
 		    }
 		}
-	      #if 0
-		else if (lp->mohawk) {
-		    /* To use this 32 bit access we should use
-		     * a manual optimized loop
-		     * Also the words are swapped, we can get more
-		     * performance by using 32 bit access and swapping
-		     * the words in a register. Will need this for cardbus
-		     *
-		     * Note: don't forget to change the ALLOC_SKB to .. +3
-		     */
-		    unsigned i;
-		    u_long *p = skb_put(skb, pktlen);
-		    register u_long a;
-		    unsigned int edpreg = ioaddr+XIRCREG_EDP-2;
-		    for (i=0; i < len ; i += 4, p++) {
-			a = inl(edpreg);
-			__asm__("rorl $16,%0\n\t"
-				:"=q" (a)
-				: "0" (a));
-			*p = a;
-		    }
-		}
-	      #endif
 		else {
 		    insw(ioaddr+XIRCREG_EDP, skb_put(skb, pktlen),
 			    (pktlen+1)>>1);
@@ -1285,13 +1189,6 @@ do_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	  skb, dev, pktlen);
 
 
-    /* adjust the packet length to min. required
-     * and hope that the buffer is large enough
-     * to provide some random data.
-     * fixme: For Mohawk we can change this by sending
-     * a larger packetlen than we actually have; the chip will
-     * pad this in his buffer with random bytes
-     */
     if (pktlen < ETH_ZLEN)
     {
         if (skb_padto(skb, ETH_ZLEN))
@@ -1572,24 +1469,12 @@ do_reset(struct net_device *dev, int full)
     }
     msleep(40);			     /* wait 40 msec to let it complete */
 
-  #if 0
-    {
-	SelectPage(0);
-	value = GetByte(XIRCREG_ESR);	 /* read the ESR */
-	printk(KERN_DEBUG "%s: ESR is: %#02x\n", dev->name, value);
-    }
-  #endif
 
     /* setup the ECR */
     SelectPage(1);
     PutByte(XIRCREG1_IMR0, 0xff); /* allow all ints */
     PutByte(XIRCREG1_IMR1, 1	); /* and Set TxUnderrunDetect */
     value = GetByte(XIRCREG1_ECR);
-  #if 0
-    if (local->mohawk)
-	value |= DisableLinkPulse;
-    PutByte(XIRCREG1_ECR, value);
-  #endif
     pr_debug("%s: ECR is: %#02x\n", dev->name, value);
 
     SelectPage(0x42);
@@ -1608,10 +1493,6 @@ do_reset(struct net_device *dev, int full)
     if (full)
 	set_addresses(dev);
 
-    /* Hardware workaround:
-     * The receive byte pointer after reset is off by 1 so we need
-     * to move the offset pointer back to 0.
-     */
     SelectPage(0);
     PutWord(XIRCREG0_DO, 0x2000); /* change offset command, off=0 */
 
@@ -1727,10 +1608,6 @@ init_mii(struct net_device *dev)
     }
 
     if (local->probe_port) {
-	/* according to the DP83840A specs the auto negotiation process
-	 * may take up to 3.5 sec, so we use this also for our ML6692
-	 * Fixme: Better to use a timer here!
-	 */
 	for (i=0; i < 35; i++) {
 	    msleep(100);	 /* wait 100 msec */
 	    status = mii_rd(ioaddr,  0, 1);

@@ -30,13 +30,6 @@ void DeActivateBAEntry( struct ieee80211_device* ieee, PBA_RECORD pBA)
 	pBA->bValid = false;
 	del_timer_sync(&pBA->Timer);
 }
-/********************************************************************************************************************
- *function: deactivete BA entry in Tx Ts, and send DELBA.
- *   input:
- *   	     PTX_TS_RECORD		pTxTs //Tx Ts which is to deactivate BA entry.
- *  output:  none
- *  notice:  As PTX_TS_RECORD structure will be defined in QOS, so wait to be merged. //FIXME
-********************************************************************************************************************/
 u8 TxTsDeleteBA( struct ieee80211_device* ieee, PTX_TS_RECORD	pTxTs)
 {
 	PBA_RECORD		pAdmittedBa = &pTxTs->TxAdmittedBARecord;  //These two BA entries must exist in TS structure
@@ -60,13 +53,6 @@ u8 TxTsDeleteBA( struct ieee80211_device* ieee, PTX_TS_RECORD	pTxTs)
 	return bSendDELBA;
 }
 
-/********************************************************************************************************************
- *function: deactivete BA entry in Tx Ts, and send DELBA.
- *   input:
- *   	     PRX_TS_RECORD		pRxTs //Rx Ts which is to deactivate BA entry.
- *  output:  none
- *  notice:  As PRX_TS_RECORD structure will be defined in QOS, so wait to be merged. //FIXME, same with above
-********************************************************************************************************************/
 u8 RxTsDeleteBA( struct ieee80211_device* ieee, PRX_TS_RECORD	pRxTs)
 {
 	PBA_RECORD		pBa = &pRxTs->RxAdmittedBARecord;
@@ -119,7 +105,7 @@ static struct sk_buff* ieee80211_ADDBA(struct ieee80211_device* ieee, u8* Dst, P
 		IEEE80211_DEBUG(IEEE80211_DL_ERR, "pBA(%p) is NULL or ieee(%p) is NULL\n", pBA, ieee);
 		return NULL;
 	}
-	skb = dev_alloc_skb(len + sizeof( struct ieee80211_hdr_3addr)); //need to add something others? FIXME
+	skb = dev_alloc_skb(len + sizeof( struct ieee80211_hdr_3addr));
 	if (skb == NULL)
 	{
 		IEEE80211_DEBUG(IEEE80211_DL_ERR, "can't alloc skb for ADDBA_REQ\n");
@@ -174,48 +160,6 @@ static struct sk_buff* ieee80211_ADDBA(struct ieee80211_device* ieee, u8* Dst, P
 	//return NULL;
 }
 
-#if 0 //I try to merge ADDBA_REQ and ADDBA_RSP frames together..
-/********************************************************************************************************************
- *function:  construct ADDBAREQ frame
- *   input:  u8* 		dst 	//ADDBARsp frame's destination
- *   	     PBA_RECORD 	pBA	//BA_RECORD entry which stores the necessary information for BA_RSP.
- *   	     u16 		StatusCode  //status code.
- *  output:  none
- *  return:  sk_buff* 		skb     //return constructed skb to xmit
-********************************************************************************************************************/
-static struct sk_buff* ieee80211_ADDBA_Rsp( IN	struct ieee80211_device* ieee, u8* dst, PBA_RECORD pBA, u16 StatusCode)
-{
-	OCTET_STRING	osADDBAFrame, tmp;
-
-	FillOctetString(osADDBAFrame, Buffer, 0);
-	*pLength = 0;
-
-	ConstructMaFrameHdr(
-					Adapter,
-					Addr,
-					ACT_CAT_BA,
-					ACT_ADDBARSP,
-					&osADDBAFrame	);
-
-	// Dialog Token
-	FillOctetString(tmp, &pBA->DialogToken, 1);
-	PacketAppendData(&osADDBAFrame, tmp);
-
-	// Status Code
-	FillOctetString(tmp, &StatusCode, 2);
-	PacketAppendData(&osADDBAFrame, tmp);
-
-	// BA Parameter Set
-	FillOctetString(tmp, &pBA->BaParamSet, 2);
-	PacketAppendData(&osADDBAFrame, tmp);
-
-	// BA Timeout Value
-	FillOctetString(tmp, &pBA->BaTimeoutValue, 2);
-	PacketAppendData(&osADDBAFrame, tmp);
-
-	*pLength = osADDBAFrame.Length;
-}
-#endif
 
 /********************************************************************************************************************
  *function:  construct DELBA frame
@@ -250,7 +194,7 @@ static struct sk_buff* ieee80211_DELBA(
 	DelbaParamSet.field.Initiator	= (TxRxSelect==TX_DIR)?1:0;
 	DelbaParamSet.field.TID	= pBA->BaParamSet.field.TID;
 
-	skb = dev_alloc_skb(len + sizeof( struct ieee80211_hdr_3addr)); //need to add something others? FIXME
+	skb = dev_alloc_skb(len + sizeof( struct ieee80211_hdr_3addr));
 	if (skb == NULL)
 	{
 		IEEE80211_DEBUG(IEEE80211_DL_ERR, "can't alloc skb for ADDBA_REQ\n");
@@ -776,4 +720,3 @@ void RxBaInactTimeout(unsigned long data)
 		DELBA_REASON_TIMEOUT);
 	return ;
 }
-

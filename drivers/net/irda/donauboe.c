@@ -1260,7 +1260,7 @@ dumpbufs(self->rx_bufs[self->rxs],len,'<');
               else if (enable & OBOE_ENABLEH_FIRON)
                 {
                   if (len > 3)
-                      len -= 4;   /*FIXME: check this */
+                      len -= 4;
                   else
                       len = 0;
                   IRDA_DEBUG (1, "%s.FIR:%x(%x)\n", __func__, len,enable);
@@ -1598,7 +1598,6 @@ toshoboe_open (struct pci_dev *pci_dev, const struct pci_device_id *pdid)
       self->qos.baud_rate.bits |= (IR_4000000 << 8);
     }
 
-  /*FIXME: work this out... */
   self->qos.min_turn_time.bits = 0xff;
 
   irda_qos_bits_to_value (&self->qos);

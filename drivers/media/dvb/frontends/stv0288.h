@@ -43,7 +43,7 @@ struct stv0288_config {
 };
 
 #if defined(CONFIG_DVB_STV0288) || (defined(CONFIG_DVB_STV0288_MODULE) && \
-							defined(MODULE))
+	defined(MODULE))
 extern struct dvb_frontend *stv0288_attach(const struct stv0288_config *config,
 					   struct i2c_adapter *i2c);
 #else

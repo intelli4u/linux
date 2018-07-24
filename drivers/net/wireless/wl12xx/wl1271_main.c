@@ -251,7 +251,6 @@ static struct conf_drv_settings default_conf = {
 		.host_fast_wakeup_support = false
 	},
 	.roam_trigger = {
-		/* FIXME: due to firmware bug, must use value 1 for now */
 		.trigger_pacing               = 1,
 		.avg_weight_rssi_beacon       = 20,
 		.avg_weight_rssi_data         = 10,
@@ -562,11 +561,6 @@ static int wl1271_fetch_nvs(struct wl1271 *wl)
 		return ret;
 	}
 
-	/*
-	 * FIXME: the LEGACY NVS image support (NVS's missing the 5GHz band
-	 * configurations) can be removed when those NVS files stop floating
-	 * around.
-	 */
 	if (fw->size != sizeof(struct wl1271_nvs_file) &&
 	    (fw->size != WL1271_INI_LEGACY_NVS_FILE_SIZE ||
 	     wl1271_11a_enabled())) {
@@ -1241,12 +1235,6 @@ static int wl1271_op_config(struct ieee80211_hw *hw, u32 changed)
 		wl->band = conf->channel->band;
 		wl->channel = channel;
 
-		/*
-		 * FIXME: the mac80211 should really provide a fixed rate
-		 * to use here. for now, just use the smallest possible rate
-		 * for the band as a fixed rate for association frames and
-		 * other control messages.
-		 */
 		if (!test_bit(WL1271_FLAG_STA_ASSOCIATED, &wl->flags))
 			wl1271_set_band_rate(wl);
 
@@ -2211,7 +2199,6 @@ static ssize_t wl1271_sysfs_show_bt_coex_state(struct device *dev,
 	struct wl1271 *wl = dev_get_drvdata(dev);
 	ssize_t len;
 
-	/* FIXME: what's the maximum length of buf? page size?*/
 	len = 500;
 
 	mutex_lock(&wl->mutex);
@@ -2273,7 +2260,6 @@ static ssize_t wl1271_sysfs_show_hw_pg_ver(struct device *dev,
 	struct wl1271 *wl = dev_get_drvdata(dev);
 	ssize_t len;
 
-	/* FIXME: what's the maximum length of buf? page size?*/
 	len = 500;
 
 	mutex_lock(&wl->mutex);
@@ -2327,7 +2313,6 @@ int wl1271_init_ieee80211(struct wl1271 *wl)
 		sizeof(struct wl1271_tx_hw_descr);
 
 	/* unit us */
-	/* FIXME: find a proper value */
 	wl->hw->channel_change_time = 10000;
 	wl->hw->max_listen_interval = wl->conf.conn.max_listen_interval;
 

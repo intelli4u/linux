@@ -53,8 +53,7 @@
  * as opposed to devices that do something strangely or wrongly.
  */
 
-#if !defined(CONFIG_USB_STORAGE_SDDR09) && \
-		!defined(CONFIG_USB_STORAGE_SDDR09_MODULE)
+#if !defined(CONFIG_USB_STORAGE_SDDR09) && !defined(CONFIG_USB_STORAGE_SDDR09_MODULE)
 #define NO_SDDR09
 #endif
 
@@ -804,6 +803,19 @@ UNUSUAL_DEV(  0x05e3, 0x0723, 0x9451, 0x9451,
 		"USB to SATA",
 		US_SC_DEVICE, US_PR_DEVICE, NULL,
 		US_FL_SANE_SENSE ),
+		
+#if 1
+/* The device always reports command failed in CSW to the first INQUIRY command.
+ * The sense data shows code: 0x70, key: 0x7, ASC: 0x21, ASCQ: 0x0 and it means
+ * illegal request for the logical block address out of range.
+ * SCSI driver did not send any read/write command yet, so the response is unreasonable.
+ */
+UNUSUAL_DEV(  0x05e3, 0x0731, 0x9094, 0x9094,
+		"Genesys Logic",
+		"USB to SATA",
+		US_SC_DEVICE, US_PR_DEVICE, NULL,
+		US_FL_FIX_INQUIRY ),
+#endif		
 
 /* Reported by Hanno Boeck <hanno@gmx.de>
  * Taken from the Lycoris Kernel */
@@ -1829,7 +1841,6 @@ UNUSUAL_DEV(  0x12d1, 0x143F, 0x0000, 0x0000,
 		US_SC_DEVICE, US_PR_DEVICE, usb_stor_huawei_e220_init,
 		0),
 
-/* Reported by Vilius Bilinkevicius <vilisas AT xxx DOT lt) */
 UNUSUAL_DEV(  0x132b, 0x000b, 0x0001, 0x0001,
 		"Minolta",
 		"Dimage Z10",

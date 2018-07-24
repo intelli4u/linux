@@ -9,4 +9,3 @@ obj-$(CONFIG_ETRAX_GPIO)		+= gpio.o
 obj-$(CONFIG_ETRAX_DS1302)		+= ds1302.o
 obj-$(CONFIG_ETRAX_PCF8563)		+= pcf8563.o
 obj-$(CONFIG_ETRAX_SYNCHRONOUS_SERIAL)	+= sync_serial.o
-

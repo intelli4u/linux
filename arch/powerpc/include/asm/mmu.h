@@ -135,7 +135,7 @@ extern void early_init_mmu_secondary(void);
 #elif defined(CONFIG_PPC_BOOK3E_MMU)
 /* Freescale Book-E software loaded TLB or Book-3e (ISA 2.06+) MMU */
 #  include <asm/mmu-book3e.h>
-#elif defined (CONFIG_PPC_8xx)
+#elif defined(CONFIG_PPC_8xx)
 /* Motorola/Freescale 8xx software loaded TLB */
 #  include <asm/mmu-8xx.h>
 #endif

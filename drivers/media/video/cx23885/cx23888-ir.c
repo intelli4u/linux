@@ -805,7 +805,6 @@ static int cx23888_ir_rx_s_parameters(struct v4l2_subdev *sd,
 	p->resolution = clock_divider_to_resolution(rxclk_divider);
 	o->resolution = p->resolution;
 
-	/* FIXME - make this dependent on resolution for better performance */
 	control_rx_irq_watermark(dev, RX_FIFO_HALF_FULL);
 
 	control_rx_s_edge_detection(dev, CNTRL_EDG_BOTH);
@@ -923,7 +922,6 @@ static int cx23888_ir_tx_s_parameters(struct v4l2_subdev *sd,
 	p->resolution = clock_divider_to_resolution(txclk_divider);
 	o->resolution = p->resolution;
 
-	/* FIXME - make this dependent on resolution for better performance */
 	control_tx_irq_watermark(dev, TX_FIFO_HALF_EMPTY);
 
 	control_tx_polarity_invert(dev, p->invert_carrier_sense);
@@ -1219,7 +1217,6 @@ int cx23888_ir_probe(struct cx23885_dev *dev)
 
 	v4l2_subdev_init(sd, &cx23888_ir_controller_ops);
 	v4l2_set_subdevdata(sd, state);
-	/* FIXME - fix the formatting of dev->v4l2_dev.name and use it */
 	snprintf(sd->name, sizeof(sd->name), "%s/888-ir", dev->name);
 	sd->grp_id = CX23885_HW_888_IR;
 

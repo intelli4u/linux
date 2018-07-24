@@ -60,7 +60,7 @@ extern const char *drbd_buildtag(void);
 
 
 enum drbd_io_error_p {
-	EP_PASS_ON, /* FIXME should the better be named "Ignore"? */
+	EP_PASS_ON,
 	EP_CALL_HELPER,
 	EP_DETACH
 };

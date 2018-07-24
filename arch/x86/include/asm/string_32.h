@@ -285,7 +285,6 @@ void *__constant_c_and_count_memset(void *s, unsigned long pattern,
 	{
 		int d0, d1;
 #if __GNUC__ == 4 && __GNUC_MINOR__ == 0
-		/* Workaround for broken gcc 4.0 */
 		register unsigned long eax asm("%eax") = pattern;
 #else
 		unsigned long eax = pattern;

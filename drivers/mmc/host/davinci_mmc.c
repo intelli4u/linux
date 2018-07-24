@@ -858,7 +858,6 @@ static void mmc_davinci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 			dev_warn(mmc_dev(host->mmc), "powerup timeout\n");
 	}
 
-	/* FIXME on power OFF, reset things ... */
 }
 
 static void
@@ -1410,4 +1409,3 @@ module_exit(davinci_mmcsd_exit);
 MODULE_AUTHOR("Texas Instruments India");
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("MMC/SD driver for Davinci MMC controller");
-

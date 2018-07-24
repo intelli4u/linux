@@ -8,7 +8,7 @@
 #include <linux/netfilter.h>
 
 /* only for userspace compatibility */
-#ifndef __KERNEL__
+//#ifndef __KERNEL__
 /* IP Cache bits. */
 /* Src IP address. */
 #define NFC_IP_SRC		0x0001
@@ -49,7 +49,17 @@
 /* Packets about to hit the wire. */
 #define NF_IP_POST_ROUTING	4
 #define NF_IP_NUMHOOKS		5
-#endif /* ! __KERNEL__ */
+//#endif /* ! __KERNEL__ */
+
+#ifdef CONFIG_IP_NF_TARGET_CONE
+/* Cone NAT, Otherwise Symmetric NAT */
+#define NFC_IP_CONE_NAT         0x0800
+#define NFC_IP_CONE_NAT_ALTERED 0x1000
+#endif /* CONFIG_IP_NF_TARGET_CONE */
+
+#ifdef CONFIG_IP_NF_LFP
+#define NFC_LFP_ENABLE		(1<<29)
+#endif
 
 enum nf_ip_hook_priorities {
 	NF_IP_PRI_FIRST = INT_MIN,

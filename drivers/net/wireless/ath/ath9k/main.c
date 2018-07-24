@@ -218,9 +218,6 @@ int ath_set_channel(struct ath_softc *sc, struct ieee80211_hw *hw,
 
 	stopped = ath_stoprecv(sc);
 
-	/* XXX: do not flush receive queue here. We don't want
-	 * to flush data frames already in queue because of
-	 * changing channel. */
 
 	if (!stopped || !(sc->sc_flags & SC_OP_OFFCHANNEL))
 		fastcc = false;
@@ -1039,8 +1036,6 @@ int ath_get_mac80211_qnum(u32 queue, struct ath_softc *sc)
 	return qnum;
 }
 
-/* XXX: Remove me once we don't depend on ath9k_channel for all
- * this redundant data */
 void ath9k_update_ichannel(struct ath_softc *sc, struct ieee80211_hw *hw,
 			   struct ath9k_channel *ichan)
 {
@@ -1262,11 +1257,6 @@ static int ath9k_tx(struct ieee80211_hw *hw,
 
 	memset(&txctl, 0, sizeof(struct ath_tx_control));
 
-	/*
-	 * As a temporary workaround, assign seq# here; this will likely need
-	 * to be cleaned up to work better with Beacon transmission and virtual
-	 * BSSes.
-	 */
 	if (info->flags & IEEE80211_TX_CTL_ASSIGN_SEQ) {
 		if (info->flags & IEEE80211_TX_CTL_FIRST_FRAGMENT)
 			sc->tx.seq_no += 0x10;
@@ -1653,7 +1643,6 @@ static int ath9k_config(struct ieee80211_hw *hw, u32 changed)
 		ath_print(common, ATH_DBG_CONFIG, "Set channel: %d MHz\n",
 			  curchan->center_freq);
 
-		/* XXX: remove me eventualy */
 		ath9k_update_ichannel(sc, hw, &sc->sc_ah->channels[pos]);
 
 		ath_update_chainmask(sc, conf_is_ht(conf));
@@ -1696,7 +1685,6 @@ skip_chan_change:
 	FIF_BCN_PRBRESP_PROMISC |		\
 	FIF_FCSFAIL)
 
-/* FIXME: sc->sc_full_reset ? */
 static void ath9k_configure_filter(struct ieee80211_hw *hw,
 				   unsigned int changed_flags,
 				   unsigned int *total_flags,
@@ -2069,10 +2057,6 @@ static void ath9k_sw_scan_start(struct ieee80211_hw *hw)
 	mutex_unlock(&sc->mutex);
 }
 
-/*
- * XXX: this requires a revisit after the driver
- * scan_complete gets moved to another place/removed in mac80211.
- */
 static void ath9k_sw_scan_complete(struct ieee80211_hw *hw)
 {
 	struct ath_wiphy *aphy = hw->priv;

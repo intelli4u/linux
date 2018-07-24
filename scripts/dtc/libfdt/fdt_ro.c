@@ -385,11 +385,6 @@ int fdt_node_offset_by_prop_value(const void *fdt, int startoffset,
 
 	FDT_CHECK_HEADER(fdt);
 
-	/* FIXME: The algorithm here is pretty horrible: we scan each
-	 * property of a node in fdt_getprop(), then if that didn't
-	 * find what we want, we scan over them again making our way
-	 * to the next node.  Still it's the easiest to implement
-	 * approach; performance can come later. */
 	for (offset = fdt_next_node(fdt, startoffset, NULL);
 	     offset >= 0;
 	     offset = fdt_next_node(fdt, offset, NULL)) {
@@ -450,11 +445,6 @@ int fdt_node_offset_by_compatible(const void *fdt, int startoffset,
 
 	FDT_CHECK_HEADER(fdt);
 
-	/* FIXME: The algorithm here is pretty horrible: we scan each
-	 * property of a node in fdt_node_check_compatible(), then if
-	 * that didn't find what we want, we scan over them again
-	 * making our way to the next node.  Still it's the easiest to
-	 * implement approach; performance can come later. */
 	for (offset = fdt_next_node(fdt, startoffset, NULL);
 	     offset >= 0;
 	     offset = fdt_next_node(fdt, offset, NULL)) {

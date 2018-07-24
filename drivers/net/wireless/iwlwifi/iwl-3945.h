@@ -216,22 +216,6 @@ extern int iwl3945_dump_nic_event_log(struct iwl_priv *priv, bool full_log,
 				       char **buf, bool display);
 extern void iwl3945_dump_nic_error_log(struct iwl_priv *priv);
 
-/******************************************************************************
- *
- * Functions implemented in iwl-[34]*.c which are forward declared here
- * for use by iwl-base.c
- *
- * NOTE:  The implementation of these functions are hardware specific
- * which is why they are in the hardware specific files (vs. iwl-base.c)
- *
- * Naming convention --
- * iwl3945_         <-- Its part of iwlwifi (should be changed to iwl3945_)
- * iwl3945_hw_      <-- Hardware specific (implemented in iwl-XXXX.c by all HW)
- * iwlXXXX_     <-- Hardware specific (implemented in iwl-XXXX.c for XXXX)
- * iwl3945_bg_      <-- Called from work queue context
- * iwl3945_mac_     <-- mac80211 callback
- *
- ****************************************************************************/
 extern void iwl3945_hw_rx_handler_setup(struct iwl_priv *priv);
 extern void iwl3945_hw_setup_deferred_work(struct iwl_priv *priv);
 extern void iwl3945_hw_cancel_deferred_work(struct iwl_priv *priv);

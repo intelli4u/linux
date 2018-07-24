@@ -595,7 +595,6 @@ static struct isa_driver snd_wavefront_driver = {
 	.match		= snd_wavefront_isa_match,
 	.probe		= snd_wavefront_isa_probe,
 	.remove		= __devexit_p(snd_wavefront_isa_remove),
-	/* FIXME: suspend, resume */
 	.driver		= {
 		.name	= DEV_NAME
 	},
@@ -650,7 +649,6 @@ static struct pnp_card_driver wavefront_pnpc_driver = {
 	.id_table	= snd_wavefront_pnpids,
 	.probe		= snd_wavefront_pnp_detect,
 	.remove		= __devexit_p(snd_wavefront_pnp_remove),
-	/* FIXME: suspend,resume */
 };
 
 #endif /* CONFIG_PNP */

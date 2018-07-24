@@ -143,7 +143,6 @@
 #define PCMD_MBC	(1<<12)
 #define PCMD_DCE	(1<<11)
 #define PCMD_LC	(1<<10)
-/* FIXME:  PCMD_SQC need be checked.   */
 #define PCMD_SQC	(3<<8)	/* currently only bit 8 is changeable,
 				   bit 9 should be 0 all day. */
 #define PVCR_VCSA	(0x1<<14)

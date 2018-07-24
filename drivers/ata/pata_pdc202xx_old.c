@@ -172,8 +172,6 @@ static void pdc2026x_bmdma_start(struct ata_queued_cmd *qc)
 	else
 		iowrite8(ioread8(clock) & ~sel66, clock);
 
-	/* The DMA clocks may have been trashed by a reset. FIXME: make conditional
-	   and move to qc_issue ? */
 	pdc202xx_set_dmamode(ap, qc->dev);
 
 	/* Cases the state machine will not complete correctly without help */

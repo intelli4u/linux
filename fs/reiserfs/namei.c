@@ -266,7 +266,6 @@ static int linear_search_in_dir_item(struct cpu_key *key,
 		   have to go to the left neighbor, but if generation counter
 		   is 0 already, we know for sure, that there is no name with
 		   the same hash value */
-		// FIXME: this work correctly only because hash value can not
 		// be 0. Btw, in case of Yura's hash it is probably possible,
 		// so, this is a bug
 		return NAME_NOT_FOUND;
@@ -278,7 +277,6 @@ static int linear_search_in_dir_item(struct cpu_key *key,
 }
 
 // may return NAME_FOUND, NAME_FOUND_INVISIBLE, NAME_NOT_FOUND
-// FIXME: should add something like IOERROR
 static int reiserfs_find_entry(struct inode *dir, const char *name, int namelen,
 			       struct treepath *path_to_entry,
 			       struct reiserfs_dir_entry *de)
@@ -691,7 +689,6 @@ static int reiserfs_mknod(struct inode *dir, struct dentry *dentry, int mode,
 	inode->i_op = &reiserfs_special_inode_operations;
 	init_special_inode(inode, inode->i_mode, rdev);
 
-	//FIXME: needed for block and char devices only
 	reiserfs_update_sd(&th, inode);
 
 	reiserfs_update_inode_transaction(inode);
@@ -863,7 +860,6 @@ static int reiserfs_rmdir(struct inode *dir, struct dentry *dentry)
 	reiserfs_update_inode_transaction(dir);
 
 	if (de.de_objectid != inode->i_ino) {
-		// FIXME: compare key of an object and a key found in the
 		// entry
 		retval = -EIO;
 		goto end_rmdir;
@@ -954,7 +950,6 @@ static int reiserfs_unlink(struct inode *dir, struct dentry *dentry)
 	reiserfs_update_inode_transaction(dir);
 
 	if (de.de_objectid != inode->i_ino) {
-		// FIXME: compare key of an object and a key found in the
 		// entry
 		retval = -EIO;
 		goto end_unlink;
@@ -1118,7 +1113,6 @@ static int reiserfs_link(struct dentry *old_dentry, struct inode *dir,
 
 	reiserfs_write_lock(dir->i_sb);
 	if (inode->i_nlink >= REISERFS_LINK_MAX) {
-		//FIXME: sd_nlink is 32 bit for new files
 		reiserfs_write_unlock(dir->i_sb);
 		return -EMLINK;
 	}
@@ -1171,7 +1165,6 @@ static int de_still_valid(const char *name, int len,
 
 	// recalculate pointer to name and name length
 	set_de_name_and_namelen(&tmp);
-	// FIXME: could check more
 	if (tmp.de_namelen != len || memcmp(name, de->de_name, len))
 		return 0;
 	return 1;
@@ -1485,7 +1478,6 @@ static int reiserfs_rename(struct inode *old_dir, struct dentry *old_dentry,
 	pathrelse(&new_entry_path);
 	pathrelse(&dot_dot_entry_path);
 
-	// FIXME: this reiserfs_cut_from_item's return value may screw up
 	// anybody, but it will panic if will not be able to find the
 	// entry. This needs one more clean up
 	if (reiserfs_cut_from_item

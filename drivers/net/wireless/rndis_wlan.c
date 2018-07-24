@@ -2753,21 +2753,6 @@ static void rndis_wlan_pmkid_cand_list_indication(struct usbnet *usbdev,
 		netdev_dbg(usbdev->net, "cand[%i]: flags: 0x%08x, bssid: %pM\n",
 			   i, le32_to_cpu(cand->flags), cand->bssid);
 
-#if 0
-		struct iw_pmkid_cand pcand;
-		union iwreq_data wrqu;
-
-		memset(&pcand, 0, sizeof(pcand));
-		if (le32_to_cpu(cand->flags) & 0x01)
-			pcand.flags |= IW_PMKID_CAND_PREAUTH;
-		pcand.index = i;
-		memcpy(pcand.bssid.sa_data, cand->bssid, ETH_ALEN);
-
-		memset(&wrqu, 0, sizeof(wrqu));
-		wrqu.data.length = sizeof(pcand);
-		wireless_send_event(usbdev->net, IWEVPMKIDCAND, &wrqu,
-								(u8 *)&pcand);
-#endif
 	}
 }
 
@@ -2930,10 +2915,6 @@ static void rndis_device_poller(struct work_struct *work)
 	int update_jiffies = DEVICE_POLLER_JIFFIES;
 	void *buf;
 
-	/* Only check/do workaround when connected. Calling is_associated()
-	 * also polls device with rndis_command() and catches for media link
-	 * indications.
-	 */
 	if (!is_associated(usbdev))
 		goto end;
 
@@ -2945,9 +2926,6 @@ static void rndis_device_poller(struct work_struct *work)
 	netdev_dbg(usbdev->net, "dev-poller: OID_802_11_RSSI -> %d, rssi:%d, qual: %d\n",
 		   ret, le32_to_cpu(rssi), level_to_qual(le32_to_cpu(rssi)));
 
-	/* Workaround transfer stalls on poor quality links.
-	 * TODO: find right way to fix these stalls (as stalls do not happen
-	 * with ndiswrapper/windows driver). */
 	if (priv->param_workaround_interval > 0 && priv->last_qual <= 25) {
 		/* Decrease stats worker interval to catch stalls.
 		 * faster. Faster than 400-500ms causes packet loss,
@@ -3040,9 +3018,6 @@ static void rndis_copy_module_params(struct usbnet *usbdev)
 
 static int bcm4320a_early_init(struct usbnet *usbdev)
 {
-	/* copy module parameters for bcm4320a so that iwconfig reports txpower
-	 * and workaround parameter is copied to private structure correctly.
-	 */
 	rndis_copy_module_params(usbdev);
 
 	/* bcm4320a doesn't handle configuration parameters well. Try
@@ -3466,4 +3441,3 @@ MODULE_AUTHOR("Bjorge Dijkstra");
 MODULE_AUTHOR("Jussi Kivilinna");
 MODULE_DESCRIPTION("Driver for RNDIS based USB Wireless adapters");
 MODULE_LICENSE("GPL");
-

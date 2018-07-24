@@ -16,11 +16,7 @@
 
 #ifndef CONFIG_GDBSTUB_ON_TTYSx
 /* display 'Uncompressing Linux... ' messages on ttyS0 or ttyS1 */
-#if 1	/* ttyS0 */
 #define CYG_DEV_BASE	0xA6FB0000
-#else   /* ttyS1 */
-#define CYG_DEV_BASE	0xA6FC0000
-#endif
 
 #define CYG_DEV_THR	(*((volatile __u8*)(CYG_DEV_BASE + 0x00)))
 #define CYG_DEV_MCR	(*((volatile __u8*)(CYG_DEV_BASE + 0x10)))
@@ -127,15 +123,6 @@ static inline unsigned char get_byte(void)
 {
 	unsigned char ch = inptr < insize ? inbuf[inptr++] : fill_inbuf();
 
-#if 0
-	char hex[3];
-	hex[0] = ((ch & 0x0f) > 9) ?
-		((ch & 0x0f) + 'A' - 0xa) : ((ch & 0x0f) + '0');
-	hex[1] = ((ch >> 4) > 9) ?
-		((ch >> 4) + 'A' - 0xa) : ((ch >> 4) + '0');
-	hex[2] = 0;
-	kputs(hex);
-#endif
 	return ch;
 }
 

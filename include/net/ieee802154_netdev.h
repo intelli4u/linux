@@ -100,10 +100,6 @@ struct ieee802154_mlme_ops {
 
 	struct wpan_phy *(*get_phy)(const struct net_device *dev);
 
-	/*
-	 * FIXME: these should become the part of PIB/MIB interface.
-	 * However we still don't have IB interface of any kind
-	 */
 	u16 (*get_pan_id)(const struct net_device *dev);
 	u16 (*get_short_addr)(const struct net_device *dev);
 	u8 (*get_dsn)(const struct net_device *dev);
@@ -117,5 +113,3 @@ static inline struct ieee802154_mlme_ops *ieee802154_mlme_ops(
 }
 
 #endif
-
-

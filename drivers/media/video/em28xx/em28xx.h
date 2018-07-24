@@ -132,7 +132,7 @@
 #define EM28XX_STOP_AUDIO       0
 
 /* maximum number of em28xx boards */
-#define EM28XX_MAXBOARDS 4 /*FIXME: should be bigger */
+#define EM28XX_MAXBOARDS 4
 
 /* maximum number of frames that can be queued */
 #define EM28XX_NUM_FRAMES 5
@@ -797,7 +797,6 @@ static inline int em28xx_gamma_set(struct em28xx *dev, s32 val)
 	return em28xx_write_regs(dev, EM28XX_R14_GAMMA, &tmp, 1);
 }
 
-/*FIXME: maxw should be dependent of alt mode */
 static inline unsigned int norm_maxw(struct em28xx *dev)
 {
 	if (dev->board.is_webcam)

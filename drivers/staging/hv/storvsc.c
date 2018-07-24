@@ -545,7 +545,6 @@ static int StorVscOnDeviceAdd(struct hv_device *Device, void *AdditionalInfo)
 	/* props = (struct vmstorage_channel_properties *)
 	 *		channel->offerMsg.Offer.u.Standard.UserDefined; */
 
-	/* FIXME: */
 	/*
 	 * If we support more than 1 scsi channel, we need to set the
 	 * port number here to the scsi channel but how do we get the
@@ -650,7 +649,6 @@ int StorVscOnHostReset(struct hv_device *Device)
 		goto Cleanup;
 	}
 
-	/* FIXME: Add a timeout */
 	osd_WaitEventWait(request->WaitEvent);
 
 	kfree(request->WaitEvent);

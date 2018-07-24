@@ -95,11 +95,7 @@ static void dump_thread32(struct pt_regs *regs, struct user32 *dump)
 	dump->regs.sp = regs->sp;
 	dump->regs.ss = regs->ss;
 
-#if 1 /* FIXME */
 	dump->u_fpvalid = 0;
-#else
-	dump->u_fpvalid = dump_fpu(regs, &dump->i387);
-#endif
 }
 
 #endif

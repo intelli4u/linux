@@ -196,8 +196,7 @@ unsigned int BIOS_revision;
 struct apm_info apm_info;
 EXPORT_SYMBOL(apm_info);
 
-#if defined(CONFIG_X86_SPEEDSTEP_SMI) || \
-	defined(CONFIG_X86_SPEEDSTEP_SMI_MODULE)
+#if defined(CONFIG_X86_SPEEDSTEP_SMI) || defined(CONFIG_X86_SPEEDSTEP_SMI_MODULE)
 struct ist_info ist_info;
 EXPORT_SYMBOL(ist_info);
 #else

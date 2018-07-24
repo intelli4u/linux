@@ -295,15 +295,6 @@ static int rubin_do_compress(int bit_divider, int *bits, unsigned char *data_in,
 	*dstlen = outpos;
 	return 0;
 }
-#if 0
-/* _compress returns the compressed size, -1 if bigger */
-int jffs2_rubinmips_compress(unsigned char *data_in, unsigned char *cpage_out,
-		   uint32_t *sourcelen, uint32_t *dstlen, void *model)
-{
-	return rubin_do_compress(BIT_DIVIDER_MIPS, bits_mips, data_in,
-				 cpage_out, sourcelen, dstlen);
-}
-#endif
 static int jffs2_dynrubin_compress(unsigned char *data_in,
 				   unsigned char *cpage_out,
 				   uint32_t *sourcelen, uint32_t *dstlen,

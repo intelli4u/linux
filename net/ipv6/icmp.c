@@ -172,11 +172,6 @@ static inline int icmpv6_xrlim_allow(struct sock *sk, u8 type,
 	if (type == ICMPV6_PKT_TOOBIG)
 		return 1;
 
-	/*
-	 * Look up the output route.
-	 * XXX: perhaps the expire for routing entries cloned by
-	 * this lookup should be more aggressive (not longer than timeout).
-	 */
 	dst = ip6_route_output(net, sk, fl);
 	if (dst->error) {
 		IP6_INC_STATS(net, ip6_dst_idev(dst),
@@ -963,4 +958,3 @@ struct ctl_table * __net_init ipv6_icmp_sysctl_init(struct net *net)
 	return table;
 }
 #endif
-

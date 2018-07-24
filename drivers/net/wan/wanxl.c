@@ -581,10 +581,6 @@ static int __devinit wanxl_pci_init_one(struct pci_dev *pdev,
 	/* QUICC can only access first 256 MB of host RAM directly,
 	   but PLX9060 DMA does 32-bits for actual packet data transfers */
 
-	/* FIXME when PCI/DMA subsystems are fixed.
-	   We set both dma_mask and consistent_dma_mask to 28 bits
-	   and pray pci_alloc_consistent() will use this info. It should
-	   work on most platforms */
 	if (pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(28)) ||
 	    pci_set_dma_mask(pdev, DMA_BIT_MASK(28))) {
 		printk(KERN_ERR "wanXL: No usable DMA configuration\n");
@@ -629,9 +625,6 @@ static int __devinit wanxl_pci_init_one(struct pci_dev *pdev,
 	       (unsigned long long)card->status_address);
 #endif
 
-	/* FIXME when PCI/DMA subsystems are fixed.
-	   We set both dma_mask and consistent_dma_mask back to 32 bits
-	   to indicate the card can do 32-bit DMA addressing */
 	if (pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32)) ||
 	    pci_set_dma_mask(pdev, DMA_BIT_MASK(32))) {
 		printk(KERN_ERR "wanXL: No usable DMA configuration\n");

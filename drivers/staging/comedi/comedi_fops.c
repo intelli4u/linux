@@ -447,7 +447,7 @@ static int do_subdinfo_ioctl(struct comedi_device *dev,
 			us->range_type =
 			    (i << 24) | (0 << 16) | (s->range_table->length);
 		} else {
-			us->range_type = 0;	/* XXX */
+			us->range_type = 0;
 		}
 		us->flags = s->flags;
 
@@ -539,11 +539,6 @@ static int do_chaninfo_ioctl(struct comedi_device *dev,
 			    (s->range_table_list[i]->length);
 			put_user(x, it.rangelist + i);
 		}
-#if 0
-		if (copy_to_user(it.rangelist, s->range_type_list,
-				 s->n_chan * sizeof(unsigned int)))
-			return -EFAULT;
-#endif
 	}
 
 	return 0;
@@ -1274,10 +1269,6 @@ static int do_lock_ioctl(struct comedi_device *dev, unsigned int arg,
 	if (ret < 0)
 		return ret;
 
-#if 0
-	if (s->lock_f)
-		ret = s->lock_f(dev, s);
-#endif
 
 	return ret;
 }
@@ -1314,10 +1305,6 @@ static int do_unlock_ioctl(struct comedi_device *dev, unsigned int arg,
 		return -EACCES;
 
 	if (s->lock == file) {
-#if 0
-		if (s->unlock)
-			s->unlock(dev, s);
-#endif
 
 		s->lock = NULL;
 	}
@@ -1983,7 +1970,6 @@ static int __init comedi_init(void)
 		return PTR_ERR(comedi_class);
 	}
 
-	/* XXX requires /proc interface */
 	comedi_proc_init();
 
 	/* create devices files for legacy/manual use */

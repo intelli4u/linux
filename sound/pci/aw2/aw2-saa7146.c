@@ -430,12 +430,6 @@ unsigned int snd_aw2_saa7146_get_hw_ptr_capture(struct snd_aw2_saa7146 *chip,
 void snd_aw2_saa7146_use_digital_input(struct snd_aw2_saa7146 *chip,
 				       int use_digital)
 {
-	/* FIXME: switch between analog and digital input does not always work.
-	   It can produce a kind of white noise. It seams that received data
-	   are inverted sometime (endian inversion). Why ? I don't know, maybe
-	   a problem of synchronization... However for the time being I have
-	   not found the problem. Workaround: switch again (and again) between
-	   digital and analog input until it works. */
 	if (use_digital)
 		WRITEREG(0x40, GPIO_CTRL);
 	else

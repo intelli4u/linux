@@ -699,7 +699,7 @@ ENTRY(debug_exception)
 	j	_user_exception
 
 	/* Debug exception while in exception mode. */
-1:	j	1b	// FIXME!!
+1:	j	1b
 
 
 /*
@@ -1957,4 +1957,3 @@ ENTRY(ret_from_fork)
 	callx4	a4
 
 	j	common_exception_return
-

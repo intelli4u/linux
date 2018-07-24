@@ -2053,11 +2053,11 @@ static int adpt_system_info(void __user *buffer)
 
 #if defined __i386__
 	adpt_i386_info(&si);
-#elif defined (__ia64__)
+#elif defined(__ia64__)
 	adpt_ia64_info(&si);
 #elif defined(__sparc__)
 	adpt_sparc_info(&si);
-#elif defined (__alpha__)
+#elif defined(__alpha__)
 	adpt_alpha_info(&si);
 #else
 	si.processorType = 0xff ;

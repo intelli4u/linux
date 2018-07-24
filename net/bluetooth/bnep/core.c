@@ -445,7 +445,6 @@ send:
 	iv[il++] = (struct kvec) { skb->data, skb->len };
 	len += skb->len;
 
-	/* FIXME: linearize skb */
 	{
 		len = kernel_sendmsg(sock, &s->msg, iv, il, len);
 	}

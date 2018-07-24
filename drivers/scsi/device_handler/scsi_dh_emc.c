@@ -405,19 +405,6 @@ static int clariion_check_sense(struct scsi_device *sdev,
 	switch (sense_hdr->sense_key) {
 	case NOT_READY:
 		if (sense_hdr->asc == 0x04 && sense_hdr->ascq == 0x03)
-			/*
-			 * LUN Not Ready - Manual Intervention Required
-			 * indicates this is a passive path.
-			 *
-			 * FIXME: However, if this is seen and EVPD C0
-			 * indicates that this is due to a NDU in
-			 * progress, we should set FAIL_PATH too.
-			 * This indicates we might have to do a SCSI
-			 * inquiry in the end_io path. Ugh.
-			 *
-			 * Can return FAILED only when we want the error
-			 * recovery process to kick in.
-			 */
 			return SUCCESS;
 		break;
 	case ILLEGAL_REQUEST:

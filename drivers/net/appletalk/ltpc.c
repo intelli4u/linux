@@ -497,9 +497,6 @@ static void idle(struct net_device *dev)
 {
 	unsigned long flags;
 	int state;
-	/* FIXME This is initialized to shut the warning up, but I need to
-	 * think this through again.
-	 */
 	struct xmitQel *q = NULL;
 	int oops;
 	int i;
@@ -972,7 +969,6 @@ static int __init ltpc_probe_dma(int base, int dma)
 	}
 	/* set up request */
 
-	/* FIXME -- do timings better! */
 
 	ltdmabuf[0] = LT_READMEM;
 	ltdmabuf[1] = 1;  /* mailbox */

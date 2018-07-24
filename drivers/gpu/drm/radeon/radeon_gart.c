@@ -186,7 +186,6 @@ int radeon_gart_bind(struct radeon_device *rdev, unsigned offset,
 							0, PAGE_SIZE,
 							PCI_DMA_BIDIRECTIONAL);
 		if (pci_dma_mapping_error(rdev->pdev, rdev->gart.pages_addr[p])) {
-			/* FIXME: failed to map page (return -ENOMEM?) */
 			radeon_gart_unbind(rdev, offset, pages);
 			return -ENOMEM;
 		}

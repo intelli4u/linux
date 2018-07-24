@@ -87,7 +87,6 @@ void r420_pipes_init(struct radeon_device *rdev)
 	unsigned gb_pipe_select;
 	unsigned num_pipes;
 
-	/* GA_ENHANCE workaround TCL deadlock issue */
 	WREG32(R300_GA_ENHANCE, R300_GA_DEADLOCK_CNTL | R300_GA_FASTSYNC_CNTL |
 	       (1 << 2) | (1 << 3));
 	/* add idle wait as per freedesktop.org bug 24041 */
@@ -199,12 +198,6 @@ static void r420_clock_resume(struct radeon_device *rdev)
 
 static void r420_cp_errata_init(struct radeon_device *rdev)
 {
-	/* RV410 and R420 can lock up if CP DMA to host memory happens
-	 * while the 2D engine is busy.
-	 *
-	 * The proper workaround is to queue a RESYNC at the beginning
-	 * of the CP init, apparently.
-	 */
 	radeon_scratch_get(rdev, &rdev->config.r300.resync_scratch);
 	radeon_ring_lock(rdev, 8);
 	radeon_ring_write(rdev, PACKET0(R300_CP_RESYNC_ADDR, 1));

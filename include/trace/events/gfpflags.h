@@ -34,4 +34,3 @@
 	{(unsigned long)__GFP_RECLAIMABLE,	"GFP_RECLAIMABLE"},	\
 	{(unsigned long)__GFP_MOVABLE,		"GFP_MOVABLE"}		\
 	) : "GFP_NOWAIT"
-

@@ -220,11 +220,6 @@ static void __init bootmem_init_one_node(unsigned int nid)
 
 	free_bootmem_with_active_regions(nid, end_pfn);
 
-	/*
-	 * XXX Handle initial reservations for the system memory node
-	 * only for the moment, we'll refactor this later for handling
-	 * reservations in other nodes.
-	 */
 	if (nid == 0) {
 		/* Reserve the sections we're already using. */
 		for (i = 0; i < memblock.reserved.cnt; i++)

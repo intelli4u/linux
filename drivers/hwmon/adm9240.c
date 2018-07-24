@@ -786,4 +786,3 @@ MODULE_LICENSE("GPL");
 
 module_init(sensors_adm9240_init);
 module_exit(sensors_adm9240_exit);
-

@@ -627,4 +627,3 @@ int __init mx31_clocks_init(unsigned long fref)
 
 	return 0;
 }
-

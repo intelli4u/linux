@@ -342,7 +342,6 @@ static void __init e400_init(void)
 	pxa_set_ffuart_info(NULL);
 	pxa_set_btuart_info(NULL);
 	pxa_set_stuart_info(NULL);
-	/* Fixme - e400 may have a switched clock */
 	eseries_register_clks();
 	eseries_get_tmio_gpios();
 	set_pxa_fb_info(&e400_pxafb_mach_info);

@@ -554,7 +554,6 @@ static int rdma_read_complete(struct svc_rqst *rqstp,
 	/* Free the context */
 	svc_rdma_put_context(head, 0);
 
-	/* XXX: What should this be? */
 	rqstp->rq_prot = IPPROTO_MAX;
 	svc_xprt_copy_addrs(rqstp, rqstp->rq_xprt);
 

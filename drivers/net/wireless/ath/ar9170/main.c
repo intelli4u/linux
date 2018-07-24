@@ -84,7 +84,7 @@ static struct ieee80211_rate __ar9170_ratetable[] = {
 #define CHAN(_freq, _idx) {		\
 	.center_freq	= (_freq),	\
 	.hw_value	= (_idx),	\
-	.max_power	= 18, /* XXX */	\
+	.max_power	= 18,	\
 }
 
 static struct ieee80211_channel ar9170_2ghz_chantable[] = {
@@ -2101,13 +2101,6 @@ static int ar9170_read_eeprom(struct ar9170 *ar)
 	ar9170_band_2GHz.ht_cap.mcs.tx_params |= tx_params;
 	ar9170_band_5GHz.ht_cap.mcs.tx_params |= tx_params;
 
-	/*
-	 * I measured this, a bandswitch takes roughly
-	 * 135 ms and a frequency switch about 80.
-	 *
-	 * FIXME: measure these values again once EEPROM settings
-	 *	  are used, that will influence them!
-	 */
 	if (bands == 2)
 		ar->hw->channel_change_time = 135 * 1000;
 	else

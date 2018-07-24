@@ -25,6 +25,10 @@
 
 #include "br_private.h"
 
+#ifdef HNDCTF
+#include <ctf/hndctf.h>
+#endif /* HNDCTF */
+
 /*
  * Determine initial path cost based on speed.
  * using recommendations from 802.1d standard
@@ -304,6 +308,16 @@ int br_add_bridge(struct net *net, const char *name)
 	if (ret)
 		goto out_free;
 
+#ifdef HNDCTF
+	if ((ctf_dev_register(kcih, dev, TRUE) != BCME_OK) ||
+	    (ctf_enable(kcih, dev, TRUE, NULL) != BCME_OK)) {
+		ctf_dev_unregister(kcih, dev);
+		unregister_netdevice(dev);
+		ret = -ENXIO;
+		goto out_free;
+	}
+#endif /* HNDCTF */
+
 	ret = br_sysfs_addbr(dev);
 	if (ret)
 		unregister_netdevice(dev);
@@ -336,8 +350,12 @@ int br_del_bridge(struct net *net, const char *name)
 		ret = -EBUSY;
 	}
 
-	else
+	else {
+#ifdef HNDCTF
+		ctf_dev_unregister(kcih, dev);
+#endif /* HNDCTF */
 		del_br(netdev_priv(dev), NULL);
+	}
 
 	rtnl_unlock();
 	return ret;

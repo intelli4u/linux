@@ -133,7 +133,6 @@ struct eth1394_ff_hdr {
 #error Unknown bit field type
 #endif
 
-/* XXX: Subsequent fragments, including last */
 #if defined __BIG_ENDIAN_BITFIELD
 struct eth1394_sf_hdr {
 	u16 lf:2;

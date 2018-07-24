@@ -359,11 +359,6 @@ static void config_write_pciex_rc(unsigned int __iomem *base, uint32_t where,
 }
 
 /* Interfaces */
-/* Note: Work-around
- *  On SCC PCIEXC, one device is seen on all 32 dev_no.
- *  As SCC PCIEXC can have only one device on the bus, we look only one dev_no.
- * (dev_no = 1)
- */
 static int scc_pciex_read_config(struct pci_bus *bus, unsigned int devfn,
 				 int where, int size, unsigned int *val)
 {
@@ -411,15 +406,6 @@ static void pciex_clear_intr_all(unsigned int __iomem *base)
 	PEX_OUT(base, PEXINTSTS, 0xffffffff);
 }
 
-#if 0
-static void pciex_disable_intr_all(unsigned int *base)
-{
-	PEX_OUT(base, PEXINTMASK,   0x0);
-	PEX_OUT(base, PEXAERRMASK,  0x0);
-	PEX_OUT(base, PEXPRERRMASK, 0x0);
-	PEX_OUT(base, PEXVDMASK,    0x0);
-}
-#endif
 
 static void pciex_enable_intr_all(unsigned int __iomem *base)
 {

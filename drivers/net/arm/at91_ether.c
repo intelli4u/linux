@@ -370,27 +370,6 @@ static void disable_phyirq(struct net_device *dev)
 /*
  * Perform a software reset of the PHY.
  */
-#if 0
-static void reset_phy(struct net_device *dev)
-{
-	struct at91_private *lp = netdev_priv(dev);
-	unsigned int bmcr;
-
-	spin_lock_irq(&lp->lock);
-	enable_mdi();
-
-	/* Perform PHY reset */
-	write_phy(lp->phy_address, MII_BMCR, BMCR_RESET);
-
-	/* Wait until PHY reset is complete */
-	do {
-		read_phy(lp->phy_address, MII_BMCR, &bmcr);
-	} while (!(bmcr & BMCR_RESET));
-
-	disable_mdi();
-	spin_unlock_irq(&lp->lock);
-}
-#endif
 
 static void at91ether_check_link(unsigned long dev_id)
 {
@@ -938,7 +917,6 @@ static irqreturn_t at91ether_interrupt(int irq, void *dev_id)
 		netif_wake_queue(dev);
 	}
 
-	/* Work-around for Errata #11 */
 	if (intstatus & AT91_EMAC_RBNA) {
 		ctl = at91_emac_read(AT91_EMAC_CTL);
 		at91_emac_write(AT91_EMAC_CTL, ctl & ~AT91_EMAC_RE);

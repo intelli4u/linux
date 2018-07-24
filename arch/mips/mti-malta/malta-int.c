@@ -1,6 +1,6 @@
 /*
  * Carsten Langgaard, carstenl@mips.com
- * Copyright (C) 2000, 2001, 2004 MIPS Technologies, Inc.
+ * Copyright (C) 2000, 2001, 2004, 2011 MIPS Technologies, Inc.
  * Copyright (C) 2001 Ralf Baechle
  *
  *  This program is free software; you can distribute it and/or modify it
@@ -56,7 +56,6 @@ static DEFINE_RAW_SPINLOCK(mips_irq_lock);
 static inline int mips_pcibios_iack(void)
 {
 	int irq;
-	u32 dummy;
 
 	/*
 	 * Determine highest priority pending interrupt by performing
@@ -83,7 +82,7 @@ static inline int mips_pcibios_iack(void)
 		BONITO_PCIMAP_CFG = 0x20000;
 
 		/* Flush Bonito register block */
-		dummy = BONITO_PCIMAP_CFG;
+		(void) BONITO_PCIMAP_CFG;
 		iob();    /* sync */
 
 		irq = __raw_readl((u32 *)_pcictrl_bonito_pcicfg);
@@ -560,7 +559,6 @@ void __init arch_init_irq(void)
 	}
 
 	if (gic_present) {
-		/* FIXME */
 		int i;
 #if defined(CONFIG_MIPS_MT_SMP)
 		gic_call_int_base = GIC_NUM_INTRS - NR_CPUS;
@@ -743,3 +741,10 @@ int malta_be_handler(struct pt_regs *regs, int is_fixup)
 
 	return retval;
 }
+
+#ifdef CONFIG_HOTPLUG_CPU
+void fixup_irqs(void)
+{
+        pr_debug("CPU%d: fixup_irqs\n", smp_processor_id());
+}
+#endif

@@ -1,37 +1,4 @@
-/*
- * Ultra Wide Band
- * Scanning management
- *
- * Copyright (C) 2005-2006 Intel Corporation
- * Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
- *
- *
- *
- * FIXME: docs
- * FIXME: there are issues here on how BEACON and SCAN on USB RCI deal
- *        with each other. Currently seems that START_BEACON while
- *        SCAN_ONLY will cancel the scan, so we need to update the
- *        state here. Clarification request sent by email on
- *        10/05/2005.
- *        10/28/2005 No clear answer heard--maybe we'll hack the API
- *                   so that when we start beaconing, if the HC is
- *                   scanning in a mode not compatible with beaconing
- *                   we just fail.
- */
+
 
 #include <linux/device.h>
 #include <linux/err.h>

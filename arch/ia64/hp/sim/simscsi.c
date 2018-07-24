@@ -84,7 +84,6 @@ static char *simscsi_root = DEFAULT_SIMSCSI_ROOT;
 static int __init
 simscsi_setup (char *s)
 {
-	/* XXX Fix me we may need to strcpy() ? */
 	if (strlen(s) > MAX_ROOT_LEN) {
 		printk(KERN_ERR "simscsi_setup: prefix too long---using default %s\n",
 		       simscsi_root);

@@ -812,9 +812,6 @@ static int pkt_flush_cache(struct pktcdvd_device *pd)
 	 * the IMMED bit -- we default to not setting it, although that
 	 * would allow a much faster close, this is safer
 	 */
-#if 0
-	cgc.cmd[1] = 1 << 1;
-#endif
 	return pkt_generic_packet(pd, &cgc);
 }
 
@@ -1185,56 +1182,7 @@ static void pkt_put_packet_data(struct pktcdvd_device *pd, struct packet_data *p
  */
 static int pkt_start_recovery(struct packet_data *pkt)
 {
-	/*
-	 * FIXME. We need help from the file system to implement
-	 * recovery handling.
-	 */
 	return 0;
-#if 0
-	struct request *rq = pkt->rq;
-	struct pktcdvd_device *pd = rq->rq_disk->private_data;
-	struct block_device *pkt_bdev;
-	struct super_block *sb = NULL;
-	unsigned long old_block, new_block;
-	sector_t new_sector;
-
-	pkt_bdev = bdget(kdev_t_to_nr(pd->pkt_dev));
-	if (pkt_bdev) {
-		sb = get_super(pkt_bdev);
-		bdput(pkt_bdev);
-	}
-
-	if (!sb)
-		return 0;
-
-	if (!sb->s_op || !sb->s_op->relocate_blocks)
-		goto out;
-
-	old_block = pkt->sector / (CD_FRAMESIZE >> 9);
-	if (sb->s_op->relocate_blocks(sb, old_block, &new_block))
-		goto out;
-
-	new_sector = new_block * (CD_FRAMESIZE >> 9);
-	pkt->sector = new_sector;
-
-	pkt->bio->bi_sector = new_sector;
-	pkt->bio->bi_next = NULL;
-	pkt->bio->bi_flags = 1 << BIO_UPTODATE;
-	pkt->bio->bi_idx = 0;
-
-	BUG_ON(pkt->bio->bi_rw != REQ_WRITE);
-	BUG_ON(pkt->bio->bi_vcnt != pkt->frames);
-	BUG_ON(pkt->bio->bi_size != pkt->frames * CD_FRAMESIZE);
-	BUG_ON(pkt->bio->bi_end_io != pkt_end_io_packet_write);
-	BUG_ON(pkt->bio->bi_private != pkt);
-
-	drop_super(sb);
-	return 1;
-
-out:
-	drop_super(sb);
-	return 0;
-#endif
 }
 
 static inline void pkt_set_state(struct packet_data *pkt, enum packet_data_state state)
@@ -1837,10 +1785,6 @@ static noinline_for_stack int pkt_set_write_settings(struct pktcdvd_device *pd)
 	} else if (wp->data_block_type == PACKET_BLOCK_MODE2) {
 		wp->session_format = 0x20;
 		wp->subhdr2 = 8;
-#if 0
-		wp->mcn[0] = 0x80;
-		memcpy(&wp->mcn[1], PACKET_MCN, sizeof(wp->mcn) - 1);
-#endif
 	} else {
 		/*
 		 * paranoia

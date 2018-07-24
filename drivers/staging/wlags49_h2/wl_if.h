@@ -231,4 +231,3 @@ struct rtsreq
 
 
 #endif  // __WAVELAN2_IF_H__
-

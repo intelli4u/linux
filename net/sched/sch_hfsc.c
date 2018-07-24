@@ -824,26 +824,6 @@ update_vf(struct hfsc_class *cl, unsigned int len, u64 cur_time)
 		if (cl->cl_flags & HFSC_USC) {
 			cl->cl_myf = cl->cl_myfadj + rtsc_y2x(&cl->cl_ulimit,
 							      cl->cl_total);
-#if 0
-			/*
-			 * This code causes classes to stay way under their
-			 * limit when multiple classes are used at gigabit
-			 * speed. needs investigation. -kaber
-			 */
-			/*
-			 * if myf lags behind by more than one clock tick
-			 * from the current time, adjust myfadj to prevent
-			 * a rate-limited class from going greedy.
-			 * in a steady state under rate-limiting, myf
-			 * fluctuates within one clock tick.
-			 */
-			myf_bound = cur_time - PSCHED_JIFFIE2US(1);
-			if (cl->cl_myf < myf_bound) {
-				delta = cur_time - cl->cl_myf;
-				cl->cl_myfadj += delta;
-				cl->cl_myf += delta;
-			}
-#endif
 		}
 
 		f = max(cl->cl_myf, cl->cl_cfmin);

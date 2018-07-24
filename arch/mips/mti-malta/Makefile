@@ -13,5 +13,4 @@ obj-y				:= malta-amon.o malta-cmdline.o \
 obj-$(CONFIG_EARLY_PRINTK)	+= malta-console.o
 obj-$(CONFIG_PCI)		+= malta-pci.o
 
-# FIXME FIXME FIXME
 obj-$(CONFIG_MIPS_MT_SMTC)	+= malta-smtc.o

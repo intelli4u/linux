@@ -188,7 +188,6 @@ static int ath_setkey_tkip(struct ath_common *common, u16 keyix, const u8 *key,
 	}
 
 	memcpy(hk->kv_mic, key_rxmic, sizeof(hk->kv_mic));
-	/* XXX delete tx key on failure? */
 	return ath9k_hw_set_keycache_entry(ah, keyix + 32, hk, addr);
 }
 

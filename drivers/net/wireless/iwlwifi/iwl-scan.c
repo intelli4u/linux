@@ -565,4 +565,3 @@ void iwl_setup_scan_deferred_work(struct iwl_priv *priv)
 	INIT_DELAYED_WORK(&priv->scan_check, iwl_bg_scan_check);
 }
 EXPORT_SYMBOL(iwl_setup_scan_deferred_work);
-

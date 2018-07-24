@@ -552,11 +552,6 @@ redo1:
 				}
 				pipe->tmp_page = page;
 			}
-			/* Always wake up, even if the copy fails. Otherwise
-			 * we lock up (O_NONBLOCK-)readers that sleep due to
-			 * syscall merging.
-			 * FIXME! Is this really true?
-			 */
 			do_wakeup = 1;
 			chars = PAGE_SIZE;
 			if (chars > total_len)

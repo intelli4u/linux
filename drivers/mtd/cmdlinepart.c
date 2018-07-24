@@ -48,11 +48,7 @@
 #define ERRP "mtd: "
 
 /* debug macro */
-#if 0
-#define dbg(x) do { printk("DEBUG-CMDLINE-PART: "); printk x; } while(0)
-#else
 #define dbg(x)
-#endif
 
 
 /* special size referring to all the remaining space in a partition */

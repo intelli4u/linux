@@ -16,10 +16,6 @@ static inline long syscall_get_nr(struct task_struct *task,
 static inline void syscall_rollback(struct task_struct *task,
 				    struct pt_regs *regs)
 {
-	/*
-	 * XXX: This needs some thought. On SH we don't
-	 * save away the original r0 value anywhere.
-	 */
 }
 
 static inline long syscall_get_error(struct task_struct *task,

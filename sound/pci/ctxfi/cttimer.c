@@ -440,4 +440,3 @@ void ct_timer_free(struct ct_timer *atimer)
 		atimer->ops->free_global(atimer);
 	kfree(atimer);
 }
-

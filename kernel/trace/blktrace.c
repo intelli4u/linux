@@ -1842,4 +1842,3 @@ void blk_fill_rwbs_rq(char *rwbs, struct request *rq)
 }
 
 #endif /* CONFIG_EVENT_TRACING */
-

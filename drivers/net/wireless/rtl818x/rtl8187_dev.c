@@ -498,16 +498,6 @@ static void rtl8187b_status_cb(struct urb *urb)
 		skb_queue_reverse_walk(&priv->b_tx_status.queue, skb) {
 			ieee80211hdr = (struct ieee80211_hdr *)skb->data;
 
-			/*
-			 * While testing, it was discovered that the seq_no
-			 * doesn't actually contains the sequence number.
-			 * Instead of returning just the 12 bits of sequence
-			 * number, hardware is returning entire sequence control
-			 * (fragment number plus sequence number) in a 12 bit
-			 * only field overflowing after some time. As a
-			 * workaround, just consider the lower bits, and expect
-			 * it's unlikely we wrongly ack some sent data
-			 */
 			if ((le16_to_cpu(ieee80211hdr->seq_ctrl)
 			    & 0xFFF) == seq_no)
 				break;
@@ -1499,10 +1489,6 @@ static int __devinit rtl8187_probe(struct usb_interface *intf,
 			priv->rfkill_mask = RFKILL_MASK_8198;
 	}
 
-	/*
-	 * XXX: Once this driver supports anything that requires
-	 *	beacons it must implement IEEE80211_TX_CTL_ASSIGN_SEQ.
-	 */
 	dev->wiphy->interface_modes = BIT(NL80211_IFTYPE_STATION);
 
 	if ((id->driver_info == DEVICE_RTL8187) && priv->is_rtl8187b)

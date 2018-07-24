@@ -3,7 +3,6 @@
 #include <arch/cache.h>
 #include <arch/hwregs/dma.h>
 
-/* This file is used to workaround a cache bug, Guinness TR 106. */
 
 inline void flush_dma_descr(struct dma_descr_data *descr, int flush_buf)
 {

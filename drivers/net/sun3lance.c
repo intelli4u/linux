@@ -343,7 +343,6 @@ static int __init lance_probe( struct net_device *dev)
 
 	lp = netdev_priv(dev);
 
-	/* XXX - leak? */
 	MEM = dvma_malloc_align(sizeof(struct lance_memory), 0x10000);
 	if (MEM == NULL) {
 #ifdef CONFIG_SUN3
@@ -593,16 +592,6 @@ static int lance_start_xmit( struct sk_buff *skb, struct net_device *dev )
 #endif
 
 	/* Fill in a Tx ring entry */
-#if 0
-	if (lance_debug >= 2) {
-		printk( "%s: TX pkt %d type 0x%04x"
-			" from %s to %s"
-			" data at 0x%08x len %d\n",
-			dev->name, lp->new_tx, ((u_short *)skb->data)[6],
-			DEV_ADDR(&skb->data[6]), DEV_ADDR(skb->data),
-			(int)skb->data, (int)skb->len );
-	}
-#endif
 	/* We're not prepared for the int until the last flags are set/reset.
 	 * And the int may happen already after setting the OWN_CHIP... */
 	local_irq_save(flags);
@@ -822,21 +811,6 @@ static int lance_rx( struct net_device *dev )
 					     RX_RING_MOD_MASK;
 				}
 
-#if 0
-				if (lance_debug >= 3) {
-					u_char *data = PKTBUF_ADDR(head);
-					printk("%s: RX pkt %d type 0x%04x"
-					       " from %pM to %pM",
-					       dev->name, lp->new_tx, ((u_short *)data)[6],
-					       &data[6], data);
-
-					printk(" data %02x %02x %02x %02x %02x %02x %02x %02x "
-					       "len %d at %08x\n",
-					       data[15], data[16], data[17], data[18],
-					       data[19], data[20], data[21], data[22],
-					       pkt_len, data);
-				}
-#endif
 				if (lance_debug >= 3) {
 					u_char *data = PKTBUF_ADDR(head);
 					printk( "%s: RX pkt %d type 0x%04x len %d\n ", dev->name, entry, ((u_short *)data)[6], pkt_len);
@@ -958,4 +932,3 @@ void __exit cleanup_module(void)
 }
 
 #endif /* MODULE */
-

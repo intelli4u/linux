@@ -29,7 +29,6 @@
 #include "emac.h"
 #include "debug.h"
 
-// XXX FIXME: Axon seems to support a subset of the RGMII, we
 // thus need to take that into account and possibly change some
 // of the bit settings below that don't seem to quite match the
 // AXON spec

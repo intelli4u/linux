@@ -237,7 +237,6 @@ u16_t zfTxGenWlanHeader(zdev_t* dev, zbuf_t* buf, u16_t* header, u16_t seq,
         zfApGetStaTxRateAndQosType(dev, da, &phyCtrl, &qosType, &rateProbingFlag);
         mt = (u16_t)(phyCtrl & 0x3);
         mcs = (u16_t)((phyCtrl >> 16) & 0x3f);
-#if 1
         //zfApGetStaQosType(dev, da, &qosType);
 
         /* if DA == WME STA */
@@ -250,21 +249,8 @@ u16_t zfTxGenWlanHeader(zdev_t* dev, zbuf_t* buf, u16_t* header, u16_t seq,
             header[hlen] = up;
             hlen += 1;
         }
-#endif
     }
 
-#if 0
-    //AGG Test Code
-    if (header[6] == 0x8000)
-    {
-        /* QoS data */
-        header[4] |= 0x0080;
-
-        /* QoS Control */
-        header[hlen] = 0;
-        hlen += 1;
-    }
-#endif
 
     if (wd->wlanMode == ZM_MODE_AP) {
         /* Todo: rate control here for qos field */
@@ -340,14 +326,6 @@ u16_t zfTxGenWlanHeader(zdev_t* dev, zbuf_t* buf, u16_t* header, u16_t seq,
     else
     {
         /* unicast frame */
-    #if 0
-        // Enable RTS according to MPDU Lengths ( not MSDU Lengths )
-        if (len >= wd->rtsThreshold)
-        {
-            /* Enable RTS */
-            macCtrl |= 1;
-        }
-    #endif
     }
     /* VAP test code */
     //macCtrl |= 0x4;
@@ -628,7 +606,6 @@ u16_t zfTxGenWlanHeader(zdev_t* dev, zbuf_t* buf, u16_t* header, u16_t seq,
                 wdsPort = 0;
             }
 
-            #if 1
             /* IV */
             switch (wd->ap.wds.encryMode[wdsPort])
             {
@@ -697,7 +674,6 @@ u16_t zfTxGenWlanHeader(zdev_t* dev, zbuf_t* buf, u16_t* header, u16_t seq,
                     hlen += 4; /* plus IV length */
                     break;
             }/* end of switch */
-            #endif
         }
     }
     else   /* wd->wlanMode != ZM_MODE_AP */
@@ -706,7 +682,6 @@ u16_t zfTxGenWlanHeader(zdev_t* dev, zbuf_t* buf, u16_t* header, u16_t seq,
 
         if ( wd->wlanMode == ZM_MODE_INFRASTRUCTURE )
         {
-            #if 1
             /* if WME AP */
             if (wd->sta.wmeConnected != 0)
             {
@@ -717,7 +692,6 @@ u16_t zfTxGenWlanHeader(zdev_t* dev, zbuf_t* buf, u16_t* header, u16_t seq,
                 header[hlen] = up;
                 hlen += 1;
             }
-            #endif
 
             if ( encExemptionActionType == ZM_ENCRYPTION_EXEMPT_NO_EXEMPTION )
             {
@@ -1207,25 +1181,11 @@ u16_t zfTxGenWlanHeader(zdev_t* dev, zbuf_t* buf, u16_t* header, u16_t seq,
 
     if (mt == 2)
     {
-#if 0
-        /* HT PT: 0 Mixed mode    1 Green field */
-	    if (wd->sta.preambleTypeHT == ZM_PREAMBLE_TYPE_GREEN_FIELD)
-	    {
-            phyCtrl |= 0x4;     /* Bit 2 */
-        }
-#endif
         /* Bandwidth */
         if (wd->sta.htCtrlBandwidth == ZM_BANDWIDTH_40MHZ)
         {
             phyCtrl |= (0x80<<16);  /* BIT 23 */
         }
-#if 0
-        /* STBC */
-        if (wd->sta.htCtrlSTBC<=0x3)
-        {
-            phyCtrl |= (wd->sta.htCtrlSTBC<<28);   /* BIT 23 */
-        }
-#endif
         /* Short GI */
         if(wd->sta.htCtrlSG)
         {
@@ -1240,16 +1200,6 @@ u16_t zfTxGenWlanHeader(zdev_t* dev, zbuf_t* buf, u16_t* header, u16_t seq,
     }
     else if(mt == 1)
     {
-        #if 0
-        //bug that cause OFDM rate become duplicate legacy rate
-        /* Bandwidth */
-        if (wd->sta.htCtrlBandwidth == ZM_BANDWIDTH_40MHZ)
-        {
-            phyCtrl |= (0x80<<16);  /* BIT 23 */
-            mt = 3;                 /* duplicate legacy */
-            phyCtrl |= mt;
-        }
-        #endif
     }
     else if(mt == 0)
     {
@@ -1397,7 +1347,6 @@ u16_t zfTxGenWlanHeader(zdev_t* dev, zbuf_t* buf, u16_t* header, u16_t seq,
                             header[1] |= 0x1;
                         }
 
-                        /* Enable RIFS : workaround 854T RTS/CTS */
                         /* Bit13 : TI enable RIFS */
                         //header[1] |= 0x2000;
                     }

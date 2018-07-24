@@ -27,8 +27,8 @@
 # define REG_PTR_MODE "q"
 #endif
 
-#if defined(CONFIG_X86_32) && \
-	(defined(CONFIG_X86_OOSTORE) || defined(CONFIG_X86_PPRO_FENCE))
+#if defined(CONFIG_X86_32) && (defined(CONFIG_X86_OOSTORE) || \
+	defined(CONFIG_X86_PPRO_FENCE))
 /*
  * On PPro SMP or if we are using OOSTORE, we use a locked operation to unlock
  * (PPro errata 66, 92)

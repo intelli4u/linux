@@ -517,12 +517,12 @@ static const struct {
 
 	{ "RTL-8139A",
 	  HW_REVID(1, 1, 1, 0, 0, 0, 0),
-	  HasHltClk, /* XXX undocumented? */
+	  HasHltClk,
 	},
 
 	{ "RTL-8139A rev G",
 	  HW_REVID(1, 1, 1, 0, 0, 1, 0),
-	  HasHltClk, /* XXX undocumented? */
+	  HasHltClk,
 	},
 
 	{ "RTL-8139B",
@@ -547,7 +547,7 @@ static const struct {
 
 	{ "RTL-8100B/8139D",
 	  HW_REVID(1, 1, 1, 0, 1, 0, 1),
-	  HasHltClk /* XXX undocumented? */
+	  HasHltClk
 	| HasLWake,
 	},
 
@@ -1561,11 +1561,6 @@ static inline void rtl8139_thread_iter (struct net_device *dev,
 			} else {
 				netdev_info(dev, "media is unconnected, link down, or incompatible connection\n");
 			}
-#if 0
-			RTL_W8 (Cfg9346, Cfg9346_Unlock);
-			RTL_W8 (Config1, tp->mii.full_duplex ? 0x60 : 0x20);
-			RTL_W8 (Cfg9346, Cfg9346_Lock);
-#endif
 		}
 	}
 
@@ -1624,7 +1619,6 @@ static inline void rtl8139_tx_clear (struct rtl8139_private *tp)
 	tp->cur_tx = 0;
 	tp->dirty_tx = 0;
 
-	/* XXX account for unsent Tx packets in tp->stats.tx_dropped */
 }
 
 static void rtl8139_tx_timeout_task (struct work_struct *work)
@@ -2268,8 +2262,6 @@ static void rtl8139_get_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 			wol->wolopts |= WAKE_PHY;
 		if (cfg3 & Cfg3_Magic)
 			wol->wolopts |= WAKE_MAGIC;
-		/* (KON)FIXME: See how netdev_set_wol() handles the
-		   following constants.  */
 		if (cfg5 & Cfg5_UWF)
 			wol->wolopts |= WAKE_UCAST;
 		if (cfg5 & Cfg5_MWF)
@@ -2309,9 +2301,6 @@ static int rtl8139_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 	RTL_W8 (Cfg9346, Cfg9346_Lock);
 
 	cfg5 = RTL_R8 (Config5) & ~(Cfg5_UWF | Cfg5_MWF | Cfg5_BWF);
-	/* (KON)FIXME: These are untested.  We may have to set the
-	   CRC0, Wakeup0 and LSBCRC0 registers too, but I have no
-	   documentation.  */
 	if (wol->wolopts & WAKE_UCAST)
 		cfg5 |= Cfg5_UWF;
 	if (wol->wolopts & WAKE_MCAST)

@@ -125,27 +125,6 @@ asn1_octet_decode(struct asn1_ctx *ctx, unsigned char *ch)
 	return 1;
 }
 
-#if 0 /* will be needed later by spnego decoding/encoding of ntlmssp */
-static unsigned char
-asn1_enum_decode(struct asn1_ctx *ctx, __le32 *val)
-{
-	unsigned char ch;
-
-	if (ctx->pointer >= ctx->end) {
-		ctx->error = ASN1_ERR_DEC_EMPTY;
-		return 0;
-	}
-
-	ch = *(ctx->pointer)++; /* ch has 0xa, ptr points to length octet */
-	if ((ch) == ASN1_ENUM)  /* if ch value is ENUM, 0xa */
-		*val = *(++(ctx->pointer)); /* value has enum value */
-	else
-		return 0;
-
-	ctx->pointer++;
-	return 1;
-}
-#endif
 
 static unsigned char
 asn1_tag_decode(struct asn1_ctx *ctx, unsigned int *tag)

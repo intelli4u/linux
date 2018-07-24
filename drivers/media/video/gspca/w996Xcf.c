@@ -449,7 +449,6 @@ static int w9968cf_set_crop_window(struct sd *sd)
 		start_cropy = 35;
 	}
 
-	/* Work around to avoid FP arithmetics */
 	#define SC(x) ((x) << 10)
 
 	/* Scaling factors */
@@ -513,7 +512,6 @@ static int w9968cf_mode_init_regs(struct sd *sd)
 
 	/* Video Capture Control Register */
 	if (sd->sensor == SEN_OV7620) {
-		/* Seems to work around a bug in the image sensor */
 		vs_polarity = 1;
 		hs_polarity = 1;
 	} else {

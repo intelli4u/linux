@@ -845,12 +845,6 @@ static void clk_tree_init(void)
 
 	ipg_perclk.set_parent(&ipg_perclk, &lp_apm_clk);
 
-	/*
-	 * Initialise the IPG PER CLK dividers to 3. IPG_PER_CLK should be at
-	 * 8MHz, its derived from lp_apm.
-	 *
-	 * FIXME: Verify if true for all boards
-	 */
 	reg = __raw_readl(MXC_CCM_CBCDR);
 	reg &= ~MXC_CCM_CBCDR_PERCLK_PRED1_MASK;
 	reg &= ~MXC_CCM_CBCDR_PERCLK_PRED2_MASK;

@@ -23,7 +23,6 @@ static inline int cpu_to_node(int cpu)
 }
 
 extern struct cpumask node_to_cpumask_map[];
-/* FIXME: This is dumb, recalculating every time.  But simple. */
 static const struct cpumask *cpumask_of_node(int node)
 {
 	int cpu;

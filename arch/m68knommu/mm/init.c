@@ -190,4 +190,3 @@ free_initmem()
 			(int)(addr - PAGE_SIZE));
 #endif
 }
-

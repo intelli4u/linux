@@ -27,10 +27,6 @@
  */
 #define MAX_DEVICES_PER_PCIBUS	8
 
-/*
- * XXX: No kmalloc available when we do our crosstalk scan,
- * 	we should try to move it later in the boot process.
- */
 static struct bridge_controller bridges[MAX_PCI_BUSSES];
 
 /*
@@ -53,7 +49,6 @@ int __cpuinit bridge_probe(nasid_t nasid, int widget_id, int masterwid)
 
 	printk("a bridge\n");
 
-	/* XXX: kludge alert.. */
 	if (!num_bridges)
 		ioport_resource.end = ~0UL;
 
@@ -182,12 +177,6 @@ int pcibios_plat_dev_init(struct pci_dev *dev)
 	return 0;
 }
 
-/*
- * Device might live on a subordinate PCI bus.  XXX Walk up the chain of buses
- * to find the slot number in sense of the bridge device register.
- * XXX This also means multiple devices might rely on conflicting bridge
- * settings.
- */
 
 static inline void pci_disable_swapping(struct pci_dev *dev)
 {

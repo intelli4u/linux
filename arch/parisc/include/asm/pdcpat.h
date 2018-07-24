@@ -272,7 +272,6 @@ typedef struct pdc_pat_cell_info_rtn_block {
 } pdc_pat_cell_info_rtn_block_t;
 
 
-/* FIXME: mod[508] should really be a union of the various mod components */
 struct pdc_pat_cell_mod_maddr_block {	/* PDC_PAT_CELL_MODULE */
 	unsigned long cba;		/* func 0 cfg space address */
 	unsigned long mod_info;		/* module information */

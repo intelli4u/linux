@@ -1683,15 +1683,6 @@ static void handle_assoc(local_info_t *local, struct sk_buff *skb,
 		atomic_dec(&sta->users);
 	}
 
-#if 0
-	PDEBUG(DEBUG_AP, "%s: %pM %sassoc (len=%d "
-	       "prev_ap=%pM) => %d(%d) (%s)\n",
-	       dev->name,
-	       hdr->addr2,
-	       reassoc ? "re" : "", len,
-	       prev_ap,
-	       resp, send_deauth, txt);
-#endif
 }
 
 
@@ -2707,17 +2698,6 @@ ap_tx_ret hostap_handle_sta_tx(local_info_t *local, struct hostap_tx_data *tx)
 	    !(meta->flags & HOSTAP_TX_FLAGS_WDS) &&
 	    meta->iface->type != HOSTAP_INTERFACE_MASTER &&
 	    meta->iface->type != HOSTAP_INTERFACE_AP) {
-#if 0
-		/* This can happen, e.g., when wlan0 is added to a bridge and
-		 * bridging code does not know which port is the correct target
-		 * for a unicast frame. In this case, the packet is send to all
-		 * ports of the bridge. Since this is a valid scenario, do not
-		 * print out any errors here. */
-		if (net_ratelimit()) {
-			printk(KERN_DEBUG "AP: drop packet to non-associated "
-			       "STA %pM\n", hdr->addr1);
-		}
-#endif
 		local->ap->tx_drop_nonassoc++;
 		ret = AP_TX_DROP;
 		goto out;

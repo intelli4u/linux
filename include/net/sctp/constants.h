@@ -328,9 +328,9 @@ enum { SCTP_MAX_GABS = 16 };
 				 * functions simpler to write.
 				 */
 
-#if defined (CONFIG_SCTP_HMAC_MD5)
+#if defined(CONFIG_SCTP_HMAC_MD5)
 #define SCTP_COOKIE_HMAC_ALG "hmac(md5)"
-#elif defined (CONFIG_SCTP_HMAC_SHA1)
+#elif defined(CONFIG_SCTP_HMAC_SHA1)
 #define SCTP_COOKIE_HMAC_ALG "hmac(sha1)"
 #else
 #define SCTP_COOKIE_HMAC_ALG NULL
@@ -432,7 +432,7 @@ enum {
 	SCTP_AUTH_HMAC_ID_RESERVED_0,
 	SCTP_AUTH_HMAC_ID_SHA1,
 	SCTP_AUTH_HMAC_ID_RESERVED_2,
-#if defined (CONFIG_CRYPTO_SHA256) || defined (CONFIG_CRYPTO_SHA256_MODULE)
+#if defined(CONFIG_CRYPTO_SHA256) || defined(CONFIG_CRYPTO_SHA256_MODULE)
 	SCTP_AUTH_HMAC_ID_SHA256,
 #endif
 	__SCTP_AUTH_HMAC_MAX

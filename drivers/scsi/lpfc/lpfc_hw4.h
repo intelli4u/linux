@@ -2525,4 +2525,3 @@ union lpfc_wqe {
 #define ELS_COMMAND_NON_FIP 0xC
 #define ELS_COMMAND_FIP 0xD
 #define OTHER_COMMAND 0x8
-

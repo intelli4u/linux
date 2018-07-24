@@ -47,10 +47,6 @@ static struct platform_driver kim_platform_driver = {
 	.remove = kim_remove,
 	/* TODO: ST driver power management during suspend/resume ?
 	 */
-#if 0
-	.suspend = kim_suspend,
-	.resume = kim_resume,
-#endif
 	.driver = {
 		   .name = "kim",
 		   .owner = THIS_MODULE,
@@ -459,20 +455,11 @@ long st_kim_start(void *kim_data)
 		rfkill_set_hw_state(kim_gdata->rfkill[ST_BT], 1);
 		/* Configure BT nShutdown to HIGH state */
 		gpio_set_value(kim_gdata->gpios[ST_BT], GPIO_LOW);
-		mdelay(5);	/* FIXME: a proper toggle */
+		mdelay(5);
 		gpio_set_value(kim_gdata->gpios[ST_BT], GPIO_HIGH);
 		mdelay(100);
 		/* re-initialize the completion */
 		INIT_COMPLETION(kim_gdata->ldisc_installed);
-#if 0 /* older way of signalling user-space UIM */
-		/* send signal to UIM */
-		err = kill_pid(find_get_pid(kim_gdata->uim_pid), SIGUSR2, 0);
-		if (err != 0) {
-			pr_info(" sending SIGUSR2 to uim failed %ld", err);
-			err = -1;
-			continue;
-		}
-#endif
 		/* unblock and send event to UIM via /dev/rfkill */
 		rfkill_set_hw_state(kim_gdata->rfkill[ST_BT], 0);
 		/* wait for ldisc to be installed */
@@ -507,14 +494,6 @@ long st_kim_stop(void *kim_data)
 	struct kim_data_s	*kim_gdata = (struct kim_data_s *)kim_data;
 
 	INIT_COMPLETION(kim_gdata->ldisc_installed);
-#if 0 /* older way of signalling user-space UIM */
-	/* send signal to UIM */
-	err = kill_pid(find_get_pid(kim_gdata->uim_pid), SIGUSR2, 1);
-	if (err != 0) {
-		pr_err("sending SIGUSR2 to uim failed %ld", err);
-		return -1;
-	}
-#endif
 	/* set BT rfkill to be blocked */
 	err = rfkill_set_hw_state(kim_gdata->rfkill[ST_BT], 1);
 

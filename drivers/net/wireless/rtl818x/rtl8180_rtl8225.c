@@ -281,7 +281,7 @@ static void rtl8225_rf_set_tx_power(struct ieee80211_hw *dev, int channel)
 	for (i = 0; i < 8; i++)
 		rtl8225_write_phy_cck(dev, 0x44 + i, *tmp++);
 
-	msleep(1); /* FIXME: optional? */
+	msleep(1);
 
 	/* anaparam2 on */
 	rtl818x_iowrite8(priv, &priv->map->EEPROM_CMD, RTL818X_EEPROM_CMD_CONFIG);
@@ -315,7 +315,7 @@ static void rtl8225_rf_init(struct ieee80211_hw *dev)
 	rtl818x_iowrite16(priv, &priv->map->RFPinsSelect, 0x0488);
 	rtl818x_iowrite8(priv, &priv->map->GP_ENABLE, 0);
 	rtl818x_ioread8(priv, &priv->map->EEPROM_CMD);
-	msleep(200);	/* FIXME: ehh?? */
+	msleep(200);
 	rtl818x_iowrite8(priv, &priv->map->GP_ENABLE, 0xFF & ~(1 << 6));
 
 	rtl818x_iowrite32(priv, &priv->map->RF_TIMING, 0x000a8008);
@@ -544,7 +544,7 @@ static void rtl8225z2_rf_init(struct ieee80211_hw *dev)
 	rtl818x_iowrite16(priv, &priv->map->RFPinsSelect, 0x0488);
 	rtl818x_iowrite8(priv, &priv->map->GP_ENABLE, 0);
 	rtl818x_ioread8(priv, &priv->map->EEPROM_CMD);
-	msleep(200);	/* FIXME: ehh?? */
+	msleep(200);
 	rtl818x_iowrite8(priv, &priv->map->GP_ENABLE, 0xFF & ~(1 << 6));
 
 	rtl818x_iowrite32(priv, &priv->map->RF_TIMING, 0x00088008);
@@ -651,7 +651,7 @@ static void rtl8225z2_rf_init(struct ieee80211_hw *dev)
 	rtl8225_write_phy_ofdm(dev, 0x20, 0x1f); msleep(1);
 	rtl8225_write_phy_ofdm(dev, 0x21, 0x27); msleep(1);
 	rtl8225_write_phy_ofdm(dev, 0x22, 0x16); msleep(1);
-	rtl8225_write_phy_ofdm(dev, 0x23, 0x80); msleep(1); /* FIXME: not needed? */
+	rtl8225_write_phy_ofdm(dev, 0x23, 0x80); msleep(1);
 	rtl8225_write_phy_ofdm(dev, 0x24, 0x46); msleep(1);
 	rtl8225_write_phy_ofdm(dev, 0x25, 0x20); msleep(1);
 	rtl8225_write_phy_ofdm(dev, 0x26, 0x90); msleep(1);

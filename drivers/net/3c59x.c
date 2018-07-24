@@ -19,14 +19,6 @@
 
 */
 
-/*
- * FIXME: This driver _could_ support MTU changing, but doesn't.  See Don's hamachi.c implementation
- * as well as other drivers
- *
- * NOTE: If you make 'vortex_debug' a constant (#define vortex_debug 0) the driver shrinks by 2k
- * due to dead code elimination.  There will be some performance benefits from this due to
- * elimination of all the tests and reduced cache footprint.
- */
 
 
 #define DRV_NAME	"3c59x"
@@ -795,7 +787,6 @@ static int global_full_duplex = -1;
 static int global_enable_wol = -1;
 static int global_use_mmio = -1;
 
-/* Variables to work-around the Compaq PCI BIOS32 problem. */
 static int compaq_ioaddr, compaq_irq, compaq_device_id = 0x5900;
 static struct net_device *compaq_net_device;
 
@@ -988,7 +979,6 @@ static int __init vortex_eisa_init(void)
 	}
 #endif
 
-	/* Special code to work-around the Compaq PCI BIOS32 problem. */
 	if (compaq_ioaddr) {
 		vortex_probe1(NULL, ioport_map(compaq_ioaddr, VORTEX_TOTAL_SIZE),
 			      compaq_irq, compaq_device_id, vortex_cards_found++);
@@ -1878,7 +1868,6 @@ vortex_timer(unsigned long data)
 			 ioaddr + EL3_CMD);
 		if (vortex_debug > 1)
 			pr_debug("wrote 0x%08x to Wn3_Config\n", config);
-		/* AKPM: FIXME: Should reset Rx & Tx here.  P60 of 3c90xc.pdf */
 
 		spin_unlock_irq(&vp->lock);
 	}
@@ -2284,11 +2273,6 @@ vortex_interrupt(int irq, void *dev_id)
 				pci_unmap_single(VORTEX_PCI(vp), vp->tx_skb_dma, (vp->tx_skb->len + 3) & ~3, PCI_DMA_TODEVICE);
 				dev_kfree_skb_irq(vp->tx_skb); /* Release the transferred buffer */
 				if (ioread16(ioaddr + TxFree) > 1536) {
-					/*
-					 * AKPM: FIXME: I don't think we need this.  If the queue was stopped due to
-					 * insufficient FIFO room, the TxAvailable test will succeed and call
-					 * netif_wake_queue()
-					 */
 					netif_wake_queue(dev);
 				} else { /* Interrupt when FIFO has room for max-sized packet. */
 					iowrite16(SetTxThreshold + (1536>>2), ioaddr + EL3_CMD);
@@ -2399,14 +2383,9 @@ boomerang_interrupt(int irq, void *dev_id)
 			iowrite16(AckIntr | DownComplete, ioaddr + EL3_CMD);
 			while (vp->cur_tx - dirty_tx > 0) {
 				int entry = dirty_tx % TX_RING_SIZE;
-#if 1	/* AKPM: the latter is faster, but cyclone-only */
 				if (ioread32(ioaddr + DownListPtr) ==
 					vp->tx_ring_dma + entry * sizeof(struct boom_tx_desc))
 					break;			/* It still hasn't been processed. */
-#else
-				if ((vp->tx_ring[entry].status & DN_COMPLETE) == 0)
-					break;			/* It still hasn't been processed. */
-#endif
 
 				if (vp->tx_skbuff[entry]) {
 					struct sk_buff *skb = vp->tx_skbuff[entry];

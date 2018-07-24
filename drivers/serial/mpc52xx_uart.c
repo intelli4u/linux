@@ -1,33 +1,4 @@
-/*
- * Driver for the PSC of the Freescale MPC52xx PSCs configured as UARTs.
- *
- * FIXME According to the usermanual the status bits in the status register
- * are only updated when the peripherals access the FIFO and not when the
- * CPU access them. So since we use this bits to know when we stop writing
- * and reading, they may not be updated in-time and a race condition may
- * exists. But I haven't be able to prove this and I don't care. But if
- * any problem arises, it might worth checking. The TX/RX FIFO Stats
- * registers should be used in addition.
- * Update: Actually, they seem updated ... At least the bits we use.
- *
- *
- * Maintainer : Sylvain Munaut <tnt@246tNt.com>
- *
- * Some of the code has been inspired/copied from the 2.4 code written
- * by Dale Farnsworth <dfarnsworth@mvista.com>.
- *
- * Copyright (C) 2008 Freescale Semiconductor Inc.
- *                    John Rigby <jrigby@gmail.com>
- * Added support for MPC5121
- * Copyright (C) 2006 Secret Lab Technologies Ltd.
- *                    Grant Likely <grant.likely@secretlab.ca>
- * Copyright (C) 2004-2006 Sylvain Munaut <tnt@246tNt.com>
- * Copyright (C) 2003 MontaVista, Software, Inc.
- *
- * This file is licensed under the terms of the GNU General Public License
- * version 2. This program is licensed "as is" without any warranty of any
- * kind, whether express or implied.
- */
+
 
 #undef DEBUG
 
@@ -799,9 +770,6 @@ mpc52xx_uart_set_termios(struct uart_port *port, struct ktermios *new,
 	/* Do our best to flush TX & RX, so we don't lose anything */
 	/* But we don't wait indefinitely ! */
 	j = 5000000;	/* Maximum wait */
-	/* FIXME Can't receive chars since set_termios might be called at early
-	 * boot for the console, all stuff is not yet ready to receive at that
-	 * time and that just makes the kernel oops */
 	/* while (j-- && mpc52xx_uart_int_rx_chars(port)); */
 	while (!mpc52xx_uart_tx_empty(port) && --j)
 		udelay(1);

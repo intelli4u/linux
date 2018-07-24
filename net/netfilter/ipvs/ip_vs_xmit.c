@@ -436,9 +436,6 @@ ip_vs_nat_xmit(struct sk_buff *skb, struct ip_vs_conn *cp,
 
 	ip_vs_update_conntrack(skb, cp, 1);
 
-	/* FIXME: when application helper enlarges the packet and the length
-	   is larger than the MTU of outgoing device, there will be still
-	   MTU problem. */
 
 	/* Another hack: avoid icmp_send in ip_fragment */
 	skb->local_df = 1;
@@ -514,9 +511,6 @@ ip_vs_nat_xmit_v6(struct sk_buff *skb, struct ip_vs_conn *cp,
 
 	ip_vs_update_conntrack(skb, cp, 1);
 
-	/* FIXME: when application helper enlarges the packet and the length
-	   is larger than the MTU of outgoing device, there will be still
-	   MTU problem. */
 
 	/* Another hack: avoid icmp_send in ip_fragment */
 	skb->local_df = 1;

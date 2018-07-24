@@ -46,4 +46,3 @@ struct omap_clk {
 
 
 #endif
-

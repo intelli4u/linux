@@ -2370,22 +2370,6 @@ int jfsIOWait(void *arg)
 	return 0;
 }
 
-/*
- * NAME:	lmLogFormat()/jfs_logform()
- *
- * FUNCTION:	format file system log
- *
- * PARAMETERS:
- *	log	- volume log
- *	logAddress - start address of log space in FS block
- *	logSize	- length of log space in FS block;
- *
- * RETURN:	0	- success
- *		-EIO	- i/o error
- *
- * XXX: We're synchronously writing one page at a time.  This needs to
- *	be improved by writing multiple pages at once.
- */
 int lmLogFormat(struct jfs_log *log, s64 logAddress, int logSize)
 {
 	int rc = -EIO;

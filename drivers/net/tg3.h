@@ -1,4 +1,4 @@
-/* $Id: tg3.h,v 1.37.2.32 2002/03/11 12:18:18 davem Exp $
+/* $Id: tg3.h,v 1.37.2.32 2002/03/11 12:18:18 Exp $
  * tg3.h: Definitions for Broadcom Tigon3 ethernet driver.
  *
  * Copyright (C) 2001, 2002, 2003, 2004 David S. Miller (davem@redhat.com)
@@ -26,7 +26,7 @@
 #define TG3_RX_INTERNAL_RING_SZ_5906	32
 
 #define RX_STD_MAX_SIZE_5705		512
-#define RX_JUMBO_MAX_SIZE		0xdeadbeef /* XXX */
+#define RX_JUMBO_MAX_SIZE		0xdeadbeef
 
 /* First 256 bytes are a mirror of PCI config space. */
 #define TG3PCI_VENDOR			0x00000000
@@ -462,7 +462,7 @@
 #define  MAC_MI_MODE_SHORT_PREAMBLE	 0x00000002
 #define  MAC_MI_MODE_AUTO_POLL		 0x00000010
 #define  MAC_MI_MODE_500KHZ_CONST	 0x00008000
-#define  MAC_MI_MODE_BASE		 0x000c0000 /* XXX magic values XXX */
+#define  MAC_MI_MODE_BASE		 0x000c0000
 #define MAC_AUTO_POLL_STATUS		0x00000458
 #define  MAC_AUTO_POLL_ERROR		 0x00000001
 #define MAC_TX_MODE			0x0000045c
@@ -2349,7 +2349,6 @@ struct tg3_internal_buffer_desc {
 	u32				addr_hi;
 	u32				addr_lo;
 	u32				nic_mbuf;
-	/* XXX FIX THIS */
 #ifdef __BIG_ENDIAN
 	u16				cqid_sqid;
 	u16				len;

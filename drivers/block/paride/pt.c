@@ -716,7 +716,6 @@ static long pt_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			return 0;
 
 		default:
-			/* FIXME: rate limit ?? */
 			printk(KERN_DEBUG "%s: Unimplemented mt_op %d\n", tape->name,
 			       mtop.mt_op);
 			return -EINVAL;

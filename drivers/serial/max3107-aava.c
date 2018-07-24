@@ -245,38 +245,6 @@ static int max3107_aava_configure(struct max3107_port *s)
 	return 0;
 }
 
-#if 0
-/* This will get enabled once we have the board stuff merged for this
-   specific case */
-
-static const struct baud_table brg13_ext[] = {
-	{ 300,    MAX3107_BRG13_B300 },
-	{ 600,    MAX3107_BRG13_B600 },
-	{ 1200,   MAX3107_BRG13_B1200 },
-	{ 2400,   MAX3107_BRG13_B2400 },
-	{ 4800,   MAX3107_BRG13_B4800 },
-	{ 9600,   MAX3107_BRG13_B9600 },
-	{ 19200,  MAX3107_BRG13_B19200 },
-	{ 57600,  MAX3107_BRG13_B57600 },
-	{ 115200, MAX3107_BRG13_B115200 },
-	{ 230400, MAX3107_BRG13_B230400 },
-	{ 460800, MAX3107_BRG13_B460800 },
-	{ 921600, MAX3107_BRG13_B921600 },
-	{ 0, 0 }
-};
-
-static void max3107_aava_init(struct max3107_port *s)
-{
-	/*override for AAVA SC specific*/
-	if (mrst_platform_id() == MRST_PLATFORM_AAVA_SC) {
-		if (get_koski_build_id() <= KOSKI_EV2)
-			if (s->ext_clk) {
-				s->brg_cfg = MAX3107_BRG13_B9600;
-				s->baud_tbl = (struct baud_table *)brg13_ext;
-			}
-	}
-}
-#endif
 
 static int __devexit max3107_aava_remove(struct spi_device *spi)
 {

@@ -351,7 +351,7 @@ lightweight_exit:
 	mtspr	SPRN_PID, r3
 
 #ifdef CONFIG_44x
-	iccci	0, 0 /* XXX hack */
+	iccci	0, 0
 #endif
 
 	/* Load some guest volatiles. */
@@ -367,8 +367,6 @@ lightweight_exit:
 	lwz	r3, VCPU_XER(r4)
 	mtxer	r3
 
-	/* Switch the IVPR. XXX If we take a TLB miss after this we're screwed,
-	 * so how do we make sure vcpu won't fault? */
 	lis	r8, kvmppc_booke_handlers@ha
 	lwz	r8, kvmppc_booke_handlers@l(r8)
 	mtspr	SPRN_IVPR, r8
@@ -380,7 +378,6 @@ lightweight_exit:
 	 * because host interrupt handlers would get confused. */
 	lwz	r1, VCPU_GPR(r1)(r4)
 
-	/* XXX handle USPRG0 */
 	/* Host interrupt handlers may have clobbered these guest-readable
 	 * SPRGs, so we need to reload them here with the guest's values. */
 	lwz	r3, VCPU_SPRG4(r4)
@@ -420,9 +417,6 @@ lightweight_exit:
 	ori	r3, r3, KVMPPC_MSR_MASK@l
 	mtsrr1	r3
 
-	/* Clear any debug events which occurred since we disabled MSR[DE].
-	 * XXX This gives us a 3-instruction window in which a breakpoint
-	 * intended for guest context could fire in the host instead. */
 	lis	r3, 0xffff
 	ori	r3, r3, 0xffff
 	mtspr	SPRN_DBSR, r3

@@ -132,7 +132,6 @@ static struct Conf
 				/* intrpolltime */ 1,
 				/* The frequency of OUR polls */
 				/* breakinterval */ 25,
-				/* x10 mS XXX: units seem to be 1ms not 10! -- REW */
 				/* timer */ 10,
 				/* mS */
 	/* RtaLoadBase */ 0x7000,
@@ -828,7 +827,6 @@ static int rio_init_datastructures(void)
 	p->RIOConf = RIOConf;
 	rio_dprintk(RIO_DEBUG_INIT, "Got : %p %p %p\n", p, p->RIOHosts, p->RIOPortp);
 
-#if 1
 	for (i = 0; i < RIO_PORTS; i++) {
 		port = p->RIOPortp[i] = kzalloc(sizeof(struct Port), GFP_KERNEL);
 		if (!port) {
@@ -844,9 +842,6 @@ static int rio_init_datastructures(void)
 		port->gs.rd = &rio_real_driver;
 		spin_lock_init(&port->portSem);
 	}
-#else
-	/* We could postpone initializing them to when they are configured. */
-#endif
 
 
 

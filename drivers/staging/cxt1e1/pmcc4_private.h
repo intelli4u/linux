@@ -103,19 +103,6 @@ struct c4_chan_info
     struct mdesc *txd_irq_srv;
     struct mdesc *txd_usr_add;
 
-#if 0
-    /*
-     * FUTURE CODE MIGHT SEPARATE TIMESLOT MAP SETUPS INTO SINGLE IOCTL and
-     * REMOVE MAPS FROM CHANNEL PARAMETER STRUCTURE
-     */
-    /*
-     * each byte in bitmask below represents one timeslot (bitmask[0] is for
-     * timeslot 0 and so on), each bit in the byte selects timeslot bits for
-     * this channel (0xff - whole timeslot, 0x7f - 56kbps mode)
-     */
-
-    u_int8_t    ts_bitmask[32];
-#endif
     spinlock_t  ch_rxlock;
     spinlock_t  ch_txlock;
     atomic_t    tx_pending;

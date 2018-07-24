@@ -60,9 +60,8 @@ static void crisv32_hwcontrol(struct mtd_info *mtd, int cmd,
 		dout = REG_RD(gio, regi_gio, rw_pa_dout);
 		dout.data &= ~PIN_BITMASK;
 
-#if (CE_BIT == 4 && NAND_NCE == 1 &&  \
-     CLE_BIT == 5 && NAND_CLE == 2 && \
-     ALE_BIT == 6 && NAND_ALE == 4)
+#if (CE_BIT == 4 && NAND_NCE == CLE_BIT == 5 && NAND_CLE == 2 && ALE_BIT == 6 && \
+	NAND_ALE == 4)
 		/* Pins in same order as control bits, but shifted.
 		 * Optimize for this case; works for 2.6.18 */
 		dout.data |= ((ctrl & CTRL_BITMASK) ^ NAND_NCE) << CE_BIT;
@@ -171,4 +170,3 @@ out_mtd:
 	kfree(wrapper);
 	return NULL;
 }
-

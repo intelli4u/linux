@@ -92,7 +92,6 @@ static struct powerdomain core_24xx_pwrdm = {
 
 #ifdef CONFIG_ARCH_OMAP2430
 
-/* XXX 2430 KILLDOMAINWKUP bit?  No current users apparently */
 
 static struct powerdomain mdm_pwrdm = {
 	.name		  = "mdm_pwrdm",

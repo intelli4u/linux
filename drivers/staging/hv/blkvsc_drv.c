@@ -118,7 +118,6 @@ struct block_device_context {
 /* Per driver */
 struct blkvsc_driver_context {
 	/* !! These must be the first 2 fields !! */
-	/* FIXME this is a bug! */
 	struct driver_context drv_ctx;
 	struct storvsc_driver_object drv_obj;
 };
@@ -708,12 +707,6 @@ static int blkvsc_do_read_capacity16(struct block_device_context *blkdev)
 	blkdev->capacity = be64_to_cpu(*(unsigned long long *) &buf[0]) + 1;
 	blkdev->sector_size = be32_to_cpu(*(unsigned int *)&buf[8]);
 
-#if 0
-	blkdev->capacity = ((buf[0] << 24) | (buf[1] << 16) |
-			    (buf[2] << 8) | buf[3]) + 1;
-	blkdev->sector_size = (buf[4] << 24) | (buf[5] << 16) |
-			      (buf[6] << 8) | buf[7];
-#endif
 
 	kunmap(page_buf);
 
@@ -869,14 +862,6 @@ static int blkvsc_submit_request(struct blkvsc_request *blkvsc_req,
 		   blkvsc_req->sector_count,
 		   blkvsc_req->request.DataBuffer.Offset,
 		   blkvsc_req->request.DataBuffer.Length);
-#if 0
-	for (i = 0; i < (blkvsc_req->request.DataBuffer.Length >> 12); i++) {
-		DPRINT_DBG(BLKVSC_DRV, "blkvsc_submit_request() - "
-			   "req %p pfn[%d] %llx\n",
-			   blkvsc_req, i,
-			   blkvsc_req->request.DataBuffer.PfnArray[i]);
-	}
-#endif
 
 	storvsc_req = &blkvsc_req->request;
 	storvsc_req->Extension = (void *)((unsigned long)blkvsc_req +
@@ -1201,7 +1186,6 @@ static int blkvsc_cancel_pending_reqs(struct block_device_context *blkdev)
 					comp_req->sector_count *
 					blkdev->sector_size);
 
-				/* FIXME: shouldn't this do more than return? */
 				if (ret)
 					goto out;
 			}
@@ -1460,14 +1444,6 @@ static int blkvsc_ioctl(struct block_device *bd, fmode_t mode,
 	 * TODO: I think there is certain format for HDIO_GET_IDENTITY rather
 	 * than just a GUID. Commented it out for now.
 	 */
-#if 0
-	case HDIO_GET_IDENTITY:
-		DPRINT_INFO(BLKVSC_DRV, "HDIO_GET_IDENTITY\n");
-		if (copy_to_user((void __user *)arg, blkdev->device_id,
-				 blkdev->device_id_len))
-			ret = -EFAULT;
-		break;
-#endif
 	default:
 		ret = -EINVAL;
 		break;

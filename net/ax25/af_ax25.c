@@ -790,10 +790,6 @@ out:
 	return res;
 }
 
-/*
- * XXX: when creating ax25_sock we should update the .obj_size setting
- * below.
- */
 static struct proto ax25_proto = {
 	.name	  = "AX25",
 	.owner	  = THIS_MODULE,
@@ -1106,9 +1102,6 @@ out:
 	return 0;
 }
 
-/*
- *	FIXME: nonblock behaviour looks like it may have a bug.
- */
 static int __must_check ax25_connect(struct socket *sock,
 	struct sockaddr *uaddr, int addr_len, int flags)
 {
@@ -1523,11 +1516,6 @@ static int ax25_sendmsg(struct kiocb *iocb, struct socket *sock,
 		else
 			dp = &dtmp;
 	} else {
-		/*
-		 *	FIXME: 1003.1g - if the socket is like this because
-		 *	it has become closed (not started closed) and is VC
-		 *	we ought to SIGPIPE, EPIPE
-		 */
 		if (sk->sk_state != TCP_ESTABLISHED) {
 			err = -ENOTCONN;
 			goto out;
@@ -1685,7 +1673,6 @@ out:
 
 static int ax25_shutdown(struct socket *sk, int how)
 {
-	/* FIXME - generate DM and RNR states */
 	return -EOPNOTSUPP;
 }
 

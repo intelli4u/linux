@@ -1757,9 +1757,6 @@ core99_sleep(void)
 	UN_OUT(UNI_N_POWER_MGT, UNI_N_POWER_MGT_SLEEP);
 	mdelay(10);
 
-	/*
-	 * FIXME: A bit of black magic with OpenPIC (don't ask me why)
-	 */
 	if (pmac_mb.model_id == PMAC_TYPE_SAWTOOTH) {
 		MACIO_BIS(0x506e0, 0x00400000);
 		MACIO_BIS(0x506e0, 0x80000000);
@@ -1818,7 +1815,6 @@ core99_wake_up(void)
 	for (i=0; i<KEYLARGO_GPIO_CNT; i++)
 		MACIO_OUT8(KEYLARGO_GPIO_0+i, save_gpio_normal[i]);
 
-	/* FIXME more black magic with OpenPIC ... */
 	if (pmac_mb.model_id == PMAC_TYPE_SAWTOOTH) {
 		MACIO_BIC(0x506e0, 0x00400000);
 		MACIO_BIC(0x506e0, 0x80000000);
@@ -2927,55 +2923,6 @@ pmac_feature_init(void)
 	set_initial_features();
 }
 
-#if 0
-static void dump_HT_speeds(char *name, u32 cfg, u32 frq)
-{
-	int	freqs[16] = { 200,300,400,500,600,800,1000,0,0,0,0,0,0,0,0,0 };
-	int	bits[8] = { 8,16,0,32,2,4,0,0 };
-	int	freq = (frq >> 8) & 0xf;
-
-	if (freqs[freq] == 0)
-		printk("%s: Unknown HT link frequency %x\n", name, freq);
-	else
-		printk("%s: %d MHz on main link, (%d in / %d out) bits width\n",
-		       name, freqs[freq],
-		       bits[(cfg >> 28) & 0x7], bits[(cfg >> 24) & 0x7]);
-}
-
-void __init pmac_check_ht_link(void)
-{
-	u32	ufreq, freq, ucfg, cfg;
-	struct device_node *pcix_node;
-	u8	px_bus, px_devfn;
-	struct pci_controller *px_hose;
-
-	(void)in_be32(u3_ht_base + U3_HT_LINK_COMMAND);
-	ucfg = cfg = in_be32(u3_ht_base + U3_HT_LINK_CONFIG);
-	ufreq = freq = in_be32(u3_ht_base + U3_HT_LINK_FREQ);
-	dump_HT_speeds("U3 HyperTransport", cfg, freq);
-
-	pcix_node = of_find_compatible_node(NULL, "pci", "pci-x");
-	if (pcix_node == NULL) {
-		printk("No PCI-X bridge found\n");
-		return;
-	}
-	if (pci_device_from_OF_node(pcix_node, &px_bus, &px_devfn) != 0) {
-		printk("PCI-X bridge found but not matched to pci\n");
-		return;
-	}
-	px_hose = pci_find_hose_for_OF_device(pcix_node);
-	if (px_hose == NULL) {
-		printk("PCI-X bridge found but not matched to host\n");
-		return;
-	}	
-	early_read_config_dword(px_hose, px_bus, px_devfn, 0xc4, &cfg);
-	early_read_config_dword(px_hose, px_bus, px_devfn, 0xcc, &freq);
-	dump_HT_speeds("PCI-X HT Uplink", cfg, freq);
-	early_read_config_dword(px_hose, px_bus, px_devfn, 0xc8, &cfg);
-	early_read_config_dword(px_hose, px_bus, px_devfn, 0xd0, &freq);
-	dump_HT_speeds("PCI-X HT Downlink", cfg, freq);
-}
-#endif /* 0 */
 
 /*
  * Early video resume hook

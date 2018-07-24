@@ -996,7 +996,6 @@ snd_ad1889_probe(struct pci_dev *pci,
 
 	/* (2) */
 	err = snd_card_create(index[devno], id[devno], THIS_MODULE, 0, &card);
-	/* XXX REVISIT: we can probably allocate chip in this call */
 	if (err < 0)
 		return err;
 

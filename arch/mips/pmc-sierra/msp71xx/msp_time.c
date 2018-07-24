@@ -62,8 +62,7 @@ void __init plat_time_init(void)
 	}
 
 	if (cpu_rate == 0) {
-#if defined(CONFIG_PMC_MSP7120_EVAL) \
- || defined(CONFIG_PMC_MSP7120_GW)
+#if defined(CONFIG_PMC_MSP7120_EVAL) || defined(CONFIG_PMC_MSP7120_GW)
 		cpu_rate = 400000000;
 #elif defined(CONFIG_PMC_MSP7120_FPGA)
 		cpu_rate = 25000000;

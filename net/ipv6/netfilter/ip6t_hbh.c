@@ -25,21 +25,6 @@ MODULE_DESCRIPTION("Xtables: IPv6 Hop-By-Hop and Destination Header match");
 MODULE_AUTHOR("Andras Kis-Szabo <kisza@sch.bme.hu>");
 MODULE_ALIAS("ip6t_dst");
 
-/*
- *  (Type & 0xC0) >> 6
- *	0	-> ignorable
- *	1	-> must drop the packet
- *	2	-> send ICMP PARM PROB regardless and drop packet
- *	3	-> Send ICMP if not a multicast address and drop packet
- *  (Type & 0x20) >> 5
- *	0	-> invariant
- *	1	-> can change the routing
- *  (Type & 0x1F) Type
- *	0	-> Pad1 (only 1 byte!)
- *	1	-> PadN LENGTH info (total length = length + 2)
- *	C0 | 2	-> JUMBO 4 x x x x ( xxxx > 64k )
- *	5	-> RTALERT 2 x x
- */
 
 static struct xt_match hbh_mt6_reg[] __read_mostly;
 

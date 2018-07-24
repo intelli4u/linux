@@ -148,5 +148,3 @@ int main(int argc, char ** argv)
     close(dev);
     exit(0);
 }
-
-

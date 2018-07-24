@@ -483,7 +483,6 @@ static int seek_firmware(struct dvb_frontend *fe, unsigned int type,
 		goto found;
 	}
 
-	/*FIXME: Would make sense to seek for type "hint" match ? */
 
 	i = -ENOENT;
 	goto ret;
@@ -967,7 +966,6 @@ static int generic_set_freq(struct dvb_frontend *fe, u32 freq /* in HZ */,
 		 * newer firmwares
 		 */
 
-#if 1
 		/*
 		 * The proper adjustment would be to do it at s-code table.
 		 * However, this didn't work, as reported by
@@ -976,25 +974,6 @@ static int generic_set_freq(struct dvb_frontend *fe, u32 freq /* in HZ */,
 
 		if (priv->cur_fw.type & DTV7)
 			offset += 500000;
-
-#else
-		/*
-		 * Still need tests for XC3028L (firmware 3.2 or upper)
-		 * So, for now, let's just comment the per-firmware
-		 * version of this change. Reports with xc3028l working
-		 * with and without the lines bellow are welcome
-		 */
-
-		if (priv->firm_version < 0x0302) {
-			if (priv->cur_fw.type & DTV7)
-				offset += 500000;
-		} else {
-			if (priv->cur_fw.type & DTV7)
-				offset -= 300000;
-			else if (type != ATSC) /* DVB @6MHz, DTV 8 and DTV 7/8 */
-				offset += 200000;
-		}
-#endif
 	}
 
 	div = (freq - offset + DIV / 2) / DIV;

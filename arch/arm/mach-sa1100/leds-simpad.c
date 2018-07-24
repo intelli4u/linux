@@ -97,4 +97,3 @@ void simpad_leds_event(led_event_t evt)
 	else 
 	        clear_cs3_bit(LED2_ON);
 }
-

@@ -1712,7 +1712,6 @@ static void at76_mac80211_tx_callback(struct urb *urb)
 	case -ENOENT:
 	case -ECONNRESET:
 		/* fail, urb has been unlinked */
-		/* FIXME: add error message */
 		break;
 	default:
 		at76_dbg(DBG_URB, "%s - nonzero tx status received: %d",
@@ -1745,13 +1744,6 @@ static int at76_mac80211_tx(struct ieee80211_hw *hw, struct sk_buff *skb)
 		return NETDEV_TX_BUSY;
 	}
 
-	/* The following code lines are important when the device is going to
-	 * authenticate with a new bssid. The driver must send CMD_JOIN before
-	 * an authentication frame is transmitted. For this to succeed, the
-	 * correct bssid of the AP must be known. As mac80211 does not inform
-	 * drivers about the bssid prior to the authentication process the
-	 * following workaround is necessary. If the TX frame is an
-	 * authentication frame extract the bssid and send the CMD_JOIN. */
 	if (mgmt->frame_control & cpu_to_le16(IEEE80211_STYPE_AUTH)) {
 		if (compare_ether_addr(priv->bssid, mgmt->bssid)) {
 			memcpy(priv->bssid, mgmt->bssid, ETH_ALEN);
@@ -1896,7 +1888,6 @@ static void at76_dwork_hw_scan(struct work_struct *work)
 	ret = at76_get_cmd_status(priv->udev, CMD_SCAN);
 	at76_dbg(DBG_MAC80211, "%s: CMD_SCAN status 0x%02x", __func__, ret);
 
-	/* FIXME: add maximum time for scan to complete */
 
 	if (ret != CMD_STATUS_COMPLETE) {
 		ieee80211_queue_delayed_work(priv->hw, &priv->dwork_hw_scan,
@@ -2037,9 +2028,6 @@ static void at76_configure_filter(struct ieee80211_hw *hw,
 	if (priv->device_unplugged)
 		return;
 
-	/* FIXME: access to priv->promisc should be protected with
-	 * priv->mtx, but it's impossible because this function needs to be
-	 * atomic */
 
 	if (flags && !priv->promisc) {
 		/* mac80211 wants us to enable promiscuous mode */
@@ -2077,7 +2065,6 @@ static int at76_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 		memcpy(priv->wep_keys[key->keyidx], key->key, key->keylen);
 		priv->wep_keys_len[key->keyidx] = key->keylen;
 
-		/* FIXME: find out how to do this properly */
 		priv->wep_key_id = key->keyidx;
 
 		break;

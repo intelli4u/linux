@@ -30,8 +30,8 @@ struct cx24113_config {
 	u32 xtal_khz;
 };
 
-#if defined(CONFIG_DVB_TUNER_CX24113) || \
-	(defined(CONFIG_DVB_TUNER_CX24113_MODULE) && defined(MODULE))
+#if defined(CONFIG_DVB_TUNER_CX24113) || (defined(CONFIG_DVB_TUNER_CX24113_MODULE) && \
+	defined(MODULE))
 extern struct dvb_frontend *cx24113_attach(struct dvb_frontend *,
 	const struct cx24113_config *config, struct i2c_adapter *i2c);
 

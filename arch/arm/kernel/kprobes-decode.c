@@ -943,15 +943,11 @@ prep_emulate_rdhi16rdlo12rs8rm0_wflags(kprobe_opcode_t insn,
 static enum kprobe_insn __kprobes
 space_1111(kprobe_opcode_t insn, struct arch_specific_insn *asi)
 {
-	/* CPS mmod == 1 : 1111 0001 0000 xx10 xxxx xxxx xx0x xxxx */
-	/* RFE           : 1111 100x x0x1 xxxx xxxx 1010 xxxx xxxx */
-	/* SRS           : 1111 100x x1x0 1101 xxxx 0101 xxxx xxxx */
 	if ((insn & 0xfff30020) == 0xf1020000 ||
 	    (insn & 0xfe500f00) == 0xf8100a00 ||
 	    (insn & 0xfe5f0f00) == 0xf84d0500)
 		return INSN_REJECTED;
 
-	/* PLD : 1111 01x1 x101 xxxx xxxx xxxx xxxx xxxx : */
 	if ((insn & 0xfd700000) == 0xf4500000) {
 		insn &= 0xfff0ffff;	/* Rn = r0 */
 		asi->insn[0] = insn;
@@ -959,14 +955,11 @@ space_1111(kprobe_opcode_t insn, struct arch_specific_insn *asi)
 		return INSN_GOOD;
 	}
 
-	/* BLX(1) : 1111 101x xxxx xxxx xxxx xxxx xxxx xxxx : */
 	if ((insn & 0xfe000000) == 0xfa000000) {
 		asi->insn_handler = simulate_blx1;
 		return INSN_GOOD_NO_SLOT;
 	}
 
-	/* SETEND : 1111 0001 0000 0001 xxxx xxxx 0000 xxxx */
-	/* CDP2   : 1111 1110 xxxx xxxx xxxx xxxx xxx0 xxxx */
 	if ((insn & 0xffff00f0) == 0xf1010000 ||
 	    (insn & 0xff000010) == 0xfe000000) {
 		asi->insn[0] = insn;
@@ -974,8 +967,6 @@ space_1111(kprobe_opcode_t insn, struct arch_specific_insn *asi)
 		return INSN_GOOD;
 	}
 
-	/* MCRR2 : 1111 1100 0100 xxxx xxxx xxxx xxxx xxxx : (Rd != Rn) */
-	/* MRRC2 : 1111 1100 0101 xxxx xxxx xxxx xxxx xxxx : (Rd != Rn) */
 	if ((insn & 0xffe00000) == 0xfc400000) {
 		insn &= 0xfff00fff;	/* Rn = r0 */
 		insn |= 0x00001000;	/* Rd = r1 */
@@ -985,8 +976,6 @@ space_1111(kprobe_opcode_t insn, struct arch_specific_insn *asi)
 		return INSN_GOOD;
 	}
 
-	/* LDC2 : 1111 110x xxx1 xxxx xxxx xxxx xxxx xxxx */
-	/* STC2 : 1111 110x xxx0 xxxx xxxx xxxx xxxx xxxx */
 	if ((insn & 0xfe000000) == 0xfc000000) {
 		insn &= 0xfff0ffff;      /* Rn = r0 */
 		asi->insn[0] = insn;
@@ -994,8 +983,6 @@ space_1111(kprobe_opcode_t insn, struct arch_specific_insn *asi)
 		return INSN_GOOD;
 	}
 
-	/* MCR2 : 1111 1110 xxx0 xxxx xxxx xxxx xxx1 xxxx */
-	/* MRC2 : 1111 1110 xxx1 xxxx xxxx xxxx xxx1 xxxx */
 	insn &= 0xffff0fff;	/* Rd = r0 */
 	asi->insn[0]      = insn;
 	asi->insn_handler = (insn & (1 << 20)) ? emulate_rd12 : emulate_ird12;
@@ -1005,77 +992,45 @@ space_1111(kprobe_opcode_t insn, struct arch_specific_insn *asi)
 static enum kprobe_insn __kprobes
 space_cccc_000x(kprobe_opcode_t insn, struct arch_specific_insn *asi)
 {
-	/* cccc 0001 0xx0 xxxx xxxx xxxx xxxx xxx0 xxxx */
 	if ((insn & 0x0f900010) == 0x01000000) {
 
-		/* BXJ  : cccc 0001 0010 xxxx xxxx xxxx 0010 xxxx */
-		/* MSR  : cccc 0001 0x10 xxxx xxxx xxxx 0000 xxxx */
 		if ((insn & 0x0ff000f0) == 0x01200020 ||
 		    (insn & 0x0fb000f0) == 0x01200000)
 			return INSN_REJECTED;
 
-		/* MRS : cccc 0001 0x00 xxxx xxxx xxxx 0000 xxxx */
 		if ((insn & 0x0fb00010) == 0x01000000)
 			return prep_emulate_rd12(insn, asi);
 
-		/* SMLALxy : cccc 0001 0100 xxxx xxxx xxxx 1xx0 xxxx */
 		if ((insn & 0x0ff00090) == 0x01400080)
 			return prep_emulate_rdhi16rdlo12rs8rm0_wflags(insn, asi);
 
-		/* SMULWy : cccc 0001 0010 xxxx xxxx xxxx 1x10 xxxx */
-		/* SMULxy : cccc 0001 0110 xxxx xxxx xxxx 1xx0 xxxx */
 		if ((insn & 0x0ff000b0) == 0x012000a0 ||
 		    (insn & 0x0ff00090) == 0x01600080)
 			return prep_emulate_rd16rs8rm0_wflags(insn, asi);
 
-		/* SMLAxy : cccc 0001 0000 xxxx xxxx xxxx 1xx0 xxxx : Q */
-		/* SMLAWy : cccc 0001 0010 xxxx xxxx xxxx 0x00 xxxx : Q */
 		return prep_emulate_rd16rn12rs8rm0_wflags(insn, asi);
 
 	}
 
-	/* cccc 0001 0xx0 xxxx xxxx xxxx xxxx 0xx1 xxxx */
 	else if ((insn & 0x0f900090) == 0x01000010) {
 
-		/* BKPT : 1110 0001 0010 xxxx xxxx xxxx 0111 xxxx */
 		if ((insn & 0xfff000f0) == 0xe1200070)
 			return INSN_REJECTED;
 
-		/* BLX(2) : cccc 0001 0010 xxxx xxxx xxxx 0011 xxxx */
-		/* BX     : cccc 0001 0010 xxxx xxxx xxxx 0001 xxxx */
 		if ((insn & 0x0ff000d0) == 0x01200010) {
 			asi->insn[0] = truecc_insn(insn);
 			asi->insn_handler = simulate_blx2bx;
 			return INSN_GOOD;
 		}
 
-		/* CLZ : cccc 0001 0110 xxxx xxxx xxxx 0001 xxxx */
 		if ((insn & 0x0ff000f0) == 0x01600010)
 			return prep_emulate_rd12rm0(insn, asi);
 
-		/* QADD    : cccc 0001 0000 xxxx xxxx xxxx 0101 xxxx :Q */
-		/* QSUB    : cccc 0001 0010 xxxx xxxx xxxx 0101 xxxx :Q */
-		/* QDADD   : cccc 0001 0100 xxxx xxxx xxxx 0101 xxxx :Q */
-		/* QDSUB   : cccc 0001 0110 xxxx xxxx xxxx 0101 xxxx :Q */
 		return prep_emulate_rd12rn16rm0_wflags(insn, asi);
 	}
 
-	/* cccc 0000 xxxx xxxx xxxx xxxx xxxx 1001 xxxx */
 	else if ((insn & 0x0f000090) == 0x00000090) {
 
-		/* MUL    : cccc 0000 0000 xxxx xxxx xxxx 1001 xxxx :   */
-		/* MULS   : cccc 0000 0001 xxxx xxxx xxxx 1001 xxxx :cc */
-		/* MLA    : cccc 0000 0010 xxxx xxxx xxxx 1001 xxxx :   */
-		/* MLAS   : cccc 0000 0011 xxxx xxxx xxxx 1001 xxxx :cc */
-		/* UMAAL  : cccc 0000 0100 xxxx xxxx xxxx 1001 xxxx :   */
-		/* UMULL  : cccc 0000 1000 xxxx xxxx xxxx 1001 xxxx :   */
-		/* UMULLS : cccc 0000 1001 xxxx xxxx xxxx 1001 xxxx :cc */
-		/* UMLAL  : cccc 0000 1010 xxxx xxxx xxxx 1001 xxxx :   */
-		/* UMLALS : cccc 0000 1011 xxxx xxxx xxxx 1001 xxxx :cc */
-		/* SMULL  : cccc 0000 1100 xxxx xxxx xxxx 1001 xxxx :   */
-		/* SMULLS : cccc 0000 1101 xxxx xxxx xxxx 1001 xxxx :cc */
-		/* SMLAL  : cccc 0000 1110 xxxx xxxx xxxx 1001 xxxx :   */
-		/* SMLALS : cccc 0000 1111 xxxx xxxx xxxx 1001 xxxx :cc */
 		if ((insn & 0x0fe000f0) == 0x00000090) {
 		       return prep_emulate_rd16rs8rm0_wflags(insn, asi);
 		} else if  ((insn & 0x0fe000f0) == 0x00200090) {
@@ -1085,19 +1040,8 @@ space_cccc_000x(kprobe_opcode_t insn, struct arch_specific_insn *asi)
 		}
 	}
 
-	/* cccc 000x xxxx xxxx xxxx xxxx xxxx 1xx1 xxxx */
 	else if ((insn & 0x0e000090) == 0x00000090) {
 
-		/* SWP   : cccc 0001 0000 xxxx xxxx xxxx 1001 xxxx */
-		/* SWPB  : cccc 0001 0100 xxxx xxxx xxxx 1001 xxxx */
-		/* LDRD  : cccc 000x xxx0 xxxx xxxx xxxx 1101 xxxx */
-		/* STRD  : cccc 000x xxx0 xxxx xxxx xxxx 1111 xxxx */
-		/* STREX : cccc 0001 1000 xxxx xxxx xxxx 1001 xxxx */
-		/* LDREX : cccc 0001 1001 xxxx xxxx xxxx 1001 xxxx */
-		/* LDRH  : cccc 000x xxx1 xxxx xxxx xxxx 1011 xxxx */
-		/* STRH  : cccc 000x xxx0 xxxx xxxx xxxx 1011 xxxx */
-		/* LDRSB : cccc 000x xxx1 xxxx xxxx xxxx 1101 xxxx */
-		/* LDRSH : cccc 000x xxx1 xxxx xxxx xxxx 1111 xxxx */
 		if ((insn & 0x0fb000f0) == 0x01000090) {
 			/* SWP/SWPB */
 			return prep_emulate_rd12rn16rm0_wflags(insn, asi);
@@ -1119,12 +1063,7 @@ space_cccc_000x(kprobe_opcode_t insn, struct arch_specific_insn *asi)
 		return prep_emulate_ldr_str(insn, asi);
 	}
 
-	/* cccc 000x xxxx xxxx xxxx xxxx xxxx xxxx xxxx */
 
-	/*
-	 * ALU op with S bit and Rd == 15 :
-	 * 	cccc 000x xxx1 xxxx 1111 xxxx xxxx xxxx
-	 */
 	if ((insn & 0x0e10f000) == 0x0010f000)
 		return INSN_REJECTED;
 
@@ -1137,14 +1076,6 @@ space_cccc_000x(kprobe_opcode_t insn, struct arch_specific_insn *asi)
 		return INSN_GOOD_NO_SLOT;
 	}
 
-	/*
-	 * Data processing: Immediate-shift / Register-shift
-	 * ALU op : cccc 000x xxxx xxxx xxxx xxxx xxxx xxxx
-	 * CPY    : cccc 0001 1010 xxxx xxxx 0000 0000 xxxx
-	 * MOV    : cccc 0001 101x xxxx xxxx xxxx xxxx xxxx
-	 * *S (bit 20) updates condition codes
-	 * ADC/SBC/RSC reads the C flag
-	 */
 	insn &= 0xfff00ff0;	/* Rn = r0, Rd = r0 */
 	insn |= 0x00000001;	/* Rm = r1 */
 	if (insn & 0x010) {
@@ -1160,24 +1091,11 @@ space_cccc_000x(kprobe_opcode_t insn, struct arch_specific_insn *asi)
 static enum kprobe_insn __kprobes
 space_cccc_001x(kprobe_opcode_t insn, struct arch_specific_insn *asi)
 {
-	/*
-	 * MSR   : cccc 0011 0x10 xxxx xxxx xxxx xxxx xxxx
-	 * Undef : cccc 0011 0100 xxxx xxxx xxxx xxxx xxxx
-	 * ALU op with S bit and Rd == 15 :
-	 *	   cccc 001x xxx1 xxxx 1111 xxxx xxxx xxxx
-	 */
 	if ((insn & 0x0fb00000) == 0x03200000 ||	/* MSR */
 	    (insn & 0x0ff00000) == 0x03400000 ||	/* Undef */
 	    (insn & 0x0e10f000) == 0x0210f000)		/* ALU s-bit, R15  */
 		return INSN_REJECTED;
 
-	/*
-	 * Data processing: 32-bit Immediate
-	 * ALU op : cccc 001x xxxx xxxx xxxx xxxx xxxx xxxx
-	 * MOV    : cccc 0011 101x xxxx xxxx xxxx xxxx xxxx
-	 * *S (bit 20) updates condition codes
-	 * ADC/SBC/RSC reads the C flag
-	 */
 	insn &= 0xffff0fff;	/* Rd = r0 */
 	asi->insn[0] = insn;
 	asi->insn_handler = (insn & (1 << 20)) ?  /* S-bit */
@@ -1188,7 +1106,6 @@ space_cccc_001x(kprobe_opcode_t insn, struct arch_specific_insn *asi)
 static enum kprobe_insn __kprobes
 space_cccc_0110__1(kprobe_opcode_t insn, struct arch_specific_insn *asi)
 {
-	/* SEL : cccc 0110 1000 xxxx xxxx xxxx 1011 xxxx GE: !!! */
 	if ((insn & 0x0ff000f0) == 0x068000b0) {
 		insn &= 0xfff00ff0;	/* Rd = r0, Rn = r0 */
 		insn |= 0x00000001;	/* Rm = r1 */
@@ -1197,10 +1114,6 @@ space_cccc_0110__1(kprobe_opcode_t insn, struct arch_specific_insn *asi)
 		return INSN_GOOD;
 	}
 
-	/* SSAT   : cccc 0110 101x xxxx xxxx xxxx xx01 xxxx :Q */
-	/* USAT   : cccc 0110 111x xxxx xxxx xxxx xx01 xxxx :Q */
-	/* SSAT16 : cccc 0110 1010 xxxx xxxx xxxx 0011 xxxx :Q */
-	/* USAT16 : cccc 0110 1110 xxxx xxxx xxxx 0011 xxxx :Q */
 	if ((insn & 0x0fa00030) == 0x06a00010 ||
 	    (insn & 0x0fb000f0) == 0x06a00030) {
 		insn &= 0xffff0ff0;	/* Rd = r0, Rm = r0 */
@@ -1209,118 +1122,46 @@ space_cccc_0110__1(kprobe_opcode_t insn, struct arch_specific_insn *asi)
 		return INSN_GOOD;
 	}
 
-	/* REV    : cccc 0110 1011 xxxx xxxx xxxx 0011 xxxx */
-	/* REV16  : cccc 0110 1011 xxxx xxxx xxxx 1011 xxxx */
-	/* REVSH  : cccc 0110 1111 xxxx xxxx xxxx 1011 xxxx */
 	if ((insn & 0x0ff00070) == 0x06b00030 ||
 	    (insn & 0x0ff000f0) == 0x06f000b0)
 		return prep_emulate_rd12rm0(insn, asi);
 
-	/* SADD16    : cccc 0110 0001 xxxx xxxx xxxx 0001 xxxx :GE */
-	/* SADDSUBX  : cccc 0110 0001 xxxx xxxx xxxx 0011 xxxx :GE */
-	/* SSUBADDX  : cccc 0110 0001 xxxx xxxx xxxx 0101 xxxx :GE */
-	/* SSUB16    : cccc 0110 0001 xxxx xxxx xxxx 0111 xxxx :GE */
-	/* SADD8     : cccc 0110 0001 xxxx xxxx xxxx 1001 xxxx :GE */
-	/* SSUB8     : cccc 0110 0001 xxxx xxxx xxxx 1111 xxxx :GE */
-	/* QADD16    : cccc 0110 0010 xxxx xxxx xxxx 0001 xxxx :   */
-	/* QADDSUBX  : cccc 0110 0010 xxxx xxxx xxxx 0011 xxxx :   */
-	/* QSUBADDX  : cccc 0110 0010 xxxx xxxx xxxx 0101 xxxx :   */
-	/* QSUB16    : cccc 0110 0010 xxxx xxxx xxxx 0111 xxxx :   */
-	/* QADD8     : cccc 0110 0010 xxxx xxxx xxxx 1001 xxxx :   */
-	/* QSUB8     : cccc 0110 0010 xxxx xxxx xxxx 1111 xxxx :   */
-	/* SHADD16   : cccc 0110 0011 xxxx xxxx xxxx 0001 xxxx :   */
-	/* SHADDSUBX : cccc 0110 0011 xxxx xxxx xxxx 0011 xxxx :   */
-	/* SHSUBADDX : cccc 0110 0011 xxxx xxxx xxxx 0101 xxxx :   */
-	/* SHSUB16   : cccc 0110 0011 xxxx xxxx xxxx 0111 xxxx :   */
-	/* SHADD8    : cccc 0110 0011 xxxx xxxx xxxx 1001 xxxx :   */
-	/* SHSUB8    : cccc 0110 0011 xxxx xxxx xxxx 1111 xxxx :   */
-	/* UADD16    : cccc 0110 0101 xxxx xxxx xxxx 0001 xxxx :GE */
-	/* UADDSUBX  : cccc 0110 0101 xxxx xxxx xxxx 0011 xxxx :GE */
-	/* USUBADDX  : cccc 0110 0101 xxxx xxxx xxxx 0101 xxxx :GE */
-	/* USUB16    : cccc 0110 0101 xxxx xxxx xxxx 0111 xxxx :GE */
-	/* UADD8     : cccc 0110 0101 xxxx xxxx xxxx 1001 xxxx :GE */
-	/* USUB8     : cccc 0110 0101 xxxx xxxx xxxx 1111 xxxx :GE */
-	/* UQADD16   : cccc 0110 0110 xxxx xxxx xxxx 0001 xxxx :   */
-	/* UQADDSUBX : cccc 0110 0110 xxxx xxxx xxxx 0011 xxxx :   */
-	/* UQSUBADDX : cccc 0110 0110 xxxx xxxx xxxx 0101 xxxx :   */
-	/* UQSUB16   : cccc 0110 0110 xxxx xxxx xxxx 0111 xxxx :   */
-	/* UQADD8    : cccc 0110 0110 xxxx xxxx xxxx 1001 xxxx :   */
-	/* UQSUB8    : cccc 0110 0110 xxxx xxxx xxxx 1111 xxxx :   */
-	/* UHADD16   : cccc 0110 0111 xxxx xxxx xxxx 0001 xxxx :   */
-	/* UHADDSUBX : cccc 0110 0111 xxxx xxxx xxxx 0011 xxxx :   */
-	/* UHSUBADDX : cccc 0110 0111 xxxx xxxx xxxx 0101 xxxx :   */
-	/* UHSUB16   : cccc 0110 0111 xxxx xxxx xxxx 0111 xxxx :   */
-	/* UHADD8    : cccc 0110 0111 xxxx xxxx xxxx 1001 xxxx :   */
-	/* UHSUB8    : cccc 0110 0111 xxxx xxxx xxxx 1111 xxxx :   */
-	/* PKHBT     : cccc 0110 1000 xxxx xxxx xxxx x001 xxxx :   */
-	/* PKHTB     : cccc 0110 1000 xxxx xxxx xxxx x101 xxxx :   */
-	/* SXTAB16   : cccc 0110 1000 xxxx xxxx xxxx 0111 xxxx :   */
-	/* SXTB      : cccc 0110 1010 xxxx xxxx xxxx 0111 xxxx :   */
-	/* SXTAB     : cccc 0110 1010 xxxx xxxx xxxx 0111 xxxx :   */
-	/* SXTAH     : cccc 0110 1011 xxxx xxxx xxxx 0111 xxxx :   */
-	/* UXTAB16   : cccc 0110 1100 xxxx xxxx xxxx 0111 xxxx :   */
-	/* UXTAB     : cccc 0110 1110 xxxx xxxx xxxx 0111 xxxx :   */
-	/* UXTAH     : cccc 0110 1111 xxxx xxxx xxxx 0111 xxxx :   */
 	return prep_emulate_rd12rn16rm0_wflags(insn, asi);
 }
 
 static enum kprobe_insn __kprobes
 space_cccc_0111__1(kprobe_opcode_t insn, struct arch_specific_insn *asi)
 {
-	/* Undef : cccc 0111 1111 xxxx xxxx xxxx 1111 xxxx */
 	if ((insn & 0x0ff000f0) == 0x03f000f0)
 		return INSN_REJECTED;
 
-	/* USADA8 : cccc 0111 1000 xxxx xxxx xxxx 0001 xxxx */
-	/* USAD8  : cccc 0111 1000 xxxx 1111 xxxx 0001 xxxx */
 	if ((insn & 0x0ff000f0) == 0x07800010)
 		 return prep_emulate_rd16rn12rs8rm0_wflags(insn, asi);
 
-	/* SMLALD : cccc 0111 0100 xxxx xxxx xxxx 00x1 xxxx */
-	/* SMLSLD : cccc 0111 0100 xxxx xxxx xxxx 01x1 xxxx */
 	if ((insn & 0x0ff00090) == 0x07400010)
 		return prep_emulate_rdhi16rdlo12rs8rm0_wflags(insn, asi);
 
-	/* SMLAD  : cccc 0111 0000 xxxx xxxx xxxx 00x1 xxxx :Q */
-	/* SMLSD  : cccc 0111 0000 xxxx xxxx xxxx 01x1 xxxx :Q */
-	/* SMMLA  : cccc 0111 0101 xxxx xxxx xxxx 00x1 xxxx :  */
-	/* SMMLS  : cccc 0111 0101 xxxx xxxx xxxx 11x1 xxxx :  */
 	if ((insn & 0x0ff00090) == 0x07000010 ||
 	    (insn & 0x0ff000d0) == 0x07500010 ||
 	    (insn & 0x0ff000d0) == 0x075000d0)
 		return prep_emulate_rd16rn12rs8rm0_wflags(insn, asi);
 
-	/* SMUSD  : cccc 0111 0000 xxxx xxxx xxxx 01x1 xxxx :  */
-	/* SMUAD  : cccc 0111 0000 xxxx 1111 xxxx 00x1 xxxx :Q */
-	/* SMMUL  : cccc 0111 0101 xxxx 1111 xxxx 00x1 xxxx :  */
 	return prep_emulate_rd16rs8rm0_wflags(insn, asi);
 }
 
 static enum kprobe_insn __kprobes
 space_cccc_01xx(kprobe_opcode_t insn, struct arch_specific_insn *asi)
 {
-	/* LDR   : cccc 01xx x0x1 xxxx xxxx xxxx xxxx xxxx */
-	/* LDRB  : cccc 01xx x1x1 xxxx xxxx xxxx xxxx xxxx */
-	/* LDRBT : cccc 01x0 x111 xxxx xxxx xxxx xxxx xxxx */
-	/* LDRT  : cccc 01x0 x011 xxxx xxxx xxxx xxxx xxxx */
-	/* STR   : cccc 01xx x0x0 xxxx xxxx xxxx xxxx xxxx */
-	/* STRB  : cccc 01xx x1x0 xxxx xxxx xxxx xxxx xxxx */
-	/* STRBT : cccc 01x0 x110 xxxx xxxx xxxx xxxx xxxx */
-	/* STRT  : cccc 01x0 x010 xxxx xxxx xxxx xxxx xxxx */
 	return prep_emulate_ldr_str(insn, asi);
 }
 
 static enum kprobe_insn __kprobes
 space_cccc_100x(kprobe_opcode_t insn, struct arch_specific_insn *asi)
 {
-	/* LDM(2) : cccc 100x x101 xxxx 0xxx xxxx xxxx xxxx */
-	/* LDM(3) : cccc 100x x1x1 xxxx 1xxx xxxx xxxx xxxx */
 	if ((insn & 0x0e708000) == 0x85000000 ||
 	    (insn & 0x0e508000) == 0x85010000)
 		return INSN_REJECTED;
 
-	/* LDM(1) : cccc 100x x0x1 xxxx xxxx xxxx xxxx xxxx */
-	/* STM(1) : cccc 100x x0x0 xxxx xxxx xxxx xxxx xxxx */
 	asi->insn[0] = truecc_insn(insn);
 	asi->insn_handler = ((insn & 0x108000) == 0x008000) ? /* STM & R15 */
 				simulate_stm1_pc : simulate_ldm1stm1;
@@ -1330,8 +1171,6 @@ space_cccc_100x(kprobe_opcode_t insn, struct arch_specific_insn *asi)
 static enum kprobe_insn __kprobes
 space_cccc_101x(kprobe_opcode_t insn, struct arch_specific_insn *asi)
 {
-	/* B  : cccc 1010 xxxx xxxx xxxx xxxx xxxx xxxx */
-	/* BL : cccc 1011 xxxx xxxx xxxx xxxx xxxx xxxx */
 	asi->insn[0] = truecc_insn(insn);
 	asi->insn_handler = simulate_bbl;
 	return INSN_GOOD;
@@ -1340,8 +1179,6 @@ space_cccc_101x(kprobe_opcode_t insn, struct arch_specific_insn *asi)
 static enum kprobe_insn __kprobes
 space_cccc_1100_010x(kprobe_opcode_t insn, struct arch_specific_insn *asi)
 {
-	/* MCRR : cccc 1100 0100 xxxx xxxx xxxx xxxx xxxx : (Rd!=Rn) */
-	/* MRRC : cccc 1100 0101 xxxx xxxx xxxx xxxx xxxx : (Rd!=Rn) */
 	insn &= 0xfff00fff;
 	insn |= 0x00001000;	/* Rn = r0, Rd = r1 */
 	asi->insn[0] = insn;
@@ -1352,8 +1189,6 @@ space_cccc_1100_010x(kprobe_opcode_t insn, struct arch_specific_insn *asi)
 static enum kprobe_insn __kprobes
 space_cccc_110x(kprobe_opcode_t insn, struct arch_specific_insn *asi)
 {
-	/* LDC : cccc 110x xxx1 xxxx xxxx xxxx xxxx xxxx */
-	/* STC : cccc 110x xxx0 xxxx xxxx xxxx xxxx xxxx */
 	insn &= 0xfff0ffff;	/* Rn = r0 */
 	asi->insn[0] = insn;
 	asi->insn_handler = emulate_ldcstc;
@@ -1363,21 +1198,16 @@ space_cccc_110x(kprobe_opcode_t insn, struct arch_specific_insn *asi)
 static enum kprobe_insn __kprobes
 space_cccc_111x(kprobe_opcode_t insn, struct arch_specific_insn *asi)
 {
-	/* BKPT : 1110 0001 0010 xxxx xxxx xxxx 0111 xxxx */
-	/* SWI  : cccc 1111 xxxx xxxx xxxx xxxx xxxx xxxx */
 	if ((insn & 0xfff000f0) == 0xe1200070 ||
 	    (insn & 0x0f000000) == 0x0f000000)
 		return INSN_REJECTED;
 
-	/* CDP : cccc 1110 xxxx xxxx xxxx xxxx xxx0 xxxx */
 	if ((insn & 0x0f000010) == 0x0e000000) {
 		asi->insn[0] = insn;
 		asi->insn_handler = emulate_none;
 		return INSN_GOOD;
 	}
 
-	/* MCR : cccc 1110 xxx0 xxxx xxxx xxxx xxx1 xxxx */
-	/* MRC : cccc 1110 xxx1 xxxx xxxx xxxx xxx1 xxxx */
 	insn &= 0xffff0fff;	/* Rd = r0 */
 	asi->insn[0] = insn;
 	asi->insn_handler = (insn & (1 << 20)) ? emulate_rd12 : emulate_ird12;

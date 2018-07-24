@@ -186,7 +186,6 @@ static const char csum_zero_pad[1] = {0x00};
 static unsigned char mem2mem_discard_buf[MEM2MEM_DISCARD_BUF_LENGTH];
 
 /* Descriptor pool. */
-/* FIXME Tweak this value. */
 #define CRYPTOCOP_DESCRIPTOR_POOL_SIZE   (100)
 static struct cryptocop_dma_desc descr_pool[CRYPTOCOP_DESCRIPTOR_POOL_SIZE];
 static struct cryptocop_dma_desc *descr_pool_free_list;
@@ -2047,7 +2046,6 @@ static void cryptocop_job_queue_close(void)
 	unsigned long int              process_flags, flags;
 	int                            i;
 
-	/* FIXME: This is as yet untested code. */
 
 	/* Stop strcop from getting an operation to process while we are closing the
 	   module. */
@@ -3535,4 +3533,3 @@ static void __exit exit_stream_coprocessor(void)
 
 module_init(init_stream_coprocessor);
 module_exit(exit_stream_coprocessor);
-

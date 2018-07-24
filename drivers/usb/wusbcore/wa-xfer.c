@@ -1,84 +1,4 @@
-/*
- * WUSB Wire Adapter
- * Data transfer and URB enqueing
- *
- * Copyright (C) 2005-2006 Intel Corporation
- * Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
- *
- *
- * How transfers work: get a buffer, break it up in segments (segment
- * size is a multiple of the maxpacket size). For each segment issue a
- * segment request (struct wa_xfer_*), then send the data buffer if
- * out or nothing if in (all over the DTO endpoint).
- *
- * For each submitted segment request, a notification will come over
- * the NEP endpoint and a transfer result (struct xfer_result) will
- * arrive in the DTI URB. Read it, get the xfer ID, see if there is
- * data coming (inbound transfer), schedule a read and handle it.
- *
- * Sounds simple, it is a pain to implement.
- *
- *
- * ENTRY POINTS
- *
- *   FIXME
- *
- * LIFE CYCLE / STATE DIAGRAM
- *
- *   FIXME
- *
- * THIS CODE IS DISGUSTING
- *
- *   Warned you are; it's my second try and still not happy with it.
- *
- * NOTES:
- *
- *   - No iso
- *
- *   - Supports DMA xfers, control, bulk and maybe interrupt
- *
- *   - Does not recycle unused rpipes
- *
- *     An rpipe is assigned to an endpoint the first time it is used,
- *     and then it's there, assigned, until the endpoint is disabled
- *     (destroyed [{h,d}wahc_op_ep_disable()]. The assignment of the
- *     rpipe to the endpoint is done under the wa->rpipe_sem semaphore
- *     (should be a mutex).
- *
- *     Two methods it could be done:
- *
- *     (a) set up a timer everytime an rpipe's use count drops to 1
- *         (which means unused) or when a transfer ends. Reset the
- *         timer when a xfer is queued. If the timer expires, release
- *         the rpipe [see rpipe_ep_disable()].
- *
- *     (b) when looking for free rpipes to attach [rpipe_get_by_ep()],
- *         when none are found go over the list, check their endpoint
- *         and their activity record (if no last-xfer-done-ts in the
- *         last x seconds) take it
- *
- *     However, due to the fact that we have a set of limited
- *     resources (max-segments-at-the-same-time per xfer,
- *     xfers-per-ripe, blocks-per-rpipe, rpipes-per-host), at the end
- *     we are going to have to rebuild all this based on an scheduler,
- *     to where we have a list of transactions to do and based on the
- *     availability of the different required components (blocks,
- *     rpipes, segment slots, etc), we go scheduling them. Painful.
- */
+
 #include <linux/init.h>
 #include <linux/spinlock.h>
 #include <linux/slab.h>
@@ -207,7 +127,6 @@ static void wa_xfer_giveback(struct wa_xfer *xfer)
 	spin_lock_irqsave(&xfer->wa->xfer_list_lock, flags);
 	list_del_init(&xfer->list_node);
 	spin_unlock_irqrestore(&xfer->wa->xfer_list_lock, flags);
-	/* FIXME: segmentation broken -- kills DWA */
 	wusbhc_giveback_urb(xfer->wa->wusb, xfer->urb, xfer->result);
 	wa_put(xfer->wa);
 	wa_xfer_put(xfer);
@@ -429,9 +348,6 @@ static ssize_t __wa_xfer_setup_sizes(struct wa_xfer *xfer,
 	xfer->is_dma = urb->transfer_flags & URB_NO_TRANSFER_DMA_MAP ? 1 : 0;
 	xfer->seg_size = le16_to_cpu(rpipe->descr.wBlocks)
 		* 1 << (xfer->wa->wa_descr->bRPipeBlockSize - 1);
-	/* Compute the segment size and make sure it is a multiple of
-	 * the maxpktsize (WUSB1.0[8.3.3.1])...not really too much of
-	 * a check (FIXME) */
 	maxpktsize = le16_to_cpu(rpipe->descr.wMaxPacketSize);
 	if (xfer->seg_size < maxpktsize) {
 		dev_err(dev, "HW BUG? seg_size %zu smaller than maxpktsize "
@@ -702,16 +618,6 @@ error_segs_kzalloc:
 	return result;
 }
 
-/*
- * Allocates all the stuff needed to submit a transfer
- *
- * Breaks the whole data buffer in a list of segments, each one has a
- * structure allocated to it and linked in xfer->seg[index]
- *
- * FIXME: merge setup_segs() and the last part of this function, no
- *        need to do two for loops when we could run everything in a
- *        single one
- */
 static int __wa_xfer_setup(struct wa_xfer *xfer, struct urb *urb)
 {
 	int result;
@@ -918,7 +824,6 @@ static void wa_urb_enqueue_b(struct wa_xfer *xfer)
 	if (result < 0)
 		goto error_rpipe_get;
 	result = -ENODEV;
-	/* FIXME: segmentation broken -- kills DWA */
 	mutex_lock(&wusbhc->mutex);		/* get a WUSB dev */
 	if (urb->dev == NULL) {
 		mutex_unlock(&wusbhc->mutex);
@@ -953,7 +858,6 @@ static void wa_urb_enqueue_b(struct wa_xfer *xfer)
 error_xfer_setup:
 error_dequeued:
 	spin_unlock_irqrestore(&xfer->lock, flags);
-	/* FIXME: segmentation broken, kills DWA */
 	if (wusb_dev)
 		wusb_dev_put(wusb_dev);
 error_dev_gone:
@@ -1234,13 +1138,6 @@ static int wa_xfer_status_to_errno(u8 status)
 	return errno;
 }
 
-/*
- * Process a xfer result completion message
- *
- * inbound transfers: need to schedule a DTI read
- *
- * FIXME: this functio needs to be broken up in parts
- */
 static void wa_xfer_result_chew(struct wahc *wa, struct wa_xfer *xfer)
 {
 	int result;
@@ -1272,7 +1169,7 @@ static void wa_xfer_result_chew(struct wahc *wa, struct wa_xfer *xfer)
 		if (printk_ratelimit())
 			dev_err(dev, "xfer %p#%u: Bad segment state %u\n",
 				xfer, seg_idx, seg->status);
-		seg->status = WA_SEG_PENDING;	/* workaround/"fix" it */
+		seg->status = WA_SEG_PENDING;
 	}
 	if (usb_status & 0x80) {
 		seg->result = wa_xfer_status_to_errno(usb_status);
@@ -1280,7 +1177,6 @@ static void wa_xfer_result_chew(struct wahc *wa, struct wa_xfer *xfer)
 			xfer, seg->index, usb_status);
 		goto error_complete;
 	}
-	/* FIXME: we ignore warnings, tally them for stats */
 	if (usb_status & 0x40) 		/* Warning?... */
 		usb_status = 0;		/* ... pass */
 	if (xfer->is_inbound) {	/* IN data phase: read to buffer */
@@ -1500,7 +1396,6 @@ static void wa_xfer_result_cb(struct urb *urb)
 		xfer_id = xfer_result->dwTransferID;
 		xfer = wa_xfer_get_by_id(wa, xfer_id);
 		if (xfer == NULL) {
-			/* FIXME: transaction might have been cancelled */
 			dev_err(dev, "DTI Error: xfer result--"
 				"unknown xfer 0x%08x (status 0x%02x)\n",
 				xfer_id, usb_status);
@@ -1568,7 +1463,6 @@ void wa_handle_notif_xfer(struct wahc *wa, struct wa_notif_hdr *notif_hdr)
 	BUG_ON(notif_hdr->bNotifyType != WA_NOTIF_TRANSFER);
 
 	if ((0x80 | notif_xfer->bEndpoint) != dti_epd->bEndpointAddress) {
-		/* FIXME: hardcoded limitation, adapt */
 		dev_err(dev, "BUG: DTI ep is %u, not %u (hack me)\n",
 			notif_xfer->bEndpoint, dti_epd->bEndpointAddress);
 		goto error;

@@ -185,13 +185,6 @@ static pte_t set_pte_filter(pte_t pte, unsigned long addr)
 			return pte;
 		if (!test_bit(PG_arch_1, &pg->flags)) {
 #ifdef CONFIG_8xx
-			/* On 8xx, cache control instructions (particularly
-			 * "dcbst" from flush_dcache_icache) fault as write
-			 * operation if there is an unpopulated TLB entry
-			 * for the address in question. To workaround that,
-			 * we invalidate the TLB here, thus avoiding dcbst
-			 * misbehaviour.
-			 */
 			/* 8xx doesn't care about PID, size or ind args */
 			_tlbil_va(addr, 0, 0, 0);
 #endif /* CONFIG_8xx */
@@ -342,4 +335,3 @@ void assert_pte_locked(struct mm_struct *mm, unsigned long addr)
 	assert_spin_locked(pte_lockptr(mm, pmd));
 }
 #endif /* CONFIG_DEBUG_VM */
-

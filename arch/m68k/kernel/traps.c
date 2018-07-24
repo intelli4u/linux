@@ -242,7 +242,7 @@ int send_fault_sig(struct pt_regs *regs);
 
 asmlinkage void trap_c(struct frame *fp);
 
-#if defined (CONFIG_M68060)
+#if defined(CONFIG_M68060)
 static inline void access_error060 (struct frame *fp)
 {
 	unsigned long fslw = fp->un.fmt4.pc; /* is really FSLW for access error */
@@ -294,7 +294,7 @@ static inline void access_error060 (struct frame *fp)
 }
 #endif /* CONFIG_M68060 */
 
-#if defined (CONFIG_M68040)
+#if defined(CONFIG_M68040)
 static inline unsigned long probe040(int iswrite, unsigned long addr, int wbs)
 {
 	unsigned long mmusr;
@@ -361,10 +361,6 @@ static inline void fix_xframe040(struct frame *fp, unsigned long wba, unsigned s
 static inline void do_040writebacks(struct frame *fp)
 {
 	int res = 0;
-#if 0
-	if (fp->un.fmt7.wb1s & WBV_040)
-		printk("access_error040: cannot handle 1st writeback. oops.\n");
-#endif
 
 	if ((fp->un.fmt7.wb2s & WBV_040) &&
 	    !(fp->un.fmt7.wb2s & WBTT_040)) {
@@ -710,9 +706,6 @@ static inline void bus_error030 (struct frame *fp)
 			force_sig(SIGSEGV, current);
 			return;
 		} else {
-#if 0
-			static volatile long tlong;
-#endif
 
 			printk("weird %s access at %#lx from pc %#lx (ssw is %#x)\n",
 			       !(ssw & RW) ? "write" : "read", addr,
@@ -724,16 +717,6 @@ static inline void bus_error030 (struct frame *fp)
 			mmusr = temp;
 
 			printk ("level 0 mmusr is %#x\n", mmusr);
-#if 0
-			asm volatile ("pmove %%tt0,%0@"
-				      : /* no outputs */
-				      : "a" (&tlong));
-			printk("tt0 is %#lx, ", tlong);
-			asm volatile ("pmove %%tt1,%0@"
-				      : /* no outputs */
-				      : "a" (&tlong));
-			printk("tt1 is %#lx\n", tlong);
-#endif
 #ifdef DEBUG
 			printk("Unknown SIGSEGV - 1\n");
 #endif
@@ -830,17 +813,17 @@ asmlinkage void buserr_c(struct frame *fp)
 #endif
 
 	switch (fp->ptregs.format) {
-#if defined (CONFIG_M68060)
+#if defined(CONFIG_M68060)
 	case 4:				/* 68060 access error */
 	  access_error060 (fp);
 	  break;
 #endif
-#if defined (CONFIG_M68040)
+#if defined(CONFIG_M68040)
 	case 0x7:			/* 68040 access error */
 	  access_error040 (fp);
 	  break;
 #endif
-#if defined (CPU_M68020_OR_M68030)
+#if defined(CPU_M68020_OR_M68030)
 	case 0xa:
 	case 0xb:
 	  bus_error030 (fp);

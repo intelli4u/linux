@@ -126,7 +126,6 @@ static int __init omap_cpu_init(struct cpufreq_policy *policy)
 							VERY_HI_RATE) / 1000;
 	}
 
-	/* FIXME: what's the actual transition time? */
 	policy->cpuinfo.transition_latency = 300 * 1000;
 
 	return 0;
@@ -168,4 +167,3 @@ arch_initcall(omap_cpufreq_init);
  * cpufreq_unregister_driver()
  * cpufreq_frequency_table_put_attr()
  */
-

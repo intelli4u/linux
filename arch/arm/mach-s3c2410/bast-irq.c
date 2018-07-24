@@ -40,9 +40,6 @@
 
 #include <plat/irq.h>
 
-#if 0
-#include <asm/debug-ll.h>
-#endif
 
 #define irqdbf(x...)
 #define irqdbf2(x...)

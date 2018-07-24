@@ -494,7 +494,6 @@ EXPORT_SYMBOL(edac_mc_find);
  *	!0	Failure
  */
 
-/* FIXME - should a warning be printed if no error detection? correction? */
 int edac_mc_add_mc(struct mem_ctl_info *mci)
 {
 	debugf0("%s()\n", __func__);
@@ -629,7 +628,6 @@ static void edac_mc_scrub_block(unsigned long page, unsigned long offset,
 		local_irq_restore(flags);
 }
 
-/* FIXME - should return -1 */
 int edac_mc_find_csrow_by_page(struct mem_ctl_info *mci, unsigned long page)
 {
 	struct csrow_info *csrows = mci->csrows;
@@ -667,8 +665,6 @@ int edac_mc_find_csrow_by_page(struct mem_ctl_info *mci, unsigned long page)
 }
 EXPORT_SYMBOL_GPL(edac_mc_find_csrow_by_page);
 
-/* FIXME - setable log (warning/emerg) levels */
-/* FIXME - integrate with evlog: http://evlog.sourceforge.net/ */
 void edac_mc_handle_ce(struct mem_ctl_info *mci,
 		unsigned long page_frame_number,
 		unsigned long offset_in_page, unsigned long syndrome,
@@ -678,7 +674,6 @@ void edac_mc_handle_ce(struct mem_ctl_info *mci,
 
 	debugf3("MC%d: %s()\n", mci->mc_idx, __func__);
 
-	/* FIXME - maybe make panic on INTERNAL ERROR an option */
 	if (row >= mci->nr_csrows || row < 0) {
 		/* something is wrong */
 		edac_mc_printk(mci, KERN_ERR,
@@ -699,7 +694,6 @@ void edac_mc_handle_ce(struct mem_ctl_info *mci,
 	}
 
 	if (edac_mc_get_log_ce())
-		/* FIXME - put in DIMM location */
 		edac_mc_printk(mci, KERN_WARNING,
 			"CE page 0x%lx, offset 0x%lx, grain %d, syndrome "
 			"0x%lx, row %d, channel %d, label \"%s\": %s\n",
@@ -754,7 +748,6 @@ void edac_mc_handle_ue(struct mem_ctl_info *mci,
 
 	debugf3("MC%d: %s()\n", mci->mc_idx, __func__);
 
-	/* FIXME - maybe make panic on INTERNAL ERROR an option */
 	if (row >= mci->nr_csrows || row < 0) {
 		/* something is wrong */
 		edac_mc_printk(mci, KERN_ERR,
@@ -902,7 +895,6 @@ void edac_mc_handle_fbd_ce(struct mem_ctl_info *mci,
 	}
 
 	if (edac_mc_get_log_ce())
-		/* FIXME - put in DIMM location */
 		edac_mc_printk(mci, KERN_WARNING,
 			"CE row %d, channel %d, label \"%s\": %s\n",
 			csrow, channel,

@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /* ld script to make ARM Linux kernel
  * taken from the i386 version by Russell King
  * Written by Martin Mares <mj@atrey.karlin.mff.cuni.cz>
@@ -101,6 +102,11 @@ SECTIONS
 			*(.glue_7t)
 		*(.got)			/* Global offset table		*/
 	}
+
+	. = ALIGN(32);
+	__fastpath_begin = .;
+	.text.fastpath : { *(.text.fastpath) }
+	__fastpath_end = .;
 
 	RO_DATA(PAGE_SIZE)
 

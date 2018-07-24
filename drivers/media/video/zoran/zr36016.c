@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2001 Wolfgang Scherr <scherr@net4you.at>
  *
- * $Id: zr36016.c,v 1.1.2.14 2003/08/20 19:46:55 rbultje Exp $
+ * $Id: zr36016.c,v 1.1.2.14 2003/08/20 19:46:55 Exp $
  *
  * ------------------------------------------------------------------------
  *
@@ -222,23 +222,6 @@ zr36016_basic_test (struct zr36016 *ptr)
    simple loop for pushing the init datasets - NO USE --
    ========================================================================= */
 
-#if 0
-static int zr36016_pushit (struct zr36016 *ptr,
-			   u16             startreg,
-			   u16             len,
-			   const char     *data)
-{
-	int i=0;
-
-	dprintk(4, "%s: write data block to 0x%04x (len=%d)\n",
-		ptr->name, startreg,len);
-	while (i<len) {
-		zr36016_writei(ptr, startreg++,  data[i++]);
-	}
-
-	return i;
-}
-#endif
 
 /* =========================================================================
    Basic datasets & init:

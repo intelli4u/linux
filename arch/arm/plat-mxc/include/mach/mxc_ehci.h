@@ -50,4 +50,3 @@ struct mxc_usbh_platform_data {
 int mxc_initialize_usb_hw(int port, unsigned int flags);
 
 #endif /* __INCLUDE_ASM_ARCH_MXC_EHCI_H */
-

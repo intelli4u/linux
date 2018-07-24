@@ -747,21 +747,6 @@ static int mchip_compress_frame(u8 *buf, int bufsize)
 	return len;
 }
 
-#if 0
-/* uncompress one image into a buffer */
-static int mchip_uncompress_frame(u8 *img, int imgsize, u8 *buf, int bufsize)
-{
-	mchip_vrj_setup(0x3f);
-	udelay(50);
-
-	mchip_set(MCHIP_HIC_MODE, MCHIP_HIC_MODE_STILL_DECOMP);
-	mchip_set(MCHIP_HIC_CMD, MCHIP_HIC_CMD_START);
-
-	mchip_delay(MCHIP_HIC_CMD, 0);
-
-	return mchip_comp_read_frame(buf, bufsize);
-}
-#endif
 
 /* start continuous compressed capture */
 static void mchip_cont_compression_start(void)

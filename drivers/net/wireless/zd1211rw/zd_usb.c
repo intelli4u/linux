@@ -1025,7 +1025,6 @@ void zd_usb_clear(struct zd_usb *usb)
 	usb_set_intfdata(usb->intf, NULL);
 	usb_put_intf(usb->intf);
 	ZD_MEMCLEAR(usb, sizeof(*usb));
-	/* FIXME: usb_interrupt, usb_tx, usb_rx? */
 }
 
 static const char *speed(enum usb_device_speed speed)

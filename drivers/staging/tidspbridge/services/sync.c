@@ -101,4 +101,3 @@ int sync_wait_on_multiple_events(struct sync_object **events,
 func_end:
 	return status;
 }
-

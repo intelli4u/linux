@@ -386,13 +386,6 @@ int irda_param_pack(__u8 *buf, char *fmt, ...)
 			arg.i = va_arg(args, __u32);
 			put_unaligned(arg.i, (__u32 *)(buf+n)); n+=4;
 			break;
-#if 0
-		case 'c': /* \0 terminated string */
-			arg.c = va_arg(args, char *);
-			strcpy(buf+n, arg.c);
-			n += strlen(arg.c) + 1;
-			break;
-#endif
 		default:
 			va_end(args);
 			return -1;
@@ -430,13 +423,6 @@ static int irda_param_unpack(__u8 *buf, char *fmt, ...)
 			arg.ip = va_arg(args, __u32 *);
 			*arg.ip = get_unaligned((__u32 *)(buf+n)); n+=4;
 			break;
-#if 0
-		case 'c':   /* \0 terminated string */
-			arg.c = va_arg(args, char *);
-			strcpy(arg.c, buf+n);
-			n += strlen(arg.c) + 1;
-			break;
-#endif
 		default:
 			va_end(args);
 			return -1;

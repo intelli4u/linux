@@ -3386,10 +3386,8 @@ static int __devexit s3c_hsotg_remove(struct platform_device *pdev)
 	return 0;
 }
 
-#if 1
 #define s3c_hsotg_suspend NULL
 #define s3c_hsotg_resume NULL
-#endif
 
 static struct platform_driver s3c_hsotg_driver = {
 	.driver		= {

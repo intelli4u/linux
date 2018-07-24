@@ -1,4 +1,4 @@
-/* $Id: b1.c,v 1.1.2.2 2004/01/16 21:09:27 keil Exp $
+/* $Id: b1.c,v 1.1.2.2 2004/01/16 21:09:27 Exp $
  * 
  * Common module for AVM B1 cards.
  * 

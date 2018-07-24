@@ -1,4 +1,4 @@
-/* $Id: b1dma.c,v 1.1.2.3 2004/02/10 01:07:12 keil Exp $
+/* $Id: b1dma.c,v 1.1.2.3 2004/02/10 01:07:12 Exp $
  * 
  * Common module for AVM B1 cards that support dma with AMCC
  * 

@@ -779,45 +779,6 @@ static void snd_korg1212_EnableCardInterrupts(struct snd_korg1212 * korg1212)
 	       korg1212->statusRegPtr);
 }
 
-#if 0 /* not used */
-
-static int snd_korg1212_SetMonitorMode(struct snd_korg1212 *korg1212,
-				       enum MonitorModeSelector mode)
-{
-	K1212_DEBUG_PRINTK("K1212_DEBUG: SetMonitorMode [%s]\n",
-			   stateName[korg1212->cardState]);
-
-        switch (mode) {
-	case K1212_MONMODE_Off:
-		if (korg1212->cardState != K1212_STATE_MONITOR)
-			return 0;
-		else {
-			snd_korg1212_SendStopAndWait(korg1212);
-			snd_korg1212_setCardState(korg1212, K1212_STATE_OPEN);
-		}
-		break;
-
-	case K1212_MONMODE_On:
-		if (korg1212->cardState != K1212_STATE_OPEN)
-			return 0;
-		else {
-			int rc;
-			snd_korg1212_setCardState(korg1212, K1212_STATE_MONITOR);
-			rc = snd_korg1212_Send1212Command(korg1212, K1212_DB_SelectPlayMode,
-							  K1212_MODE_MonitorOn, 0, 0, 0);
-			if (rc != K1212_CMDRET_Success)
-				return 0;
-		}
-		break;
-
-	default:
-		return 0;
-        }
-
-        return 1;
-}
-
-#endif /* not used */
 
 static inline int snd_korg1212_use_is_exclusive(struct snd_korg1212 *korg1212)
 {
@@ -1551,7 +1512,6 @@ static int snd_korg1212_prepare(struct snd_pcm_substream *substream)
 
 	spin_lock_irq(&korg1212->lock);
 
-	/* FIXME: we should wait for ack! */
 	if (korg1212->stop_pending_cnt > 0) {
 		K1212_DEBUG_PRINTK("K1212_DEBUG: snd_korg1212_prepare - Stop is pending... [%s]\n",
 				   stateName[korg1212->cardState]);

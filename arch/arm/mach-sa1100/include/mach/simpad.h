@@ -102,11 +102,3 @@ struct simpad_battery {
 extern int simpad_get_battery(struct simpad_battery* );
 
 #endif // __ASM_ARCH_SIMPAD_H
-
-
-
-
-
-
-
-

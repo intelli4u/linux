@@ -224,19 +224,6 @@ static int _omap3_noncore_dpll_stop(struct clk *clk)
 	return 0;
 }
 
-/**
- * lookup_dco_sddiv -  Set j-type DPLL4 compensation variables
- * @clk: pointer to a DPLL struct clk
- * @dco: digital control oscillator selector
- * @sd_div: target sigma-delta divider
- * @m: DPLL multiplier to set
- * @n: DPLL divider to set
- *
- * See 36xx TRM section 3.5.3.3.3.2 "Type B DPLL (Low-Jitter)"
- *
- * XXX This code is not needed for 3430/AM35xx; can it be optimized
- * out in non-multi-OMAP builds for those chips?
- */
 static void lookup_dco_sddiv(struct clk *clk, u8 *dco, u8 *sd_div, u16 m,
 			     u8 n)
 {
@@ -300,14 +287,9 @@ static int omap3_noncore_dpll_program(struct clk *clk, u16 m, u8 n, u16 freqsel)
 	v |= m << __ffs(dd->mult_mask);
 	v |= (n - 1) << __ffs(dd->div1_mask);
 
-	/*
-	 * XXX This code is not needed for 3430/AM35XX; can it be optimized
-	 * out in non-multi-OMAP builds for those chips?
-	 */
 	if ((dd->flags & DPLL_J_TYPE) && !(dd->flags & DPLL_NO_DCO_SEL)) {
 		u8 dco, sd_div;
 		lookup_dco_sddiv(clk, &dco, &sd_div, m, n);
-		/* XXX This probably will need revision for OMAP4 */
 		v &= ~(OMAP3630_PERIPH_DPLL_DCO_SEL_MASK
 			| OMAP3630_PERIPH_DPLL_SD_DIV_MASK);
 		v |= dco << __ffs(OMAP3630_PERIPH_DPLL_DCO_SEL_MASK);
@@ -370,10 +352,6 @@ int omap3_noncore_dpll_enable(struct clk *clk)
 		WARN_ON(clk->parent != dd->clk_ref);
 		r = _omap3_noncore_dpll_lock(clk);
 	}
-	/*
-	 *FIXME: this is dubious - if clk->rate has changed, what about
-	 * propagating?
-	 */
 	if (!r)
 		clk->rate = omap2_get_dpll_rate(clk);
 

@@ -55,11 +55,6 @@ static void wl1271_rx_status(struct wl1271 *wl,
 
 	status->signal = desc->rssi;
 
-	/*
-	 * FIXME: In wl1251, the SNR should be divided by two.  In wl1271 we
-	 * need to divide by two for now, but TI has been discussing about
-	 * changing it.  This needs to be rechecked.
-	 */
 	wl->noise = desc->rssi - (desc->snr >> 1);
 
 	status->freq = ieee80211_channel_to_frequency(desc->channel);
@@ -83,10 +78,6 @@ static void wl1271_rx_handle_data(struct wl1271 *wl, u32 length)
 	u8 *buf;
 	u8 beacon = 0;
 
-	/*
-	 * In PLT mode we seem to get frames and mac80211 warns about them,
-	 * workaround this by not retrieving them at all.
-	 */
 	if (unlikely(wl->state == WL1271_STATE_PLT))
 		return;
 

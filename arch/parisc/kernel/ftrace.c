@@ -182,4 +182,3 @@ void ftrace_function_trampoline(unsigned long parent,
 	}
 #endif
 }
-

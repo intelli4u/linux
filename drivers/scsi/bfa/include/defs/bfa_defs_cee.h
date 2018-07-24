@@ -153,5 +153,3 @@ struct bfa_cee_stats_s {
 
 
 #endif	/* __BFA_DEFS_CEE_H__ */
-
-

@@ -329,14 +329,10 @@ static snd_pcm_format_t hpi_to_alsa_formats[] = {
 	-1,			/* HPI_FORMAT_RAW_BITSTREAM       12 */
 	-1,			/* HPI_FORMAT_AA_TAGIT1_HITS_EX1  13 */
 	SNDRV_PCM_FORMAT_FLOAT,	/* HPI_FORMAT_PCM32_FLOAT         14 */
-#if 1
 	/* ALSA can't handle 3 byte sample size together with power-of-2
 	 *  constraint on buffer_bytes, so disable this format
 	 */
 	-1
-#else
-	/* SNDRV_PCM_FORMAT_S24_3LE */	/* { HPI_FORMAT_PCM24_SIGNED        15 */
-#endif
 };
 
 
@@ -616,8 +612,6 @@ static int snd_card_asihpi_trigger(struct snd_pcm_substream *substream,
 			if (snd_pcm_substream_chip(s) != card)
 				continue;
 
-			/*? workaround linked streams don't
-			transition to SETUP 20070706*/
 			s->runtime->status->state = SNDRV_PCM_STATE_SETUP;
 
 			if (card->support_grouping) {
@@ -3004,4 +2998,3 @@ static void __exit snd_asihpi_exit(void)
 
 module_init(snd_asihpi_init)
 module_exit(snd_asihpi_exit)
-

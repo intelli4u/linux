@@ -75,12 +75,6 @@ struct vmw_resource {
 	void (*res_free) (struct vmw_resource *res);
 
 	/* TODO is a generic snooper needed? */
-#if 0
-	void (*snoop)(struct vmw_resource *res,
-		      struct ttm_object_file *tfile,
-		      SVGA3dCmdHeader *header);
-	void *snoop_priv;
-#endif
 };
 
 struct vmw_cursor_snooper {

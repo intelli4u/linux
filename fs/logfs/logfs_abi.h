@@ -383,7 +383,6 @@ SIZE_CHECK(logfs_disk_inode, 200);
  * @type:			file type, identical to bits 12..15 of mode
  * @name:			file name
  */
-/* FIXME: add 6 bytes of padding to remove the __packed */
 struct logfs_disk_dentry {
 	__be64	ino;
 	__be16	namelen;
@@ -492,7 +491,7 @@ struct logfs_je_dynsb {
 	__be64	ds_rename_pos;
 
 	__be64	ds_victim_ino;
-	__be64	ds_victim_parent; /* XXX */
+	__be64	ds_victim_parent;
 
 	__be64	ds_used_bytes;
 	__be32	ds_generation;

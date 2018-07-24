@@ -19790,7 +19790,7 @@ opd_sgl:
 #	(2) read it in from either user or supervisor space		#
 #	(3) if (b || w || l) then simply read in			#
 #	    if (s || d || x) then check for SNAN,UNNORM,DENORM		#
-#	    if (packed) then punt for now				#
+#	    if packed then punt for now				#
 # INPUT:								#
 #	%d0 : src type field						#
 #########################################################################

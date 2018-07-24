@@ -392,20 +392,6 @@ wd33c93_queuecommand(struct scsi_cmnd *cmd,
 	cmd->scsi_done = done;
 	cmd->result = 0;
 
-/* We use the Scsi_Pointer structure that's included with each command
- * as a scratchpad (as it's intended to be used!). The handy thing about
- * the SCp.xxx fields is that they're always associated with a given
- * cmd, and are preserved across disconnect-reselect. This means we
- * can pretty much ignore SAVE_POINTERS and RESTORE_POINTERS messages
- * if we keep all the critical pointers and counters in SCp:
- *  - SCp.ptr is the pointer into the RAM buffer
- *  - SCp.this_residual is the size of that buffer
- *  - SCp.buffer points to the current scatter-gather buffer
- *  - SCp.buffers_residual tells us how many S.G. buffers there are
- *  - SCp.have_data_in is not used
- *  - SCp.sent_command is not used
- *  - SCp.phase records this command's SRCID_ER bit setting
- */
 
 	if (scsi_bufflen(cmd)) {
 		cmd->SCp.buffer = scsi_sglist(cmd);

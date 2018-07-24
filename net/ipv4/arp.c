@@ -272,7 +272,6 @@ static int arp_constructor(struct neighbour *neigh)
 		   in old paradigm.
 		 */
 
-#if 1
 		/* So... these "amateur" devices are hopeless.
 		   The only thing, that I can say now:
 		   It is very sad that we need to keep ugly obsolete
@@ -298,7 +297,6 @@ static int arp_constructor(struct neighbour *neigh)
 			return 0;
 #endif
 		;}
-#endif
 		if (neigh->type == RTN_MULTICAST) {
 			neigh->nud_state = NUD_NOARP;
 			arp_mc_map(addr, neigh->ha, dev, 1);

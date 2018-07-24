@@ -79,13 +79,6 @@ static char Cx86_cb[] __cpuinitdata = "?.5x Core/Bus Clock";
 static const char __cpuinitconst cyrix_model_mult1[] = "12??43";
 static const char __cpuinitconst cyrix_model_mult2[] = "12233445";
 
-/*
- * Reset the slow-loop (SLOP) bit on the 686(L) which is set by some old
- * BIOSes for compatibility with DOS games.  This makes the udelay loop
- * work correctly, and improves performance.
- *
- * FIXME: our newer udelay uses the tsc. We don't need to frob with SLOP
- */
 
 static void __cpuinit check_cx686_slop(struct cpuinfo_x86 *c)
 {
@@ -256,18 +249,6 @@ static void __cpuinit init_cyrix(struct cpuinfo_x86 *c)
 #ifdef CONFIG_PCI
 	{
 		u32 vendor, device;
-		/*
-		 * It isn't really a PCI quirk directly, but the cure is the
-		 * same. The MediaGX has deep magic SMM stuff that handles the
-		 * SB emulation. It throws away the fifo on disable_dma() which
-		 * is wrong and ruins the audio.
-		 *
-		 *  Bug2: VSA1 has a wrap bug so that using maximum sized DMA
-		 *  causes bad things. According to NatSemi VSA2 has another
-		 *  bug to do with 'hlt'. I've not seen any boards using VSA2
-		 *  and X doesn't seem to support it either so who cares 8).
-		 *  VSA1 we work around however.
-		 */
 
 		printk(KERN_INFO "Working around Cyrix MediaGX virtual DMA bugs.\n");
 		isa_dma_bridge_buggy = 2;

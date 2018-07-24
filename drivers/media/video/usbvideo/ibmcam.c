@@ -235,7 +235,7 @@ static videosize_t ibmcam_size_to_videosize(int size)
  * History:
  * 1/21/00  Created.
  */
-static enum ParseState ibmcam_find_header(struct uvd *uvd) /* FIXME: Add frame here */
+static enum ParseState ibmcam_find_header(struct uvd *uvd)
 {
 	struct usbvideo_frame *frame;
 	ibmcam_t *icam;
@@ -257,20 +257,11 @@ static enum ParseState ibmcam_find_header(struct uvd *uvd) /* FIXME: Add frame h
 			    (RING_QUEUE_PEEK(&uvd->dp, 1) == 0xFF) &&
 			    (RING_QUEUE_PEEK(&uvd->dp, 2) == 0x00))
 			{
-#if 0				/* This code helps to detect new frame markers */
-				dev_info(&uvd->dev->dev,
-					 "Header sig: 00 FF 00 %02X\n",
-					 RING_QUEUE_PEEK(&uvd->dp, 3));
-#endif
 				frame->header = RING_QUEUE_PEEK(&uvd->dp, 3);
 				if ((frame->header == HDRSIG_MODEL1_128x96) ||
 				    (frame->header == HDRSIG_MODEL1_176x144) ||
 				    (frame->header == HDRSIG_MODEL1_352x288))
 				{
-#if 0
-					dev_info(&uvd->dev->dev,
-						 "Header found.\n");
-#endif
 					RING_QUEUE_DEQUEUE_BYTES(&uvd->dp, marker_len);
 					icam->has_hdr = 1;
 					break;
@@ -297,9 +288,6 @@ case IBMCAM_MODEL_4:
 			if ((RING_QUEUE_PEEK(&uvd->dp, 0) == 0x00) &&
 			    (RING_QUEUE_PEEK(&uvd->dp, 1) == 0xFF))
 			{
-#if 0
-				dev_info(&uvd->dev->dev, "Header found.\n");
-#endif
 				RING_QUEUE_DEQUEUE_BYTES(&uvd->dp, marker_len);
 				icam->has_hdr = 1;
 				frame->header = HDRSIG_MODEL1_176x144;
@@ -340,9 +328,6 @@ case IBMCAM_MODEL_4:
 				byte3 = RING_QUEUE_PEEK(&uvd->dp, 2);
 				byte4 = RING_QUEUE_PEEK(&uvd->dp, 3);
 				frame->header = (byte3 << 8) | byte4;
-#if 0
-				dev_info(&uvd->dev->dev, "Header found.\n");
-#endif
 				RING_QUEUE_DEQUEUE_BYTES(&uvd->dp, marker_len);
 				icam->has_hdr = 1;
 				break;
@@ -1141,13 +1126,6 @@ static void ibmcam_ProcessIsocData(struct uvd *uvd,
 	/* Update the frame's uncompressed length. */
 	frame->seqRead_Length += copylen;
 
-#if 0
-	{
-		static unsigned char j=0;
-		memset(frame->data, j++, uvd->max_frame_size);
-		frame->frameState = FrameState_Ready;
-	}
-#endif
 }
 
 /*
@@ -1180,13 +1158,6 @@ static int ibmcam_veio(
 			cp,
 			sizeof(cp),
 			1000);
-#if 0
-		dev_info(&uvd->dev->dev,
-			 "USB => %02x%02x%02x%02x%02x%02x%02x%02x "
-			 "(req=$%02x val=$%04x ind=$%04x)\n",
-			 cp[0],cp[1],cp[2],cp[3],cp[4],cp[5],cp[6],cp[7],
-			 req, value, index);
-#endif
 	} else {
 		i = usb_control_msg(
 			uvd->dev,
@@ -1474,20 +1445,6 @@ static void ibmcam_change_lighting_conditions(struct uvd *uvd)
 		break;
 	}
 	case IBMCAM_MODEL_2:
-#if 0
-		/*
-		 * This command apparently requires camera to be stopped. My
-		 * experiments showed that it -is- possible to alter the lighting
-		 * conditions setting "on the fly", but why bother? This setting does
-		 * not work reliably in all cases, so I decided simply to leave the
-		 * setting where Xirlink put it - in the camera setup phase. This code
-		 * is commented out because it does not work at -any- moment, so its
-		 * presence makes no sense. You may use it for experiments.
-		 */
-		ibmcam_veio(uvd, 0, 0x0000, 0x010c);	/* Stop camera */
-		ibmcam_model2_Packet1(uvd, mod2_sensitivity, lighting);
-		ibmcam_veio(uvd, 0, 0x00c0, 0x010c);	/* Start camera */
-#endif
 		break;
 	case IBMCAM_MODEL_3:
 	case IBMCAM_MODEL_4:
@@ -1651,19 +1608,6 @@ static void ibmcam_set_hue(struct uvd *uvd)
 	}
 	case IBMCAM_MODEL_3:
 	{
-#if 0 /* This seems not to work. No problem, will fix programmatically */
-		unsigned short hue = 0x05 + (uvd->vpic.hue / (0xFFFF / (0x37 - 0x05 + 1)));
-		RESTRICT_TO_RANGE(hue, 0x05, 0x37);
-		if (uvd->vpic_old.hue == hue)
-			return;
-		uvd->vpic_old.hue = hue;
-		ibmcam_veio(uvd, 0, 0x0000, 0x010c);	/* Stop */
-		ibmcam_model3_Packet1(uvd, 0x007e, hue);
-		ibmcam_veio(uvd, 0, 0x0001, 0x0114);
-		ibmcam_veio(uvd, 0, 0x00c0, 0x010c);	/* Go! */
-		usb_clear_halt(uvd->dev, usb_rcvisocpipe(uvd->dev, uvd->video_endp));
-		ibmcam_veio(uvd, 0, 0x0001, 0x0113);
-#endif
 		break;
 	}
 	case IBMCAM_MODEL_4:
@@ -1883,7 +1827,7 @@ static int ibmcam_model1_setup(struct uvd *uvd)
 
 	/* Default sharpness */
 	for (i=0; i < 2; i++)
-		ibmcam_PacketFormat2(uvd, sharp_13, 0x1a);	/* Level 4 FIXME */
+		ibmcam_PacketFormat2(uvd, sharp_13, 0x1a);
 
 	/* Default lighting conditions */
 	ibmcam_Packet_Format1(uvd, light_27, lighting); /* 0=Bright 2=Low */
@@ -1900,13 +1844,8 @@ static int ibmcam_model1_setup(struct uvd *uvd)
 		ibmcam_veio(uvd, 0, 0x04, 0x011a);	/* Same everywhere */
 		ibmcam_veio(uvd, 0, 0x2b, 0x011c);
 		ibmcam_veio(uvd, 0, 0x23, 0x012a);	/* Same everywhere */
-#if 0
-		ibmcam_veio(uvd, 0, 0x00, 0x0106);
-		ibmcam_veio(uvd, 0, 0x38, 0x0107);
-#else
 		ibmcam_veio(uvd, 0, 0x02, 0x0106);
 		ibmcam_veio(uvd, 0, 0x2a, 0x0107);
-#endif
 		break;
 	case VIDEOSIZE_176x144:
 		ibmcam_Packet_Format1(uvd, 0x2b, 0x1e);
@@ -3543,7 +3482,6 @@ case IBMCAM_MODEL_4:
 		ibmcam_veio(uvd, 0, 0x0000, 0x0112);
 		break;
 	case IBMCAM_MODEL_3:
-#if 1
 		ibmcam_veio(uvd, 0, 0x0000, 0x010c);
 
 		/* Here we are supposed to select video interface alt. setting 0 */
@@ -3560,7 +3498,6 @@ case IBMCAM_MODEL_4:
 		ibmcam_veio(uvd, 0, 0x0000, 0x0112);
 		ibmcam_veio(uvd, 0, 0x0080, 0x0100);
 		IBMCAM_T(uvd)->initialized = 0;
-#endif
 		break;
 	} /* switch */
 }
@@ -3613,7 +3550,7 @@ static int ibmcam_setup_on_open(struct uvd *uvd)
 {
 	int setup_ok = 0; /* Success by default */
 	/* Send init sequence only once, it's large! */
-	if (!IBMCAM_T(uvd)->initialized) { /* FIXME rename */
+	if (!IBMCAM_T(uvd)->initialized) {
 		switch (IBMCAM_T(uvd)->camera_model) {
 		case IBMCAM_MODEL_1:
 			setup_ok = ibmcam_model1_setup(uvd);
@@ -3830,7 +3767,7 @@ static int ibmcam_probe(struct usb_interface *intf, const struct usb_device_id *
 		canvasY = 240;
 		break;
 	case IBMCAM_MODEL_3:
-		RESTRICT_TO_RANGE(lighting, 0, 15); /* FIXME */
+		RESTRICT_TO_RANGE(lighting, 0, 15);
 		switch (size) {
 		case SIZE_160x120:
 			canvasX = 160;

@@ -242,10 +242,6 @@ int snd_usb_parse_audio_endpoints(struct snd_usb_audio *chip, int iface_no)
 
 	num = iface->num_altsetting;
 
-	/*
-	 * Dallas DS4201 workaround: It presents 5 altsettings, but the last
-	 * one misses syncpipe, and does not produce any sound.
-	 */
 	if (chip->usb_id == USB_ID(0x04fa, 0x4201))
 		num = 4;
 
@@ -358,11 +354,6 @@ int snd_usb_parse_audio_endpoints(struct snd_usb_audio *chip, int iface_no)
 			continue;
 		}
 
-		/*
-		 * Blue Microphones workaround: The last altsetting is identical
-		 * with the previous one, except for a larger packet size, but
-		 * is actually a mislabeled two-channel setting; ignore it.
-		 */
 		if (fmt->bNrChannels == 1 &&
 		    fmt->bSubframeSize == 2 &&
 		    altno == 2 && num == 3 &&
@@ -447,4 +438,3 @@ int snd_usb_parse_audio_endpoints(struct snd_usb_audio *chip, int iface_no)
 	}
 	return 0;
 }
-

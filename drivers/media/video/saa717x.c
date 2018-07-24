@@ -1013,7 +1013,6 @@ static int saa717x_s_mbus_fmt(struct v4l2_subdev *sd, struct v4l2_mbus_framefmt 
 	if (fmt->code != V4L2_MBUS_FMT_FIXED)
 		return -EINVAL;
 
-	/* FIXME need better bounds checking here */
 	if (fmt->width < 1 || fmt->width > 1440)
 		return -EINVAL;
 	if (fmt->height < 1 || fmt->height > 960)
@@ -1091,7 +1090,7 @@ static int saa717x_s_audio_routing(struct v4l2_subdev *sd,
 {
 	struct saa717x_state *decoder = to_state(sd);
 
-	if (input < 3) { /* FIXME! --tadachi */
+	if (input < 3) {
 		decoder->audio_input = input;
 		v4l2_dbg(1, debug, sd,
 				"set decoder audio input to %d\n",
@@ -1325,11 +1324,10 @@ static int saa717x_probe(struct i2c_client *client,
 	decoder->input = -1;
 	decoder->enable = 1;
 
-	/* FIXME!! */
 	decoder->playback = 0;	/* initially capture mode used */
 	decoder->audio = 1; /* DECODER_AUDIO_48_KHZ */
 
-	decoder->audio_input = 2; /* FIXME!! */
+	decoder->audio_input = 2;
 
 	decoder->tuner_audio_mode = TUNER_AUDIO_STEREO;
 	/* set volume, bass and treble */
@@ -1338,7 +1336,6 @@ static int saa717x_probe(struct i2c_client *client,
 
 	v4l2_dbg(1, debug, sd, "writing init values\n");
 
-	/* FIXME!! */
 	saa717x_write_regs(sd, reg_init_initialize);
 
 	v4l2_ctrl_handler_setup(hdl);

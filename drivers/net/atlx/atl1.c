@@ -289,7 +289,6 @@ static s32 atl1_reset_hw(struct atl1_hw *hw)
 			break;
 		/* delay 1 ms */
 		msleep(1);
-		/* FIXME: still the right way to do this? */
 		cpu_relax();
 	}
 
@@ -3609,7 +3608,6 @@ static int atl1_set_pauseparam(struct net_device *netdev,
 	return 0;
 }
 
-/* FIXME: is this right? -- CHS */
 static u32 atl1_get_rx_csum(struct net_device *netdev)
 {
 	return 1;

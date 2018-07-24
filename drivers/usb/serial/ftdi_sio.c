@@ -127,21 +127,6 @@ static struct ftdi_sio_quirk ftdi_stmclite_quirk = {
 	.probe	= ftdi_stmclite_probe,
 };
 
-/*
- * The 8U232AM has the same API as the sio except for:
- * - it can support MUCH higher baudrates; up to:
- *   o 921600 for RS232 and 2000000 for RS422/485 at 48MHz
- *   o 230400 at 12MHz
- *   so .. 8U232AM's baudrate setting codes are different
- * - it has a two byte status code.
- * - it returns characters every 16ms (the FTDI does it every 40ms)
- *
- * the bcdDevice value is used to differentiate FT232BM and FT245BM from
- * the earlier FT8U232AM and FT8U232BM.  For now, include all known VID/PID
- * combinations in both tables.
- * FIXME: perhaps bcdDevice can also identify 12MHz FT8U232AM devices,
- * but I don't know if those ever went into mass production. [Ian Abbott]
- */
 
 
 
@@ -1039,7 +1024,6 @@ static int update_mctrl(struct usb_serial_port *port, unsigned int set,
 				(clear & TIOCM_DTR) ? "LOW" : "unchanged",
 				(set & TIOCM_RTS) ? "HIGH" :
 				(clear & TIOCM_RTS) ? "LOW" : "unchanged");
-		/* FIXME: locking on last_dtr_rts */
 		priv->last_dtr_rts = (priv->last_dtr_rts & ~clear) | set;
 	}
 	return rv;
@@ -1522,8 +1506,6 @@ static int create_sysfs_attrs(struct usb_serial_port *port)
 
 	dbg("%s", __func__);
 
-	/* XXX I've no idea if the original SIO supports the event_char
-	 * sysfs parameter, so I'm playing it safe.  */
 	if (priv->chip_type != SIO) {
 		dbg("sysfs attributes for %s", ftdi_chip_name[priv->chip_type]);
 		retval = device_create_file(&port->dev, &dev_attr_event_char);
@@ -1546,7 +1528,6 @@ static void remove_sysfs_attrs(struct usb_serial_port *port)
 
 	dbg("%s", __func__);
 
-	/* XXX see create_sysfs_attrs */
 	if (priv->chip_type != SIO) {
 		device_remove_file(&port->dev, &dev_attr_event_char);
 		if (priv->chip_type == FT232BM ||
@@ -1668,7 +1649,6 @@ static int ftdi_NDI_device_setup(struct usb_serial *serial)
 	dbg("%s setting NDI device latency to %d", __func__, latency);
 	dev_info(&udev->dev, "NDI device with a latency value of %d", latency);
 
-	/* FIXME: errors are not returned */
 	usb_control_msg(udev, usb_sndctrlpipe(udev, 0),
 				FTDI_SIO_SET_LATENCY_TIMER_REQUEST,
 				FTDI_SIO_SET_LATENCY_TIMER_REQUEST_TYPE,
@@ -2017,9 +1997,6 @@ static void ftdi_set_termios(struct tty_struct *tty,
 
 	cflag = termios->c_cflag;
 
-	/* FIXME -For this cut I don't care if the line is really changing or
-	   not  - so just do the change regardless  - should be able to
-	   compare old_termios and tty->termios */
 	/* NOTE These routines can get interrupted by
 	   ftdi_sio_read_bulk_callback  - need to examine what this means -
 	   don't see any problems yet */

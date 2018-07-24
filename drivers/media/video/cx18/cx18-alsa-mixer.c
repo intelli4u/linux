@@ -146,17 +146,7 @@ static struct snd_kcontrol_new snd_cx18_mixer_tv_vol __initdata = {
 	.tlv.p = snd_cx18_mixer_tv_vol_db_scale
 };
 
-/* FIXME - add mute switch and balance, bass, treble sliders:
-	V4L2_CID_AUDIO_MUTE
 
-	V4L2_CID_AUDIO_BALANCE
-
-	V4L2_CID_AUDIO_BASS
-	V4L2_CID_AUDIO_TREBLE
-*/
-
-/* FIXME - add stereo, lang1, lang2, mono menu */
-/* FIXME - add CS5345 I2S volume for HVR-1600 */
 
 int __init snd_cx18_mixer_create(struct snd_cx18_card *cxsc)
 {

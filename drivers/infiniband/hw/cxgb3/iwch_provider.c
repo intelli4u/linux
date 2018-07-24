@@ -963,11 +963,6 @@ static struct ib_qp *iwch_create_qp(struct ib_pd *pd,
 	qhp->attr.state = IWCH_QP_STATE_IDLE;
 	qhp->attr.next_state = IWCH_QP_STATE_IDLE;
 
-	/*
-	 * XXX - These don't get passed in from the openib user
-	 * at create time.  The CM sets them via a QP modify.
-	 * Need to fix...  I think the CM should
-	 */
 	qhp->attr.enable_rdma_read = 1;
 	qhp->attr.enable_rdma_write = 1;
 	qhp->attr.enable_bind = 1;

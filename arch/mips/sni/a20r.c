@@ -227,7 +227,6 @@ void __init sni_a20r_irq_init(void)
 
 void sni_a20r_init(void)
 {
-	/* FIXME, remove if not needed */
 }
 
 static int __init snirm_a20r_setup_devinit(void)

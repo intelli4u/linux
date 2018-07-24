@@ -1,4 +1,4 @@
-/* $Id: isdnl2.c,v 2.30.2.4 2004/02/11 13:21:34 keil Exp $
+/* $Id: isdnl2.c,v 2.30.2.4 2004/02/11 13:21:34 Exp $
  *
  * Author       Karsten Keil
  *              based on the teles driver from Jan den Ouden

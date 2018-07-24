@@ -397,16 +397,6 @@ int __sysfs_add_one(struct sysfs_addrm_cxt *acxt, struct sysfs_dirent *sd)
 	return 0;
 }
 
-/**
- *	sysfs_pathname - return full path to sysfs dirent
- *	@sd: sysfs_dirent whose path we want
- *	@path: caller allocated buffer
- *
- *	Gives the name "/" to the sysfs_root entry; any path returned
- *	is relative to wherever sysfs is mounted.
- *
- *	XXX: does no error checking on @path size
- */
 static char *sysfs_pathname(struct sysfs_dirent *sd, char *path)
 {
 	if (sd->s_parent) {

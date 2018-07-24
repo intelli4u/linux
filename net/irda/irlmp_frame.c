@@ -278,7 +278,6 @@ void irlmp_link_disconnect_indication(struct lap_cb *lap,
 	lap->reason = reason;
 	lap->daddr = DEV_ADDR_ANY;
 
-	/* FIXME: must do something with the skb if any */
 
 	/*
 	 *  Inform station state machine

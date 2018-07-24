@@ -249,9 +249,8 @@ static irqreturn_t dma_err(int irq, void *dummy)
 	}
 #else
 	dmaor_reset(0);
-#if defined(CONFIG_CPU_SUBTYPE_SH7723)	|| \
-		defined(CONFIG_CPU_SUBTYPE_SH7780)	|| \
-		defined(CONFIG_CPU_SUBTYPE_SH7785)
+#if defined(CONFIG_CPU_SUBTYPE_SH7723)	|| defined(CONFIG_CPU_SUBTYPE_SH7780)	|| \
+	defined(CONFIG_CPU_SUBTYPE_SH7785)
 	dmaor_reset(1);
 #endif
 	disable_irq(irq);
@@ -322,9 +321,8 @@ static int __init sh_dmac_init(void)
 	i = dmaor_reset(0);
 	if (unlikely(i != 0))
 		return i;
-#if defined(CONFIG_CPU_SUBTYPE_SH7723)	|| \
-		defined(CONFIG_CPU_SUBTYPE_SH7780)	|| \
-		defined(CONFIG_CPU_SUBTYPE_SH7785)
+#if defined(CONFIG_CPU_SUBTYPE_SH7723)	|| defined(CONFIG_CPU_SUBTYPE_SH7780)	|| \
+	defined(CONFIG_CPU_SUBTYPE_SH7785)
 	i = dmaor_reset(1);
 	if (unlikely(i != 0))
 		return i;

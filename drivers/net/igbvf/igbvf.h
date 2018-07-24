@@ -286,7 +286,6 @@ struct igbvf_info {
 	s32                     (*get_variants)(struct igbvf_adapter *);
 };
 
-/* hardware capability, feature, and workaround flags */
 #define IGBVF_FLAG_RX_CSUM_DISABLED             (1 << 0)
 
 #define IGBVF_RX_DESC_ADV(R, i)     \

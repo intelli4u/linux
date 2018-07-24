@@ -215,7 +215,6 @@ enum {
 int netlbl_unlabel_genl_init(void);
 
 /* Unlabeled connection hash table size */
-/* XXX - currently this number is an uneducated guess */
 #define NETLBL_UNLHSH_BITSIZE       7
 
 /* General Unlabeled init function */

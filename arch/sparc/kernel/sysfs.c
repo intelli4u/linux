@@ -98,7 +98,6 @@ static struct attribute_group mmu_stat_group = {
 	.name = "mmu_stats",
 };
 
-/* XXX convert to rusty's on_one_cpu */
 static unsigned long run_on_cpu(unsigned long cpu,
 			        unsigned long (*func)(unsigned long),
 				unsigned long arg)

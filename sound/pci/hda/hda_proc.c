@@ -538,7 +538,6 @@ static void print_gpio(struct snd_info_buffer *buffer,
 			    (sticky & (1<<i)) ? 1 : 0,
 			    (data & (1<<i)) ? 1 : 0,
 			    (unsol & (1<<i)) ? 1 : 0);
-	/* FIXME: add GPO and GPI pin information */
 	print_nid_array(buffer, codec, nid, &codec->mixers);
 	print_nid_array(buffer, codec, nid, &codec->nids);
 }
@@ -724,4 +723,3 @@ int snd_hda_codec_proc_new(struct hda_codec *codec)
 	snd_info_set_text_ops(entry, codec, print_codec_info);
 	return 0;
 }
-

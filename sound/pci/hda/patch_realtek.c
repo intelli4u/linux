@@ -1091,7 +1091,6 @@ static void alc_mic_automute(struct hda_codec *codec)
 					  alive->mux_idx);
 	}
 
-	/* FIXME: analog mixer */
 }
 
 /* unsolicited event for HP jack sensing */
@@ -1214,20 +1213,6 @@ static void alc_auto_init_amp(struct hda_codec *codec, int type)
 		case 0x10ec0888:
 			alc888_coef_init(codec);
 			break;
-#if 0 /* XXX: This may cause the silent output on speaker on some machines */
-		case 0x10ec0267:
-		case 0x10ec0268:
-			snd_hda_codec_write(codec, 0x20, 0,
-					    AC_VERB_SET_COEF_INDEX, 7);
-			tmp = snd_hda_codec_read(codec, 0x20, 0,
-						 AC_VERB_GET_PROC_COEF, 0);
-			snd_hda_codec_write(codec, 0x20, 0,
-					    AC_VERB_SET_COEF_INDEX, 7);
-			snd_hda_codec_write(codec, 0x20, 0,
-					    AC_VERB_SET_PROC_COEF,
-					    tmp | 0x3000);
-			break;
-#endif /* XXX */
 		}
 		break;
 	}
@@ -1658,7 +1643,6 @@ static struct hda_verb alc888_4ST_ch6_intel_init[] = {
 /* Line-in jack as Surround */
 	{ 0x1a, AC_VERB_SET_PIN_WIDGET_CONTROL, PIN_OUT },
 	{ 0x1a, AC_VERB_SET_AMP_GAIN_MUTE, AMP_OUT_UNMUTE },
-/* Line-Out as CLFE (workaround because Mic-in is not loud enough) */
 	{ 0x17, AC_VERB_SET_CONNECT_SEL, 0x03},
 	{ } /* end */
 };
@@ -3886,7 +3870,6 @@ static int alc_build_pcms(struct hda_codec *codec)
 			info->stream[SNDRV_PCM_STREAM_CAPTURE] = *(spec->stream_digital_capture);
 			info->stream[SNDRV_PCM_STREAM_CAPTURE].nid = spec->dig_in_nid;
 		}
-		/* FIXME: do we need this for all Realtek codec models? */
 		codec->spdif_status_reset = 1;
 	}
 
@@ -4446,7 +4429,7 @@ static struct alc_config_preset alc880_presets[] = {
 				alc880_gpio2_init_verbs },
 		.num_dacs = ARRAY_SIZE(alc880_dac_nids),
 		.dac_nids = alc880_dac_nids,
-		.adc_nids = alc880_adc_nids_alt, /* FIXME: correct? */
+		.adc_nids = alc880_adc_nids_alt,
 		.num_adc_nids = 1, /* single ADC */
 		.hp_nid = 0x03,
 		.num_channel_mode = ARRAY_SIZE(alc880_2_jack_modes),
@@ -5945,56 +5928,6 @@ static struct hda_verb alc260_init_verbs[] = {
 	{ }
 };
 
-#if 0 /* should be identical with alc260_init_verbs? */
-static struct hda_verb alc260_hp_init_verbs[] = {
-	/* Headphone and output */
-	{0x10, AC_VERB_SET_PIN_WIDGET_CONTROL, 0xc0},
-	/* mono output */
-	{0x11, AC_VERB_SET_PIN_WIDGET_CONTROL, 0x40},
-	/* Mic1 (rear panel) pin widget for input and vref at 80% */
-	{0x12, AC_VERB_SET_PIN_WIDGET_CONTROL, 0x24},
-	/* Mic2 (front panel) pin widget for input and vref at 80% */
-	{0x13, AC_VERB_SET_PIN_WIDGET_CONTROL, 0x24},
-	/* Line In pin widget for input */
-	{0x14, AC_VERB_SET_PIN_WIDGET_CONTROL, 0x20},
-	/* Line-2 pin widget for output */
-	{0x15, AC_VERB_SET_PIN_WIDGET_CONTROL, 0x40},
-	/* CD pin widget for input */
-	{0x16, AC_VERB_SET_PIN_WIDGET_CONTROL, 0x20},
-	/* unmute amp left and right */
-	{0x04, AC_VERB_SET_AMP_GAIN_MUTE, 0x7000},
-	/* set connection select to line in (default select for this ADC) */
-	{0x04, AC_VERB_SET_CONNECT_SEL, 0x02},
-	/* unmute Line-Out mixer amp left and right (volume = 0) */
-	{0x08, AC_VERB_SET_AMP_GAIN_MUTE, 0xb000},
-	/* mute pin widget amp left and right (no gain on this amp) */
-	{0x15, AC_VERB_SET_AMP_GAIN_MUTE, 0x0000},
-	/* unmute HP mixer amp left and right (volume = 0) */
-	{0x09, AC_VERB_SET_AMP_GAIN_MUTE, 0xb000},
-	/* mute pin widget amp left and right (no gain on this amp) */
-	{0x10, AC_VERB_SET_AMP_GAIN_MUTE, 0x0000},
-	/* Amp Indexes: CD = 0x04, Line In 1 = 0x02, Mic 1 = 0x00 &
-	 * Line In 2 = 0x03
-	 */
-	/* mute analog inputs */
-	{0x07, AC_VERB_SET_AMP_GAIN_MUTE, AMP_IN_MUTE(0)},
-	{0x07, AC_VERB_SET_AMP_GAIN_MUTE, AMP_IN_MUTE(1)},
-	{0x07, AC_VERB_SET_AMP_GAIN_MUTE, AMP_IN_MUTE(2)},
-	{0x07, AC_VERB_SET_AMP_GAIN_MUTE, AMP_IN_MUTE(3)},
-	{0x07, AC_VERB_SET_AMP_GAIN_MUTE, AMP_IN_MUTE(4)},
-	/* Amp Indexes: DAC = 0x01 & mixer = 0x00 */
-	/* Unmute Front out path */
-	{0x08, AC_VERB_SET_AMP_GAIN_MUTE, (0x7000 | (0x00 << 8))},
-	{0x08, AC_VERB_SET_AMP_GAIN_MUTE, (0x7000 | (0x01 << 8))},
-	/* Unmute Headphone out path */
-	{0x09, AC_VERB_SET_AMP_GAIN_MUTE, (0x7000 | (0x00 << 8))},
-	{0x09, AC_VERB_SET_AMP_GAIN_MUTE, (0x7000 | (0x01 << 8))},
-	/* Unmute Mono out path */
-	{0x0a, AC_VERB_SET_AMP_GAIN_MUTE, (0x7000 | (0x00 << 8))},
-	{0x0a, AC_VERB_SET_AMP_GAIN_MUTE, (0x7000 | (0x01 << 8))},
-	{ }
-};
-#endif
 
 static struct hda_verb alc260_hp_3013_init_verbs[] = {
 	/* Line out and output */
@@ -7137,7 +7070,6 @@ static hda_nid_t alc883_capsrc_nids_rev[2] = { 0x22, 0x23 };
 #define alc889_capsrc_nids	alc882_capsrc_nids
 
 /* input MUX */
-/* FIXME: should be a matrix-type input source selection */
 
 static struct hda_input_mux alc882_capture_source = {
 	.num_items = 4,
@@ -7837,7 +7769,6 @@ static struct hda_verb alc882_base_init_verbs[] = {
 	/* CD pin widget for input */
 	{0x1c, AC_VERB_SET_PIN_WIDGET_CONTROL, PIN_IN},
 
-	/* FIXME: use matrix-type input source selection */
 	/* Mixer elements: 0x18, 19, 1a, 1b, 1c, 1d, 14, 15, 16, 17, 0b */
 	/* Input mixer2 */
 	{0x23, AC_VERB_SET_AMP_GAIN_MUTE, AMP_IN_UNMUTE(0)},
@@ -7968,10 +7899,6 @@ static struct snd_kcontrol_new alc882_macpro_mixer[] = {
 	HDA_CODEC_MUTE("Headphone Playback Switch", 0x18, 0x0, HDA_OUTPUT),
 	HDA_CODEC_VOLUME("Line Playback Volume", 0x0b, 0x01, HDA_INPUT),
 	HDA_CODEC_MUTE("Line Playback Switch", 0x0b, 0x01, HDA_INPUT),
-	/* FIXME: this looks suspicious...
-	HDA_CODEC_VOLUME("Beep Playback Volume", 0x0b, 0x02, HDA_INPUT),
-	HDA_CODEC_MUTE("Beep Playback Switch", 0x0b, 0x02, HDA_INPUT),
-	*/
 	{ } /* end */
 };
 
@@ -7996,7 +7923,6 @@ static struct hda_verb alc882_macpro_init_verbs[] = {
 	{0x18, AC_VERB_SET_AMP_GAIN_MUTE, AMP_OUT_UNMUTE},
 	{0x18, AC_VERB_SET_CONNECT_SEL, 0x00},
 
-	/* FIXME: use matrix-type input source selection */
 	/* Mixer elements: 0x18, 19, 1a, 1b, 1c, 1d, 14, 15, 16, 17, 0b */
 	/* Input mixer1: unmute Mic, F-Mic, Line, CD inputs */
 	{0x24, AC_VERB_SET_AMP_GAIN_MUTE, AMP_IN_UNMUTE(0)},
@@ -8179,7 +8105,6 @@ static struct hda_verb alc885_mbp3_init_verbs[] = {
 	{0x1a, AC_VERB_SET_AMP_GAIN_MUTE, AMP_OUT_MUTE},
 	{0x1a, AC_VERB_SET_CONNECT_SEL, 0x01},
 
-	/* FIXME: use matrix-type input source selection */
 	/* Mixer elements: 0x18, 19, 1a, 1b, 1c, 1d, 14, 15, 16, 17, 0b */
 	/* Input mixer1: unmute Mic, F-Mic, Line, CD inputs */
 	{0x24, AC_VERB_SET_AMP_GAIN_MUTE, AMP_IN_UNMUTE(0)},
@@ -8486,7 +8411,6 @@ static struct hda_verb alc883_auto_init_verbs[] = {
 	{0x26, AC_VERB_SET_AMP_GAIN_MUTE, AMP_IN_UNMUTE(0)},
 	{0x26, AC_VERB_SET_AMP_GAIN_MUTE, AMP_IN_UNMUTE(1)},
 
-	/* FIXME: use matrix-type input source selection */
 	/* Mixer elements: 0x18, 19, 1a, 1b, 1c, 1d, 14, 15, 16, 17, 0b */
 	/* Input mixer2 */
 	{0x23, AC_VERB_SET_AMP_GAIN_MUTE, AMP_IN_UNMUTE(0)},
@@ -9700,9 +9624,6 @@ static struct snd_pci_quirk alc882_ssid_cfg_tbl[] = {
 	SND_PCI_QUIRK(0x106b, 0x4900, "iMac 9,1 Aluminum", ALC885_IMAC91),
 	SND_PCI_QUIRK(0x106b, 0x3f00, "Macbook 5,1", ALC885_MB5),
 	SND_PCI_QUIRK(0x106b, 0x4a00, "Macbook 5,2", ALC885_MB5),
-	/* FIXME: HP jack sense seems not working for MBP 5,1 or 5,2,
-	 * so apparently no perfect solution yet
-	 */
 	SND_PCI_QUIRK(0x106b, 0x4000, "MacbookPro 5,1", ALC885_MB5),
 	SND_PCI_QUIRK(0x106b, 0x4600, "MacbookPro 5,2", ALC885_MB5),
 	SND_PCI_QUIRK(0x106b, 0x4100, "Macmini 3,1", ALC885_MACMINI3),
@@ -10783,7 +10704,6 @@ static int patch_alc882(struct hda_codec *codec)
 
 	spec->stream_analog_playback = &alc882_pcm_analog_playback;
 	spec->stream_analog_capture = &alc882_pcm_analog_capture;
-	/* FIXME: setup DAC5 */
 	/*spec->stream_analog_alt_playback = &alc880_pcm_analog_alt_playback;*/
 	spec->stream_analog_alt_capture = &alc880_pcm_analog_alt_capture;
 
@@ -11325,7 +11245,6 @@ static struct hda_verb alc262_init_verbs[] = {
 	{0x14, AC_VERB_SET_CONNECT_SEL, 0x00},
 	{0x15, AC_VERB_SET_CONNECT_SEL, 0x01},
 
-	/* FIXME: use matrix-type input source selection */
 	/* Mixer elements: 0x18, 19, 1a, 1b, 1c, 1d, 14, 15, 16, 17, 0b */
 	/* Input mixer1: unmute Mic, F-Mic, Line, CD inputs */
 	{0x24, AC_VERB_SET_AMP_GAIN_MUTE, (0x7000 | (0x00 << 8))},
@@ -11962,7 +11881,6 @@ static struct hda_verb alc262_volume_init_verbs[] = {
 	{0x0e, AC_VERB_SET_AMP_GAIN_MUTE, AMP_IN_UNMUTE(0)},
 	{0x0e, AC_VERB_SET_AMP_GAIN_MUTE, AMP_IN_UNMUTE(1)},
 
-	/* FIXME: use matrix-type input source selection */
 	/* Mixer elements: 0x18, 19, 1a, 1b, 1c, 1d, 14, 15, 16, 17, 0b */
 	/* Input mixer1: unmute Mic, F-Mic, Line, CD inputs */
 	{0x24, AC_VERB_SET_AMP_GAIN_MUTE, (0x7000 | (0x00 << 8))},
@@ -12049,7 +11967,6 @@ static struct hda_verb alc262_HP_BPC_init_verbs[] = {
 	{0x1d, AC_VERB_SET_AMP_GAIN_MUTE, 0x7000 },
 
 
-	/* FIXME: use matrix-type input source selection */
 	/* Mixer elements: 0x18, 19, 1a, 1b, 1c, 1d, 14, 15, 0b, 12 */
 	/* Input mixer1: only unmute Mic */
 	{0x24, AC_VERB_SET_AMP_GAIN_MUTE, (0x7000 | (0x00 << 8))},
@@ -12151,7 +12068,6 @@ static struct hda_verb alc262_HP_BPC_WildWest_init_verbs[] = {
 	{0x1c, AC_VERB_SET_AMP_GAIN_MUTE, 0x7000 },
 	{0x1d, AC_VERB_SET_AMP_GAIN_MUTE, 0x7000 },
 
-	/* FIXME: use matrix-type input source selection */
 	/* Mixer elements: 0x18, 19, 1a, 1b, 1c, 1d, 14, 15, 16, 17, 0b */
 	/* Input mixer1: unmute Mic, F-Mic, Line, CD inputs */
 	{0x24, AC_VERB_SET_AMP_GAIN_MUTE, (0x7000 | (0x00 << 8))}, /*rear MIC*/
@@ -12333,10 +12249,6 @@ static struct snd_pci_quirk alc262_cfg_tbl[] = {
 	SND_PCI_QUIRK(0x104d, 0x9025, "Sony VAIO Z21MN", ALC262_TOSHIBA_S06),
 	SND_PCI_QUIRK(0x104d, 0x9035, "Sony VAIO VGN-FW170J", ALC262_AUTO),
 	SND_PCI_QUIRK(0x104d, 0x9047, "Sony VAIO Type G", ALC262_AUTO),
-#if 0 /* disable the quirk since model=auto works better in recent versions */
-	SND_PCI_QUIRK_MASK(0x104d, 0xff00, 0x9000, "Sony VAIO",
-			   ALC262_SONY_ASSAMD),
-#endif
 	SND_PCI_QUIRK(0x1179, 0x0001, "Toshiba dynabook SS RX1",
 		      ALC262_TOSHIBA_RX1),
 	SND_PCI_QUIRK(0x1179, 0xff7b, "Toshiba S06", ALC262_TOSHIBA_S06),
@@ -12597,18 +12509,6 @@ static int patch_alc262(struct hda_codec *codec)
 		return -ENOMEM;
 
 	codec->spec = spec;
-#if 0
-	/* pshou 07/11/05  set a zero PCM sample to DAC when FIFO is
-	 * under-run
-	 */
-	{
-	int tmp;
-	snd_hda_codec_write(codec, 0x1a, 0, AC_VERB_SET_COEF_INDEX, 7);
-	tmp = snd_hda_codec_read(codec, 0x20, 0, AC_VERB_GET_PROC_COEF, 0);
-	snd_hda_codec_write(codec, 0x1a, 0, AC_VERB_SET_COEF_INDEX, 7);
-	snd_hda_codec_write(codec, 0x1a, 0, AC_VERB_SET_PROC_COEF, tmp | 0x80);
-	}
-#endif
 	alc_auto_parse_customize_define(codec);
 
 	alc_fix_pll_init(codec, 0x20, 0x0a, 10);
@@ -14239,7 +14139,6 @@ static struct hda_verb alc269_init_verbs[] = {
 	{0x14, AC_VERB_SET_AMP_GAIN_MUTE, AMP_OUT_UNMUTE},
 	{0x15, AC_VERB_SET_AMP_GAIN_MUTE, AMP_OUT_UNMUTE},
 
-	/* FIXME: use Mux-type input source selection */
 	/* Mixer elements: 0x18, 19, 1a, 1b, 1d, 0b */
 	/* Input mixer1: unmute Mic, F-Mic, Line, CD inputs */
 	{0x23, AC_VERB_SET_CONNECT_SEL, 0x00},
@@ -14282,7 +14181,6 @@ static struct hda_verb alc269vb_init_verbs[] = {
 	{0x14, AC_VERB_SET_AMP_GAIN_MUTE, AMP_OUT_UNMUTE},
 	{0x21, AC_VERB_SET_AMP_GAIN_MUTE, AMP_OUT_UNMUTE},
 
-	/* FIXME: use Mux-type input source selection */
 	/* Mixer elements: 0x18, 19, 1a, 1b, 1d, 0b */
 	/* Input mixer1: unmute Mic, F-Mic, Line, CD inputs */
 	{0x22, AC_VERB_SET_CONNECT_SEL, 0x00},
@@ -14822,10 +14720,6 @@ static struct hda_verb alc861_threestack_ch2_init[] = {
 	{ 0x0d, AC_VERB_SET_PIN_WIDGET_CONTROL, 0x24 },
 
 	{ 0x15, AC_VERB_SET_AMP_GAIN_MUTE, 0xb00c },
-#if 0
-	{ 0x15, AC_VERB_SET_AMP_GAIN_MUTE, (0x7000 | (0x01 << 8)) }, /*mic*/
-	{ 0x15, AC_VERB_SET_AMP_GAIN_MUTE, (0x7000 | (0x02 << 8)) }, /*line-in*/
-#endif
 	{ } /* end */
 };
 /*
@@ -14842,10 +14736,6 @@ static struct hda_verb alc861_threestack_ch6_init[] = {
 	{ 0x0d, AC_VERB_SET_CONNECT_SEL, 0x00 },
 
 	{ 0x15, AC_VERB_SET_AMP_GAIN_MUTE, 0xb080 },
-#if 0
-	{ 0x15, AC_VERB_SET_AMP_GAIN_MUTE, (0x7080 | (0x01 << 8)) }, /*mic*/
-	{ 0x15, AC_VERB_SET_AMP_GAIN_MUTE, (0x7080 | (0x02 << 8)) }, /*line in*/
-#endif
 	{ } /* end */
 };
 
@@ -14881,10 +14771,6 @@ static struct hda_verb alc861_asus_ch2_init[] = {
 	{ 0x0d, AC_VERB_SET_PIN_WIDGET_CONTROL, 0x24 },
 
 	{ 0x15, AC_VERB_SET_AMP_GAIN_MUTE, 0xb00c },
-#if 0
-	{ 0x15, AC_VERB_SET_AMP_GAIN_MUTE, (0x7000 | (0x01 << 8)) }, /*mic*/
-	{ 0x15, AC_VERB_SET_AMP_GAIN_MUTE, (0x7000 | (0x02 << 8)) }, /*line-in*/
-#endif
 	{ } /* end */
 };
 /* Set mic1 nad line-in as output and mute mixer */
@@ -14899,10 +14785,6 @@ static struct hda_verb alc861_asus_ch6_init[] = {
 	{ 0x0d, AC_VERB_SET_CONNECT_SEL, 0x00 },
 
 	{ 0x15, AC_VERB_SET_AMP_GAIN_MUTE, 0xb080 },
-#if 0
-	{ 0x15, AC_VERB_SET_AMP_GAIN_MUTE, (0x7080 | (0x01 << 8)) }, /*mic*/
-	{ 0x15, AC_VERB_SET_AMP_GAIN_MUTE, (0x7080 | (0x02 << 8)) }, /*line in*/
-#endif
 	{ } /* end */
 };
 
@@ -15713,16 +15595,12 @@ static struct snd_pci_quirk alc861_cfg_tbl[] = {
 	SND_PCI_QUIRK(0x1043, 0x13d7, "ASUS A9rp", ALC861_ASUS_LAPTOP),
 	SND_PCI_QUIRK(0x1043, 0x81cb, "ASUS P1-AH2", ALC861_3ST_DIG),
 	SND_PCI_QUIRK(0x1179, 0xff00, "Toshiba", ALC861_TOSHIBA),
-	/* FIXME: the entry below breaks Toshiba A100 (model=auto works!)
-	 *        Any other models that need this preset?
-	 */
 	/* SND_PCI_QUIRK(0x1179, 0xff10, "Toshiba", ALC861_TOSHIBA), */
 	SND_PCI_QUIRK(0x1462, 0x7254, "HP dx2200 (MSI MS-7254)", ALC861_3ST),
 	SND_PCI_QUIRK(0x1462, 0x7297, "HP dx2250 (MSI MS-7297)", ALC861_3ST),
 	SND_PCI_QUIRK(0x1584, 0x2b01, "Uniwill X40AIx", ALC861_UNIWILL_M31),
 	SND_PCI_QUIRK(0x1584, 0x9072, "Uniwill m31", ALC861_UNIWILL_M31),
 	SND_PCI_QUIRK(0x1584, 0x9075, "Airis Praxis N1212", ALC861_ASUS_LAPTOP),
-	/* FIXME: the below seems conflict */
 	/* SND_PCI_QUIRK(0x1584, 0x9075, "Uniwill", ALC861_UNIWILL_M31), */
 	SND_PCI_QUIRK(0x1849, 0x0660, "Asrock 939SLI32", ALC660_3ST),
 	SND_PCI_QUIRK(0x8086, 0xd600, "Intel", ALC861_3ST),
@@ -15970,7 +15848,6 @@ static hda_nid_t alc861vd_adc_nids[1] = {
 static hda_nid_t alc861vd_capsrc_nids[1] = { 0x22 };
 
 /* input MUX */
-/* FIXME: should be a matrix-type input source selection */
 static struct hda_input_mux alc861vd_capture_source = {
 	.num_items = 4,
 	.items = {
@@ -16957,7 +16834,6 @@ static hda_nid_t alc272_capsrc_nids[1] = { 0x23 };
 
 
 /* input MUX */
-/* FIXME: should be a matrix-type input source selection */
 static struct hda_input_mux alc662_capture_source = {
 	.num_items = 4,
 	.items = {
@@ -16985,29 +16861,6 @@ static struct hda_input_mux alc663_capture_source = {
 	},
 };
 
-#if 0 /* set to 1 for testing other input sources below */
-static struct hda_input_mux alc272_nc10_capture_source = {
-	.num_items = 16,
-	.items = {
-		{ "Autoselect Mic", 0x0 },
-		{ "Internal Mic", 0x1 },
-		{ "In-0x02", 0x2 },
-		{ "In-0x03", 0x3 },
-		{ "In-0x04", 0x4 },
-		{ "In-0x05", 0x5 },
-		{ "In-0x06", 0x6 },
-		{ "In-0x07", 0x7 },
-		{ "In-0x08", 0x8 },
-		{ "In-0x09", 0x9 },
-		{ "In-0x0a", 0x0a },
-		{ "In-0x0b", 0x0b },
-		{ "In-0x0c", 0x0c },
-		{ "In-0x0d", 0x0d },
-		{ "In-0x0e", 0x0e },
-		{ "In-0x0f", 0x0f },
-	},
-};
-#endif
 
 /*
  * 2ch mode
@@ -17417,7 +17270,6 @@ static struct hda_verb alc662_init_verbs[] = {
 	/* CD pin widget for input */
 	{0x1c, AC_VERB_SET_PIN_WIDGET_CONTROL, PIN_IN},
 
-	/* FIXME: use matrix-type input source selection */
 	/* Mixer elements: 0x18, 19, 1a, 1b, 1c, 1d, 14, 15, 16, 17, 0b */
 	/* Input mixer */
 	{0x22, AC_VERB_SET_AMP_GAIN_MUTE, AMP_IN_UNMUTE(0)},

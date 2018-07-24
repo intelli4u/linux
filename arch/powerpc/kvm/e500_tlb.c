@@ -174,7 +174,6 @@ static int kvmppc_e500_tlb_index(struct kvmppc_vcpu_e500 *vcpu_e500,
 {
 	int i;
 
-	/* XXX Replace loop with fancy data structures. */
 	for (i = 0; i < vcpu_e500->guest_tlb_size[tlbsel]; i++) {
 		struct tlbe *tlbe = &vcpu_e500->guest_tlb[tlbsel][i];
 		unsigned int tid;
@@ -236,7 +235,6 @@ static void kvmppc_e500_tlb1_invalidate(struct kvmppc_vcpu_e500 *vcpu_e500,
 	unsigned int pid = tid & 0xff;
 	unsigned int i;
 
-	/* XXX Replace loop with fancy data structures. */
 	for (i = 0; i < vcpu_e500->guest_tlb_size[1]; i++) {
 		struct tlbe *stlbe = &vcpu_e500->shadow_tlb[1][i];
 		unsigned int tid;
@@ -324,7 +322,6 @@ static inline void kvmppc_e500_shadow_map(struct kvmppc_vcpu_e500 *vcpu_e500,
 			     stlbe->mas3, stlbe->mas7);
 }
 
-/* XXX only map the one-one case, for now use TLB0 */
 static int kvmppc_e500_stlbe_map(struct kvmppc_vcpu_e500 *vcpu_e500,
 		int tlbsel, int esel)
 {
@@ -341,7 +338,6 @@ static int kvmppc_e500_stlbe_map(struct kvmppc_vcpu_e500 *vcpu_e500,
 
 /* Caller must ensure that the specified guest TLB entry is safe to insert into
  * the shadow TLB. */
-/* XXX for both one-one and one-to-many , for now use TLB1 */
 static int kvmppc_e500_tlb1_map(struct kvmppc_vcpu_e500 *vcpu_e500,
 		u64 gvaddr, gfn_t gfn, struct tlbe *gtlbe)
 {
@@ -366,7 +362,6 @@ void kvmppc_mmu_priv_switch(struct kvm_vcpu *vcpu, int usermode)
 		struct kvmppc_vcpu_e500 *vcpu_e500 = to_e500(vcpu);
 		int i;
 
-		/* XXX Replace loop with fancy data structures. */
 		for (i = 0; i < tlb1_max_shadow_size(); i++)
 			kvmppc_e500_stlbe_invalidate(vcpu_e500, 1, i);
 

@@ -239,7 +239,6 @@ static u8 hostaddr[ETH_ALEN];
  */
 static int __ref rndis_do_config(struct usb_configuration *c)
 {
-	/* FIXME alloc iConfiguration string, set it in c->strings */
 
 	if (gadget_is_otg(c->cdev->gadget)) {
 		c->descriptors = otg_desc;
@@ -272,7 +271,6 @@ MODULE_PARM_DESC(use_eem, "use CDC EEM mode");
  */
 static int __ref eth_do_config(struct usb_configuration *c)
 {
-	/* FIXME alloc iConfiguration string, set it in c->strings */
 
 	if (gadget_is_otg(c->cdev->gadget)) {
 		c->descriptors = otg_desc;

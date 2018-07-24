@@ -72,7 +72,7 @@ static void writeseg_end_io(struct bio *bio, int err)
 	struct logfs_super *super = logfs_super(sb);
 	struct page *page;
 
-	BUG_ON(!uptodate); /* FIXME: Retry io or write elsewhere */
+	BUG_ON(!uptodate);
 	BUG_ON(err);
 	BUG_ON(bio->bi_vcnt == 0);
 	do {
@@ -178,7 +178,7 @@ static void erase_end_io(struct bio *bio, int err)
 	struct super_block *sb = bio->bi_private; 
 	struct logfs_super *super = logfs_super(sb); 
 
-	BUG_ON(!uptodate); /* FIXME: Retry io or write elsewhere */ 
+	BUG_ON(!uptodate); 
 	BUG_ON(err); 
 	BUG_ON(bio->bi_vcnt == 0); 
 	bio_put(bio); 

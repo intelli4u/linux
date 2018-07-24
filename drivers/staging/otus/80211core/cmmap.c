@@ -1544,30 +1544,6 @@ void zfApProcessDisasoc(zdev_t* dev, zbuf_t* buf, u16_t* src, u16_t apId)
 
 void zfApProcessProbeRsp(zdev_t* dev, zbuf_t* buf, struct zsAdditionInfo* AddInfo)
 {
-#if 0
-    zmw_get_wlan_dev(dev);
-
-    zm_msg0_mm(ZM_LV_0, "Rx probersp");
-
-    /* Gather scan result */
-
-    //zm_debug_msg1("bssList Count = ", wd->sta.bssList.bssCount);
-    /* return if not in scanning */
-    if ((wd->heartBeatNotification & ZM_BSSID_LIST_SCAN)
-            != ZM_BSSID_LIST_SCAN)
-    {
-        return;
-    }
-
-    //if ( wd->sta.pUpdateBssList->bssCount == ZM_MAX_BSS )
-    if ( wd->sta.bssList.bssCount == ZM_MAX_BSS )
-    {
-        return;
-    }
-
-    zfProcessProbeRsp(dev, buf, AddInfo);
-
-#endif
 }
 
 /************************************************************************/
@@ -1686,7 +1662,6 @@ u16_t zfApAddIeTim(zdev_t* dev, zbuf_t* buf, u16_t offset, u16_t vap)
         uniBitMap[i] = 0;
     }
     highestByte = 0;
-#if 1
 
     zmw_enter_critical_section(dev);
 
@@ -1737,7 +1712,6 @@ u16_t zfApAddIeTim(zdev_t* dev, zbuf_t* buf, u16_t offset, u16_t vap)
     }
 
     zmw_leave_critical_section(dev);
-#endif
 
     zfQueueGenerateUapsdTim(dev, wd->ap.uapsdQ, uniBitMap, &highestByte);
 
@@ -2169,23 +2143,17 @@ u16_t zfIntrabssForward(zdev_t* dev, zbuf_t* buf, u8_t srcVap)
             goto zlTxError;
         }
 
-#if 1
         /* AP : Buffer frame for power saving STA */
         ret = zfApBufferPsFrame(dev, txBuf, vap);
         if (ret == 0)
         {
             /* forward frame if not been buffered */
-            #if 1
             /* Put to VTXQ[ac] */
             ret = zfPutVtxq(dev, txBuf);
             /* Push VTXQ[ac] */
             zfPushVtxq(dev);
-            #else
-            zfTxSendEth(dev, txBuf, vap, ZM_INTERNAL_ALLOC_BUF, 0);
-            #endif
 
         }
-#endif
     }
     return asocFlag;
 

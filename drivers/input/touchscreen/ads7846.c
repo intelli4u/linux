@@ -30,27 +30,6 @@
 #include <linux/regulator/consumer.h>
 #include <asm/irq.h>
 
-/*
- * This code has been heavily tested on a Nokia 770, and lightly
- * tested on other ads7846 devices (OSK/Mistral, Lubbock, Spitz).
- * TSC2046 is just newer ads7846 silicon.
- * Support for ads7843 tested on Atmel at91sam926x-EK.
- * Support for ads7845 has only been stubbed in.
- * Support for Analog Devices AD7873 and AD7843 tested.
- *
- * IRQ handling needs a workaround because of a shortcoming in handling
- * edge triggered IRQs on some platforms like the OMAP1/2. These
- * platforms don't handle the ARM lazy IRQ disabling properly, thus we
- * have to maintain our own SW IRQ disabled status. This should be
- * removed as soon as the affected platform's IRQ handling is fixed.
- *
- * App note sbaa036 talks in more detail about accurate sampling...
- * that ought to help in situations like LCDs inducing noise (which
- * can also be helped by using synch signals) and more generally.
- * This driver tries to utilize the measures described in the app
- * note. The strength of filtering can be set in the board-* specific
- * files.
- */
 
 #define TS_POLL_DELAY	(1 * 1000000)	/* ns delay before the first sample */
 #define TS_POLL_PERIOD	(5 * 1000000)	/* ns delay between samples */
@@ -126,7 +105,6 @@ struct ads7846 {
 	struct hrtimer		timer;
 	unsigned		pendown:1;	/* P: lock */
 	unsigned		pending:1;	/* P: lock */
-// FIXME remove "irq_disabled"
 	unsigned		irq_disabled:1;	/* P: lock */
 	unsigned		disabled:1;
 	unsigned		is_suspended:1;
@@ -141,11 +119,7 @@ struct ads7846 {
 };
 
 /* leave chip selected when we're done, for quicker re-select? */
-#if	0
-#define	CS_CHANGE(xfer)	((xfer).cs_change = 1)
-#else
 #define	CS_CHANGE(xfer)	((xfer).cs_change = 0)
-#endif
 
 /*--------------------------------------------------------------------------*/
 
@@ -241,7 +215,6 @@ static int ads7846_read12_ser(struct device *dev, unsigned command)
 
 	spi_message_init(&req->msg);
 
-	/* FIXME boards with ads7846 might use external vref instead ... */
 	use_internal = (ts->model == 7846);
 
 	/* maybe turn on internal vREF, and let it settle */
@@ -813,11 +786,6 @@ static irqreturn_t ads7846_irq(int irq, void *handle)
 	spin_lock_irqsave(&ts->lock, flags);
 	if (likely(get_pendown_state(ts))) {
 		if (!ts->irq_disabled) {
-			/* The ARM do_simple_IRQ() dispatcher doesn't act
-			 * like the other dispatchers:  it will report IRQs
-			 * even after they've been disabled.  We work around
-			 * that here.  (The "generic irq" framework may help...)
-			 */
 			ts->irq_disabled = 1;
 			disable_irq_nosync(ts->spi->irq);
 			ts->pending = 1;

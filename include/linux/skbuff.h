@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  *	Definitions for the 'struct sk_buff' memory handlers.
  *
@@ -317,7 +318,12 @@ struct sk_buff {
 	/* These two members must be first. */
 	struct sk_buff		*next;
 	struct sk_buff		*prev;
-
+#ifdef PKTC
+	unsigned char           pktc_cb[8];
+#endif
+#ifdef CTF_PPPOE
+	unsigned char           ctf_pppoe_cb[8];
+#endif
 	ktime_t			tstamp;
 
 	struct sock		*sk;
@@ -332,9 +338,36 @@ struct sk_buff {
 	char			cb[48] __aligned(8);
 
 	unsigned long		_skb_refdst;
-#ifdef CONFIG_XFRM
+#if defined(CONFIG_XFRM) || defined(CTFMAP)
 	struct	sec_path	*sp;
 #endif
+#ifdef CTFPOOL
+	void			*ctfpool;
+#endif
+#ifdef BCMDBG_CTRACE
+	struct list_head	ctrace_list;
+#define	CTRACE_NUM	16
+	char			*func[CTRACE_NUM];
+	int			line[CTRACE_NUM];
+	int			ctrace_start;
+	int			ctrace_count;
+#endif /* BCMDBG_CTRACE */
+#if defined(HNDCTF) || defined(CTFPOOL)
+	__u32			pktc_flags;
+#endif
+#ifdef HNDCTF
+	void			*ctf_ipc_txif;
+#endif
+#ifdef BCMFA
+#define BCM_FA_INVALID_IDX_VAL	0xFFF00000
+	__u32                   napt_idx;
+	__u32			napt_flags;
+#endif /* BCMFA */
+
+	__u8			tcpf_smb:1,
+				tcpf_hdrbuf:1,
+				tcpf_nf:1;
+
 	unsigned int		len,
 				data_len;
 	__u16			mac_len,
@@ -362,42 +395,12 @@ struct sk_buff {
 	__be16			protocol;
 
 	void			(*destructor)(struct sk_buff *skb);
-#if defined(CONFIG_NF_CONNTRACK) || defined(CONFIG_NF_CONNTRACK_MODULE)
-	struct nf_conntrack	*nfct;
-	struct sk_buff		*nfct_reasm;
-#endif
-#ifdef CONFIG_BRIDGE_NETFILTER
-	struct nf_bridge_info	*nf_bridge;
-#endif
-
 	int			skb_iif;
-#ifdef CONFIG_NET_SCHED
-	__u16			tc_index;	/* traffic control index */
-#ifdef CONFIG_NET_CLS_ACT
-	__u16			tc_verd;	/* traffic control verdict */
-#endif
-#endif
 
 	__u32			rxhash;
 
-	kmemcheck_bitfield_begin(flags2);
-	__u16			queue_mapping:16;
-#ifdef CONFIG_IPV6_NDISC_NODETYPE
-	__u8			ndisc_nodetype:2,
-				deliver_no_wcard:1;
-#else
-	__u8			deliver_no_wcard:1;
-#endif
-	kmemcheck_bitfield_end(flags2);
-
 	/* 0/14 bit hole */
 
-#ifdef CONFIG_NET_DMA
-	dma_cookie_t		dma_cookie;
-#endif
-#ifdef CONFIG_NETWORK_SECMARK
-	__u32			secmark;
-#endif
 	union {
 		__u32		mark;
 		__u32		dropcount;
@@ -415,6 +418,36 @@ struct sk_buff {
 				*data;
 	unsigned int		truesize;
 	atomic_t		users;
+	kmemcheck_bitfield_begin(flags2);
+	__u16			queue_mapping:16;
+#ifdef CONFIG_IPV6_NDISC_NODETYPE
+	__u8			ndisc_nodetype:2,
+				deliver_no_wcard:1;
+#else
+	__u8			deliver_no_wcard:1;
+#endif
+	kmemcheck_bitfield_end(flags2);
+#if defined(CONFIG_NF_CONNTRACK) || defined(CONFIG_NF_CONNTRACK_MODULE)
+	struct nf_conntrack	*nfct;
+	struct sk_buff		*nfct_reasm;
+	/* Cache info */
+	__u32			nfcache;
+#endif
+#ifdef CONFIG_BRIDGE_NETFILTER
+	struct nf_bridge_info	*nf_bridge;
+#endif
+#ifdef CONFIG_NET_SCHED
+	__u16			tc_index;	/* traffic control index */
+#ifdef CONFIG_NET_CLS_ACT
+	__u16			tc_verd;	/* traffic control verdict */
+#endif
+#endif
+#ifdef CONFIG_NET_DMA
+	dma_cookie_t		dma_cookie;
+#endif
+#ifdef CONFIG_NETWORK_SECMARK
+	__u32			secmark;
+#endif
 };
 
 #ifdef __KERNEL__
@@ -1429,7 +1462,12 @@ static inline int pskb_network_may_pull(struct sk_buff *skb, unsigned int len)
  * NET_IP_ALIGN(2) + ethernet_header(14) + IP_header(20/40) + ports(8)
  */
 #ifndef NET_SKB_PAD
+#if defined(CONFIG_PPTP) || defined(CONFIG_PPTP_MODULE) || \
+    defined(CONFIG_L2TP) || defined(CONFIG_L2TP_MODULE)
+#define NET_SKB_PAD	max(64, L1_CACHE_BYTES)
+#else
 #define NET_SKB_PAD	max(32, L1_CACHE_BYTES)
+#endif
 #endif
 
 extern int ___pskb_trim(struct sk_buff *skb, unsigned int len);
@@ -1551,25 +1589,48 @@ static inline struct sk_buff *netdev_alloc_skb(struct net_device *dev,
 	return __netdev_alloc_skb(dev, length, GFP_ATOMIC);
 }
 
-static inline struct sk_buff *netdev_alloc_skb_ip_align(struct net_device *dev,
-		unsigned int length)
+static inline struct sk_buff *__netdev_alloc_skb_ip_align(struct net_device *dev,
+		unsigned int length, gfp_t gfp)
 {
-	struct sk_buff *skb = netdev_alloc_skb(dev, length + NET_IP_ALIGN);
+	struct sk_buff *skb = __netdev_alloc_skb(dev, length + NET_IP_ALIGN, gfp);
 
 	if (NET_IP_ALIGN && skb)
 		skb_reserve(skb, NET_IP_ALIGN);
 	return skb;
 }
 
+static inline struct sk_buff *netdev_alloc_skb_ip_align(struct net_device *dev,
+		unsigned int length)
+{
+	return __netdev_alloc_skb_ip_align(dev, length, GFP_ATOMIC);
+}
+
 extern struct page *__netdev_alloc_page(struct net_device *dev, gfp_t gfp_mask);
+
+#if defined(CONFIG_BCM_RECVFILE)
+/**
+ * skb_frag_page - retrieve the page refered to by a paged fragment
+ * @frag: the paged fragment
+ *
+ * Returns the &struct page associated with @frag.
+ */
+static inline struct page *skb_frag_page(const skb_frag_t *frag)
+{
+	return frag->page;
+}
+
+extern int skb_copy_datagram_to_kernel_iovec(const struct sk_buff *from,
+					       int offset, struct iovec *to,
+					       int size);
+#endif /* CONFIG_BCM_RECVFILE */
 
 /**
  *	netdev_alloc_page - allocate a page for ps-rx on a specific device
  *	@dev: network device to receive on
  *
- * 	Allocate a new page node local to the specified device.
+ *	Allocate a new page node local to the specified device.
  *
- * 	%NULL is returned if there is no free memory.
+ *	%NULL is returned if there is no free memory.
  */
 static inline struct page *netdev_alloc_page(struct net_device *dev)
 {
@@ -1854,6 +1915,8 @@ extern int	       skb_shift(struct sk_buff *tgt, struct sk_buff *skb,
 				 int shiftlen);
 
 extern struct sk_buff *skb_segment(struct sk_buff *skb, int features);
+extern struct sk_buff *skb_tcp_segment(struct sk_buff *skb, int features,
+	unsigned int oldlen, unsigned thlen);
 
 static inline void *skb_header_pointer(const struct sk_buff *skb, int offset,
 				       int len, void *buffer)
@@ -2079,6 +2142,7 @@ static inline void nf_reset(struct sk_buff *skb)
 	skb->nfct = NULL;
 	nf_conntrack_put_reasm(skb->nfct_reasm);
 	skb->nfct_reasm = NULL;
+	/* skb->nfcache = 0; ? */
 #endif
 #ifdef CONFIG_BRIDGE_NETFILTER
 	nf_bridge_put(skb->nf_bridge);
@@ -2095,6 +2159,7 @@ static inline void __nf_copy(struct sk_buff *dst, const struct sk_buff *src)
 	dst->nfctinfo = src->nfctinfo;
 	dst->nfct_reasm = src->nfct_reasm;
 	nf_conntrack_get_reasm(src->nfct_reasm);
+	dst->nfcache = src->nfcache;
 #endif
 #ifdef CONFIG_BRIDGE_NETFILTER
 	dst->nf_bridge  = src->nf_bridge;

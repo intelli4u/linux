@@ -133,17 +133,6 @@ static int __devinit reg_fixed_voltage_probe(struct platform_device *pdev)
 	if (gpio_is_valid(config->gpio)) {
 		drvdata->enable_high = config->enable_high;
 
-		/* FIXME: Remove below print warning
-		 *
-		 * config->gpio must be set to -EINVAL by platform code if
-		 * GPIO control is not required. However, early adopters
-		 * not requiring GPIO control may forget to initialize
-		 * config->gpio to -EINVAL. This will cause GPIO 0 to be used
-		 * for GPIO control.
-		 *
-		 * This warning will be removed once there are a couple of users
-		 * for this driver.
-		 */
 		if (!config->gpio)
 			dev_warn(&pdev->dev,
 				"using GPIO 0 for regulator enable control\n");

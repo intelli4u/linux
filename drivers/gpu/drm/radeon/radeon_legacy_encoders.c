@@ -559,7 +559,7 @@ static void radeon_legacy_tmds_int_mode_set(struct drm_encoder *encoder,
 		     RADEON_FP_CRTC_USE_SHADOW_VEND |
 		     RADEON_FP_CRT_SYNC_ALT);
 
-    if (1) /*  FIXME rgbBits == 8 */
+    if (1)
 	    fp_gen_cntl |= RADEON_FP_PANEL_FORMAT;  /* 24 bit format */
     else
 	    fp_gen_cntl &= ~RADEON_FP_PANEL_FORMAT;/* 18 bit format */
@@ -675,7 +675,7 @@ static void radeon_legacy_tmds_ext_mode_set(struct drm_encoder *encoder,
 	} else {
 		fp2_gen_cntl = RREG32(RADEON_FP2_GEN_CNTL);
 
-		if (1) /*  FIXME rgbBits == 8 */
+		if (1)
 			fp2_gen_cntl |= RADEON_FP2_PANEL_FORMAT; /* 24 bit format, */
 		else
 			fp2_gen_cntl &= ~RADEON_FP2_PANEL_FORMAT;/* 18 bit format, */
@@ -684,7 +684,6 @@ static void radeon_legacy_tmds_ext_mode_set(struct drm_encoder *encoder,
 				  RADEON_FP2_DVO_EN |
 				  RADEON_FP2_DVO_RATE_SEL_SDR);
 
-		/* XXX: these are oem specific */
 		if (ASIC_IS_R300(rdev)) {
 			if ((dev->pdev->device == 0x4850) &&
 			    (dev->pdev->subsystem_vendor == 0x1028) &&

@@ -357,11 +357,6 @@ static int savage_dispatch_dma_prim(drm_savage_private_t * dev_priv,
 		dev_priv->state.common.vbaddr = dmabuf->bus_address;
 	}
 	if (S3_SAVAGE3D_SERIES(dev_priv->chipset) && dev_priv->waiting) {
-		/* Workaround for what looks like a hardware bug. If a
-		 * WAIT_3D_IDLE was emitted some time before the
-		 * indexed drawing command then the engine will lock
-		 * up. There are two known workarounds:
-		 * WAIT_IDLE_EMPTY or emit at least 63 NOPs. */
 		BEGIN_BCI(63);
 		for (i = 0; i < 63; ++i)
 			BCI_WRITE(BCI_CMD_WAIT);
@@ -607,11 +602,6 @@ static int savage_dispatch_dma_idx(drm_savage_private_t * dev_priv,
 		dev_priv->state.common.vbaddr = dmabuf->bus_address;
 	}
 	if (S3_SAVAGE3D_SERIES(dev_priv->chipset) && dev_priv->waiting) {
-		/* Workaround for what looks like a hardware bug. If a
-		 * WAIT_3D_IDLE was emitted some time before the
-		 * indexed drawing command then the engine will lock
-		 * up. There are two known workarounds:
-		 * WAIT_IDLE_EMPTY or emit at least 63 NOPs. */
 		BEGIN_BCI(63);
 		for (i = 0; i < 63; ++i)
 			BCI_WRITE(BCI_CMD_WAIT);

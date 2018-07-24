@@ -87,7 +87,7 @@
 #define OP_63_FNMSUB		30
 #define OP_63_FNMADD		31
 #define OP_63_FCMPO		32
-#define OP_63_MTFSB1		38 // XXX
+#define OP_63_MTFSB1		38
 #define OP_63_FSUB		20
 #define OP_63_FNEG		40
 #define OP_63_MCRFS		64
@@ -728,7 +728,6 @@ int kvmppc_emulate_paired_single(struct kvm_run *run, struct kvm_vcpu *vcpu)
 		/* X form */
 		switch (inst_get_field(inst, 21, 30)) {
 		case OP_4X_PS_CMPU0:
-			/* XXX */
 			emulated = EMULATE_FAIL;
 			break;
 		case OP_4X_PSQ_LX:
@@ -742,7 +741,6 @@ int kvmppc_emulate_paired_single(struct kvm_run *run, struct kvm_vcpu *vcpu)
 			break;
 		}
 		case OP_4X_PS_CMPO0:
-			/* XXX */
 			emulated = EMULATE_FAIL;
 			break;
 		case OP_4X_PSQ_LUX:
@@ -765,7 +763,6 @@ int kvmppc_emulate_paired_single(struct kvm_run *run, struct kvm_vcpu *vcpu)
 			vcpu->arch.qpr[ax_rd] ^= 0x80000000;
 			break;
 		case OP_4X_PS_CMPU1:
-			/* XXX */
 			emulated = EMULATE_FAIL;
 			break;
 		case OP_4X_PS_MR:
@@ -774,7 +771,6 @@ int kvmppc_emulate_paired_single(struct kvm_run *run, struct kvm_vcpu *vcpu)
 			vcpu->arch.qpr[ax_rd] = vcpu->arch.qpr[ax_rb];
 			break;
 		case OP_4X_PS_CMPO1:
-			/* XXX */
 			emulated = EMULATE_FAIL;
 			break;
 		case OP_4X_PS_NABS:
@@ -1154,15 +1150,11 @@ int kvmppc_emulate_paired_single(struct kvm_run *run, struct kvm_vcpu *vcpu)
 		case OP_63_MTFSB1:
 		case OP_63_MCRFS:
 		case OP_63_MTFSFI:
-			/* XXX need to implement */
 			break;
 		case OP_63_MFFS:
-			/* XXX missing CR */
 			*fpr_d = vcpu->arch.fpscr;
 			break;
 		case OP_63_MTFSF:
-			/* XXX missing fm bits */
-			/* XXX missing CR */
 			vcpu->arch.fpscr = *fpr_b;
 			break;
 		case OP_63_FCMPU:

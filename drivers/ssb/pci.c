@@ -574,9 +574,6 @@ static int sprom_extract(struct ssb_bus *bus, struct ssb_sprom *out,
 	memset(out->et0mac, 0xFF, 6);		/* preset et0 and et1 mac */
 	memset(out->et1mac, 0xFF, 6);
 	if ((bus->chip_id & 0xFF00) == 0x4400) {
-		/* Workaround: The BCM44XX chip has a stupid revision
-		 * number stored in the SPROM.
-		 * Always extract r1. */
 		out->revision = 1;
 		sprom_extract_r123(out, in);
 	} else if (bus->chip_id == 0x4321) {

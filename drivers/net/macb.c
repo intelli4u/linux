@@ -763,13 +763,8 @@ static void macb_reset_hw(struct macb *bp)
 	/* Make sure we have the write buffer for ourselves */
 	wmb();
 
-	/*
-	 * Disable RX and TX (XXX: Should we halt the transmission
-	 * more gracefully?)
-	 */
 	macb_writel(bp, NCR, 0);
 
-	/* Clear the stats registers (XXX: Update stats first?) */
 	macb_writel(bp, NCR, MACB_BIT(CLRSTAT));
 
 	/* Clear all status flags */
@@ -1023,7 +1018,6 @@ static struct net_device_stats *macb_get_stats(struct net_device *dev)
 	nstat->rx_crc_errors = hwstat->rx_fcs_errors;
 	nstat->rx_frame_errors = hwstat->rx_align_errors;
 	nstat->rx_fifo_errors = hwstat->rx_overruns;
-	/* XXX: What does "missed" mean? */
 	nstat->tx_aborted_errors = hwstat->tx_excessive_cols;
 	nstat->tx_carrier_errors = hwstat->tx_carrier_errors;
 	nstat->tx_fifo_errors = hwstat->tx_underruns;

@@ -380,11 +380,6 @@ static void dccp_ackvec_check_rcv_ackvector(struct dccp_ackvec *av,
 		return;
 
 	i = len;
-	/*
-	 * XXX
-	 * I think it might be more efficient to work backwards. See comment on
-	 * rcv_ackno. -sorbo.
-	 */
 	avr = list_entry(av->av_records.next, struct dccp_ackvec_record, avr_node);
 	while (i--) {
 		const u8 rl = *vector & DCCP_ACKVEC_LEN_MASK;

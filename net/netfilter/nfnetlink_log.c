@@ -577,9 +577,6 @@ nfulnl_log_packet(u_int8_t pf,
 	if (prefix)
 		plen = strlen(prefix) + 1;
 
-	/* FIXME: do we want to make the size calculation conditional based on
-	 * what is actually present?  way more branches and checks, but more
-	 * memory efficient... */
 	size =    NLMSG_SPACE(sizeof(struct nfgenmsg))
 		+ nla_total_size(sizeof(struct nfulnl_msg_packet_hdr))
 		+ nla_total_size(sizeof(u_int32_t))	/* ifindex */
@@ -670,7 +667,6 @@ unlock_and_release:
 	return;
 
 alloc_failure:
-	/* FIXME: statistics */
 	goto unlock_and_release;
 }
 EXPORT_SYMBOL_GPL(nfulnl_log_packet);

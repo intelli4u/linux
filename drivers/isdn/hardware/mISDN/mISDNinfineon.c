@@ -507,7 +507,6 @@ reset_inf(struct inf_hw *hw)
 		mdelay(10);
 		outb(DIVA_RESET_BIT, (u32)hw->cfg.start + DIVA_PCI_CTRL);
 		mdelay(10);
-		/* Workaround PCI9060 */
 		outb(9, (u32)hw->cfg.start + 0x69);
 		outb(DIVA_RESET_BIT | DIVA_LED_A,
 			(u32)hw->cfg.start + DIVA_PCI_CTRL);

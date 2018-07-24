@@ -38,8 +38,7 @@
  */
 #define L1_CACHE_SHIFT_MAX	5
 
-#if defined(CONFIG_SMP) && \
-    !defined(CONFIG_BFIN_CACHE_COHERENT)
+#if defined(CONFIG_SMP) && !defined(CONFIG_BFIN_CACHE_COHERENT)
 # if defined(CONFIG_BFIN_EXTMEM_ICACHEABLE) || defined(CONFIG_BFIN_L2_ICACHEABLE)
 # define __ARCH_SYNC_CORE_ICACHE
 # endif

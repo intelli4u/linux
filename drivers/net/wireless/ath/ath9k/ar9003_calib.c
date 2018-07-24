@@ -322,10 +322,6 @@ static bool ar9003_hw_iscal_supported(struct ath_hw *ah,
 {
 	switch (calType & ah->supp_cals) {
 	case IQ_MISMATCH_CAL:
-		/*
-		 * XXX: Run IQ Mismatch for non-CCK only
-		 * Note that CHANNEL_B is never set though.
-		 */
 		return true;
 	case ADC_GAIN_CAL:
 	case ADC_DC_CAL:

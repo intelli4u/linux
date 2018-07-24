@@ -868,17 +868,6 @@ static int saa6752hs_s_mbus_fmt(struct v4l2_subdev *sd, struct v4l2_mbus_framefm
 	if (f->code != V4L2_MBUS_FMT_FIXED)
 		return -EINVAL;
 
-	/*
-	  FIXME: translate and round width/height into EMPRESS
-	  subsample type:
-
-	  type   |   PAL   |  NTSC
-	  ---------------------------
-	  SIF    | 352x288 | 352x240
-	  1/2 D1 | 352x576 | 352x480
-	  2/3 D1 | 480x576 | 480x480
-	  D1     | 720x576 | 720x480
-	*/
 
 	dist_352 = abs(f->width - 352);
 	dist_480 = abs(f->width - 480);

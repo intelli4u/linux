@@ -248,10 +248,9 @@ int riotopen(struct tty_struct *tty, struct file *filp)
 
 
 		PortP->firstOpen++;
-		PortP->CookMode = 0;	/* XXX RIOCookMode(tp); */
+		PortP->CookMode = 0;
 		PortP->InUse = NOT_INUSE;
 
-		/* Tentative fix for bug PR27. Didn't work. */
 		/* PortP->gs.xmit_cnt = 0; */
 
 		rio_spin_unlock_irqrestore(&PortP->portSem, flags);
@@ -534,11 +533,6 @@ int riotclose(void *ptr)
 		PortP->closes++;
 
 close_end:
-	/* XXX: Why would a "DELETED" flag be reset here? I'd have
-	   thought that a "deleted" flag means that the port was
-	   permanently gone, but here we can make it reappear by it
-	   being in close during the "deletion".
-	 */
 	PortP->State &= ~(RIO_CLOSING | RIO_DELETED);
 	if (PortP->firstOpen)
 		PortP->firstOpen--;
@@ -650,5 +644,3 @@ int RIOShortCommand(struct rio_info *p, struct Port *PortP, int command, int len
 	rio_spin_unlock_irqrestore(&PortP->portSem, flags);
 	return p->RIOHalted ? RIO_FAIL : ~RIO_FAIL;
 }
-
-

@@ -64,7 +64,8 @@
 
 #define DEBUG
 
-#if !defined(CONFIG_FB_AMIGA_OCS) && !defined(CONFIG_FB_AMIGA_ECS) && !defined(CONFIG_FB_AMIGA_AGA)
+#if !defined(CONFIG_FB_AMIGA_OCS) && !defined(CONFIG_FB_AMIGA_ECS) && \
+	!defined(CONFIG_FB_AMIGA_AGA)
 #define CONFIG_FB_AMIGA_OCS   /* define at least one fb driver, this will change later */
 #endif
 
@@ -914,23 +915,6 @@ static struct fb_videomode ami_modedb[] __initdata = {
 	FB_SYNC_VERT_HIGH_ACT | FB_SYNC_COMP_HIGH_ACT, FB_VMODE_NONINTERLACED | FB_VMODE_YWRAP
     },
 
-#if 0
-
-    /*
-     *  A2024 video modes
-     *  These modes don't work yet because there's no A2024 driver.
-     */
-
-    {
-	/* 1024x800, 10 Hz */
-	"a2024-10", 10, 1024, 800, TAG_HIRES, 0, 0, 0, 0, 0, 0,
-	0, FB_VMODE_NONINTERLACED | FB_VMODE_YWRAP
-    }, {
-	/* 1024x800, 15 Hz */
-	"a2024-15", 15, 1024, 800, TAG_HIRES, 0, 0, 0, 0, 0, 0,
-	0, FB_VMODE_NONINTERLACED | FB_VMODE_YWRAP
-    }
-#endif
 };
 
 #define NUM_TOTAL_MODES  ARRAY_SIZE(ami_modedb)
@@ -3207,17 +3191,12 @@ static void ami_init_display(void)
 	amiga_audio_min_period = div16(par->htotal);
 
 	is_lace = par->bplcon0 & BPC0_LACE ? 1 : 0;
-#if 1
 	if (is_lace) {
 		i = custom.vposr >> 15;
 	} else {
 		custom.vposw = custom.vposr | 0x8000;
 		i = 1;
 	}
-#else
-	i = 1;
-	custom.vposw = custom.vposr | 0x8000;
-#endif
 	custom.cop2lc = (u_short *)ZTWO_PADDR(copdisplay.list[currentcop][i]);
 }
 
@@ -3658,16 +3637,6 @@ static void ami_build_copper(void)
 			                    par->diwstop_h, par->diwstop_v+1), diwhigh);
 			(cops++)->l = CMOVE(diwhigh2hw(par->diwstrt_h, par->diwstrt_v,
 			                    par->diwstop_h, par->diwstop_v), diwhigh);
-#if 0
-			if (par->beamcon0 & BMC0_VARBEAMEN) {
-				(copl++)->l = CMOVE(vtotal2hw(par->vtotal), vtotal);
-				(copl++)->l = CMOVE(vbstrt2hw(par->vbstrt+1), vbstrt);
-				(copl++)->l = CMOVE(vbstop2hw(par->vbstop+1), vbstop);
-				(cops++)->l = CMOVE(vtotal2hw(par->vtotal), vtotal);
-				(cops++)->l = CMOVE(vbstrt2hw(par->vbstrt), vbstrt);
-				(cops++)->l = CMOVE(vbstop2hw(par->vbstop), vbstop);
-			}
-#endif
 		}
 		p = ZTWO_PADDR(copdisplay.list[currentcop][0]);
 		(copl++)->l = CMOVE(highw(p), cop2lc);
@@ -3682,13 +3651,6 @@ static void ami_build_copper(void)
 		if (!IS_OCS) {
 			(copl++)->l = CMOVE(diwhigh2hw(par->diwstrt_h, par->diwstrt_v,
 			                    par->diwstop_h, par->diwstop_v), diwhigh);
-#if 0
-			if (par->beamcon0 & BMC0_VARBEAMEN) {
-				(copl++)->l = CMOVE(vtotal2hw(par->vtotal), vtotal);
-				(copl++)->l = CMOVE(vbstrt2hw(par->vbstrt), vbstrt);
-				(copl++)->l = CMOVE(vbstop2hw(par->vbstop), vbstop);
-			}
-#endif
 		}
 	}
 	copdisplay.rebuild[1] = copl;

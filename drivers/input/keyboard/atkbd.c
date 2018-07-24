@@ -74,7 +74,6 @@ static const unsigned short atkbd_set2_keycode[ATKBD_KEYMAP_SIZE] = {
 
 #ifdef CONFIG_KEYBOARD_ATKBD_HP_KEYCODES
 
-/* XXX: need a more general approach */
 
 #include "hpps2atkbd.h"	/* include the keyboard scancodes */
 
@@ -370,7 +369,7 @@ static irqreturn_t atkbd_interrupt(struct serio *serio, unsigned char data,
 
 	dev_dbg(&serio->dev, "Received %02x flags %02x\n", data, flags);
 
-#if !defined(__i386__) && !defined (__x86_64__)
+#if !defined(__i386__) && !defined(__x86_64__)
 	if ((flags & (SERIO_FRAME | SERIO_PARITY)) && (~flags & SERIO_TIMEOUT) && !atkbd->resend && atkbd->write) {
 		dev_warn(&serio->dev, "Frame/parity error: %02x\n", flags);
 		serio_write(serio, ATKBD_CMD_RESEND);
@@ -488,7 +487,6 @@ static irqreturn_t atkbd_interrupt(struct serio *serio, unsigned char data,
 			value = 0;
 			atkbd->last = 0;
 		} else if (!atkbd->softrepeat && test_bit(keycode, dev->key)) {
-			/* Workaround Toshiba laptop multiple keypress */
 			value = time_before(jiffies, atkbd->time) && atkbd->last == code ? 1 : 2;
 		} else {
 			value = 1;

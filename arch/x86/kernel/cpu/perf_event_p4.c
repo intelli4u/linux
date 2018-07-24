@@ -53,15 +53,6 @@ static struct p4_pebs_bind p4_pebs_bind_map[] = {
 	P4_GEN_PEBS_BIND(split_store_retired,		0x0000400, 0x0000002),
 };
 
-/*
- * Note that we don't use CCCR1 here, there is an
- * exception for P4_BSQ_ALLOCATION but we just have
- * no workaround
- *
- * consider this binding as resources which particular
- * event may borrow, it doesn't contain EventMask,
- * Tags and friends -- they are left to a caller
- */
 static struct p4_event_bind p4_event_bind_map[] = {
 	[P4_EVENT_TC_DELIVER_MODE] = {
 		.opcode		= P4_OPCODE(P4_EVENT_TC_DELIVER_MODE),
@@ -482,18 +473,6 @@ static int p4_hw_config(struct perf_event *event)
 		if (rc)
 			goto out;
 
-		/*
-		 * We don't control raw events so it's up to the caller
-		 * to pass sane values (and we don't count the thread number
-		 * on HT machine but allow HT-compatible specifics to be
-		 * passed on)
-		 *
-		 * Note that for RAW events we allow user to use P4_CCCR_RESERVED
-		 * bits since we keep additional info here (for cache events and etc)
-		 *
-		 * XXX: HT wide things should check perf_paranoid_cpu() &&
-		 *      CAP_SYS_ADMIN
-		 */
 		event->hw.config |= event->attr.config &
 			(p4_config_pack_escr(P4_ESCR_MASK_HT) |
 			 p4_config_pack_cccr(P4_CCCR_MASK_HT | P4_CCCR_RESERVED));
@@ -526,25 +505,6 @@ static inline int p4_pmu_clear_cccr_ovf(struct hw_perf_event *hwc)
 
 static void p4_pmu_disable_pebs(void)
 {
-	/*
-	 * FIXME
-	 *
-	 * It's still allowed that two threads setup same cache
-	 * events so we can't simply clear metrics until we knew
-	 * noone is depending on us, so we need kind of counter
-	 * for "ReplayEvent" users.
-	 *
-	 * What is more complex -- RAW events, if user (for some
-	 * reason) will pass some cache event metric with improper
-	 * event opcode -- it's fine from hardware point of view
-	 * but completely nonsence from "meaning" of such action.
-	 *
-	 * So at moment let leave metrics turned on forever -- it's
-	 * ok for now but need to be revisited!
-	 *
-	 * (void)checking_wrmsrl(MSR_IA32_PEBS_ENABLE, (u64)0);
-	 * (void)checking_wrmsrl(MSR_P4_PEBS_MATRIX_VERT, (u64)0);
-	 */
 }
 
 static inline void p4_pmu_disable_event(struct perf_event *event)
@@ -913,14 +873,6 @@ static __initconst const struct x86_pmu p4_pmu = {
 	.max_period		= (1ULL << 39) - 1,
 	.hw_config		= p4_hw_config,
 	.schedule_events	= p4_pmu_schedule_events,
-	/*
-	 * This handles erratum N15 in intel doc 249199-029,
-	 * the counter may not be updated correctly on write
-	 * so we need a second write operation to do the trick
-	 * (the official workaround didn't work)
-	 *
-	 * the former idea is taken from OProfile code
-	 */
 	.perfctr_second_write	= 1,
 };
 

@@ -42,12 +42,6 @@ extern const char *profile_mode_names[];
 
 #define PROFILE_IS_HAT(_profile) ((_profile)->flags & PFLAG_HAT)
 
-/*
- * FIXME: currently need a clean way to replace and remove profiles as a
- * set.  It should be done at the namespace level.
- * Either, with a set of profiles loaded at the namespace level or via
- * a mark and remove marked interface.
- */
 enum profile_mode {
 	APPARMOR_ENFORCE,	/* enforce access rules */
 	APPARMOR_COMPLAIN,	/* allow and log access violations */
@@ -98,28 +92,6 @@ struct aa_ns_acct {
 	int count;
 };
 
-/* struct aa_namespace - namespace for a set of profiles
- * @base: common policy
- * @parent: parent of namespace
- * @lock: lock for modifying the object
- * @acct: accounting for the namespace
- * @unconfined: special unconfined profile for the namespace
- * @sub_ns: list of namespaces under the current namespace.
- *
- * An aa_namespace defines the set profiles that are searched to determine
- * which profile to attach to a task.  Profiles can not be shared between
- * aa_namespaces and profile names within a namespace are guaranteed to be
- * unique.  When profiles in separate namespaces have the same name they
- * are NOT considered to be equivalent.
- *
- * Namespaces are hierarchical and only namespaces and profiles below the
- * current namespace are visible.
- *
- * Namespace names must be unique and can not contain the characters :/\0
- *
- * FIXME TODO: add vserver support of namespaces (can it all be done in
- *             userspace?)
- */
 struct aa_namespace {
 	struct aa_policy base;
 	struct aa_namespace *parent;

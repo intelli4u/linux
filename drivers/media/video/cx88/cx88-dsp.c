@@ -115,8 +115,6 @@ static u32 int_goertzel(s16 x[], u32 N, u32 freq)
 	tmp = (s64)s_prev2 * s_prev2 + (s64)s_prev * s_prev -
 		      (s64)coeff * s_prev2 * s_prev / 32768;
 
-	/* XXX: N must be low enough so that N*N fits in s32.
-	 * Else we need two divisions. */
 	divisor = N * N;
 	do_div(tmp, divisor);
 
@@ -224,7 +222,6 @@ static s32 detect_btsc(struct cx88_core *core, s16 x[], u32 N)
 	s32 dual = freq_magnitude(x, N, FREQ_BTSC_DUAL);
 	dprintk(1, "detect btsc: dual_ref=%d, dual=%d, sap_ref=%d, sap=%d"
 		   "\n", dual_ref, dual, sap_ref, sap);
-	/* FIXME: Currently not supported */
 	return UNSET;
 }
 
@@ -310,4 +307,3 @@ s32 cx88_dsp_detect_stereo_sap(struct cx88_core *core)
 	return ret;
 }
 EXPORT_SYMBOL(cx88_dsp_detect_stereo_sap);
-

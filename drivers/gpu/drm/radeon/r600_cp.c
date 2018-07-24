@@ -1855,10 +1855,8 @@ static void r600_cp_init_ring_buffer(struct drm_device *dev,
 
 #if __OS_HAS_AGP
 	if (dev_priv->flags & RADEON_IS_AGP) {
-		/* XXX */
 		radeon_write_agp_base(dev_priv, dev->agp->base);
 
-		/* XXX */
 		radeon_write_agp_location(dev_priv,
 			     (((dev_priv->gart_vm_start - 1 +
 				dev_priv->gart_size) & 0xffff0000) |
@@ -2080,7 +2078,6 @@ int r600_do_init_cp(struct drm_device *dev, drm_radeon_init_t *init,
 	}
 
 #if __OS_HAS_AGP
-	/* XXX */
 	if (dev_priv->flags & RADEON_IS_AGP) {
 		drm_core_ioremap_wc(dev_priv->cp_ring, dev);
 		drm_core_ioremap_wc(dev_priv->ring_rptr, dev);
@@ -2139,7 +2136,6 @@ int r600_do_init_cp(struct drm_device *dev, drm_radeon_init_t *init,
 		 * align it down.
 		 */
 #if __OS_HAS_AGP
-		/* XXX */
 		if (dev_priv->flags & RADEON_IS_AGP) {
 			base = dev->agp->base;
 			/* Check if valid */
@@ -2166,7 +2162,6 @@ int r600_do_init_cp(struct drm_device *dev, drm_radeon_init_t *init,
 	}
 
 #if __OS_HAS_AGP
-	/* XXX */
 	if (dev_priv->flags & RADEON_IS_AGP)
 		dev_priv->gart_buffers_offset = (dev->agp_buffer_map->offset
 						 - dev->agp->base
@@ -2204,7 +2199,6 @@ int r600_do_init_cp(struct drm_device *dev, drm_radeon_init_t *init,
 
 #if __OS_HAS_AGP
 	if (dev_priv->flags & RADEON_IS_AGP) {
-		/* XXX turn off pcie gart */
 	} else
 #endif
 	{
@@ -2546,7 +2540,6 @@ int r600_cp_dispatch_texture(struct drm_device *dev,
  */
 static u32 radeon_cs_id_get(struct drm_radeon_private *radeon)
 {
-	/* FIXME: check if wrap affect last reported wrap & sequence */
 	radeon->cs_id_scnt = (radeon->cs_id_scnt + 1) & 0x00FFFFFF;
 	if (!radeon->cs_id_scnt) {
 		/* increment wrap counter */

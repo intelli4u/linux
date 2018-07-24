@@ -239,4 +239,3 @@ static struct platform_driver ohci_hcd_pnx8550_driver = {
 	.probe		= ohci_hcd_pnx8550_drv_probe,
 	.remove		= ohci_hcd_pnx8550_drv_remove,
 };
-

@@ -12,7 +12,7 @@
 #define EV4_CPU                 2       /* EV4 (21064)          */
 #define LCA4_CPU                4       /* LCA4 (21066/21068)   */
 #define EV5_CPU                 5       /* EV5 (21164)          */
-#define EV45_CPU                6       /* EV4.5 (21064/xxx)    */
+#define EV45_CPU                6
 #define EV56_CPU		7	/* EV5.6 (21164)	*/
 #define EV6_CPU			8	/* EV6 (21264)		*/
 #define PCA56_CPU		9	/* PCA56 (21164PC)	*/

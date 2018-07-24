@@ -39,7 +39,7 @@
  */
 /*---------------------------------------------------------------------------*/
 
-#if (!defined(EASYCAP_H))
+#if !defined(EASYCAP_H)
 #define EASYCAP_H
 
 #if defined(EASYCAP_DEBUG)
@@ -92,7 +92,7 @@
 
 /*vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 #if defined(EASYCAP_IS_VIDEODEV_CLIENT)
-#if (!defined(__OLD_VIDIOC_))
+#if !defined(__OLD_VIDIOC_)
 #define __OLD_VIDIOC_
 #endif /* !defined(__OLD_VIDIOC_) */
 
@@ -104,7 +104,7 @@
 #endif /*EASYCAP_IS_VIDEODEV_CLIENT*/
 /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 
-#if (!defined(__OLD_VIDIOC_))
+#if !defined(__OLD_VIDIOC_)
 #define __OLD_VIDIOC_
 #endif /* !defined(__OLD_VIDIOC_) */
 #include <linux/videodev2.h>
@@ -115,7 +115,7 @@
 #include <config/video/usbvideo.h>
 #endif /*EASYCAP_NEEDS_USBVIDEO_H*/
 
-#if (!defined(PAGE_SIZE))
+#if !defined(PAGE_SIZE)
 #error "PAGE_SIZE not defined"
 #endif
 

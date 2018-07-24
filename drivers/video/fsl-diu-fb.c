@@ -37,12 +37,6 @@
 #include <linux/fsl-diu-fb.h>
 #include "edid.h"
 
-/*
- * These parameters give default parameters
- * for video output 1024x768,
- * FIXME - change timing to proper amounts
- * hsync 31.5kHz, vsync 60Hz
- */
 static struct fb_videomode __devinitdata fsl_diu_default_mode = {
 	.refresh	= 60,
 	.xres		= 1024,
@@ -319,10 +313,6 @@ static void fsl_diu_free(void *virt, size_t size)
 		free_pages_exact(virt, size);
 }
 
-/*
- * Workaround for failed writing desc register of planes.
- * Needed with MPC5121 DIU rev 2.0 silicon.
- */
 void wr_reg_wa(u32 *reg, u32 val)
 {
 	do {
@@ -976,7 +966,6 @@ static int fsl_diu_blank(int blank_mode, struct fb_info *info)
 	switch (blank_mode) {
 	case FB_BLANK_VSYNC_SUSPEND:
 	case FB_BLANK_HSYNC_SUSPEND:
-	/* FIXME: fixes to enable_panel and enable lcdc needed */
 	case FB_BLANK_NORMAL:
 	/*	fsl_diu_disable_panel(info);*/
 		break;
@@ -1327,7 +1316,6 @@ static irqreturn_t fsl_diu_isr(int irq, void *dev_id)
 	unsigned int status = in_be32(&hw->int_status);
 
 	if (status) {
-		/* This is the workaround for underrun */
 		if (status & INT_UNDRUN) {
 			out_be32(&hw->diu_mode, 0);
 			pr_debug("Err: DIU occurs underrun!\n");
@@ -1832,4 +1820,3 @@ MODULE_PARM_DESC(bpp, "Specify bit-per-pixel if not specified mode");
 module_param_named(monitor, monitor_port, int, 0);
 MODULE_PARM_DESC(monitor,
 	"Specify the monitor port (0, 1 or 2) if supported by the platform");
-

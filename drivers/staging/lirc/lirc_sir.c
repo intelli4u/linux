@@ -143,9 +143,8 @@ static unsigned int duty_cycle = 50;   /* duty cycle of 50% */
 #endif
 #ifndef LIRC_PORT
 /* for external dongles, default to com1 */
-#if defined(LIRC_SIR_ACTISYS_ACT200L) || \
-    defined(LIRC_SIR_ACTISYS_ACT220L) || \
-    defined(LIRC_SIR_TEKRAM)
+#if defined(LIRC_SIR_ACTISYS_ACT200L) || defined(LIRC_SIR_ACTISYS_ACT220L) || \
+	defined(LIRC_SIR_TEKRAM)
 #define LIRC_PORT 0x3f8
 #else
 /* onboard sir ports are typically com3 */
@@ -610,7 +609,7 @@ static irqreturn_t sir_interrupt(int irq, void *dev_id)
 	int iir, lsr;
 
 	while ((iir = inb(io + UART_IIR) & UART_IIR_ID)) {
-		switch (iir&UART_IIR_ID) { /* FIXME toto treba preriedit */
+		switch (iir&UART_IIR_ID) {
 		case UART_IIR_MSI:
 			(void) inb(io + UART_MSR);
 			break;
@@ -618,10 +617,6 @@ static irqreturn_t sir_interrupt(int irq, void *dev_id)
 			(void) inb(io + UART_LSR);
 			break;
 		case UART_IIR_THRI:
-#if 0
-			if (lsr & UART_LSR_THRE) /* FIFO is empty */
-				outb(data, io + UART_TX)
-#endif
 			break;
 		case UART_IIR_RDI:
 			/* avoid interference with timer */
@@ -744,14 +739,9 @@ static void send_pulse(unsigned long len)
 	}
 	while (bytes_out--) {
 		outb(PULSE, io + UART_TX);
-		/* FIXME treba seriozne cakanie z char/serial.c */
 		while (!(inb(io + UART_LSR) & UART_LSR_THRE))
 			;
 	}
-#if 0
-	if (time_left > 0)
-		safe_udelay(time_left);
-#endif
 }
 #endif
 

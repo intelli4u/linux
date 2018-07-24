@@ -175,24 +175,6 @@ static char *split_if_spec(char *str, ...)
 }
 
 
-#if 0
-/* Adjust SKB. */
-
-struct sk_buff *ether_adjust_skb(struct sk_buff *skb, int extra)
-{
-	if ((skb != NULL) && (skb_tailroom(skb) < extra)) {
-		struct sk_buff *skb2;
-
-		skb2 = skb_copy_expand(skb, 0, extra, GFP_ATOMIC);
-		dev_kfree_skb(skb);
-		skb = skb2;
-	}
-	if (skb != NULL)
-		skb_put(skb, extra);
-
-	return skb;
-}
-#endif
 
 /* Return the IP address as a string for a given device. */
 
@@ -266,21 +248,12 @@ static int tuntap_open(struct iss_net_private *lp)
 
 static void tuntap_close(struct iss_net_private *lp)
 {
-#if 0
-	if (lp->tp.info.tuntap.fixed_config)
-		iter_addresses(lp->tp.info.tuntap.dev, close_addr, lp->host.dev_name);
-#endif
 	simc_close(lp->tp.info.tuntap.fd);
 	lp->tp.info.tuntap.fd = -1;
 }
 
 static int tuntap_read (struct iss_net_private *lp, struct sk_buff **skb)
 {
-#if 0
-	*skb = ether_adjust_skb(*skb, ETH_HEADER_OTHER);
-	if (*skb == NULL)
-		return -ENOMEM;
-#endif
 
 	return simc_read(lp->tp.info.tuntap.fd,
 			(*skb)->data, (*skb)->dev->mtu + ETH_HEADER_OTHER);
@@ -334,10 +307,6 @@ static int tuntap_probe(struct iss_net_private *lp, int index, char *init)
 		strcpy(lp->tp.info.tuntap.dev_name, TRANSPORT_TUNTAP_NAME);
 
 
-#if 0
-	if (setup_etheraddr(mac_str, lp->mac))
-		lp->have_mac = 1;
-#endif
 	lp->mtu = TRANSPORT_TUNTAP_MTU;
 
 	//lp->info.tuntap.gate_addr = gate_addr;
@@ -352,10 +321,6 @@ static int tuntap_probe(struct iss_net_private *lp, int index, char *init)
 	lp->tp.poll = tuntap_poll;
 
 	printk("TUN/TAP backend - ");
-#if 0
-	if (lp->host.gate_addr != NULL)
-		printk("IP = %s", lp->host.gate_addr);
-#endif
 	printk("\n");
 
 	return 1;
@@ -431,7 +396,6 @@ static int iss_net_poll(void)
 			       "shutting it down\n", lp->dev->name, err);
 			dev_close(lp->dev);
 		} else {
-			// FIXME reactivate_fd(lp->fd, ISS_ETH_IRQ);
 		}
 	}
 
@@ -557,56 +521,20 @@ static struct net_device_stats *iss_net_get_stats(struct net_device *dev)
 
 static void iss_net_set_multicast_list(struct net_device *dev)
 {
-#if 0
-	if (dev->flags & IFF_PROMISC)
-		return;
-	else if (!netdev_mc_empty(dev))
-		dev->flags |= IFF_ALLMULTI;
-	else
-		dev->flags &= ~IFF_ALLMULTI;
-#endif
 }
 
 static void iss_net_tx_timeout(struct net_device *dev)
 {
-#if 0
-	dev->trans_start = jiffies;
-	netif_wake_queue(dev);
-#endif
 }
 
 static int iss_net_set_mac(struct net_device *dev, void *addr)
 {
-#if 0
-	struct iss_net_private *lp = netdev_priv(dev);
-	struct sockaddr *hwaddr = addr;
-
-	spin_lock(&lp->lock);
-	memcpy(dev->dev_addr, hwaddr->sa_data, ETH_ALEN);
-	spin_unlock(&lp->lock);
-#endif
 
 	return 0;
 }
 
 static int iss_net_change_mtu(struct net_device *dev, int new_mtu)
 {
-#if 0
-	struct iss_net_private *lp = netdev_priv(dev);
-	int err = 0;
-
-	spin_lock(&lp->lock);
-
-	// FIXME not needed new_mtu = transport_set_mtu(new_mtu, &lp->user);
-
-	if (new_mtu < 0)
-		err = new_mtu;
-	else
-		dev->mtu = new_mtu;
-
-	spin_unlock(&lp->lock);
-	return err;
-#endif
 	return -EINVAL;
 }
 
@@ -710,7 +638,6 @@ static int iss_net_configure(int index, char *init)
 
 	if (err) {
 		printk("Error registering net device!\n");
-		/* XXX: should we call ->remove() here? */
 		free_netdev(dev);
 		return 1;
 	}
@@ -718,14 +645,9 @@ static int iss_net_configure(int index, char *init)
 	init_timer(&lp->tl);
 	lp->tl.function = iss_net_user_timer_expire;
 
-#if 0
-	if (lp->have_mac)
-		set_ether_mac(dev, lp->mac);
-#endif
 	return 0;
 
 errout:
-	// FIXME: unregister; free, etc..
 	return -EIO;
 
 }
@@ -823,4 +745,3 @@ static int iss_net_init(void)
 }
 
 module_init(iss_net_init);
-

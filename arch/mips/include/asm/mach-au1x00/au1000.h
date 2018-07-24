@@ -525,7 +525,7 @@ enum soc_au1200_ints {
  * SDRAM register offsets
  */
 #if defined(CONFIG_SOC_AU1000) || defined(CONFIG_SOC_AU1500) || \
-    defined(CONFIG_SOC_AU1100)
+	defined(CONFIG_SOC_AU1100)
 #define MEM_SDMODE0		0x0000
 #define MEM_SDMODE1		0x0004
 #define MEM_SDMODE2		0x0008

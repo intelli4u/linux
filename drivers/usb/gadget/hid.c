@@ -30,7 +30,7 @@
 
 /*-------------------------------------------------------------------------*/
 
-#define HIDG_VENDOR_NUM		0x0525	/* XXX NetChip */
+#define HIDG_VENDOR_NUM		0x0525
 #define HIDG_PRODUCT_NUM	0xa4ac	/* Linux-USB HID gadget */
 
 /*-------------------------------------------------------------------------*/

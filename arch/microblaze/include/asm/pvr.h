@@ -181,7 +181,6 @@ struct pvr_s {
 			((pvr.pvr[5] & PVR5_DCACHE_ADDR_TAG_BITS_MASK) >> 26)
 #define PVR_DCACHE_USE_FSL(pvr)		(pvr.pvr[5] & PVR5_DCACHE_USE_FSL_MASK)
 #define PVR_DCACHE_ALLOW_WR(pvr)	(pvr.pvr[5] & PVR5_DCACHE_ALLOW_WR_MASK)
-/* FIXME two shifts on one line needs any comment */
 #define PVR_DCACHE_LINE_LEN(pvr) \
 			(1 << ((pvr.pvr[5] & PVR5_DCACHE_LINE_LEN_MASK) >> 21))
 #define PVR_DCACHE_BYTE_SIZE(pvr) \

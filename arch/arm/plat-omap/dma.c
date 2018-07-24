@@ -996,15 +996,6 @@ void omap_start_dma(int lch)
 
 	l = dma_read(CCR(lch));
 
-	/*
-	 * Errata: Inter Frame DMA buffering issue (All OMAP2420 and
-	 * OMAP2430ES1.0): DMA will wrongly buffer elements if packing and
-	 * bursting is enabled. This might result in data gets stalled in
-	 * FIFO at the end of the block.
-	 * Workaround: DMA channels must have BUFFERING_DISABLED bit set to
-	 * guarantee no data will stay in the DMA FIFO in case inter frame
-	 * buffering occurs.
-	 */
 	if (cpu_is_omap2420() ||
 	    (cpu_is_omap2430() && (omap_type() == OMAP2430_REV_ES1_0)))
 		l |= OMAP_DMA_CCR_BUFFERING_DISABLE;
@@ -2251,5 +2242,3 @@ static int __init omap_dma_cmdline_reserve_ch(char *str)
 }
 
 __setup("omap_dma_reserve_ch=", omap_dma_cmdline_reserve_ch);
-
-

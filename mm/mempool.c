@@ -238,10 +238,6 @@ repeat_alloc:
 	prepare_to_wait(&pool->wait, &wait, TASK_UNINTERRUPTIBLE);
 	smp_mb();
 	if (!pool->curr_nr) {
-		/*
-		 * FIXME: this should be io_schedule().  The timeout is there
-		 * as a workaround for some DM problems in 2.6.18.
-		 */
 		io_schedule_timeout(5*HZ);
 	}
 	finish_wait(&pool->wait, &wait);

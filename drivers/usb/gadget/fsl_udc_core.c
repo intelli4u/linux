@@ -1454,7 +1454,6 @@ static int process_ep_req(struct fsl_udc *udc, int pipe,
 				tmp &= ~errors;
 				curr_qh->size_ioc_int_sts = cpu_to_le32(tmp);
 				status = -EPIPE;
-				/* FIXME: continue with next queued TD? */
 
 				break;
 			}
@@ -2185,7 +2184,6 @@ static int __init struct_udc_setup(struct fsl_udc *udc,
 	udc->ep_qh_size = size;
 
 	/* Initialize ep0 status request structure */
-	/* FIXME: fsl_alloc_request() ignores ep argument */
 	udc->status_req = container_of(fsl_alloc_request(NULL, GFP_KERNEL),
 			struct fsl_req, req);
 	/* allocate a small amount of memory to get valid address */

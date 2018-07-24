@@ -266,8 +266,6 @@ static irqreturn_t snd_als300plus_interrupt(int irq, void *dev_id)
 			snd_als300_dbgplay("IRQ_CAPTURE\n");
 		}
 	}
-	/* FIXME: Ack other interrupt types. Not important right now as
-	 * those other devices aren't enabled. */
 	return IRQ_HANDLED;
 }
 

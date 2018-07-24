@@ -201,24 +201,6 @@ static unsigned char indirect_read(int socket, unsigned short reg)
 	return val;
 }
 
-#if 0
-static unsigned short indirect_read16(int socket, unsigned short reg)
-{
-	unsigned short int port;
-	unsigned short tmp;
-	unsigned long flags;
-	spin_lock_irqsave(&port_lock,flags);
-	reg  = reg + socket * 0x40;
-	port = sockets[socket].io_base;
-	outb(reg,port);
-	tmp = inb(port+1);
-	reg++;
-	outb(reg,port);
-	tmp = tmp | (inb(port+1)<<8);
-	spin_unlock_irqrestore(&port_lock,flags);
-	return tmp;
-}
-#endif
 
 static void indirect_write(int socket, unsigned short reg, unsigned char value)
 {
@@ -710,4 +692,3 @@ static void i82092aa_module_exit(void)
 
 module_init(i82092aa_module_init);
 module_exit(i82092aa_module_exit);
-

@@ -418,7 +418,6 @@ static int ves1x93_get_frontend(struct dvb_frontend* fe, struct dvb_frontend_par
 		p->inversion = (ves1x93_readreg (state, 0x0f) & 2) ?
 				INVERSION_OFF : INVERSION_ON;
 	p->u.qpsk.fec_inner = ves1x93_get_fec (state);
-	/*  XXX FIXME: timing offset !! */
 
 	return 0;
 }

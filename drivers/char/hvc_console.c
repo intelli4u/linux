@@ -643,7 +643,6 @@ int hvc_poll(struct hvc_struct *hp)
 #ifdef CONFIG_MAGIC_SYSRQ
 			if (hp->index == hvc_console.index) {
 				/* Handle the SysRq Hack */
-				/* XXX should support a sequence */
 				if (buf[i] == '\x0f') {	/* ^O */
 					/* if ^O is pressed again, reset
 					 * sysrq_pressed and flip ^O char */

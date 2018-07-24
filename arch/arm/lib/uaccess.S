@@ -560,4 +560,3 @@ ENDPROC(__copy_from_user)
 		mov	r0, r4
 		ldmfd	sp!, {r4 - r7, pc}
 		.popsection
-

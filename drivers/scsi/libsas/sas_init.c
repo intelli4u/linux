@@ -153,8 +153,6 @@ int sas_unregister_ha(struct sas_ha_struct *sas_ha)
 static int sas_get_linkerrors(struct sas_phy *phy)
 {
 	if (scsi_is_sas_phy_local(phy))
-		/* FIXME: we have no local phy stats
-		 * gathering at this time */
 		return -EINVAL;
 
 	return sas_smp_get_phy_events(phy);

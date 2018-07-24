@@ -71,15 +71,6 @@ MODULE_LICENSE("GPL");
  */
 static unsigned use_dma = 1;
 
-#if 0
-//#include <linux/moduleparam.h>
-/* "modprobe goku_udc use_dma=1" etc
- *	0 to disable dma
- *	1 to use IN dma only (normal operation)
- *	2 to use IN and OUT dma
- */
-module_param(use_dma, uint, S_IRUGO);
-#endif
 
 /*-------------------------------------------------------------------------*/
 
@@ -389,12 +380,6 @@ static int write_fifo(struct goku_ep *ep, struct goku_request *req)
 		else
 			is_last = 1;
 	}
-#if 0		/* printk seemed to trash is_last...*/
-//#ifdef USB_TRACE
-	VDBG(dev, "wrote %s %u bytes%s IN %u left %p\n",
-		ep->ep.name, count, is_last ? "/last" : "",
-		req->req.length - req->req.actual, req);
-#endif
 
 	/* requests complete when all IN data is in the FIFO,
 	 * or sometimes later, if a zlp was needed.
@@ -654,11 +639,6 @@ static void abort_dma(struct goku_ep *ep, int status)
 	req = list_entry(ep->queue.next, struct goku_request, queue);
 	master = readl(&regs->dma_master) & MST_RW_BITS;
 
-	/* FIXME using these resets isn't usably documented. this may
-	 * not work unless it's followed by disabling the endpoint.
-	 *
-	 * FIXME the OUT reset path doesn't even behave consistently.
-	 */
 	if (ep->is_in) {
 		if (unlikely((readl(&regs->dma_master) & MST_RD_ENA) == 0))
 			goto finished;
@@ -1570,7 +1550,6 @@ rescan:
 			stop_activity(dev, dev->driver);
 			stat = 0;
 			handled = 1;
-			// FIXME have a neater way to prevent re-enumeration
 			dev->driver = NULL;
 			goto done;
 		}
@@ -1878,7 +1857,6 @@ static struct pci_driver goku_pci_driver = {
 	.probe =	goku_probe,
 	.remove =	goku_remove,
 
-	/* FIXME add power management support */
 };
 
 static int __init init (void)

@@ -1582,11 +1582,8 @@ static void ipmr_queue_xmit(struct net *net, struct mr_table *mrt,
 	skb_dst_set(skb, &rt->dst);
 	ip_decrease_ttl(ip_hdr(skb));
 
-	/* FIXME: forward and output firewalls used to be called here.
-	 * What do we do with netfilter? -- RR */
 	if (vif->flags & VIFF_TUNNEL) {
 		ip_encap(skb, vif->local, vif->remote);
-		/* FIXME: extra output firewall step used to be here. --RR */
 		vif->dev->stats.tx_packets++;
 		vif->dev->stats.tx_bytes += skb->len;
 	}
@@ -1643,17 +1640,6 @@ static int ip_mr_forward(struct net *net, struct mr_table *mrt,
 		int true_vifi;
 
 		if (skb_rtable(skb)->fl.iif == 0) {
-			/* It is our own packet, looped back.
-			   Very complicated situation...
-
-			   The best workaround until routing daemons will be
-			   fixed is not to redistribute packet, if it was
-			   send through wrong interface. It means, that
-			   multicast applications WILL NOT work for
-			   (S,G), which have default multicast route pointing
-			   to wrong oif. In any case, it is not a good
-			   idea to use multicasting applications on router.
-			 */
 			goto dont_forward;
 		}
 

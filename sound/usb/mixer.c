@@ -339,7 +339,6 @@ static int get_ctl_value_v2(struct usb_mixer_elem_info *cval, int request, int v
 		return ret;
 	}
 
-	/* FIXME: how should we handle multiple triplets here? */
 
 	switch (request) {
 	case UAC_GET_CUR:
@@ -421,7 +420,6 @@ int snd_usb_mixer_set_ctl_value(struct usb_mixer_elem_info *cval,
 		/* audio class v2 controls are always 2 bytes in size */
 		val_len = sizeof(__u16);
 
-		/* FIXME */
 		if (request != UAC_SET_CUR) {
 			snd_printdd(KERN_WARNING "RANGE setting not yet supported\n");
 			return -EINVAL;
@@ -730,7 +728,7 @@ static struct usb_feature_control_info audio_feature_info[] = {
 	{ "Tone Control - Bass",	USB_MIXER_S8 },
 	{ "Tone Control - Mid",		USB_MIXER_S8 },
 	{ "Tone Control - Treble",	USB_MIXER_S8 },
-	{ "Graphic Equalizer",		USB_MIXER_S8 }, /* FIXME: not implemeted yet */
+	{ "Graphic Equalizer",		USB_MIXER_S8 },
 	{ "Auto Gain Control",		USB_MIXER_BOOLEAN },
 	{ "Delay Control",		USB_MIXER_U16 },
 	{ "Bass Boost",			USB_MIXER_BOOLEAN },
@@ -993,7 +991,6 @@ static void build_feature_ctl(struct mixer_build *state, void *raw_desc,
 	control++; /* change from zero-based to 1-based value */
 
 	if (control == UAC_FU_GRAPHIC_EQUALIZER) {
-		/* FIXME: not supported yet */
 		return;
 	}
 
@@ -1561,7 +1558,6 @@ static int build_audio_procunit(struct mixer_build *state, int unitid, void *raw
 		/* get min/max values */
 		if (type == UAC_PROCESS_UP_DOWNMIX && cval->control == UAC_UD_MODE_SELECT) {
 			__u8 *control_spec = uac_processing_unit_specific(desc, state->mixer->protocol);
-			/* FIXME: hard-coded */
 			cval->min = 1;
 			cval->max = control_spec[0];
 			cval->res = 1;
@@ -1868,7 +1864,7 @@ static int parse_audio_unit(struct mixer_build *state, int unitid)
 		if (state->mixer->protocol == UAC_VERSION_1)
 			return parse_audio_processing_unit(state, unitid, p1);
 		else
-			return 0; /* FIXME - effect units not implemented yet */
+			return 0;
 	case UAC1_EXTENSION_UNIT:
 	/*   UAC2_PROCESSING_UNIT_V2 has the same value */
 		if (state->mixer->protocol == UAC_VERSION_1)

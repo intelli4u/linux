@@ -1183,9 +1183,6 @@ enum jme_phy_reg17_vals {
 
 #define BMSR_ANCOMP               0x0020
 
-/*
- * Workaround
- */
 static inline int is_buggy250(unsigned short device, unsigned int chiprev)
 {
 	return device == PCI_DEVICE_ID_JMICRON_JMC250 && chiprev == 0x11;

@@ -332,26 +332,6 @@ sddr09_send_scsi_command(struct us_data *us,
 	return sddr09_send_command(us, 0, USB_DIR_OUT, command, command_len);
 }
 
-#if 0
-/*
- * Test Unit Ready Command: 12 bytes.
- * byte 0: opcode: 00
- */
-static int
-sddr09_test_unit_ready(struct us_data *us) {
-	unsigned char *command = us->iobuf;
-	int result;
-
-	memset(command, 0, 6);
-	command[1] = LUNBITS;
-
-	result = sddr09_send_scsi_command(us, command, 6);
-
-	US_DEBUGP("sddr09_test_unit_ready returns %d\n", result);
-
-	return result;
-}
-#endif
 
 /*
  * Request Sense Command: 12 bytes.
@@ -500,29 +480,6 @@ sddr09_read22(struct us_data *us, unsigned long fromaddress,
 			    buf, use_sg);
 }
 
-#if 0
-/*
- * Read Pagewise Control
- *
- * fromaddress gives the starting position (as in read data;
- * the last 8 bits are ignored); increasing it by 256 shifts
- * the output stream by 64 bytes.
- *
- * count counts control groups of size (1 << controlshift).
- * For me, controlshift = 6. Is this constant?
- *
- * After getting one control group, jump to the next page
- * (fromaddress += 256).
- */
-static int
-sddr09_read23(struct us_data *us, unsigned long fromaddress,
-	      int count, int controlshift, unsigned char *buf, int use_sg) {
-
-	int bulklen = (count << controlshift);
-	return sddr09_readX(us, 3, fromaddress, count, bulklen,
-			    buf, use_sg);
-}
-#endif
 
 /*
  * Erase Command: 12 bytes.
@@ -635,79 +592,6 @@ sddr09_write_inplace(struct us_data *us, unsigned long address,
 			     buf, use_sg);
 }
 
-#if 0
-/*
- * Read Scatter Gather Command: 3+4n bytes.
- * byte 0: opcode E7
- * byte 2: n
- * bytes 4i-1,4i,4i+1: page address
- * byte 4i+2: page count
- * (i=1..n)
- *
- * This reads several pages from the card to a single memory buffer.
- * The last two bits of byte 1 have the same meaning as for E8.
- */
-static int
-sddr09_read_sg_test_only(struct us_data *us) {
-	unsigned char *command = us->iobuf;
-	int result, bulklen, nsg, ct;
-	unsigned char *buf;
-	unsigned long address;
-
-	nsg = bulklen = 0;
-	command[0] = 0xE7;
-	command[1] = LUNBITS;
-	command[2] = 0;
-	address = 040000; ct = 1;
-	nsg++;
-	bulklen += (ct << 9);
-	command[4*nsg+2] = ct;
-	command[4*nsg+1] = ((address >> 9) & 0xFF);
-	command[4*nsg+0] = ((address >> 17) & 0xFF);
-	command[4*nsg-1] = ((address >> 25) & 0xFF);
-
-	address = 0340000; ct = 1;
-	nsg++;
-	bulklen += (ct << 9);
-	command[4*nsg+2] = ct;
-	command[4*nsg+1] = ((address >> 9) & 0xFF);
-	command[4*nsg+0] = ((address >> 17) & 0xFF);
-	command[4*nsg-1] = ((address >> 25) & 0xFF);
-
-	address = 01000000; ct = 2;
-	nsg++;
-	bulklen += (ct << 9);
-	command[4*nsg+2] = ct;
-	command[4*nsg+1] = ((address >> 9) & 0xFF);
-	command[4*nsg+0] = ((address >> 17) & 0xFF);
-	command[4*nsg-1] = ((address >> 25) & 0xFF);
-
-	command[2] = nsg;
-
-	result = sddr09_send_scsi_command(us, command, 4*nsg+3);
-
-	if (result) {
-		US_DEBUGP("Result for send_control in sddr09_read_sg %d\n",
-			  result);
-		return result;
-	}
-
-	buf = kmalloc(bulklen, GFP_NOIO);
-	if (!buf)
-		return -ENOMEM;
-
-	result = usb_stor_bulk_transfer_buf(us, us->recv_bulk_pipe,
-				       buf, bulklen, NULL);
-	kfree(buf);
-	if (result != USB_STOR_XFER_GOOD) {
-		US_DEBUGP("Result for bulk_transfer in sddr09_read_sg %d\n",
-			  result);
-		return -EIO;
-	}
-
-	return 0;
-}
-#endif
 
 /*
  * Read Status Command: 12 bytes.
@@ -950,23 +834,7 @@ sddr09_write_lba(struct us_data *us, unsigned int lba,
 
 	US_DEBUGP("sddr09_write_inplace returns %d\n", result);
 
-#if 0
-	{
-		unsigned char status = 0;
-		int result2 = sddr09_read_status(us, &status);
-		if (result2)
-			US_DEBUGP("sddr09_write_inplace: cannot read status\n");
-		else if (status != 0xc0)
-			US_DEBUGP("sddr09_write_inplace: status after write: 0x%x\n",
-				  status);
-	}
-#endif
 
-#if 0
-	{
-		int result2 = sddr09_test_unit_ready(us);
-	}
-#endif
 
 	return result;
 }
@@ -1129,23 +997,6 @@ sddr09_get_wp(struct us_data *us, struct sddr09_card_info *info) {
 	return 0;
 }
 
-#if 0
-/*
- * Reset Command: 12 bytes.
- * byte 0: opcode: EB
- */
-static int
-sddr09_reset(struct us_data *us) {
-
-	unsigned char *command = us->iobuf;
-
-	memset(command, 0, 12);
-	command[0] = 0xEB;
-	command[1] = LUNBITS;
-
-	return sddr09_send_scsi_command(us, command, 12);
-}
-#endif
 
 static struct nand_flash_dev *
 sddr09_get_cardinfo(struct us_data *us, unsigned char flags) {

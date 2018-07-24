@@ -94,7 +94,6 @@ enum si_intf_state {
 	SI_ENABLE_INTERRUPTS2,
 	SI_DISABLE_INTERRUPTS1,
 	SI_DISABLE_INTERRUPTS2
-	/* FIXME - add watchdog stuff. */
 };
 
 /* Some BT-specific defines we need here. */
@@ -1966,7 +1965,6 @@ static int acpi_gpe_irq_setup(struct smi_info *info)
 	if (!info->irq)
 		return 0;
 
-	/* FIXME - is level triggered right? */
 	status = acpi_install_gpe_handler(NULL,
 					  info->irq,
 					  ACPI_GPE_LEVEL_TRIGGERED,

@@ -502,7 +502,6 @@ static int __init db1200_dev_init(void)
 		printk(KERN_INFO " S6.7 OFF: PSC1 mode AC97\n");
 	}
 
-	/* Audio PSC clock is supplied externally. (FIXME: platdata!!) */
 	__raw_writel(PSC_SEL_CLK_SERCLK,
 		(void __iomem *)KSEG1ADDR(PSC1_PHYS_ADDR) + PSC_SEL_OFFSET);
 	wmb();

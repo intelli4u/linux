@@ -689,9 +689,6 @@ static void usage(void)
 "            -a|--addr    addr-spec     Walk a range of pages\n"
 "            -b|--bits    bits-spec     Walk pages with specified bits\n"
 "            -p|--pid     pid           Walk process address space\n"
-#if 0 /* planned features */
-"            -f|--file    filename      Walk file address space\n"
-#endif
 "            -l|--list                  Show page details in ranges\n"
 "            -L|--list-each             Show page details one by one\n"
 "            -N|--no-summary            Don't show summary info\n"

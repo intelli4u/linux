@@ -38,15 +38,6 @@ ip6t_mangle_out(struct sk_buff *skb, const struct net_device *out)
 	u_int8_t hop_limit;
 	u_int32_t flowlabel, mark;
 
-#if 0
-	/* root is playing with raw sockets. */
-	if (skb->len < sizeof(struct iphdr) ||
-	    ip_hdrlen(skb) < sizeof(struct iphdr)) {
-		if (net_ratelimit())
-			pr_warning("ip6t_hook: happy cracking.\n");
-		return NF_ACCEPT;
-	}
-#endif
 
 	/* save source/dest address, mark, hoplimit, flowlabel, priority,  */
 	memcpy(&saddr, &ipv6_hdr(skb)->saddr, sizeof(saddr));

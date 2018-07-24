@@ -482,7 +482,6 @@ int qt2_open(struct tty_struct *tty, struct usb_serial_port *port)
 		return -ENODEV;
 	}
 
-	/* FIXME: are these needed?  Does it even do anything useful? */
 	/* get the modem and line status values from the UART */
 	status = qt2_openboxchannel(serial, port->number,
 			&ChannelData);
@@ -650,9 +649,6 @@ static void qt2_close(struct usb_serial_port *port)
 	 * still be pushing characters out over the line, so we have to
 	 * wait testing the actual line status until the lines change
 	 * indicating that the data is done transfering. */
-	/* FIXME: slow this polling down so it doesn't run the USB bus flat out
-	 * if it actually has to spend any time in this loop (which it normally
-	 * doesn't because the buffer is nearly empty) */
 	jift = jiffies + (10 * HZ);	/* 10 sec timeout */
 	do {
 		status = qt2_box_get_register(serial, port->number,
@@ -944,10 +940,6 @@ static int qt2_ioctl(struct tty_struct *tty, struct file *file,
 				return 0;
 			}
 		} /* end inifinite while */
-		/* FIXME: This while loop needs a way to break out if the device
-		 * is disconnected while a process is waiting for the MSR to
-		 * change, because once it's disconnected, it isn't going to
-		 * change state ... */
 	} else {
 		/* any other ioctls we don't know about come here */
 		dbg("%s(): No ioctl for that one. port = %d", __func__,
@@ -1702,9 +1694,6 @@ static void qt2_write_bulk_callback(struct urb *urb)
 			__func__, urb->status);
 		return;
 	}
-	/* FIXME What is supposed to be going on here?
-	 * does this actually do anything useful, and should it?
-	 */
 	/*port_softint((void *) serial); commented in vendor driver */
 	schedule_work(&port->work);
 	dbg("%s(): port %d exit", __func__, port->number);

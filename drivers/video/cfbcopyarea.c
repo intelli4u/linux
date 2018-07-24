@@ -1,26 +1,4 @@
-/*
- *  Generic function for frame buffer with packed pixels of any depth.
- *
- *      Copyright (C)  1999-2005 James Simmons <jsimmons@www.infradead.org>
- *
- *  This file is subject to the terms and conditions of the GNU General Public
- *  License.  See the file COPYING in the main directory of this archive for
- *  more details.
- *
- * NOTES:
- *
- *  This is for cfb packed pixels. Iplan and such are incorporated in the
- *  drivers that need them.
- *
- *  FIXME
- *
- *  Also need to add code to deal with cards endians that are different than
- *  the native cpu endians. I also need to deal with MSB position in the word.
- *
- *  The two functions or copying forward and backward could be split up like
- *  the ones for filling, i.e. in aligned and unaligned versions. This would
- *  help moving some redundant computations and branches out of the loop, too.
- */
+
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -428,4 +406,3 @@ EXPORT_SYMBOL(cfb_copyarea);
 MODULE_AUTHOR("James Simmons <jsimmons@users.sf.net>");
 MODULE_DESCRIPTION("Generic software accelerated copyarea");
 MODULE_LICENSE("GPL");
-

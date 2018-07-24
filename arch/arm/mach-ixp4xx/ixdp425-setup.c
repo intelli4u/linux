@@ -57,8 +57,7 @@ static struct platform_device ixdp425_flash = {
 	.resource	= &ixdp425_flash_resource,
 };
 
-#if defined(CONFIG_MTD_NAND_PLATFORM) || \
-    defined(CONFIG_MTD_NAND_PLATFORM_MODULE)
+#if defined(CONFIG_MTD_NAND_PLATFORM) || defined(CONFIG_MTD_NAND_PLATFORM_MODULE)
 
 #ifdef CONFIG_MTD_PARTITIONS
 const char *part_probes[] = { "cmdlinepart", NULL };
@@ -213,8 +212,7 @@ static struct platform_device ixdp425_eth[] = {
 static struct platform_device *ixdp425_devices[] __initdata = {
 	&ixdp425_i2c_gpio,
 	&ixdp425_flash,
-#if defined(CONFIG_MTD_NAND_PLATFORM) || \
-    defined(CONFIG_MTD_NAND_PLATFORM_MODULE)
+#if defined(CONFIG_MTD_NAND_PLATFORM) || defined(CONFIG_MTD_NAND_PLATFORM_MODULE)
 	&ixdp425_flash_nand,
 #endif
 	&ixdp425_uart,
@@ -230,8 +228,7 @@ static void __init ixdp425_init(void)
 	ixdp425_flash_resource.end =
 		IXP4XX_EXP_BUS_BASE(0) + ixp4xx_exp_bus_size - 1;
 
-#if defined(CONFIG_MTD_NAND_PLATFORM) || \
-    defined(CONFIG_MTD_NAND_PLATFORM_MODULE)
+#if defined(CONFIG_MTD_NAND_PLATFORM) || defined(CONFIG_MTD_NAND_PLATFORM_MODULE)
 	ixdp425_flash_nand_resource.start = IXP4XX_EXP_BUS_BASE(3),
 	ixdp425_flash_nand_resource.end   = IXP4XX_EXP_BUS_BASE(3) + 0x10 - 1;
 

@@ -584,45 +584,6 @@ static int i2o_scsi_queuecommand(struct scsi_cmnd *SCpnt,
 
 	mptr = &msg->body[0];
 
-#if 0 /* this code can't work */
-#ifdef CONFIG_I2O_EXT_ADAPTEC
-	if (c->adaptec) {
-		u32 adpt_flags = 0;
-
-		if (SCpnt->sc_request && SCpnt->sc_request->upper_private_data) {
-			i2o_sg_io_hdr_t __user *usr_ptr =
-			    ((Sg_request *) (SCpnt->sc_request->
-					     upper_private_data))->header.
-			    usr_ptr;
-
-			if (usr_ptr)
-				get_user(adpt_flags, &usr_ptr->flags);
-		}
-
-		switch (i2o_dev->lct_data.class_id) {
-		case I2O_CLASS_EXECUTIVE:
-		case I2O_CLASS_RANDOM_BLOCK_STORAGE:
-			/* interpret flag has to be set for executive */
-			adpt_flags ^= I2O_DPT_SG_FLAG_INTERPRET;
-			break;
-
-		default:
-			break;
-		}
-
-		/*
-		 * for Adaptec controllers we use the PRIVATE command, because
-		 * the normal SCSI EXEC doesn't support all SCSI commands on
-		 * all controllers (for example READ CAPACITY).
-		 */
-		if (sgl_offset == SGL_OFFSET_10)
-			sgl_offset = SGL_OFFSET_12;
-		cmd = I2O_CMD_PRIVATE << 24;
-		*mptr++ = cpu_to_le32(I2O_VENDOR_DPT << 16 | I2O_CMD_SCSI_EXEC);
-		*mptr++ = cpu_to_le32(adpt_flags | tid);
-	}
-#endif
-#endif
 
 	msg->u.head[1] = cpu_to_le32(cmd | HOST_TID << 12 | tid);
 	msg->u.s.icntxt = cpu_to_le32(i2o_scsi_driver.context);
@@ -642,14 +603,6 @@ static int i2o_scsi_queuecommand(struct scsi_cmnd *SCpnt,
 	 */
 
 	/* Attach tags to the devices */
-	/* FIXME: implement
-	   if(SCpnt->device->tagged_supported) {
-	   if(SCpnt->tag == HEAD_OF_QUEUE_TAG)
-	   scsi_flags |= 0x01000000;
-	   else if(SCpnt->tag == ORDERED_QUEUE_TAG)
-	   scsi_flags |= 0x01800000;
-	   }
-	 */
 
 	*mptr++ = cpu_to_le32(scsi_flags | SCpnt->cmd_len);
 

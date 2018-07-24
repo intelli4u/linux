@@ -652,7 +652,6 @@ static int __devinit ps3vram_probe(struct ps3_system_bus_device *dev)
 	priv->fifo_base = (u32 *) (priv->xdr_buf + FIFO_OFFSET);
 	priv->fifo_ptr = priv->fifo_base;
 
-	/* XXX: Need to open GPU, in case ps3fb or snd_ps3 aren't loaded */
 	if (ps3_open_hv_device(dev)) {
 		dev_err(&dev->core, "ps3_open_hv_device failed\n");
 		error = -EAGAIN;

@@ -457,7 +457,6 @@ static void do_ubd_request(struct request_queue * q);
 static int thread_fd = -1;
 static LIST_HEAD(restart);
 
-/* XXX - move this inside ubd_intr. */
 /* Called without dev->lock held, and only in interrupt context. */
 static void ubd_handler(void)
 {
@@ -1410,7 +1409,6 @@ static void do_io(struct io_thread_req *req)
  */
 int kernel_fd = -1;
 
-/* Only changed by the io thread. XXX: currently unused. */
 static int io_count = 0;
 
 int io_thread(void *arg)

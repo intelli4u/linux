@@ -217,11 +217,6 @@ static struct usb_config_descriptor config_desc = {
 	.bNumInterfaces =	GMIDI_NUM_INTERFACES,
 	.bConfigurationValue =	GMIDI_CONFIG,
 	.iConfiguration =	STRING_MIDI_GADGET,
-	/*
-	 * FIXME: When embedding this driver in a device,
-	 * these need to be set to reflect the actual
-	 * power properties of the device. Is it selfpowered?
-	 */
 	.bmAttributes =		USB_CONFIG_ATT_ONE,
 	.bMaxPower =		CONFIG_USB_GADGET_VBUS_DRAW / 2,
 };
@@ -526,7 +521,6 @@ static void gmidi_complete(struct usb_ep *ep, struct usb_request *req)
 		ERROR(dev, "kill %s:  resubmit %d bytes --> %d\n",
 				ep->name, req->length, status);
 		usb_ep_set_halt(ep);
-		/* FIXME recover later ... somehow */
 	}
 }
 
@@ -603,21 +597,6 @@ gmidi_set_config(struct gmidi_device *dev, unsigned number, gfp_t gfp_flags)
 	int result = 0;
 	struct usb_gadget *gadget = dev->gadget;
 
-#if 0
-	/* FIXME */
-	/* Hacking this bit out fixes a bug where on receipt of two
-	   USB_REQ_SET_CONFIGURATION messages, we end up with no
-	   buffered OUT requests waiting for data. This is clearly
-	   hiding a bug elsewhere, because if the config didn't
-	   change then we really shouldn't do anything. */
-	/* Having said that, when we do "change" from config 1
-	   to config 1, we at least gmidi_reset_config() which
-	   clears out any requests on endpoints, so it's not like
-	   we leak or anything. */
-	if (number == dev->config) {
-		return 0;
-	}
-#endif
 
 	gmidi_reset_config(dev);
 
@@ -1318,4 +1297,3 @@ static void __exit gmidi_cleanup(void)
 	usb_gadget_unregister_driver(&gmidi_driver);
 }
 module_exit(gmidi_cleanup);
-

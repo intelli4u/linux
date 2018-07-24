@@ -243,7 +243,7 @@ static int viafb_i2c_probe(struct platform_device *platdev)
 			continue;
 		ret = create_i2c_bus(&i2c_stuff->adapter,
 				     &i2c_stuff->algo, adap_cfg,
-				NULL); /* FIXME: PCIDEV */
+				NULL);
 		if (ret < 0) {
 			printk(KERN_ERR "viafb: cannot create i2c bus %u:%d\n",
 				i, ret);

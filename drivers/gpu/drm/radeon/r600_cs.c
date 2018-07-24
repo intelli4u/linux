@@ -485,7 +485,6 @@ static int r600_cs_packet_next_reloc_mm(struct radeon_cs_parser *p,
 			  idx, relocs_chunk->length_dw);
 		return -EINVAL;
 	}
-	/* FIXME: we assume reloc size is 4 dwords */
 	*cs_reloc = p->relocs_ptr[(idx / 4)];
 	return 0;
 }
@@ -1116,7 +1115,6 @@ static inline int r600_check_texture_resource(struct radeon_cs_parser *p,  u32 i
 	switch (G_038000_TILE_MODE(word0)) {
 	case V_038000_ARRAY_LINEAR_GENERAL:
 		pitch_align = 1;
-		/* XXX check height align */
 		break;
 	case V_038000_ARRAY_LINEAR_ALIGNED:
 		pitch_align = max((u32)64, (u32)(track->group_size / bpe)) / 8;
@@ -1125,7 +1123,6 @@ static inline int r600_check_texture_resource(struct radeon_cs_parser *p,  u32 i
 				 __func__, __LINE__, pitch);
 			return -EINVAL;
 		}
-		/* XXX check height align */
 		break;
 	case V_038000_ARRAY_1D_TILED_THIN1:
 		pitch_align = max((u32)8, (u32)(track->group_size / (8 * bpe))) / 8;
@@ -1134,7 +1131,6 @@ static inline int r600_check_texture_resource(struct radeon_cs_parser *p,  u32 i
 				 __func__, __LINE__, pitch);
 			return -EINVAL;
 		}
-		/* XXX check height align */
 		break;
 	case V_038000_ARRAY_2D_TILED_THIN1:
 		pitch_align = max((u32)track->nbanks,
@@ -1144,14 +1140,12 @@ static inline int r600_check_texture_resource(struct radeon_cs_parser *p,  u32 i
 				__func__, __LINE__, pitch);
 			return -EINVAL;
 		}
-		/* XXX check height align */
 		break;
 	default:
 		dev_warn(p->dev, "%s invalid tiling %d (0x%08X)\n", __func__,
 			 G_038000_TILE_MODE(word0), word0);
 		return -EINVAL;
 	}
-	/* XXX check offset align */
 
 	word0 = radeon_get_ib_value(p, idx + 4);
 	word1 = radeon_get_ib_value(p, idx + 5);
@@ -1545,12 +1539,6 @@ int r600_cs_parse(struct radeon_cs_parser *p)
 			return r;
 		}
 	} while (p->idx < p->chunks[p->chunk_ib_idx].length_dw);
-#if 0
-	for (r = 0; r < p->ib->length_dw; r++) {
-		printk(KERN_INFO "%05d  0x%08X\n", r, p->ib->ptr[r]);
-		mdelay(1);
-	}
-#endif
 	kfree(p->track);
 	p->track = NULL;
 	return 0;

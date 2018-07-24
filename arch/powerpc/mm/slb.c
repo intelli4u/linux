@@ -218,7 +218,6 @@ void switch_slb(struct task_struct *tsk, struct mm_struct *mm)
 		__slb_flush_and_rebolt();
 	}
 
-	/* Workaround POWER5 < DD2.1 issue */
 	if (offset == 1 || offset > SLB_CACHE_ENTRIES)
 		asm volatile("slbie %0" : : "r" (slbie_data));
 

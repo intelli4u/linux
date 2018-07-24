@@ -1,14 +1,4 @@
-/*
- * Support PCI IO workaround
- *
- *  Copyright (C) 2006 Benjamin Herrenschmidt <benh@kernel.crashing.org>
- *		       IBM, Corp.
- *  (C) Copyright 2007-2008 TOSHIBA CORPORATION
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
+
 #undef DEBUG
 
 #include <linux/kernel.h>
@@ -145,7 +135,6 @@ static void __iomem *iowa_ioremap(phys_addr_t addr, unsigned long size,
 	return res;
 }
 
-/* Regist new bus to support workaround */
 void __devinit iowa_register_bus(struct pci_controller *phb,
 			struct ppc_pci_io *ops,
 			int (*initfunc)(struct iowa_bus *, void *), void *data)
@@ -172,7 +161,6 @@ void __devinit iowa_register_bus(struct pci_controller *phb,
 	pr_debug("IOWA:[%d]Add bus, %s.\n", iowa_bus_count-1, np->full_name);
 }
 
-/* enable IO workaround */
 void __devinit io_workaround_init(void)
 {
 	static int io_workaround_inited;

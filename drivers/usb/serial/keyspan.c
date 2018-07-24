@@ -137,7 +137,6 @@ struct keyspan_serial_private {
 	struct urb	*indat_urb;
 	char		indat_buf[INDAT49W_BUFLEN];
 
-	/* XXX this one probably will need a lock */
 	struct urb	*glocont_urb;
 	char		glocont_buf[GLOCONT_BUFLEN];
 	char		ctrl_buf[8];	/* for EP0 control message */
@@ -284,8 +283,6 @@ static void keyspan_set_termios(struct tty_struct *tty,
 	/* If no match or invalid, don't change */
 	if (d_details->calculate_baud_rate(baud_rate, d_details->baudclk,
 				NULL, NULL, NULL, device_port) == KEYSPAN_BAUD_RATE_OK) {
-		/* FIXME - more to do here to ensure rate changes cleanly */
-		/* FIXME - calcuate exact rate from divisor ? */
 		p_priv->baud = baud_rate;
 	} else
 		baud_rate = tty_termios_baud_rate(old_termios);
@@ -454,7 +451,6 @@ static void	usa26_indat_callback(struct urb *urb)
 					flag |= TTY_FRAME;
 				if (stat & RXERROR_PARITY)
 					flag |= TTY_PARITY;
-				/* XXX should handle break (0x10) */
 				tty_insert_flip_char(tty, data[i+1], flag);
 			}
 		}
@@ -527,11 +523,6 @@ static void	usa26_instat_callback(struct urb *urb)
 
 	msg = (struct keyspan_usa26_portStatusMessage *)data;
 
-#if 0
-	dbg("%s - port status: port %d cts %d dcd %d dsr %d ri %d toff %d txoff %d rxen %d cr %d",
-	    __func__, msg->port, msg->hskia_cts, msg->gpia_dcd, msg->dsr, msg->ri, msg->_txOff,
-	    msg->_txXoff, msg->rxEnabled, msg->controlResponse);
-#endif
 
 	/* Now do something useful with the data */
 
@@ -839,7 +830,6 @@ static void	usa49_indat_callback(struct urb *urb)
 					flag |= TTY_FRAME;
 				if (stat & RXERROR_PARITY)
 					flag |= TTY_PARITY;
-				/* XXX should handle break (0x10) */
 				tty_insert_flip_char(tty, data[i+1], flag);
 			}
 		}
@@ -907,7 +897,6 @@ static void usa49wg_indat_callback(struct urb *urb)
 						flag |= TTY_FRAME;
 					if (stat & RXERROR_PARITY)
 						flag |= TTY_PARITY;
-					/* XXX should handle break (0x10) */
 					tty_insert_flip_char(tty,
 							data[i+1], flag);
 					i += 2;
@@ -985,7 +974,6 @@ static void usa90_indat_callback(struct urb *urb)
 						flag |= TTY_FRAME;
 					if (stat & RXERROR_PARITY)
 						flag |= TTY_PARITY;
-					/* XXX should handle break (0x10) */
 					tty_insert_flip_char(tty, data[i+1],
 									flag);
 				}
@@ -1165,7 +1153,6 @@ static int keyspan_write_room(struct tty_struct *tty)
 	p_priv = usb_get_serial_port_data(port);
 	d_details = p_priv->device_details;
 
-	/* FIXME: locking */
 	if (d_details->msg_format == msg_usa90)
 		data_len = 64;
 	else
@@ -1960,13 +1947,6 @@ static int keyspan_usa26_send_setup(struct usb_serial *serial,
 	err = usb_submit_urb(this_urb, GFP_ATOMIC);
 	if (err != 0)
 		dbg("%s - usb_submit_urb(setup) failed (%d)", __func__, err);
-#if 0
-	else {
-		dbg("%s - usb_submit_urb(%d) OK %d bytes (end %d)", __func__
-		    outcont_urb, this_urb->transfer_buffer_length,
-		    usb_pipeendpoint(this_urb->pipe));
-	}
-#endif
 
 	return 0;
 }
@@ -2018,7 +1998,7 @@ static int keyspan_usa28_send_setup(struct usb_serial *serial,
 	}
 
 	/* If parity is enabled, we must calculate it ourselves. */
-	msg.parity = 0;		/* XXX for now */
+	msg.parity = 0;
 
 	msg.ctsFlowControl = (p_priv->flow_control == flow_cts);
 	msg.xonFlowControl = 0;
@@ -2088,12 +2068,6 @@ static int keyspan_usa28_send_setup(struct usb_serial *serial,
 	err = usb_submit_urb(this_urb, GFP_ATOMIC);
 	if (err != 0)
 		dbg("%s - usb_submit_urb(setup) failed", __func__);
-#if 0
-	else {
-		dbg("%s - usb_submit_urb(setup) OK %d bytes", __func__,
-		    this_urb->transfer_buffer_length);
-	}
-#endif
 
 	return 0;
 }
@@ -2277,13 +2251,6 @@ static int keyspan_usa49_send_setup(struct usb_serial *serial,
 	err = usb_submit_urb(this_urb, GFP_ATOMIC);
 	if (err != 0)
 		dbg("%s - usb_submit_urb(setup) failed (%d)", __func__, err);
-#if 0
-	else {
-		dbg("%s - usb_submit_urb(%d) OK %d bytes (end %d)", __func__,
-			   outcont_urb, this_urb->transfer_buffer_length,
-			   usb_pipeendpoint(this_urb->pipe));
-	}
-#endif
 
 	return 0;
 }
@@ -2749,4 +2716,3 @@ MODULE_FIRMWARE("keyspan/usa49wlc.fw");
 
 module_param(debug, bool, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(debug, "Debug enabled or not");
-

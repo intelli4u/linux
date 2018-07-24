@@ -850,9 +850,6 @@ static int dccp_v4_rcv(struct sk_buff *skb)
 	if (dh->dccph_cscov && (min_cov == 0 || dh->dccph_cscov < min_cov))  {
 		dccp_pr_debug("Packet CsCov %d does not satisfy MinCsCov %d\n",
 			      dh->dccph_cscov, min_cov);
-		/* FIXME: "Such packets SHOULD be reported using Data Dropped
-		 *         options (Section 11.7) with Drop Code 0, Protocol
-		 *         Constraints."                                     */
 		goto discard_and_relse;
 	}
 
@@ -970,10 +967,8 @@ static const struct proto_ops inet_dccp_ops = {
 	.socketpair	   = sock_no_socketpair,
 	.accept		   = inet_accept,
 	.getname	   = inet_getname,
-	/* FIXME: work on tcp_poll to rename it to inet_csk_poll */
 	.poll		   = dccp_poll,
 	.ioctl		   = inet_ioctl,
-	/* FIXME: work on inet_listen to rename it to sock_common_listen */
 	.listen		   = inet_dccp_listen,
 	.shutdown	   = inet_shutdown,
 	.setsockopt	   = sock_common_setsockopt,

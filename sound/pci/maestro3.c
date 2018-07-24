@@ -362,7 +362,6 @@ MODULE_PARM_DESC(amp_gpio, "GPIO pin number for external amp. (default = -1)");
 #define DSP2HOST_REQ_TIMER      0x04
 
 /* AC97 registers */
-/* XXX fix this crap up */
 /*#define AC97_RESET              0x00*/
 
 #define AC97_VOL_MUTE_B         0x8000
@@ -1645,7 +1644,6 @@ static void snd_m3_update_hw_volume(unsigned long private_data)
 	if (!chip->master_switch || !chip->master_volume)
 		return;
 
-	/* FIXME: we can't call snd_ac97_* functions since here is in tasklet. */
 	spin_lock_irqsave(&chip->ac97_lock, flags);
 
 	val = chip->ac97->regs[AC97_MASTER_VOL];
@@ -1758,10 +1756,6 @@ static irqreturn_t snd_m3_interrupt(int irq, void *dev_id)
 		}
 	}
 
-#if 0 /* TODO: not supported yet */
-	if ((status & MPU401_INT_PENDING) && chip->rmidi)
-		snd_mpu401_uart_interrupt(irq, chip->rmidi->private_data, regs);
-#endif
 
 	/* ack ints */
 	outb(status, chip->iobase + HOST_INT_STATUS);
@@ -2130,16 +2124,6 @@ static void snd_m3_ac97_reset(struct snd_m3 *chip)
 			   delay1, delay2);
 	}
 
-#if 0
-	/* more gung-ho reset that doesn't
-	 * seem to work anywhere :)
-	 */
-	tmp = inw(io + RING_BUS_CTRL_A);
-	outw(RAC_SDFS_ENABLE|LAC_SDFS_ENABLE, io + RING_BUS_CTRL_A);
-	msleep(20);
-	outw(tmp, io + RING_BUS_CTRL_A);
-	msleep(50);
-#endif
 }
 
 static int __devinit snd_m3_mixer(struct snd_m3 *chip)
@@ -2863,15 +2847,6 @@ snd_m3_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
 		return err;
 	}
 
-#if 0 /* TODO: not supported yet */
-	/* TODO enable MIDI IRQ and I/O */
-	err = snd_mpu401_uart_new(chip->card, 0, MPU401_HW_MPU401,
-				  chip->iobase + MPU401_DATA_PORT,
-				  MPU401_INFO_INTEGRATED,
-				  chip->irq, 0, &chip->rmidi);
-	if (err < 0)
-		printk(KERN_WARNING "maestro3: no MIDI support.\n");
-#endif
 
 	pci_set_drvdata(pci, card);
 	dev++;

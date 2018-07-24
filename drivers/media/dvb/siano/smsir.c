@@ -79,13 +79,6 @@ int sms_ir_init(struct smscore_device_t *coredev)
 	input_dev->phys = coredev->ir.phys;
 	input_dev->dev.parent = coredev->device;
 
-#if 0
-	/* TODO: properly initialize the parameters bellow */
-	input_dev->id.bustype = BUS_USB;
-	input_dev->id.version = 1;
-	input_dev->id.vendor = le16_to_cpu(dev->udev->descriptor.idVendor);
-	input_dev->id.product = le16_to_cpu(dev->udev->descriptor.idProduct);
-#endif
 
 	coredev->ir.props.priv = coredev;
 	coredev->ir.props.driver_type = RC_DRIVER_IR_RAW;

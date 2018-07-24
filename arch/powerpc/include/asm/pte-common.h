@@ -161,7 +161,7 @@ extern unsigned long bad_call_to_PMD_PAGE_SIZE(void);
  * set breakpoints anywhere, so don't write protect the kernel text
  * on platforms where such control is possible.
  */
-#if defined(CONFIG_KGDB) || defined(CONFIG_XMON) || defined(CONFIG_BDI_SWITCH) ||\
+#if defined(CONFIG_KGDB) || defined(CONFIG_XMON) || defined(CONFIG_BDI_SWITCH) || \
 	defined(CONFIG_KPROBES)
 #define PAGE_KERNEL_TEXT	PAGE_KERNEL_X
 #else
@@ -177,4 +177,3 @@ extern unsigned long bad_call_to_PMD_PAGE_SIZE(void);
 
 /* Advertise support for _PAGE_SPECIAL */
 #define __HAVE_ARCH_PTE_SPECIAL
-

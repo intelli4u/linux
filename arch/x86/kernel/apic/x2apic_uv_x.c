@@ -581,10 +581,6 @@ int uv_set_vga_state(struct pci_dev *pdev, bool decode,
 	return rc;
 }
 
-/*
- * Called on each cpu to initialize the per_cpu UV data area.
- * FIXME: hotplug not supported yet
- */
 void __cpuinit uv_cpu_init(void)
 {
 	/* CPU 0 initilization will be done via uv_system_init. */

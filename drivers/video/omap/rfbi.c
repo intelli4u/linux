@@ -31,7 +31,6 @@
 #include "omapfb.h"
 #include "dispc.h"
 
-/* To work around an RFBI transfer rate limitation */
 #define OMAP_RFBI_RATE_LIMIT	1
 
 #define RFBI_BASE		0x48050800
@@ -595,4 +594,3 @@ const struct lcd_ctrl_extif omap2_ext_if = {
 
 	.max_transmit_size	= (u32) ~0,
 };
-

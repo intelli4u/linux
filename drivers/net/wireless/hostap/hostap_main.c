@@ -752,24 +752,6 @@ void hostap_set_multicast_list_queue(struct work_struct *work)
 
 static void hostap_set_multicast_list(struct net_device *dev)
 {
-#if 0
-	/* FIX: promiscuous mode seems to be causing a lot of problems with
-	 * some station firmware versions (FCSErr frames, invalid MACPort, etc.
-	 * corrupted incoming frames). This code is now commented out while the
-	 * problems are investigated. */
-	struct hostap_interface *iface;
-	local_info_t *local;
-
-	iface = netdev_priv(dev);
-	local = iface->local;
-	if ((dev->flags & IFF_ALLMULTI) || (dev->flags & IFF_PROMISC)) {
-		local->is_promisc = 1;
-	} else {
-		local->is_promisc = 0;
-	}
-
-	schedule_work(&local->set_multicast_list_queue);
-#endif
 }
 
 

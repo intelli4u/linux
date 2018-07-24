@@ -257,91 +257,6 @@ scsi_cmd_stack_free(ctlr_info_t *h)
 	cciss_free_sg_chain_blocks(sa->cmd_sg_list, CMD_STACK_SIZE);
 }
 
-#if 0
-static int xmargin=8;
-static int amargin=60;
-
-static void
-print_bytes (unsigned char *c, int len, int hex, int ascii)
-{
-
-	int i;
-	unsigned char *x;
-
-	if (hex)
-	{
-		x = c;
-		for (i=0;i<len;i++)
-		{
-			if ((i % xmargin) == 0 && i>0) printk("\n");
-			if ((i % xmargin) == 0) printk("0x%04x:", i);
-			printk(" %02x", *x);
-			x++;
-		}
-		printk("\n");
-	}
-	if (ascii)
-	{
-		x = c;
-		for (i=0;i<len;i++)
-		{
-			if ((i % amargin) == 0 && i>0) printk("\n");
-			if ((i % amargin) == 0) printk("0x%04x:", i);
-			if (*x > 26 && *x < 128) printk("%c", *x);
-			else printk(".");
-			x++;
-		}
-		printk("\n");
-	}
-}
-
-static void
-print_cmd(CommandList_struct *cp)
-{
-	printk("queue:%d\n", cp->Header.ReplyQueue);
-	printk("sglist:%d\n", cp->Header.SGList);
-	printk("sgtot:%d\n", cp->Header.SGTotal);
-	printk("Tag:0x%08x/0x%08x\n", cp->Header.Tag.upper, 
-			cp->Header.Tag.lower);
-	printk("LUN:0x%02x%02x%02x%02x%02x%02x%02x%02x\n",
-		cp->Header.LUN.LunAddrBytes[0],
-		cp->Header.LUN.LunAddrBytes[1],
-		cp->Header.LUN.LunAddrBytes[2],
-		cp->Header.LUN.LunAddrBytes[3],
-		cp->Header.LUN.LunAddrBytes[4],
-		cp->Header.LUN.LunAddrBytes[5],
-		cp->Header.LUN.LunAddrBytes[6],
-		cp->Header.LUN.LunAddrBytes[7]);
-	printk("CDBLen:%d\n", cp->Request.CDBLen);
-	printk("Type:%d\n",cp->Request.Type.Type);
-	printk("Attr:%d\n",cp->Request.Type.Attribute);
-	printk(" Dir:%d\n",cp->Request.Type.Direction);
-	printk("Timeout:%d\n",cp->Request.Timeout);
-	printk( "CDB: %02x %02x %02x %02x %02x %02x %02x %02x"
-		" %02x %02x %02x %02x %02x %02x %02x %02x\n",
-		cp->Request.CDB[0], cp->Request.CDB[1],
-		cp->Request.CDB[2], cp->Request.CDB[3],
-		cp->Request.CDB[4], cp->Request.CDB[5],
-		cp->Request.CDB[6], cp->Request.CDB[7],
-		cp->Request.CDB[8], cp->Request.CDB[9],
-		cp->Request.CDB[10], cp->Request.CDB[11],
-		cp->Request.CDB[12], cp->Request.CDB[13],
-		cp->Request.CDB[14], cp->Request.CDB[15]),
-	printk("edesc.Addr: 0x%08x/0%08x, Len  = %d\n", 
-		cp->ErrDesc.Addr.upper, cp->ErrDesc.Addr.lower, 
-			cp->ErrDesc.Len);
-	printk("sgs..........Errorinfo:\n");
-	printk("scsistatus:%d\n", cp->err_info->ScsiStatus);
-	printk("senselen:%d\n", cp->err_info->SenseLen);
-	printk("cmd status:%d\n", cp->err_info->CommandStatus);
-	printk("resid cnt:%d\n", cp->err_info->ResidualCnt);
-	printk("offense size:%d\n", cp->err_info->MoreErrInfo.Invalid_Cmd.offense_size);
-	printk("offense byte:%d\n", cp->err_info->MoreErrInfo.Invalid_Cmd.offense_num);
-	printk("offense value:%d\n", cp->err_info->MoreErrInfo.Invalid_Cmd.offense_value);
-			
-}
-
-#endif
 
 static int 
 find_bus_target_lun(ctlr_info_t *h, int *bus, int *target, int *lun)
@@ -761,11 +676,6 @@ static void complete_scsi_command(CommandList_struct *c, int timeout,
 				/* Pass it up to the upper layers... */
 				if( ei->ScsiStatus)
                 		{
-#if 0
-                    			printk(KERN_WARNING "cciss: cmd %p "
-						"has SCSI Status = %x\n",
-						c, ei->ScsiStatus);
-#endif
 					cmd->result |= (ei->ScsiStatus << 1);
                 		}
 				else {  /* scsi status is zero??? How??? */
@@ -851,7 +761,7 @@ cciss_scsi_detect(ctlr_info_t *h)
 	sh = scsi_host_alloc(&cciss_driver_template, sizeof(struct ctlr_info *));
 	if (sh == NULL)
 		goto fail;
-	sh->io_port = 0;	// good enough?  FIXME, 
+	sh->io_port = 0;
 	sh->n_io_port = 0;	// I don't think we use these two...
 	sh->this_id = SELF_SCSI_ID;  
 	sh->sg_tablesize = h->maxsgentries;
@@ -1438,7 +1348,6 @@ cciss_scsi_queue_command (struct scsi_cmnd *cmd, void (* done)(struct scsi_cmnd 
 	spin_unlock_irqrestore(&h->lock, flags);
 	if (c == NULL) {			/* trouble... */
 		dev_warn(&h->pdev->dev, "scsi_cmd_alloc returned NULL!\n");
-		/* FIXME: next 3 lines are -> BAD! <- */
 		cmd->result = DID_NO_CONNECT << 16;
 		done(cmd);
 		return 0;

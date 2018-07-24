@@ -95,7 +95,8 @@
 
 #if   ((CFG_GLOBAL_CHIP == BCM11107) || (CFG_GLOBAL_CHIP == FPGA11107))
 #define CAP_HW_CFG_ARM_CLK_HZ 500000000
-#elif ((CFG_GLOBAL_CHIP == BCM11109) || (CFG_GLOBAL_CHIP == BCM11170) || (CFG_GLOBAL_CHIP == BCM11110))
+#elif ((CFG_GLOBAL_CHIP == BCM11109) || (CFG_GLOBAL_CHIP == BCM11170) || \
+	(CFG_GLOBAL_CHIP == BCM11110))
 #define CAP_HW_CFG_ARM_CLK_HZ 300000000
 #elif (CFG_GLOBAL_CHIP == BCM11211)
 #define CAP_HW_CFG_ARM_CLK_HZ 666666666
@@ -103,9 +104,11 @@
 #error CFG_GLOBAL_CHIP type capabilities not defined
 #endif
 
-#if ((CFG_GLOBAL_CHIP == BCM11107) || (CFG_GLOBAL_CHIP == BCM11211) || (CFG_GLOBAL_CHIP == FPGA11107))
+#if ((CFG_GLOBAL_CHIP == BCM11107) || (CFG_GLOBAL_CHIP == BCM11211) || (CFG_GLOBAL_CHIP \
+	== FPGA11107))
 #define CAP_HW_CFG_VPM_CLK_HZ 333333333
-#elif ((CFG_GLOBAL_CHIP == BCM11109) || (CFG_GLOBAL_CHIP == BCM11170) || (CFG_GLOBAL_CHIP == BCM11110))
+#elif ((CFG_GLOBAL_CHIP == BCM11109) || (CFG_GLOBAL_CHIP == BCM11170) || \
+	(CFG_GLOBAL_CHIP == BCM11110))
 #define CAP_HW_CFG_VPM_CLK_HZ 200000000
 #else
 #error CFG_GLOBAL_CHIP type capabilities not defined
@@ -354,7 +357,8 @@ static inline uint32_t cap_getMaxArmSpeedHz(void)
 {
 #if   ((CFG_GLOBAL_CHIP == BCM11107) || (CFG_GLOBAL_CHIP == FPGA11107))
 	return 500000000;
-#elif ((CFG_GLOBAL_CHIP == BCM11109) || (CFG_GLOBAL_CHIP == BCM11170) || (CFG_GLOBAL_CHIP == BCM11110))
+#elif ((CFG_GLOBAL_CHIP == BCM11109) || (CFG_GLOBAL_CHIP == BCM11170) || \
+	(CFG_GLOBAL_CHIP == BCM11110))
 	return 300000000;
 #elif (CFG_GLOBAL_CHIP == BCM11211)
 	return 666666666;
@@ -377,9 +381,11 @@ static inline uint32_t cap_getMaxArmSpeedHz(void)
 ****************************************************************************/
 static inline uint32_t cap_getMaxVpmSpeedHz(void)
 {
-#if ((CFG_GLOBAL_CHIP == BCM11107) || (CFG_GLOBAL_CHIP == BCM11211) || (CFG_GLOBAL_CHIP == FPGA11107))
+#if ((CFG_GLOBAL_CHIP == BCM11107) || (CFG_GLOBAL_CHIP == BCM11211) || (CFG_GLOBAL_CHIP \
+	== FPGA11107))
 	return 333333333;
-#elif ((CFG_GLOBAL_CHIP == BCM11109) || (CFG_GLOBAL_CHIP == BCM11170) || (CFG_GLOBAL_CHIP == BCM11110))
+#elif ((CFG_GLOBAL_CHIP == BCM11109) || (CFG_GLOBAL_CHIP == BCM11170) || \
+	(CFG_GLOBAL_CHIP == BCM11110))
 	return 200000000;
 #else
 #error CFG_GLOBAL_CHIP type capabilities not defined

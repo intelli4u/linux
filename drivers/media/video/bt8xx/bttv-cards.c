@@ -2680,12 +2680,6 @@ struct tvcard bttv_tvcards[] = {
 		.tuner_addr	= ADDR_UNSET,
 	},
 	[BTTV_BOARD_MACHTV_MAGICTV] = {
-		/* Julian Calaby <julian.calaby@gmail.com>
-		 * Slightly different from original MachTV definition (0x60)
-
-		 * FIXME: RegSpy says gpiomask should be "0x001c800f", but it
-		 * stuffs up remote chip. Bug is a pin on the jaecs is not set
-		 * properly (methinks) causing no keyup bits being set */
 
 		.name           = "MagicTV", /* rebranded MachTV */
 		.video_inputs   = 3,
@@ -3030,7 +3024,6 @@ static void flyvideo_gpio(struct bttv *btv)
 	gpio_inout(0xffffff, 0);
 	udelay(8);  /* without this we would see the 0x1800 mask */
 	gpio = gpio_read();
-	/* FIXME: must restore OUR_EN ??? */
 
 	/* all cards provide GPIO info, some have an additional eeprom
 	 * LR50: GPIO coding can be found lower right CP1 .. CP9
@@ -4552,14 +4545,6 @@ static void kodicom4400r_init(struct bttv *btv)
 	master[btv->c.nr+2] = btv;
 }
 
-/* The Grandtec X-Guard framegrabber card uses two Dual 4-channel
- * video multiplexers to provide up to 16 video inputs. These
- * multiplexers are controlled by the lower 8 GPIO pins of the
- * bt878. The multiplexers probably Pericom PI5V331Q or similar.
-
- * xxx0 is pin xxx of multiplexer U5,
- * yyy1 is pin yyy of multiplexer U2
- */
 #define ENA0    0x01
 #define ENB0    0x02
 #define ENA1    0x04

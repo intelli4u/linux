@@ -204,7 +204,6 @@ static void ccid3_hc_tx_no_feedback_timer(unsigned long data)
 	bh_lock_sock(sk);
 	if (sock_owned_by_user(sk)) {
 		/* Try again later. */
-		/* XXX: set some sensible MIB */
 		goto restart_timer;
 	}
 

@@ -74,7 +74,7 @@ static int ide_floppy_callback(ide_drive_t *drive, int dsc)
 
 	if (pc->c[0] == GPCMD_READ_10 || pc->c[0] == GPCMD_WRITE_10 ||
 	    (rq && rq->cmd_type == REQ_TYPE_BLOCK_PC))
-		uptodate = 1; /* FIXME */
+		uptodate = 1;
 	else if (pc->c[0] == GPCMD_REQUEST_SENSE) {
 
 		u8 *buf = bio_data(rq->bio);
@@ -479,15 +479,6 @@ static void ide_floppy_setup(ide_drive_t *drive)
 
 	drive->pc_callback	 = ide_floppy_callback;
 
-	/*
-	 * We used to check revisions here. At this point however I'm giving up.
-	 * Just assume they are all broken, its easier.
-	 *
-	 * The actual reason for the workarounds was likely a driver bug after
-	 * all rather than a firmware bug, and the workaround below used to hide
-	 * it. It should be fixed as of version 1.9, but to be on the safe side
-	 * we'll leave the limitation below for the 2.2.x tree.
-	 */
 	if (!strncmp((char *)&id[ATA_ID_PROD], "IOMEGA ZIP 100 ATAPI", 20)) {
 		drive->atapi_flags |= IDE_AFLAG_ZIP_DRIVE;
 		/* This value will be visible in the /proc/ide/hdx/settings */

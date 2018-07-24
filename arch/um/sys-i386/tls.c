@@ -50,14 +50,6 @@ int do_get_thread_area(struct user_desc *info)
 	return ret;
 }
 
-/*
- * sys_get_thread_area: get a yet unused TLS descriptor index.
- * XXX: Consider leaving one free slot for glibc usage at first place. This must
- * be done here (and by changing GDT_ENTRY_TLS_* macros) and nowhere else.
- *
- * Also, this must be tested when compiling in SKAS mode with dynamic linking
- * and running against NPTL.
- */
 static int get_free_idx(struct task_struct* task)
 {
 	struct thread_struct *t = &task->thread;
@@ -234,7 +226,6 @@ out:
 	return ret;
 }
 
-/* XXX: use do_get_thread_area to read the host value? I'm not at all sure! */
 static int get_tls_entry(struct task_struct *task, struct user_desc *info,
 			 int idx)
 {

@@ -83,7 +83,6 @@ int reiserfs_readdir_dentry(struct dentry *dentry, void *dirent,
 		    search_by_entry_key(inode->i_sb, &pos_key, &path_to_entry,
 					&de);
 		if (search_res == IO_ERROR) {
-			// FIXME: we could just skip part of directory which could
 			// not be read
 			ret = -EIO;
 			goto out;

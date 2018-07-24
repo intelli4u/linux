@@ -424,11 +424,3 @@ download_firmware_fail:
 	return rt_status;
 
 }
-
-
-
-
-
-
-
-

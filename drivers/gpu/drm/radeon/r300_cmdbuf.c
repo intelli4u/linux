@@ -658,8 +658,6 @@ static __inline__ int r300_emit_raw_packet3(drm_radeon_private_t *dev_priv,
 	if (4 > drm_buffer_unprocessed(cmdbuf->buffer))
 		return -EINVAL;
 
-	/* Fixme !! This simply emits a packet without much checking.
-	   We need to be smarter. */
 
 	/* obtain first word - actual packet3 header */
 	header = drm_buffer_pointer_to_dword(cmdbuf->buffer, 0);
@@ -821,7 +819,6 @@ static __inline__ void r300_pacify(drm_radeon_private_t *dev_priv)
 	OUT_RING(CP_PACKET0(R300_TX_INVALTAGS, 0));
 	OUT_RING(0);
 	ADVANCE_RING();
-	/* FIXME: is this one really needed ? */
 	BEGIN_RING(2);
 	OUT_RING(CP_PACKET0(R300_RB3D_AARESOLVE_CTL, 0));
 	OUT_RING(0);

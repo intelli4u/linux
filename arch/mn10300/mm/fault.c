@@ -68,37 +68,6 @@ void do_BUG(const char *file, int line)
 	printk(KERN_EMERG "kernel BUG at %s:%d!\n", file, line);
 }
 
-#if 0
-static void print_pagetable_entries(pgd_t *pgdir, unsigned long address)
-{
-	pgd_t *pgd;
-	pmd_t *pmd;
-	pte_t *pte;
-
-	pgd = pgdir + __pgd_offset(address);
-	printk(KERN_DEBUG "pgd entry %p: %016Lx\n",
-	       pgd, (long long) pgd_val(*pgd));
-
-	if (!pgd_present(*pgd)) {
-		printk(KERN_DEBUG "... pgd not present!\n");
-		return;
-	}
-	pmd = pmd_offset(pgd, address);
-	printk(KERN_DEBUG "pmd entry %p: %016Lx\n",
-	       pmd, (long long)pmd_val(*pmd));
-
-	if (!pmd_present(*pmd)) {
-		printk(KERN_DEBUG "... pmd not present!\n");
-		return;
-	}
-	pte = pte_offset(pmd, address);
-	printk(KERN_DEBUG "pte entry %p: %016Lx\n",
-	       pte, (long long) pte_val(*pte));
-
-	if (!pte_present(*pte))
-		printk(KERN_DEBUG "... pte not present!\n");
-}
-#endif
 
 asmlinkage void monitor_signal(struct pt_regs *);
 
@@ -139,12 +108,6 @@ asmlinkage void do_page_fault(struct pt_regs *regs, unsigned long fault_code,
 	}
 #endif
 
-#if 0
-	printk(KERN_DEBUG "--- do_page_fault(%p,%s:%04lx,%08lx)\n",
-	       regs,
-	       fault_code & 0x10000 ? "ins" : "data",
-	       fault_code & 0xffff, address);
-#endif
 
 	tsk = current;
 
@@ -190,29 +153,6 @@ asmlinkage void do_page_fault(struct pt_regs *regs, unsigned long fault_code,
 		/* accessing the stack below the stack pointer is always a
 		 * bug */
 		if ((address & PAGE_MASK) + 2 * PAGE_SIZE < regs->sp) {
-#if 0
-			printk(KERN_WARNING
-			       "[%d] ### Access below stack @%lx (sp=%lx)\n",
-			       current->pid, address, regs->sp);
-			printk(KERN_WARNING
-			       "vma [%08x - %08x]\n",
-			       vma->vm_start, vma->vm_end);
-			show_registers(regs);
-			printk(KERN_WARNING
-			       "[%d] ### Code: [%08lx]"
-			       " %02x %02x %02x %02x %02x %02x %02x %02x\n",
-			       current->pid,
-			       regs->pc,
-			       ((u8 *) regs->pc)[0],
-			       ((u8 *) regs->pc)[1],
-			       ((u8 *) regs->pc)[2],
-			       ((u8 *) regs->pc)[3],
-			       ((u8 *) regs->pc)[4],
-			       ((u8 *) regs->pc)[5],
-			       ((u8 *) regs->pc)[6],
-			       ((u8 *) regs->pc)[7]
-			       );
-#endif
 			goto bad_area;
 		}
 	}

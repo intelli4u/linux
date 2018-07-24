@@ -264,7 +264,7 @@ encode_cb_sequence(struct xdr_stream *xdr, struct nfsd4_cb_sequence *args,
 	WRITE32(0);		/* slotid, always 0 */
 	WRITE32(0);		/* highest slotid always 0 */
 	WRITE32(0);		/* cachethis always 0 */
-	WRITE32(0); /* FIXME: support referring_call_lists */
+	WRITE32(0);
 	hdr->nops++;
 }
 
@@ -378,7 +378,6 @@ decode_cb_sequence(struct xdr_stream *xdr, struct nfsd4_cb_sequence *res,
 		dprintk("%s Invalid slotid\n", __func__);
 		goto out;
 	}
-	/* FIXME: process highest slotid and target highest slotid */
 	status = 0;
 out:
 	return status;
@@ -670,8 +669,6 @@ static void nfsd4_cb_recall_done(struct rpc_task *task, void *calldata)
 
 	if (current_rpc_client == NULL) {
 		/* We're shutting down; give up. */
-		/* XXX: err, or is it ok just to fall through
-		 * and rpc_restart_call? */
 		return;
 	}
 
@@ -775,7 +772,6 @@ static void _nfsd4_cb_recall(struct nfs4_delegation *dp)
 
 void nfsd4_do_callback_rpc(struct work_struct *w)
 {
-	/* XXX: for now, just send off delegation recall. */
 	/* In future, generalize to handle any sort of callback. */
 	struct nfsd4_callback *c = container_of(w, struct nfsd4_callback, cb_work);
 	struct nfs4_delegation *dp = container_of(c, struct nfs4_delegation, dl_recall);

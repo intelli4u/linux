@@ -147,4 +147,3 @@ ENTRY(ret_from_user_signal)
 ENTRY(ret_from_user_rt_signal)
 	movel #__NR_rt_sigreturn,%d0
 	trap #0
-

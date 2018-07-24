@@ -380,7 +380,6 @@ static struct s3c_gpio_chip s5pc100_gpio_chips[] = {
 	},
 };
 
-/* FIXME move from irq-gpio.c */
 extern struct irq_chip s5pc100_gpioint;
 extern void s5pc100_irq_gpioint_handler(unsigned int irq, struct irq_desc *desc);
 

@@ -203,4 +203,3 @@ void __init mx31lite_db_init(void)
 	mxc_register_device(&imx_wdt_device0, NULL);
 	mxc_register_device(&imx_rtc_device0, NULL);
 }
-

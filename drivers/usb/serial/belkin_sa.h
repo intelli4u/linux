@@ -121,4 +121,3 @@
 #define BELKIN_SA_MSR_CD		0x80	/* Current CD */
 
 #endif /* __LINUX_USB_SERIAL_BSA_H */
-

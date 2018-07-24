@@ -42,11 +42,7 @@ static int load_som_library(struct file *);
  * If we don't support core dumping, then supply a NULL so we
  * don't even try.
  */
-#if 0
-static int som_core_dump(struct coredump_params *cprm);
-#else
 #define som_core_dump	NULL
-#endif
 
 #define SOM_PAGESTART(_v) ((_v) & ~(unsigned long)(SOM_PAGESIZE-1))
 #define SOM_PAGEOFFSET(_v) ((_v) & (SOM_PAGESIZE-1))
@@ -256,14 +252,6 @@ load_som_binary(struct linux_binprm * bprm, struct pt_regs * regs)
 
 	current->mm->start_stack = bprm->p;
 
-#if 0
-	printk("(start_brk) %08lx\n" , (unsigned long) current->mm->start_brk);
-	printk("(end_code) %08lx\n" , (unsigned long) current->mm->end_code);
-	printk("(start_code) %08lx\n" , (unsigned long) current->mm->start_code);
-	printk("(end_data) %08lx\n" , (unsigned long) current->mm->end_data);
-	printk("(start_stack) %08lx\n" , (unsigned long) current->mm->start_stack);
-	printk("(brk) %08lx\n" , (unsigned long) current->mm->brk);
-#endif
 
 	map_hpux_gateway_page(current,current->mm);
 

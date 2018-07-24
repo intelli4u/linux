@@ -1397,20 +1397,6 @@ static void zfcp_fsf_open_port_handler(struct zfcp_fsf_req *req)
 		                  ZFCP_STATUS_COMMON_ACCESS_BOXED,
 		                  &port->status);
 		/* check whether D_ID has changed during open */
-		/*
-		 * FIXME: This check is not airtight, as the FCP channel does
-		 * not monitor closures of target port connections caused on
-		 * the remote side. Thus, they might miss out on invalidating
-		 * locally cached WWPNs (and other N_Port parameters) of gone
-		 * target ports. So, our heroic attempt to make things safe
-		 * could be undermined by 'open port' response data tagged with
-		 * obsolete WWPNs. Another reason to monitor potential
-		 * connection closures ourself at least (by interpreting
-		 * incoming ELS' and unsolicited status). It just crosses my
-		 * mind that one should be able to cross-check by means of
-		 * another GID_PN straight after a port has been opened.
-		 * Alternately, an ADISC/PDISC ELS should suffice, as well.
-		 */
 		plogi = (struct fc_els_flogi *) req->qtcb->bottom.support.els;
 		if (req->qtcb->bottom.support.els1_length >=
 		    FSF_PLOGI_MIN_LEN)

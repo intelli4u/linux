@@ -329,14 +329,6 @@ int et131x_ioctl(struct net_device *netdev, struct ifreq *reqbuf, int cmd)
 	return status;
 }
 
-/**
- * et131x_set_packet_filter - Configures the Rx Packet filtering on the device
- * @adapter: pointer to our private adapter structure
- *
- * FIXME: lot of dups with MAC code
- *
- * Returns 0 on success, errno on failure
- */
 int et131x_set_packet_filter(struct et131x_adapter *adapter)
 {
 	int status = 0;

@@ -509,7 +509,7 @@ enum {
 #ifdef notdef
     HAL_MODE_11G    = 0x010,        /* 11g channels (OFDM/CCK) */
 #else
-    HAL_MODE_11G    = 0x008,        /* XXX historical */
+    HAL_MODE_11G    = 0x008,
 #endif
     HAL_MODE_108G   = 0x020,        /* 11a+Turbo channels */
     HAL_MODE_108A   = 0x040,        /* 11g+Turbo channels */

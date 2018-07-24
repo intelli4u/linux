@@ -1014,31 +1014,6 @@ void irlap_resend_rejected_frames(struct irlap_cb *self, int command)
 
 		irlap_send_i_frame(self, tx_skb, command);
 	}
-#if 0 /* Not yet */
-	/*
-	 *  We can now fill the window with additional data frames
-	 */
-	while (!skb_queue_empty(&self->txq)) {
-
-		IRDA_DEBUG(0, "%s(), sending additional frames!\n", __func__);
-		if (self->window > 0) {
-			skb = skb_dequeue( &self->txq);
-			IRDA_ASSERT(skb != NULL, return;);
-
-			/*
-			 *  If send window > 1 then send frame with pf
-			 *  bit cleared
-			 */
-			if ((self->window > 1) &&
-			    !skb_queue_empty(&self->txq)) {
-				irlap_send_data_primary(self, skb);
-			} else {
-				irlap_send_data_primary_poll(self, skb);
-			}
-			kfree_skb(skb);
-		}
-	}
-#endif
 }
 
 void irlap_resend_rejected_frame(struct irlap_cb *self, int command)
@@ -1317,7 +1292,6 @@ int irlap_driver_rcv(struct sk_buff *skb, struct net_device *dev,
 	if (!net_eq(dev_net(dev), &init_net))
 		goto out;
 
-	/* FIXME: should we get our own field? */
 	self = (struct irlap_cb *) dev->atalk_ptr;
 
 	/* If the net device is down, then IrLAP is gone! */

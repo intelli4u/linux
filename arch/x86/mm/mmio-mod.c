@@ -172,11 +172,6 @@ static void pre(struct kmmio_probe *p, struct pt_regs *regs,
 	else
 		my_trace->pc = 0;
 
-	/*
-	 * XXX: the timestamp recorded will be *after* the tracing has been
-	 * done, not at the time we hit the instruction. SMP implications
-	 * on event ordering?
-	 */
 
 	switch (type) {
 	case REG_READ:

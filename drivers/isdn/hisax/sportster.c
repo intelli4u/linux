@@ -1,4 +1,4 @@
-/* $Id: sportster.c,v 1.16.2.4 2004/01/13 23:48:39 keil Exp $
+/* $Id: sportster.c,v 1.16.2.4 2004/01/13 23:48:39 Exp $
  *
  * low level stuff for USR Sportster internal TA
  *

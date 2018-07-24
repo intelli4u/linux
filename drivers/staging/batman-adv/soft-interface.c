@@ -142,7 +142,6 @@ int interface_tx(struct sk_buff *skb, struct net_device *dev)
 	if (atomic_read(&module_state) != MODULE_ACTIVE)
 		goto dropped;
 
-	/* FIXME: each batman_if will be attached to a softif */
 	bat_priv = netdev_priv(soft_device);
 
 	dev->trans_start = jiffies;

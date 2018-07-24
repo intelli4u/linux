@@ -1114,7 +1114,6 @@ static int tridentfb_set_par(struct fb_info *info)
 
 	tmp = 0x40;
 	if (vblankstart & 0x200) tmp |= 0x20;
-//FIXME	if (info->var.vmode & FB_VMODE_DOUBLE) tmp |= 0x80;  /* double scan for 200 line modes */
 	write3X4(par, VGA_CRTC_MAX_SCAN, tmp);
 
 	write3X4(par, VGA_CRTC_LINE_COMPARE, 0xFF);
@@ -1657,4 +1656,3 @@ MODULE_AUTHOR("Jani Monoses <jani@iv.ro>");
 MODULE_DESCRIPTION("Framebuffer driver for Trident cards");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("cyblafb");
-

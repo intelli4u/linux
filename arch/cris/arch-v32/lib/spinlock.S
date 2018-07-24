@@ -37,4 +37,3 @@ cris_spin_trylock:
 	movu.b	$r11,$r10
 
 	.size   cris_spin_trylock, . - cris_spin_trylock
-

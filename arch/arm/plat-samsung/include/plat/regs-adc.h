@@ -60,5 +60,3 @@
 #define S3C2410_ADCDAT1_YPDATA_MASK	(0x03FF)
 
 #endif /* __ASM_ARCH_REGS_ADC_H */
-
-

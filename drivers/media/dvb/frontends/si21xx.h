@@ -12,8 +12,8 @@ struct si21xx_config {
 	int min_delay_ms;
 };
 
-#if defined(CONFIG_DVB_SI21XX) || \
-		(defined(CONFIG_DVB_SI21XX_MODULE) && defined(MODULE))
+#if defined(CONFIG_DVB_SI21XX) || (defined(CONFIG_DVB_SI21XX_MODULE) && \
+	defined(MODULE))
 extern struct dvb_frontend *si21xx_attach(const struct si21xx_config *config,
 						struct i2c_adapter *i2c);
 #else

@@ -59,11 +59,7 @@
 
 #include "NCR5380.h"
 
-#if 0
-#define NDEBUG (NDEBUG_INTR | NDEBUG_PSEUDO_DMA | NDEBUG_ARBITRATION | NDEBUG_SELECTION | NDEBUG_RESELECTION)
-#else
 #define NDEBUG (NDEBUG_ABORT)
-#endif
 
 #define RESET_BOOT
 #define DRIVER_SETUP
@@ -104,33 +100,6 @@ static volatile unsigned char *mac_scsi_nodrq = NULL;
  * NCR 5380 register access functions
  */
 
-#if 0
-/* Debug versions */
-#define CTRL(p,v) (*ctrl = (v))
-
-static char macscsi_read(struct Scsi_Host *instance, int reg)
-{
-  int iobase = instance->io_port;
-  int i;
-  int *ctrl = &((struct NCR5380_hostdata *)instance->hostdata)->ctrl;
-
-  CTRL(iobase, 0);
-  i = in_8(iobase + (reg<<4));
-  CTRL(iobase, 0x40);
-
-  return i;
-}
-
-static void macscsi_write(struct Scsi_Host *instance, int reg, int value)
-{
-  int iobase = instance->io_port;
-  int *ctrl = &((struct NCR5380_hostdata *)instance->hostdata)->ctrl;
-
-  CTRL(iobase, 0);
-  out_8(iobase + (reg<<4), value);
-  CTRL(iobase, 0x40);
-}
-#else
 
 /* Fast versions */
 static __inline__ char macscsi_read(struct Scsi_Host *instance, int reg)
@@ -142,7 +111,6 @@ static __inline__ void macscsi_write(struct Scsi_Host *instance, int reg, int va
 {
   out_8(instance->io_port + (reg<<4), value);
 }
-#endif
 
 
 /*
@@ -379,16 +347,6 @@ const char * macscsi_info (struct Scsi_Host *spnt) {
 	return "";
 }
 
-/* 
-   Pseudo-DMA: (Ove Edlund)
-   The code attempts to catch bus errors that occur if one for example
-   "trips over the cable".
-   XXX: Since bus errors in the PDMA routines never happen on my 
-   computer, the bus error code is untested. 
-   If the code works as intended, a bus error results in Pseudo-DMA 
-   beeing disabled, meaning that the driver switches to slow handshake. 
-   If bus errors are NOT extremely rare, this has to be changed. 
-*/
 
 #define CP_IO_TO_MEM(s,d,len)				\
 __asm__ __volatile__					\

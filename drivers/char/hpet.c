@@ -227,7 +227,6 @@ static void hpet_timer_set_irq(struct hpet_dev *devp)
 		if (gsi > 0)
 			break;
 
-		/* FIXME: Setup interrupt source table */
 	}
 
 	if (irq < HPET_MAX_IRQ) {
@@ -996,7 +995,6 @@ static int hpet_acpi_add(struct acpi_device *device)
 
 static int hpet_acpi_remove(struct acpi_device *device, int type)
 {
-	/* XXX need to unregister clocksource, dealloc mem, etc */
 	return -EINVAL;
 }
 

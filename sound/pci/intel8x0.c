@@ -38,7 +38,6 @@
 #include <sound/ac97_codec.h>
 #include <sound/info.h>
 #include <sound/initval.h>
-/* for 440MX workaround */
 #include <asm/pgtable.h>
 #include <asm/cacheflush.h>
 
@@ -396,10 +395,10 @@ struct intel8x0 {
 	unsigned in_ac97_init: 1,
 		 in_sdin_init: 1;
 	unsigned in_measurement: 1;	/* during ac97 clock measurement */
-	unsigned fix_nocache: 1; 	/* workaround for 440MX */
-	unsigned buggy_irq: 1;		/* workaround for buggy mobos */
-	unsigned xbox: 1;		/* workaround for Xbox AC'97 detection */
-	unsigned buggy_semaphore: 1;	/* workaround for buggy codec semaphore */
+	unsigned fix_nocache: 1;
+	unsigned buggy_irq: 1;
+	unsigned xbox: 1;
+	unsigned buggy_semaphore: 1;
 
 	int spdif_idx;	/* SPDIF BAR index; *_SPBAR or -1 if use PCMOUT */
 	unsigned int sdm_saved;	/* SDM reg value */
@@ -689,10 +688,6 @@ static void snd_intel8x0_setup_periods(struct intel8x0 *chip, struct ichdev *ich
 						      ichdev->size));
 			bdbar[idx + 1] = cpu_to_le32(0x80000000 | /* interrupt on completion */
 						     ichdev->fragsize >> ichdev->pos_shift);
-#if 0
-			printk(KERN_DEBUG "bdbar[%i] = 0x%x [0x%x]\n",
-			       idx + 0, bdbar[idx + 0], bdbar[idx + 1]);
-#endif
 		}
 		ichdev->frags = ichdev->size / ichdev->fragsize;
 	}
@@ -701,23 +696,11 @@ static void snd_intel8x0_setup_periods(struct intel8x0 *chip, struct ichdev *ich
 	iputbyte(chip, port + ICH_REG_OFF_CIV, 0);
 	ichdev->lvi_frag = ICH_REG_LVI_MASK % ichdev->frags;
 	ichdev->position = 0;
-#if 0
-	printk(KERN_DEBUG "lvi_frag = %i, frags = %i, period_size = 0x%x, "
-	       "period_size1 = 0x%x\n",
-	       ichdev->lvi_frag, ichdev->frags, ichdev->fragsize,
-	       ichdev->fragsize1);
-#endif
 	/* clear interrupts */
 	iputbyte(chip, port + ichdev->roff_sr, ICH_FIFOE | ICH_BCIS | ICH_LVBCI);
 }
 
 #ifdef __i386__
-/*
- * Intel 82443MX running a 100MHz processor system bus has a hardware bug,
- * which aborts PCI busmaster for audio transfer.  A workaround is to set
- * the pages as non-cached.  For details, see the errata in
- *	http://www.intel.com/design/chipsets/specupdt/245051.htm
- */
 static void fill_nocache(void *buf, int size, int nocache)
 {
 	size = (size + PAGE_SIZE - 1) >> PAGE_SHIFT;
@@ -770,13 +753,6 @@ static inline void snd_intel8x0_update(struct intel8x0 *chip, struct ichdev *ich
 		ichdev->lvi_frag++;
 		ichdev->lvi_frag %= ichdev->frags;
 		ichdev->bdbar[ichdev->lvi * 2] = cpu_to_le32(ichdev->physbuf + ichdev->lvi_frag * ichdev->fragsize1);
-#if 0
-	printk(KERN_DEBUG "new: bdbar[%i] = 0x%x [0x%x], prefetch = %i, "
-	       "all = 0x%x, 0x%x\n",
-	       ichdev->lvi * 2, ichdev->bdbar[ichdev->lvi * 2],
-	       ichdev->bdbar[ichdev->lvi * 2 + 1], inb(ICH_REG_OFF_PIV + port),
-	       inl(port + 4), inb(port + ICH_REG_OFF_CR));
-#endif
 		if (--ichdev->ack == 0) {
 			ichdev->ack = ichdev->ack_reload;
 			ack = 1;
@@ -1312,37 +1288,6 @@ static int snd_intel8x0_ali_ac97spdifout_close(struct snd_pcm_substream *substre
 	return 0;
 }
 
-#if 0 // NYI
-static int snd_intel8x0_ali_spdifin_open(struct snd_pcm_substream *substream)
-{
-	struct intel8x0 *chip = snd_pcm_substream_chip(substream);
-
-	return snd_intel8x0_pcm_open(substream, &chip->ichd[ALID_SPDIFIN]);
-}
-
-static int snd_intel8x0_ali_spdifin_close(struct snd_pcm_substream *substream)
-{
-	struct intel8x0 *chip = snd_pcm_substream_chip(substream);
-
-	chip->ichd[ALID_SPDIFIN].substream = NULL;
-	return 0;
-}
-
-static int snd_intel8x0_ali_spdifout_open(struct snd_pcm_substream *substream)
-{
-	struct intel8x0 *chip = snd_pcm_substream_chip(substream);
-
-	return snd_intel8x0_pcm_open(substream, &chip->ichd[ALID_SPDIFOUT]);
-}
-
-static int snd_intel8x0_ali_spdifout_close(struct snd_pcm_substream *substream)
-{
-	struct intel8x0 *chip = snd_pcm_substream_chip(substream);
-
-	chip->ichd[ALID_SPDIFOUT].substream = NULL;
-	return 0;
-}
-#endif
 
 static struct snd_pcm_ops snd_intel8x0_playback_ops = {
 	.open =		snd_intel8x0_playback_open,
@@ -1454,29 +1399,6 @@ static struct snd_pcm_ops snd_intel8x0_ali_ac97spdifout_ops = {
 	.pointer =	snd_intel8x0_pcm_pointer,
 };
 
-#if 0 // NYI
-static struct snd_pcm_ops snd_intel8x0_ali_spdifin_ops = {
-	.open =		snd_intel8x0_ali_spdifin_open,
-	.close =	snd_intel8x0_ali_spdifin_close,
-	.ioctl =	snd_pcm_lib_ioctl,
-	.hw_params =	snd_intel8x0_hw_params,
-	.hw_free =	snd_intel8x0_hw_free,
-	.prepare =	snd_intel8x0_pcm_prepare,
-	.trigger =	snd_intel8x0_pcm_trigger,
-	.pointer =	snd_intel8x0_pcm_pointer,
-};
-
-static struct snd_pcm_ops snd_intel8x0_ali_spdifout_ops = {
-	.open =		snd_intel8x0_ali_spdifout_open,
-	.close =	snd_intel8x0_ali_spdifout_close,
-	.ioctl =	snd_pcm_lib_ioctl,
-	.hw_params =	snd_intel8x0_hw_params,
-	.hw_free =	snd_intel8x0_hw_free,
-	.prepare =	snd_intel8x0_pcm_prepare,
-	.trigger =	snd_intel8x0_pcm_trigger,
-	.pointer =	snd_intel8x0_pcm_pointer,
-};
-#endif // NYI
 
 struct ich_pcm_table {
 	char *suffix;
@@ -1606,14 +1528,6 @@ static struct ich_pcm_table ali_pcms[] __devinitdata = {
 		.prealloc_max_size = 128 * 1024,
 		.ac97_idx = ALID_AC97SPDIFOUT,
 	},
-#if 0 // NYI
-	{
-		.suffix = "HW IEC958",
-		.playback_ops = &snd_intel8x0_ali_spdifout_ops,
-		.prealloc_size = 64 * 1024,
-		.prealloc_max_size = 128 * 1024,
-	},
-#endif
 };
 
 static int __devinit snd_intel8x0_pcm(struct intel8x0 *chip)
@@ -1894,7 +1808,7 @@ static struct ac97_quirk ac97_quirks[] __devinitdata = {
 		.name = "HP zv5000",
 		.type = AC97_TUNE_MUTE_LED	/*AD1981B*/
 	},
-	{	/* FIXME: which codec? */
+	{
 		.subvendor = 0x103c,
 		.subdevice = 0x00c3,
 		.name = "HP xw6000",
@@ -2132,15 +2046,6 @@ static struct ac97_quirk ac97_quirks[] __devinitdata = {
 		.name = "Intel ICH5/AD1985",
 		.type = AC97_TUNE_AD_SHARING
 	},
-#if 0 /* FIXME: this seems wrong on most boards */
-	{
-		.subvendor = 0x8086,
-		.subdevice = 0xa000,
-		.mask = 0xfff0,
-		.name = "Intel ICH5/AD1985",
-		.type = AC97_TUNE_HP_ONLY
-	},
-#endif
 	{ } /* terminator */
 };
 
@@ -2225,7 +2130,6 @@ static int __devinit snd_intel8x0_mixer(struct intel8x0 *chip, int ac97_clock,
 	pbus->private_free = snd_intel8x0_mixer_free_ac97_bus;
 	if (ac97_clock >= 8000 && ac97_clock <= 48000)
 		pbus->clock = ac97_clock;
-	/* FIXME: my test board doesn't work well with VRA... */
 	if (chip->device_type == DEVICE_ALI)
 		pbus->no_vra = 1;
 	else
@@ -2980,7 +2884,7 @@ static int __devinit snd_intel8x0_create(struct snd_card *card,
 
 	if (pci->vendor == PCI_VENDOR_ID_INTEL &&
 	    pci->device == PCI_DEVICE_ID_INTEL_440MX)
-		chip->fix_nocache = 1; /* enable workaround */
+		chip->fix_nocache = 1;
 
 	if ((err = pci_request_regions(pci, card->shortname)) < 0) {
 		kfree(chip);
@@ -3058,7 +2962,6 @@ static int __devinit snd_intel8x0_create(struct snd_card *card,
 	}
 	/* tables must be aligned to 8 bytes here, but the kernel pages
 	   are much bigger, so we don't care (on i386) */
-	/* workaround for 440MX */
 	if (chip->fix_nocache)
 		fill_nocache(chip->bdbars.area, chip->bdbars.bytes, 1);
 	int_sta_masks = 0;

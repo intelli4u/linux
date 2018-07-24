@@ -1058,7 +1058,6 @@ static struct isa_driver snd_opti9xx_driver = {
 	.match		= snd_opti9xx_isa_match,
 	.probe		= snd_opti9xx_isa_probe,
 	.remove		= __devexit_p(snd_opti9xx_isa_remove),
-	/* FIXME: suspend/resume */
 	.driver		= {
 		.name	= DEV_NAME
 	},

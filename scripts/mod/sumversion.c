@@ -68,7 +68,6 @@ static inline uint32_t H(uint32_t x, uint32_t y, uint32_t z)
 #define ROUND2(a,b,c,d,k,s) (a = lshift(a + G(b,c,d) + k + (uint32_t)0x5A827999,s))
 #define ROUND3(a,b,c,d,k,s) (a = lshift(a + H(b,c,d) + k + (uint32_t)0x6ED9EBA1,s))
 
-/* XXX: this stuff can be optimized */
 static inline void le32_to_cpu_array(uint32_t *buf, unsigned int words)
 {
 	while (words--) {
@@ -252,7 +251,6 @@ static int parse_comment(const char *file, unsigned long len)
 	return i;
 }
 
-/* FIXME: Handle .s files differently (eg. # starts comments) --RR */
 static int parse_file(const char *fname, struct md4_ctx *md)
 {
 	char *file;

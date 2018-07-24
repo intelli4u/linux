@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  *	drivers/pci/setup-irq.c
  *
@@ -25,6 +26,11 @@ pdev_fixup_irq(struct pci_dev *dev,
 {
 	u8 pin, slot;
 	int irq = 0;
+
+#ifdef CONFIG_BCM47XX
+	if (pci_domain_nr(dev->bus) == 0)
+		return;
+#endif
 
 	/* If this device is not on the primary bus, we need to figure out
 	   which interrupt pin it will come in on.   We know which slot it

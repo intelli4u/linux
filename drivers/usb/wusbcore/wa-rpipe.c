@@ -1,62 +1,4 @@
-/*
- * WUSB Wire Adapter
- * rpipe management
- *
- * Copyright (C) 2005-2006 Intel Corporation
- * Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
- *
- *
- * FIXME: docs
- *
- * RPIPE
- *
- *   Targetted at different downstream endpoints
- *
- *   Descriptor: use to config the remote pipe.
- *
- *   The number of blocks could be dynamic (wBlocks in descriptor is
- *   0)--need to schedule them then.
- *
- * Each bit in wa->rpipe_bm represents if an rpipe is being used or
- * not. Rpipes are represented with a 'struct wa_rpipe' that is
- * attached to the hcpriv member of a 'struct usb_host_endpoint'.
- *
- * When you need to xfer data to an endpoint, you get an rpipe for it
- * with wa_ep_rpipe_get(), which gives you a reference to the rpipe
- * and keeps a single one (the first one) with the endpoint. When you
- * are done transferring, you drop that reference. At the end the
- * rpipe is always allocated and bound to the endpoint. There it might
- * be recycled when not used.
- *
- * Addresses:
- *
- *  We use a 1:1 mapping mechanism between port address (0 based
- *  index, actually) and the address. The USB stack knows about this.
- *
- *  USB Stack port number    4 (1 based)
- *  WUSB code port index     3 (0 based)
- *  USB Addresss             5 (2 based -- 0 is for default, 1 for root hub)
- *
- *  Now, because we don't use the concept as default address exactly
- *  like the (wired) USB code does, we need to kind of skip it. So we
- *  never take addresses from the urb->pipe, but from the
- *  urb->dev->devnum, to make sure that we always have the right
- *  destination address.
- */
+
 #include <linux/init.h>
 #include <asm/atomic.h>
 #include <linux/bitmap.h>
@@ -79,7 +21,7 @@ static int __rpipe_get_descr(struct wahc *wa,
 		USB_REQ_GET_DESCRIPTOR,
 		USB_DIR_IN | USB_TYPE_CLASS | USB_RECIP_RPIPE,
 		USB_DT_RPIPE<<8, index, descr, sizeof(*descr),
-		1000 /* FIXME: arbitrary */);
+		1000);
 	if (result < 0) {
 		dev_err(dev, "rpipe %u: get descriptor failed: %d\n",
 			index, (int)result);
@@ -235,7 +177,7 @@ static int __rpipe_reset(struct wahc *wa, unsigned index)
 		wa->usb_dev, usb_sndctrlpipe(wa->usb_dev, 0),
 		USB_REQ_RPIPE_RESET,
 		USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_RPIPE,
-		0, index, NULL, 0, 1000 /* FIXME: arbitrary */);
+		0, index, NULL, 0, 1000);
 	if (result < 0)
 		dev_err(dev, "rpipe %u: reset failed: %d\n",
 			index, result);
@@ -327,14 +269,11 @@ static int rpipe_aim(struct wa_rpipe *rpipe, struct wahc *wa,
 	unauth = usb_dev->wusb && !usb_dev->authenticated ? 0x80 : 0;
 	__rpipe_reset(wa, le16_to_cpu(rpipe->descr.wRPipeIndex));
 	atomic_set(&rpipe->segs_available, le16_to_cpu(rpipe->descr.wRequests));
-	/* FIXME: block allocation system; request with queuing and timeout */
-	/* FIXME: compute so seg_size > ep->maxpktsize */
 	rpipe->descr.wBlocks = cpu_to_le16(16);		/* given */
 	/* ep0 maxpktsize is 0x200 (WUSB1.0[4.8.1]) */
 	rpipe->descr.wMaxPacketSize = cpu_to_le16(ep->desc.wMaxPacketSize);
 	rpipe->descr.bHSHubAddress = 0;			/* reserved: zero */
 	rpipe->descr.bHSHubPort = wusb_port_no_to_idx(urb->dev->portnum);
-	/* FIXME: use maximum speed as supported or recommended by device */
 	rpipe->descr.bSpeed = usb_pipeendpoint(urb->pipe) == 0 ?
 		UWB_PHY_RATE_53 : UWB_PHY_RATE_200;
 
@@ -349,21 +288,14 @@ static int rpipe_aim(struct wa_rpipe *rpipe, struct wahc *wa,
 	else
 		rpipe->descr.bDeviceAddress = urb->dev->devnum | unauth;
 	rpipe->descr.bEndpointAddress = ep->desc.bEndpointAddress;
-	/* FIXME: bDataSequence */
 	rpipe->descr.bDataSequence = 0;
-	/* FIXME: dwCurrentWindow */
 	rpipe->descr.dwCurrentWindow = cpu_to_le32(1);
-	/* FIXME: bMaxDataSequence */
 	rpipe->descr.bMaxDataSequence = epcd->bMaxSequence - 1;
 	rpipe->descr.bInterval = ep->desc.bInterval;
-	/* FIXME: bOverTheAirInterval */
 	rpipe->descr.bOverTheAirInterval = 0;	/* 0 if not isoc */
-	/* FIXME: xmit power & preamble blah blah */
 	rpipe->descr.bmAttribute = ep->desc.bmAttributes & 0x03;
 	/* rpipe->descr.bmCharacteristics RO */
-	/* FIXME: bmRetryOptions */
 	rpipe->descr.bmRetryOptions = 15;
-	/* FIXME: use for assessing link quality? */
 	rpipe->descr.wNumTransactionErrors = 0;
 	result = __rpipe_set_descr(wa, &rpipe->descr,
 				   le16_to_cpu(rpipe->descr.wRPipeIndex));
@@ -521,7 +453,7 @@ void rpipe_ep_disable(struct wahc *wa, struct usb_host_endpoint *ep)
 			wa->usb_dev, usb_rcvctrlpipe(wa->usb_dev, 0),
 			USB_REQ_RPIPE_ABORT,
 			USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_RPIPE,
-			0, index, NULL, 0, 1000 /* FIXME: arbitrary */);
+			0, index, NULL, 0, 1000);
 		rpipe_put(rpipe);
 	}
 	mutex_unlock(&wa->rpipe_mutex);

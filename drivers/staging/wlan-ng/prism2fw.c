@@ -688,17 +688,6 @@ int plugimage(struct imgchunk *fchunk, unsigned int nfchunks,
 			       "warning: Failed to find PDR for "
 			       "plugrec 0x%04x.\n", s3plug[i].itemcode);
 			continue;	/* and move on to the next PDR */
-#if 0
-			/* MSM: They swear that unless it's the MAC address,
-			 * the serial number, or the TX calibration records,
-			 * then there's reasonable defaults in the f/w
-			 * image.  Therefore, missing PDRs in the card
-			 * should only be a warning, not fatal.
-			 * TODO: add fatals for the PDRs mentioned above.
-			 */
-			result = 1;
-			continue;
-#endif
 		}
 
 		/* Validate plug len against PDR len */
@@ -1168,7 +1157,6 @@ int validate_identity(void)
 			/* SEC compat range */
 			if ((s3info[i].info.compat.role == 1) &&
 			    (s3info[i].info.compat.id == 4)) {
-				/* FIXME: isn't something missing here? */
 			}
 
 			break;

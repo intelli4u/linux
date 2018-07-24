@@ -166,7 +166,6 @@ int __init early_parse_wdt_period (char *p)
 early_param("wdt_period", early_parse_wdt_period);
 #endif	/* CONFIG_BOOKE_WDT */
 
-/* Checks "l2cr=xxxx" command-line option */
 int __init ppc_setup_l2cr(char *str)
 {
 	if (cpu_has_feature(CPU_FTR_L2CR)) {
@@ -179,7 +178,6 @@ int __init ppc_setup_l2cr(char *str)
 }
 __setup("l2cr=", ppc_setup_l2cr);
 
-/* Checks "l3cr=xxxx" command-line option */
 int __init ppc_setup_l3cr(char *str)
 {
 	if (cpu_has_feature(CPU_FTR_L3CR)) {

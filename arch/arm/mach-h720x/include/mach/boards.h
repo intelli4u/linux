@@ -39,7 +39,7 @@
 #endif
 
 /* Hynix H7201 developer board specific device defines */
-#if defined (CONFIG_ARCH_H7201)
+#if defined(CONFIG_ARCH_H7201)
 /* ROM DISK SPACE */
 #define ROM_DISK_BASE           0xc1800000
 #define ROM_DISK_START          0x41800000
@@ -50,4 +50,3 @@
 #define SRAM_DISK_START         0x04000000
 #define SRAM_DISK_SIZE          0x00400000
 #endif
-

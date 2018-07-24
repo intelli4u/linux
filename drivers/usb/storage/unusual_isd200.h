@@ -15,8 +15,7 @@
  * 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#if defined(CONFIG_USB_STORAGE_ISD200) || \
-		defined(CONFIG_USB_STORAGE_ISD200_MODULE)
+#if defined(CONFIG_USB_STORAGE_ISD200) || defined(CONFIG_USB_STORAGE_ISD200_MODULE)
 
 UNUSUAL_DEV(  0x054c, 0x002b, 0x0100, 0x0110,
 		"Sony",

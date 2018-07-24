@@ -732,7 +732,6 @@ fsl_rio_rx_handler(int irq, void *dev_instance)
 		goto out;
 	}
 
-	/* XXX Need to check/dispatch until queue empty */
 	if (isr & RIO_MSG_ISR_DIQI) {
 		/*
 		 * We implement *only* mailbox 0, but can receive messages
@@ -956,7 +955,6 @@ fsl_rio_dbell_handler(int irq, void *dev_instance)
 		out_be32(&priv->msg_regs->dsr, DOORBELL_DSR_QFI);
 	}
 
-	/* XXX Need to check/dispatch until queue empty */
 	if (dsr & DOORBELL_DSR_DIQI) {
 		u32 dmsg =
 		    (u32) priv->dbell_ring.virt +
@@ -1271,7 +1269,6 @@ static char *cmdline = NULL;
 
 static int fsl_rio_get_hdid(int index)
 {
-	/* XXX Need to parse multiple entries in some format */
 	if (!cmdline)
 		return -1;
 

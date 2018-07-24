@@ -14,4 +14,3 @@ obj-$(CONFIG_USB_ULPI)		+= ulpi.o
 
 ccflags-$(CONFIG_USB_DEBUG)	+= -DDEBUG
 ccflags-$(CONFIG_USB_GADGET_DEBUG) += -DDEBUG
-

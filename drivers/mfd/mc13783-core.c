@@ -27,7 +27,6 @@ struct mc13783 {
 	irq_handler_t irqhandler[MC13783_NUM_IRQ];
 	void *irqdata[MC13783_NUM_IRQ];
 
-	/* XXX these should go as platformdata to the regulator subdevice */
 	struct mc13783_regulator_init_data *regulators;
 	int num_regulators;
 };

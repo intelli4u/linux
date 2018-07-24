@@ -362,26 +362,12 @@ static int atmio16d_ai_cmdtest(struct comedi_device *dev,
 			err++;
 		}
 	} else {
-#if 0
-		/* external trigger */
-		/* should be level/edge, hi/lo specification here */
-		if (cmd->scan_begin_arg != 0) {
-			cmd->scan_begin_arg = 0;
-			err++;
-		}
-#endif
 	}
 
 	if (cmd->convert_arg < 10000) {
 		cmd->convert_arg = 10000;
 		err++;
 	}
-#if 0
-	if (cmd->convert_arg > SLOWEST_TIMER) {
-		cmd->convert_arg = SLOWEST_TIMER;
-		err++;
-	}
-#endif
 	if (cmd->scan_end_arg != cmd->chanlist_len) {
 		cmd->scan_end_arg = cmd->chanlist_len;
 		err++;
@@ -869,13 +855,6 @@ static int atmio16d_attach(struct comedi_device *dev,
 		s->type = COMEDI_SUBD_UNUSED;
 
 /* don't yet know how to deal with counter/timers */
-#if 0
-	s++;
-	/* do */
-	s->type = COMEDI_SUBD_TIMER;
-	s->n_chan = 0;
-	s->maxdata = 0
-#endif
 	    printk("\n");
 
 	return 0;

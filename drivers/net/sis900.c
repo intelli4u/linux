@@ -1,53 +1,4 @@
-/* sis900.c: A SiS 900/7016 PCI Fast Ethernet driver for Linux.
-   Copyright 1999 Silicon Integrated System Corporation
-   Revision:	1.08.10 Apr. 2 2006
 
-   Modified from the driver which is originally written by Donald Becker.
-
-   This software may be used and distributed according to the terms
-   of the GNU General Public License (GPL), incorporated herein by reference.
-   Drivers based on this skeleton fall under the GPL and must retain
-   the authorship (implicit copyright) notice.
-
-   References:
-   SiS 7016 Fast Ethernet PCI Bus 10/100 Mbps LAN Controller with OnNow Support,
-   preliminary Rev. 1.0 Jan. 14, 1998
-   SiS 900 Fast Ethernet PCI Bus 10/100 Mbps LAN Single Chip with OnNow Support,
-   preliminary Rev. 1.0 Nov. 10, 1998
-   SiS 7014 Single Chip 100BASE-TX/10BASE-T Physical Layer Solution,
-   preliminary Rev. 1.0 Jan. 18, 1998
-
-   Rev 1.08.10 Apr.  2 2006 Daniele Venzano add vlan (jumbo packets) support
-   Rev 1.08.09 Sep. 19 2005 Daniele Venzano add Wake on LAN support
-   Rev 1.08.08 Jan. 22 2005 Daniele Venzano use netif_msg for debugging messages
-   Rev 1.08.07 Nov.  2 2003 Daniele Venzano <venza@brownhat.org> add suspend/resume support
-   Rev 1.08.06 Sep. 24 2002 Mufasa Yang bug fix for Tx timeout & add SiS963 support
-   Rev 1.08.05 Jun.  6 2002 Mufasa Yang bug fix for read_eeprom & Tx descriptor over-boundary
-   Rev 1.08.04 Apr. 25 2002 Mufasa Yang <mufasa@sis.com.tw> added SiS962 support
-   Rev 1.08.03 Feb.  1 2002 Matt Domsch <Matt_Domsch@dell.com> update to use library crc32 function
-   Rev 1.08.02 Nov. 30 2001 Hui-Fen Hsu workaround for EDB & bug fix for dhcp problem
-   Rev 1.08.01 Aug. 25 2001 Hui-Fen Hsu update for 630ET & workaround for ICS1893 PHY
-   Rev 1.08.00 Jun. 11 2001 Hui-Fen Hsu workaround for RTL8201 PHY and some bug fix
-   Rev 1.07.11 Apr.  2 2001 Hui-Fen Hsu updates PCI drivers to use the new pci_set_dma_mask for kernel 2.4.3
-   Rev 1.07.10 Mar.  1 2001 Hui-Fen Hsu <hfhsu@sis.com.tw> some bug fix & 635M/B support
-   Rev 1.07.09 Feb.  9 2001 Dave Jones <davej@suse.de> PCI enable cleanup
-   Rev 1.07.08 Jan.  8 2001 Lei-Chun Chang added RTL8201 PHY support
-   Rev 1.07.07 Nov. 29 2000 Lei-Chun Chang added kernel-doc extractable documentation and 630 workaround fix
-   Rev 1.07.06 Nov.  7 2000 Jeff Garzik <jgarzik@pobox.com> some bug fix and cleaning
-   Rev 1.07.05 Nov.  6 2000 metapirat<metapirat@gmx.de> contribute media type select by ifconfig
-   Rev 1.07.04 Sep.  6 2000 Lei-Chun Chang added ICS1893 PHY support
-   Rev 1.07.03 Aug. 24 2000 Lei-Chun Chang (lcchang@sis.com.tw) modified 630E eqaulizer workaround rule
-   Rev 1.07.01 Aug. 08 2000 Ollie Lho minor update for SiS 630E and SiS 630E A1
-   Rev 1.07    Mar. 07 2000 Ollie Lho bug fix in Rx buffer ring
-   Rev 1.06.04 Feb. 11 2000 Jeff Garzik <jgarzik@pobox.com> softnet and init for kernel 2.4
-   Rev 1.06.03 Dec. 23 1999 Ollie Lho Third release
-   Rev 1.06.02 Nov. 23 1999 Ollie Lho bug in mac probing fixed
-   Rev 1.06.01 Nov. 16 1999 Ollie Lho CRC calculation provide by Joseph Zbiciak (im14u2c@primenet.com)
-   Rev 1.06 Nov. 4 1999 Ollie Lho (ollie@sis.com.tw) Second release
-   Rev 1.05.05 Oct. 29 1999 Ollie Lho (ollie@sis.com.tw) Single buffer Tx/Rx
-   Chin-Shan Li (lcs@sis.com.tw) Added AMD Am79c901 HomePNA PHY support
-   Rev 1.05 Aug. 7 1999 Jim Huang (cmhuang@sis.com.tw) Initial release
-*/
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -659,7 +610,6 @@ static int __devinit sis900_mii_probe(struct net_device * net_dev)
 	    ((sis_priv->mii->phy_id1&0xFFF0) == 0x8000))
         	status = sis900_reset_phy(net_dev, sis_priv->cur_phy);
 
-        /* workaround for ICS1893 PHY */
         if ((sis_priv->mii->phy_id0 == 0x0015) &&
             ((sis_priv->mii->phy_id1&0xFFF0) == 0xF440))
             	mdio_write(net_dev, sis_priv->cur_phy, 0x0018, 0xD200);
@@ -1010,7 +960,6 @@ sis900_open(struct net_device *net_dev)
 	/* Soft reset the chip. */
 	sis900_reset(net_dev);
 
-	/* Equalizer workaround Rule */
 	sis630_set_eq(net_dev, sis_priv->chipset_rev);
 
 	ret = request_irq(net_dev->irq, sis900_interrupt, IRQF_SHARED,
@@ -1027,7 +976,6 @@ sis900_open(struct net_device *net_dev)
 
 	netif_start_queue(net_dev);
 
-	/* Workaround for EDB */
 	sis900_set_mode(ioaddr, HW_SPEED_10_MBPS, FDX_CAPABLE_HALF_SELECTED);
 
 	/* Enable all known interrupts by setting the interrupt mask. */
@@ -1173,32 +1121,6 @@ sis900_init_rx_ring(struct net_device *net_dev)
 		       net_dev->name, inl(ioaddr + rxdp));
 }
 
-/**
- *	sis630_set_eq - set phy equalizer value for 630 LAN
- *	@net_dev: the net device to set equalizer value
- *	@revision: 630 LAN revision number
- *
- *	630E equalizer workaround rule(Cyrus Huang 08/15)
- *	PHY register 14h(Test)
- *	Bit 14: 0 -- Automatically dectect (default)
- *		1 -- Manually set Equalizer filter
- *	Bit 13: 0 -- (Default)
- *		1 -- Speed up convergence of equalizer setting
- *	Bit 9 : 0 -- (Default)
- *		1 -- Disable Baseline Wander
- *	Bit 3~7   -- Equalizer filter setting
- *	Link ON: Set Bit 9, 13 to 1, Bit 14 to 0
- *	Then calculate equalizer value
- *	Then set equalizer value, and set Bit 14 to 1, Bit 9 to 0
- *	Link Off:Set Bit 13 to 1, Bit 14 to 0
- *	Calculate Equalizer value:
- *	When Link is ON and Bit 14 is 0, SIS900PHY will auto-dectect proper equalizer value.
- *	When the equalizer is stable, this value is not a fixed value. It will be within
- *	a small range(eg. 7~9). Then we get a minimum and a maximum value(eg. min=7, max=9)
- *	0 <= max <= 4  --> set equalizer to max
- *	5 <= max <= 14 --> set equalizer to max+1 or set equalizer to max+2 if max == min
- *	max >= 15      --> set equalizer to max+5 or set equalizer to max+6 if max == min
- */
 
 static void sis630_set_eq(struct net_device *net_dev, u8 revision)
 {
@@ -1486,7 +1408,6 @@ static void sis900_read_mode(struct net_device *net_dev, int *speed, int *duplex
 
 	sis_priv->autong_complete = 1;
 
-	/* Workaround for Realtek RTL8201 PHY issue */
 	if ((phy->phy_id0 == 0x0000) && ((phy->phy_id1 & 0xFFF0) == 0x8200)) {
 		if (mdio_read(net_dev, phy_addr, MII_CONTROL) & MII_CNTL_FDX)
 			*duplex = FDX_CAPABLE_FULL_SELECTED;
@@ -2433,7 +2354,6 @@ static int sis900_resume(struct pci_dev *pci_dev)
 	netif_device_attach(net_dev);
 	netif_start_queue(net_dev);
 
-	/* Workaround for EDB */
 	sis900_set_mode(ioaddr, HW_SPEED_10_MBPS, FDX_CAPABLE_HALF_SELECTED);
 
 	/* Enable all known interrupts by setting the interrupt mask. */
@@ -2475,4 +2395,3 @@ static void __exit sis900_cleanup_module(void)
 
 module_init(sis900_init_module);
 module_exit(sis900_cleanup_module);
-

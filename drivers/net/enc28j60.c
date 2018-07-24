@@ -10,7 +10,7 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
- * $Id: enc28j60.c,v 1.22 2007/12/20 10:47:01 claudio Exp $
+ * $Id: enc28j60.c,v 1.22 2007/12/20 10:47:01 Exp $
  */
 
 #include <linux/module.h>
@@ -185,8 +185,6 @@ static void enc28j60_soft_reset(struct enc28j60_net *priv)
 		printk(KERN_DEBUG DRV_NAME ": %s() enter\n", __func__);
 
 	spi_write_op(priv, ENC28J60_SOFT_RESET, 0, ENC28J60_SOFT_RESET);
-	/* Errata workaround #1, CLKRDY check is unreliable,
-	 * delay at least 1 mS instead */
 	udelay(2000);
 }
 
@@ -1083,14 +1081,6 @@ static void enc28j60_tx_clear(struct net_device *ndev, bool err)
 	netif_wake_queue(ndev);
 }
 
-/*
- * RX handler
- * ignore PKTIF because is unreliable! (look at the errata datasheet)
- * check EPKTCNT is the suggested workaround.
- * We don't need to clear interrupt flag, automatically done when
- * enc28j60_hw_rx() decrements the packet counter.
- * Returns how many packet processed.
- */
 static int enc28j60_rx_interrupt(struct net_device *ndev)
 {
 	struct enc28j60_net *priv = netdev_priv(ndev);

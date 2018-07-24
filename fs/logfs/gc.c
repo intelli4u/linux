@@ -718,11 +718,6 @@ void logfs_cleanup_gc(struct super_block *sb)
 	if (!super->s_free_list.count)
 		return;
 
-	/*
-	 * FIXME: The btree may still contain a single empty node.  So we
-	 * call the grim visitor to clean up that mess.  Btree code should
-	 * do it for us, really.
-	 */
 	btree_grim_visitor32(&super->s_cand_tree, 0, NULL);
 	logfs_cleanup_list(sb, &super->s_free_list);
 	logfs_cleanup_list(sb, &super->s_reserve_list);

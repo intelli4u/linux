@@ -89,11 +89,7 @@ static int mga_do_dma_reset(drm_mga_private_t *dev_priv)
 
 	sarea_priv->last_wrap = 0;
 
-	/* FIXME: Reset counters, buffer ages etc...
-	 */
 
-	/* FIXME: What else do we need to reinitialize?  WARP stuff?
-	 */
 
 	return 0;
 }
@@ -303,23 +299,6 @@ static void mga_freelist_cleanup(struct drm_device *dev)
 	dev_priv->head = dev_priv->tail = NULL;
 }
 
-#if 0
-/* FIXME: Still needed?
- */
-static void mga_freelist_reset(struct drm_device *dev)
-{
-	struct drm_device_dma *dma = dev->dma;
-	struct drm_buf *buf;
-	drm_mga_buf_priv_t *buf_priv;
-	int i;
-
-	for (i = 0; i < dma->buf_count; i++) {
-		buf = dma->buflist[i];
-		buf_priv = buf->dev_private;
-		SET_AGE(&buf_priv->list_entry->age, MGA_BUFFER_FREE, 0);
-	}
-}
-#endif
 
 static struct drm_buf *mga_freelist_get(struct drm_device * dev)
 {
@@ -809,8 +788,6 @@ static int mga_do_init_dma(struct drm_device *dev, drm_mga_init_t *init)
 	dev_priv->depth_offset = init->depth_offset;
 	dev_priv->depth_pitch = init->depth_pitch;
 
-	/* FIXME: Need to support AGP textures...
-	 */
 	dev_priv->texture_offset = init->texture_offset[0];
 	dev_priv->texture_size = init->texture_size[0];
 
@@ -890,10 +867,6 @@ static int mga_do_init_dma(struct drm_device *dev, drm_mga_init_t *init)
 	/* Init the primary DMA registers.
 	 */
 	MGA_WRITE(MGA_PRIMADDRESS, dev_priv->primary->offset | MGA_DMA_GENERAL);
-#if 0
-	MGA_WRITE(MGA_PRIMPTR, virt_to_bus((void *)dev_priv->prim.status) | MGA_PRIMPTREN0 |	/* Soft trap, SECEND, SETUPEND */
-		  MGA_PRIMPTREN1);	/* DWGSYNC */
-#endif
 
 	dev_priv->prim.start = (u8 *) dev_priv->primary->handle;
 	dev_priv->prim.end = ((u8 *) dev_priv->primary->handle

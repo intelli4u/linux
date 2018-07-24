@@ -64,8 +64,8 @@ struct vm_area_struct;
 #define _PAGE_FOW	0x0004	/* used for page protection (fault on write) */
 #define _PAGE_FOE	0x0008	/* used for page protection (fault on exec) */
 #define _PAGE_ASM	0x0010
-#define _PAGE_KRE	0x0100	/* xxx - see below on the "accessed" bit */
-#define _PAGE_URE	0x0200	/* xxx */
+#define _PAGE_KRE	0x0100
+#define _PAGE_URE	0x0200
 #define _PAGE_KWE	0x1000	/* used to do the dirty bit in software */
 #define _PAGE_UWE	0x2000	/* used to do the dirty bit in software */
 
@@ -188,8 +188,8 @@ extern unsigned long __zero_page(void);
 #if defined(CONFIG_ALPHA_GENERIC) && defined(USE_48_BIT_KSEG)
 #error "EV6-only feature in a generic kernel"
 #endif
-#if defined(CONFIG_ALPHA_GENERIC) || \
-    (defined(CONFIG_ALPHA_EV6) && !defined(USE_48_BIT_KSEG))
+#if defined(CONFIG_ALPHA_GENERIC) || (defined(CONFIG_ALPHA_EV6) && \
+	!defined(USE_48_BIT_KSEG))
 #define KSEG_PFN	(0xc0000000000UL >> PAGE_SHIFT)
 #define PHYS_TWIDDLE(pfn) \
   ((((pfn) & KSEG_PFN) == (0x40000000000UL >> PAGE_SHIFT)) \

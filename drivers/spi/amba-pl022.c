@@ -458,10 +458,6 @@ static void giveback(struct pl022 *pl022)
 
 	/* Delay if requested before any change in chip select */
 	if (last_transfer->delay_usecs)
-		/*
-		 * FIXME: This runs in interrupt context.
-		 * Is this really smart?
-		 */
 		udelay(last_transfer->delay_usecs);
 
 	/*
@@ -932,10 +928,6 @@ static void pump_transfers(unsigned long data)
 					struct spi_transfer,
 					transfer_list);
 		if (previous->delay_usecs)
-			/*
-			 * FIXME: This runs in interrupt context.
-			 * Is this really smart?
-			 */
 			udelay(previous->delay_usecs);
 
 		/* Drop chip select only if cs_change is requested */
@@ -1073,7 +1065,6 @@ static void do_polling_transfer(void *data)
 		       SSP_CR1(pl022->virtbase));
 
 		dev_dbg(&pl022->adev->dev, "polling transfer ongoing ...\n");
-		/* FIXME: insert a timeout so we don't hang here indefinately */
 		while (pl022->tx < pl022->tx_end || pl022->rx < pl022->rx_end)
 			readwriter(pl022);
 
@@ -1497,7 +1488,6 @@ static int process_dma_info(struct pl022_config_chip *chip_info,
  * commence.
  */
 
-/* FIXME: JUST GUESSING the spi->mode bits understood by this driver */
 #define MODEBITS	(SPI_CPOL | SPI_CPHA | SPI_CS_HIGH \
 			| SPI_LSB_FIRST | SPI_LOOP)
 

@@ -515,8 +515,6 @@ gss_refresh_upcall(struct rpc_task *task)
 								cred->cr_uid);
 	gss_msg = gss_setup_upcall(task->tk_client, gss_auth, cred);
 	if (PTR_ERR(gss_msg) == -EAGAIN) {
-		/* XXX: warning on the first, under the assumption we
-		 * shouldn't normally hit this case on a refresh. */
 		warn_gssd();
 		task->tk_timeout = 15*HZ;
 		rpc_sleep_on(&pipe_version_rpc_waitqueue, task, NULL);
@@ -788,7 +786,7 @@ gss_create(struct rpc_clnt *clnt, rpc_authflavor_t flavor)
 {
 	struct gss_auth *gss_auth;
 	struct rpc_auth * auth;
-	int err = -ENOMEM; /* XXX? */
+	int err = -ENOMEM;
 
 	dprintk("RPC:       creating GSS authenticator for client %p\n", clnt);
 
@@ -1151,9 +1149,6 @@ static int gss_cred_is_negative_entry(struct rpc_cred *cred)
 	return 0;
 }
 
-/*
-* Refresh credentials. XXX - finish
-*/
 static int
 gss_refresh(struct rpc_task *task)
 {
@@ -1267,7 +1262,7 @@ gss_wrap_req_integ(struct rpc_cred *cred, struct gss_cl_ctx *ctx,
 	mic.data = (u8 *)(p + 1);
 
 	maj_stat = gss_get_mic(ctx->gc_gss_ctx, &integ_buf, &mic);
-	status = -EIO; /* XXX? */
+	status = -EIO;
 	if (maj_stat == GSS_S_CONTEXT_EXPIRED)
 		clear_bit(RPCAUTH_CRED_UPTODATE, &cred->cr_flags);
 	else if (maj_stat)

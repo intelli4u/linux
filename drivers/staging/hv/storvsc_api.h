@@ -79,7 +79,6 @@ struct hv_storvsc_request {
 /* Represents the block vsc driver */
 struct storvsc_driver_object {
 	/* Must be the first field */
-	/* Which is a bug FIXME! */
 	struct hv_driver Base;
 
 	/* Set by caller (in bytes) */

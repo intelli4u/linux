@@ -383,12 +383,6 @@ static void ar9002_hw_configpcipowersave(struct ath_hw *ah,
 
 		val = REG_READ(ah, AR_WA);
 
-		/*
-		 * Set PCIe workaround bits
-		 * In AR9280 and AR9285, bit 14 in WA register (disable L1)
-		 * should only  be set when device enters D3 and be
-		 * cleared when device comes back to D0.
-		 */
 		if (ah->config.pcie_waen) {
 			if (ah->config.pcie_waen & AR_WA_D3_L1_DISABLE)
 				val |= AR_WA_D3_L1_DISABLE;

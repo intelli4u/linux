@@ -182,62 +182,6 @@ static void l1m_debug(struct FsmInst *fi, char *fmt, ...)
  * D-Channel out
  */
 
-/*
-  D OUT state machine:
-  ====================
-
-  Transmit short frame (< 16 bytes of encoded data):
-
-  L1 FRAME    D_OUT_STATE           USB                  D CHANNEL
-  --------    -----------           ---                  ---------
- 
-              FIXME
-
- -> [xx..xx]  SHORT_INIT            -> [7Exx..xxC1C27EFF]
-              SHORT_WAIT_DEN        <> OUT_D_COUNTER=16 
-                                                 
-              END_OF_SHORT          <- DEN_EVENT         -> 7Exx
-                                                          xxxx 
-                                                          xxxx
-							  xxxx 
-							  xxxx
-							  xxxx
-							  C1C1 
-							  7EFF 
-              WAIT_FOR_RESET_IDLE   <- D_UNDERRUN        <- (8ms)                        
-              IDLE                  <> Reset pipe
-
-              
-
-  Transmit long frame (>= 16 bytes of encoded data):
-
-  L1 FRAME    D_OUT_STATE           USB                  D CHANNEL
-  --------    -----------           ---                  ---------
-
- -> [xx...xx] IDLE
-              WAIT_FOR_STOP         <> OUT_D_COUNTER=0
-              WAIT_FOR_RESET        <> Reset pipe
-	      STOP
-	      INIT_LONG_FRAME       -> [7Exx..xx]
-              WAIT_DEN              <> OUT_D_COUNTER=16 
-              OUT_NORMAL            <- DEN_EVENT       -> 7Exx
-              END_OF_FRAME_BUSY     -> [xxxx]             xxxx 
-              END_OF_FRAME_NOT_BUSY -> [xxxx]             xxxx
-				    -> [xxxx]		  xxxx 
-				    -> [C1C2]		  xxxx
-				    -> [7EFF]		  xxxx
-							  xxxx 
-							  xxxx 
-                                                          ....
-							  xxxx
-							  C1C2
-							  7EFF
-	                 	    <- D_UNDERRUN      <- (> 8ms)                        
-              WAIT_FOR_STOP         <> OUT_D_COUNTER=0
-              WAIT_FOR_RESET        <> Reset pipe
-	      STOP
-
-*/          
 
 static struct Fsm dout_fsm;
 
@@ -405,7 +349,6 @@ static void usb_d_out_complete(struct urb *urb)
 
 static void dout_start_xmit(struct FsmInst *fsm, int event, void *arg)
 {
-	// FIXME unify?
 	struct st5481_adapter *adapter = fsm->userdata;
 	struct st5481_d_out *d_out = &adapter->d_out;
 	struct urb *urb;
@@ -538,7 +481,6 @@ static void dout_reseted(struct FsmInst *fsm, int event, void *arg)
 	struct st5481_d_out *d_out = &adapter->d_out;
 
 	FsmChangeState(&d_out->fsm, ST_DOUT_NONE);
-	// FIXME locking
 	if (d_out->tx_skb)
 		FsmEvent(&d_out->fsm, EV_DOUT_START_XMIT, NULL);
 }

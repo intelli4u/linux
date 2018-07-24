@@ -626,7 +626,7 @@ static const struct pcidas64_board pcidas64_boards[] = {
 	 .has_8255 = 1,
 	 },
 	{
-	 .name = "pci-das6402/12",	/*  XXX check */
+	 .name = "pci-das6402/12",
 	 .device_id = 0x1e,
 	 .ai_se_chans = 64,
 	 .ai_bits = 12,
@@ -932,99 +932,6 @@ static const struct pcidas64_board pcidas64_boards[] = {
 	 .ai_fifo = &ai_fifo_4020,
 	 .has_8255 = 1,
 	 },
-#if 0
-	{
-	 .name = "pci-das6402/16/jr",
-	 .device_id = 0		/*  XXX, */
-	 .ai_se_chans = 64,
-	 .ai_bits = 16,
-	 .ai_speed = 5000,
-	 .ao_nchan = 0,
-	 .ao_scan_speed = 10000,
-	 .layout = LAYOUT_64XX,
-	 .ai_range_table = &ai_ranges_64xx,
-	 .ai_fifo = ai_fifo_64xx,
-	 .has_8255 = 1,
-	 },
-	{
-	 .name = "pci-das64/m1/16/jr",
-	 .device_id = 0		/*  XXX, */
-	 .ai_se_chans = 64,
-	 .ai_bits = 16,
-	 .ai_speed = 1000,
-	 .ao_nchan = 0,
-	 .ao_scan_speed = 10000,
-	 .layout = LAYOUT_64XX,
-	 .ai_range_table = &ai_ranges_64xx,
-	 .ai_fifo = ai_fifo_64xx,
-	 .has_8255 = 1,
-	 },
-	{
-	 .name = "pci-das64/m2/16/jr",
-	 .device_id = 0		/*  XXX, */
-	 .ai_se_chans = 64,
-	 .ai_bits = 16,
-	 .ai_speed = 500,
-	 .ao_nchan = 0,
-	 .ao_scan_speed = 10000,
-	 .layout = LAYOUT_64XX,
-	 .ai_range_table = &ai_ranges_64xx,
-	 .ai_fifo = ai_fifo_64xx,
-	 .has_8255 = 1,
-	 },
-	{
-	 .name = "pci-das64/m3/16/jr",
-	 .device_id = 0		/*  XXX, */
-	 .ai_se_chans = 64,
-	 .ai_bits = 16,
-	 .ai_speed = 333,
-	 .ao_nchan = 0,
-	 .ao_scan_speed = 10000,
-	 .layout = LAYOUT_64XX,
-	 .ai_range_table = &ai_ranges_64xx,
-	 .ai_fifo = ai_fifo_64xx,
-	 .has_8255 = 1,
-	 },
-	{
-	 .name = "pci-das64/m1/14",
-	 .device_id = 0,	/*  XXX */
-	 .ai_se_chans = 64,
-	 .ai_bits = 14,
-	 .ai_speed = 1000,
-	 .ao_nchan = 2,
-	 .ao_scan_speed = 10000,
-	 .layout = LAYOUT_64XX,
-	 .ai_range_table = &ai_ranges_64xx,
-	 .ai_fifo = ai_fifo_64xx,
-	 .has_8255 = 1,
-	 },
-	{
-	 .name = "pci-das64/m2/14",
-	 .device_id = 0,	/*  XXX */
-	 .ai_se_chans = 64,
-	 .ai_bits = 14,
-	 .ai_speed = 500,
-	 .ao_nchan = 2,
-	 .ao_scan_speed = 10000,
-	 .layout = LAYOUT_64XX,
-	 .ai_range_table = &ai_ranges_64xx,
-	 .ai_fifo = ai_fifo_64xx,
-	 .has_8255 = 1,
-	 },
-	{
-	 .name = "pci-das64/m3/14",
-	 .device_id = 0,	/*  XXX */
-	 .ai_se_chans = 64,
-	 .ai_bits = 14,
-	 .ai_speed = 333,
-	 .ao_nchan = 2,
-	 .ao_scan_speed = 10000,
-	 .layout = LAYOUT_64XX,
-	 .ai_range_table = &ai_ranges_64xx,
-	 .ai_fifo = ai_fifo_64xx,
-	 .has_8255 = 1,
-	 },
-#endif
 };
 
 static DEFINE_PCI_DEVICE_TABLE(pcidas64_pci_table) = {
@@ -1457,7 +1364,6 @@ static int setup_subdevices(struct comedi_device *dev)
 		s->subdev_flags |= SDF_COMMON | SDF_DIFF;
 	else if (board(dev)->layout == LAYOUT_64XX)
 		s->subdev_flags |= SDF_DIFF;
-	/* XXX Number of inputs in differential mode is ignored */
 	s->n_chan = board(dev)->ai_se_chans;
 	s->len_chanlist = 0x2000;
 	s->maxdata = (1 << board(dev)->ai_bits) - 1;
@@ -1593,7 +1499,6 @@ static int setup_subdevices(struct comedi_device *dev)
 	} else
 		s->type = COMEDI_SUBD_UNUSED;
 
-	/*  user counter subd XXX */
 	s = dev->subdevices + 9;
 	s->type = COMEDI_SUBD_UNUSED;
 
@@ -1614,7 +1519,6 @@ static void init_stc_registers(struct comedi_device *dev)
 
 	spin_lock_irqsave(&dev->spinlock, flags);
 
-	/*  bit should be set for 6025, although docs say boards with <= 16 chans should be cleared XXX */
 	if (1)
 		priv(dev)->adc_control1_bits |= ADC_QUEUE_CONFIG_BIT;
 	writew(priv(dev)->adc_control1_bits,
@@ -2175,7 +2079,6 @@ static int ai_config_master_clock_4020(struct comedi_device *dev,
 	return retval ? retval : 5;
 }
 
-/* XXX could add support for 60xx series */
 static int ai_config_master_clock(struct comedi_device *dev, unsigned int *data)
 {
 
@@ -3047,8 +2950,6 @@ static void drain_dma_buffers(struct comedi_device *dev, unsigned int channel)
 			    ai_buffer_bus_addr[priv(dev)->ai_dma_index]);
 		DEBUG_PRINT("pci addr reg 0x%x\n", next_transfer_addr);
 	}
-	/* XXX check for dma ring buffer overrun (use end-of-chain bit to mark last
-	 * unused buffer) */
 }
 
 static void handle_ai_interrupt(struct comedi_device *dev,
@@ -3994,7 +3895,6 @@ static void check_adc_timing(struct comedi_device *dev, struct comedi_cmd *cmd)
 	if (cmd->scan_begin_src == TRIG_TIMER) {
 		scan_divisor = get_divisor(cmd->scan_begin_arg, cmd->flags);
 		if (cmd->convert_src == TRIG_TIMER) {
-			/*  XXX check for integer overflows */
 			min_scan_divisor = convert_divisor * cmd->chanlist_len;
 			max_scan_divisor =
 			    (convert_divisor * cmd->chanlist_len - 1) +
@@ -4308,7 +4208,6 @@ static void i2c_write(struct comedi_device *dev, unsigned int address,
 	uint8_t bitstream;
 	static const int read_bit = 0x1;
 
-/* XXX need mutex to prevent simultaneous attempts to access eeprom and i2c bus */
 
 	/*  make sure we dont send anything to eeprom */
 	priv(dev)->plx_control_bits &= ~CTL_EE_CS;

@@ -534,9 +534,6 @@ static ext4_fsblk_t ext4_find_goal(struct inode *inode, ext4_lblk_t block,
 {
 	ext4_fsblk_t goal;
 
-	/*
-	 * XXX need to get goal block from mballoc's data structures
-	 */
 
 	goal = ext4_find_near(inode, partial);
 	goal = goal & EXT4_MAX_BLOCK_FILE_PHYS;
@@ -2038,11 +2035,6 @@ static int mpage_da_submit_io(struct mpage_da_data *mpd)
 				 * without skipping the same
 				 */
 				mpd->pages_written++;
-			/*
-			 * In error case, we have to continue because
-			 * remaining pages are still locked
-			 * XXX: unlock and re-dirty them?
-			 */
 			if (ret == 0)
 				ret = err;
 		}
@@ -2076,7 +2068,6 @@ static void mpage_put_bnr_to_bhs(struct mpage_da_data *mpd,
 	pagevec_init(&pvec, 0);
 
 	while (index <= end) {
-		/* XXX: optimize tail */
 		nr_pages = pagevec_lookup(&pvec, mapping, index, PAGEVEC_SIZE);
 		if (nr_pages == 0)
 			break;
@@ -2346,12 +2337,6 @@ static void mpage_add_bh_to_extent(struct mpage_da_data *mpd,
 	sector_t next;
 	int nrblocks = mpd->b_size >> mpd->inode->i_blkbits;
 
-	/*
-	 * XXX Don't go larger than mballoc is willing to allocate
-	 * This is a stopgap solution.  We eventually need to fold
-	 * mpage_da_submit_io() into this function and then call
-	 * ext4_map_blocks() multiple times in a loop
-	 */
 	if (nrblocks >= 8*1024*1024/mpd->inode->i_sb->s_blocksize)
 		goto flush_it;
 
@@ -2549,10 +2534,6 @@ static int ext4_da_get_block_prep(struct inode *inode, sector_t iblock,
 	if (ret == 0) {
 		if (buffer_delay(bh))
 			return 0; /* Not sure this could or should happen */
-		/*
-		 * XXX: __block_prepare_write() unmaps passed block,
-		 * is it OK?
-		 */
 		ret = ext4_da_reserve_space(inode, iblock);
 		if (ret)
 			/* not enough space to reserve */
@@ -4320,9 +4301,6 @@ static Indirect *ext4_find_shared(struct inode *inode, int depth,
 	} else {
 		*top = *p->p;
 		/* Nope, don't do this in ext4.  Must leave the tree intact */
-#if 0
-		*p->p = 0;
-#endif
 	}
 	/* Writer: end */
 
@@ -5897,35 +5875,6 @@ out:
 	return;
 }
 
-#if 0
-/*
- * Bind an inode's backing buffer_head into this transaction, to prevent
- * it from being flushed to disk early.  Unlike
- * ext4_reserve_inode_write, this leaves behind no bh reference and
- * returns no iloc structure, so the caller needs to repeat the iloc
- * lookup to mark the inode dirty later.
- */
-static int ext4_pin_inode(handle_t *handle, struct inode *inode)
-{
-	struct ext4_iloc iloc;
-
-	int err = 0;
-	if (handle) {
-		err = ext4_get_inode_loc(inode, &iloc);
-		if (!err) {
-			BUFFER_TRACE(iloc.bh, "get_write_access");
-			err = jbd2_journal_get_write_access(handle, iloc.bh);
-			if (!err)
-				err = ext4_handle_dirty_metadata(handle,
-								 NULL,
-								 iloc.bh);
-			brelse(iloc.bh);
-		}
-	}
-	ext4_std_error(inode->i_sb, err);
-	return err;
-}
-#endif
 
 int ext4_change_inode_journal_flag(struct inode *inode, int val)
 {

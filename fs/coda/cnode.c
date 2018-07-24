@@ -118,7 +118,6 @@ void coda_replace_fid(struct inode *inode, struct CodaFid *oldfid,
 	BUG_ON(!coda_fideq(&cii->c_fid, oldfid));
 
 	/* replace fid and rehash inode */
-	/* XXX we probably need to hold some lock here! */
 	remove_inode_hash(inode);
 	cii->c_fid = *newfid;
 	inode->i_ino = hash;
@@ -163,4 +162,3 @@ int coda_cnode_makectl(struct inode **inode, struct super_block *sb)
 
 	return error;
 }
-

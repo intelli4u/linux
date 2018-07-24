@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  * 	NET3	Protocol independent device support routines.
  *
@@ -95,6 +96,7 @@
 #include <linux/ethtool.h>
 #include <linux/notifier.h>
 #include <linux/skbuff.h>
+#include <linux/netfilter_ipv4.h>
 #include <net/net_namespace.h>
 #include <net/sock.h>
 #include <linux/rtnetlink.h>
@@ -129,8 +131,10 @@
 #include <linux/random.h>
 #include <trace/events/napi.h>
 #include <linux/pci.h>
-
 #include "net-sysfs.h"
+
+#include <typedefs.h>
+#include <bcmdefs.h>
 
 /* Instead of increasing this, you should create a hash table. */
 #define MAX_GRO_SKBS 8
@@ -1935,7 +1939,7 @@ static inline int skb_needs_linearize(struct sk_buff *skb,
 					      illegal_highdma(dev, skb))));
 }
 
-int dev_hard_start_xmit(struct sk_buff *skb, struct net_device *dev,
+int BCMFASTPATH_HOST dev_hard_start_xmit(struct sk_buff *skb, struct net_device *dev,
 			struct netdev_queue *txq)
 {
 	const struct net_device_ops *ops = dev->netdev_ops;
@@ -1959,6 +1963,11 @@ int dev_hard_start_xmit(struct sk_buff *skb, struct net_device *dev,
 				goto out_kfree_skb;
 			if (skb->next)
 				goto gso;
+			else {
+				DEV_GSO_CB(skb)->destructor = skb->destructor;
+				skb->destructor = dev_gso_skb_destructor;
+				goto out_kfree_gso_skb;
+			}
 		} else {
 			if (skb_needs_linearize(skb, dev) &&
 			    __skb_linearize(skb))
@@ -2090,7 +2099,6 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
 				 struct netdev_queue *txq)
 {
 	spinlock_t *root_lock = qdisc_lock(q);
-	bool contended = qdisc_is_running(q);
 	int rc;
 
 	/*
@@ -2099,8 +2107,6 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
 	 * This permits __QDISC_STATE_RUNNING owner to get the lock more often
 	 * and dequeue packets faster.
 	 */
-	if (unlikely(contended))
-		spin_lock(&q->busylock);
 
 	spin_lock(root_lock);
 	if (unlikely(test_bit(__QDISC_STATE_DEACTIVATED, &q->state))) {
@@ -2116,30 +2122,20 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
 		if (!(dev->priv_flags & IFF_XMIT_DST_RELEASE))
 			skb_dst_force(skb);
 		__qdisc_update_bstats(q, skb->len);
-		if (sch_direct_xmit(skb, q, dev, txq, root_lock)) {
-			if (unlikely(contended)) {
-				spin_unlock(&q->busylock);
-				contended = false;
-			}
+		if (sch_direct_xmit(skb, q, dev, txq, root_lock))
 			__qdisc_run(q);
-		} else
+		else
 			qdisc_run_end(q);
 
 		rc = NET_XMIT_SUCCESS;
 	} else {
 		skb_dst_force(skb);
 		rc = qdisc_enqueue_root(skb, q);
-		if (qdisc_run_begin(q)) {
-			if (unlikely(contended)) {
-				spin_unlock(&q->busylock);
-				contended = false;
-			}
+		if (qdisc_run_begin(q))
 			__qdisc_run(q);
-		}
 	}
 	spin_unlock(root_lock);
-	if (unlikely(contended))
-		spin_unlock(&q->busylock);
+
 	return rc;
 }
 
@@ -2168,7 +2164,7 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
  *      the BH enable code must have IRQs enabled so that it will not deadlock.
  *          --BLG
  */
-int dev_queue_xmit(struct sk_buff *skb)
+int BCMFASTPATH_HOST dev_queue_xmit(struct sk_buff *skb)
 {
 	struct net_device *dev = skb->dev;
 	struct netdev_queue *txq;
@@ -2186,7 +2182,11 @@ int dev_queue_xmit(struct sk_buff *skb)
 #ifdef CONFIG_NET_CLS_ACT
 	skb->tc_verd = SET_TC_AT(skb->tc_verd, AT_EGRESS);
 #endif
+#ifdef CONFIG_IP_NF_LFP
+	if (q->enqueue && !(skb->nfcache & NFC_LFP_ENABLE)) {
+#else
 	if (q->enqueue) {
+#endif
 		rc = __dev_xmit_skb(skb, q, dev, txq);
 		goto out;
 	}
@@ -2501,7 +2501,7 @@ enqueue:
  *
  */
 
-int netif_rx(struct sk_buff *skb)
+int BCMFASTPATH_HOST netif_rx(struct sk_buff *skb)
 {
 	int ret;
 
@@ -2620,7 +2620,7 @@ static inline int deliver_skb(struct sk_buff *skb,
 }
 
 #if (defined(CONFIG_BRIDGE) || defined(CONFIG_BRIDGE_MODULE)) && \
-    (defined(CONFIG_ATM_LANE) || defined(CONFIG_ATM_LANE_MODULE))
+	(defined(CONFIG_ATM_LANE) || defined(CONFIG_ATM_LANE_MODULE))
 /* This hook is defined here for ATM LANE */
 int (*br_fdb_test_addr_hook)(struct net_device *dev,
 			     unsigned char *addr) __read_mostly;
@@ -2967,7 +2967,7 @@ out:
  *	NET_RX_SUCCESS: no congestion
  *	NET_RX_DROP: packet was dropped
  */
-int netif_receive_skb(struct sk_buff *skb)
+int BCMFASTPATH_HOST netif_receive_skb(struct sk_buff *skb)
 {
 	if (netdev_tstamp_prequeue)
 		net_timestamp_check(skb);
@@ -3028,7 +3028,7 @@ static void flush_backlog(void *arg)
 	}
 }
 
-static int napi_gro_complete(struct sk_buff *skb)
+static int BCMFASTPATH_HOST napi_gro_complete(struct sk_buff *skb)
 {
 	struct packet_type *ptype;
 	__be16 type = skb->protocol;
@@ -3060,7 +3060,7 @@ out:
 	return netif_receive_skb(skb);
 }
 
-static void napi_gro_flush(struct napi_struct *napi)
+static void BCMFASTPATH_HOST napi_gro_flush(struct napi_struct *napi)
 {
 	struct sk_buff *skb, *next;
 
@@ -3074,7 +3074,15 @@ static void napi_gro_flush(struct napi_struct *napi)
 	napi->gro_list = NULL;
 }
 
-enum gro_result dev_gro_receive(struct napi_struct *napi, struct sk_buff *skb)
+#ifdef CONFIG_INET_GRO
+void BCMFASTPATH_HOST generic_napi_gro_flush(struct napi_struct *napi)
+{
+	napi_gro_flush(napi);
+}
+EXPORT_SYMBOL(generic_napi_gro_flush);
+#endif /* CONFIG_INET_GRO */
+
+enum gro_result BCMFASTPATH_HOST dev_gro_receive(struct napi_struct *napi, struct sk_buff *skb)
 {
 	struct sk_buff **pp = NULL;
 	struct packet_type *ptype;
@@ -3166,7 +3174,7 @@ normal:
 }
 EXPORT_SYMBOL(dev_gro_receive);
 
-static gro_result_t
+static gro_result_t BCMFASTPATH_HOST
 __napi_gro_receive(struct napi_struct *napi, struct sk_buff *skb)
 {
 	struct sk_buff *p;
@@ -3182,7 +3190,7 @@ __napi_gro_receive(struct napi_struct *napi, struct sk_buff *skb)
 	return dev_gro_receive(napi, skb);
 }
 
-gro_result_t napi_skb_finish(gro_result_t ret, struct sk_buff *skb)
+gro_result_t BCMFASTPATH_HOST napi_skb_finish(gro_result_t ret, struct sk_buff *skb)
 {
 	switch (ret) {
 	case GRO_NORMAL:
@@ -3220,7 +3228,7 @@ void skb_gro_reset_offset(struct sk_buff *skb)
 }
 EXPORT_SYMBOL(skb_gro_reset_offset);
 
-gro_result_t napi_gro_receive(struct napi_struct *napi, struct sk_buff *skb)
+gro_result_t BCMFASTPATH_HOST napi_gro_receive(struct napi_struct *napi, struct sk_buff *skb)
 {
 	skb_gro_reset_offset(skb);
 
@@ -3353,6 +3361,12 @@ static void net_rps_action_and_irq_enable(struct softnet_data *sd)
 		local_irq_enable();
 }
 
+#ifdef CONFIG_INET_GRO
+struct napi_struct gro_napi = {0};
+atomic_t gro_timer_init = {0};
+extern spinlock_t gro_lock;
+#endif /* CONFIG_INET_GRO */
+
 static int process_backlog(struct napi_struct *napi, int quota)
 {
 	int work = 0;
@@ -3375,6 +3389,14 @@ static int process_backlog(struct napi_struct *napi, int quota)
 
 		while ((skb = __skb_dequeue(&sd->process_queue))) {
 			local_irq_enable();
+#ifdef CONFIG_INET_GRO
+			if (atomic_read(&gro_timer_init)) {
+				spin_lock_bh(&gro_lock);
+				napi_gro_receive(&gro_napi, skb);
+				spin_unlock_bh(&gro_lock);
+			}
+			else
+#endif /* CONFIG_INET_GRO */
 			__netif_receive_skb(skb);
 			local_irq_disable();
 			input_queue_head_incr(sd);
@@ -3492,7 +3514,7 @@ void netif_napi_del(struct napi_struct *napi)
 }
 EXPORT_SYMBOL(netif_napi_del);
 
-static void net_rx_action(struct softirq_action *h)
+static void BCMFASTPATH_HOST net_rx_action(struct softirq_action *h)
 {
 	struct softnet_data *sd = &__get_cpu_var(softnet_data);
 	unsigned long time_limit = jiffies + 2;
@@ -6093,4 +6115,3 @@ static int __init initialize_hashrnd(void)
 }
 
 late_initcall_sync(initialize_hashrnd);
-

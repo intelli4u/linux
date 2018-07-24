@@ -107,5 +107,3 @@ extern u16 GLOB_LLD_Read_Page_Main_Spare_cdma(u8 *data,
 
 
 #endif /*_LLD_ */
-
-

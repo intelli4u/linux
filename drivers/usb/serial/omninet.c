@@ -316,7 +316,6 @@ static int omninet_write_room(struct tty_struct *tty)
 
 	int room = 0; /* Default: no room */
 
-	/* FIXME: no consistent locking for write_urb_busy */
 	if (wport->write_urb_busy)
 		room = wport->bulk_out_size - OMNINET_HEADERLEN;
 

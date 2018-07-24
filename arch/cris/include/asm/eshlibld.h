@@ -12,7 +12,7 @@
 *! (C) Copyright 1998, 1999 Axis Communications AB, LUND, SWEDEN
 *!
 *!**************************************************************************/
-/* $Id: eshlibld.h,v 1.2 2001/02/23 13:47:33 bjornw Exp $ */
+/* $Id: eshlibld.h,v 1.2 2001/02/23 13:47:33 Exp $ */
 
 #ifndef _cris_relocate_h
 #define _cris_relocate_h
@@ -45,8 +45,8 @@
    assumed that we want to share code when debugging (exposes more
    trouble). */
 #ifndef SHARE_LIB_CORE
-# if (defined(__KERNEL__) || !defined(RELOC_DEBUG)) \
-     && !defined(CONFIG_SHARE_SHLIB_CORE)
+# if (defined(__KERNEL__) || !defined(RELOC_DEBUG)) && \
+	!defined(CONFIG_SHARE_SHLIB_CORE)
 #  define SHARE_LIB_CORE 0
 # else
 #  define SHARE_LIB_CORE 1
@@ -110,4 +110,3 @@ shlibmod_fork(struct shlibdep **deps);
 
 #endif _cris_relocate_h
 /********************** END OF FILE eshlibld.h *****************************/
-

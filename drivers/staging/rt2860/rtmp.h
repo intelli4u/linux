@@ -2109,11 +2109,9 @@ struct rt_rtmp_adapter {
 
 	unsigned long OneSecondnonBEpackets;	/* record non BE packets per second */
 
-#ifdef LINUX
 	struct iw_statistics iw_stats;
 
 	struct net_device_stats stats;
-#endif				/* LINUX // */
 
 	unsigned long TbttTickCount;
 #ifdef PCI_MSI_SUPPORT
@@ -4252,7 +4250,6 @@ int rt28xx_open(struct net_device *dev);
 #define VIRTUAL_IF_DEC(__pAd) ((__pAd)->VirtualIfCnt--)
 #define VIRTUAL_IF_NUM(__pAd) ((__pAd)->VirtualIfCnt)
 
-#ifdef LINUX
 __inline int VIRTUAL_IF_UP(struct rt_rtmp_adapter *pAd)
 {
 	if (VIRTUAL_IF_NUM(pAd) == 0) {
@@ -4274,7 +4271,6 @@ __inline void VIRTUAL_IF_DOWN(struct rt_rtmp_adapter *pAd)
 		rt28xx_close(pAd->net_dev);
 	return;
 }
-#endif /* LINUX // */
 
 /*
 	OS Related funciton prototype definitions.

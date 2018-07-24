@@ -251,4 +251,3 @@ cifs_strndup_from_ucs(const char *src, const int maxlen, const bool is_unicode,
 
 	return dst;
 }
-

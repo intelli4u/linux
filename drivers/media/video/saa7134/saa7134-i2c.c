@@ -255,9 +255,6 @@ static int saa7134_i2c_xfer(struct i2c_adapter *i2c_adap,
 			if (msgs[i].flags & I2C_M_RD)
 				addr |= 1;
 			if (i > 0 && msgs[i].flags & I2C_M_RD && msgs[i].addr != 0x40) {
-				/* workaround for a saa7134 i2c bug
-				 * needed to talk to the mt352 demux
-				 * thanks to pinnacle for the hint */
 				int quirk = 0xfe;
 				d1printk(" [%02x quirk]",quirk);
 				i2c_send_byte(dev,START,quirk);

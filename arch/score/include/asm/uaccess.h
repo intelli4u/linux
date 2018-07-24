@@ -421,4 +421,3 @@ struct exception_table_entry {
 extern int fixup_exception(struct pt_regs *regs);
 
 #endif /* __SCORE_UACCESS_H */
-

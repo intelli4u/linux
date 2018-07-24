@@ -2807,7 +2807,6 @@
  **************************************************************************
  */
 
-/* Interrupt acknowledge work-around register (A0/A1 only) */
 #define FR_AA_WORK_AROUND_BROKEN_PCI_READS 0x0070
 
 /* EE_SPI_HCMD_REG: SPI host command register */

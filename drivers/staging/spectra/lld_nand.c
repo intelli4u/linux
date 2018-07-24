@@ -447,7 +447,6 @@ static void get_toshiba_nand_para(void)
 	void __iomem *scratch_reg;
 	u32 tmp;
 
-	/* Workaround to fix a controller bug which reports a wrong */
 	/* spare area size for some kind of Toshiba NAND device */
 	if ((ioread32(FlashReg + DEVICE_MAIN_AREA_SIZE) == 4096) &&
 		(ioread32(FlashReg + DEVICE_SPARE_AREA_SIZE) == 64)) {
@@ -2596,6 +2595,3 @@ int nand_release_spectra(void)
 
 	return 0;
 }
-
-
-

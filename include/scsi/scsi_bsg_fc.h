@@ -319,4 +319,3 @@ struct fc_bsg_reply {
 
 
 #endif /* SCSI_BSG_FC_H */
-

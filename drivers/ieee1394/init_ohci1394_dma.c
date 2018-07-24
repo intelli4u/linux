@@ -100,7 +100,7 @@ static inline void __init init_ohci1394_initialize(struct ti_ohci *ohci)
 	/* Put some defaults to these undefined bus options */
 	bus_options = reg_read(ohci, OHCI1394_BusOptions);
 	bus_options |=  0x60000000; /* Enable CMC and ISC */
-	bus_options &= ~0x00ff0000; /* XXX: Set cyc_clk_acc to zero for now */
+	bus_options &= ~0x00ff0000;
 	bus_options &= ~0x18000000; /* Disable PMC and BMC */
 	reg_write(ohci, OHCI1394_BusOptions, bus_options);
 

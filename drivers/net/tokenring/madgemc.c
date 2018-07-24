@@ -72,10 +72,6 @@ static void madgemc_setint(struct net_device *dev, int val);
 
 static irqreturn_t madgemc_interrupt(int irq, void *dev_id);
 
-/*
- * These work around paging, however they don't guarentee you're on the
- * right page.
- */
 #define SIFREADB(reg) (inb(dev->base_addr + ((reg<0x8)?reg:reg-0x8)))
 #define SIFWRITEB(val, reg) (outb(val, dev->base_addr + ((reg<0x8)?reg:reg-0x8)))
 #define SIFREADW(reg) (inw(dev->base_addr + ((reg<0x8)?reg:reg-0x8)))
@@ -760,4 +756,3 @@ module_init(madgemc_init);
 module_exit(madgemc_exit);
 
 MODULE_LICENSE("GPL");
-

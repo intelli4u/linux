@@ -708,7 +708,6 @@ static struct isa_driver snd_sc6000_driver = {
 	.match		= snd_sc6000_match,
 	.probe		= snd_sc6000_probe,
 	.remove		= __devexit_p(snd_sc6000_remove),
-	/* FIXME: suspend/resume */
 	.driver		= {
 		.name	= DRV_NAME,
 	},

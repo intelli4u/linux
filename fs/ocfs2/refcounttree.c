@@ -1469,18 +1469,6 @@ static int ocfs2_divide_leaf_refcount_block(struct buffer_head *ref_leaf_bh,
 	     (unsigned long long)ref_leaf_bh->b_blocknr,
 	     le32_to_cpu(rl->rl_count), le32_to_cpu(rl->rl_used));
 
-	/*
-	 * XXX: Improvement later.
-	 * If we know all the high 32 bit cpos is the same, no need to sort.
-	 *
-	 * In order to make the whole process safe, we do:
-	 * 1. sort the entries by their low 32 bit cpos first so that we can
-	 *    find the split cpos easily.
-	 * 2. call ocfs2_insert_extent to insert the new refcount block.
-	 * 3. move the refcount rec to the new block.
-	 * 4. sort the entries by their 64 bit cpos.
-	 * 5. dirty the new_rb and rb.
-	 */
 	sort(&rl->rl_recs, le16_to_cpu(rl->rl_used),
 	     sizeof(struct ocfs2_refcount_rec),
 	     cmp_refcount_rec_by_low_cpos, swap_refcount_rec);

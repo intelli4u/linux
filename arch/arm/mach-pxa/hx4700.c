@@ -380,7 +380,6 @@ static void sony_lcd_init(void)
 	mdelay(5);
 	gpio_set_value(GPIO111_HX4700_LCD_AVDD_3V3_ON, 1);
 
-	/* FIXME: init w3220 registers here */
 
 	mdelay(5);
 	gpio_set_value(GPIO70_HX4700_LCD_SLIN1, 1);

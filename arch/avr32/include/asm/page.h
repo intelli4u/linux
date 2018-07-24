@@ -42,7 +42,6 @@ typedef struct page *pgtable_t;
 #define __pgd(x)		((pgd_t) { (x) })
 #define __pgprot(x)		((pgprot_t) { (x) })
 
-/* FIXME: These should be removed soon */
 extern unsigned long memory_start, memory_end;
 
 /* Pure 2^n version of get_order */

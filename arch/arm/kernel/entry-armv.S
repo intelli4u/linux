@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  *  linux/arch/arm/kernel/entry-armv.S
  *
@@ -40,12 +41,6 @@
 	bne	asm_do_IRQ
 
 #ifdef CONFIG_SMP
-	/*
-	 * XXX
-	 *
-	 * this macro assumes that irqstat (r6) and base (r5) are
-	 * preserved from get_irqnr_and_base above
-	 */
 	test_for_ipi r0, r6, r5, lr
 	movne	r0, sp
 	adrne	lr, BSYM(1b)
@@ -65,6 +60,7 @@
 	.section	.kprobes.text,"ax",%progbits
 #else
 	.text
+	.section .text.fastpath, "a"
 #endif
 
 /*

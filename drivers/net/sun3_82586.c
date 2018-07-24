@@ -126,9 +126,6 @@ static int     sun3_82586_send_packet(struct sk_buff *,struct net_device *);
 static struct  net_device_stats *sun3_82586_get_stats(struct net_device *dev);
 static void    set_multicast_list(struct net_device *dev);
 static void    sun3_82586_timeout(struct net_device *dev);
-#if 0
-static void    sun3_82586_dump(struct net_device *,void *);
-#endif
 
 /* helper-functions */
 static int     init586(struct net_device *dev);
@@ -853,24 +850,6 @@ static void sun3_82586_rcv_int(struct net_device *dev)
 	}
 #endif
 
-#if 0
-	if(!at_least_one)
-	{
-		int i;
-		volatile struct rfd_struct *rfds=p->rfd_top;
-		volatile struct rbd_struct *rbds;
-		printk("%s: received a FC intr. without having a frame: %04x %d\n",dev->name,status,old_at_least);
-		for(i=0;i< (p->num_recv_buffs+4);i++)
-		{
-			rbds = (struct rbd_struct *) make32(rfds->rbd_offset);
-			printk("%04x:%04x ",rfds->status,rbds->status);
-			rfds = (struct rfd_struct *) make32(rfds->next);
-		}
-		printk("\nerrs: %04x %04x stat: %04x\n",(int)p->scb->rsc_errs,(int)p->scb->ovrn_errs,(int)p->scb->status);
-		printk("\nerrs: %04x %04x rus: %02x, cus: %02x\n",(int)p->scb->rsc_errs,(int)p->scb->ovrn_errs,(int)p->scb->rus,(int)p->scb->cus);
-	}
-	old_at_least = at_least_one;
-#endif
 
 	if(debuglevel > 0)
 		printk("r");
@@ -1173,41 +1152,5 @@ void cleanup_module(void)
 }
 #endif /* MODULE */
 
-#if 0
-/*
- * DUMP .. we expect a not running CMD unit and enough space
- */
-void sun3_82586_dump(struct net_device *dev,void *ptr)
-{
-	struct priv *p = netdev_priv(dev);
-	struct dump_cmd_struct *dump_cmd = (struct dump_cmd_struct *) ptr;
-	int i;
-
-	p->scb->cmd_cuc = CUC_ABORT;
-	sun3_attn586();
-	WAIT_4_SCB_CMD();
-	WAIT_4_SCB_CMD_RUC();
-
-	dump_cmd->cmd_status = 0;
-	dump_cmd->cmd_cmd = CMD_DUMP | CMD_LAST;
-	dump_cmd->dump_offset = make16((dump_cmd + 1));
-	dump_cmd->cmd_link = 0xffff;
-
-	p->scb->cbl_offset = make16(dump_cmd);
-	p->scb->cmd_cuc = CUC_START;
-	sun3_attn586();
-	WAIT_4_STAT_COMPL(dump_cmd);
-
-	if( (dump_cmd->cmd_status & (STAT_COMPL|STAT_OK)) != (STAT_COMPL|STAT_OK) )
-				printk("%s: Can't get dump information.\n",dev->name);
-
-	for(i=0;i<170;i++) {
-		printk("%02x ",(int) ((unsigned char *) (dump_cmd + 1))[i]);
-		if(i % 24 == 23)
-			printk("\n");
-	}
-	printk("\n");
-}
-#endif
 
 MODULE_LICENSE("GPL");

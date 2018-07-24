@@ -48,8 +48,6 @@ void dlm_free_lvb(char *p)
 	kfree(p);
 }
 
-/* FIXME: have some minimal space built-in to rsb for the name and
-   kmalloc a separate name if needed, like dentries are done */
 
 struct dlm_rsb *dlm_allocate_rsb(struct dlm_ls *ls, int namelen)
 {
@@ -89,4 +87,3 @@ void dlm_free_lkb(struct dlm_lkb *lkb)
 	}
 	kmem_cache_free(lkb_cache, lkb);
 }
-

@@ -37,8 +37,7 @@ extern void __init palm27x_lcd_init(int power,
 static inline void palm27x_lcd_init(int power, struct pxafb_mode_info *mode) {}
 #endif
 
-#if	defined(CONFIG_USB_GADGET_PXA27X) || \
-	defined(CONFIG_USB_GADGET_PXA27X_MODULE)
+#if	defined(CONFIG_USB_GADGET_PXA27X) || defined(CONFIG_USB_GADGET_PXA27X_MODULE)
 extern void __init palm27x_udc_init(int vbus, int pullup,
 					int vbus_inverted);
 #else
@@ -51,8 +50,7 @@ extern void __init palm27x_irda_init(int pwdn);
 static inline void palm27x_irda_init(int pwdn) {}
 #endif
 
-#if	defined(CONFIG_TOUCHSCREEN_WM97XX) || \
-	defined(CONFIG_TOUCHSCREEN_WM97XX_MODULE)
+#if	defined(CONFIG_TOUCHSCREEN_WM97XX) || defined(CONFIG_TOUCHSCREEN_WM97XX_MODULE)
 extern void __init palm27x_ac97_init(int minv, int maxv, int jack,
 					int reset);
 #else
@@ -71,8 +69,7 @@ extern void __init palm27x_power_init(int ac, int usb);
 static inline void palm27x_power_init(int ac, int usb) {}
 #endif
 
-#if defined(CONFIG_REGULATOR_MAX1586) || \
-    defined(CONFIG_REGULATOR_MAX1586_MODULE)
+#if defined(CONFIG_REGULATOR_MAX1586) || defined(CONFIG_REGULATOR_MAX1586_MODULE)
 extern void __init palm27x_pmic_init(void);
 #else
 static inline void palm27x_pmic_init(void) {}

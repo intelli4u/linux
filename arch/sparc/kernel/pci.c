@@ -623,11 +623,6 @@ static void __devinit pci_of_scan_bus(struct pci_pbm_info *pbm,
 
 		devfn = (reg[0] >> 8) & 0xff;
 
-		/* This is a workaround for some device trees
-		 * which list PCI devices twice.  On the V100
-		 * for example, device number 3 is listed twice.
-		 * Once as "pm" and once again as "lomp".
-		 */
 		if (devfn == prev_devfn)
 			continue;
 		prev_devfn = devfn;
@@ -845,16 +840,6 @@ static int __pci_mmap_make_offset_bus(struct pci_dev *pdev, struct vm_area_struc
 	return 0;
 }
 
-/* Adjust vm_pgoff of VMA such that it is the physical page offset
- * corresponding to the 32-bit pci bus offset for DEV requested by the user.
- *
- * Basically, the user finds the base address for his device which he wishes
- * to mmap.  They read the 32-bit value from the config space base register,
- * add whatever PAGE_SIZE multiple offset they wish, and feed this into the
- * offset parameter of mmap on /proc/bus/pci/XXX for that device.
- *
- * Returns negative error code on failure, zero on success.
- */
 static int __pci_mmap_make_offset(struct pci_dev *pdev,
 				  struct vm_area_struct *vma,
 				  enum pci_mmap_state mmap_state)

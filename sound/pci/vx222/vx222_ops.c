@@ -961,9 +961,6 @@ static struct snd_kcontrol_new vx_control_mic_level = {
 	.tlv = { .p = db_scale_mic },
 };
 
-/*
- * FIXME: compressor/limiter implementation is missing yet...
- */
 
 static int vx2_add_mic_controls(struct vx_core *_chip)
 {
@@ -1028,4 +1025,3 @@ struct snd_vx_ops vx222_old_ops = {
 	.dma_write = vx2_dma_write,
 	.dma_read = vx2_dma_read,
 };
-

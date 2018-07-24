@@ -2361,7 +2361,7 @@ static int __devinit snd_ice1712_read_eeprom(struct snd_ice1712 *ice,
  found:
 	ice->eeprom.size = snd_ice1712_read_i2c(ice, dev, 0x04);
 	if (ice->eeprom.size < 6)
-		ice->eeprom.size = 32; /* FIXME: any cards without the correct size? */
+		ice->eeprom.size = 32;
 	else if (ice->eeprom.size > 32) {
 		snd_printk(KERN_ERR "invalid EEPROM (size = %i)\n", ice->eeprom.size);
 		return -EIO;

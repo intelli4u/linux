@@ -1501,58 +1501,6 @@ static int buffer_unmapped(handle_t *handle, struct buffer_head *bh)
 	return !buffer_mapped(bh);
 }
 
-/*
- * Note that we always start a transaction even if we're not journalling
- * data.  This is to preserve ordering: any hole instantiation within
- * __block_write_full_page -> ext3_get_block() should be journalled
- * along with the data so we don't crash and then get metadata which
- * refers to old data.
- *
- * In all journalling modes block_write_full_page() will start the I/O.
- *
- * Problem:
- *
- *	ext3_writepage() -> kmalloc() -> __alloc_pages() -> page_launder() ->
- *		ext3_writepage()
- *
- * Similar for:
- *
- *	ext3_file_write() -> generic_file_write() -> __alloc_pages() -> ...
- *
- * Same applies to ext3_get_block().  We will deadlock on various things like
- * lock_journal and i_truncate_mutex.
- *
- * Setting PF_MEMALLOC here doesn't work - too many internal memory
- * allocations fail.
- *
- * 16May01: If we're reentered then journal_current_handle() will be
- *	    non-zero. We simply *return*.
- *
- * 1 July 2001: @@@ FIXME:
- *   In journalled data mode, a data buffer may be metadata against the
- *   current transaction.  But the same file is part of a shared mapping
- *   and someone does a writepage() on it.
- *
- *   We will move the buffer onto the async_data list, but *after* it has
- *   been dirtied. So there's a small window where we have dirty data on
- *   BJ_Metadata.
- *
- *   Note that this only applies to the last partial page in the file.  The
- *   bit which block_write_full_page() uses prepare/commit for.  (That's
- *   broken code anyway: it's wrong for msync()).
- *
- *   It's a rare case: affects the final partial page, for journalled data
- *   where the file is subject to bith write() and writepage() in the same
- *   transction.  To fix it we'll need a custom block_write_full_page().
- *   We'll probably need that anyway for journalling writepage() output.
- *
- * We don't honour synchronous mounts for writepage().  That would be
- * disastrous.  Any write() or metadata operation will sync the fs for
- * us.
- *
- * AKPM2: if all the page's buffers are mapped to disk and !data=journal,
- * we don't need to open a transaction here.
- */
 static int ext3_ordered_writepage(struct page *page,
 				struct writeback_control *wbc)
 {
@@ -2110,9 +2058,6 @@ static Indirect *ext3_find_shared(struct inode *inode, int depth,
 	} else {
 		*top = *p->p;
 		/* Nope, don't do this in ext3.  Must leave the tree intact */
-#if 0
-		*p->p = 0;
-#endif
 	}
 	/* Writer: end */
 
@@ -3412,34 +3357,6 @@ out:
 	return;
 }
 
-#if 0
-/*
- * Bind an inode's backing buffer_head into this transaction, to prevent
- * it from being flushed to disk early.  Unlike
- * ext3_reserve_inode_write, this leaves behind no bh reference and
- * returns no iloc structure, so the caller needs to repeat the iloc
- * lookup to mark the inode dirty later.
- */
-static int ext3_pin_inode(handle_t *handle, struct inode *inode)
-{
-	struct ext3_iloc iloc;
-
-	int err = 0;
-	if (handle) {
-		err = ext3_get_inode_loc(inode, &iloc);
-		if (!err) {
-			BUFFER_TRACE(iloc.bh, "get_write_access");
-			err = journal_get_write_access(handle, iloc.bh);
-			if (!err)
-				err = ext3_journal_dirty_metadata(handle,
-								  iloc.bh);
-			brelse(iloc.bh);
-		}
-	}
-	ext3_std_error(inode->i_sb, err);
-	return err;
-}
-#endif
 
 int ext3_change_inode_journal_flag(struct inode *inode, int val)
 {

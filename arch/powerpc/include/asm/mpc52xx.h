@@ -360,4 +360,3 @@ extern char saved_sram[0x4000]; /* reuse buffer from mpc52xx suspend */
 #endif /* CONFIG_PM */
 
 #endif /* __ASM_POWERPC_MPC52xx_H__ */
-

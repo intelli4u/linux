@@ -64,7 +64,6 @@
  * Jean II */
 #define IU_MAX_RX_URBS	(IU_MAX_ACTIVE_RX_URBS + 1)
 
-/* Various ugly stuff to try to workaround generic problems */
 /* Send speed command in case of timeout, just for trying to get things sane */
 #define IU_BUG_KICK_TIMEOUT
 /* Show the USB class descriptor */
@@ -172,4 +171,3 @@ struct irda_usb_cb {
 
 	struct timer_list rx_defer_timer;	/* Wait for Rx error to clear */
 };
-
