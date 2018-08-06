@@ -59,8 +59,10 @@ br_brc_init(ctf_brc_t *brc, unsigned char *ea, struct net_device *rxdev, unsigne
 		brc->action = CTF_ACTION_UNTAG;
 	}
 
+#ifdef MERLIN
 	if (sip)
 		memcpy(&brc->ip, sip, IPV4_ADDR_LEN);
+#endif
 
 #ifdef DEBUG
 	printk("mac %02x:%02x:%02x:%02x:%02x:%02x\n",
@@ -266,10 +268,13 @@ void br_fdb_cleanup(unsigned long _data)
 
 					if (brcp->live > 0) {
 						brcp->live = 0;
+#ifdef MERLIN
 						brcp->hitting = 0;
+#endif
 						ctf_brc_release(kcih, brcp);
 						f->ageing_timer = jiffies;
 						continue;
+#ifdef MERLIN
 					} else if (brcp->hitting > 0) {
 						/* When bridge deletes a CTF hitting cache entry,
 						/* we use DHCP "probes" (ARP Request) to trigger
@@ -278,6 +283,7 @@ void br_fdb_cleanup(unsigned long _data)
 						brcp->hitting = 0;
 						if (brcp->ip != 0)
 							arpip = brcp->ip;
+#endif
 					}
 					ctf_brc_release(kcih, brcp);
 					if (arpip != 0)

@@ -372,6 +372,9 @@ KBUILD_CFLAGS += -I$(ROOTDIR)$(ACOS)
 else
 KBUILD_CFLAGS += -I../../../../ap/acos
 endif
+ifeq ($(VENDOR),merlin)
+KBUILD_CFLAGS += -DMERLIN
+endif
 
 # Detect the relative directory with srctree to adpat the compilation location
 BCM_REL_DIR := $(patsubst $(srctree)/%/$(SRCBASE),%/,$(strip \
