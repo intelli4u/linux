@@ -103,6 +103,10 @@
 #include <linux/sysctl.h>
 #endif
 
+#ifdef CONFIG_DEVICE_IDENTIFICATION
+#include <linux/netlink.h>
+#endif
+
 #include <net/net_namespace.h>
 #include <net/ip.h>
 #include <net/icmp.h>
@@ -148,6 +152,15 @@ static int attadev_update(u32 sip, char *sha, struct net_device *dev);
 /*Foxconn add start by Hank 08/25/2012*/
 static int attadev_init(struct net *net);
 /*Foxconn add end by Hank 08/25/2012*/
+
+#ifdef CONFIG_DEVICE_IDENTIFICATION
+static int netlink_init(void);
+static void arp_nl_recv_msg(struct sk_buff *skb);
+static int device_info(char *station_info_message);
+void ieee80211_concatenate_station_tlv(u_int8_t *pBuf, int msgType,
+    char *mac, u32 ip, char *ifname);
+#endif
+
 int g_pid=0; /* Foxconn tab tseng added, 2013/05/27, for xbox qos */
 int g_updated=0; /* Foxconn tab tseng added, 2013/05/27, for xbox qos */
 /* foxconn dennis modified start, 01/02/2013 @ap_mode detection */
@@ -222,6 +235,43 @@ struct neigh_table arp_tbl = {
 	.gc_thresh3 =	1024,
 };
 EXPORT_SYMBOL(arp_tbl);
+
+#ifdef CONFIG_DEVICE_IDENTIFICATION
+typedef struct TLV_DATA{
+        unsigned short us_tlv_type;
+        unsigned short us_tlv_len;
+}AP_TLV_DATA;
+
+/* foxconn add, Leon Liao, 2016/03/18 */
+#define TLV_MSG_MAX_LEN					(32)
+#define TLV_MSG_HDR_LEN					(4)
+#define TLV_MSG_TYPE_MAC_LEN			(6)	//	10
+#define TLV_MSG_TYPE_IFNAME_LEN		    (16)			//	12
+#define TLV_MSG_TYPE_IP_LEN				(8)			//	9
+
+/* foxconn add, Leon Liao, 2016/03/18 */
+enum tlvMsgType {
+    TLV_MSG_TYPE_IP             = 1,
+	TLV_MSG_TYPE_MAC,				
+	TLV_MSG_TYPE_IFNAME,
+
+	/* keep last */
+	TLV_MSG_TYPE_MAX,
+};
+
+/* foxconn add, Leon Liao, 2016/03/18 */
+struct tlvMsg {
+	u_int16_t type;
+	u_int16_t len;
+	char value[TLV_MSG_MAX_LEN];
+};
+
+#define AP_MSG_TYPE_PID           0x1333
+
+struct sock *nl_sk = NULL;
+int pid;
+#define MAX_PAYLOAD 1024 /* maximum payload size*/
+#endif
 
 int arp_mc_map(__be32 addr, u8 *haddr, struct net_device *dev, int dir)
 {
@@ -1564,6 +1614,9 @@ static int __net_init arp_net_init(struct net *net)
 		/*for attadev init*/
 #ifdef ATTADEV
     attadev_init(net);
+#ifdef CONFIG_DEVICE_IDENTIFICATION
+    netlink_init();
+#endif
 #endif
         /*Foxconn add end by Hank 08/25/2012*/
 #if INCLUDE_DETECT_AP_MODE
@@ -1576,6 +1629,9 @@ static int __net_init arp_net_init(struct net *net)
 static void __net_exit arp_net_exit(struct net *net)
 {
 	proc_net_remove(net, "arp");
+#ifdef CONFIG_DEVICE_IDENTIFICATION
+	netlink_kernel_release(nl_sk);
+#endif	
 }
 
 static struct pernet_operations arp_net_ops = {
@@ -1601,7 +1657,7 @@ static int __init arp_proc_init(void)
 #ifdef ATTADEV
 #define FLAG_VALID 1
 #define FLAG_INVALID 0
-#define MAX_ATTADEV_ENTRY 128
+#define MAX_ATTADEV_ENTRY 255
 #define ATTADEV_HASHMASK 0x7f
 
 typedef struct {
@@ -1715,6 +1771,10 @@ static int attadev_update(u32 sip, char *sha, struct net_device *dev) {
     i = hash_id;
     attadev_t *p = &attadevs[0];
 
+#ifdef CONFIG_DEVICE_IDENTIFICATION
+    char buf[128] = {0};
+#endif
+
     /* printk("sip=%08x, hashid = %d\n", sip, hash_id); */
     write_lock_bh(&attadev_lock);
     for(;;) {
@@ -1727,6 +1787,10 @@ static int attadev_update(u32 sip, char *sha, struct net_device *dev) {
                 strcpy((p+i)->ifname, dev->name);
             }
             /* foxconn wklin modified end, 2010/06/15 */
+#ifdef CONFIG_DEVICE_IDENTIFICATION
+	    ieee80211_concatenate_station_tlv(buf,1,sha,sip,dev->name);
+            device_info(buf);
+#endif
             break;
         } 
         i++;
@@ -1856,4 +1920,109 @@ static int wandev_update(u32 sip, char *sha, struct net_device *dev) {
 }
 #endif /*INCLUDE_DETECT_AP_MODE*/
 /*added by dennis end,01/02/2013,@ ap mode detection*/
+
+#ifdef CONFIG_DEVICE_IDENTIFICATION
+static int netlink_init(void)
+{
+#if 0
+    struct netlink_kernel_cfg cfg = {
+        .input = arp_nl_recv_msg,
+    };
+#endif
+    //nl_sk = netlink_kernel_create(&init_net, NETLINK_USERSOCK, &cfg);
+    nl_sk = netlink_kernel_create(&init_net, NETLINK_USERSOCK, 0, arp_nl_recv_msg,NULL,THIS_MODULE);
+   
+    if (!nl_sk) {
+        printk(KERN_ALERT "Error creating socket.\n");
+        return -1;
+    }
+
+    return 0;
+}
+
+static void arp_nl_recv_msg(struct sk_buff *skb)
+{
+    struct nlmsghdr *nlh;
+
+    //printk(KERN_INFO "Entering: %s\n", __FUNCTION__);
+    nlh = (struct nlmsghdr *)skb->data;
+
+    if(nlh->nlmsg_type == AP_MSG_TYPE_PID)
+        pid = nlh->nlmsg_pid; /*pid of sending process */
+    
+}
+
+static int device_info(char *station_info_message)
+{
+    struct sk_buff *skb_out;
+    int res;
+    struct nlmsghdr *nlh;
+    AP_TLV_DATA *station_message;
+
+    station_message = (AP_TLV_DATA*)station_info_message;
+
+    skb_out = nlmsg_new(station_message->us_tlv_len + sizeof(AP_TLV_DATA), 0);
+    if (!skb_out) {
+        printk(KERN_ERR "Failed to allocate new skb\n");
+        return -1;
+    }
+
+    nlh = nlmsg_put(skb_out, 0, 0, NLMSG_DONE, station_message->us_tlv_len + sizeof(AP_TLV_DATA), 0);
+    NETLINK_CB(skb_out).dst_group = 0; /* not in mcast group */
+    nlh->nlmsg_type = station_message->us_tlv_type;
+    nlh->nlmsg_len = station_message->us_tlv_len + sizeof(AP_TLV_DATA);
+    memcpy(nlmsg_data(nlh), station_info_message, station_message->us_tlv_len + sizeof(AP_TLV_DATA));
+
+    res = nlmsg_unicast(nl_sk, skb_out, pid);
+
+    return 0;
+}
+
+typedef uint32_t in_addr_tmp;
+struct in_addr_tmp {
+        in_addr_tmp s_addr;
+};
+
+/* foxconn add, Leon Liao, 2016/03/18 */
+void ieee80211_concatenate_station_tlv(u_int8_t *pBuf, int msgType,
+    char *mac, u32 ip, char *ifname)
+{
+
+        struct tlvMsg *pMsg = NULL, *pHdr = NULL;
+        struct in_addr_tmp in;
+        unsigned char *sip;
+        
+        if (!pBuf || !mac) {return;}
+        pHdr		= (struct tlvMsg*)pBuf;
+        pHdr->type	= msgType;
+        pHdr->len	= 0;
+        pBuf		+= TLV_MSG_HDR_LEN;    
+
+        in.s_addr = ip;
+        sip = (unsigned char *) &in;
+        
+        pMsg        = (struct tlvMsg*)(pBuf + pHdr->len);
+        pMsg->type  = TLV_MSG_TYPE_MAC;
+        pMsg->len   = TLV_MSG_TYPE_MAC_LEN;
+        memcpy(pMsg->value, mac, pMsg->len);
+        pHdr->len   += (TLV_MSG_HDR_LEN + pMsg->len);
+        
+        pMsg            = (struct tlvMsg*)(pBuf + pHdr->len);
+        pMsg->type      = TLV_MSG_TYPE_IP;
+        pMsg->len       = TLV_MSG_TYPE_IP_LEN;
+        memcpy(pMsg->value,sip,pMsg->len);
+        pHdr->len       += (TLV_MSG_HDR_LEN + pMsg->len);
+
+	if (ifname != NULL)
+	{
+            if (0 != strlen(ifname)) {
+                pMsg            = (struct tlvMsg*)(pBuf + pHdr->len);
+                pMsg->type      = TLV_MSG_TYPE_IFNAME;
+                pMsg->len       = strlen(ifname);
+                memcpy(pMsg->value, ifname, pMsg->len);
+                pHdr->len       += (TLV_MSG_HDR_LEN + pMsg->len);
+            }
+	}    
+}
+#endif
 #endif

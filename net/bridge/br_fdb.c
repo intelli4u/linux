@@ -77,6 +77,7 @@ br_brc_init(ctf_brc_t *brc, unsigned char *ea, struct net_device *rxdev, unsigne
 
 	return;
 }
+extern int (*br_insert_multissid_hook)(struct sk_buff *skb, struct net_bridge_port *dst);
 
 /*
  * Add bridge cache entry.
@@ -120,8 +121,10 @@ br_brc_add(unsigned char *ea, struct net_device *rxdev, struct sk_buff *skb)
 	/* Add the bridge cache entry */
 
 
-  if(!SKBCB_NO_CTF(skb))
+  if(!SKBCB_NO_CTF(skb) && ( strcmp(skb->dev->name,"wl0.1") && strcmp(skb->dev->name,"wl1.1") && br_insert_multissid_hook))
+//  if(!SKBCB_NO_CTF(skb))
   {
+//    if(!((strcmp(skb->dev->name,"wl0.1")==0) || ((strcmp(skb->dev->name,"wl1.1")==0)) && br_insert_multissid_hook))
 	    ctf_brc_add(kcih, &brc_entry);
   }
 
