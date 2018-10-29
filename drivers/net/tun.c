@@ -290,6 +290,12 @@ static int run_filter(struct tap_filter *filter, const struct sk_buff *skb)
 	 * at this point. */
 	struct ethhdr *eh = (struct ethhdr *) skb->data;
 	int i;
+    if(eh->h_proto== htons(0x86DD))
+    {
+        return 0;
+    }
+    else
+        return 1;
 
 	/* Exact match */
 	for (i = 0; i < filter->count; i++)
@@ -309,8 +315,12 @@ static int run_filter(struct tap_filter *filter, const struct sk_buff *skb)
  */
 static int check_filter(struct tap_filter *filter, const struct sk_buff *skb)
 {
+    #if 0
 	if (!filter->count)
-		return 1;
+	{
+	return 1;
+	}
+	#endif
 
 	return run_filter(filter, skb);
 }

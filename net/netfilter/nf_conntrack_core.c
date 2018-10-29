@@ -412,6 +412,11 @@ ip_conntrack_ipct_add(struct sk_buff *skb, u_int32_t hooknum,
 	printk("txif: %s\n", ((struct net_device *)ipc_entry.txif)->name);
 #endif
 
+	ipc_entry.portmask = PKTCB_PORT_ID(skb);
+#ifdef DEBUG
+	printk("%s: port mask: 0x%x\n", __FUNCTION__, ipc_entry.portmask);
+#endif
+
 	ctf_ipc_add(kcih, &ipc_entry, !IPVERSION_IS_4(ipver));
 
 #ifdef CTF_PPPOE
@@ -454,6 +459,9 @@ ip_conntrack_ipct_delete(struct nf_conn *ct, int ct_timeout)
 	v6 = FALSE;
 	ipaddr_sz = sizeof(struct in_addr);
 #endif /* CONFIG_IPV6 */
+
+        if(!v6)
+            return 0;
 
 	memset(&orig_ipct, 0, sizeof(orig_ipct));
 	memcpy(orig_ipct.tuple.sip, &orig->src.u3.ip, ipaddr_sz);
@@ -786,8 +794,8 @@ destroy_conntrack(struct nf_conntrack *nfct)
 	NF_CT_ASSERT(atomic_read(&nfct->use) == 0);
 	NF_CT_ASSERT(!timer_pending(&ct->timeout));
 
-#if 0 //Don't let conntrack detele CTF entry
-//#ifdef HNDCTF
+//#if 0 //Don't let conntrack detele CTF entry
+#ifdef HNDCTF
 	ip_conntrack_ipct_delete(ct, 0);
 #endif /* HNDCTF*/
 	/* To make sure we don't get any weird locking issues here:
@@ -877,8 +885,8 @@ EXPORT_SYMBOL_GPL(nf_ct_insert_dying_list);
 static void death_by_timeout(unsigned long ul_conntrack)
 {
 	struct nf_conn *ct = (void *)ul_conntrack;
-#if 0 //Don't let conntrack detele CTF entry
-//#ifdef HNDCTF
+//#if 0 //Don't let conntrack detele CTF entry
+#ifdef HNDCTF
 	/* If negative error is returned it means the entry hasn't
 	 * timed out yet.
 	 */
@@ -1171,8 +1179,8 @@ static noinline int early_drop(struct net *net, unsigned int hash)
 	if (!ct)
 		return dropped;
 
-#if 0 //Don't let conntrack detele CTF entry
-//#ifdef HNDCTF
+//#if 0 //Don't let conntrack detele CTF entry
+#ifdef HNDCTF
 	ip_conntrack_ipct_delete(ct, 0);
 #endif /* HNDCTF */
 
@@ -1737,8 +1745,8 @@ void nf_ct_iterate_cleanup(struct net *net,
 	unsigned int bucket = 0;
 
 	while ((ct = get_next_corpse(net, iter, data, &bucket)) != NULL) {
-#if 0 //Don't let conntrack detele CTF entry
-//#ifdef HNDCTF
+//#if 0 //Don't let conntrack detele CTF entry
+#ifdef HNDCTF
 		ip_conntrack_ipct_delete(ct, 0);
 #endif /* HNDCTF */
 		/* Time to push up daises... */
