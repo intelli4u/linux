@@ -55,7 +55,7 @@ extern void soc_watchdog(void);
 
 /*Foxconn add start by Hank 05/31/2013*/
 /*declare parameter*/
-#define LED_BLINK_RATE_NORMAL   50
+#define LED_BLINK_RATE_NORMAL   250
 #define LED_BLINK_RATE_QUICK    10
 static si_t *gpio_sih;
 int wps_led_state_smp = 0;
@@ -213,6 +213,8 @@ EXPORT_SYMBOL(wifi_5g_led_state_smp);
 #if (defined WNDR4000AC)
 #define GPIO_USB1_LED       (GPIO_LED_USB)
 #elif (defined R6700)
+#define GPIO_USB1_LED       18   /* USB1 LED. */
+#elif (defined R6900)
 #define GPIO_USB1_LED       18   /* USB1 LED. */
 #elif (defined R7000)
 #define GPIO_USB1_LED       17   /* USB1 LED. */
@@ -692,7 +694,7 @@ static __u64 wifi_5g_rx_cnt_old_smp=0;
 /* Added by Foxconn Antony end */
 
 
-#if (!defined WNDR4000AC) && !defined(R6250) && !defined(R6200v2) && !defined(R6700)
+#if (!defined WNDR4000AC) && !defined(R6250) && !defined(R6200v2) && !defined(R6700) && !defined(R6900)
 /*Foxconn modify start by Hank 06/21/2012*/
 /*change LED behavior, avoid blink when have traffic, plug second USB must blink,  plug first USB not blink*/
 static int usb2_normal_blink_smp(void)
@@ -779,10 +781,14 @@ static int normal_blink(void)
         interrupt_count = 0;
     
     if (interrupt_count == 0)
+	{
         gpio_led_on_off(WPS_LED_GPIO, 0);
+	}
     else if (interrupt_count == LED_BLINK_RATE_NORMAL)
-        //gpio_led_on_off(WPS_LED_GPIO, 1);
+    {
+	    //gpio_led_on_off(WPS_LED_GPIO, 1);
 		gpio_led_on_off(WPS_LED_GPIO, led_on);  /* foxconn add ken chen, 12/13/2013, to support LED control Settings */            				
+	}
 }
 
 static void quick_blink(void)
@@ -884,7 +890,7 @@ static void ipi_timer(void)
             //    gpio_led_on_off(WPS_LED_GPIO, 1);
 				
             /* foxconn add start, ken chen, 12/13/2013, to support LED control Settings */
-            if (led_on) {
+            if (led_on) {	
                 if (is_wl_secu_mode_smp && (!wps_led_is_on_smp)) {
                     gpio_led_on_off(WPS_LED_GPIO, led_on);
                 }
@@ -945,7 +951,7 @@ static void ipi_timer(void)
         wifi_normal_blink_smp();
 #endif
 
-#if (!defined WNDR4000AC) && !defined(R6250) && !defined(R6200v2) && !defined(R6700)
+#if (!defined WNDR4000AC) && !defined(R6250) && !defined(R6200v2) && !defined(R6700) && !defined(R6900)
         if (usb2_led_state_smp)
         {
             usb2_normal_blink_smp();

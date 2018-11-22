@@ -678,6 +678,7 @@ static int __devinit bcm5301x_hwinit(struct bcm5301x_i2c_data *pdata)
 {
 	si_t *sih;
 	chipcommonbregs_t *ccb;
+	uint32 pinmux; 
 
 	sih = si_kattach(SI_OSH);
 	if (!sih) {
@@ -691,6 +692,13 @@ static int __devinit bcm5301x_hwinit(struct bcm5301x_i2c_data *pdata)
 		return -ENXIO;
 	}
 	pdata->ccb = ccb;
+
+	pinmux = R_REG(SI_OSH, &ccb->cru_gpio_control0);
+	if (pinmux & ((uint32)0x3 << 4)) {
+		printk("bcm5301x_hwinit: setting pinmux\n");
+		pinmux &= ~((uint32)0x3 << 4);
+		W_REG(SI_OSH, &ccb->cru_gpio_control0, pinmux);
+	}
 
 	bcm5301x_reset_and_en(pdata);
 
@@ -826,3 +834,4 @@ static void __exit bcm5301x_i2c_exit(void)
 
 module_init(bcm5301x_i2c_init);
 module_exit(bcm5301x_i2c_exit);
+MODULE_LICENSE("GPL");

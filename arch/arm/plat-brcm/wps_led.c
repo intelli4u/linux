@@ -25,7 +25,7 @@
 
 #include "wps_led.h"
 
-/*#define _DEBUG*/
+//#define _DEBUG
 
 
 #ifdef CONFIG_DEVFS_FS
