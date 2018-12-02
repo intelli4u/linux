@@ -1,3 +1,5 @@
+-include $(SRC_BASE_DIR)/.config
+
 VERSION = 2
 PATCHLEVEL = 6
 SUBLEVEL = 36
