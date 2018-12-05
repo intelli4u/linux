@@ -1225,6 +1225,18 @@ int zap_vma_ptes(struct vm_area_struct *vma, unsigned long address,
 }
 EXPORT_SYMBOL_GPL(zap_vma_ptes);
 
+#ifdef MERLIN
+/*
+ * FOLL_FORCE can write to even unwritable pte's, but only
+ * after we've gone through a COW cycle and they are dirty.
+ */
+static inline bool can_follow_write_pte(pte_t pte, unsigned int flags)
+{
+	return pte_write(pte) ||
+		((flags & FOLL_FORCE) && (flags & FOLL_COW) && pte_dirty(pte));
+}
+#endif
+
 /**
  * follow_page - look up a page descriptor from a user-virtual address
  * @vma: vm_area_struct mapping @address
@@ -1286,7 +1298,11 @@ struct page *follow_page(struct vm_area_struct *vma, unsigned long address,
 	pte = *ptep;
 	if (!pte_present(pte))
 		goto no_page;
+#ifdef MERLIN
+	if ((flags & FOLL_WRITE) && !can_follow_write_pte(pte, flags))
+#else
 	if ((flags & FOLL_WRITE) && !pte_write(pte))
+#endif
 		goto unlock;
 
 	page = vm_normal_page(vma, address, pte);
@@ -1473,7 +1489,11 @@ int __get_user_pages(struct task_struct *tsk, struct mm_struct *mm,
 				 */
 				if ((ret & VM_FAULT_WRITE) &&
 				    !(vma->vm_flags & VM_WRITE))
+#ifdef MERLIN
+					foll_flags |= FOLL_COW;
+#else
 					foll_flags &= ~FOLL_WRITE;
+#endif
 
 				cond_resched();
 			}
