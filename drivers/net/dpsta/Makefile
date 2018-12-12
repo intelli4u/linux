@@ -30,7 +30,7 @@ SYMOBJ := $(DPSTASRC)/dpsta_linux.o
 
 # Search for sources under src/router/dpsta
 ifneq (,$(wildcard $(src)/$(DPSTASRC)/*.c))
-  EXTRA_CFLAGS += -I$(src)/$(DPSTASRC)/../../router/dpsta
+  EXTRA_CFLAGS += -I$(src)/$(DPSTASRC)
   dpsta-objs := $(DPSTAOBJ) dpsta_ksyms.o
 else
   dpsta-objs := $(DPSTASRC)/linux/dpsta.o

@@ -18,8 +18,8 @@
 # $Id: Makefile,v 1.13 2010-12-13 20:23:49 $
 #
 
-ifneq ($(SRCBASE),)
-SRCBASE_OFFSET := $(BCM_REL_DIR)../../../$(SRCBASE)
+ifneq ($(ROUTER),)
+SRCBASE_OFFSET := $(BCM_REL_DIR)../../../$(if $(MERLIN),$(ROUTER),$(SRCBASE))
 else
 SRCBASE_OFFSET := ../../../../../../../src
 endif

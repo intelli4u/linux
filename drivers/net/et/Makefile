@@ -18,8 +18,8 @@
 # $Id: Makefile,v 1.5 2010-12-07 04:47:36 $
 #
 
-ifneq ($(SRCBASE),)
-ETSRCDIR := $(BCM_REL_DIR)../../../$(SRCBASE)/et
+ifneq ($(ROOTDIR),)
+ETSRCDIR := $(BCM_REL_DIR)../../../$(if $(MERLIN),$(SRCBASE_A),$(SRCBASE))/et
 else
 ETSRCDIR := ../../../../../../../src/et
 endif
@@ -57,8 +57,9 @@ endif
 endif	# /* CONFIG_ET_ALL_PASSIVE_ON */
 
 # Search for sources under src/et/sys or objects under src/et/linux
-ifneq ($(wildcard $(ROOTDIR)$(SRCBASE)/et/sys),)
-EXTRA_CFLAGS	+= -I$(ROOTDIR)$(SRCBASE)/et/sys -I$(ROOTDIR)$(SRCBASE)/et/include
+srcbase_et := $(ROOTDIR)$(if $(MERLIN),$(SRCBASE_A),$(SRCBASE))/et
+ifneq ($(wildcard $(srcbase_et)/include),)
+EXTRA_CFLAGS	+= $(addprefix -I$(srcbase_et)/,sys include)
 else
 et-objs := $(ETSRCDIR)/linux/et.o
 endif
@@ -75,4 +76,4 @@ clean:
 	$(MAKE) -C $(KERNELDIR) M=`pwd` clean
 endif
 
-#clean-files += $(ETSRCDIR)/sys/*.o $(ETSRCDIR)/sys/.*.o.cmd
+clean-files += $(ETSRCDIR)/sys/*.o $(ETSRCDIR)/sys/.*.o.cmd

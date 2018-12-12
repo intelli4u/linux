@@ -21,7 +21,7 @@
 obj-${CONFIG_BCM_CTF} := ctf.o
 
 ifneq ($(ROUTER),)
-CTFSRC := $(BCM_REL_DIR)../../../$(ROUTER)/ctf
+CTFSRC := $(BCM_REL_DIR)../../../$(ROUTER)/ctf${BCMEX}/
 else
 CTFSRC := ../../../../../../../src/router/ctf/
 endif
@@ -34,7 +34,7 @@ endif # CONFIG_BUZZZ_FUNC
 
 # Search for sources under src/router/ctf
 ifneq (,$(wildcard $(src)/$(CTFSRC)/*.c))
-  EXTRA_CFLAGS += -I$(src)/$(CTFSRC)/../../router/ctf -DHNDCTF
+  EXTRA_CFLAGS += -I$(src)/$(CTFSRC)/../../router/ctf${BCMEX} -DHNDCTF
   ctf-objs := $(CTFOBJ) ctf_ksyms.o
 else
   ctf-objs := $(CTFSRC)/linux/ctf.o

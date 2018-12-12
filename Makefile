@@ -375,6 +375,7 @@ else
 KBUILD_CFLAGS += -I../../../../ap/acos
 endif
 ifeq ($(VENDOR),merlin)
+export MERLIN=y
 KBUILD_CFLAGS += -DMERLIN
 endif
 
@@ -616,12 +617,12 @@ ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 KBUILD_CFLAGS	+= -Os
 else
 KBUILD_CFLAGS	+= -O2
+endif
 
 ifeq ($(BWDPI),y)
 KBUILD_CFLAGS += -DRTCONFIG_BWDPI
 endif
 
-endif
 
 include $(srctree)/arch/$(SRCARCH)/Makefile
 
@@ -731,7 +732,6 @@ export	INSTALL_PATH ?= /boot
 # makefile but the argument can be passed to make if needed.
 #
 
-INSTALL_MOD_PATH = $(TARGETDIR)
 MODLIB	= $(INSTALL_MOD_PATH)/lib/modules/$(KERNELRELEASE)
 export MODLIB
 

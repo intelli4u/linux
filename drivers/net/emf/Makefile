@@ -19,9 +19,9 @@
 #
 
 ifneq ($(ROUTER),)
-EMFDIR := $(BCM_REL_DIR)../../../$(ROUTER)/emf
+EMFDIR := $(BCM_REL_DIR)../../../$(ROUTER)/emf${BCMEX}
 EMFSRCDIR := $(EMFDIR)/emf
-EMFCSRCDIR := $(EMFDIR)/emf
+EMFCSRCDIR := $(BCM_REL_DIR)../../../$(if $(MERLIN),$(SRCBASE_A),$(SRCBASE))/emf/emf
 else
 EMFSRCDIR := ../../../../../../../src/router/emf/emf
 EMFCSRCDIR := ../../../../../../../src/emf/emf
@@ -36,7 +36,7 @@ endif # CONFIG_BUZZZ_FUNC
 
 # Search for sources under src/router/emf/emf
 ifneq ($(wildcard $(src)/$(EMFSRCDIR)),)
-	EXTRA_CFLAGS += -I$(ROOTDIR)$(SRCBASE)/router/emf/emf -I$(ROOTDIR)$(SRCBASE)/router/emf/igs
+	EXTRA_CFLAGS += -I$(ROOTDIR)$(SRCBASE)/router/emf${BCMEX}/emf -I$(ROOTDIR)$(SRCBASE)/router/emf${BCMEX}/igs
 	EXTRA_CFLAGS += -I$(ROOTDIR)$(SRCBASE)/include/emf/emf -I$(ROOTDIR)$(SRCBASE)/include/emf/igs
 	emf-objs := $(EMF_OBJS)
 else
