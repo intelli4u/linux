@@ -25,10 +25,6 @@
 #include <asm/atomic.h>
 #include <asm/unaligned.h>
 #include "br_private.h"
-/*  added start pling 07/02/2007 */
-#define MAX_MAC_CNT     1024
-static int mac_cnt = 0; 
-/*  added end pling 07/02/2007 */
 #ifdef HNDCTF
 #include <linux/if.h>
 #include <linux/if_vlan.h>
@@ -59,10 +55,8 @@ br_brc_init(ctf_brc_t *brc, unsigned char *ea, struct net_device *rxdev, unsigne
 		brc->action = CTF_ACTION_UNTAG;
 	}
 
-#ifdef MERLIN
 	if (sip)
 		memcpy(&brc->ip, sip, IPV4_ADDR_LEN);
-#endif
 
 #ifdef DEBUG
 	printk("mac %02x:%02x:%02x:%02x:%02x:%02x\n",
@@ -180,8 +174,6 @@ static void fdb_rcu_free(struct rcu_head *head)
 	struct net_bridge_fdb_entry *ent
 		= container_of(head, struct net_bridge_fdb_entry, rcu);
 	kmem_cache_free(br_fdb_cache, ent);
-	if (mac_cnt>0)
-		mac_cnt--; /*  added pling 08/12/2014 */
 }
 
 static inline void fdb_delete(struct net_bridge_fdb_entry *f)
@@ -268,13 +260,10 @@ void br_fdb_cleanup(unsigned long _data)
 
 					if (brcp->live > 0) {
 						brcp->live = 0;
-#ifdef MERLIN
 						brcp->hitting = 0;
-#endif
 						ctf_brc_release(kcih, brcp);
 						f->ageing_timer = jiffies;
 						continue;
-#ifdef MERLIN
 					} else if (brcp->hitting > 0) {
 						/* When bridge deletes a CTF hitting cache entry,
 						/* we use DHCP "probes" (ARP Request) to trigger
@@ -283,7 +272,6 @@ void br_fdb_cleanup(unsigned long _data)
 						brcp->hitting = 0;
 						if (brcp->ip != 0)
 							arpip = brcp->ip;
-#endif
 					}
 					ctf_brc_release(kcih, brcp);
 					if (arpip != 0)
@@ -480,13 +468,8 @@ static struct net_bridge_fdb_entry *fdb_create(struct hlist_head *head,
 {
 	struct net_bridge_fdb_entry *fdb;
 
-    /*  wklin added start, 06/18/2008 */
-    if (mac_cnt > MAX_MAC_CNT)
-        return 0;
-    /*  wklin added end, 06/18/2008 */
 	fdb = kmem_cache_alloc(br_fdb_cache, GFP_ATOMIC);
 	if (fdb) {
-        mac_cnt++; /*  wklin added , 06/18/2008 */
 		memcpy(fdb->addr.addr, addr, ETH_ALEN);
 		hlist_add_head_rcu(&fdb->hlist, head);
 

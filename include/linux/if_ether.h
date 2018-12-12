@@ -82,13 +82,6 @@
 #define ETH_P_FCOE	0x8906		/* Fibre Channel over Ethernet  */
 #define ETH_P_FIP	0x8914		/* FCoE Initialization Protocol */
 #define ETH_P_EDSA	0xDADA		/* Ethertype DSA [ NOT AN OFFICIALLY REGISTERED ID ] */
-/* Fxcn port-S Wins, 0714-09 */
-/*  added start, pptp, Winster Chan, 06/26/2006 */
-#define ETH_P_PPTP_GRE      0x082F  /* PPTP GRE encapsulated messages */
-#define ETH_P_PPPOE_DISC    0xAA63  /* PPPoE discovery messages */
-#define ETH_P_PPPOE_SESS    0xAA64  /* PPPoE session messages */
-/*  added end, pptp, Winster Chan, 06/26/2006 */
-/* Fxcn port-E Wins, 0714-09 */
 
 /*
  *	Non DIX types. Won't clash for 1500 types.

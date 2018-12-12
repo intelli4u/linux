@@ -37,13 +37,12 @@ netdev_tx_t BCMFASTPATH_HOST br_dev_xmit(struct sk_buff *skb, struct net_device 
 	struct net_bridge_fdb_entry *dst;
 	struct net_bridge_mdb_entry *mdst;
 	struct br_cpu_netstats *brstats = this_cpu_ptr(br->stats);
-
+	
 #ifdef HNDCTF
-#ifdef CTF_IS_PKTTOBR
-	/* For broadstream iqos inbound traffic.
-	  * Inbound traffic need to apply qdisc rule to br interface, and ctf need to use
-	  * dev_queue_xmit of bridge dev to transmit packet.
-	  * Add fastpath here to forward packet from br to eth0/1/2 directly if this packet
+	/* For broadstream iqos inbound traffic. 
+	  * Inbound traffic need to apply qdisc rule to br interface, and ctf need to use 
+	  * dev_queue_xmit of bridge dev to transmit packet. 
+	  * Add fastpath here to forward packet from br to eth0/1/2 directly if this packet 
 	  * is cached in ctf ip entry.
 	  */
 	if (CTF_IS_PKTTOBR(skb)) {
@@ -60,7 +59,6 @@ netdev_tx_t BCMFASTPATH_HOST br_dev_xmit(struct sk_buff *skb, struct net_device 
 			skb->dev = tmpdev;
 		}
 	}
-#endif
 #endif /* HNDCTF */
 
 #ifdef CONFIG_BRIDGE_NETFILTER

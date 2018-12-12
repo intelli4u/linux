@@ -963,7 +963,6 @@ static int do_rawv6_setsockopt(struct sock *sk, int level, int optname,
 
 	switch (optname) {
 		case IPV6_CHECKSUM:
-#if 0			
 			if (inet_sk(sk)->inet_num == IPPROTO_ICMPV6 &&
 			    level == IPPROTO_IPV6) {
 				/*
@@ -976,7 +975,6 @@ static int do_rawv6_setsockopt(struct sock *sk, int level, int optname,
 				 */
 				return -EINVAL;
 			}
-#endif
 
 			/* You may get strange result with a positive odd offset;
 			   RFC2292bis agrees with me. */

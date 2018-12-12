@@ -336,10 +336,6 @@ struct sk_buff {
 	 * first. This is owned by whoever has the skb queued ATM.
 	 */
 	char			cb[48] __aligned(8);
-	char			fpath_cb[48] __aligned(8);    /*  Bob added 02/06/2013 for cb is used by other kernel code */ 
-	
-	/* foxconn wklin added, 2010/06/15 @attach_dev */
-#define pp_bridge_indev(skb) (struct net_device **)(&(skb->cb[44]))
 
 	unsigned long		_skb_refdst;
 #if defined(CONFIG_XFRM) || defined(CTFMAP)
@@ -358,6 +354,9 @@ struct sk_buff {
 #endif /* BCMDBG_CTRACE */
 #if defined(HNDCTF) || defined(CTFPOOL)
 	__u32			pktc_flags;
+#endif
+#ifdef HNDCTF
+	void			*ctf_ipc_txif;
 #endif
 #ifdef BCMFA
 #define BCM_FA_INVALID_IDX_VAL	0xFFF00000
@@ -448,9 +447,6 @@ struct sk_buff {
 #endif
 #ifdef CONFIG_NETWORK_SECMARK
 	__u32			secmark;
-#endif
-#ifdef HNDCTF
-	void			*ctf_ipc_txif;
 #endif
 };
 
@@ -1466,7 +1462,12 @@ static inline int pskb_network_may_pull(struct sk_buff *skb, unsigned int len)
  * NET_IP_ALIGN(2) + ethernet_header(14) + IP_header(20/40) + ports(8)
  */
 #ifndef NET_SKB_PAD
+#if defined(CONFIG_PPTP) || defined(CONFIG_PPTP_MODULE) || \
+    defined(CONFIG_L2TP) || defined(CONFIG_L2TP_MODULE)
+#define NET_SKB_PAD	max(64, L1_CACHE_BYTES)
+#else
 #define NET_SKB_PAD	max(32, L1_CACHE_BYTES)
+#endif
 #endif
 
 extern int ___pskb_trim(struct sk_buff *skb, unsigned int len);
