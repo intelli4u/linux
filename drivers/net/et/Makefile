@@ -18,7 +18,7 @@
 # $Id: Makefile,v 1.5 2010-12-07 04:47:36 $
 #
 
-ifneq ($(SRCBASE),)
+ifneq ($(ROOTDIR),)
 ETSRCDIR := $(BCM_REL_DIR)../../../$(SRCBASE)/et
 else
 ETSRCDIR := ../../../../../../../src/et

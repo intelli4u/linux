@@ -18,7 +18,7 @@
 # $Id: Makefile,v 1.13 2010-12-13 20:23:49 $
 #
 
-ifneq ($(SRCBASE),)
+ifneq ($(ROOTDIR),)
 SRCBASE_OFFSET := $(BCM_REL_DIR)../../../$(SRCBASE)
 else
 SRCBASE_OFFSET := ../../../../../../../src

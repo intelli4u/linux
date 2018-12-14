@@ -18,7 +18,7 @@
 # $Id: Makefile,v 1.3 2008-08-13 20:20:16 $
 #
 
-ifneq ($(ROUTER),)
+ifneq ($(ROOTDIR),)
 EMFDIR := $(BCM_REL_DIR)../../../$(ROUTER)/emf
 EMFSRCDIR := $(EMFDIR)/emf
 EMFCSRCDIR := $(EMFDIR)/emf

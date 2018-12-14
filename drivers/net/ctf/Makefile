@@ -20,7 +20,7 @@
 
 obj-${CONFIG_BCM_CTF} := ctf.o
 
-ifneq ($(ROUTER),)
+ifneq ($(ROOTDIR),)
 CTFSRC := $(BCM_REL_DIR)../../../$(ROUTER)/ctf
 else
 CTFSRC := ../../../../../../../src/router/ctf/
