@@ -16,6 +16,7 @@
 *.s
 *.ko
 *.so
+*.cmd
 *.so.dbg
 *.mod.c
 *.i

@@ -120,24 +120,6 @@ static unsigned log_start;	/* Index into log_buf: next char to be read by syslog
 static unsigned con_start;	/* Index into log_buf: next char to be sent to consoles */
 static unsigned log_end;	/* Index into log_buf: most-recently-written-char + 1 */
 
-/* Fxcn port-S Wins, 0713-09 */
-#define LOG_BUF_LEN	__LOG_BUF_LEN
-/*  added start pling 03/03/2008 */
-/* Duplicate these buffers for wan debug mode */
-DECLARE_WAIT_QUEUE_HEAD(log_wait2);
-static spinlock_t logbuf_lock2 = SPIN_LOCK_UNLOCKED;
-
-static char real_log_buf2[LOG_BUF_LEN];
-static char *log_buf2 = real_log_buf2;
-#define LOG_BUF2(idx) (log_buf2[(idx) & LOG_BUF_MASK])
-
-static unsigned long log_start2;		/* Index into log_buf2: next char to be read by syslog() */
-static unsigned long con_start2;		/* Index into log_buf2: next char to be sent to consoles */
-static unsigned long log_end2;			/* Index into log_buf2: most-recently-written-char + 1 */
-static unsigned long logged_chars2;		/* Number of chars produced since last read+clear operation */
-/*  added end pling 03/03/2008 */
-/* Fxcn port-E Wins, 0713-09 */
-
 /*
  *	Array of consoles built from command line options (console=)
  */
@@ -192,19 +174,19 @@ void log_buf_kexec_setup(void)
 extern int oops_mem;
 
 struct oopsbuf_s {
-	char sig[8];
-	uint32_t len;
-	char buf[0];
+         char sig[8];
+         uint32_t len;
+         char buf[0];
 };
 
-#define OOPSBUF_SIG		"OopsBuf"
-#define MAX_PREV_OOPS_MSG_LEN	(CONFIG_DUMP_PREV_OOPS_MSG_BUF_LEN - sizeof(struct oopsbuf_s))
+#define OOPSBUF_SIG     "OopsBuf"
+#define MAX_PREV_OOPS_MSG_LEN   (CONFIG_DUMP_PREV_OOPS_MSG_BUF_LEN - sizeof(struct oopsbuf_s))
 static struct oopsbuf_s *oopsbuf = NULL;
 static int save_oopsmsg = 0;
 
 void enable_oopsbuf(int onoff)
 {
-	save_oopsmsg = !!onoff;
+        save_oopsmsg = !!onoff;
 }
 
 static inline void copy_char_to_oopsbuf(char c)
@@ -212,11 +194,11 @@ static inline void copy_char_to_oopsbuf(char c)
 	if (!oopsbuf)
 		return;
 	else if (likely(!save_oopsmsg))
-		return;
-	else if (unlikely((oopsbuf->len + 1) >= MAX_PREV_OOPS_MSG_LEN))
-		return;
+                return;
+        else if (unlikely((oopsbuf->len + 1) >= MAX_PREV_OOPS_MSG_LEN))
+                return;
 
-	oopsbuf->buf[oopsbuf->len++] = c;
+        oopsbuf->buf[oopsbuf->len++] = c;
 }
 
 static char local_buf[CONFIG_DUMP_PREV_OOPS_MSG_BUF_LEN];
@@ -225,62 +207,62 @@ static int local_buf_len = 0;
 int prepare_and_dump_previous_oops(void)
 {
 #if 0
-	int len;
+        int len;
 #endif
-	unsigned char *u;
+        unsigned char *u;
 #if 0
-	char *p, *q, log_prefix[] = "<?>>>>XXXXXX";
+        char *p, *q, log_prefix[] = "<?>>>>XXXXXX";
 #endif
-	//printk("* KERNEL: prepare_and_dump_oops: %08x::%d\n", CONFIG_DUMP_PREV_OOPS_MSG_BUF_ADDR, MAX_PREV_OOPS_MSG_LEN);
+        //printk("* KERNEL: prepare_and_dump_oops: %08x::%d\n", CONFIG_DUMP_PREV_OOPS_MSG_BUF_ADDR, MAX_PREV_OOPS_MSG_LEN);
 
 	if (oops_mem)
 		oopsbuf = (struct oopsbuf_s *) (CONFIG_DUMP_PREV_OOPS_MSG_BUF_ADDR);
 	else
 		return 0;
 
-	if (strncmp(oopsbuf->sig, OOPSBUF_SIG, strlen(OOPSBUF_SIG))) {
-		u = oopsbuf->sig;
-		printk("* Invalid signature of oopsbuf: %02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X (len %u)\n",
-			u[0], u[1], u[2], u[3], u[4], u[5], u[6], u[7],
-			oopsbuf->len);
-	}
-	if (oopsbuf->len > 32 && oopsbuf->len < MAX_PREV_OOPS_MSG_LEN) {
+        if (strncmp(oopsbuf->sig, OOPSBUF_SIG, strlen(OOPSBUF_SIG))) {
+                u = oopsbuf->sig;
+                printk("* Invalid signature of oopsbuf: %02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X (len %u)\n",
+                        u[0], u[1], u[2], u[3], u[4], u[5], u[6], u[7],
+                        oopsbuf->len);
+        }
+        if (oopsbuf->len > 32 && oopsbuf->len < MAX_PREV_OOPS_MSG_LEN) {
 		memcpy(local_buf, oopsbuf->buf, oopsbuf->len);
 		local_buf_len = oopsbuf->len;
 #if 0
-	/* Fix-up oops message.
-	 * If message is broken by NULL character, use space character instead.
-	 * If character is not printable, use the '.' character instead.
-	 */
-	for (p = oopsbuf->buf, len = oopsbuf->len; len > 0; len--, p++) {
-		if (*p == '\0')
-			*p = ' ';
-		else if (!isprint(*p) && *p != '\n')
-			*p = '.';
-	}
-	*p = '\0';
+                /* Fix-up oops message.
+                 * If message is broken by NULL character, use space character instead.
+                 * If character is not printable, use the '.' character instead.
+                 */
+                for (p = oopsbuf->buf, len = oopsbuf->len; len > 0; len--, p++) {
+                        if (*p == '\0')
+                                *p = ' ';
+                        else if (!isprint(*p) && *p != '\n')
+                                *p = '.';
+                }
+                *p = '\0';
 
-	p = oopsbuf->buf;
-	printk("_ Reboot message ... _______________________________________________________\n");
-	while ((q = strsep(&p, "\n"))) {
-		if (q[0] == '<' && q[2] == '>' && q[1] >= '0' && q[1] <= '9') {
-			strncpy(log_prefix, q, 3);
-			log_prefix[3] = '\0';
-			q += 3;
-		} else {
-			log_prefix[0] = '\0';
-		}
-		printk("%s>>> %s\n", log_prefix, q);
-	}
-	printk("____________________________________________________________________________\n");
+                p = oopsbuf->buf;
+                printk("_ Reboot message ... _______________________________________________________\n");
+                while ((q = strsep(&p, "\n"))) {
+                        if (q[0] == '<' && q[2] == '>' && q[1] >= '0' && q[1] <= '9') {
+                                strncpy(log_prefix, q, 3);
+                                log_prefix[3] = '\0';
+                                q += 3;
+                        } else {
+                                log_prefix[0] = '\0';
+                        }
+                        printk("%s>>> %s\n", log_prefix, q);
+                }
+                printk("____________________________________________________________________________\n");
 #endif
-	}
+        }
 
-	/* Initialize oopsbuf */
-	strcpy(oopsbuf->sig, OOPSBUF_SIG);
-	oopsbuf->len = 0;
-	memset(oopsbuf->buf, 0, MAX_PREV_OOPS_MSG_LEN);
-	return 0;
+        /* Initialize oopsbuf */
+        strcpy(oopsbuf->sig, OOPSBUF_SIG);
+        oopsbuf->len = 0;
+        memset(oopsbuf->buf, 0, MAX_PREV_OOPS_MSG_LEN);
+        return 0;
 }
 
 void dump_previous_oops(void)
@@ -544,145 +526,6 @@ out:
 	return error;
 }
 
-/* Fxcn port-S Wins, 0713-09 */
-/*  added start pling 03/03/2008 */
-int do_syslog2(int type, char __user *buf, int len)
-{
-	unsigned long i, j, limit, count;
-	int do_clear = 0;
-	char c;
-	int error = 0;
-
-	error = security_syslog(type,1);
-	if (error)
-		return error;
-
-	switch (type) {
-	case 0:		/* Close log */
-		break;
-	case 1:		/* Open log */
-		break;
-	case 2:		/* Read from log */
-		error = -EINVAL;
-		if (!buf || len < 0)
-			goto out;
-		error = 0;
-		if (!len)
-			goto out;
-		if (!access_ok(VERIFY_WRITE, buf, len)) {
-			error = -EFAULT;
-			goto out;
-		}
-		error = wait_event_interruptible(log_wait2,
-							(log_start2 - log_end2));
-		if (error)
-			goto out;
-		i = 0;
-		spin_lock_irq(&logbuf_lock2);
-		while (!error && (log_start2 != log_end2) && i < len) {
-			c = LOG_BUF2(log_start2);
-			log_start2++;
-			spin_unlock_irq(&logbuf_lock2);
-			error = __put_user(c,buf);
-			buf++;
-			i++;
-			cond_resched();
-			spin_lock_irq(&logbuf_lock2);
-		}
-		spin_unlock_irq(&logbuf_lock2);
-		if (!error)
-			error = i;
-		break;
-	case 4:		/* Read/clear last kernel messages */
-		do_clear = 1;
-		/* FALL THRU */
-	case 3:		/* Read last kernel messages */
-		error = -EINVAL;
-		if (!buf || len < 0)
-			goto out;
-		error = 0;
-		if (!len)
-			goto out;
-		if (!access_ok(VERIFY_WRITE, buf, len)) {
-			error = -EFAULT;
-			goto out;
-		}
-		count = len;
-		if (count > log_buf_len)
-			count = log_buf_len;
-		spin_lock_irq(&logbuf_lock2);
-		if (count > logged_chars2)
-			count = logged_chars2;
-		if (do_clear)
-			logged_chars2 = 0;
-		limit = log_end2;
-		/*
-		 * __put_user() could sleep, and while we sleep
-		 * printk() could overwrite the messages
-		 * we try to copy to user space. Therefore
-		 * the messages are copied in reverse. <manfreds>
-		 */
-		for (i = 0; i < count && !error; i++) {
-			j = limit-1-i;
-			if (j + log_buf_len < log_end2)
-				break;
-			c = LOG_BUF2(j);
-			spin_unlock_irq(&logbuf_lock2);
-			error = __put_user(c,&buf[count-1-i]);
-			cond_resched();
-			spin_lock_irq(&logbuf_lock2);
-		}
-		spin_unlock_irq(&logbuf_lock2);
-		if (error)
-			break;
-		error = i;
-		if (i != count) {
-			int offset = count-error;
-			/* buffer overflow during copy, correct user buffer. */
-			for (i = 0; i < error; i++) {
-				if (__get_user(c,&buf[i+offset]) ||
-				    __put_user(c,&buf[i])) {
-					error = -EFAULT;
-					break;
-				}
-				cond_resched();
-			}
-		}
-		break;
-	case 5:		/* Clear ring buffer */
-		logged_chars2 = 0;
-		break;
-	case 6:		/* Disable logging to console */
-		console_loglevel = minimum_console_loglevel;
-		break;
-	case 7:		/* Enable logging to console */
-		console_loglevel = default_console_loglevel;
-		break;
-	case 8:		/* Set level of messages printed to console */
-		error = -EINVAL;
-		if (len < 1 || len > 8)
-			goto out;
-		if (len < minimum_console_loglevel)
-			len = minimum_console_loglevel;
-		console_loglevel = len;
-		error = 0;
-		break;
-	case 9:		/* Number of chars in the log buffer */
-		error = log_end2 - log_start2;
-		break;
-	case 10:	/* Size of the log buffer */
-		error = log_buf_len;
-		break;
-	default:
-		error = -EINVAL;
-		break;
-	}
-out:
-	return error;
-}
-/*  added end pling 03/03/2008 */
-/* Fxcn port-E Wins, 0713-09 */
-
 SYSCALL_DEFINE3(syslog, int, type, char __user *, buf, int, len)
 {
 	return do_syslog(type, buf, len, SYSLOG_FROM_CALL);
@@ -809,25 +652,9 @@ static void emit_log_char(char c)
 	if (logged_chars < log_buf_len)
 		logged_chars++;
 #ifdef CONFIG_DUMP_PREV_OOPS_MSG
-	copy_char_to_oopsbuf(c);
+        copy_char_to_oopsbuf(c);
 #endif
 }
-
-/* Fxcn port-S Wins, 0713-09 */
-/*  added start pling 03/03/2008 */
-static void emit_log_char2(char c)
-{
-	LOG_BUF2(log_end2) = c;
-	log_end2++;
-	if (log_end2 - log_start2 > log_buf_len)
-		log_start2 = log_end2 - log_buf_len;
-	if (log_end2 - con_start2 > log_buf_len)
-		con_start2 = log_end2 - log_buf_len;
-	if (logged_chars2 < log_buf_len)
-		logged_chars2++;
-}
-/*  added end pling 03/03/2008 */
-/* Fxcn port-E Wins, 0713-09 */
 
 /*
  * Zap console related locks when oopsing. Only zap at most once
@@ -987,9 +814,6 @@ asmlinkage int vprintk(const char *fmt, va_list args)
 	unsigned long flags;
 	int this_cpu;
 	char *p;
-/* Fxcn port-S Wins, 0713-09 */
-	static int log_to_buf2 = 0;				/*  added pling 03/03/2008 */
-/* Fxcn port-E Wins, 0713-09 */
 
 	boot_delay_msec();
 	printk_delay();
@@ -1366,13 +1190,7 @@ void wake_up_klogd(void)
 	if (waitqueue_active(&log_wait))
 		this_cpu_write(printk_pending, 1);
 }
-/* Fxcn port-S Wins, 0713-09 */
-void wake_up_klogd2(void)
-{
-	if (!oops_in_progress && waitqueue_active(&log_wait2))
-		wake_up_interruptible(&log_wait2);
-}
-/* Fxcn port-E Wins, 0713-09 */
+
 /**
  * release_console_sem - unlock the console system
  *
@@ -1392,9 +1210,6 @@ void release_console_sem(void)
 	unsigned long flags;
 	unsigned _con_start, _log_end;
 	unsigned wake_klogd = 0;
-/* Fxcn port-S Wins, 0713-09 */
-	unsigned long wake_klogd2 = 0;		/*  added start pling 03/03/2008 */
-/* Fxcn port-E Wins, 0713-09 */
 
 	if (console_suspended) {
 		up(&console_sem);
@@ -1406,9 +1221,6 @@ void release_console_sem(void)
 	for ( ; ; ) {
 		spin_lock_irqsave(&logbuf_lock, flags);
 		wake_klogd |= log_start - log_end;
-/* Fxcn port-S Wins, 0713-09 */
-		wake_klogd2 |= log_start2 - log_end2;		/*  added pling 03/03/2008 */
-/* Fxcn port-E Wins, 0713-09 */
 		if (con_start == log_end)
 			break;			/* Nothing to print */
 		_con_start = con_start;
@@ -1425,12 +1237,6 @@ void release_console_sem(void)
 	spin_unlock_irqrestore(&logbuf_lock, flags);
 	if (wake_klogd)
 		wake_up_klogd();
-/* Fxcn port-S Wins, 0713-09 */
-	/*  added start pling 03/03/2008 */
-	if (wake_klogd2)
-		wake_up_klogd2();
-	/*  added end pling 03/03/2008 */
-/* Fxcn port-E Wins, 0713-09 */
 }
 EXPORT_SYMBOL(release_console_sem);
 
@@ -1648,9 +1454,6 @@ void register_console(struct console *newcon)
 		 */
 		spin_lock_irqsave(&logbuf_lock, flags);
 		con_start = log_start;
-/* Fxcn port-S Wins, 0713-09 */
-		con_start2 = log_start2;		/*  added pling 03/03/2008 */
-/* Fxcn port-E Wins, 0713-09 */
 		spin_unlock_irqrestore(&logbuf_lock, flags);
 	}
 	release_console_sem();

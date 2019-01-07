@@ -364,16 +364,13 @@ KBUILD_LDFLAGS_MODULE := -T $(srctree)/scripts/module-common.lds
 # Broadcom source tree
 KBUILD_CFLAGS += -I$(ROOTDIR)$(SRCBASE)/include
 KBUILD_CFLAGS += -I$(ROOTDIR)$(SRCBASE)/common/include
+KBUILD_CFLAGS += -I$(ROOTDIR)$(SRCBASE)/shared/bcmwifi/include
 KBUILD_CFLAGS += $(WLAN_ComponentIncPath)
 KBUILD_CFLAGS += $(WLAN_StdIncPathA)
 KBUILD_AFLAGS += -I$(ROOTDIR)$(SRCBASE)/include
 KBUILD_AFLAGS += -I$(ROOTDIR)$(SRCBASE)/common/include
 KBUILD_CFLAGS += -DBCMDRIVER -Dlinux
-ifneq ($(ACOS),)
-KBUILD_CFLAGS += -I$(ROOTDIR)$(ACOS)
-else
-KBUILD_CFLAGS += -I../../../../ap/acos
-endif
+
 ifeq ($(VENDOR),merlin)
 export MERLIN=y
 KBUILD_CFLAGS += -DMERLIN

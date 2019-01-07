@@ -16,7 +16,7 @@
 #include <asm/hardware/cache-l2x0.h>
 #include <asm/mach/map.h>
 #include <asm/clkdev.h>
-#include <linux/uaccess.h>
+#include <asm/uaccess.h>
 #include <mach/clkdev.h>
 #include <mach/io_map.h>
 #include <plat/bsp.h>

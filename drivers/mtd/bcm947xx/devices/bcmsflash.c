@@ -231,10 +231,6 @@ bcmsflash_mtd_init(void)
 		ret = -ENODEV;
 		goto fail;
 	}
-	/*for disable do norflash partition*/
-	ret = -ENODEV;
-	goto fail;	
-	
 	bcmsflash.sfl = info;
 
 	/* Setup region info */

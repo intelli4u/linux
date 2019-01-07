@@ -373,12 +373,7 @@ static int hfsplus_fill_super(struct super_block *sb, void *data, int silent)
 	if (!(vhdr->attributes & cpu_to_be32(HFSPLUS_VOL_UNMNT))) {
 		printk(KERN_WARNING "hfs: Filesystem was not cleanly unmounted, "
 		       "running fsck.hfsplus is recommended.  mounting read-only.\n");
-        /*  removed start pling 05/31/2010 */
-        /* Ignore this flag to force writeable */
-#if 0
 		sb->s_flags |= MS_RDONLY;
-#endif
-        /*  removed end pling 05/31/2010 */
 	} else if (sbi->flags & HFSPLUS_SB_FORCE) {
 		/* nothing */
 	} else if (vhdr->attributes & cpu_to_be32(HFSPLUS_VOL_SOFTLOCK)) {
