@@ -74,6 +74,29 @@ config IP_NF_MATCH_ADDRTYPE
 	  If you want to compile it as a module, say M here and read
 	  <file:Documentation/kbuild/modules.txt>.  If unsure, say `N'.
 
+config IP_NF_MATCH_TOS
+        tristate "TOS match support"
+        depends on IP_NF_IPTABLES
+        help
+          TOS matching allows you to match packets based on the Type Of
+          Service fields of the IP packet.
+
+          To compile it as a module, choose M here.  If unsure, say N.
+
+config IP_NF_MATCH_TIME
+        tristate  'TIME match support'
+        depends on IP_NF_IPTABLES
+        help
+          This option adds a `time' match, which allows you
+          to match based on the packet arrival time/date
+          (arrival time/date at the machine which netfilter is running on) or
+          departure time/date (for locally generated packets).
+
+          If you say Y here, try iptables -m time --help for more information.
+          If you want to compile it as a module, say M here and read
+
+          Documentation/modules.txt.  If unsure, say `N'.
+
 config IP_NF_MATCH_AH
 	tristate '"ah" match support'
 	depends on NETFILTER_ADVANCED
@@ -212,6 +235,12 @@ config IP_NF_TARGET_CONE
 
 	  To compile it as a module, choose M here.  If unsure, say N.
 
+config IP_NF_TARGET_TRIGGER
+        tristate "TRIGGER target support (port-trigger)"
+        depends on NF_NAT
+        help
+          To compile it as a module, choose M here.  If unsure, say N.
+
 config NF_NAT_SNMP_BASIC
 	tristate "Basic SNMP-ALG support"
 	depends on NF_NAT
@@ -265,6 +294,11 @@ config NF_NAT_IRC
 	depends on NF_CONNTRACK && NF_NAT
 	default NF_NAT && NF_CONNTRACK_IRC
 
+config NF_NAT_RTSP
+        tristate
+        depends on IP_NF_IPTABLES && NF_CONNTRACK && NF_NAT
+        default NF_NAT && NF_CONNTRACK_RTSP
+
 config NF_NAT_TFTP
 	tristate
 	depends on NF_CONNTRACK && NF_NAT
@@ -306,6 +340,16 @@ config IP_NF_MANGLE
 	  which can effect how the packet is routed.
 
 	  To compile it as a module, choose M here.  If unsure, say N.
+
+config IP_NF_TARGET_TOS
+        tristate "TOS target support"
+        depends on IP_NF_MANGLE
+        help
+          This option adds a `TOS' target, which allows you to create rules in
+          the `mangle' table which alter the Type Of Service field of an IP
+          packet prior to routing.
+
+          To compile it as a module, choose M here.  If unsure, say N.
 
 config IP_NF_TARGET_CLUSTERIP
 	tristate "CLUSTERIP target support (EXPERIMENTAL)"
@@ -401,5 +445,85 @@ config IP_NF_ARP_MANGLE
 
 endif # IP_NF_ARPTABLES
 
-endmenu
+config IP_NF_MATCH_U32
+        tristate  'U32 match support'
+        depends on IP_NF_IPTABLES
+        help
+          U32 allows you to extract quantities of up to 4 bytes from a packet,
+          AND them with specified masks, shift them by specified amounts and
+          test whether the results are in any of a set of specified ranges.
+          The specification of what to extract is general enough to skip over
+          headers with lengths stored in the packet, as in IP or TCP header
+          lengths.
 
+          Details and examples are in the kernel module source.
+
+config IP_NF_TARGET_ROUTE
+        tristate  'ROUTE target support'
+        depends on IP_NF_MANGLE
+        help
+          This option adds a `ROUTE' target, which enables you to setup unusual
+          routes. For example, the ROUTE lets you route a received packet through
+          an interface or towards a host, even if the regular destination of the
+          packet is the router itself. The ROUTE target is also able to change the
+          incoming interface of a packet.
+
+          The target can be or not a final target. It has to be used inside the
+          mangle table.
+
+          If you want to compile it as a module, say M here and read
+          Documentation/modules.txt.  The module will be called ipt_ROUTE.o.
+          If unsure, say `N'.
+
+config IP_NF_MATCH_IPP2P
+        tristate  'IPP2P match support'
+        depends on IP_NF_IPTABLES
+        help
+          This option makes possible to match some P2P packets
+          therefore helps controlling such traffic.
+
+          If you want to compile it as a module, say M here and read
+          <file:Documentation/modules.txt>.  If unsure, say `N'.
+
+config IP_NF_MATCH_WEB
+        tristate  'web match'
+        depends on IP_NF_IPTABLES
+
+config IP_NF_MATCH_WEBMON
+        tristate  'Web Monitor match'
+        depends on IP_NF_IPTABLES && EXPERIMENTAL
+
+config IP_NF_TOMATOCT
+        tristate  'tomato_ct'
+        depends on NF_CONNTRACK_MARK && EXPERIMENTAL
+
+config IP_NF_LFP
+        tristate  'lfp'
+        depends on NF_CONNTRACK
+        default n
+
+config IP_NF_DNSMQ
+        tristate  'dnsmq'
+        depends on NF_CONNTRACK
+        default n
+
+config IP_NF_MATCH_ACCOUNT
+  tristate "account match support"
+  depends on IP_NF_IPTABLES
+  ---help---
+    This patch adds the account match
+
+    The account match provides simple traffic accounting for continuous networks.
+    --aaddr   subnet for which enable traffic accounting
+    --aname   table name with traffic counters, it can be accessed by reading
+              /proc/net/ipt_account/<table name>
+    --ashort  do simple statistics (no tcp/udp/icmp counters)
+
+    More options can be found on project homepage.
+
+    Project homepage:
+    http://www.svn.barbara.eu.org/ipt_account/
+      
+    To compile it as a module, choose M here.  If unsure, say N.
+
+endmenu

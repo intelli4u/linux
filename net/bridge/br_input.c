@@ -21,7 +21,6 @@
 /* Bridge group multicast address 802.1d (pg 51). */
 const u8 br_group_address[ETH_ALEN] = { 0x01, 0x80, 0xc2, 0x00, 0x00, 0x00 };
 
-int qos_enable = 0;		/* Foxconn added pling 03/13/2007 */
 static int br_pass_frame_up(struct sk_buff *skb)
 {
 	struct net_device *indev, *brdev = BR_INPUT_SKB_CB(skb)->brdev;
@@ -34,9 +33,6 @@ static int br_pass_frame_up(struct sk_buff *skb)
 	u64_stats_update_end(&brstats->syncp);
 
 	indev = skb->dev;
-	/* foxconn wklin added, 2010/06/15 @attach_dev */
-	if (htons(ETH_P_ARP) == eth_hdr(skb)->h_proto)
-	    *(pp_bridge_indev(skb)) = indev;/*backup incoming port to be used in arp.c */
 	skb->dev = brdev;
 
 	return NF_HOOK(NFPROTO_BRIDGE, NF_BR_LOCAL_IN, skb, indev, NULL,
@@ -58,7 +54,11 @@ int br_handle_frame_finish(struct sk_buff *skb)
 
 	/* insert into forwarding database after filtering to avoid spoofing */
 	br = p->br;
+#ifdef HNDCTF
+	br_fdb_update(br, p, eth_hdr(skb)->h_source, skb);
+#else
 	br_fdb_update(br, p, eth_hdr(skb)->h_source);
+#endif
 
 	if (is_multicast_ether_addr(dest) &&
 	    br_multicast_rcv(br, p, skb))
@@ -119,7 +119,11 @@ static int br_handle_local_finish(struct sk_buff *skb)
 {
 	struct net_bridge_port *p = br_port_get_rcu(skb->dev);
 
+#ifdef HNDCTF
+	br_fdb_update(p->br, p, eth_hdr(skb)->h_source, skb);
+#else
 	br_fdb_update(p->br, p, eth_hdr(skb)->h_source);
+#endif
 	return 0;	 /* process further */
 }
 

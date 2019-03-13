@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  * Connection state tracking for netfilter.  This is separated from,
  * but required by, the (future) NAT layer; it can also be used by an iptables
@@ -88,6 +89,9 @@ struct nf_conn_help {
 #ifdef	HNDCTF
 #define CTF_FLAGS_CACHED	(1 << 31)	/* Indicates cached connection */
 #define CTF_FLAGS_EXCLUDED	(1 << 30)
+#define CTF_FLAGS_DNAT_CACHED	(1 << 29)
+#define CTF_FLAGS_SNAT_CACHED	(1 << 28)
+#define CTF_FLAGS_ROUTE_CACHED	(1 << 27)
 #define CTF_FLAGS_REPLY_CACHED	(1 << 1)
 #define CTF_FLAGS_ORG_CACHED	(1 << 0)
 #endif
@@ -129,6 +133,22 @@ struct nf_conn {
 	/* Flags for connection attributes */
 	u_int32_t ctf_flags;
 #endif /* HNDCTF */
+
+#if defined(CONFIG_NETFILTER_XT_MATCH_LAYER7) || \
+    defined(CONFIG_NETFILTER_XT_MATCH_LAYER7_MODULE)
+	struct {
+		/*
+		 * e.g. "http". NULL before decision. "unknown" after decision
+		 * if no match.
+		 */
+		char *app_proto;
+		/*
+		 * application layer data so far. NULL after match decision.
+		 */
+		char *app_data;
+		unsigned int app_data_len;
+	} layer7;
+#endif
 
 	/* Storage reserved for other modules: */
 	union nf_conntrack_proto proto;

@@ -73,13 +73,6 @@
 #include "sierra_ms.h"
 #include "option_ms.h"
 
-/* Foxconn added start by Kathy, 09/10/2016 @ USB workaround for R6400 TD#125 */ 
-#if (defined R6400)
-#include "../core/usb.h"
-extern struct usb_power_on_off uhub;
-#endif
-/* Foxconn added end by Kathy, 09/10/2016 @ USB workaround for R6400 TD#125 */
- 
 #ifdef CONFIG_BCM47XX
 #include <bcmnvram.h>
 
@@ -904,13 +897,6 @@ int usb_stor_probe1(struct us_data **pus,
 	init_completion(&(us->notify));
 	init_waitqueue_head(&us->delay_wait);
 	init_completion(&us->scanning_done);
-
-/* Foxconn added start by Kathy, 09/10/2016 @ USB workaround for R6400 TD#125 */ 
-#if (defined R6400)
-    uhub.usb_assoc_time_cur = jiffies;//kathy added
-    //printk("------ assoc %lu (%lu) ------> usb_assoc_time_cur\n",  uhub.usb_assoc_time_cur, jiffies);
-#endif
-/* Foxconn added end by Kathy, 09/10/2016 @ USB workaround for R6400 TD#125 */ 
 
 	/* Associate the us_data structure with the USB device */
 	result = associate_dev(us, intf);

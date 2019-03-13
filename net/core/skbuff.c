@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2013. */
 /*
  *	Routines having to do with the 'struct sk_buff' memory handlers.
  *
@@ -237,6 +238,10 @@ struct sk_buff * BCMFASTPATH_HOST __alloc_skb(unsigned int size, gfp_t gfp_mask,
 #ifdef NET_SKBUFF_DATA_USES_OFFSET
 	skb->mac_header = ~0U;
 #endif
+#ifdef BCMFA
+	skb->napt_idx = BCM_FA_INVALID_IDX_VAL;
+	skb->napt_flags = 0;
+#endif
 
 	/* make sure we initialize shinfo sequentially */
 	shinfo = skb_shinfo(skb);
@@ -436,23 +441,6 @@ static void BCMFASTPATH_HOST skb_release_head_state(struct sk_buff *skb)
 #endif
 }
 
-#ifdef CATHY_DEBUG_MEM
-extern void *dead_message;
-void save_dead_message(struct sk_buff *skb)
-{
-	//printk("message saved! head %p end %p data %p tail %p\n",
-	//	skb->head, skb->end, skb->data, skb->tail);
-	MSG_SAVE_LEN((skb->end - skb->head + sizeof(struct skb_shared_info)));
-	MSG_SAVE_SKB_PTR(skb);
-	MSG_SAVE_HEAD_PTR(skb);
-	MSG_SAVE_END_PTR(skb);
-	MSG_SAVE_DATA_PTR(skb);
-	MSG_SAVE_TAIL_PTR(skb);
-	memcpy(MSG_BUF, skb->head, MSG_GET_LEN);
-	memcpy(MSG_HDR, skb, sizeof(struct sk_buff));
-}
-#endif
-
 /* Free everything but the sk_buff shell. */
 static void skb_release_all(struct sk_buff *skb)
 {
@@ -475,12 +463,6 @@ void BCMFASTPATH_HOST __kfree_skb(struct sk_buff *skb)
 		skb_tcph_pool_free(tcph_pool, skb);
 		return;
 	}
-
-#ifdef CATHY_DEBUG_MEM
-	if (skb_shinfo(skb)->nr_frags) {
-		save_dead_message(skb);
-	}
-#endif
 
 	skb_release_all(skb);
 	kfree_skbmem(skb);
@@ -580,8 +562,9 @@ static void BCMFASTPATH_HOST __copy_skb_header(struct sk_buff *new, const struct
 #ifdef PKTC
 	memset(new->pktc_cb, 0, sizeof(new->pktc_cb));
 #endif
-	memset(new->fpath_cb, 0, sizeof(new->fpath_cb));    /* foxconn Bob added 02/06/2013 to init fpath_cb */ 
-	
+#ifdef CTF_PPPOE
+	memset(new->ctf_pppoe_cb, 0, sizeof(new->ctf_pppoe_cb));
+#endif
 	new->tstamp		= old->tstamp;
 	new->dev		= old->dev;
 	new->transport_header	= old->transport_header;
@@ -639,6 +622,11 @@ static void BCMFASTPATH_HOST __copy_skb_header(struct sk_buff *new, const struct
 	new->ctrace_start = 0;
 	new->ctrace_count = 1;
 #endif /* BCMDBG_CTRACE */
+
+#ifdef BCMFA
+	new->napt_idx		= BCM_FA_INVALID_IDX_VAL;
+	new->napt_flags		= 0;
+#endif
 
 	skb_copy_secmark(new, old);
 }

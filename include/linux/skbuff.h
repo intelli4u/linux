@@ -31,37 +31,6 @@
 #include <linux/dmaengine.h>
 #include <linux/hrtimer.h>
 
-#ifdef CATHY_DEBUG_MEM
-extern void *dead_message;
-
-#define MSG_HDR_OFFSET		(0x100)
-#define MSG_BUF_OFFSET		(0x400)
-
-#define MSG_HDR			(dead_message + MSG_HDR_OFFSET)
-
-#define MSG_BUF			(dead_message + MSG_BUF_OFFSET)
-
-#define MSG_SAVE_LEN(len) do { if (!dead_message) return; *(unsigned int *)dead_message = (unsigned int)(len); } while (0);
-
-#define MSG_GET_LEN	(dead_message ? (*(unsigned int *)dead_message) : 0)
-
-#define MSG_SAVE_SKB_PTR(skb)	do { if (!dead_message) return; *(unsigned int *)(dead_message + 4) = (unsigned int)(skb); } while (0);
-#define MSG_GET_SKB_PTR		(dead_message ? (*(unsigned int *)(dead_message + 4)) : 0)
-
-#define MSG_SAVE_HEAD_PTR(skb)	do { if (!dead_message) return; *(unsigned int *)(dead_message + 8) = (unsigned int)(skb->head); } while (0);
-#define MSG_GET_HEAD_PTR		(dead_message ? (*(unsigned int *)(dead_message + 8)) : 0)
-
-#define MSG_SAVE_END_PTR(skb)	do { if (!dead_message) return; *(unsigned int *)(dead_message + 12) = (unsigned int)(skb->end); } while (0);
-#define MSG_GET_END_PTR		(dead_message ? (*(unsigned int *)(dead_message + 12)) : 0)
-
-#define MSG_SAVE_DATA_PTR(skb)	do { if (!dead_message) return; *(unsigned int *)(dead_message + 16) = (unsigned int)(skb->data); } while (0);
-#define MSG_GET_DATA_PTR		(dead_message ? (*(unsigned int *)(dead_message + 16)) : 0)
-
-#define MSG_SAVE_TAIL_PTR(skb)	do { if (!dead_message) return; *(unsigned int *)(dead_message + 20) = (unsigned int)(skb->tail); } while (0);
-#define MSG_GET_TAIL_PTR		(dead_message ? (*(unsigned int *)(dead_message + 20)) : 0)
-
-#endif
-
 /* Don't change this without changing skb_csum_unnecessary! */
 #define CHECKSUM_NONE 0
 #define CHECKSUM_UNNECESSARY 1
@@ -352,6 +321,9 @@ struct sk_buff {
 #ifdef PKTC
 	unsigned char           pktc_cb[8];
 #endif
+#ifdef CTF_PPPOE
+	unsigned char           ctf_pppoe_cb[8];
+#endif
 	ktime_t			tstamp;
 
 	struct sock		*sk;
@@ -364,10 +336,6 @@ struct sk_buff {
 	 * first. This is owned by whoever has the skb queued ATM.
 	 */
 	char			cb[48] __aligned(8);
-	char			fpath_cb[48] __aligned(8);    /* foxconn Bob added 02/06/2013 for cb is used by other kernel code */ 
-	
-	/* foxconn wklin added, 2010/06/15 @attach_dev */
-#define pp_bridge_indev(skb) (struct net_device **)(&(skb->cb[44]))
 
 	unsigned long		_skb_refdst;
 #if defined(CONFIG_XFRM) || defined(CTFMAP)
@@ -387,6 +355,15 @@ struct sk_buff {
 #if defined(HNDCTF) || defined(CTFPOOL)
 	__u32			pktc_flags;
 #endif
+#ifdef HNDCTF
+	void			*ctf_ipc_txif;
+#endif
+#ifdef BCMFA
+#define BCM_FA_INVALID_IDX_VAL	0xFFF00000
+	__u32                   napt_idx;
+	__u32			napt_flags;
+#endif /* BCMFA */
+
 	__u8			tcpf_smb:1,
 				tcpf_hdrbuf:1,
 				tcpf_nf:1;
@@ -1485,7 +1462,12 @@ static inline int pskb_network_may_pull(struct sk_buff *skb, unsigned int len)
  * NET_IP_ALIGN(2) + ethernet_header(14) + IP_header(20/40) + ports(8)
  */
 #ifndef NET_SKB_PAD
+#if defined(CONFIG_PPTP) || defined(CONFIG_PPTP_MODULE) || \
+    defined(CONFIG_L2TP) || defined(CONFIG_L2TP_MODULE)
+#define NET_SKB_PAD	max(64, L1_CACHE_BYTES)
+#else
 #define NET_SKB_PAD	max(32, L1_CACHE_BYTES)
+#endif
 #endif
 
 extern int ___pskb_trim(struct sk_buff *skb, unsigned int len);
@@ -1607,25 +1589,48 @@ static inline struct sk_buff *netdev_alloc_skb(struct net_device *dev,
 	return __netdev_alloc_skb(dev, length, GFP_ATOMIC);
 }
 
-static inline struct sk_buff *netdev_alloc_skb_ip_align(struct net_device *dev,
-		unsigned int length)
+static inline struct sk_buff *__netdev_alloc_skb_ip_align(struct net_device *dev,
+		unsigned int length, gfp_t gfp)
 {
-	struct sk_buff *skb = netdev_alloc_skb(dev, length + NET_IP_ALIGN);
+	struct sk_buff *skb = __netdev_alloc_skb(dev, length + NET_IP_ALIGN, gfp);
 
 	if (NET_IP_ALIGN && skb)
 		skb_reserve(skb, NET_IP_ALIGN);
 	return skb;
 }
 
+static inline struct sk_buff *netdev_alloc_skb_ip_align(struct net_device *dev,
+		unsigned int length)
+{
+	return __netdev_alloc_skb_ip_align(dev, length, GFP_ATOMIC);
+}
+
 extern struct page *__netdev_alloc_page(struct net_device *dev, gfp_t gfp_mask);
+
+#if defined(CONFIG_BCM_RECVFILE)
+/**
+ * skb_frag_page - retrieve the page refered to by a paged fragment
+ * @frag: the paged fragment
+ *
+ * Returns the &struct page associated with @frag.
+ */
+static inline struct page *skb_frag_page(const skb_frag_t *frag)
+{
+	return frag->page;
+}
+
+extern int skb_copy_datagram_to_kernel_iovec(const struct sk_buff *from,
+					       int offset, struct iovec *to,
+					       int size);
+#endif /* CONFIG_BCM_RECVFILE */
 
 /**
  *	netdev_alloc_page - allocate a page for ps-rx on a specific device
  *	@dev: network device to receive on
  *
- * 	Allocate a new page node local to the specified device.
+ *	Allocate a new page node local to the specified device.
  *
- * 	%NULL is returned if there is no free memory.
+ *	%NULL is returned if there is no free memory.
  */
 static inline struct page *netdev_alloc_page(struct net_device *dev)
 {
@@ -2137,6 +2142,7 @@ static inline void nf_reset(struct sk_buff *skb)
 	skb->nfct = NULL;
 	nf_conntrack_put_reasm(skb->nfct_reasm);
 	skb->nfct_reasm = NULL;
+	/* skb->nfcache = 0; ? */
 #endif
 #ifdef CONFIG_BRIDGE_NETFILTER
 	nf_bridge_put(skb->nf_bridge);
@@ -2153,6 +2159,7 @@ static inline void __nf_copy(struct sk_buff *dst, const struct sk_buff *src)
 	dst->nfctinfo = src->nfctinfo;
 	dst->nfct_reasm = src->nfct_reasm;
 	nf_conntrack_get_reasm(src->nfct_reasm);
+	dst->nfcache = src->nfcache;
 #endif
 #ifdef CONFIG_BRIDGE_NETFILTER
 	dst->nf_bridge  = src->nf_bridge;

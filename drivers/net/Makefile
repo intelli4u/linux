@@ -161,13 +161,10 @@ obj-$(CONFIG_PPP_ASYNC) += ppp_async.o
 obj-$(CONFIG_PPP_SYNC_TTY) += ppp_synctty.o
 obj-$(CONFIG_PPP_DEFLATE) += ppp_deflate.o
 obj-$(CONFIG_PPP_BSDCOMP) += bsd_comp.o
-obj-$(CONFIG_PPP_MPPE) += ppp_mppe.o
-#obj-$(CONFIG_PPPOE) += pppox.o pppoe.o
-#obj-$(CONFIG_PPPOL2TP) += pppox.o
-
-obj-$(CONFIG_PPPOE) += pppox.o pppoe.o pptp.o
-#obj-$(CONFIG_PPPOE) += pppox.o pppoe.o pppopptp.o
-obj-$(CONFIG_PPPOE) += pppol2tp.o
+obj-$(CONFIG_PPP_MPPE_MPPC) += ppp_mppe.o
+obj-$(CONFIG_PPPOE) += pppox.o pppoe.o
+obj-$(CONFIG_PPPOL2TP) += pppox.o 
+obj-$(CONFIG_PPTP) += pppox.o pptp.o
 
 obj-$(CONFIG_SLIP) += slip.o
 obj-$(CONFIG_SLHC) += slhc.o
@@ -292,7 +289,6 @@ obj-$(CONFIG_ET) += et/
 obj-$(CONFIG_BCM57XX) += bcm57xx/
 obj-$(CONFIG_WL) += wl/
 obj-$(CONFIG_EMF) += emf/ igs/
-obj-$(CONFIG_PROXYARP) += proxyarp/
 
 obj-$(CONFIG_WLAN) += wireless/
 obj-$(CONFIG_NET_TULIP) += tulip/

@@ -2370,18 +2370,6 @@ static int do_tkill(pid_t tgid, pid_t pid, int sig)
 	return do_send_specific(tgid, pid, sig, &info);
 }
 
-/* Foxconn added start pling 05/31/2016 */
-int kill_proc(pid_t pid, int sig, int priv)
-{
-	/* This is only valid for single tasks */
-	if (pid <= 0)
-		return -EINVAL;
-
-	return do_tkill(0, pid, sig);
-}
-EXPORT_SYMBOL(kill_proc);
-/* Foxconn added end pling 05/31/2016 */
-
 /**
  *  sys_tgkill - send signal to one specific thread
  *  @tgid: the thread group ID of the thread

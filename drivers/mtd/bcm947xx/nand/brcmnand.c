@@ -758,7 +758,7 @@ struct mtd_partition brcmnand_parts[] = {
 		.offset = 0
 	},
 	{
-		.name = "OpenVPN",
+		.name = "asus",
 		.size = 0x500000,
 		.offset = 0
 	},
@@ -817,8 +817,6 @@ brcmnand_mtd_init(void)
 	struct mtd_partition *parts;
 	int i;
 #endif
-	uint32 *offset;
-	uint32 reg, size, block, page, ecc_level;
 
 	printk(KERN_INFO "%s, Version %s (c) Broadcom Inc. 2012\n",
 		DRV_DESC, DRV_VERSION);

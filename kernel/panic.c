@@ -47,38 +47,9 @@ static long no_blink(int state)
 /* Returns how long it waited in ms */
 long (*panic_blink)(int state);
 EXPORT_SYMBOL(panic_blink);
-#if (defined CONFIG_CRASHLOG)
-//#if (defined CONFIG_CRASHLOG) || (defined KERNEL_CRASH_DUMP_TO_MTD)
+
+#ifdef CONFIG_CRASHLOG
 void  nvram_store_crash(void);
-#endif
-
-#if (defined R6400)
-#define NEW_DEBUG_HIDDEN_PAGE
-#endif
-#ifdef CATHY_DEBUG_MEM
-
-#include <linux/skbuff.h>
-
-#define DUMP_PKT(data, len) \
-{ \
-	unsigned int ii; \
-	printk("%s %d\n", __func__, __LINE__); \
-	for (ii = 0; ii < len; ii++) { \
-		if (!(ii & 0xf)) \
-			printk("\n"); \
-		printk("%02x ", ((unsigned char *)data)[ii]); \
-	} \
-	printk("\n"); \
-}
-
-#endif
-#ifdef KERNEL_CRASH_DUMP_TO_MTD
-int flash_write_buffer(void);
-#ifdef NEW_DEBUG_HIDDEN_PAGE
-/* Foxconn added start, John Ou, 12/10/2014, for new debug page */
-int flash_write_reboot_reason(int);
-/* Foxconn added end, John Ou, 12/10/2014, for new debug page */
-#endif
 #endif
 
 /**
@@ -108,25 +79,12 @@ NORET_TYPE void panic(const char * fmt, ...)
 	va_start(args, fmt);
 	vsnprintf(buf, sizeof(buf), fmt, args);
 	va_end(args);
+#ifdef CONFIG_DUMP_PREV_OOPS_MSG
+        enable_oopsbuf(1);
+#endif
 	printk(KERN_EMERG "Kernel panic - not syncing: %s\n",buf);
 #ifdef CONFIG_DEBUG_BUGVERBOSE
 	dump_stack();
-#endif
-
-#ifdef CATHY_DEBUG_MEM
-	if (dead_message) {
-		unsigned int len = MSG_GET_LEN;
-
-		if (len > 0) {
-			printk(KERN_EMERG "sizeof sk_buff %d shinfo %d",
-				sizeof(struct sk_buff), sizeof(struct skb_shared_info));
-			printk(KERN_EMERG "tolen %d skb 0x%08x head 0x%08x data 0x%08x end 0x%08x tail 0x%08x\n",
-				len, MSG_GET_SKB_PTR, MSG_GET_HEAD_PTR,
-				MSG_GET_DATA_PTR, MSG_GET_END_PTR, MSG_GET_TAIL_PTR);
-			DUMP_PKT(MSG_BUF, len);
-			DUMP_PKT(MSG_HDR, sizeof(struct sk_buff));
-		}
-	}
 #endif
 
 	/*
@@ -148,17 +106,8 @@ NORET_TYPE void panic(const char * fmt, ...)
 	atomic_notifier_call_chain(&panic_notifier_list, 0, buf);
 
 	bust_spinlocks(0);
-	
-#ifdef KERNEL_CRASH_DUMP_TO_MTD
-        flash_write_buffer();
-#ifdef NEW_DEBUG_HIDDEN_PAGE
-		/* Foxconn added start, John Ou, 12/10/2014, for new debug page */
-		flash_write_reboot_reason(0);
-		/* Foxconn added end, John Ou, 12/10/2014, for new debug page */
-#endif
-#endif
-#if (defined CONFIG_CRASHLOG)  //when fbwifi debug disable
-//#if (defined CONFIG_CRASHLOG) || (defined KERNEL_CRASH_DUMP_TO_MTD) //when fbwifi debug enable
+
+#ifdef CONFIG_CRASHLOG
 	nvram_store_crash();
 #endif
 
@@ -382,6 +331,9 @@ void oops_enter(void)
 	/* can't trust the integrity of the kernel anymore: */
 	debug_locks_off();
 	do_oops_enter_exit();
+#ifdef CONFIG_DUMP_PREV_OOPS_MSG
+	enable_oopsbuf(1);
+#endif
 }
 
 /*

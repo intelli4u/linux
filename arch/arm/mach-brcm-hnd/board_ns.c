@@ -1401,8 +1401,7 @@ static int __init cfenenad_parser_init(void)
 module_init(cfenenad_parser_init);
 
 #endif /* CONFIG_MTD_NFLASH */
-#if (defined CONFIG_CRASHLOG)
-//#if (defined CONFIG_CRASHLOG) || (defined KERNEL_CRASH_DUMP_TO_MTD)   //when fbwifi enable
+#ifdef CONFIG_CRASHLOG
 extern char *get_logbuf(void);
 extern char *get_logsize(void);
 
@@ -1415,14 +1414,9 @@ void nvram_store_crash(void)
 	int buf_len;
 	int len;
 
-	printk("%s(%d): Trying to store crash\n", __FUNCTION__, __LINE__);
+	printk("Trying to store crash\n");
 
-#ifdef KERNEL_CRASH_DUMP_TO_MTD
-    /* write log to POT1 */
-	mtd = get_mtd_device_nm("DebugMsg");
-#else
-    mtd = get_mtd_device_nm("crash");
-#endif
+	mtd = get_mtd_device_nm("crash");
 
 	if (!IS_ERR(mtd)) {
 
@@ -1435,16 +1429,16 @@ void nvram_store_crash(void)
 		mtd->read(mtd, 0, sizeof(buf), &len, buf);
 		for (len=0;len<sizeof(buf);len++)
 			if (buf[len]!=0xff) {
-				printk("%s(%d): Could not save crash, partition not clean\n", __FUNCTION__, __LINE__);
+				printk("Could not save crash, partition not clean\n");
 				break;
 			}
 		if (len == sizeof(buf)) {
 			mtd->write(mtd, 0, buf_len, &len, buffer);
 			if (buf_len == len)
-				printk("%s(%d): Crash Saved\n", __FUNCTION__, __LINE__);
+				printk("Crash Saved\n");
 		}
 	} else {
-		printk("%s(%d): Could not find NVRAM partition\n", __FUNCTION__, __LINE__);
+		printk("Could not find NVRAM partition\n");
 	}
 }
 #endif /* CONFIG_CRASHLOG */

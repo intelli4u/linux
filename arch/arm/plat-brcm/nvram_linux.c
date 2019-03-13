@@ -131,7 +131,7 @@ early_nvram_init(void)
 #endif
 	char *nvram_space_str;
 	int bootdev;
-	uint32 flash_base;
+	uint32 flash_base = 0;
 	uint32 lim = SI_FLASH_WINDOW;
 	uint32 off;
 	hndsflash_t *sfl_info;
@@ -569,8 +569,8 @@ nvram_commit(void)
 		magic_offset = i + ((void *)&header->magic - (void *)header);
 	} else {
 		offset = nvram_mtd->size - nvram_space;
-		magic_offset = ((void *)&header->magic - (void *)header);
 		header = (struct nvram_header *)buf;
+		magic_offset = ((void *)&header->magic - (void *)header);
 	}
 
 	/* clear the existing magic # to mark the NVRAM as unusable 
@@ -689,7 +689,7 @@ EXPORT_SYMBOL(nvram_commit);
 static ssize_t
 dev_nvram_read(struct file *file, char *buf, size_t count, loff_t *ppos)
 {
-	char tmp[100], *name = tmp, *value;
+	char tmp[512], *name = tmp, *value;
 	ssize_t ret;
 	unsigned long off;
 

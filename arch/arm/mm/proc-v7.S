@@ -196,6 +196,7 @@ __v7_ca9mp_setup:
 	mcreq	p15, 0, r0, c1, c0, 1		@ TLB ops broadcasting
 #endif
 __v7_setup:
+	@ temporary local stack in RAM, physical address, MMU is off
 #ifdef CONFIG_SPARSEMEM
 	ldr	r0, =(PAGE_OFFSET+SZ_128M)
 	ldr	r1, =__v7_setup_stack

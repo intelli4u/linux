@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  * Copyright 1995, Russell King.
  * Various bits and pieces copyrights include:

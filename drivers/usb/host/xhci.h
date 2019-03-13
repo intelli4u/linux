@@ -266,6 +266,14 @@ struct xhci_op_regs {
  * A read gives the current link PM state of the port,
  * a write with Link State Write Strobe set sets the link state.
  */
+/* Port Link State - bits 5:8
+ * A read gives the current link PM state of the port,
+ * a write with Link State Write Strobe set sets the link state.
+ */
+#define PORT_PLS_MASK  (0xf << 5)
+#define XDEV_U0                (0x0 << 5)
+#define XDEV_U3                (0x3 << 5)
+#define XDEV_RESUME    (0xf << 5)
 /* true: port has power (see HCC_PPC) */
 #define PORT_POWER	(1 << 9)
 /* bits 10:13 indicate device speed:
@@ -637,6 +645,9 @@ struct xhci_ep_ctx {
 #define AVG_TRB_LENGTH_FOR_EP(p)	((p) & 0xffff)
 #define MAX_ESIT_PAYLOAD_FOR_EP(p)	(((p) & 0xffff) << 16)
 
+/* deq bitmasks */
+#define EP_CTX_CYCLE_MASK               (1 << 0)
+#define SCTX_DEQ_MASK                   (~0xfL)
 
 /**
  * struct xhci_input_control_context
@@ -739,6 +750,8 @@ struct xhci_virt_ep {
 	struct timer_list	stop_cmd_timer;
 	int			stop_cmds_pending;
 	struct xhci_hcd		*xhci;
+	struct xhci_segment	*queued_deq_seg;
+	union xhci_trb		*queued_deq_ptr;
 	/*
 	 * Sometimes the xHC can not process isochronous endpoint ring quickly
 	 * enough, and it will miss some isoc tds on the ring and generate
@@ -1030,6 +1043,9 @@ union xhci_trb {
 #define	TRB_NEC_CMD_COMP	48
 /* Get NEC firmware revision. */
 #define	TRB_NEC_GET_FW		49
+
+#define TRB_TYPE_LINK_LE32(x)	(((x) & cpu_to_le32(TRB_TYPE_BITMASK)) == \
+	cpu_to_le32(TRB_TYPE(TRB_LINK)))
 
 #define NEC_FW_MINOR(p)		(((p) >> 0) & 0xff)
 #define NEC_FW_MAJOR(p)		(((p) >> 8) & 0xff)
