@@ -20,7 +20,7 @@
 
 obj-${CONFIG_DPSTA} := dpsta.o
 
-ifneq ($(ROUTER),)
+ifneq ($(ROOTDIR),)
 DPSTASRC := $(BCM_REL_DIR)../../../$(ROUTER)/dpsta
 else
 DPSTASRC := ../../../../../../../src/router/dpsta
