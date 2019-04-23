@@ -12,7 +12,6 @@ endif
 obj-$(CONFIG_PLAT_MPCORE) += plat-head.o
 obj-$(CONFIG_PLAT_MPCORE) += mpcore_core.o
 obj-$(CONFIG_PLAT_MPCORE) += mpcore_gtimer.o
-obj-$(CONFIG_PLAT_MPCORE) += wps_led.o
 obj-$(CONFIG_PLAT_MPCORE) += mpcore_cache.o
 obj-$(CONFIG_PLAT_MPCORE) += clock.o
 obj-$(CONFIG_PLAT_MPCORE) += platsmp.o 
@@ -22,7 +21,6 @@ obj-$(CONFIG_PLAT_BCM5301X) += bcm5301x_pcie.o
 obj-$(CONFIG_PLAT_NAND_JFFS2) += bcm5301x_nandc.o
 obj-$(CONFIG_PLAT_BCM5301X) += nvram_linux.o
 obj-$(CONFIG_PLAT_BCM5301X) += hndcoma.o
-obj-$(CONFIG_PLAT_BCM5301X) += bcm5301x_pwm.o
 obj-$(CONFIG_PLAT_BCM5301X) += $(addprefix $(RELATED)$(SHARED)/, hndarm_ca9.o)
 obj-$(CONFIG_PLAT_BCM5301X) += $(addprefix $(RELATED)$(SHARED)/, hndsoc.o)
 obj-$(CONFIG_PLAT_BCM5301X) += $(addprefix $(RELATED)$(SHARED)/, hndchipc.o)
