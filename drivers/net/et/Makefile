@@ -19,7 +19,7 @@
 #
 
 ifneq ($(ROOTDIR),)
-ETSRCDIR := $(BCM_REL_DIR)../../../$(if $(MERLIN),$(SRCBASE_A),$(SRCBASE))/et
+ETSRCDIR := $(BCM_REL_DIR)../../../$(SRCBASE)/et
 else
 ETSRCDIR := ../../../../../../../src/et
 endif

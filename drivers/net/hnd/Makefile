@@ -18,7 +18,7 @@
 # $Id: Makefile,v 1.5 2008-05-02 22:49:54 $
 #
 
-ifneq ($(ROUTER),)
+ifneq ($(ROOTDIR),)
 RELATED = $(BCM_REL_DIR)../../../
 else
 SHARED   ?= ../../../../../../../src/shared

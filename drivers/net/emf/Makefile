@@ -21,7 +21,7 @@
 ifneq ($(ROUTER),)
 EMFDIR := $(BCM_REL_DIR)../../../$(ROUTER)/emf${BCMEX}
 EMFSRCDIR := $(EMFDIR)/emf
-EMFCSRCDIR := $(BCM_REL_DIR)../../../$(if $(MERLIN),$(SRCBASE_A),$(SRCBASE))/emf/emf
+EMFCSRCDIR := $(BCM_REL_DIR)../../../$(SRCBASE)/emf/emf
 else
 EMFSRCDIR := ../../../../../../../src/router/emf/emf
 EMFCSRCDIR := ../../../../../../../src/emf/emf
