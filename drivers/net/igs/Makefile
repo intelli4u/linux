@@ -33,7 +33,7 @@ IGS_OBJS := $(IGSCSRCDIR)/igsc.o $(IGSCSRCDIR)/igsc_sdb.o $(IGSSRCDIR)/igs_linux
 
 # Search for sources under src/router/emf/igs
 ifneq ($(wildcard $(src)/$(IGSSRCDIR)),)
-	EXTRA_CFLAGS += -I$(ROOTDIR)$(SRCBASE)/router/emf/igs -I$(ROOTDIR)$(SRCBASE)/router/emf/emf
+	EXTRA_CFLAGS += -I$(ROOTDIR)$(SRCBASE)/router/emf${BCMEX}/igs -I$(ROOTDIR)$(SRCBASE)/router/emf${BCMEX}/emf
 	EXTRA_CFLAGS += -I$(SRCBASE)/include/emf/igs -I$(SRCBASE)/include/emf/emf
 	igs-objs := $(IGS_OBJS)
 else
