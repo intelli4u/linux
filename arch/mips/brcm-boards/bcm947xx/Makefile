@@ -17,7 +17,7 @@
 #
 # $Id: Makefile,v 1.8 2010-09-17 04:51:19 $
 #
-ifndef ($(ROOTDIR),)
+ifneq ($(ROOTDIR),)
 RELATED = $(BCM_REL_DIR)../../../../
 else
 SHARED ?= ../../../../../../shared
