@@ -1,4 +1,4 @@
-ifneq ($(ROUTER),)
+ifneq ($(ROOTDIR),)
 RELATED = $(BCM_REL_DIR)../../../
 else
 SHARED ?= ../../../../../../../src/shared
