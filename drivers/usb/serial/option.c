@@ -149,7 +149,7 @@ static void option_instat_callback(struct urb *urb);
 #define HUAWEI_PRODUCT_K3765			0x1465
 #define HUAWEI_PRODUCT_E14AC			0x14AC
 #define HUAWEI_PRODUCT_ETS1220			0x1803
-#define HUAWEI_PRODUCT_E353S			0x1506
+#define HUAWEI_PRODUCT_E353			0x1506
 
 #define QUANTA_VENDOR_ID			0x0408
 #define QUANTA_PRODUCT_Q101			0xEA02
@@ -165,8 +165,6 @@ static void option_instat_callback(struct urb *urb);
 #define YISO_VENDOR_ID				0x0EAB
 #define YISO_PRODUCT_U893			0xC893
 
-#define TELECOM_CHINA_VENDOR_ID                 0x15eb
-#define TELECOM_CHINA_PRODUCT_ITON_U8           0x7152
 /*
  * NOVATEL WIRELESS PRODUCTS
  *
@@ -325,11 +323,6 @@ static void option_instat_callback(struct urb *urb);
 #define DLINK_PRODUCT_DWM_652_U5		0xce16
 #define DLINK_PRODUCT_DWM_652_U5A		0xce1e
 
-/*foxconn Han edited start, 07/28/2014 for DLINK DWP-156 dongle*/
-#define DLINK_DWP156_VENDOR_ID      0x2001
-#define DLINK_DWP156_PRODUCT_7D0B   0x7d0b
-/*foxconn Han edited end, 07/28/2014 for DLINK DWP-156 dongle*/
-
 #define QISDA_VENDOR_ID				0x1da5
 #define QISDA_PRODUCT_H21_4512			0x4512
 #define QISDA_PRODUCT_H21_4523			0x4523
@@ -429,7 +422,7 @@ static const struct option_blacklist_info four_g_w14_blacklist = {
 	.reason = OPTION_BLACKLIST_SENDSETUP
 };
 
-static const struct usb_device_id option_ids[] = {
+static struct usb_device_id option_ids[] = {
 	{ USB_DEVICE(OPTION_VENDOR_ID, OPTION_PRODUCT_COLT) },
 	{ USB_DEVICE(OPTION_VENDOR_ID, OPTION_PRODUCT_RICOLA) },
 	{ USB_DEVICE(OPTION_VENDOR_ID, OPTION_PRODUCT_RICOLA_LIGHT) },
@@ -530,10 +523,15 @@ static const struct usb_device_id option_ids[] = {
 	{ USB_DEVICE_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, HUAWEI_PRODUCT_K3765, 0xff, 0xff, 0xff) },
 	{ USB_DEVICE_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, HUAWEI_PRODUCT_ETS1220, 0xff, 0xff, 0xff) },
 	{ USB_DEVICE_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, HUAWEI_PRODUCT_E14AC, 0xff, 0xff, 0xff) },
-	{ USB_DEVICE_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, 0x1F01, 0xff, 0xff, 0xff) },
-	{ USB_DEVICE_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, 0x1446, 0xff, 0xff, 0xff) },
-	{ USB_DEVICE(HUAWEI_VENDOR_ID, HUAWEI_PRODUCT_E353S) },
-	{ USB_DEVICE_AND_INTERFACE_INFO(TELECOM_CHINA_VENDOR_ID, TELECOM_CHINA_PRODUCT_ITON_U8, 0xff, 0xff, 0xff) },
+	{ USB_DEVICE_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, HUAWEI_PRODUCT_E353, 0xff, 0x01, 0x01) },
+	{ USB_DEVICE_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, HUAWEI_PRODUCT_E353, 0xff, 0x01, 0x02) },
+	{ USB_DEVICE_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, HUAWEI_PRODUCT_E353, 0xff, 0x01, 0x03) },
+	{ USB_DEVICE_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, HUAWEI_PRODUCT_E353, 0xff, 0x01, 0x10) },
+	{ USB_DEVICE_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, HUAWEI_PRODUCT_E353, 0xff, 0x01, 0x12) },
+	{ USB_DEVICE_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, HUAWEI_PRODUCT_E353, 0xff, 0x01, 0x13) },
+	{ USB_DEVICE_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, HUAWEI_PRODUCT_E353, 0xff, 0x02, 0x01) },  /* E398 3G Modem */
+	{ USB_DEVICE_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, HUAWEI_PRODUCT_E353, 0xff, 0x02, 0x02) },  /* E398 3G PC UI Interface */
+	{ USB_DEVICE_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, HUAWEI_PRODUCT_E353, 0xff, 0x02, 0x03) },  /* E398 3G Application Interface */
 	{ USB_DEVICE(NOVATELWIRELESS_VENDOR_ID, NOVATELWIRELESS_PRODUCT_V640) },
 	{ USB_DEVICE(NOVATELWIRELESS_VENDOR_ID, NOVATELWIRELESS_PRODUCT_V620) },
 	{ USB_DEVICE(NOVATELWIRELESS_VENDOR_ID, NOVATELWIRELESS_PRODUCT_V740) },
@@ -925,8 +923,6 @@ static const struct usb_device_id option_ids[] = {
 	{ USB_DEVICE(ZTE_VENDOR_ID2, ZTE_PRODUCT_MF_330) },
 	{ USB_DEVICE(BENQ_VENDOR_ID, BENQ_PRODUCT_H10) },
 	{ USB_DEVICE(DLINK_VENDOR_ID, DLINK_PRODUCT_DWM_652) },
-    /*foxconn Han edited, 07/28/2014 for DLINK DWP-156 dongle*/
-	{ USB_DEVICE(DLINK_DWP156_VENDOR_ID, DLINK_DWP156_PRODUCT_7D0B) },
 	{ USB_DEVICE(ALINK_VENDOR_ID, DLINK_PRODUCT_DWM_652_U5) }, /* Yes, ALINK_VENDOR_ID */
 	{ USB_DEVICE(ALINK_VENDOR_ID, DLINK_PRODUCT_DWM_652_U5A) },
 	{ USB_DEVICE(QISDA_VENDOR_ID, QISDA_PRODUCT_H21_4512) },
@@ -975,13 +971,6 @@ static const struct usb_device_id option_ids[] = {
 
 	{ USB_DEVICE(OLIVETTI_VENDOR_ID, OLIVETTI_PRODUCT_OLICARD100) },
 	{ USB_DEVICE(CELOT_VENDOR_ID, CELOT_PRODUCT_CT680M) }, /* CT-650 CDMA 450 1xEVDO modem */
-    /*foxconn Han edited start*/
-	{ USB_DEVICE(0x2077, 0xa002) }, /* Netgear AC327U and AC329U */
-	{ USB_DEVICE(0x2077, 0xa003) }, /* Netgear AC327U and AC329U */
-    /*foxconn Han edited end*/
-    /*foxconn Han edited, 08/25/2014 for Micromax MMX377G (Mediatek MT6229 inside)*/
-	{ USB_DEVICE(0x2020, 0x4010) },
-
 	{ } /* Terminating entry */
 };
 MODULE_DEVICE_TABLE(usb, option_ids);
@@ -1033,6 +1022,8 @@ static struct usb_serial_driver option_1port_device = {
 };
 
 static int debug;
+static __u16 vendor  = 0;
+static __u16 product = 0;
 
 /* per port private data */
 
@@ -1067,6 +1058,15 @@ struct option_port_private {
 static int __init option_init(void)
 {
 	int retval;
+
+	/* Add user specified VID/PID to reserved element of table. */
+	if (vendor > 0 && product > 0) {
+		int i = sizeof(option_ids)/sizeof(option_ids[0]) - 2;
+		option_ids[i].idVendor = vendor;
+		option_ids[i].idProduct = product;
+		option_ids[i].match_flags = USB_DEVICE_ID_MATCH_DEVICE;
+	}
+
 	retval = usb_serial_register(&option_1port_device);
 	if (retval)
 		goto failed_1port_device_register;
@@ -1241,3 +1241,7 @@ MODULE_LICENSE("GPL");
 
 module_param(debug, bool, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(debug, "Debug messages");
+module_param(vendor, ushort, 0);
+MODULE_PARM_DESC(vendor, "User specified USB idVendor");
+module_param(product, ushort, 0);
+MODULE_PARM_DESC(product, "User specified USB idProduct");

@@ -1231,7 +1231,7 @@ restart:
 			}
 
 			if (net_ratelimit())
-				printk(KERN_WARNING "ipv4: Neighbour table overflow.\n");
+				printk(KERN_DEBUG "ipv4: Neighbour table overflow.\n");
 			rt_drop(rt);
 			return -ENOBUFS;
 		}
@@ -3308,15 +3308,6 @@ int __init ip_rt_init(void)
 				  SLAB_HWCACHE_ALIGN|SLAB_PANIC, NULL);
 
 	ipv4_dst_blackhole_ops.kmem_cachep = ipv4_dst_ops.kmem_cachep;
-
-	/* Foxconn added start pling 04/16/2014 */
-	/* Increase max number of dst_entry, for ACOS NAT
-	 *  to hold 65536 connections.
-	 *  ps. original value is 2048 */
-#if (defined CONFIG_NAT_65536_SESSION)
-	rhash_entries = 8192;
-#endif
-	/* Foxconn added end pling 04/16/2014 */
 
 	rt_hash_table = (struct rt_hash_bucket *)
 		alloc_large_system_hash("IP route cache",

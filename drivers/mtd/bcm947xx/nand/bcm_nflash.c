@@ -1,7 +1,7 @@
 /*
  * Broadcom SiliconBackplane chipcommon serial flash interface
  *
- * Copyright (C) 2015, Broadcom Corporation. All Rights Reserved.
+ * Copyright (C) 2013, Broadcom Corporation. All Rights Reserved.
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -62,6 +62,7 @@ init_nflash_mtd_partitions(hndnand_t *nfl, struct mtd_info *mtd, size_t size);
 struct mtd_partition *nflash_parts;
 #endif
 
+int nospare;
 /* Mutexing is version-dependent */
 extern struct nand_hw_control *nand_hwcontrol_lock_init(void);
 
@@ -159,9 +160,7 @@ _nflash_mtd_read(struct mtd_info *mtd, struct mtd_partition *part,
 	if (!need_copy) {
 		ptr = buf;
 	} else {
-		NFLASH_UNLOCK(nflash);
 		tmpbuf = (uchar *)kmalloc(size, GFP_KERNEL);
-		NFLASH_LOCK(nflash);
 		ptr = tmpbuf;
 	}
 
@@ -546,7 +545,7 @@ nflash_mtd_init(void)
 	/* Scan bad block */
 	NFLASH_LOCK(&nflash);
 	for (i = 0; i < info->numblocks; i++) {
-		if (hndnand_checkbadb(nflash.nfl, (i * info->blocksize)) != 0) {
+		if (hndnand_checkbadb(nflash.nfl, (i * (uint64)info->blocksize)) != 0) {
 			nflash.map[i] = 1;
 		}
 	}

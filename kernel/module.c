@@ -304,8 +304,6 @@ static bool find_symbol_in_section(const struct symsearch *syms,
 {
 	struct find_symbol_arg *fsa = data;
 
-//printk(KERN_EMERG"symnum=%d syms->start[symnum].name=%08x fsa=%08x\n",symnum,syms->start[symnum].name,fsa);
-//printk(KERN_EMERG"symnum=%d syms->start[symnum].name=%s fsa->name=%s\n",symnum,syms->start[symnum].name,fsa->name);
 	if (strcmp(syms->start[symnum].name, fsa->name) != 0)
 		return false;
 

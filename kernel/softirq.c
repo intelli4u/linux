@@ -137,6 +137,10 @@ EXPORT_SYMBOL(local_bh_disable);
  */
 void _local_bh_enable(void)
 {
+#ifdef BCMDBG
+	WARN_ON_ONCE(in_irq());
+	WARN_ON_ONCE(!irqs_disabled());
+#endif
 
 	if (softirq_count() == SOFTIRQ_OFFSET)
 		trace_softirqs_on((unsigned long)__builtin_return_address(0));
@@ -147,6 +151,9 @@ EXPORT_SYMBOL(_local_bh_enable);
 
 static inline void _local_bh_enable_ip(unsigned long ip)
 {
+#ifdef BCMDBG
+	WARN_ON_ONCE(in_irq() || irqs_disabled());
+#endif
 #ifdef CONFIG_TRACE_IRQFLAGS
 	local_irq_disable();
 #endif

@@ -97,7 +97,7 @@ BCMINITFN(nand_find_nvram)(hndnand_t *nfl, uint32 off)
 	int rlen = sizeof(nflash_nvh);
 	int len;
 
-	for (; off < nfl_boot_size(nfl); off += blocksize) {
+	for (; off < NFL_BOOT_SIZE; off += blocksize) {
 		if (hndnand_checkbadb(nfl, off) != 0)
 			continue;
 
@@ -131,7 +131,7 @@ early_nvram_init(void)
 #endif
 	char *nvram_space_str;
 	int bootdev;
-	uint32 flash_base;
+	uint32 flash_base = 0;
 	uint32 lim = SI_FLASH_WINDOW;
 	uint32 off;
 	hndsflash_t *sfl_info;
@@ -152,7 +152,7 @@ early_nvram_init(void)
 		flash_base = nfl_info->base;
 		blocksize = nfl_info->blocksize;
 		off = blocksize;
-		for (; off < nfl_boot_size(nfl_info); off += blocksize) {
+		for (; off < NFL_BOOT_SIZE; off += blocksize) {
 			if (hndnand_checkbadb(nfl_info, off) != 0)
 				continue;
 			header = (struct nvram_header *)(flash_base + off);
@@ -549,8 +549,8 @@ nvram_commit(void)
 		magic_offset = i + ((void *)&header->magic - (void *)header);
 	} else {
 		offset = nvram_mtd->size - nvram_space;
-		magic_offset = ((void *)&header->magic - (void *)header);
 		header = (struct nvram_header *)buf;
+		magic_offset = ((void *)&header->magic - (void *)header);
 	}
 
 	/* clear the existing magic # to mark the NVRAM as unusable 
@@ -669,7 +669,7 @@ EXPORT_SYMBOL(nvram_commit);
 static ssize_t
 dev_nvram_read(struct file *file, char *buf, size_t count, loff_t *ppos)
 {
-	char tmp[100], *name = tmp, *value;
+	char tmp[512], *name = tmp, *value;
 	ssize_t ret;
 	unsigned long off;
 
@@ -724,8 +724,8 @@ dev_nvram_write(struct file *file, const char *buf, size_t count, loff_t *ppos)
 	char tmp[512], *name = tmp, *value;
 	ssize_t ret;
 
-	if (count+1 > sizeof(tmp)) {
-		if (!(name = kmalloc(count+1, GFP_KERNEL)))
+	if (count +1 > sizeof(tmp)) {
+		if (!(name = kmalloc(count + 1, GFP_KERNEL)))
 			return -ENOMEM;
 	}
 

@@ -1196,9 +1196,6 @@ kill_proc_info(int sig, struct siginfo *info, pid_t pid)
 	return error;
 }
 
-#define __si_special(priv) \
-	((priv) ? SEND_SIG_PRIV : SEND_SIG_NOINFO)
-
 /* like kill_pid_info(), but doesn't use uid/euid of "current" */
 int kill_pid_info_as_uid(int sig, struct siginfo *info, struct pid *pid,
 		      uid_t uid, uid_t euid, u32 secid)
@@ -1299,6 +1296,9 @@ send_sig_info(int sig, struct siginfo *info, struct task_struct *p)
 
 	return do_send_sig_info(sig, info, p, false);
 }
+
+#define __si_special(priv) \
+	((priv) ? SEND_SIG_PRIV : SEND_SIG_NOINFO)
 
 int
 send_sig(int sig, struct task_struct *p, int priv)
@@ -2369,17 +2369,6 @@ static int do_tkill(pid_t tgid, pid_t pid, int sig)
 
 	return do_send_specific(tgid, pid, sig, &info);
 }
-
-int kill_proc(pid_t pid, int sig, int priv)
-{
-	/* This is only valid for single tasks */
-	if (pid <= 0)
-		return -EINVAL;
-
-	return do_tkill(0, pid, sig);
-}
-EXPORT_SYMBOL(kill_proc);
-
 
 /**
  *  sys_tgkill - send signal to one specific thread

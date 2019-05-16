@@ -49,7 +49,7 @@ extern spinlock_t bcm947xx_sih_lock;
 #define	SOC_PCIE_CONTROL	0x000	/* a.k.a. CLK_CONTROL reg */
 #define	SOC_PCIE_PM_STATUS	0x008
 #define	SOC_PCIE_PM_CONTROL	0x00c	/* in EP mode only ! */
-#define SOC_PCIE_RC_AXI_CONFIG	0x100
+
 #define	SOC_PCIE_EXT_CFG_ADDR	0x120
 #define	SOC_PCIE_EXT_CFG_DATA	0x124
 #define	SOC_PCIE_CFG_ADDR	0x1f8
@@ -62,10 +62,8 @@ extern spinlock_t bcm947xx_sih_lock;
 
 #define	SOC_PCIE_HDR_OFF	0x400	/* 256 bytes per function */
 
-#define	SOC_PCIE_IMAP0_0123_REGS_TYPE	0xcd0
-
 /* 32-bit 4KB in-bound mapping windows for Function 0..3, n=0..7 */
-#define	SOC_PCIE_SYS_IMAP0(f, n)	(0xc00+((f)<<5)+((n)<<2))
+#define	SOC_PCIE_SYS_IMAP0(f, n)	(0xc00+((f)<<9)((n)<<2))
 /* 64-bit in-bound mapping windows for func 0..3 */
 #define	SOC_PCIE_SYS_IMAP1(f)		(0xc80+((f)<<3))
 #define	SOC_PCIE_SYS_IMAP2(f)		(0xcc0+((f)<<3))
@@ -88,10 +86,6 @@ extern int _memsize;
 #define PCI_MAX_BUS		4
 #define PLX_PRIM_SEC_BUS_NUM		(0x00000201 | (PCI_MAX_BUS << 16))
 
-#define PLX_SWITCH_ID		0x8603
-#define ASMEDIA_SWITCH_ID	0x1182
-
-static uint pcie_coreid, pcie_corerev;
 
 #ifdef	CONFIG_PCI
 
@@ -204,7 +198,6 @@ static struct soc_pcie_port {
 	bool isswitch;
 	bool port1active;
 	bool port2active;
-	uint16 switch_id;
 } soc_pcie_ports[4] = {
 	{
 	.irqs = {0, 0, 0, 0, 0, 0},
@@ -294,7 +287,8 @@ si_bus_irq_map_t si_bus_irq_map[] = {
 	{BCM47XX_GMAC_ID, 0, 4, 179}	/* 179, 180, 181, 182 */,
 	{BCM47XX_USB20H_ID, 0, 1, 111}	/* 111 EHCI. */,
 	{BCM47XX_USB20H_ID, 0, 1, 111}	/* 111 OHCI. */,
-	{BCM47XX_USB30H_ID, 0, 5, 112}	/* 112, 113, 114, 115, 116. XHCI */
+	{BCM47XX_USB30H_ID, 0, 5, 112}	/* 112, 113, 114, 115, 116. XHCI */,
+	{BCM47XX_SDIO3H_ID, 0, 1, 177}	/* 177 SDIO3 */
 };
 #define SI_BUS_IRQ_MAP_SIZE (sizeof(si_bus_irq_map) / sizeof(si_bus_irq_map_t))
 
@@ -376,7 +370,7 @@ static void __iomem *soc_pci_cfg_base(struct pci_bus *bus, unsigned int devfn, i
 		if (slot >= 1)
 			return NULL;
 		type = slot;
-		__raw_writel(where & 0x1ffc, base + SOC_PCIE_EXT_CFG_ADDR);
+		__raw_writel(where & 0xffc, base + SOC_PCIE_EXT_CFG_ADDR);
 		offset = SOC_PCIE_EXT_CFG_DATA;
 	} else {
 		/* WAR for function num > 1 */
@@ -401,7 +395,7 @@ static void plx_pcie_switch_init(struct pci_bus *bus, unsigned int devfn)
 	struct soc_pcie_port *port = soc_pcie_bus2port(bus);
 	u32 dRead = 0;
 	u16 bm = 0;
-	int bus_inc = 0;
+	int bus_inc = port->hw_pci.domain - 1;
 
 	soc_pci_read_config(bus, devfn, 0x100, 4, &dRead);
 	printk("PCIE: Doing PLX switch Init...Test Read = %08x\n", (unsigned int)dRead);
@@ -488,91 +482,13 @@ static void plx_pcie_switch_init(struct pci_bus *bus, unsigned int devfn)
 	}
 }
 
-static void
-asmedia_pcie_switch_init(struct pci_bus *bus, unsigned int devfn)
-{
-	struct soc_pcie_port *port = soc_pcie_bus2port(bus);
-	u32 dRead = 0;
-	u16 bm = 0;
-	int bus_inc = 0;
-
-	soc_pci_read_config(bus, devfn, 0x100, 4, &dRead);
-	printk("PCIE: Doing ASMedia switch Init...Test Read = %08x\n", (unsigned int)dRead);
-
-	soc_pci_read_config(bus, devfn, 0x4, 2, &bm);
-#if NS_PCI_DEBUG
-	printk("bus master: %08x\n", bm);
-#endif
-	bm |= 0x06;
-	soc_pci_write_config(bus, devfn, 0x4, 2, bm);
-	bm = 0;
-#if NS_PCI_DEBUG
-	soc_pci_read_config(bus, devfn, 0x4, 2, &bm);
-	printk("bus master after: %08x\n", bm);
-	bm = 0;
-#endif
-
-	/* Bus 1 is the upstream port of the switch.
-	 * Bus 2 has the two downstream ports, one on each device number.
-	 */
-	if (bus->number == (bus_inc + 1)) {
-		/* Upstream port */
-		soc_pci_write_config(bus, devfn, 0x18, 4, (0x00000201 | (PCI_MAX_BUS << 16)));
-
-		/* MEM_BASE, MEM_LIM require 1MB alignment */
-		BUG_ON((port->owin_res->start >> 16) & 0xf);
-		soc_pci_write_config(bus, devfn, PCI_MEMORY_BASE, 2,
-			port->owin_res->start >> 16);
-		BUG_ON(((port->owin_res->start + SZ_32M) >> 16) & 0xf);
-		soc_pci_write_config(bus, devfn, PCI_MEMORY_LIMIT, 2,
-			(port->owin_res->start + SZ_32M) >> 16);
-
-		printk("bm = %04x\n devfn = = %08x, bus = %08x\n", bm, devfn, bus->number);
-	} else if (bus->number == (bus_inc + 2)) {
-		/* Downstream ports */
-		if (devfn == 0x18) {
-			soc_pci_write_config(bus, devfn, 0x18, 4,
-				(0x00000000 | ((bus->number + 1) << 16) |
-				((bus->number + 1) << 8) | bus->number));
-			BUG_ON((port->owin_res->start + SZ_48M >> 16) & 0xf);
-			soc_pci_write_config(bus, devfn, PCI_MEMORY_BASE, 2,
-				port->owin_res->start + SZ_48M >> 16);
-			BUG_ON(((port->owin_res->start + SZ_48M + SZ_32M) >> 16) & 0xf);
-			soc_pci_write_config(bus, devfn, PCI_MEMORY_LIMIT, 2,
-				(port->owin_res->start + SZ_48M + SZ_32M) >> 16);
-
-			soc_pci_read_config(bus, devfn, 0x92, 2, &bm);
-			if (bm & PCI_EXP_LNKSTA_DLLLA)
-				port->port1active = 1;
-
-			printk("bm = %04x\n devfn = = %08x, bus = %08x\n", bm, devfn, bus->number);
-		} else if (devfn == 0x38) {
-			soc_pci_write_config(bus, devfn, 0x18, 4,
-				(0x00000000 | ((bus->number + 2) << 16) |
-				((bus->number + 2) << 8) | bus->number));
-			BUG_ON((port->owin_res->start + (SZ_48M * 2) >> 16) & 0xf);
-			soc_pci_write_config(bus, devfn, PCI_MEMORY_BASE, 2,
-				port->owin_res->start  + (SZ_48M * 2) >> 16);
-			BUG_ON(((port->owin_res->start + (SZ_48M * 2) + SZ_32M) >> 16) & 0xf);
-			soc_pci_write_config(bus, devfn, PCI_MEMORY_LIMIT, 2,
-				(port->owin_res->start + (SZ_48M * 2) + SZ_32M) >> 16);
-
-			soc_pci_read_config(bus, devfn, 0x92, 2, &bm);
-			if (bm & PCI_EXP_LNKSTA_DLLLA)
-				port->port2active = 1;
-
-			printk("bm = %04x\n devfn = = %08x, bus = %08x\n", bm, devfn, bus->number);
-		}
-	}
-}
-
 static int soc_pci_read_config(struct pci_bus *bus, unsigned int devfn,
 	int where, int size, u32 *val)
 {
 	void __iomem *base;
 	u32 data_reg;
 	struct soc_pcie_port *port = soc_pcie_bus2port(bus);
-	int bus_inc = 0;
+	int bus_inc = port->hw_pci.domain - 1;
 
 	if ((bus->number > (bus_inc + 4))) {
 		*val = ~0UL;
@@ -581,12 +497,7 @@ static int soc_pci_read_config(struct pci_bus *bus, unsigned int devfn,
 
 	if (port->isswitch == 1) {
 		if (bus->number == (bus_inc + 2)) {
-			if (port->switch_id == PLX_SWITCH_ID &&
-			    !((devfn == 0x8) || (devfn == 0x10))) {
-				*val = ~0UL;
-				return PCIBIOS_SUCCESSFUL;
-			} else if (port->switch_id == ASMEDIA_SWITCH_ID &&
-				!((devfn == 0x18) || (devfn == 0x38))) {
+			if (!((devfn == 0x8) || (devfn == 0x10))) {
 				*val = ~0UL;
 				return PCIBIOS_SUCCESSFUL;
 			}
@@ -626,23 +537,13 @@ static int soc_pci_read_config(struct pci_bus *bus, unsigned int devfn,
 	}
 
 	if ((bus->number == (bus_inc + 1)) && (port->isswitch == 0) &&
-		(where == 0) && (((data_reg >> 16) & 0xFFFF) == PLX_SWITCH_ID)) {
+		(where == 0) && (((data_reg >> 16) & 0x0000FFFF) == 0x00008603)) {
 		plx_pcie_switch_init(bus, devfn);
-		port->switch_id = PLX_SWITCH_ID;
-		port->isswitch = 1;
-	} else if ((bus->number == (bus_inc + 1)) && (port->isswitch == 0) &&
-		(where == 0) && (((data_reg >> 16) & 0xFFFF) == ASMEDIA_SWITCH_ID)) {
-		asmedia_pcie_switch_init(bus, devfn);
-		port->switch_id = ASMEDIA_SWITCH_ID;
 		port->isswitch = 1;
 	}
 	if ((bus->number == (bus_inc + 2)) && (port->isswitch == 1) &&
-		(where == 0) && (((data_reg >> 16) & 0xFFFF) == PLX_SWITCH_ID)) {
+		(where == 0) && (((data_reg >> 16) & 0x0000FFFF) == 0x00008603))
 		plx_pcie_switch_init(bus, devfn);
-	} else if ((bus->number == (bus_inc + 2)) && (port->isswitch == 1) &&
-		(where == 0) && (((data_reg >> 16) & 0xFFFF) == ASMEDIA_SWITCH_ID)) {
-		asmedia_pcie_switch_init(bus, devfn);
-	}
 
 	/* HEADER_TYPE=00 indicates the port in EP mode */
 
@@ -663,18 +564,14 @@ static int soc_pci_write_config(struct pci_bus *bus, unsigned int devfn,
 	void __iomem *base;
 	u32 data_reg;
 	struct soc_pcie_port *port = soc_pcie_bus2port(bus);
-	int bus_inc = 0;
+	int bus_inc = port->hw_pci.domain - 1;
 
 	if (bus->number > (bus_inc + 4))
 		return PCIBIOS_SUCCESSFUL;
 
 	if ((bus->number == (bus_inc + 2)) && (port->isswitch == 1)) {
-		if (port->switch_id == PLX_SWITCH_ID && !((devfn == 0x8) || (devfn == 0x10))) {
+		if (!((devfn == 0x8) || (devfn == 0x10)))
 			return PCIBIOS_SUCCESSFUL;
-		} else if (port->switch_id == ASMEDIA_SWITCH_ID &&
-			!((devfn == 0x18) || (devfn == 0x38))) {
-			return PCIBIOS_SUCCESSFUL;
-		}
 	}
 	else if ((bus->number == (bus_inc + 3)) && (port->isswitch == 1)) {
 		if (devfn != 0)
@@ -824,16 +721,6 @@ static void __init soc_pcie_hw_init(struct soc_pcie_port *port)
 	__raw_writel(0x1, port->reg_base + SOC_PCIE_CONTROL);
 	mdelay(250);
 
-	if (ACP_WAR_ENAB() || arch_is_coherent()) {
-		/* Set ARCACHE to 0xb, and AWCACHE to 0x7, ARUSER to 0x1, and AWUSER to 0x1
-		 * ARCACHE=0xb - Cacheable write-back, allocate on write
-		 * AWCACHE=0x7 - Cacheable write-back, allocate on read
-		 */
-		tmp32 = ((0x7 << 14) | (0x1 << 9) | (0xb << 5) | (0x1 << 0));
-		__raw_writel(tmp32, port->reg_base + SOC_PCIE_RC_AXI_CONFIG);
-		udelay(250);
-	}
-
 	/* TBD: take care of PM, check we're on */
 }
 
@@ -869,15 +756,7 @@ static void __init soc_pcie_map_init(struct soc_pcie_port *port)
 	}
 	WARN_ON(size > 0);
 
-	if (pcie_coreid == NS_PCIEG2_CORE_ID && pcie_corerev == 0x7) {
-		/* Enable FUNC0_IMAP0_0/1/2/3 from RO to RW for NS-B0 */
-		__raw_writel(0x1, port->reg_base + SOC_PCIE_IMAP0_0123_REGS_TYPE);
-		/* 4KB memory page pointing to CCB for NS-B0 */
-		addr = (0x18001 << 12) | 0x1;
-		__raw_writel(addr, port->reg_base + SOC_PCIE_SYS_IMAP0(0, 1));
-	}
-
-	/*
+	/* 
 	 * Inbound address translation setup
 	 * Northstar only maps up to 128 MiB inbound, DRAM could be up to 1 GiB.
 	 *
@@ -885,16 +764,6 @@ static void __init soc_pcie_map_init(struct soc_pcie_port *port)
 	 * otherwise DMA bouncing mechanism may be required.
 	 * Also consider DMA mask to limit DMA physical address
 	 */
-	if (arch_is_coherent()) {
-		/* Using IARR_2/IMAP_2 is enough since it supports up to 2GB for NS-B0 */
-		addr = DDR_PADDR_ACP;
-		__raw_writel(addr | 0x1,
-			port->reg_base + SOC_PCIE_SYS_IMAP2(0));
-		__raw_writel(addr | 0x1, /* 1GB size */
-			port->reg_base + SOC_PCIE_SYS_IARR(2));
-		return;
-	}
-
 	size = min(_memsize, SZ_128M);
 	addr = PHYS_OFFSET;
 
@@ -908,26 +777,14 @@ static void __init soc_pcie_map_init(struct soc_pcie_port *port)
 	__raw_writel(addr | size,
 		port->reg_base + SOC_PCIE_SYS_IARR(1));
 
-	if (_memsize <= SZ_128M)
-		return;
-
 #ifdef CONFIG_SPARSEMEM
-	/* DDR memory size > 128MB */
-	addr = PHYS_OFFSET2;
-
-	if (pcie_coreid == NS_PCIEG2_CORE_ID && pcie_corerev == 0x7) {
-		/* Means 1GB for NS-B0 IARR_2 */
-		size = 1;
-	} else {
-		size = min(_memsize - SZ_128M, SZ_128M);
-		size >>= 20;	/* In MB */
-		size &= 0xff;	/* Size is an 8-bit field */
-	}
+	addr = PHYS_OFFSET2 + SZ_128M;
 	__raw_writel(addr | 0x1,
 		port->reg_base + SOC_PCIE_SYS_IMAP2(0));
 	__raw_writel(addr | size,
 		port->reg_base + SOC_PCIE_SYS_IARR(2));
 #endif
+
 }
 
 /*
@@ -1021,7 +878,7 @@ bcm5301x_usb_power_on(int coreid)
 	if (coreid == NS_USB20_CORE_ID) {
 		enable_usb = getgpiopin(NULL, "usbport1", GPIO_PIN_NOTDEFINED);
 		if (enable_usb != GPIO_PIN_NOTDEFINED) {
-			int enable_usb_mask = 1 << enable_usb;
+			int enable_usb_mask = 0 << enable_usb;
 
 			si_gpioout(sih, enable_usb_mask, enable_usb_mask, GPIO_DRV_PRIORITY);
 			si_gpioouten(sih, enable_usb_mask, enable_usb_mask, GPIO_DRV_PRIORITY);
@@ -1029,7 +886,7 @@ bcm5301x_usb_power_on(int coreid)
 
 		enable_usb = getgpiopin(NULL, "usbport2", GPIO_PIN_NOTDEFINED);
 		if (enable_usb != GPIO_PIN_NOTDEFINED) {
-			int enable_usb_mask = 1 << enable_usb;
+			int enable_usb_mask = 0 << enable_usb;
 
 			si_gpioout(sih, enable_usb_mask, enable_usb_mask, GPIO_DRV_PRIORITY);
 			si_gpioouten(sih, enable_usb_mask, enable_usb_mask, GPIO_DRV_PRIORITY);
@@ -1039,14 +896,14 @@ bcm5301x_usb_power_on(int coreid)
 	    
 	    enable_usb = getgpiopin(NULL, "usbport1", GPIO_PIN_NOTDEFINED);
 		if (enable_usb != GPIO_PIN_NOTDEFINED) {
-			int enable_usb_mask = 1 << enable_usb;
+			int enable_usb_mask = 0 << enable_usb;
 
 			si_gpioout(sih, enable_usb_mask, enable_usb_mask, GPIO_DRV_PRIORITY);
 			si_gpioouten(sih, enable_usb_mask, enable_usb_mask, GPIO_DRV_PRIORITY);
 		}
 		enable_usb = getgpiopin(NULL, "usbport2", GPIO_PIN_NOTDEFINED);
 		if (enable_usb != GPIO_PIN_NOTDEFINED) {
-			int enable_usb_mask = 1 << enable_usb;
+			int enable_usb_mask = 0 << enable_usb;
 
 			si_gpioout(sih, enable_usb_mask, enable_usb_mask, GPIO_DRV_PRIORITY);
 			si_gpioouten(sih, enable_usb_mask, enable_usb_mask, GPIO_DRV_PRIORITY);
@@ -1058,34 +915,56 @@ bcm5301x_usb_power_on(int coreid)
 static void
 bcm5301x_usb20_phy_init(void)
 {
-	uint32 dmu_base;
-	uint32 *cru_clkset_key;
-	uint32 *cru_usb2_control;
+	uint32 *genpll_base;
+	uint32 val, ndiv, pdiv, ch2_mdiv, ch2_freq;
+	uint32 usb_pll_pdiv, usb_pll_ndiv;
 
 	/* Check Chip ID */
-	if (!BCM4707_CHIP(CHIPID(sih->chip)))
-		return;
-
-	/* Check Package ID */
-	if (sih->chippkg == BCM4709_PKG_ID) {
+	if (!BCM4707_CHIP(CHIPID(sih->chip))) {
 		return;
 	}
-	else if (sih->chippkg == BCM4707_PKG_ID || sih->chippkg == BCM4708_PKG_ID) {
-		dmu_base = (uint32)REG_MAP(0x1800c000, 4096);
-		cru_clkset_key = (uint32 *)(dmu_base + 0x180);
-		cru_usb2_control = (uint32 *)(dmu_base + 0x164);
 
-		/* unlock */
-		writel(0x0000ea68, cru_clkset_key);
+	/* reg map for genpll base address */
+	genpll_base = (uint32 *)REG_MAP(0x1800C140, 4096);
 
-		/* fill value */
-		writel(0x00dd10c3, cru_usb2_control);
+	/* get divider integer from the cru_genpll_control5 */
+	val = readl(genpll_base + 0x5);
+	ndiv = (val >> 20) & 0x3ff;
+	if (ndiv == 0)
+		ndiv = 1 << 10;
 
-		/* lock */
-		writel(0x00000000, cru_clkset_key);
+	/* get pdiv and ch2_mdiv from the cru_genpll_control6 */
+	val = readl(genpll_base + 0x6);
+	pdiv = (val >> 24) & 0x7;
+	pdiv = (pdiv == 0) ? (1 << 3) : pdiv;
 
-		REG_UNMAP((void *)dmu_base);
-	}
+	ch2_mdiv = val & 0xff;
+	ch2_mdiv = (ch2_mdiv == 0) ? (1 << 8) : ch2_mdiv;
+
+	/* calculate ch2_freq based on 25MHz reference clock */
+	ch2_freq = (25000000 / (pdiv * ch2_mdiv)) * ndiv;
+
+	/* get usb_pll_pdiv from the cru_usb2_control */
+	val = readl(genpll_base + 0x9);
+	usb_pll_pdiv = (val >> 12) & 0x7;
+	usb_pll_pdiv = (usb_pll_pdiv == 0) ? (1 << 3) : usb_pll_pdiv;
+
+	/* calculate usb_pll_ndiv based on a solid 1920MHz that is for USB2 phy */
+	usb_pll_ndiv = (1920000000 * usb_pll_pdiv) / ch2_freq;
+
+	/* unlock in cru_clkset_key */
+	writel(0x0000ea68, genpll_base + 0x10);
+
+	/* set usb_pll_ndiv to cru_usb2_control */
+	val &= ~(0x3ff << 2);
+	val |= (usb_pll_ndiv << 2);
+	writel(val, genpll_base + 0x9);
+
+	/* lock in cru_clkset_key */
+	writel(0x00000000, genpll_base + 0x10);
+
+	/* reg unmap */
+	REG_UNMAP((void *)genpll_base);
 }
 
 static void
@@ -1125,86 +1004,13 @@ bcm5301x_usb30_phy_init(void)
 	writel(0x0000009a, ccb_mii_mng_ctrl_addr);
 	OSL_DELAY(2);
 
-	if (CHIPID(sih->chip) == BCM4707_CHIP_ID) {
-		/* Chiprev 4 for NS-B0 and chiprev 6 for NS-B1 */
-		if (CHIPREV(sih->chiprev) == 4 || CHIPREV(sih->chiprev) == 6) {
-			/* USB3 PLL Block */
-			SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-			writel(0x587e8000, ccb_mii_mng_cmd_data_addr);
+	/* 53018, NS-Bx and NS47094
+	 * Chiprev 4 for NS-B0 and chiprev 6 for NS-B1 */
+	if ((CHIPID(sih->chip) == BCM53018_CHIP_ID) ||
+	    (CHIPID(sih->chip) == BCM4707_CHIP_ID &&
+	    (CHIPREV(sih->chiprev) == 4 || CHIPREV(sih->chiprev) == 6)) ||
+	    (CHIPID(sih->chip) == BCM47094_CHIP_ID)) {
 
-			/* Clear ana_pllSeqStart */
-			SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-			writel(0x58061000, ccb_mii_mng_cmd_data_addr);
-
-			/* CMOS Divider ratio to 25 */
-			SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-			writel(0x582a6400, ccb_mii_mng_cmd_data_addr);
-
-			/* Asserting PLL Reset */
-			SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-			writel(0x582ec000, ccb_mii_mng_cmd_data_addr);
-
-			/* Deaaserting PLL Reset */
-			SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-			writel(0x582e8000, ccb_mii_mng_cmd_data_addr);
-
-			/* Deasserting USB3 system reset */
-			writel(0x00000000, usb3_idm_idm_reset_ctrl_addr);
-
-			/* Set ana_pllSeqStart */
-			SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-			writel(0x58069000, ccb_mii_mng_cmd_data_addr);
-
-			/* RXPMD block */
-			SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-			writel(0x587e8020, ccb_mii_mng_cmd_data_addr);
-
-			/* CDR int loop locking BW to 1 */
-			SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-			writel(0x58120049, ccb_mii_mng_cmd_data_addr);
-
-			/* CDR int loop acquisition BW to 1 */
-			SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-			writel(0x580e0049, ccb_mii_mng_cmd_data_addr);
-
-			/* CDR prop loop BW to 1 */
-			SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-			writel(0x580a005c, ccb_mii_mng_cmd_data_addr);
-
-			/* Waiting MII Mgt interface idle */
-			SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-		} else {
-			/* PLL30 block */
-			SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-			writel(0x587e8000, ccb_mii_mng_cmd_data_addr);
-
-		SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-		writel(0x582a6400, ccb_mii_mng_cmd_data_addr);
-
-		SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-		writel(0x587e80e0, ccb_mii_mng_cmd_data_addr);
-
-		SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-		writel(0x580a009c, ccb_mii_mng_cmd_data_addr);
-
-		/* Enable SSC */
-		SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-		writel(0x587e8040, ccb_mii_mng_cmd_data_addr);
-
-		SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-		writel(0x580a21d3, ccb_mii_mng_cmd_data_addr);
-
-		SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-		writel(0x58061003, ccb_mii_mng_cmd_data_addr);
-
-		/* Waiting MII Mgt interface idle */
-		SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-
-			/* Deasserting USB3 system reset */
-			writel(0x00000000, usb3_idm_idm_reset_ctrl_addr);
-		}
-	}
-	else if (CHIPID(sih->chip) == BCM53018_CHIP_ID) {
 		/* USB3 PLL Block */
 		SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
 		writel(0x587e8000, ccb_mii_mng_cmd_data_addr);
@@ -1258,6 +1064,37 @@ bcm5301x_usb30_phy_init(void)
 		/* Waiting MII Mgt interface idle */
 		SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
 	}
+	/* NS-Ax */
+	else if (CHIPID(sih->chip) == BCM4707_CHIP_ID) {
+		/* PLL30 block */
+		SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
+		writel(0x587e8000, ccb_mii_mng_cmd_data_addr);
+
+		SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
+		writel(0x582a6400, ccb_mii_mng_cmd_data_addr);
+
+		SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
+		writel(0x587e80e0, ccb_mii_mng_cmd_data_addr);
+
+		SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
+		writel(0x580a009c, ccb_mii_mng_cmd_data_addr);
+
+		/* Enable SSC */
+		SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
+		writel(0x587e8040, ccb_mii_mng_cmd_data_addr);
+
+		SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
+		writel(0x580a21d3, ccb_mii_mng_cmd_data_addr);
+
+		SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
+		writel(0x58061003, ccb_mii_mng_cmd_data_addr);
+
+		/* Waiting MII Mgt interface idle */
+		SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
+
+		/* Deasserting USB3 system reset */
+		writel(0x00000000, usb3_idm_idm_reset_ctrl_addr);
+	}
 
 	/* Reg unmap */
 	REG_UNMAP((void *)ccb_mii_base);
@@ -1277,49 +1114,6 @@ bcm5301x_usb_phy_init(int coreid)
 	else if (coreid == NS_USB30_CORE_ID) {
 		bcm5301x_usb30_phy_init();
 	}
-}
-
-static void
-bcm5301x_usb_idm_ioctrl(int coreid)
-{
-	uint32 usb3_idm_idm_base;
-	uint32 *usb3_idm_idm_ioctrl_addr;
-	uint32 ioctrl_val;
-	uint32 arcache = 0xb, awcache = 0x7, aruser = 0x1, awuser = 0x1;
-
-	if (!arch_is_coherent())
-		return;
-
-	usb3_idm_idm_base = (uint32)REG_MAP(0x18105000, 4096);
-	usb3_idm_idm_ioctrl_addr = (uint32 *)(usb3_idm_idm_base + 0x408);
-
-	if (coreid == NS_USB20_CORE_ID) {
-		uint32 usb2_idm_idm_base;
-		uint32 *usb2_idm_idm_ioctrl_addr;
-
-		usb2_idm_idm_base = (uint32)REG_MAP(0x18115000, 4096);
-		usb2_idm_idm_ioctrl_addr = (uint32 *)(usb2_idm_idm_base + 0x408);
-
-		ioctrl_val = readl(usb2_idm_idm_ioctrl_addr);
-		ioctrl_val &= ~((0xf << 2) | (0xf << 6));
-		ioctrl_val |= (arcache << 6) | (awcache << 2);
-		writel(ioctrl_val, usb2_idm_idm_ioctrl_addr);
-
-		REG_UNMAP((void *)usb2_idm_idm_base);
-
-		ioctrl_val = readl(usb3_idm_idm_ioctrl_addr);
-		ioctrl_val &= ~((0x1f << 12) | (0x1f << 17));
-		ioctrl_val |= (aruser << 17) | (awuser << 12);
-		writel(ioctrl_val, usb3_idm_idm_ioctrl_addr);
-	}
-	else if (coreid == NS_USB30_CORE_ID) {
-		ioctrl_val = readl(usb3_idm_idm_ioctrl_addr);
-		ioctrl_val &= ~((0xf << 2) | (0xf << 6) | (0x1f << 22) | (0x1f << 27));
-		ioctrl_val |= (aruser << 27) | (awuser << 22) | (arcache << 6) | (awcache << 2);
-		writel(ioctrl_val, usb3_idm_idm_ioctrl_addr);
-	}
-
-	REG_UNMAP((void *)usb3_idm_idm_base);
 }
 
 static void
@@ -1353,6 +1147,40 @@ bcm5301x_usb_hc_init(struct pci_dev *dev, int coreid)
 	}
 }
 
+static void
+bcm5301x_sdio_init(void)
+{
+	uint32 sdio3_idm_idm_base;
+	uint32 *sdio3_idm_idm_reset_ctrl_addr;
+	uint32 dmu_base;
+	uint32 *cru_gpio_control0_addr;
+	uint32 val32;
+	uint32 mask;
+
+	/* Check Chip ID */
+	if (!BCM4707_CHIP(CHIPID(sih->chip)) ||
+		(sih->chippkg != BCM4709_PKG_ID))
+		return;
+
+	dmu_base = (uint32)REG_MAP(0x1800c000, 4096);
+	cru_gpio_control0_addr = (uint32 *)(dmu_base + 0x1c0);
+	mask = ((1 << 19) |	/* SDIO_CARD_PWR_CTL */
+		(1 << 20));	/* SDIO_EN_1P8 */
+	val32 = readl(cru_gpio_control0_addr);
+	val32 &= ~mask;
+	writel(val32, cru_gpio_control0_addr);
+	REG_UNMAP((void *)dmu_base);
+
+	sdio3_idm_idm_base = (uint32)REG_MAP(0x18116000, 4096);
+	sdio3_idm_idm_reset_ctrl_addr = (uint32 *)(sdio3_idm_idm_base + 0x800);
+	/* Perform SDIO3 system soft reset */
+	writel(0x00000001, sdio3_idm_idm_reset_ctrl_addr);
+	OSL_DELAY(1);
+	/* Deasserting SDIO3 system reset */
+	writel(0x00000000, sdio3_idm_idm_reset_ctrl_addr);
+	REG_UNMAP((void *)sdio3_idm_idm_base);
+}
+
 int
 pcibios_enable_device(struct pci_dev *dev, int mask)
 {
@@ -1382,13 +1210,12 @@ pcibios_enable_device(struct pci_dev *dev, int mask)
 	}
 
 	/* OHCI/EHCI only initialize one time */
-	if (coreid == NS_USB20_CORE_ID && si_iscoreup(sih)) {
+	if ((coreid == NS_USB30_CORE_ID || coreid == NS_USB20_CORE_ID) && si_iscoreup(sih)) {
 		rc = 0;
 		goto out;
 	}
 
-	if (coreid != GMAC_CORE_ID)
-		si_core_reset(sih, 0, 0);
+	si_core_reset(sih, 0, 0);
 
 	if (coreid == NS_USB20_CORE_ID || coreid == NS_USB30_CORE_ID) {
 		/* Set gpio HIGH to turn on USB VBUS power */
@@ -1399,10 +1226,9 @@ pcibios_enable_device(struct pci_dev *dev, int mask)
 
 		/* USB HC init */
 		bcm5301x_usb_hc_init(dev, coreid);
-
-		bcm5301x_usb_idm_ioctrl(coreid);
-
 	}
+	else if (coreid == NS_SDIO3_CORE_ID)
+		bcm5301x_sdio_init();
 
 	rc = 0;
 out:
@@ -1533,112 +1359,18 @@ out:
 	REG_UNMAP((void *)dmu_base);
 }
 
-static void __init
-bcm5301x_pcie_phy_init(void)
-{
-	uint32 ccb_mii_base;
-	uint32 *ccb_mii_mng_ctrl_addr;
-	uint32 *ccb_mii_mng_cmd_data_addr;
-	uint32 dmu_base, cru_straps_ctrl;
-	uint32 blkaddr = 0x863, regaddr;
-	uint32 sb = 1, op_w = 1, pa[3] = {0x0, 0x1, 0xf}, blkra = 0x1f, ta = 2;
-	uint32 i, val;
-
-	/* Check Chip ID */
-	if (!BCM4707_CHIP(CHIPID(sih->chip)))
-		return;
-
-	/* Reg map */
-	dmu_base = (uint32)REG_MAP(0x1800c000, 4096);
-	ccb_mii_base = (uint32)REG_MAP(0x18003000, 4096);
-	ccb_mii_mng_ctrl_addr = (uint32 *)ccb_mii_base;
-	ccb_mii_mng_cmd_data_addr = (uint32 *)(ccb_mii_base + 0x4);
-
-	/* Set MDC/MDIO for Internal phy */
-	SPINWAIT(((readl(ccb_mii_mng_ctrl_addr) >> 8 & 1) == 1), 1000);
-	writel(0x0000009a, ccb_mii_mng_ctrl_addr);
-
-	/* To improve PCIE phy jitter */
-	for (i = 0; i < (ARRAY_SIZE(soc_pcie_ports) - 1); i++) {
-		if (i == 2) {
-			cru_straps_ctrl = readl((uint32 *)(dmu_base + 0x2a0));
-
-			/* 3rd PCIE is not selected */
-			if (cru_straps_ctrl & 0x10)
-				break;
-		}
-
-		/* Change blkaddr */
-		SPINWAIT(((readl(ccb_mii_mng_ctrl_addr) >> 8 & 1) == 1), 1000);
-		val = (sb << 30) | (op_w << 28) | (pa[i] << 23) | (blkra << 18) |
-			(ta << 16) | (blkaddr << 4);
-		writel(val, ccb_mii_mng_cmd_data_addr);
-
-		/* Write 0x0190 to 0x13 regaddr */
-		SPINWAIT(((readl(ccb_mii_mng_ctrl_addr) >> 8 & 1) == 1), 1000);
-		regaddr = 0x13;
-		val = (sb << 30) | (op_w << 28) | (pa[i] << 23) | (regaddr << 18) |
-			(ta << 16) | 0x0190;
-		writel(val, ccb_mii_mng_cmd_data_addr);
-
-		/* Write 0x0191 to 0x19 regaddr */
-		SPINWAIT(((readl(ccb_mii_mng_ctrl_addr) >> 8 & 1) == 1), 1000);
-		regaddr = 0x19;
-		val = (sb << 30) | (op_w << 28) | (pa[i] << 23) | (regaddr << 18) |
-			(ta << 16) | 0x0191;
-		writel(val, ccb_mii_mng_cmd_data_addr);
-	}
-
-	/* Waiting MII Mgt interface idle */
-	SPINWAIT((((readl(ccb_mii_mng_ctrl_addr) >> 8) & 1) == 1), 1000);
-
-	/* Reg unmap */
-	REG_UNMAP((void *)dmu_base);
-	REG_UNMAP((void *)ccb_mii_base);
-}
-
 static int __init soc_pcie_init(void)
 {
 	unsigned int i;
 	int allow_gen2, linkfail;
-	uint origidx;
-	unsigned long flags;
-
 
 	hndpci_init(sih);
-
-	spin_lock_irqsave(&sih_lock, flags);
-
-	/* Save current core index */
-	origidx = si_coreidx(sih);
-
-	/* Get pcie coreid and corerev */
-	si_setcore(sih, NS_PCIEG2_CORE_ID, 0);
-	pcie_coreid = si_coreid(sih);
-	pcie_corerev = si_corerev(sih);
-
-	/* Restore core index */
-	si_setcoreidx(sih, origidx);
-
-	spin_unlock_irqrestore(&sih_lock, flags);
-
-	/* For NS-B0, overwrite the start and end values for PCIE port 1 and port 2 */
-	if (pcie_coreid == NS_PCIEG2_CORE_ID && pcie_corerev == 0x7) {
-		soc_pcie_owin[1].start = 0x20000000;
-		soc_pcie_owin[1].end = 0x20000000 + SZ_128M - 1;
-
-		soc_pcie_owin[2].start = 0x28000000;
-		soc_pcie_owin[2].end = 0x28000000 + SZ_128M - 1;
-	}
 
 	/* Scan the SB bus */
 	printk(KERN_INFO "PCI: scanning bus %x\n", 0);
 	pci_scan_bus(0, &pcibios_ops, &soc_pcie_ports[0].hw_pci);
 
 	bcm5301x_3rd_pcie_init();
-
-	bcm5301x_pcie_phy_init();
-
 	for (i = 1; i < ARRAY_SIZE(soc_pcie_ports); i++) {
 		struct soc_pcie_port *port = &soc_pcie_ports[i];
 

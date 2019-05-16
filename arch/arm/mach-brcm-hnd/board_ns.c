@@ -208,29 +208,6 @@ early_printk("board_map_io\n");
 	soc_map_io( &clk_ref );
 }
 
-#if defined(CONFIG_SPI_SPIDEV) && defined(CONFIG_SPI_BCM5301X)
-
-#include <linux/spi/spi.h>
-
-static struct spi_board_info spidev_board_info[] __initdata = {
-	{
-		.modalias	= "spidev",
-		.mode		= SPI_MODE_0,
-		.max_speed_hz	= (1 << 20 ), /* 1Mhz */
-		.bus_num	= 1,
-	},
-};
-
-static void __init board_init_spi(void)
-{
-	spi_register_board_info(spidev_board_info, ARRAY_SIZE(spidev_board_info));
-}
-#else
-inline void board_init_spi(void)
-{
-}
-#endif
-
 
 void __init board_init_irq(void)
 {
@@ -310,19 +287,6 @@ static void __init brcm_setup(void)
 	/* Get global SB handle */
 	sih = si_kattach(SI_OSH);
 
-	if (ACP_WAR_ENAB() && BCM4707_CHIP(CHIPID(sih->chip))) {
-		if (sih->chippkg == BCM4708_PKG_ID)
-			ns_acp_win_size = SZ_128M;
-		else if (sih->chippkg == BCM4707_PKG_ID)
-			ns_acp_win_size = SZ_32M;
-		else
-			ns_acp_win_size = SZ_256M;
-	} else if (BCM4707_CHIP(CHIPID(sih->chip)) &&
-		(CHIPREV(sih->chiprev) == 4 || CHIPREV(sih->chiprev) == 6)) {
-		/* Chiprev 4 for NS-B0 and chiprev 6 for NS-B1 */
-		ns_acp_win_size = SZ_1G;
-	}
-
 	if (strncmp(boot_command_line, "root=/dev/mtdblock", strlen("root=/dev/mtdblock")) == 0)
 		sprintf(saved_root_name, "/dev/mtdblock%d", rootfs_mtdblock());
 
@@ -354,11 +318,6 @@ early_printk("board_init\n");
 	 */
 	soc_add_devices();
 
-	board_init_spi();
-
-	printk(KERN_NOTICE "ACP (Accelerator Coherence Port) %s\n",
-		(ACP_WAR_ENAB() || arch_is_coherent()) ? "enabled" : "disabled");
-
 	return;
 }
 
@@ -377,24 +336,9 @@ static void __init board_fixup(
 		clk_ref.rate = 17594;	/* Emulator ref clock rate */
 
 
-#if defined(BCM_GMAC3)
-	/* In ATLAS builds, cap the total memory to 256M (for both Ax and Bx). */
-	if (_memsize > SZ_256M) {
-		_memsize = SZ_256M;
-		early_printk("ATLAS board_fixup: cap memory to 256M\n");
-	}
-#endif /* BCM_GMAC3 */
 	mem_size = _memsize;
 
 	early_printk("board_fixup: mem=%uMiB\n", mem_size >> 20);
-
-	/* for NS-B0-ACP */
-	if (ACP_WAR_ENAB() || arch_is_coherent()) {
-		mi->bank[0].start = PHYS_OFFSET;
-		mi->bank[0].size = mem_size;
-		mi->nr_banks++;
-		return;
-	}
 
 	lo_size = min(mem_size, DRAM_MEMORY_REGION_SIZE);
 
@@ -405,7 +349,7 @@ static void __init board_fixup(
 	if (lo_size == mem_size)
 		return;
 
-	mi->bank[1].start = PHYS_OFFSET2;
+	mi->bank[1].start = DRAM_LARGE_REGION_BASE + lo_size;
 	mi->bank[1].size = mem_size - lo_size;
 	mi->nr_banks++;
 }
@@ -419,9 +363,6 @@ void __init bcm47xx_adjust_zones(unsigned long *size, unsigned long *hole)
 	unsigned long dma_size = SZ_128M >> PAGE_SHIFT;
 
 	if (size[0] <= dma_size)
-		return;
-
-	if (ACP_WAR_ENAB() || arch_is_coherent())
 		return;
 
 	size[ZONE_NORMAL] = size[0] - dma_size;
@@ -538,6 +479,11 @@ static uint32 boot_partition_size(uint32 flash_phys) {
 #else
 #define MTD_PARTS 0
 #endif
+#if defined(PLC)
+#define PLC_PARTS 1
+#else
+#define PLC_PARTS 0
+#endif
 #if defined(CONFIG_FAILSAFE_UPGRADE)
 #define FAILSAFE_PARTS 2
 #else
@@ -549,7 +495,7 @@ static uint32 boot_partition_size(uint32 flash_phys) {
 #define CRASHLOG_PARTS 0
 #endif
 /* boot;nvram;kernel;rootfs;empty */
-#define FLASH_PARTS_NUM	(15+MTD_PARTS+FAILSAFE_PARTS+CRASHLOG_PARTS)
+#define FLASH_PARTS_NUM	(15+MTD_PARTS+PLC_PARTS+FAILSAFE_PARTS+CRASHLOG_PARTS)
 
 //static struct mtd_partition bcm947xx_flash_parts[FLASH_PARTS_NUM] = {{0}};
 
@@ -1327,7 +1273,6 @@ static int __init cfenenad_parser_init(void)
 module_init(cfenenad_parser_init);
 
 #endif /* CONFIG_MTD_NFLASH */
-
 #ifdef CONFIG_CRASHLOG
 extern char *get_logbuf(void);
 extern char *get_logsize(void);

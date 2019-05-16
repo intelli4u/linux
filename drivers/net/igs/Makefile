@@ -1,7 +1,7 @@
 #
 # Makefile for the Broadcom IGS Layer
 #
-# Copyright (C) 2015, Broadcom Corporation. All Rights Reserved.
+# Copyright (C) 2013, Broadcom Corporation. All Rights Reserved.
 # 
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -19,9 +19,9 @@
 #
 
 ifneq ($(ROOTDIR),)
-EMFDIR := $(BCM_REL_DIR)../../../$(ROUTER)/emf
+EMFDIR := $(BCM_REL_DIR)../../../$(ROUTER)/emf${BCMEX}
 IGSSRCDIR := $(EMPDIR)/igs
-IGSCSRCDIR := $(EMPDIR)/igs
+IGSCSRCDIR := $(BCM_REL_DIR)../../../$(if $(MERLIN),$(SRCBASE_A),$(SRCBASE))/emf/igs
 else
 IGSSRCDIR := ../../../../../../../src/router/emf/igs
 IGSCSRCDIR := ../../../../../../../src/emf/igs
@@ -33,7 +33,7 @@ IGS_OBJS := $(IGSCSRCDIR)/igsc.o $(IGSCSRCDIR)/igsc_sdb.o $(IGSSRCDIR)/igs_linux
 
 # Search for sources under src/router/emf/igs
 ifneq ($(wildcard $(src)/$(IGSSRCDIR)),)
-	EXTRA_CFLAGS += -I$(ROOTDIR)$(SRCBASE)/router/emf/igs -I$(ROOTDIR)$(SRCBASE)/router/emf/emf
+	EXTRA_CFLAGS += -I$(ROOTDIR)$(SRCBASE)/router/emf${BCMEX}/igs -I$(ROOTDIR)$(SRCBASE)/router/emf${BCMEX}/emf
 	EXTRA_CFLAGS += -I$(SRCBASE)/include/emf/igs -I$(SRCBASE)/include/emf/emf
 	igs-objs := $(IGS_OBJS)
 else

@@ -23,10 +23,6 @@
 #include "br_private.h"
 
 int (*br_should_route_hook)(struct sk_buff *skb);
-/*Foxconn modify start by Hank 08/10/2012 */
-/*extern nvram_get function for kernel using*/
-extern char *nvram_get(const char *name);
-/*Foxconn modify end by Hank 08/10/2012 */
 
 static const struct stp_proto br_stp_proto = {
 	.rcv	= br_stp_rcv,
@@ -71,15 +67,6 @@ static int __init br_init(void)
 #if defined(CONFIG_ATM_LANE) || defined(CONFIG_ATM_LANE_MODULE)
 	br_fdb_test_addr_hook = br_fdb_test_addr;
 #endif
-	/* Foxconn added start pling 03/13/2007 */
-#define nvram_safe_get(name) (nvram_get(name) ? : "")
-	char *qos_en = nvram_safe_get("qos_enable");
-	char *wla_rp = nvram_safe_get("wla_repeater");
-	if(!strcmp(qos_en, "1") && strcmp(wla_rp, "1")) {
-		extern int qos_enable;
-		qos_enable = 1;
-	}
-	/* Foxconn added end pling 03/13/2007 */
 
 	return 0;
 err_out4:

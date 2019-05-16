@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2013. */
 /*
  *	Routines having to do with the 'struct sk_buff' memory handlers.
  *
@@ -462,6 +463,7 @@ void BCMFASTPATH_HOST __kfree_skb(struct sk_buff *skb)
 		skb_tcph_pool_free(tcph_pool, skb);
 		return;
 	}
+
 	skb_release_all(skb);
 	kfree_skbmem(skb);
 }
@@ -560,14 +562,8 @@ static void BCMFASTPATH_HOST __copy_skb_header(struct sk_buff *new, const struct
 #ifdef PKTC
 	memset(new->pktc_cb, 0, sizeof(new->pktc_cb));
 #endif
-	memset(new->fpath_cb, 0, sizeof(new->fpath_cb));    /* foxconn Bob added 02/06/2013 to init fpath_cb */ 
-	
 #ifdef CTF_PPPOE
 	memset(new->ctf_pppoe_cb, 0, sizeof(new->ctf_pppoe_cb));
-#endif
-#if defined(HNDCTF) && defined(CTFMAP)
-	if (PKTISCTF(NULL, old))
-		new->ctfmap		= NULL;
 #endif
 	new->tstamp		= old->tstamp;
 	new->dev		= old->dev;
@@ -577,7 +573,12 @@ static void BCMFASTPATH_HOST __copy_skb_header(struct sk_buff *new, const struct
 	skb_dst_copy(new, old);
 	new->rxhash		= old->rxhash;
 #ifdef CONFIG_XFRM
-	new->sp		= secpath_get(old->sp);
+#if defined(HNDCTF) && defined(CTFMAP)
+	if (PKTISCTF(NULL, old))
+		new->sp		= NULL;
+	else
+#endif
+		new->sp		= secpath_get(old->sp);
 #endif
 	memcpy(new->cb, old->cb, sizeof(old->cb));
 	new->csum		= old->csum;

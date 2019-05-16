@@ -70,7 +70,6 @@ static struct super_block *alloc_super(struct file_system_type *type)
 #else
 		INIT_LIST_HEAD(&s->s_files);
 #endif
-        s->s_bdi = &default_backing_dev_info; /* foxconn patch */
 		INIT_LIST_HEAD(&s->s_instances);
 		INIT_HLIST_HEAD(&s->s_anon);
 		INIT_LIST_HEAD(&s->s_inodes);
@@ -108,14 +107,7 @@ static struct super_block *alloc_super(struct file_system_type *type)
 		mutex_init(&s->s_dquot.dqonoff_mutex);
 		init_rwsem(&s->s_dquot.dqptr_sem);
 		init_waitqueue_head(&s->s_wait_unfrozen);
-        /* Foxconn modified start pling 12/04/2009 */
-        /* Large file support, up to 4GB for FAT32 */
-#ifdef SAMBA_ENABLE
-		s->s_maxbytes = 0xFFFFFFFFUL;
-#else
 		s->s_maxbytes = MAX_NON_LFS;
-#endif
-        /* Foxconn modified end pling 12/04/2009 */
 		s->s_op = &default_op;
 		s->s_time_gran = 1000000000;
 	}
@@ -955,7 +947,6 @@ vfs_kern_mount(struct file_system_type *type, int flags, const char *name, void 
 		goto out_free_secdata;
 	BUG_ON(!mnt->mnt_sb);
 	WARN_ON(!mnt->mnt_sb->s_bdi);
-	WARN_ON(mnt->mnt_sb->s_bdi == &default_backing_dev_info); /* foxconn patch */
 	mnt->mnt_sb->s_flags |= MS_BORN;
 
 	error = security_sb_kern_mount(mnt->mnt_sb, flags, secdata);

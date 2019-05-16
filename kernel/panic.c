@@ -52,13 +52,6 @@ EXPORT_SYMBOL(panic_blink);
 void  nvram_store_crash(void);
 #endif
 
-#ifdef KERNEL_CRASH_DUMP_TO_MTD
-int flash_write_buffer(void);
-/* Foxconn added start, John Ou, 12/10/2014, for new debug page */
-int flash_write_reboot_reason(int);
-/* Foxconn added end, John Ou, 12/10/2014, for new debug page */
-#endif
-
 /**
  *	panic - halt the system
  *	@fmt: The text string to print
@@ -86,6 +79,9 @@ NORET_TYPE void panic(const char * fmt, ...)
 	va_start(args, fmt);
 	vsnprintf(buf, sizeof(buf), fmt, args);
 	va_end(args);
+#ifdef CONFIG_DUMP_PREV_OOPS_MSG
+        enable_oopsbuf(1);
+#endif
 	printk(KERN_EMERG "Kernel panic - not syncing: %s\n",buf);
 #ifdef CONFIG_DEBUG_BUGVERBOSE
 	dump_stack();
@@ -110,13 +106,6 @@ NORET_TYPE void panic(const char * fmt, ...)
 	atomic_notifier_call_chain(&panic_notifier_list, 0, buf);
 
 	bust_spinlocks(0);
-	
-#ifdef KERNEL_CRASH_DUMP_TO_MTD
-        flash_write_buffer();
-		/* Foxconn added start, John Ou, 12/10/2014, for new debug page */
-		flash_write_reboot_reason(0);
-		/* Foxconn added end, John Ou, 12/10/2014, for new debug page */
-#endif
 
 #ifdef CONFIG_CRASHLOG
 	nvram_store_crash();
@@ -342,6 +331,9 @@ void oops_enter(void)
 	/* can't trust the integrity of the kernel anymore: */
 	debug_locks_off();
 	do_oops_enter_exit();
+#ifdef CONFIG_DUMP_PREV_OOPS_MSG
+	enable_oopsbuf(1);
+#endif
 }
 
 /*

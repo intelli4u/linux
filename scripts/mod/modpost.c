@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /* Postprocess module symbol versions
  *
  * Copyright 2003       Kai Germaschewski

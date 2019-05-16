@@ -838,7 +838,6 @@ static inline int nla_put_msecs(struct sk_buff *skb, int attrtype,
 #define NLA_PUT_NET64(skb, attrtype, value) \
 	NLA_PUT_BE64(skb, attrtype | NLA_F_NET_BYTEORDER, value)
 
-
 #define NLA_PUT_STRING(skb, attrtype, value) \
 	NLA_PUT(skb, attrtype, strlen(value) + 1, value)
 

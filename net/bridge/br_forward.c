@@ -21,35 +21,6 @@
 #include <linux/netfilter_bridge.h>
 #include "br_private.h"
 
-/* Foxconn add start, Zz Shan@MutiSsidControl 03/13/2009*/
-#ifdef MULTIPLE_SSID
-/*foxconn modified start, water, 01/07/10*/
-//#include "../../../../router/multissidcontrol/MultiSsidControl.h"
-#include "multissidcontrol/MultiSsidControl.h"
-/*Foxconn add start by Hank 08/29/2012*/
-#ifdef INCLUDE_ACCESSCONTROL
-#include "access_control/AccessControl.h"
-#endif
-/*Foxconn add end by Hank 08/29/2012*/
-/*foxconn modified end, water, 01/07/10*/
-int (*br_insert_multissid_hook)(struct sk_buff *skb, struct net_bridge_port *dst)=NULL;
-extern T_MSsidCtlProfile *gProfile;
-extern int gProfilenum;
-/* Foxconn added start pling 10/06/2010 */
-extern T_MSsidCtlProfile *gProfile_5g;
-extern int gProfilenum_5g;
-/* Foxconn added end pling 10/06/2010 */
-#endif
-/* Foxconn add end, Zz Shan 03/13/2009*/
-
-/*Fxcn added start by dennis,02/17/2012,for access control*/
-#ifdef INCLUDE_ACCESSCONTROL
-int (*br_insert_accesscntl_hook)(struct sk_buff *skb, struct net_bridge_port *dst)=NULL;
-extern T_AccessControlTable *gAccessTable;
-extern int gAccessTablenum;
-#endif
-/*Fxcn added end by dennis,02/17/2012,for access control*/
-
 static int deliver_clone(const struct net_bridge_port *prev,
 			 struct sk_buff *skb,
 			 void (*__packet_hook)(const struct net_bridge_port *p,
@@ -59,33 +30,6 @@ static int deliver_clone(const struct net_bridge_port *prev,
 static inline int should_deliver(const struct net_bridge_port *p,
 				 const struct sk_buff *skb)
 {
-
-    /* Foxconn add start, Zz Shan@MutiSsidControl 03/16/2009*/
-#ifdef MULTIPLE_SSID    
-	if(br_insert_multissid_hook)
-	{
-		int ret = 0;
-		
-		ret=br_insert_multissid_hook(skb, p);
-		
-		if (ret == 1) //Drop 
-		    return 0;  		    
-	}
-#endif	 
-	/* Foxconn add end, Zz Shan 03/16/2009*/
-	/*Fxcn added start by dennis,02/17/2012,for access control*/
-#ifdef INCLUDE_ACCESSCONTROL
-    if(br_insert_accesscntl_hook){
-        int ret = 0;
-		
-		ret=br_insert_accesscntl_hook(skb, p);
-		
-		if (ret == 1) //Drop 
-		    return 0;  
-    }
-#endif
-     /*Fxcn added end by dennis,02/17/2012,for access control*/
-
 	return (((p->flags & BR_HAIRPIN_MODE) || skb->dev != p->dev) &&
 		p->state == BR_STATE_FORWARDING);
 }
@@ -301,7 +245,6 @@ static void br_multicast_flood(struct net_bridge_mdb_entry *mdst,
 			rp = rcu_dereference(rp->next);
 	}
 
-	/* flood the SSDP packets if failed to deliver */
 	if (!prev &&
 	    skb->protocol == htons(ETH_P_IP) &&
 	    ip_hdr(skb)->daddr == in_aton("239.255.255.250")) {
@@ -341,38 +284,4 @@ void br_multicast_forward(struct net_bridge_mdb_entry *mdst,
 {
 	br_multicast_flood(mdst, skb, skb2, __br_forward);
 }
-#endif
-/* Foxconn add start, Zz Shan@MutiSsidControl 03/13/2009*/
-#ifdef MULTIPLE_SSID
-void insert_msc_func_to_br(void *FUNC)
-{
-   br_insert_multissid_hook= FUNC;
-}
-
-void remove_msc_func_from_br(void)
-{
-   br_insert_multissid_hook= NULL;
-}
-EXPORT_SYMBOL(insert_msc_func_to_br);
-EXPORT_SYMBOL(remove_msc_func_from_br);
-
-#endif
-/* Foxconn add end, Zz Shan 03/13/2009*/
-/* Fxcn port-E Wins, 0715-09 */
-#ifdef INCLUDE_ACCESSCONTROL
-/*fxcn added start by dennis,02/17/12*/
-void insert_acs_func_to_br(void *FUNC)
-{
-   br_insert_accesscntl_hook= FUNC;
-}
-
-void remove_acs_func_from_br(void)
-{
-   br_insert_accesscntl_hook= NULL;
-}
-/*dxcn added end by dennis, 02/17/12*/
-/*Foxconn add start by Hank 08/29/2012*/
-EXPORT_SYMBOL(insert_acs_func_to_br);
-EXPORT_SYMBOL(remove_acs_func_from_br);
-/*Foxconn add end by Hank 08/29/2012*/
 #endif

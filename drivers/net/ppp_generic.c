@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  * Generic PPP layer for Linux.
  *
@@ -56,6 +57,9 @@
 #ifdef HNDCTF
 #define TYPEDEF_INT32
 #include <ctf/hndctf.h>
+#if defined(CTF_PPTP) || defined(CTF_L2TP)
+#include <linux/if_pppox.h>
+#endif
 #endif
 
 #define PPP_VERSION	"2.4.2"
@@ -96,6 +100,10 @@ struct ppp_file {
 
 #define PF_TO_PPP(pf)		PF_TO_X(pf, struct ppp)
 #define PF_TO_CHANNEL(pf)	PF_TO_X(pf, struct channel)
+
+#if defined(CTF_PPTP) || defined(CTF_L2TP)
+typedef struct channel channel_t;
+#endif
 
 /*
  * Data structure describing one ppp unit.
@@ -140,6 +148,9 @@ struct ppp {
 	unsigned pass_len, active_len;
 #endif /* CONFIG_PPP_FILTER */
 	struct net	*ppp_net;	/* the net we belong to */
+#if defined(CTF_PPTP) || defined(CTF_L2TP)
+	channel_t		*ctfpch;
+#endif
 };
 
 /*
@@ -274,193 +285,6 @@ static int unit_get(struct idr *p, void *ptr);
 static int unit_set(struct idr *p, void *ptr, int n);
 static void unit_put(struct idr *p, int n);
 static void *unit_find(struct idr *p, int n);
-
-/* Foxconn added start pling 03/28/2006 */
-/**********************************************************************
-* FUNCTION: computeTCPChecksum
-* ARGUMENTS:
-*   ipHdr -- pointer to IP header
-*   tcpHdr -- pointer to TCP header
-* RETURNS:
-*   The computed TCP checksum
-***********************************************************************/
-#define UINT16  unsigned short
-#define UINT32  unsigned long
-static UINT16 computeTCPChecksum(unsigned char *ipHdr, unsigned char *tcpHdr)
-{
-    UINT32 sum = 0;
-    UINT16 count = ipHdr[2] * 256 + ipHdr[3];
-    unsigned char *addr = tcpHdr;
-    unsigned char pseudoHeader[12];
-
-    /* Count number of bytes in TCP header and data */
-    count -= (ipHdr[0] & 0x0F) * 4;
-
-    memcpy(pseudoHeader, ipHdr+12, 8);
-    pseudoHeader[8] = 0;
-    pseudoHeader[9] = ipHdr[9];
-    pseudoHeader[10] = (count >> 8) & 0xFF;
-    pseudoHeader[11] = (count & 0xFF);
-
-    /* Checksum the pseudo-header */
-    sum += * (UINT16 *) pseudoHeader;
-    sum += * ((UINT16 *) (pseudoHeader+2));
-    sum += * ((UINT16 *) (pseudoHeader+4));
-    sum += * ((UINT16 *) (pseudoHeader+6));
-    sum += * ((UINT16 *) (pseudoHeader+8));
-    sum += * ((UINT16 *) (pseudoHeader+10));
-
-    /* Checksum the TCP header and data */
-    while (count > 1) {
-	    sum += * (UINT16 *) addr;
-	    addr += 2;
-	    count -= 2;
-    }
-
-    if (count > 0) {
-	    sum += *addr;
-    }
-
-    while(sum >> 16) {
-	    sum = (sum & 0xffff) + (sum >> 16);
-    }
-
-    return (UINT16) (~sum & 0xFFFF);
-}
-
-/**********************************************************************
-* FUNCTION: ppp_modify_tcp_mss
-* ARGUMENTS:
-*   payload -- IP packet
-*   payload_len -- either "incoming" or "outgoing"
-*   clampMss -- clamp value
-* RETURNS:
-*   Nothing
-* DESCRIPTION:
-*   Clamps MSS option if TCP SYN flag is set.
-***********************************************************************/
-void ppp_modify_tcp_mss(unsigned char *payload, int clampMss)
-{
-    unsigned char *tcpHdr;
-    unsigned char *ipHdr;
-    unsigned char *opt;
-    unsigned char *endHdr;
-    unsigned char *mssopt = NULL;
-    UINT16 csum;
-
-    /* Make sure this is IP packet */
-    if (payload[0] != 0x00 || payload[1] != 0x21) {
-        return;
-    }
-
-    ipHdr = &payload[2];
-    
-    /* Verify once more that it's IPv4 */
-    if ((ipHdr[0] & 0xF0) != 0x40) {
-        return;
-    }
-
-    /* Is it a fragment that's not at the beginning of the packet? */
-    if ((ipHdr[6] & 0x1F) || ipHdr[7]) {
-        /* Yup, don't touch! */
-        return;
-    }
-
-    /* Is it TCP? */
-    if (ipHdr[9] != 0x06) {
-        return;
-    }
-
-    /* Get start of TCP header */
-    tcpHdr = ipHdr + (ipHdr[0] & 0x0F) * 4;
-
-    /* Is SYN set? */
-    if (!(tcpHdr[13] & 0x02)) {
-        return;
-    }
-
-    /* Compute and verify TCP checksum -- do not touch a packet with a bad
-       checksum */
-    csum = computeTCPChecksum(ipHdr, tcpHdr);
-    if (csum) {
-        /* printk("Bad TCP checksum %x", (unsigned int) csum);*/ 
-
-        /* Upper layers will drop it */
-        return;
-    }
-
-    /* Look for existing MSS option */
-    endHdr = tcpHdr + ((tcpHdr[12] & 0xF0) >> 2);
-    opt = tcpHdr + 20;
-    while (opt < endHdr) {
-        if (!*opt)
-            break;   /* End of options */
-
-        switch(*opt) {
-            case 1:
-                opt++;
-                break;
-
-            case 2:
-                if (opt[1] != 4) {
-                   /* Something fishy about MSS option length. */
-                   printk("Bogus length for MSS option (%u) from %u.%u.%u.%u",
-                                    (unsigned int) opt[1],
-                                    (unsigned int) ipHdr[12],
-                                    (unsigned int) ipHdr[13],
-                                    (unsigned int) ipHdr[14],
-                                    (unsigned int) ipHdr[15]);
-                   return;
-                }
-                mssopt = opt;
-                break;
-
-            default:
-                if (opt[1] < 2) {
-                    /* Someone's trying to attack us? */
-                    printk("Bogus TCP option length (%u) from %u.%u.%u.%u",
-                                    (unsigned int) opt[1],
-                                    (unsigned int) ipHdr[12],
-                                    (unsigned int) ipHdr[13],
-                                    (unsigned int) ipHdr[14],
-                                    (unsigned int) ipHdr[15]);
-                    return;
-                }
-                opt += (opt[1]);
-                break;
-        }
-
-        /* Found existing MSS option? */
-        if (mssopt) {
-            break;
-        }
-    }
-
-    /* If MSS exists and it's low enough, do nothing */
-    if (mssopt) {
-        unsigned mss = mssopt[2] * 256 + mssopt[3];
-        if (mss <= clampMss) {
-            return;
-        }
-
-        mssopt[2] = (((unsigned) clampMss) >> 8) & 0xFF;
-        mssopt[3] = ((unsigned) clampMss) & 0xFF;
-
-        /*printk("%s: Modified MSS value to %d\n", __FUNCTION__, clampMss);*/
-    } else {
-        /* No MSS option.  Don't add one; we'll have to use 536. */
-        return;
-    }
-
-    /* Recompute TCP checksum */
-    tcpHdr[16] = 0;
-    tcpHdr[17] = 0;
-    csum = computeTCPChecksum(ipHdr, tcpHdr);
-    (* (UINT16 *) (tcpHdr+16)) = csum;
-}
-#undef UINT16
-#undef UINT32
-/* Foxconn added end pling 03/28/2006 */
 
 static struct class *ppp_class;
 
@@ -878,17 +702,8 @@ static long ppp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		break;
 
 	case PPPIOCGIDLE:
-		/*foxconn modified start, water, 11/27/09, @pppoe/pptp idle time not correct issue*/
-		if (jiffies >= ppp->last_xmit) /* wklin modified from > to >=*/
-			idle.xmit_idle = (jiffies - ppp->last_xmit) / HZ;
-		else
-			idle.xmit_idle = (0xFFFFFFFF - ppp->last_xmit + jiffies) / HZ;
-		idle.recv_idle = idle.xmit_idle;
-		/*
 		idle.xmit_idle = (jiffies - ppp->last_xmit) / HZ;
 		idle.recv_idle = (jiffies - ppp->last_recv) / HZ;
-		*/
-		/*foxconn modified end, water, 11/27/09*/
 		if (copy_to_user(argp, &idle, sizeof(idle)))
 			break;
 		err = 0;
@@ -1178,16 +993,6 @@ ppp_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	return NETDEV_TX_OK;
 }
 
-/*Foxconn add start by Eric Huang 12/04/2012*/
-/*add get ppp interface status function*/
-static struct net_device_stats * ppp_dev_collect_stats(struct net_device *dev_p)
-{
-	struct ppp *ppp = netdev_priv(dev_p);
-
-	return &ppp->dev->stats;
-}
-/*Foxconn add end by Eric Huang 12/04/2012*/
-
 static int
 ppp_net_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 {
@@ -1234,10 +1039,6 @@ ppp_net_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 static const struct net_device_ops ppp_netdev_ops = {
 	.ndo_start_xmit = ppp_start_xmit,
 	.ndo_do_ioctl   = ppp_net_ioctl,
-	/*Foxconn add start by Eric Huang 12/04/2012*/
-	/*add get ppp interface status function*/
-	.ndo_get_stats  = ppp_dev_collect_stats,
-	/*Foxconn add end by Eric Huang 12/04/2012*/
 };
 
 static void ppp_setup(struct net_device *dev)
@@ -1365,15 +1166,7 @@ ppp_send_frame(struct ppp *ppp, struct sk_buff *skb)
 		skb_pull(skb, 2);
 #else
 		/* for data packets, record the time */
-		//ppp->last_xmit = jiffies;
-        /* foxconn wklin modified start, 01/18/2007 */
-		/* Foxconn modified start pling 08/26/2013 */
-		/* skb->sk seems can't use to identify whether packet is from IP stack
-		 * or not. Use skb->skb_iif instead (==0 means it come from "lo") */
-		//if (!skb->sk) /* record the time if not from IP stack */
-		if (skb->skb_iif )
-		/* Foxconn modified end pling 08/26/2013 */		    ppp->last_xmit = jiffies;
-        /* foxconn wklin modified end, 01/02/2007 */
+		ppp->last_xmit = jiffies;
 #endif /* CONFIG_PPP_FILTER */
 	}
 
@@ -1441,28 +1234,6 @@ ppp_send_frame(struct ppp *ppp, struct sk_buff *skb)
 	if (ppp->flags & SC_LOOP_TRAFFIC) {
 		if (ppp->file.rq.qlen > PPP_MAX_RQLEN)
 			goto drop;
-		/* Foxconn added start, Winster Chan, 01/02/2007 */
-		/* Foxconn modified start pling 08/26/2013 */
-		/* skb->sk seems can't use to identify whether packet is from IP stack
-		 * or not. Use skb->skb_iif instead (==0 means it come from "lo") */
-		//if (skb->sk) {
-		if (!skb->skb_iif ) { 
-		/* Foxconn modified end pling 08/26/2013 */				if (skb->data[0]==0x00 && skb->data[1]==0x21 &&
-					skb->data[11]==0x01 && skb->data[18]==0xFF)
-				{
-					printk("PPP: Received triggerring packet.\n");
-					/*foxconn added start, water, 04/16/10*/
-					/*add michael's patch, @3500L BTS-A201001425: 
-					Internet PPPoE/PPTP idle time is not precise 
-					at the first time.*/
-					ppp->last_xmit = jiffies;
-					/*foxconn added end, water, 04/16/10*/
-            	}
-		    	else
-        	    	goto drop;
-        }
-        printk("PPP: DoD triggered.\n");
-        /* Foxconn added end, Winster Chan, 01/02/2007 */
 		skb_queue_tail(&ppp->file.rq, skb);
 		wake_up_interruptible(&ppp->file.rwait);
 		return;
@@ -1500,27 +1271,10 @@ ppp_push(struct ppp *ppp)
 	}
 
 	if ((ppp->flags & SC_MULTILINK) == 0) {
-        /* foxconn wklin added start, 12/09/2010 */
-#define PPP_SHORTCUT
-#ifdef PPP_SHORTCUT
-        extern struct ppp_channel_ops async_ops;
-#endif
-        /* foxconn wklin added end, 12/09/2010 */
 		/* not doing multilink: send it down the first channel */
 		list = list->next;
 		pch = list_entry(list, struct channel, clist);
 
-        /* foxconn wklin added start, 12/09/2010 */
-#ifdef PPP_SHORTCUT
-        /* we bound two channels to ppp interface, make sure the we send to the
-         * short-cut chanel (!&async_ops).
-         */
-        if (pch->chan->ops == &async_ops && ppp->n_channels == 2) {
-            list = list->next;
-            pch = list_entry(list, struct channel, clist);
-        }
-#endif
-        /* foxconn wklin added end, 12/09/2010 */
 		spin_lock_bh(&pch->downl);
 		if (pch->chan) {
 			if (pch->chan->ops->start_xmit(pch->chan, skb))
@@ -1941,7 +1695,7 @@ ppp_receive_nonmp_frame(struct ppp *ppp, struct sk_buff *skb)
 			/* copy to a new sk_buff with more tailroom */
 			ns = dev_alloc_skb(skb->len + 128);
 			if (!ns) {
-				printk(KERN_ERR "PPP: no memory (VJ decomp)\n");
+				printk(KERN_ERR"PPP: no memory (VJ decomp)\n");
 				goto err;
 			}
 			skb_reserve(ns, 2);
@@ -2030,10 +1784,7 @@ ppp_receive_nonmp_frame(struct ppp *ppp, struct sk_buff *skb)
 			__skb_pull(skb, 2);
 		} else
 #endif /* CONFIG_PPP_FILTER */
-		//ppp->last_recv = jiffies;
-        /* Foxconn removed start, Winster Chan, 01/12/2007 */
-		; /* ppp->last_recv = jiffies; */
-        /* Foxconn removed end, Winster Chan, 01/12/2007 */
+			ppp->last_recv = jiffies;
 
 		if ((ppp->dev->flags & IFF_UP) == 0 ||
 		    ppp->npmode[npi] != NPMODE_PASS) {
@@ -2806,10 +2557,6 @@ ppp_get_stats(struct ppp *ppp, struct ppp_stats *st)
  * or if there is already a unit with the requested number.
  * unit == -1 means allocate a new number.
  */
-/*Foxconn modify start by Hank 08/10/2012 */
-/*change function definition*/
-extern char *nvram_get(const char *name); 
-/*Foxconn modify end by Hank 08/10/2012 */
 static struct ppp *
 ppp_create_interface(struct net *net, int unit, int *retp)
 {
@@ -2845,15 +2592,7 @@ ppp_create_interface(struct net *net, int unit, int *retp)
 	 * the net device is belong to
 	 */
 	dev_net_set(dev, net);
-    /* foxconn wklin added start, 11/06/2008 */
-    {
-#define nvram_safe_get(name) (nvram_get(name) ? : "")
-	char *value = nvram_safe_get("wan_proto");
-	if(!strcmp(value, "pppoe"))
-        dev->acos_flags |= NETIF_ACOSFLAGS_PPPOE;
-	if(!strcmp(value, "pptp"))
-        dev->acos_flags |= NETIF_ACOSFLAGS_PPTP;
-    }
+
 	ret = -EEXIST;
 	mutex_lock(&pn->all_ppp_mutex);
 
@@ -3066,6 +2805,9 @@ ppp_connect_channel(struct channel *pch, int unit)
 	list_add_tail(&pch->clist, &ppp->channels);
 	++ppp->n_channels;
 	pch->ppp = ppp;
+#if defined(CTF_PPTP) || defined(CTF_L2TP)
+	ppp->ctfpch = pch;
+#endif
 	atomic_inc(&ppp->file.refcnt);
 	ppp_unlock(ppp);
 	ret = 0;
@@ -3097,6 +2839,9 @@ ppp_disconnect_channel(struct channel *pch)
 		if (--ppp->n_channels == 0)
 			wake_up_interruptible(&ppp->file.rwait);
 		ppp_unlock(ppp);
+#if defined(CTF_PPTP) || defined(CTF_L2TP)
+		ppp->ctfpch = NULL;
+#endif
 		if (atomic_dec_and_test(&ppp->file.refcnt))
 			ppp_destroy_interface(ppp);
 		err = 0;
@@ -3191,11 +2936,13 @@ static void *unit_find(struct idr *p, int n)
 	return idr_find(p, n);
 }
 
-#ifdef CTF_PPPOE
+#if defined(CTF_PPPOE) || defined(CTF_PPTP) || defined(CTF_L2TP)
 void
 ppp_rxstats_upd(void *pppif, struct sk_buff *skb)
 {
+	if (pppif == NULL || skb == NULL) return;
 	struct ppp *ppp = netdev_priv((const struct net_device *)pppif);
+	if (ppp == NULL || ppp->dev == NULL) return;
 	++ppp->dev->stats.rx_packets;
 	ppp->dev->stats.rx_bytes += skb->len;
 	ppp->last_recv = jiffies;
@@ -3204,11 +2951,91 @@ ppp_rxstats_upd(void *pppif, struct sk_buff *skb)
 void
 ppp_txstats_upd(void *pppif, struct sk_buff *skb)
 {
+	if (pppif == NULL || skb == NULL) return;
 	struct ppp *ppp = netdev_priv((const struct net_device *)pppif);
+	if (ppp == NULL || ppp->dev == NULL) return;
 	++ppp->dev->stats.tx_packets;
 	ppp->dev->stats.tx_bytes += skb->len;
 	ppp->last_xmit = jiffies;
 }
+
+#if defined(CTF_PPTP) || defined(CTF_L2TP)
+int
+ppp_get_conn_pkt_info(void *pppif, struct ctf_ppp *ctfppp){
+	struct pppox_sock *po = NULL;
+	struct sock *sk = NULL;
+	struct ppp *ppp = NULL;
+	struct channel *pch = NULL;
+	struct ppp_net *pn;
+	const char *vars;
+
+	ppp = (struct ppp *)netdev_priv((const struct net_device *)pppif);
+	if(ppp) pch = ppp->ctfpch;
+
+	if (pch == NULL){
+		return (BCME_ERROR);
+	}
+
+	po = pppox_sk((struct sock *)pch->chan->private);
+
+	if (po == NULL){
+		return (BCME_ERROR);
+	}
+	ctfppp->psk.po = po;
+
+	sk = po->chan.private;
+	if (sk && sk == &po->sk){
+		ctfppp->psk.pppox_protocol = sk->sk_protocol;
+		switch (sk->sk_protocol){
+		case PX_PROTO_OE:
+			ctfppp->pppox_id = po->pppoe_pa.sid;
+			memcpy(ctfppp->psk.dhost.octet , po->pppoe_pa.remote, ETH_ALEN);
+
+#ifdef DEBUG
+		printk("%s: Adding pppoe connection:  session ID =%04x, Address=%02x:%02x:%02x:%02x:%02x:%02x\n",
+			__FUNCTION__,ntohs(ctfppp->pppox_id),
+				ctfppp->psk.dhost.octet[0], ctfppp->psk.dhost.octet[1],
+				ctfppp->psk.dhost.octet[2], ctfppp->psk.dhost.octet[3],
+				ctfppp->psk.dhost.octet[4], ctfppp->psk.dhost.octet[5]);
+#endif /*DEBUG*/
+			break;
+#ifdef CTF_PPTP
+		case PX_PROTO_PPTP:
+			ctfppp->pppox_id = 0xffff;
+#ifdef DEBUG
+
+		printk("%s: Adding pptp entry:  src call ID =%04x, src ip=%u.%u.%u.%u, dst call ID=%4x, dst ip=%u.%u.%u.%u\n ",
+			__FUNCTION__,po->proto.pptp.dst_addr.call_id,	NIPQUAD(po->proto.pptp.src_addr.sin_addr.s_addr),
+			po->proto.pptp.dst_addr.call_id,NIPQUAD(po->proto.pptp.dst_addr.sin_addr.s_addr));
+#endif
+			break;
+#endif /*CTF_PPTP*/
+#ifdef CTF_L2TP
+		case PX_PROTO_OL2TP:
+			ctfppp->pppox_id = 0xffff;
+#ifdef DEBUG
+		printk("%s: Adding l2tp entry:\n", __FUNCTION__);
+		printk("local tunnel ID =0x%04x,session ID =0x%04x, src ip=%u.%u.%u.%u\n",
+			po->proto.l2tp.ts.tunnel_id, po->proto.l2tp.ts.session_id,NIPQUAD(po->proto.l2tp.inet.saddr));
+		printk("peer  tunnel ID=0x%4x, session ID = 0x%04x, dst ip=%u.%u.%u.%u\n ",
+			po->proto.l2tp.ts.peer_tunnel_id, po->proto.l2tp.ts.peer_session_id,NIPQUAD(po->proto.l2tp.inet.daddr));
+		printk("header len =%d\n", po->proto.l2tp.ts.l2tph_len);
+
+#endif
+			break;
+#endif /* CTF_L2TP*/
+
+		default:
+			return (BCME_ERROR);
+		}
+	}
+	else{
+		return (BCME_ERROR);
+	}
+	return (BCME_OK);
+}
+EXPORT_SYMBOL(ppp_get_conn_pkt_info);
+#endif
 
 EXPORT_SYMBOL(ppp_rxstats_upd);
 EXPORT_SYMBOL(ppp_txstats_upd);

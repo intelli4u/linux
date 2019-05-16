@@ -25,10 +25,6 @@
 #include <asm/atomic.h>
 #include <asm/unaligned.h>
 #include "br_private.h"
-/* Foxconn added start pling 07/02/2007 */
-#define MAX_MAC_CNT     1024
-static int mac_cnt = 0; 
-/* Foxconn added end pling 07/02/2007 */
 #ifdef HNDCTF
 #include <linux/if.h>
 #include <linux/if_vlan.h>
@@ -40,10 +36,6 @@ static int mac_cnt = 0;
 #else
 #define BCMFASTPATH_HOST
 #endif	/* HNDCTF */
-
-#ifdef INCLUDE_ACCESSCONTROL
-int (*br_ctf_accesscntl_hook)(struct sk_buff *skb)=NULL;
-#endif
 
 #ifdef HNDCTF
 static void
@@ -77,7 +69,6 @@ br_brc_init(ctf_brc_t *brc, unsigned char *ea, struct net_device *rxdev, unsigne
 
 	return;
 }
-extern int (*br_insert_multissid_hook)(struct sk_buff *skb, struct net_bridge_port *dst);
 
 /*
  * Add bridge cache entry.
@@ -85,7 +76,7 @@ extern int (*br_insert_multissid_hook)(struct sk_buff *skb, struct net_bridge_po
 void
 br_brc_add(unsigned char *ea, struct net_device *rxdev, struct sk_buff *skb)
 {
-	ctf_brc_t brc_entry;
+	ctf_brc_t brc_entry, *brcp;
 	struct ethhdr *eth;
 	struct arphdr *arp;
 	unsigned char *arp_ptr = NULL;
@@ -119,17 +110,16 @@ br_brc_add(unsigned char *ea, struct net_device *rxdev, struct sk_buff *skb)
 #endif
 
 	/* Add the bridge cache entry */
-
-
-  if(!SKBCB_NO_CTF(skb) && ( strcmp(skb->dev->name,"wl0.1") && strcmp(skb->dev->name,"wl1.1") && br_insert_multissid_hook))
-//  if(!SKBCB_NO_CTF(skb))
-  {
-//    if(!((strcmp(skb->dev->name,"wl0.1")==0) || ((strcmp(skb->dev->name,"wl1.1")==0)) && br_insert_multissid_hook))
-	    ctf_brc_add(kcih, &brc_entry);
-  }
+	if ((brcp = ctf_brc_lkup(kcih, ea)) == NULL)
+		ctf_brc_add(kcih, &brc_entry);
+	else {
+		ctf_brc_release(kcih, brcp);
+		ctf_brc_update(kcih, &brc_entry);
+	}
 
 	return;
 }
+
 #endif /* HNDCTF */
 
 static struct kmem_cache *br_fdb_cache __read_mostly;
@@ -184,8 +174,6 @@ static void fdb_rcu_free(struct rcu_head *head)
 	struct net_bridge_fdb_entry *ent
 		= container_of(head, struct net_bridge_fdb_entry, rcu);
 	kmem_cache_free(br_fdb_cache, ent);
-	if (mac_cnt>0)
-		mac_cnt--; /* foxconn added pling 08/12/2014 */
 }
 
 static inline void fdb_delete(struct net_bridge_fdb_entry *f)
@@ -262,38 +250,34 @@ void br_fdb_cleanup(unsigned long _data)
 #ifdef HNDCTF
 				ctf_brc_t *brcp;
 
-//				ctf_brc_acquire(kcih);
-
 				/* Before expiring the fdb entry check the brc
 				 * live counter to make sure there are no frames
 				 * on this connection for timeout period.
 				 */
-				brcp = ctf_brc_lkup(kcih, f->addr.addr, FALSE);
+				brcp = ctf_brc_lkup(kcih, f->addr.addr);
 				if (brcp != NULL) {
 					uint32 arpip = 0;
 
 					if (brcp->live > 0) {
 						brcp->live = 0;
 						brcp->hitting = 0;
-//						ctf_brc_release(kcih);
+						ctf_brc_release(kcih, brcp);
 						f->ageing_timer = jiffies;
 						continue;
 					} else if (brcp->hitting > 0) {
 						/* When bridge deletes a CTF hitting cache entry,
-						 * we use DHCP "probes" (ARP Request) to trigger
+						/* we use DHCP "probes" (ARP Request) to trigger
 						 * the CTF fast path restoration.
 						 */
 						brcp->hitting = 0;
 						if (brcp->ip != 0)
 							arpip = brcp->ip;
 					}
-//					ctf_brc_release(kcih);
+					ctf_brc_release(kcih, brcp);
 					if (arpip != 0)
 						arp_send(ARPOP_REQUEST, ETH_P_ARP,
 							arpip, br->dev, 0, NULL,
 							NULL, NULL);
-				} else {
-//					ctf_brc_release(kcih);
 				}
 #endif /* HNDCTF */
 				fdb_delete(f);
@@ -484,15 +468,8 @@ static struct net_bridge_fdb_entry *fdb_create(struct hlist_head *head,
 {
 	struct net_bridge_fdb_entry *fdb;
 
-    /* foxconn wklin added start, 06/18/2008 */
-    if (mac_cnt > MAX_MAC_CNT) {
-		//printk(KERN_EMERG "%s: Max MAC count exceed! mac_cnt=%d\n", __FUNCTION__, mac_cnt);
-        return 0;
-	}
-    /* foxconn wklin added end, 06/18/2008 */
 	fdb = kmem_cache_alloc(br_fdb_cache, GFP_ATOMIC);
 	if (fdb) {
-        mac_cnt++; /* foxconn wklin added , 06/18/2008 */
 		memcpy(fdb->addr.addr, addr, ETH_ALEN);
 		hlist_add_head_rcu(&fdb->hlist, head);
 
@@ -577,14 +554,15 @@ void BCMFASTPATH_HOST br_fdb_update(struct net_bridge *br, struct net_bridge_por
 	if (likely(fdb)) {
 		/* attempt to update an entry for a local interface */
 		if (unlikely(fdb->is_local)) {
-//			if (net_ratelimit())
-//				br_warn(br, "received packet on %s with "
-//					"own address as source address\n",
-//					source->dev->name);
+			if (net_ratelimit())
+				br_debug(br, "received packet on %s with "
+					"own address as source address\n",
+					source->dev->name);
 		} else {
 			/* fastpath: update of existing entry */
 #ifdef HNDCTF
-			/* Update the brc entry incase the host moved from
+			/* Add the entry if the addr is new, or
+			 * update the brc entry incase the host moved from
 			 * one bridge to another or to a different port under
 			 * the same bridge.
 			 */
@@ -609,21 +587,3 @@ void BCMFASTPATH_HOST br_fdb_update(struct net_bridge *br, struct net_bridge_por
 		spin_unlock(&br->hash_lock);
 	}
 }
-
-
-#ifdef INCLUDE_ACCESSCONTROL
-
-void insert_acs_func_to_br_ctf(void *FUNC)
-{
-   br_ctf_accesscntl_hook= FUNC;
-}
-
-void remove_acs_func_from_br_ctf(void)
-{
-   br_ctf_accesscntl_hook= NULL;
-}
-
-EXPORT_SYMBOL(insert_acs_func_to_br_ctf);
-EXPORT_SYMBOL(remove_acs_func_from_br_ctf);
-
-#endif

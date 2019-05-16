@@ -1,7 +1,7 @@
 #
 # Makefile for the Broadcom wl driver
 #
-# Copyright (C) 2012, Broadcom Corporation. All Rights Reserved.
+# Copyright (C) 2013, Broadcom Corporation. All Rights Reserved.
 # 
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -19,7 +19,7 @@
 #
 
 ifneq ($(ROOTDIR),)
-SRCBASE_OFFSET := $(BCM_REL_DIR)../../../$(SRCBASE)
+SRCBASE_OFFSET := $(BCM_REL_DIR)../../../$(if $(MERLIN),$(ROUTER),$(SRCBASE))
 else
 SRCBASE_OFFSET := ../../../../../../../src
 endif

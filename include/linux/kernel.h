@@ -272,6 +272,10 @@ extern bool printk_timed_ratelimit(unsigned long *caller_jiffies,
 				   unsigned int interval_msec);
 
 extern int printk_delay_msec;
+#ifdef CONFIG_DUMP_PREV_OOPS_MSG 
+extern void enable_oopsbuf(int onoff);
+extern int prepare_and_dump_previous_oops(void);
+#endif
 
 /*
  * Print a one-time message (analogous to WARN_ONCE() et al):
@@ -781,18 +785,5 @@ struct sysinfo {
 #ifdef CONFIG_FTRACE_MCOUNT_RECORD
 # define REBUILD_DUE_TO_FTRACE_MCOUNT_RECORD
 #endif
-/*Foxconn modify start by Hank 08/10/2012 */
-/*add function for ipv6 addr translation*/
-#define NIP6(addr) \
-	ntohs((addr).s6_addr16[0]), \
-	ntohs((addr).s6_addr16[1]), \
-	ntohs((addr).s6_addr16[2]), \
-	ntohs((addr).s6_addr16[3]), \
-	ntohs((addr).s6_addr16[4]), \
-	ntohs((addr).s6_addr16[5]), \
-	ntohs((addr).s6_addr16[6]), \
-	ntohs((addr).s6_addr16[7])
 
-#define NIP6_SEQFMT "%04x%04x%04x%04x%04x%04x%04x%04x"
-/*Foxconn modify end by Hank 08/10/2012 */
 #endif

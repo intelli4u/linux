@@ -2,9 +2,6 @@
 #define __LINUX_MROUTE_H
 
 #include <linux/sockios.h>
-/*Foxconn modify start by Hank 08/10/2012 */
-#include <linux/in.h>
-/*Foxconn modify end by Hank 08/10/2012 */
 #include <linux/types.h>
 #ifdef __KERNEL__
 #include <linux/in.h>

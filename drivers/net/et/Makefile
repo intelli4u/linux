@@ -1,7 +1,7 @@
 #
 # Makefile for the Broadcom et driver
 #
-# Copyright (C) 2015, Broadcom Corporation. All Rights Reserved.
+# Copyright (C) 2013, Broadcom Corporation. All Rights Reserved.
 # 
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -41,6 +41,10 @@ et-objs		+= $(ETSRCDIR)/sys/etc_fa.o
 EXTRA_CFLAGS	+= -DETFA
 endif
 
+ifeq ($(CONFIG_RGMII_BCM_FA),y)
+EXTRA_CFLAGS	+= -DRGMII_BCM_FA
+endif
+
 obj-$(CONFIG_ET) := et.o
 
 EXTRA_CFLAGS	+= -DDMA -Werror
@@ -53,8 +57,9 @@ endif
 endif	# /* CONFIG_ET_ALL_PASSIVE_ON */
 
 # Search for sources under src/et/sys or objects under src/et/linux
-ifneq ($(wildcard $(ROOTDIR)$(SRCBASE)/et/sys),)
-EXTRA_CFLAGS	+= -I$(ROOTDIR)$(SRCBASE)/et/sys -I$(ROOTDIR)$(SRCBASE)/et/include
+srcbase_et := $(ROOTDIR)$(if $(MERLIN),$(SRCBASE_A),$(SRCBASE))/et
+ifneq ($(wildcard $(srcbase_et)/include),)
+EXTRA_CFLAGS	+= $(addprefix -I$(srcbase_et)/,sys include)
 else
 et-objs := $(ETSRCDIR)/linux/et.o
 endif

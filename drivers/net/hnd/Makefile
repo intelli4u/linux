@@ -1,7 +1,7 @@
 #
 # Makefile for Broadcom Home Networking Division (HND) shared driver code
 #
-# Copyright (C) 2015, Broadcom Corporation. All Rights Reserved.
+# Copyright (C) 2013, Broadcom Corporation. All Rights Reserved.
 # 
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -68,14 +68,6 @@ hnd-objs += $(RELATED)$(SHARED)/bcmrobo.o
 endif
 endif
 
-HND_OBJS += $(src)/$(RELATED)$(SHARED)/pcie_core.o
-hnd-objs += $(RELATED)$(SHARED)/pcie_core.o
-
-ifeq ($(CONFIG_BCM_GMAC3),y)
-HND_OBJS += $(src)/$(RELATED)$(SHARED)/hndfwd.o
-hnd-objs += $(RELATED)$(SHARED)/hndfwd.o
-endif
-
 ifdef CONFIG_USB_RNDIS
 EXTRA_CFLAGS += -DCONFIG_USBRNDIS_RETAIL
 endif                                  
@@ -96,10 +88,6 @@ endif
 
 ifeq ($(wildcard $(src)/$(RELATED)$(SHARED)/hnddma.c),)
 hnd-objs += $(RELATED)$(SHARED)/hnddma.o
-endif
-
-ifeq ($(wildcard $(src)/$(RELATED)$(SHARED)/hndfwd.c),)
-hnd-objs += $(RELATED)$(SHARED)/hndfwd.o
 endif
 
 ifeq ($(wildcard $(src)/$(RELATED)$(SHARED)/linux_osl.c),)
@@ -128,10 +116,6 @@ endif
 
 ifeq ($(wildcard $(src)/$(RELATED)$(SHARED)/nicpci.c),)
 hnd-objs += $(RELATED)$(SHARED)/nicpci.o
-endif
-
-ifeq ($(wildcard $(src)/$(RELATED)$(SHARED)/pcie_core.c),)
-hnd-objs += $(RELATED)$(SHARED)/pcie_core.o
 endif
 
 $(src)/shared_ksyms.c: $(src)/shared_ksyms.sh $(HND_OBJS)

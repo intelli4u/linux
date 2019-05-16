@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  * VLAN		An implementation of 802.1Q VLAN tagging.
  *
@@ -366,5 +367,12 @@ struct vlan_ioctl_args {
 
 	short vlan_qos;   
 };
+
+#ifdef HNDCTF
+extern void vlan_rxstats_upd(struct net_device *vldev,
+	struct sk_buff *skb, int packets, int bytes);
+extern void vlan_txstats_upd(struct net_device *vldev,
+	struct sk_buff *skb, int packets, int bytes);
+#endif /* HNDCTF */
 
 #endif /* !(_LINUX_IF_VLAN_H_) */
