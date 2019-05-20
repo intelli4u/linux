@@ -1,3 +1,4 @@
+
 ifneq ($(ROOTDIR),)
 RELATED = $(BCM_REL_DIR)../../../
 else
@@ -12,7 +13,6 @@ endif
 obj-$(CONFIG_PLAT_MPCORE) += plat-head.o
 obj-$(CONFIG_PLAT_MPCORE) += mpcore_core.o
 obj-$(CONFIG_PLAT_MPCORE) += mpcore_gtimer.o
-obj-$(CONFIG_PLAT_MPCORE) += wps_led.o
 obj-$(CONFIG_PLAT_MPCORE) += mpcore_cache.o
 obj-$(CONFIG_PLAT_MPCORE) += clock.o
 obj-$(CONFIG_PLAT_MPCORE) += platsmp.o 
@@ -32,7 +32,6 @@ obj-$(CONFIG_PLAT_BCM5301X) += $(addprefix $(RELATED)$(SHARED)/, spiflash.o)
 obj-$(CONFIG_PLAT_BCM5301X) += $(addprefix $(RELATED)$(SHARED)/, nandcore.o)
 obj-$(CONFIG_PLAT_BCM5301X) += $(addprefix $(RELATED)$(SHARED)/, hndnand.o)
 obj-$(CONFIG_PLAT_BCM5301X) += $(addprefix $(RELATED)$(SHARED)/, linux_gpio.o)
-obj-$(CONFIG_PLAT_BCM5301X) += $(addprefix $(RELATED)$(SHARED)/, bcmwifi.o)
 obj-$(CONFIG_CACHE_L310) += cache-l310.o
 ifeq ($(CONFIG_GENERIC_GPIO),y)
 obj-$(CONFIG_GENERIC_GPIO) += gen_gpio.o

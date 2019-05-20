@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /*
  * Copyright (C) 1995-2003 Russell King
  *               2001-2002 Keith Owens

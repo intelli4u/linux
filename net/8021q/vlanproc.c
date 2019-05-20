@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 /******************************************************************************
  * vlanproc.c	VLAN Module. /proc filesystem interface.
  *

@@ -45,7 +45,7 @@
 static int fsync_buffers_list(spinlock_t *lock, struct list_head *list);
 
 #define BH_ENTRY(list) list_entry((list), struct buffer_head, b_assoc_buffers)
-int find_get_block_slow_fail=0;
+
 inline void
 init_buffer(struct buffer_head *bh, bh_end_io_t *handler, void *private)
 {
@@ -220,8 +220,6 @@ __find_get_block_slow(struct block_device *bdev, sector_t block)
 	 * elsewhere, don't buffer_error if we had some unmapped buffers
 	 */
 	if (all_mapped) {
-    if(printk_ratelimit())
-    {
 		printk("__find_get_block_slow() failed. "
 			"block=%llu, b_blocknr=%llu\n",
 			(unsigned long long)block,
@@ -229,14 +227,6 @@ __find_get_block_slow(struct block_device *bdev, sector_t block)
 		printk("b_state=0x%08lx, b_size=%zu\n",
 			bh->b_state, bh->b_size);
 		printk("device blocksize: %d\n", 1 << bd_inode->i_blkbits);
-    	head = page_buffers(page);
-    	bh = head;
-    	do {
-                printk("block_nr=%d state=%08x size=%d\n",bh->b_blocknr,bh->b_state,bh->b_size);
-		    bh = bh->b_this_page;
-	    } while (bh != head);
-	  }
-	  find_get_block_slow_fail=1;
 	}
 out_unlock:
 	spin_unlock(&bd_mapping->private_lock);
@@ -922,7 +912,6 @@ init_page_buffers(struct page *page, struct block_device *bdev,
 	} while (bh != head);
 }
 
-int repeat_count=0;
 /*
  * Create the page-cache page that contains the requested block.
  *
@@ -943,22 +932,14 @@ grow_dev_page(struct block_device *bdev, sector_t block,
 
 	BUG_ON(!PageLocked(page));
 
-	if (page_has_buffers(page)) 
-	{
+	if (page_has_buffers(page)) {
 		bh = page_buffers(page);
-                if(repeat_count==9)
-                {
-		    try_to_free_buffers(page);
-                }
-                else
-                {
-    		    if (bh->b_size == size) {
-		    	    init_page_buffers(page, bdev, block, size);
-			    return page;
-		    }
-		    if (!try_to_free_buffers(page))
-		    	    goto failed;
-                }
+		if (bh->b_size == size) {
+			init_page_buffers(page, bdev, block, size);
+			return page;
+		}
+		if (!try_to_free_buffers(page))
+			goto failed;
 	}
 
 	/*
@@ -1027,12 +1008,9 @@ grow_buffers(struct block_device *bdev, sector_t block, int size)
 	return 1;
 }
 
-int get_block_failed=0;
-
 static struct buffer_head *
 __getblk_slow(struct block_device *bdev, sector_t block, int size)
 {
-        repeat_count=0;
 	/* Size must be multiple of hard sectorsize */
 	if (unlikely(size & (bdev_logical_block_size(bdev)-1) ||
 			(size < 512 || size > PAGE_SIZE))) {
@@ -1046,19 +1024,12 @@ __getblk_slow(struct block_device *bdev, sector_t block, int size)
 	}
 
 	for (;;) {
-		struct buffer_head * bh=NULL;
+		struct buffer_head * bh;
 		int ret;
-                repeat_count++;
 
 		bh = __find_get_block(bdev, block, size);
 		if (bh)
 			return bh;
-
-                if(repeat_count>=10)
-                {
-                    repeat_count=0;
-                    return bh;
-                }
 
 		ret = grow_buffers(bdev, block, size);
 		if (ret < 0)
@@ -1263,7 +1234,6 @@ static void bh_lru_install(struct buffer_head *bh)
 		__brelse(evictee);
 }
 
-extern int drop_caches();
 /*
  * Look up the bh in this cpu's LRU.  If it's there, move it to the head.
  */
@@ -1315,11 +1285,6 @@ __find_get_block(struct block_device *bdev, sector_t block, unsigned size)
 	}
 	if (bh)
 		touch_buffer(bh);
-        if(find_get_block_slow_fail)
-        {
-            find_get_block_slow_fail=0;
-//            drop_caches();
-        }
 	return bh;
 }
 EXPORT_SYMBOL(__find_get_block);
@@ -3057,7 +3022,7 @@ int try_to_free_buffers(struct page *page)
 	int ret = 0;
 
 	BUG_ON(!PageLocked(page));
-	if (PageWriteback(page) && (repeat_count!=9))
+	if (PageWriteback(page))
 		return 0;
 
 	if (mapping == NULL) {		/* can this still happen? */

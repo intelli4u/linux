@@ -26,6 +26,7 @@ obj-$(CONFIG_NF_NAT_AMANDA) += nf_nat_amanda.o
 obj-$(CONFIG_NF_NAT_FTP) += nf_nat_ftp.o
 obj-$(CONFIG_NF_NAT_H323) += nf_nat_h323.o
 obj-$(CONFIG_NF_NAT_IRC) += nf_nat_irc.o
+obj-$(CONFIG_NF_NAT_RTSP) += nf_nat_rtsp.o
 obj-$(CONFIG_NF_NAT_PPTP) += nf_nat_pptp.o
 obj-$(CONFIG_NF_NAT_SIP) += nf_nat_sip.o
 obj-$(CONFIG_NF_NAT_SNMP_BASIC) += nf_nat_snmp_basic.o
@@ -49,19 +50,29 @@ obj-$(CONFIG_IP_NF_SECURITY) += iptable_security.o
 
 # matches
 obj-$(CONFIG_IP_NF_MATCH_ADDRTYPE) += ipt_addrtype.o
+obj-$(CONFIG_IP_NF_MATCH_IPP2P) += ipt_ipp2p.o
+obj-$(CONFIG_IP_NF_MATCH_TOS) += ipt_tos.o
+obj-$(CONFIG_IP_NF_MATCH_TIME) += ipt_time.o
 obj-$(CONFIG_IP_NF_MATCH_AH) += ipt_ah.o
 obj-$(CONFIG_IP_NF_MATCH_ECN) += ipt_ecn.o
+obj-$(CONFIG_IP_NF_MATCH_WEB) += ipt_web.o
+obj-$(CONFIG_IP_NF_MATCH_U32) += ipt_u32.o
+obj-$(CONFIG_IP_NF_MATCH_WEBMON) += ipt_webmon.o
 
 # targets
 obj-$(CONFIG_IP_NF_TARGET_CLUSTERIP) += ipt_CLUSTERIP.o
+obj-$(CONFIG_IP_NF_TARGET_TOS) += ipt_TOS.o
 obj-$(CONFIG_IP_NF_TARGET_ECN) += ipt_ECN.o
 obj-$(CONFIG_IP_NF_TARGET_LOG) += ipt_LOG.o
 obj-$(CONFIG_IP_NF_TARGET_MASQUERADE) += ipt_MASQUERADE.o
 obj-$(CONFIG_IP_NF_TARGET_NETMAP) += ipt_NETMAP.o
 obj-$(CONFIG_IP_NF_TARGET_REDIRECT) += ipt_REDIRECT.o
+obj-$(CONFIG_IP_NF_TARGET_ROUTE) += ipt_ROUTE.o
 obj-$(CONFIG_IP_NF_TARGET_REJECT) += ipt_REJECT.o
+obj-$(CONFIG_IP_NF_TARGET_TRIGGER) += ipt_TRIGGER.o
 obj-$(CONFIG_IP_NF_TARGET_ULOG) += ipt_ULOG.o
 obj-$(CONFIG_IP_NF_TARGET_CONE) += ipt_cone.o
+
 # generic ARP tables
 obj-$(CONFIG_IP_NF_ARPTABLES) += arp_tables.o
 obj-$(CONFIG_IP_NF_ARP_MANGLE) += arpt_mangle.o
@@ -70,3 +81,13 @@ obj-$(CONFIG_IP_NF_ARP_MANGLE) += arpt_mangle.o
 obj-$(CONFIG_IP_NF_ARPFILTER) += arptable_filter.o
 
 obj-$(CONFIG_IP_NF_QUEUE) += ip_queue.o
+
+obj-$(CONFIG_IP_NF_TOMATOCT) += tomato_ct.o
+
+obj-$(CONFIG_IP_NF_LFP) += lfp.o
+obj-$(CONFIG_IP_NF_DNSMQ) += dnsmq.o
+
+
+# account
+obj-$(CONFIG_IP_NF_MATCH_RECENT) += ipt_recent.o
+obj-$(CONFIG_IP_NF_MATCH_ACCOUNT) += ipt_account.o

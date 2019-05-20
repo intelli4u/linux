@@ -1,7 +1,7 @@
 #
 # Makefile for the Broadcom wl driver
 #
-# Copyright (C) 2015, Broadcom Corporation. All Rights Reserved.
+# Copyright (C) 2014, Broadcom Corporation. All Rights Reserved.
 # 
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -20,14 +20,14 @@
 TARGET := dhd
 obj-$(CONFIG_DHDAP) := $(TARGET).o
 
-ifndef SRCBASE_DHD
-    SRCBASE_DHD := dhd/src
+ifeq ($(DHDAP_USE_SEPARATE_CHECKOUTS),1)
+SRCBASE_DHD    := dhd/src
+SRCBASE_OFFSET := $(BCM_REL_DIR)../../../$(ROUTER)/$(SRCBASE_DHD)
+DHDMAKEFILE    := $(BCM_REL_DIR)../../../$(SRC_BASE)/$(SRCBASE_DHD)/dhd/config/dhd_router.mk
 else
-    SRCBASE_DHD := $(subst $(dir $(patsubst %/,%,$(dir $(SRCBASE_DHD)))),,$(SRCBASE_DHD))
+SRCBASE_OFFSET := $(BCM_REL_DIR)../../../$(ROUTER)
+DHDMAKEFILE    := $(SRCBASE)/dhd/config/dhd_router.mk
 endif
-
-SRCBASE_OFFSET := ../../../../../../../../$(SRCBASE_DHD)
-DHDMAKEFILE    := $(SRCBASE)/../../$(SRCBASE_DHD)/dhd/config/dhd_router.mk
 
 REBUILD_DHD_MODULE=$(shell if [ -d "$(SRCBASE)/../../$(SRCBASE_DHD)/dhd/sys" ]; then echo 1; else echo 0; fi)
 
@@ -41,14 +41,16 @@ ifeq ($(REBUILD_DHD_MODULE),1)
     # Include master configuration from dhd makefile
     include $(DHDMAKEFILE)
 
-    # Fix the include paths for DHD. DHD gets built from a
-    # different source tree.
-    KBUILD_CFLAGS_REMOVE := -I$(SRCBASE)/include
-    KBUILD_CFLAGS_REMOVE += -I$(SRCBASE)/common/include
-    KBUILD_CFLAGS_REMOVE += $(WLAN_ComponentIncPath)
-    KBUILD_CFLAGS_REMOVE += $(WLAN_StdIncPathA)
+    ifeq ($(DHDAP_USE_SEPARATE_CHECKOUTS),1)
+        # Fix the include paths for DHD. DHD gets built from a
+        # different source tree.
+        KBUILD_CFLAGS_REMOVE := -I$(SRCBASE)/include
+        KBUILD_CFLAGS_REMOVE += -I$(SRCBASE)/common/include
+        KBUILD_CFLAGS_REMOVE += $(WLAN_ComponentIncPath)
+        KBUILD_CFLAGS_REMOVE += $(WLAN_StdIncPathA)
 
-    KBUILD_CFLAGS   := $(filter-out $(KBUILD_CFLAGS_REMOVE), $(KBUILD_CFLAGS))
+        KBUILD_CFLAGS   := $(filter-out $(KBUILD_CFLAGS_REMOVE), $(KBUILD_CFLAGS))
+    endif
 
     # dhd-objs is for linking to dhd.o
     $(TARGET)-objs := $(DHD_OBJS)
@@ -56,7 +58,9 @@ ifeq ($(REBUILD_DHD_MODULE),1)
 else # Use prebuilt modules
 
     prebuilt := dhd.o
-    $(TARGET)-objs := $(SRCBASE_OFFSET)/dhd/linux/$(prebuilt)
+    $(TARGET)-objs := $(firstword $(wildcard \
+        $(SRCBASE_OFFSET)/wl_arm_7/prebuilt/$(prebuilt) \
+        $(SRCBASE_OFFSET)/dhd/linux/$(prebuilt)))
     obj-$(CONFIG_DHDAP) := $(TARGET).o
 
 endif

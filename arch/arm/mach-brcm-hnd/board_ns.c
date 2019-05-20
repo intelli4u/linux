@@ -267,16 +267,7 @@ static int __init rootfs_mtdblock(void)
 		else
 			return 3;
 #else
-		/*Foxconn modify by Hank 10/24/2012*/
-		/*change linux partition when using nandflash boot up*/
-
-#if defined(R6200v2)    
-        return 3; 
-#elif defined(R7000)
-		return 3; 
-#else
-		return 15; 
-#endif
+		return 3;
 #endif
 	}
 

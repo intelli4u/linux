@@ -1,7 +1,7 @@
 #
 # Makefile for the Broadcom et driver
 #
-# Copyright (C) 2015, Broadcom Corporation. All Rights Reserved.
+# Copyright (C) 2013, Broadcom Corporation. All Rights Reserved.
 # 
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -41,6 +41,10 @@ et-objs		+= $(ETSRCDIR)/sys/etc_fa.o
 EXTRA_CFLAGS	+= -DETFA
 endif
 
+ifeq ($(CONFIG_RGMII_BCM_FA),y)
+EXTRA_CFLAGS	+= -DRGMII_BCM_FA
+endif
+
 obj-$(CONFIG_ET) := et.o
 
 EXTRA_CFLAGS	+= -DDMA -Werror
@@ -63,7 +67,7 @@ ifneq ($(KERNELRELEASE),)
 # kbuild part of makefile
 else
 # Normal makefile
-KERNELDIR := $(BASEDIR)/components/opensource/linux/linux-2.6.36
+KERNELDIR := $(LINUX_DIR)
 all:
 	$(MAKE) -C $(KERNELDIR) M=`pwd`
 

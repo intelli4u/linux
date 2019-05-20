@@ -454,6 +454,12 @@ static void plx_pcie_switch_init(struct pci_bus *bus, unsigned int devfn)
 		BUG_ON(((port->owin_res->start + SZ_32M) >> 16) & 0xf);
 		soc_pci_write_config(bus, devfn, PCI_MEMORY_LIMIT, 2,
 			(port->owin_res->start + SZ_32M) >> 16);
+
+		/* Set 0dB de-emphasis on PEX8603 UpPort to improve TX signal */
+		printk("PCIE: Setting PEX8603 UpPort to 0dB de-emphasis.\n");
+		soc_pci_read_config(bus, devfn, 0xb80, 4, &dRead);
+		dRead |= (1 << 20);
+		soc_pci_write_config(bus, devfn, 0xb80, 4, dRead);
 	} else if (bus->number == (bus_inc + 2)) {
 		/* TODO: I need to fix these hard coded addresses. */
 		if (devfn == 0x8) {

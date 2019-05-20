@@ -1113,8 +1113,7 @@ static void rcu_do_batch(struct rcu_state *rsp, struct rcu_data *rdp)
 		next = list->next;
 		prefetch(next);
 		debug_rcu_head_unqueue(list);
-		if(list->func)
-    		    list->func(list);
+		list->func(list);
 		list = next;
 		if (++count >= rdp->blimit)
 			break;

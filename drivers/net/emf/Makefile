@@ -1,7 +1,7 @@
 #
 # Makefile for the Broadcom EMF Layer
 #
-# Copyright (C) 2015, Broadcom Corporation. All Rights Reserved.
+# Copyright (C) 2014, Broadcom Corporation. All Rights Reserved.
 # 
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -19,7 +19,7 @@
 #
 
 ifneq ($(ROOTDIR),)
-EMFDIR := $(BCM_REL_DIR)../../../$(ROUTER)/emf
+EMFDIR := $(BCM_REL_DIR)../../../$(ROUTER)/emf${BCMEX}$(EX7)
 EMFSRCDIR := $(EMFDIR)/emf
 EMFCSRCDIR := $(EMFDIR)/emf
 else
@@ -36,7 +36,7 @@ endif # CONFIG_BUZZZ_FUNC
 
 # Search for sources under src/router/emf/emf
 ifneq ($(wildcard $(src)/$(EMFSRCDIR)),)
-	EXTRA_CFLAGS += -I$(ROOTDIR)$(SRCBASE)/router/emf/emf -I$(ROOTDIR)$(SRCBASE)/router/emf/igs
+	EXTRA_CFLAGS += -I$(ROOTDIR)$(SRCBASE)/router/emf${BCMEX}$(EX7)/emf -I$(ROOTDIR)$(SRCBASE)/router/emf${BCMEX}$(EX7)/igs
 	EXTRA_CFLAGS += -I$(ROOTDIR)$(SRCBASE)/include/emf/emf -I$(ROOTDIR)$(SRCBASE)/include/emf/igs
 	emf-objs := $(EMF_OBJS)
 else
@@ -49,7 +49,7 @@ ifneq ($(KERNELRELEASE),)
 # kbuild part of makefile
 else
 # Normal makefile
-KERNELDIR := $(BASEDIR)/components/opensource/linux/linux-2.6.36
+KERNELDIR := $(LINUX_DIR)
 all:
 	$(MAKE) -C $(KERNELDIR) M=`pwd`
 clean:

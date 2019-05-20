@@ -2,7 +2,7 @@
  * Nortstar NAND controller driver
  * for Linux NAND library and MTD interface
  *
- *  Copyright (C) 2015, Broadcom Corporation. All Rights Reserved.
+ *  Copyright (C) 2014, Broadcom Corporation. All Rights Reserved.
  *  
  *  Permission to use, copy, modify, and/or distribute this software for any
  *  purpose with or without fee is hereby granted, provided that the above
@@ -791,7 +791,7 @@ init_brcmnand_mtd_partitions(struct mtd_info *mtd, size_t size)
 	brcmnand_parts[0].offset = offset;
 	brcmnand_parts[0].size = size - offset - 0x500000;
 	
-        brcmnand_parts[1].offset = size-0x500000;
+	brcmnand_parts[1].offset = size-0x500000;
 	brcmnand_parts[1].size = 0x500000;
 
 	return brcmnand_parts;

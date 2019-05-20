@@ -10,6 +10,8 @@ menu "Broadcom HND network devices"
 	depends on PCI
 config HND
 	bool "Broadcom HND network device support"
+config RTAC3200
+	bool "RT-AC3200 support"
 config ET
 	tristate "10/100 Ethernet support"
 	depends on HND
@@ -116,4 +118,7 @@ config DPSTA
 config EMF
 	tristate "Efficient Multicast Forwarding & IGMP Snooping Layers"
 	depends on NETFILTER
+config PLC
+	bool "Broadcom PLC network failover support"
+	depends on ET && WL
 endmenu

@@ -14,7 +14,9 @@
 
 #include <linux/typecheck.h>
 
+#ifndef BCMDBG
 #undef CONFIG_TRACE_IRQFLAGS
+#endif
 
 #ifdef CONFIG_TRACE_IRQFLAGS
   extern void trace_softirqs_on(unsigned long ip);

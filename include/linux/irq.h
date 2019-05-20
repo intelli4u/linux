@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 #ifndef _LINUX_IRQ_H
 #define _LINUX_IRQ_H
 

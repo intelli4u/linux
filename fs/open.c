@@ -156,15 +156,9 @@ static long do_sys_ftruncate(unsigned int fd, loff_t length, int small)
 		goto out_putf;
 
 	error = -EINVAL;
-
-    /* Foxconn modified start pling 12/04/2009 */
-    /* Remove large file limitation */
-#if (!defined SAMBA_ENABLE)
 	/* Cannot ftruncate over 2^31 bytes without large file support */
 	if (small && length > MAX_NON_LFS)
 		goto out_putf;
-#endif
-    /* Foxconn modified end pling 12/04/2009 */
 
 	error = -EPERM;
 	if (IS_APPEND(inode))
@@ -1028,13 +1022,8 @@ SYSCALL_DEFINE0(vhangup)
  */
 int generic_file_open(struct inode * inode, struct file * filp)
 {
-    /* Foxconn modifed start pling 06/12/2009 */
-    /* remove "big file" limitation */
-#if (!defined SAMBA_ENABLE)
 	if (!(filp->f_flags & O_LARGEFILE) && i_size_read(inode) > MAX_NON_LFS)
 		return -EOVERFLOW;
-#endif
-    /* Foxconn modifed end pling 06/12/2009 */
 	return 0;
 }
 

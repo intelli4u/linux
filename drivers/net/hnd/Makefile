@@ -1,7 +1,7 @@
 #
 # Makefile for Broadcom Home Networking Division (HND) shared driver code
 #
-# Copyright (C) 2015, Broadcom Corporation. All Rights Reserved.
+# Copyright (C) 2014, Broadcom Corporation. All Rights Reserved.
 # 
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -44,6 +44,7 @@ endif
 
 hnd-objs := $(addprefix $(RELATED)$(SHARED)/, $(sort $(WLFILES:.c=.o)))
 HND_OBJS := $(addprefix $(src)/$(RELATED)$(SHARED)/, $(sort $(WLFILES:.c=.o)))
+
 EXTRA_CFLAGS += $(WLFLAGS) -DBCM5354 -DLINUX_HYBRID_POSTPROCESSING_REMOVAL
 
 # For the ARM platform...
@@ -52,10 +53,8 @@ EXTRA_CFLAGS    += -DROBO_SRAB -DBCMDMASGLISTOSL
 endif
 
 ifneq ($(CONFIG_BCM947XX),y)
-ifneq ($(CONFIG_PLAT_BCM5301X),y)
 HND_OBJS += $(src)/$(RELATED)$(SHARED)/nvramstubs.o
 hnd-objs += $(RELATED)$(SHARED)/nvramstubs.o
-endif
 endif
 
 ifeq ($(CONFIG_ET_47XX),y)
@@ -67,9 +66,6 @@ HND_OBJS += $(src)/$(RELATED)$(SHARED)/bcmrobo.o
 hnd-objs += $(RELATED)$(SHARED)/bcmrobo.o
 endif
 endif
-
-HND_OBJS += $(src)/$(RELATED)$(SHARED)/pcie_core.o
-hnd-objs += $(RELATED)$(SHARED)/pcie_core.o
 
 ifeq ($(CONFIG_BCM_GMAC3),y)
 HND_OBJS += $(src)/$(RELATED)$(SHARED)/hndfwd.o
@@ -118,9 +114,15 @@ ifeq ($(wildcard $(src)/$(RELATED)$(SHARED)/bcmsrom.c),)
 hnd-objs += $(RELATED)$(SHARED)/bcmsrom.o
 endif
 
-#ifeq ($(wildcard $(src)/$(RELATED)$(SHARED)/bcmwpa.c),)
-#hnd-objs += $(RELATED)$(SHARED)/bcmwpa.o
+#ifeq ($(wildcard $(src)/$(RELATED)$(SHARED)/nvramstubs.c),)
+#hnd-objs += $(RELATED)$(SHARED)/nvramstubs.o
 #endif
+
+ifneq ($(CONFIG_WL_USE_APSTA),y)
+ifeq ($(wildcard $(src)/$(RELATED)$(SHARED)/bcmwpa.c),)
+hnd-objs += $(RELATED)$(SHARED)/bcmwpa.o
+endif
+endif
 
 ifeq ($(wildcard $(src)/$(RELATED)$(SHARED)/bcmotp.c),)
 hnd-objs += $(RELATED)$(SHARED)/bcmotp.o

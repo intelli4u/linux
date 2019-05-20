@@ -1388,11 +1388,7 @@ int fat_fill_super(struct super_block *sb, void *data, int silent,
 			       le32_to_cpu(fsinfo->signature2),
 			       sbi->fsinfo_sector);
 		} else {
-			/* Foxconn removed by Max Ding, 12/06/2010 for WNR3500L-TD186, port from Linux 2.6.21 */
-			/* Linux 2.6.21 have not the option, Linux 2.6.22 add the option and the default value is 0,
-			 * we didn't set the option in Linux 2.6.22, then cause the bug, so remove the option to fix it.
-			 */
-			/* if (sbi->options.usefree) */ 
+			if (sbi->options.usefree)
 				sbi->free_clus_valid = 1;
 			sbi->free_clusters = le32_to_cpu(fsinfo->free_clusters);
 			sbi->prev_free = le32_to_cpu(fsinfo->next_cluster);

@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2013. */
 /*
  *	Routines having to do with the 'struct sk_buff' memory handlers.
  *
@@ -560,8 +561,6 @@ static void BCMFASTPATH_HOST __copy_skb_header(struct sk_buff *new, const struct
 #ifdef PKTC
 	memset(new->pktc_cb, 0, sizeof(new->pktc_cb));
 #endif
-	memset(new->fpath_cb, 0, sizeof(new->fpath_cb));    /* foxconn Bob added 02/06/2013 to init fpath_cb */ 
-	
 #ifdef CTF_PPPOE
 	memset(new->ctf_pppoe_cb, 0, sizeof(new->ctf_pppoe_cb));
 #endif
@@ -875,8 +874,10 @@ int pskb_expand_head(struct sk_buff *skb, int nhead, int ntail,
 
 	BUG_ON(nhead < 0);
 
-	if (skb_shared(skb))
+	if (skb_shared(skb) && !PKTISCTFFWDING(skb)) {
+		printk("pskb_expand_head users %d skb %p\n", atomic_read(&skb->users), skb);
 		BUG();
+	}
 
 	size = SKB_DATA_ALIGN(size);
 

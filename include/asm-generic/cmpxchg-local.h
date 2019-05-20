@@ -1,3 +1,4 @@
+/* Modified by Broadcom Corp. Portions Copyright (c) Broadcom Corp, 2012. */
 #ifndef __ASM_GENERIC_CMPXCHG_LOCAL_H
 #define __ASM_GENERIC_CMPXCHG_LOCAL_H
 

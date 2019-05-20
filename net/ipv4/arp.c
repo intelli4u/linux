@@ -103,10 +103,6 @@
 #include <linux/sysctl.h>
 #endif
 
-#ifdef CONFIG_DEVICE_IDENTIFICATION
-#include <linux/netlink.h>
-#endif
-
 #include <net/net_namespace.h>
 #include <net/ip.h>
 #include <net/icmp.h>
@@ -128,16 +124,6 @@ EXPORT_SYMBOL(clip_tbl_hook);
 
 #include <linux/netfilter_arp.h>
 
-#define C_MAX_TOKEN_SIZE        128
-#define C_MAX_RESERVED_IP       64
-typedef struct ArpControlProfile {
-        char enable[12];
-        int numResrvAddr;
-        char resrvMacAddr[C_MAX_RESERVED_IP][C_MAX_TOKEN_SIZE];
-        char resrvIpAddr[C_MAX_RESERVED_IP][C_MAX_TOKEN_SIZE];
-}T_ArpCtlProfile;
-T_ArpCtlProfile arp_profile = {"disable", 0 ,"", ""};
-/*foxconn add end,edward zhang, 2012/1/16 @arp protection*/
 /*
  *	Interface to generic neighbour cache.
  */
@@ -146,27 +132,7 @@ static int arp_constructor(struct neighbour *neigh);
 static void arp_solicit(struct neighbour *neigh, struct sk_buff *skb);
 static void arp_error_report(struct neighbour *neigh, struct sk_buff *skb);
 static void parp_redo(struct sk_buff *skb);
-/* foxconn wklin modified start, 2010/06/15 @attach_dev */
-static int attadev_update(u32 sip, char *sha, struct net_device *dev);
-/* foxconn wklin modified end, 2010/06/15 */
-/*Foxconn add start by Hank 08/25/2012*/
-static int attadev_init(struct net *net);
-/*Foxconn add end by Hank 08/25/2012*/
 
-#ifdef CONFIG_DEVICE_IDENTIFICATION
-static int netlink_init(void);
-static void arp_nl_recv_msg(struct sk_buff *skb);
-static int device_info(char *station_info_message);
-void ieee80211_concatenate_station_tlv(u_int8_t *pBuf, int msgType,
-    char *mac, u32 ip, char *ifname);
-#endif
-
-int g_pid=0; /* Foxconn tab tseng added, 2013/05/27, for xbox qos */
-int g_updated=0; /* Foxconn tab tseng added, 2013/05/27, for xbox qos */
-/* foxconn dennis modified start, 01/02/2013 @ap_mode detection */
-static int wandev_update(u32 sip, char *sha, struct net_device *indev);
-static int wandev_init(struct net *net);
-/* foxconn dennis modified end, 01/02/2013  */
 static const struct neigh_ops arp_generic_ops = {
 	.family =		AF_INET,
 	.solicit =		arp_solicit,
@@ -235,43 +201,6 @@ struct neigh_table arp_tbl = {
 	.gc_thresh3 =	1024,
 };
 EXPORT_SYMBOL(arp_tbl);
-
-#ifdef CONFIG_DEVICE_IDENTIFICATION
-typedef struct TLV_DATA{
-        unsigned short us_tlv_type;
-        unsigned short us_tlv_len;
-}AP_TLV_DATA;
-
-/* foxconn add, Leon Liao, 2016/03/18 */
-#define TLV_MSG_MAX_LEN					(32)
-#define TLV_MSG_HDR_LEN					(4)
-#define TLV_MSG_TYPE_MAC_LEN			(6)	//	10
-#define TLV_MSG_TYPE_IFNAME_LEN		    (16)			//	12
-#define TLV_MSG_TYPE_IP_LEN				(8)			//	9
-
-/* foxconn add, Leon Liao, 2016/03/18 */
-enum tlvMsgType {
-    TLV_MSG_TYPE_IP             = 1,
-	TLV_MSG_TYPE_MAC,				
-	TLV_MSG_TYPE_IFNAME,
-
-	/* keep last */
-	TLV_MSG_TYPE_MAX,
-};
-
-/* foxconn add, Leon Liao, 2016/03/18 */
-struct tlvMsg {
-	u_int16_t type;
-	u_int16_t len;
-	char value[TLV_MSG_MAX_LEN];
-};
-
-#define AP_MSG_TYPE_PID           0x1333
-
-struct sock *nl_sk = NULL;
-int pid;
-#define MAX_PAYLOAD 1024 /* maximum payload size*/
-#endif
 
 int arp_mc_map(__be32 addr, u8 *haddr, struct net_device *dev, int dir)
 {
@@ -801,14 +730,6 @@ void arp_send(int type, int ptype, __be32 dest_ip,
 
 	if (dev->flags&IFF_NOARP)
 		return;
-    	/* Foxconn added start pling 03/25/2011 */
-	/* If we are using auto IP, the ARP reply should be in Broadcast */
-	if (type == ARPOP_REPLY &&
-		((htonl(src_ip) & 0xFFFF0000) == 0xa9fe0000))
-		skb = arp_create(type, ptype, dest_ip, dev, src_ip,
-			 NULL, src_hw, target_hw);
-	else
-	/* Foxconn added end pling 03/25/2011 */
 
 	skb = arp_create(type, ptype, dest_ip, dev, src_ip,
 			 dest_hw, src_hw, target_hw);
@@ -827,8 +748,6 @@ EXPORT_SYMBOL(arp_send);
 static int arp_process(struct sk_buff *skb)
 {
 	struct net_device *dev = skb->dev;
-    /* foxconn wklin added, 2010/06/15 @attach_dev */
-	struct net_device *bridge_indev = NULL;
 	struct in_device *in_dev = __in_dev_get_rcu(dev);
 	struct arphdr *arp;
 	unsigned char *arp_ptr;
@@ -847,8 +766,6 @@ static int arp_process(struct sk_buff *skb)
 	if (in_dev == NULL)
 		goto out;
 
-    /* foxconn wklin added, 2010/06/15 @attach_dev */
-    bridge_indev = *(pp_bridge_indev(skb));
 	arp = arp_hdr(skb);
 
 	switch (dev_type) {
@@ -943,60 +860,6 @@ static int arp_process(struct sk_buff *skb)
 		goto out;
 	}
 
-    /* foxconn wklin modified sart, 02/02/2007 */
-#define ATTADEV
-#ifdef ATTADEV
-		/*Foxconn modify start by Hank 08/10/2012 */
-		/*kernel function be modified*/
-    if ((arp->ar_op == htons(ARPOP_REQUEST) || arp->ar_op == htons(ARPOP_REPLY))
-       && inet_addr_type(net,sip)==RTN_UNICAST && memcmp(dev->name,"br0", 3) == 0) {
-	   /*Foxconn modify end by Hank 08/10/2012 */
-        /* foxconn wklin modified start, 2010/06/15 @attach_dev */
-        //static int attadev_update(u32 sip, char *sha, struct net_device *indev);
-        attadev_update(sip, sha, bridge_indev);
-	/* Foxconn tab tseng added, 2013/05/27, for xbox qos */
-	g_updated = 1;
-        /* foxconn wklin modified end, 2010/06/15 */
-    }
-#endif
-    /* foxconn wklin modified end, 02/02/2007 */
-    /*fxcn added by dennis start,01/02/2013,@ ap mode detection*/
-#ifdef INCLUDE_DETECT_AP_MODE
-	if ((arp->ar_op == htons(ARPOP_REQUEST) || arp->ar_op == htons(ARPOP_REPLY))
-       && inet_addr_type(net,sip)==RTN_UNICAST && (memcmp(dev->name,"eth0", 4) == 0||memcmp(dev->name,"vlan2", 5) == 0)) {
-       wandev_update(sip, sha, bridge_indev);
-    }
-#endif
-    /* fxcn added by dennis end,01/02/2013, */
-/*foxconn add start,edward zhang, 2012/11/16 @arp protection*/
-#ifdef ARP_PROTECTION
-
-    if(!strcmp(skb->dev->name, "br0") && !strcmp(arp_profile.enable,"enable"))
-    {
-        unsigned char mac[64] = "";
-        unsigned char ip[16] = "";
-        int need_drop = 1;
-        int i;
-        sprintf(mac,"%02x:%02x:%02x:%02x:%02x:%02x",sha[0],sha[1],sha[2],sha[3],sha[4],sha[5]);
-        sprintf(ip,"%08x",ntohl(sip));
-        //printk("ip:%s  mac:%s\n",ip,mac);
-        for(i=0 ;i<arp_profile.numResrvAddr ; i++)
-        {
-            if(strcmp(arp_profile.resrvIpAddr[i],ip))
-                continue;
-            else if(!strcmp(arp_profile.resrvMacAddr[i],mac))
-            {
-                need_drop = 0;
-                break;
-            }
-
-        }
-        if(need_drop)
-            goto out;
-    }
-#endif
-/*foxconn add end,edward zhang, 2012/11/16 @arp protection*/
-
 	if (arp->ar_op == htons(ARPOP_REQUEST) &&
 	    ip_route_input_noref(skb, tip, sip, 0, dev) == 0) {
 
@@ -1040,13 +903,7 @@ static int arp_process(struct sk_buff *skb)
 			}
 		}
 	}
-/* Foxconn add start, Edward zhang, 09/14/2012, @add ARP PROTECTION support for RU SKU*/
-#ifdef ARP_PROTECTION
 
-    if(!strcmp(skb->dev->name, "br0") && !strcmp(arp_profile.enable,"enable"))
-        goto out;
-#endif
-/* Foxconn add end, Edward zhang, 09/14/2012, @add ARP PROTECTION support for RU SKU*/
 	/* Update our ARP tables */
 
 	n = __neigh_lookup(&arp_tbl, &sip, dev, 0);
@@ -1322,16 +1179,7 @@ static int arp_req_delete(struct net *net, struct arpreq *r,
 
 int arp_ioctl(struct net *net, unsigned int cmd, void __user *arg)
 {
-/*foxconn add start,edward zhang, 2012/11/16 @arp protection*/
-#ifdef ARP_PROTECTION
-	unsigned long args[1];
-	int i;
-
-	if (copy_from_user(args, arg, sizeof(args)))
-		return -EFAULT;
-#endif
-/*foxconn add start,edward zhang, 2012/11/16 @arp protection*/
-	int err,b_updated;
+	int err;
 	struct arpreq r;
 	struct net_device *dev = NULL;
 
@@ -1345,31 +1193,6 @@ int arp_ioctl(struct net *net, unsigned int cmd, void __user *arg)
 			if (err)
 				return -EFAULT;
 			break;
-		/* Foxconn tab tseng added, 2013/05/27, for xbox qos */
-		case SIOCPIDARP:
-			err = copy_from_user(&g_pid, arg, sizeof(int));
-			if (err)
-                            return -EFAULT;
-                        b_updated=g_updated;
-                        g_updated=0;
-                        return b_updated; 
-			break;
-	        /* Foxconn tab tseng added end, 2013/05/27, for xbox qos */
-/*foxconn add start,edward zhang, 2012/11/16 @arp protection*/
-#ifdef ARP_PROTECTION
-		case SIOCREJARP:
-            printk("<0>%s %d\n",__FUNCTION__,__LINE__);
-			if(copy_from_user(&arp_profile, (void __user *)args[0], sizeof(T_ArpCtlProfile)))
-            {
-                //printk("<0>number1:%d,enable:%s\n",arp_profile.numResrvAddr,arp_profile.enable);
-                return -EFAULT;
-            }
-            /*printk("<0>number:%d,enable:%s\n",arp_profile.numResrvAddr,arp_profile.enable);
-            for(i= 0;i<arp_profile.numResrvAddr;i++)
-            printk("<0>ip:%s mac %s\n",arp_profile.resrvIpAddr[i],arp_profile.resrvMacAddr[i]);*/
-            return 0;
-#endif
-/*foxconn add end,edward zhang, 2012/11/16 @arp protection*/
 		default:
 			return -EINVAL;
 	}
@@ -1465,7 +1288,6 @@ void __init arp_init(void)
 
 	dev_add_pack(&arp_packet_type);
 	arp_proc_init();
-
 #ifdef CONFIG_SYSCTL
 	neigh_sysctl_register(NULL, &arp_tbl.parms, "ipv4", NULL);
 #endif
@@ -1609,29 +1431,12 @@ static int __net_init arp_net_init(struct net *net)
 {
 	if (!proc_net_fops_create(net, "arp", S_IRUGO, &arp_seq_fops))
 		return -ENOMEM;
-		
-        /*Foxconn add start by Hank 08/25/2012*/
-		/*for attadev init*/
-#ifdef ATTADEV
-    attadev_init(net);
-#ifdef CONFIG_DEVICE_IDENTIFICATION
-    netlink_init();
-#endif
-#endif
-        /*Foxconn add end by Hank 08/25/2012*/
-#if INCLUDE_DETECT_AP_MODE
-        wandev_init(net);
-#endif
-
 	return 0;
 }
 
 static void __net_exit arp_net_exit(struct net *net)
 {
 	proc_net_remove(net, "arp");
-#ifdef CONFIG_DEVICE_IDENTIFICATION
-	netlink_kernel_release(nl_sk);
-#endif	
 }
 
 static struct pernet_operations arp_net_ops = {
@@ -1652,377 +1457,3 @@ static int __init arp_proc_init(void)
 }
 
 #endif /* CONFIG_PROC_FS */
-/* foxconn wklin added start, 02/06/2007 */
-
-#ifdef ATTADEV
-#define FLAG_VALID 1
-#define FLAG_INVALID 0
-#define MAX_ATTADEV_ENTRY 255
-#define ATTADEV_HASHMASK 0x7f
-
-typedef struct {
-    u32 sip;
-    unsigned char sha[6];
-    unsigned short flag;
-    /* foxconn added, 2010/06/15 @attach_dev */
-    char ifname[IFNAMSIZ];
-} attadev_t;
-
-static rwlock_t attadev_lock = RW_LOCK_UNLOCKED;
-static attadev_t attadevs[MAX_ATTADEV_ENTRY];
-/*Foxconn modify start by Hank 08/25/2012*/
-/*change init, create, and get information function of attadev, delatta
-  Because the kernel function is changed in 2.6.36*/		
-static int attadev_get_info(struct seq_file *seq, void *v)
-{
-    attadev_t *p = &attadevs[0];
-    int i, size, len=0;
-
-    read_lock_bh(&attadev_lock);
-    for (i=0; i<MAX_ATTADEV_ENTRY; i++) {
-        if ((p+i)->flag == FLAG_VALID) {
-            seq_printf(seq, "%08X %02X:%02X:%02X:%02X:%02X:%02X %s\n",
-                    ntohl((p+i)->sip),
-                    ((p+i)->sha)[0], ((p+i)->sha)[1], ((p+i)->sha)[2],
-                    ((p+i)->sha)[3], ((p+i)->sha)[4], ((p+i)->sha)[5], 
-                    (p+i)->ifname);/*Foxconn add by Mos: 05/30/2011 : for attached devices read wifi/wireless device*/
-        }
-    }
-    read_unlock_bh(&attadev_lock);
-        return 0;
-}
-
-static int attadev_del_info(struct seq_file *seq, void *v)
-{
-    attadev_t *p = &attadevs[0];
-    int i=0;
-
-    write_lock_bh(&attadev_lock);
-    for (i=0; i<MAX_ATTADEV_ENTRY; i++) {
-        (p+i)->sip = 0;
-        memset((p+i)->sha,'\0', 6);
-        (p+i)->flag = FLAG_INVALID;
-    }
-    write_unlock_bh(&attadev_lock);
-    return 0;
-}
-
-static int attadev_seq_open(struct inode *inode, struct file *file)
-{
-    return single_open_net(inode, file, attadev_get_info);
-}
-
-static int delatta_seq_open(struct inode *inode, struct file *file)
-{
-    return single_open_net(inode, file, attadev_del_info);
-}
-
-static const struct file_operations attadev_seq_fops = {
-        .owner          = THIS_MODULE,
-        .open       = attadev_seq_open,
-        .read       = seq_read,
-        .llseek     = seq_lseek,
-        .release        = single_release_net,
-};
-
-static const struct file_operations delatta_seq_fops = {
-        .owner          = THIS_MODULE,
-        .open       = delatta_seq_open,
-        .read       = seq_read,
-        .llseek     = seq_lseek,
-        .release        = single_release_net,
-};
-
-static int attadev_init(struct net *net) {
-    int i;
-    attadev_t *p = &attadevs[0];
-
-    /* init data structure */
-    for (i=0; i<MAX_ATTADEV_ENTRY; i++) {
-        (p+i)->sip = 0;
-        memset((p+i)->sha,'\0', 6);
-        (p+i)->flag = FLAG_INVALID;
-    }
-
-	proc_net_fops_create(net, "attadev", S_IRUGO, &attadev_seq_fops);
-    proc_net_fops_create(net, "delatta", S_IRUGO, &delatta_seq_fops);
-	
-    return 0;
-}
-/*Foxconn modify end by Hank 08/25/2012*/
-
-static u32 attadev_hash(u32 *pkey)
-{
-	u32 hash_val;
-
-	hash_val = *(u32*)pkey;
-	hash_val ^= (hash_val>>16);
-	hash_val ^= hash_val>>8;
-	hash_val ^= hash_val>>3;
-	hash_val &= ATTADEV_HASHMASK;
-
-	return hash_val;
-}
-
-/* foxconn wklin modified ,2010/06/15 @attach_dev */
-static int attadev_update(u32 sip, char *sha, struct net_device *dev) {
-    int hash_id = attadev_hash(&sip);
-    int i;
-    i = hash_id;
-    attadev_t *p = &attadevs[0];
-
-#ifdef CONFIG_DEVICE_IDENTIFICATION
-    char buf[128] = {0};
-#endif
-
-    /* printk("sip=%08x, hashid = %d\n", sip, hash_id); */
-    write_lock_bh(&attadev_lock);
-    for(;;) {
-        if ((p+i)->flag == FLAG_INVALID || (p+i)->sip == sip) {
-            (p+i)->sip = sip;
-            (p+i)->flag = FLAG_VALID;
-            memcpy((p+i)->sha, sha, 6);
-            /* foxconn wklin modified start, 2010/06/15 @attach_dev */
-            if (dev && dev->name) {
-                strcpy((p+i)->ifname, dev->name);
-            }
-            /* foxconn wklin modified end, 2010/06/15 */
-#ifdef CONFIG_DEVICE_IDENTIFICATION
-	    ieee80211_concatenate_station_tlv(buf,1,sha,sip,dev->name);
-            device_info(buf);
-#endif
-            break;
-        } 
-        i++;
-        if (i >= MAX_ATTADEV_ENTRY) /* foxconn wklin modified, 08/01/2007 */
-            i = 0;
-        if (i == hash_id) {
-            /* printk("attadev table is full\n"); */
-            break;
-        }
-    }
-    write_unlock_bh(&attadev_lock);
-    return 0;
-}
-/*added by dennis start,01/02/2013,@ ap mode detection*/
-#ifdef INCLUDE_DETECT_AP_MODE
-static rwlock_t wandev_lock = RW_LOCK_UNLOCKED;
-static attadev_t wandevs[MAX_ATTADEV_ENTRY];
-
-static int wandev_del_info(struct seq_file *seq, void *v)
-{
-    attadev_t *p = &wandevs[0];
-    int i=0;
-
-    write_lock_bh(&wandev_lock);
-    for (i=0; i<MAX_ATTADEV_ENTRY; i++) {
-        (p+i)->sip = 0;
-        memset((p+i)->sha,'\0', 6);
-        (p+i)->flag = FLAG_INVALID;
-    }
-    write_unlock_bh(&wandev_lock);
-    return 0;
-}
-
-static int wandev_get_info(struct seq_file *seq, void *v)
-{
-    attadev_t *p = &wandevs[0];
-    int i, size, len=0;
-
-    read_lock_bh(&wandev_lock);
-    for (i=0; i<MAX_ATTADEV_ENTRY; i++) {
-        if ((p+i)->flag == FLAG_VALID) {
-			seq_printf(seq, "%08X %02X:%02X:%02X:%02X:%02X:%02X %s\n",
-                    ntohl((p+i)->sip),
-                    ((p+i)->sha)[0], ((p+i)->sha)[1], ((p+i)->sha)[2],
-                    ((p+i)->sha)[3], ((p+i)->sha)[4], ((p+i)->sha)[5], 
-                    (p+i)->ifname);
-        }
-    }
-    read_unlock_bh(&wandev_lock);
-	
-    return 0;
-}
-
-static int wandev_seq_open(struct inode *inode, struct file *file)
-{
-    return single_open_net(inode, file, wandev_get_info);
-}
-
-static int wandel_seq_open(struct inode *inode, struct file *file)
-{
-    return single_open_net(inode, file, wandev_del_info);
-}
-
-static const struct file_operations wandev_seq_fops = {
-        .owner          = THIS_MODULE,
-        .open       = wandev_seq_open,
-        .read       = seq_read,
-        .llseek     = seq_lseek,
-        .release        = single_release_net,
-};
-
-static const struct file_operations wandel_seq_fops = {
-        .owner          = THIS_MODULE,
-        .open       = wandel_seq_open,
-        .read       = seq_read,
-        .llseek     = seq_lseek,
-        .release        = single_release_net,
-};
-
-static int wandev_init(struct net *net) {
-    int i;    
-    attadev_t *p = &wandevs[0];
-
-    /* init data structure */
-    for (i=0; i<MAX_ATTADEV_ENTRY; i++) {
-        (p+i)->sip = 0;
-        memset((p+i)->sha,'\0', 6);
-        (p+i)->flag = FLAG_INVALID;
-    }
-        
-    /* create /proc/net/wandev for r/w */	
-        proc_net_fops_create (net, "wandev", S_IRUGO, &wandev_seq_fops); //added by dennis,01/02/2013	
-        proc_net_fops_create (net, "delwandev", S_IRUGO, &wandel_seq_fops); //added by dennis,01/02/2013
-    return 0;
-}
-
-static int wandev_update(u32 sip, char *sha, struct net_device *dev) {
-    int hash_id = attadev_hash(&sip);
-    int i;
-    i = hash_id;
-    attadev_t *p = &wandevs[0];
-
-    /* printk("sip=%08x, hashid = %d\n", sip, hash_id); */
-    write_lock_bh(&wandev_lock);
-    for(;;) {
-        if ((p+i)->flag == FLAG_INVALID || (p+i)->sip == sip) {
-            (p+i)->sip = sip;
-            (p+i)->flag = FLAG_VALID;
-            memcpy((p+i)->sha, sha, 6);
-            /* foxconn wklin modified start, 2010/06/15 @attach_dev */
-            if (dev && dev->name) {
-                strcpy((p+i)->ifname, dev->name);
-            }
-            /* foxconn wklin modified end, 2010/06/15 */
-            break;
-        } 
-        i++;
-        if (i >= MAX_ATTADEV_ENTRY) /* foxconn wklin modified, 08/01/2007 */
-            i = 0;
-        if (i == hash_id) {
-            /* printk("attadev table is full\n"); */
-            break;
-        }
-    }
-    write_unlock_bh(&wandev_lock);
-    return 0;
-}
-#endif /*INCLUDE_DETECT_AP_MODE*/
-/*added by dennis end,01/02/2013,@ ap mode detection*/
-
-#ifdef CONFIG_DEVICE_IDENTIFICATION
-static int netlink_init(void)
-{
-#if 0
-    struct netlink_kernel_cfg cfg = {
-        .input = arp_nl_recv_msg,
-    };
-#endif
-    //nl_sk = netlink_kernel_create(&init_net, NETLINK_USERSOCK, &cfg);
-    nl_sk = netlink_kernel_create(&init_net, NETLINK_USERSOCK, 0, arp_nl_recv_msg,NULL,THIS_MODULE);
-   
-    if (!nl_sk) {
-        printk(KERN_ALERT "Error creating socket.\n");
-        return -1;
-    }
-
-    return 0;
-}
-
-static void arp_nl_recv_msg(struct sk_buff *skb)
-{
-    struct nlmsghdr *nlh;
-
-    //printk(KERN_INFO "Entering: %s\n", __FUNCTION__);
-    nlh = (struct nlmsghdr *)skb->data;
-
-    if(nlh->nlmsg_type == AP_MSG_TYPE_PID)
-        pid = nlh->nlmsg_pid; /*pid of sending process */
-    
-}
-
-static int device_info(char *station_info_message)
-{
-    struct sk_buff *skb_out;
-    int res;
-    struct nlmsghdr *nlh;
-    AP_TLV_DATA *station_message;
-
-    station_message = (AP_TLV_DATA*)station_info_message;
-
-    skb_out = nlmsg_new(station_message->us_tlv_len + sizeof(AP_TLV_DATA), 0);
-    if (!skb_out) {
-        printk(KERN_ERR "Failed to allocate new skb\n");
-        return -1;
-    }
-
-    nlh = nlmsg_put(skb_out, 0, 0, NLMSG_DONE, station_message->us_tlv_len + sizeof(AP_TLV_DATA), 0);
-    NETLINK_CB(skb_out).dst_group = 0; /* not in mcast group */
-    nlh->nlmsg_type = station_message->us_tlv_type;
-    nlh->nlmsg_len = station_message->us_tlv_len + sizeof(AP_TLV_DATA);
-    memcpy(nlmsg_data(nlh), station_info_message, station_message->us_tlv_len + sizeof(AP_TLV_DATA));
-
-    res = nlmsg_unicast(nl_sk, skb_out, pid);
-
-    return 0;
-}
-
-typedef uint32_t in_addr_tmp;
-struct in_addr_tmp {
-        in_addr_tmp s_addr;
-};
-
-/* foxconn add, Leon Liao, 2016/03/18 */
-void ieee80211_concatenate_station_tlv(u_int8_t *pBuf, int msgType,
-    char *mac, u32 ip, char *ifname)
-{
-
-        struct tlvMsg *pMsg = NULL, *pHdr = NULL;
-        struct in_addr_tmp in;
-        unsigned char *sip;
-        
-        if (!pBuf || !mac) {return;}
-        pHdr		= (struct tlvMsg*)pBuf;
-        pHdr->type	= msgType;
-        pHdr->len	= 0;
-        pBuf		+= TLV_MSG_HDR_LEN;    
-
-        in.s_addr = ip;
-        sip = (unsigned char *) &in;
-        
-        pMsg        = (struct tlvMsg*)(pBuf + pHdr->len);
-        pMsg->type  = TLV_MSG_TYPE_MAC;
-        pMsg->len   = TLV_MSG_TYPE_MAC_LEN;
-        memcpy(pMsg->value, mac, pMsg->len);
-        pHdr->len   += (TLV_MSG_HDR_LEN + pMsg->len);
-        
-        pMsg            = (struct tlvMsg*)(pBuf + pHdr->len);
-        pMsg->type      = TLV_MSG_TYPE_IP;
-        pMsg->len       = TLV_MSG_TYPE_IP_LEN;
-        memcpy(pMsg->value,sip,pMsg->len);
-        pHdr->len       += (TLV_MSG_HDR_LEN + pMsg->len);
-
-	if (ifname != NULL)
-	{
-            if (0 != strlen(ifname)) {
-                pMsg            = (struct tlvMsg*)(pBuf + pHdr->len);
-                pMsg->type      = TLV_MSG_TYPE_IFNAME;
-                pMsg->len       = strlen(ifname);
-                memcpy(pMsg->value, ifname, pMsg->len);
-                pHdr->len       += (TLV_MSG_HDR_LEN + pMsg->len);
-            }
-	}    
-}
-#endif
-#endif

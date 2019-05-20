@@ -21,7 +21,7 @@ struct file_ra_state;
 struct user_struct;
 struct writeback_control;
 
-#ifndef CONFIG_DISCONTIGMEM              /* Don't use mapnrs, do it properly */
+#ifndef CONFIG_DISCONTIGMEM          /* Don't use mapnrs, do it properly */
 extern unsigned long max_mapnr;
 #endif
 
@@ -114,7 +114,7 @@ extern unsigned int kobjsize(const void *objp);
 /* Bits set in the VMA until the stack is in its final location */
 #define VM_STACK_INCOMPLETE_SETUP	(VM_RAND_READ | VM_SEQ_READ)
 
-#ifndef VM_STACK_DEFAULT_FLAGS		    /* arch can override this */
+#ifndef VM_STACK_DEFAULT_FLAGS		/* arch can override this */
 #define VM_STACK_DEFAULT_FLAGS VM_DATA_DEFAULT_FLAGS
 #endif
 
@@ -299,6 +299,8 @@ static inline int is_vmalloc_or_module_addr(const void *x)
 	return 0;
 }
 #endif
+
+extern void kvfree(const void *addr);
 
 static inline struct page *compound_head(struct page *page)
 {
@@ -1390,6 +1392,7 @@ struct page *follow_page(struct vm_area_struct *, unsigned long address,
 #define FOLL_GET	0x04	/* do get_page on page */
 #define FOLL_DUMP	0x08	/* give error on hole if it would be zero */
 #define FOLL_FORCE	0x10	/* get_user_pages read/write w/o permission */
+#define FOLL_COW       0x4000  /* internal GUP flag */
 
 typedef int (*pte_fn_t)(pte_t *pte, pgtable_t token, unsigned long addr,
 			void *data);
