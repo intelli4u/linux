@@ -58,7 +58,7 @@ char __initdata ram_nvram_buf[MAX_NVRAM_SPACE] __attribute__((aligned(PAGE_SIZE)
 static char nvram_buf[MAX_NVRAM_SPACE] __attribute__((aligned(PAGE_SIZE)));
 static bool nvram_inram = FALSE;
 
-#define CFE_UPDATE  1 // added by Chen-I for mac/regulation update
+#define CFE_UPDATE  0 // added by Chen-I for mac/regulation update
 #ifdef CFE_UPDATE
 extern void bcm947xx_watchdog_disable(void);
 
@@ -1238,7 +1238,9 @@ printk("!!! cfe_init !!!\n");
 
         printk("cfe_init: cfe_nvram_header(%08x)\n", (unsigned int) cfe_nvram_header);
 #ifndef CONFIG_MTD_NFLASH
+#ifdef CFE_UPDATE
         bcm947xx_watchdog_disable();
+#endif
 #endif
         return 0;
 
