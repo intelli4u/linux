@@ -168,9 +168,4 @@ else
 	fi
 fi
 
-if test "${res: -1}" = "+"; then
-	echo "$res"
-else
-	echo "$res"+
-fi
-
+echo "$res"
