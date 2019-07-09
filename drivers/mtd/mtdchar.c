@@ -30,6 +30,7 @@
 #include <linux/backing-dev.h>
 #include <linux/compat.h>
 #include <linux/mount.h>
+#include <linux/time.h>
 
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/map.h>
@@ -39,6 +40,8 @@
 #define MTD_INODE_FS_MAGIC 0x11307854
 static struct vfsmount *mtd_inode_mnt __read_mostly;
 
+int AWS_timezone=0;
+EXPORT_SYMBOL(AWS_timezone);
 /*
  * Data structure to hold the pointer to the mtd device as well
  * as mode information ofr various use cases.
@@ -1130,12 +1133,16 @@ int flash_write_buffer()
         mtd_crash_dump_num = 0;
         debug_msg_mtd_start = sizeof(buffer2)-1;
     }
-	
+    struct timeval now;
+    struct tm tm_val;
+
+    do_gettimeofday(&now);
+    time_to_tm(now.tv_sec+AWS_timezone*3600, 0, &tm_val);
     buf_len = get_logsize();
     sprintf(buffer2,"%d %10d", ++mtd_crash_dump_num, 
         (debug_msg_mtd_start+(sizeof(buffer3)-1)+buf_len)*1000+bitmap);
     nvram_mtd->write(nvram_mtd, 0, sizeof(buffer2)-1, &len, buffer2);
-    sprintf(buffer3, "\n==========================Kernel crash log==============================\n");
+    sprintf(buffer3,"\n==========================Kernel crash log  %d/%d/%d %02d:%02d:%02d==============================\n",1900 + tm_val.tm_year,tm_val.tm_mon + 1,tm_val.tm_mday, tm_val.tm_hour, tm_val.tm_min,tm_val.tm_sec);
     nvram_mtd->write(nvram_mtd, debug_msg_mtd_start, sizeof(buffer3)-1, &len, buffer3);	
     buffer = get_logbuf();
     nvram_mtd->write(nvram_mtd, debug_msg_mtd_start+(sizeof(buffer3)-1), 
