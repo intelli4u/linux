@@ -242,7 +242,7 @@ static int __init rootfs_mtdblock(void)
 
 #if defined(R6200v2)    
         return 3; 
-#elif defined(R6400)
+#elif defined(R7000)
 		return 3; 
 #else
 		return 15; 
@@ -763,33 +763,11 @@ static struct mtd_partition bcm947xx_nflash_parts[NFLASH_PARTS_NUM] = {
 	}
 };
 #else
-#if defined(R6400)
-#define NFLASH_PARTS_NUM	18
+#if defined(R7000)
+#define NFLASH_PARTS_NUM	19
 #else
 #define NFLASH_PARTS_NUM	17
 #endif
-
-#if defined(R6400)
-#define NFLASH_PARTS_NUM	19    //Foxconn added by Kathy
-/* Foxconn Bob added start 03/13/2014, these definitions should be the same as declared in board_config.h of CFE */
-#define FLASH_BLOCK_SIZE                (0x20000)
-//#define FIRMWARE_SIZE                   NFL_BOOT_OS_SIZE    /* foxconn added Bob for nflash firmware, limit to 32MB now. 0x2000000 */
-                                                            /* this value should be the same as NFL_BOOT_OS_SIZE */
-#define FIRMWARE_RESERVED_BLOCK_SIZE    0x6b00000   /*reserve all unused flash for linux+rootfs (liunx+rootfs+brcmnand=06d0000)*/
-#define ML_BLOCK_SIZE                   (1 * FLASH_BLOCK_SIZE)
-#define ML_RESERVED_BLOCK_SIZE          (4 * ML_BLOCK_SIZE)
-#define QOS_BLOCK_SIZE                  (1 * FLASH_BLOCK_SIZE)
-#define QOS_RESERVED_BLOCK_SIZE         (4 * QOS_BLOCK_SIZE)
-#define TM_BLOCK_SIZE                   (1 * FLASH_BLOCK_SIZE)
-#define TM_RESERVED_BLOCK_SIZE          (22 * TM_BLOCK_SIZE)
-#define POT_BLOCK_SIZE                  (1 * FLASH_BLOCK_SIZE)
-#define POT_RESERVED_BLOCK_SIZE         (8 * POT_BLOCK_SIZE)
-#define BD_BLOCK_SIZE                   (1 * FLASH_BLOCK_SIZE)
-#define BD_RESERVED_BLOCK_SIZE          (4 * BD_BLOCK_SIZE)
-#define DBG_BLOCK_SIZE                  (1 * FLASH_BLOCK_SIZE)
-#define DBG_RESERVED_BLOCK_SIZE         (8 * DBG_BLOCK_SIZE)
-/* Foxconn Bob added end 03/13/2014, these definitions should be the same as declared in board_config.h of CFE */
-
 static struct mtd_partition bcm947xx_nflash_parts[NFLASH_PARTS_NUM] = {
 	{
 		.name = "boot",
@@ -802,109 +780,7 @@ static struct mtd_partition bcm947xx_nflash_parts[NFLASH_PARTS_NUM] = {
 		.size = 0,
 		.offset = 0
 	},
-	{
-		.name = "linux",
-		.size = 0,
-		.offset = 0
-	},
-	{
-		.name = "rootfs",
-		.size = 0,
-		.offset = 0,
-		.mask_flags = MTD_WRITEABLE
-	},
-	{ 
-		.name = "board_data", 
-		.offset = 0, 
-		.size = BD_RESERVED_BLOCK_SIZE, 
-	},
-	{ 
-		.name = "POT1", 
-		.offset = 0, 
-		.size = POT_RESERVED_BLOCK_SIZE, 
-	},
-	{ 
-		.name = "POT2", 
-		.offset = 0, 
-		.size = POT_RESERVED_BLOCK_SIZE, 
-	},
-	{ 
-		.name = "T_Meter1", 
-		.offset = 0, 
-		.size = TM_RESERVED_BLOCK_SIZE, 
-	},
-	{ 
-		.name = "T_Meter2", 
-		.offset = 0, 
-		.size = TM_RESERVED_BLOCK_SIZE, 
-	},
-	{ 
-		.name = "ML1", 
-		.offset = 0, 
-		.size = ML_RESERVED_BLOCK_SIZE, 
-	},
-	{ 
-		.name = "ML2", 
-		.offset = 0, 
-		.size = ML_RESERVED_BLOCK_SIZE, 
-	},
-	{ 
-		.name = "ML3", 
-		.offset = 0, 
-		.size = ML_RESERVED_BLOCK_SIZE, 
-	},
-	{ 
-		.name = "ML4", 
-		.offset = 0, 
-		.size = ML_RESERVED_BLOCK_SIZE, 
-	},
-	{ 
-		.name = "ML5", 
-		.offset = 0, 
-		.size = ML_RESERVED_BLOCK_SIZE, 
-	},
-	{ 
-		.name = "ML6", 
-		.offset = 0, 
-		.size = ML_RESERVED_BLOCK_SIZE, 
-	},
-	{ 
-		.name = "ML7", 
-		.offset = 0, 
-		.size = ML_RESERVED_BLOCK_SIZE, 
-	},
-	{ 
-		.name = "QoSRule", 
-		.offset = 0, 
-		.size = QOS_RESERVED_BLOCK_SIZE, 
-	},
-	//Foxconn added start by Kathy
-	{ 
-		.name = "DebugMsg", 
-		.offset = 0, 
-		.size = DBG_RESERVED_BLOCK_SIZE, 
-	},
-	//Foxconn added end by Kathy
-	{
-		.name = 0,
-		.size = 0,
-		.offset = 0
-	}
-};
-#else
-static struct mtd_partition bcm947xx_nflash_parts[NFLASH_PARTS_NUM] = {
-	{
-		.name = "boot",
-		.size = 0,
-		.offset = 0,
-		.mask_flags = MTD_WRITEABLE
-	},
-	{
-		.name = "nvram",
-		.size = 0,
-		.offset = 0
-	},
-#if defined(R6400)
+#if defined(R7000)
 	{
 		.name = "linux",
 		.size = 0,
@@ -977,14 +853,19 @@ static struct mtd_partition bcm947xx_nflash_parts[NFLASH_PARTS_NUM] = {
 		.offset = 0, 
 		.size = 0, 
 	},
-#if defined(R6400)
+#if defined(R7000)
 	{ 
 		.name = "QoSRule", 
 		.offset = 0, 
 		.size = 0, 
 	},
+	{ 
+		.name = "debug", 
+		.offset = 0, 
+		.size = 0, 
+	},
 #endif
-#if !defined(R6400)
+#if !defined(R7000)
 	{
 		.name = "linux",
 		.size = 0,
@@ -1003,7 +884,6 @@ static struct mtd_partition bcm947xx_nflash_parts[NFLASH_PARTS_NUM] = {
 		.offset = 0
 	}
 };
-#endif
 #endif
 /*Foxconn modify end by Hank 10/24/2012*/
 
@@ -1203,14 +1083,9 @@ init_nflash_mtd_partitions(hndnand_t *nfl, struct mtd_info *mtd, size_t size)
 			bcm947xx_nflash_parts[i].size = partition_size*2; /* reserved 2 block for each partition */
 			bcm947xx_nflash_parts[i].offset = bcm947xx_nflash_parts[i-1].offset + bcm947xx_nflash_parts[i-1].size;
 		}
-#elif defined(R6400)
+#elif defined(R7000)
 		bcm947xx_nflash_parts[2].offset = NFL_BOOT_SIZE;
-		
-		#if defined(R6400)
-		bcm947xx_nflash_parts[2].size = FIRMWARE_RESERVED_BLOCK_SIZE;
-		#else
 		bcm947xx_nflash_parts[2].size = NFL_BOOT_OS_SIZE;
-		#endif
 
 		shift = lookup_nflash_rootfs_offset(nfl, mtd, bcm947xx_nflash_parts[2].offset,	bcm947xx_nflash_parts[2].size );
 
@@ -1218,24 +1093,14 @@ init_nflash_mtd_partitions(hndnand_t *nfl, struct mtd_info *mtd, size_t size)
 		bcm947xx_nflash_parts[3].size = (bcm947xx_nflash_parts[2].offset + bcm947xx_nflash_parts[2].size) - shift;
 	
 		/* size of rootfs */
-#if defined(R6400)
-        bcm947xx_nflash_parts[4].offset = 0x7200000; //Foxconn modified by Kathy
-        /* Setup other MTD partition */
-        for (i = 5; i < 18; i++)  //Foxconn modified by Kathy
-        {	
-            bcm947xx_nflash_parts[i].offset = bcm947xx_nflash_parts[i-1].offset + bcm947xx_nflash_parts[i-1].size;
-        }
-#else
 		/* Setup other MTD partition */
-		for (i = 4; i < 17; i++){
+		for (i = 4; i < 18; i++){
                      if(i==7 ||i==8)
 			bcm947xx_nflash_parts[i].size = (partition_size <<2 );
                      else
 			bcm947xx_nflash_parts[i].size = (partition_size <<1 );
 		     bcm947xx_nflash_parts[i].offset = bcm947xx_nflash_parts[i-1].offset + bcm947xx_nflash_parts[i-1].size;
 		}
-#endif		
-		
 	
 		/* Size of linux */
 	
