@@ -383,7 +383,7 @@ BCM_REL_DIR := $(patsubst $(srctree)/%/$(SRCBASE),%/,$(strip \
 export BCM_REL_DIR
 
 ifeq ($(PROFILE),R6400)
-KBUILD_CFLAGS += -DR7000 -DR6400
+KBUILD_CFLAGS += -DR6400
 endif
 
 # Read KERNELRELEASE from include/config/kernel.release (if it exists)

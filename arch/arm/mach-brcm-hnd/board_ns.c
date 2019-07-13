@@ -242,7 +242,7 @@ static int __init rootfs_mtdblock(void)
 
 #if defined(R6200v2)    
         return 3; 
-#elif defined(R7000)
+#elif defined(R6400)
 		return 3; 
 #else
 		return 15; 
@@ -763,7 +763,7 @@ static struct mtd_partition bcm947xx_nflash_parts[NFLASH_PARTS_NUM] = {
 	}
 };
 #else
-#if defined(R7000)
+#if defined(R6400)
 #define NFLASH_PARTS_NUM	18
 #else
 #define NFLASH_PARTS_NUM	17
@@ -904,7 +904,7 @@ static struct mtd_partition bcm947xx_nflash_parts[NFLASH_PARTS_NUM] = {
 		.size = 0,
 		.offset = 0
 	},
-#if defined(R7000)
+#if defined(R6400)
 	{
 		.name = "linux",
 		.size = 0,
@@ -977,14 +977,14 @@ static struct mtd_partition bcm947xx_nflash_parts[NFLASH_PARTS_NUM] = {
 		.offset = 0, 
 		.size = 0, 
 	},
-#if defined(R7000)
+#if defined(R6400)
 	{ 
 		.name = "QoSRule", 
 		.offset = 0, 
 		.size = 0, 
 	},
 #endif
-#if !defined(R7000)
+#if !defined(R6400)
 	{
 		.name = "linux",
 		.size = 0,
@@ -1203,7 +1203,7 @@ init_nflash_mtd_partitions(hndnand_t *nfl, struct mtd_info *mtd, size_t size)
 			bcm947xx_nflash_parts[i].size = partition_size*2; /* reserved 2 block for each partition */
 			bcm947xx_nflash_parts[i].offset = bcm947xx_nflash_parts[i-1].offset + bcm947xx_nflash_parts[i-1].size;
 		}
-#elif defined(R7000)
+#elif defined(R6400)
 		bcm947xx_nflash_parts[2].offset = NFL_BOOT_SIZE;
 		
 		#if defined(R6400)
