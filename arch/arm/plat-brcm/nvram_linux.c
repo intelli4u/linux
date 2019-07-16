@@ -1,7 +1,11 @@
 /*
  * NVRAM variable manipulation (Linux kernel half)
  *
+<<<<<<< HEAD
  * Copyright (C) 2013, Broadcom Corporation. All Rights Reserved.
+=======
+ * Copyright (C) 2012, Broadcom Corporation. All Rights Reserved.
+>>>>>>> remotes/origin/i4u/merlin/r7000
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -468,6 +472,26 @@ nvram_nflash_commit(void)
 	}
 
 	down(&nvram_sem);
+	/* foxconn added start, zacker, 11/17/2010 */
+	/* read header for checking */
+	offset = 0;
+	i = sizeof(struct nvram_header);
+	ret = nvram_mtd->read(nvram_mtd, offset, i, &len, buf);
+	if (ret || len != i) {
+		printk("nvram_commit: read error ret = %d, len = %d/%d\n", ret, len, i);
+		ret = -EIO;
+		goto done;
+	}
+
+	header = (struct nvram_header *)buf;
+	/* do NOT commit after loaddefault */
+	if (header->magic == NVRAM_INVALID_MAGIC) {
+		printk(KERN_EMERG "nvram_commit: NOT allow commit, magic = 0x%x\n",
+							header->magic);
+		ret = -EPERM;
+		goto done;
+	}
+	/* foxconn added end, zacker, 11/17/2010 */
 
 	offset = 0;
 	header = (struct nvram_header *)buf;
@@ -724,8 +748,8 @@ dev_nvram_write(struct file *file, const char *buf, size_t count, loff_t *ppos)
 	char tmp[512], *name = tmp, *value;
 	ssize_t ret;
 
-	if ((count+1) > sizeof(tmp)) {
-		if (!(name = kmalloc(count+1, GFP_KERNEL)))
+	if (count +1 > sizeof(tmp)) {
+		if (!(name = kmalloc(count + 1, GFP_KERNEL)))
 			return -ENOMEM;
 	}
 
@@ -733,7 +757,7 @@ dev_nvram_write(struct file *file, const char *buf, size_t count, loff_t *ppos)
 		ret = -EFAULT;
 		goto done;
 	}
-	name[count] = '\0';
+	name[ count ] = '\0';
 	value = name;
 	name = strsep(&value, "=");
 	if (value)

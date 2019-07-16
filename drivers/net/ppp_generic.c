@@ -1695,7 +1695,7 @@ ppp_receive_nonmp_frame(struct ppp *ppp, struct sk_buff *skb)
 			/* copy to a new sk_buff with more tailroom */
 			ns = dev_alloc_skb(skb->len + 128);
 			if (!ns) {
-				printk(KERN_ERR "PPP: no memory (VJ decomp)\n");
+				printk(KERN_ERR"PPP: no memory (VJ decomp)\n");
 				goto err;
 			}
 			skb_reserve(ns, 2);

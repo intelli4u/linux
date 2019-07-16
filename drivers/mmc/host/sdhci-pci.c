@@ -528,7 +528,7 @@ static struct sdhci_ops sdhci_pci_ops = {
 
 #ifdef CONFIG_BCM47XX
 #ifndef CONFIG_MMC_SDHCI_IO_ACCESSORS
-#error	 CONFIG_MMC_SDHCI_IO_ACCESSORS is required
+#error  CONFIG_MMC_SDHCI_IO_ACCESSORS is required
 #endif /* !CONFIG_MMC_SDHCI_IO_ACCESSORS */
 
 static inline u16
@@ -576,7 +576,7 @@ static struct sdhci_ops bcm47xx_sdhci_pci_ops = {
 	.write_w = bcm47xx_sdhci_writew,
 	.write_b = bcm47xx_sdhci_writeb,
 #endif /* CONFIG_MMC_SDHCI_IO_ACCESSORS */
-	.enable_dma	= sdhci_pci_enable_dma,
+	.enable_dma     = sdhci_pci_enable_dma,
 };
 #endif /* CONFIG_BCM47XX */
 

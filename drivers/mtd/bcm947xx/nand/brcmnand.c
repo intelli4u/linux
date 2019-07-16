@@ -2,7 +2,7 @@
  * Nortstar NAND controller driver
  * for Linux NAND library and MTD interface
  *
- *  Copyright (C) 2013, Broadcom Corporation. All Rights Reserved.
+ *  Copyright (C) 2012, Broadcom Corporation. All Rights Reserved.
  *  
  *  Permission to use, copy, modify, and/or distribute this software for any
  *  purpose with or without fee is hereby granted, provided that the above
@@ -149,6 +149,9 @@ static const struct brcmnand_ecc_size_s {
 	{10,	10, 	35},
 	{10,	11, 	39},
 	{10,	12, 	42},
+#ifdef R7000
+	{10,	40, 	70},
+#endif
 };
 
 /*
@@ -758,7 +761,7 @@ struct mtd_partition brcmnand_parts[] = {
 		.offset = 0
 	},
 	{
-		.name = "OpenVPN",
+		.name = "asus",
 		.size = 0x500000,
 		.offset = 0
 	},
@@ -778,15 +781,38 @@ init_brcmnand_mtd_partitions(struct mtd_info *mtd, size_t size)
 	struct brcmnand_mtd *brcmnand = chip->priv;
 
 	knldev = soc_knl_dev((void *)brcmnand->sih);
+#if defined(R7000)
+	if (knldev == SOC_KNLDEV_NANDFLASH)
+		/*Foxconn modify by Hank for change offset in Foxconn firmware 10/24/2012*/
+		offset = 0x2600000;;
+#elif defined(R6400)
+	if (knldev == SOC_KNLDEV_NANDFLASH)
+		/*Foxconn modify by Hank for change offset in Foxconn firmware 10/24/2012*/
+		offset = 0x3400000;
+#elif defined(R6300v2)
 	if (knldev == SOC_KNLDEV_NANDFLASH)
 		offset = NFL_BOOT_OS_SIZE +0x180000;
-
+#else
+#error offset is missed for PROFILE
+#endif
 	ASSERT(size > offset);
 
+#if defined(R6400)
+	brcmnand_parts[0].offset = offset;
+	brcmnand_parts[0].size = size - offset - 
+	                        (0x500000+0x80000+0x100000+0x100000+0x2c0000+0x2c0000+0x80000+0x80000+0x80000+0x80000+0x80000+0x80000+0x80000+0x80000+0x100000+0x100000); //kathy modified
+
+    brcmnand_parts[1].offset = brcmnand_parts[0].offset + brcmnand_parts[0].size;
+	brcmnand_parts[1].size = 0x500000;
+#elif defined(R6300v2) || defined(R7000)
 	brcmnand_parts[0].offset = offset;
 	brcmnand_parts[0].size = size - offset - 0x500000;
+
 	brcmnand_parts[1].offset = size-0x500000;
 	brcmnand_parts[1].size = 0x500000;
+#else
+#error brcmnand_parts is missed to config for PROFILE
+#endif
 
 	return brcmnand_parts;
 }

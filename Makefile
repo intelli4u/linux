@@ -382,6 +382,16 @@ BCM_REL_DIR := $(patsubst $(srctree)/%/$(SRCBASE),%/,$(strip \
 		$(addprefix $(srctree)/, ../$(SRCBASE) ../../$(SRCBASE) ../../../$(SRCBASE))))))
 export BCM_REL_DIR
 
+ifeq ($(PROFILE),R6300v2)
+KBUILD_CFLAGS += -DR6300v2
+endif
+ifeq ($(PROFILE),R6400)
+KBUILD_CFLAGS += -DR6400
+endif
+ifeq ($(PROFILE),R7000)
+KBUILD_CFLAGS += -DR7000
+endif
+
 # Read KERNELRELEASE from include/config/kernel.release (if it exists)
 KERNELRELEASE = $(shell cat include/config/kernel.release 2> /dev/null)
 KERNELVERSION = $(VERSION).$(PATCHLEVEL).$(SUBLEVEL)$(EXTRAVERSION)
@@ -961,7 +971,6 @@ $(vmlinux-dirs): prepare scripts
 include/config/kernel.release: include/config/auto.conf FORCE
 	$(Q)rm -f $@
 	$(Q)echo "$(KERNELVERSION)$$($(CONFIG_SHELL) $(srctree)/scripts/setlocalversion $(srctree))" > $@
-
 
 # Things we need to do before we recursively start building the kernel
 # or the modules are listed in "prepare".

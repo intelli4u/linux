@@ -6,21 +6,6 @@
  * Documents:
  * Northstar_top_power_uarch_v1_0.pdf
  *
- * Copyright (C) 2014, Broadcom Corporation. All Rights Reserved.
- * 
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
- * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
- * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
- * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- *
- * $Id: $
  */
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -46,7 +31,7 @@ static struct resource dmu_regs = {
 	.name = "dmu_regs",
 	.start = SOC_DMU_BASE_PA,
 	.end = SOC_DMU_BASE_PA + SZ_4K -1,
-	.flags = IORESOURCE_MEM,
+        .flags = IORESOURCE_MEM,
 };
 
 /*
@@ -59,7 +44,7 @@ static struct resource dmu_regs = {
  * be handy, and export that via a sysfs interface.
  */
 
-/*
+/* 
  * The CRU contains two similar PLLs: LCPLL and GENPLL,
  * both with several output channels divided from the PLL
  * output
@@ -74,35 +59,36 @@ static int lcpll_status(struct clk * clk)
 	u64 x;
 	unsigned pdiv, ndiv_int, ndiv_frac;
 
-	if (clk->type != CLK_PLL)
+	if( clk->type != CLK_PLL)
 		return -EINVAL;
 
 	/* read status register */
-	reg = readl(clk->regs_base + 0x10);
+	reg = readl( clk->regs_base + 0x10 );
 
 	/* bit 12 is "lock" signal, has to be "1" for proper PLL operation */
-	if ((reg & (1 << 12)) == 0) {
+	if( (reg & (1 << 12)) == 0 )
+		{
 		clk->rate = 0;
-	}
+		}
 
 	/* Update PLL frequency */
 
 	/* control1 register */
-	reg = readl(clk->regs_base + 0x04);
+	reg = readl( clk->regs_base + 0x04);
 
 	/* feedback divider integer and fraction parts */
-	pdiv = (reg >> 28) & 7;
-	ndiv_int = (reg >> 20) & 0xff;
+	pdiv = ( reg >> 28 ) & 7 ;
+	ndiv_int = ( reg >> 20) & 0xff;
 	ndiv_frac = reg & ((1<<20)-1);
 
-	if (pdiv == 0)
+	if( pdiv == 0 )
 		return -EIO;
 
-	x = clk->parent->rate / pdiv;
+	x = clk->parent->rate / pdiv ;
 
-	x = x * ((u64) ndiv_int << 20 | ndiv_frac);
+	x = x * ( (u64) ndiv_int << 20 | ndiv_frac ) ;
 
-	clk->rate = x >> 20;
+	clk->rate = x >> 20 ;
 
 	return 0;
 }
@@ -118,31 +104,32 @@ static int lcpll_chan_status(struct clk * clk)
 	unsigned enable;
 	unsigned mdiv;
 
-	if (clk->parent == NULL || clk->type != CLK_DIV)
+	if( clk->parent == NULL || clk->type != CLK_DIV )
 		return -EINVAL;
 
 	/* Register address is only stored in PLL structure */
 	base = clk->parent->regs_base;
-	BUG_ON(base == NULL);
+	BUG_ON( base == NULL );
 
 	/* enable bit is in enableb_ch[] inversed */
-	enable = ((readl(base + 0) >> 6) & 7) ^ 7;
+	enable = ((readl( base + 0 ) >> 6) & 7) ^ 7;
 
-	if ((enable & (1 << clk->chan)) == 0) {
+	if( 0 == (enable & (1 << clk->chan)))
+		{
 		clk->rate = 0;
 		return -EIO;
-	}
+		}
 
 	/* get divider */
-	reg = readl(base + 0x08);
+	reg = readl(base + 0x08 );
 
-	mdiv = 0xff & (reg >> ((0x3^clk->chan) << 3));
+	mdiv = 0xff & ( reg >> ((0x3^clk->chan) << 3) );
 
 	/* when divisor is 0, it behaves as max+1 */
-	if (mdiv == 0)
+	if( mdiv == 0 )
 		mdiv = 1 << 8;
 
-	clk->rate = (clk->parent->rate / mdiv);
+	clk->rate = ( clk->parent->rate / mdiv);
 	return 0;
 }
 
@@ -170,14 +157,14 @@ static struct clk clk_lcpll = {
  */
 
 static struct clk clk_lcpll_ch[4] = {
-	{.ops = &lcpll_chan_ops, .parent = &clk_lcpll, .type = CLK_DIV,
-	.name = "lcpll_ch0", .chan = 0},
-	{.ops = &lcpll_chan_ops, .parent = &clk_lcpll, .type = CLK_DIV,
-	.name = "lcpll_ch1", .chan = 1},
-	{.ops = &lcpll_chan_ops, .parent = &clk_lcpll, .type = CLK_DIV,
-	.name = "lcpll_ch2", .chan = 2},
-	{.ops = &lcpll_chan_ops, .parent = &clk_lcpll, .type = CLK_DIV,
-	.name = "lcpll_ch3", .chan = 3},
+	{ .ops	= &lcpll_chan_ops, .parent = &clk_lcpll, .type = CLK_DIV,
+	  .name	= "lcpll_ch0", .chan	= 0, },
+	{ .ops	= &lcpll_chan_ops, .parent = &clk_lcpll, .type = CLK_DIV,
+	  .name	= "lcpll_ch1", .chan	= 1, },
+	{ .ops	= &lcpll_chan_ops, .parent = &clk_lcpll, .type = CLK_DIV,
+	  .name	= "lcpll_ch2", .chan	= 2, },
+	{ .ops	= &lcpll_chan_ops, .parent = &clk_lcpll, .type = CLK_DIV,
+	  .name	= "lcpll_ch3", .chan	= 3, },
 };
 
 /*
@@ -189,39 +176,40 @@ static int genpll_status(struct clk * clk)
 	u64 x;
 	unsigned pdiv, ndiv_int, ndiv_frac;
 
-	if (clk->type != CLK_PLL)
+	if( clk->type != CLK_PLL)
 		return -EINVAL;
 
 	/* Offset of the PLL status register */
-	reg = readl(clk->regs_base + 0x20);
+	reg = readl( clk->regs_base + 0x20 );
 
 	/* bit 12 is "lock" signal, has to be "1" for proper PLL operation */
-	if ((reg & (1 << 12)) == 0) {
+	if( (reg & (1 << 12)) == 0 )
+		{
 		clk->rate = 0;
 		return -EIO;
-	}
+		}
 
 	/* Update PLL frequency */
 
 	/* get PLL feedback divider values from control5 */
-	reg = readl(clk->regs_base + 0x14);
+	reg = readl( clk->regs_base + 0x14);
 
 	/* feedback divider integer and fraction parts */
 	ndiv_int = reg >> 20;
 	ndiv_frac = reg & ((1<<20)-1);
 
 	/* get pdiv */
-	reg = readl(clk->regs_base + 0x18);
+	reg = readl( clk->regs_base + 0x18);
 	pdiv = (reg >> 24) & 7;
 
-	if (pdiv == 0)
+	if( pdiv == 0 )
 		return -EIO;
 
-	x = clk->parent->rate / pdiv;
+	x = clk->parent->rate / pdiv ;
 
-	x = x * ((u64)ndiv_int << 20 | ndiv_frac);
+	x = x * ( (u64) ndiv_int << 20 | ndiv_frac ) ;
 
-	clk->rate = x >> 20;
+	clk->rate = x >> 20 ;
 
 	return 0;
 }
@@ -238,24 +226,25 @@ static int genpll_chan_status(struct clk * clk)
 	unsigned mdiv;
 	unsigned off, shift;
 
-	if (clk->parent == NULL || clk->type != CLK_DIV)
+	if( clk->parent == NULL || clk->type != CLK_DIV )
 		return -EINVAL;
 
 	/* Register address is only stored in PLL structure */
 	base = clk->parent->regs_base;
 
-	BUG_ON(base == NULL);
+	BUG_ON( base == NULL );
 
 	/* enable bit is in enableb_ch[0..5] inversed */
-	enable = ((readl(base + 0x04) >> 12) & 0x3f) ^ 0x3f;
+	enable = ((readl( base + 0x04 ) >> 12) & 0x3f) ^ 0x3f ;
 
-	if ((enable & (1 << clk->chan)) == 0) {
+	if( 0 == (enable & (1 << clk->chan)))
+		{
 		clk->rate = 0;
 		return -EIO;
-	}
+		}
 
 	/* GENPLL has the 6 channels spread over two regs */
-	switch (clk->chan)
+	switch( clk->chan )
 		{
 		case 0:
 			off = 0x18; shift = 16;
@@ -286,12 +275,12 @@ static int genpll_chan_status(struct clk * clk)
 			off = shift = 0;	/* fend off warnings */
 		}
 
-	reg = readl(base + off);
+	reg = readl( base + off );
 
-	mdiv = 0xff & (reg >> shift);
+	mdiv = 0xff & ( reg >> shift );
 
 	/* when divisor is 0, it behaves as max+1 */
-	if (mdiv == 0)
+	if( mdiv == 0 )
 		mdiv = 1 << 8;
 
 	clk->rate = clk->parent->rate / mdiv;
@@ -308,10 +297,10 @@ static const struct clk_ops genpll_chan_ops = {
  * GENPLL has 6 output channels
  */
 static struct clk clk_genpll = {
-	.ops	= &genpll_ops,
-	.name	= "GENPLL",
+	.ops 	= &genpll_ops,
+	.name 	= "GENPLL",
 	.type	= CLK_PLL,
-	.chan	= 6,
+	.chan	=	6,
 };
 
 /*
@@ -325,18 +314,18 @@ static struct clk clk_genpll = {
  */
 
 static struct clk clk_genpll_ch[6] = {
-	{.ops = &genpll_chan_ops, .parent = &clk_genpll, .type = CLK_DIV,
-	.name = "genpll_ch0", .chan = 0},
-	{.ops = &genpll_chan_ops, .parent = &clk_genpll, .type = CLK_DIV,
-	.name = "genpll_ch1", .chan = 1},
-	{.ops = &genpll_chan_ops, .parent = &clk_genpll, .type = CLK_DIV,
-	.name = "genpll_ch2", .chan = 2},
-	{.ops = &genpll_chan_ops, .parent = &clk_genpll, .type = CLK_DIV,
-	.name = "genpll_ch3", .chan = 3},
-	{.ops = &genpll_chan_ops, .parent = &clk_genpll, .type = CLK_DIV,
-	.name = "genpll_ch4", .chan = 4},
-	{.ops = &genpll_chan_ops, .parent = &clk_genpll, .type = CLK_DIV,
-	.name = "genpll_ch5", .chan = 5}
+	{ .ops	= &genpll_chan_ops, .parent = &clk_genpll, .type = CLK_DIV,
+	  .name	= "genpll_ch0", .chan	= 0, },
+	{ .ops	= &genpll_chan_ops, .parent = &clk_genpll, .type = CLK_DIV,
+	  .name	= "genpll_ch1", .chan	= 1, },
+	{ .ops	= &genpll_chan_ops, .parent = &clk_genpll, .type = CLK_DIV,
+	  .name	= "genpll_ch2", .chan	= 2, },
+	{ .ops	= &genpll_chan_ops, .parent = &clk_genpll, .type = CLK_DIV,
+	  .name	= "genpll_ch3", .chan	= 3, },
+	{ .ops	= &genpll_chan_ops, .parent = &clk_genpll, .type = CLK_DIV,
+	  .name	= "genpll_ch4", .chan	= 4, },
+	{ .ops	= &genpll_chan_ops, .parent = &clk_genpll, .type = CLK_DIV,
+	  .name	= "genpll_ch5", .chan	= 5, },
 };
 
 /*
@@ -345,28 +334,38 @@ static struct clk clk_genpll_ch[6] = {
  */
 
 static struct clk_lookup soc_clk_lookups[] = {
-	/* a.k.a. "c_clk100" */
-	{.con_id = "pcie_clk", .clk = &clk_lcpll_ch[0]},
-	/* a.k.a. "c_clk200" */
-	{.con_id = "sdio_clk", .clk = &clk_lcpll_ch[1]},
-	/* a.k.a. "c_clk400" */
-	{.con_id = "ddr_clk", .clk = &clk_lcpll_ch[2]},
-	/* unassigned ? */
-	{.con_id = "c_clk120", .clk = &clk_lcpll_ch[3]},
-	/* "c_clk250" */
-	{.con_id = "en_phy_clk", .clk = &clk_genpll_ch[0]},
-	/* "c_clk150" */
-	{.con_id = "en_clk", .clk = &clk_genpll_ch[1]},
-	/* "c_clk30" */
-	{.con_id = "usb_phy_clk", .clk = &clk_genpll_ch[2]},
-	/* "c_clk500" */
-	{.con_id = "iproc_fast_clk", .clk = &clk_genpll_ch[3]},
-	/* "c_clk250" */
-	{.con_id = "iproc_med_clk", .clk = &clk_genpll_ch[4]},
-	/* "c_clk125" */
-	{.con_id = "iproc_slow_clk", .clk = &clk_genpll_ch[5]}
+	{
+	.con_id         = "pcie_clk", 		/* a.k.a. "c_clk100" */
+	.clk            = &clk_lcpll_ch[0],
+	},{
+	.con_id         = "sdio_clk", 		/* a.k.a. "c_clk200" */
+	.clk            = &clk_lcpll_ch[1],
+	},{
+	.con_id         = "ddr_clk",		/* a.k.a. "c_clk400" */
+	.clk            = &clk_lcpll_ch[2],
+	},{
+	.con_id         = "c_clk120",		/* unassigned ? */
+	.clk            = &clk_lcpll_ch[3],
+	},{
+	.con_id		= "en_phy_clk",		/* "c_clk250" */
+	.clk            = &clk_genpll_ch[0],
+	},{
+	.con_id		= "en_clk",		/* "c_clk150" */
+	.clk            = &clk_genpll_ch[1],
+	},{
+	.con_id         = "usb_phy_clk", 	/* "c_clk30" */
+	.clk            = &clk_genpll_ch[2],
+	},{
+	.con_id         = "iproc_fast_clk",	/* "c_clk500" */
+	.clk            = &clk_genpll_ch[3],
+	},{
+	.con_id         = "iproc_med_clk",	/* "c_clk250" */
+	.clk            = &clk_genpll_ch[4],
+	},{
+	.con_id         = "iproc_slow_clk",	/* "c_clk125" */
+	.clk            = &clk_genpll_ch[5],
+	}
 };
-
 void dmu_gpiomux_init(void)
 {
 #ifdef CONFIG_PLAT_MUX_CONSOLE
@@ -383,99 +382,59 @@ void dmu_gpiomux_init(void)
 #endif /* CONFIG_PLAT_MUX_CONSOLE */
 }
 
-/*
- * Install above clocks into clock lookup table
+/* 
+ * Install above clocks into clock lookup table 
  * and initialize the register base address for each
 */
-static void __init soc_clocks_init(void * __iomem cru_regs_base,
-	struct clk * clk_ref)
+static void __init soc_clocks_init( 
+		void * __iomem cru_regs_base, 
+		struct clk * clk_ref
+		)
 {
-	void * __iomem reg;
-	u32 val;
 
 	/* registers are already mapped with the rest of DMU block */
 	/* Update register base address */
-	clk_lcpll.regs_base = cru_regs_base + 0x00;
-	clk_genpll.regs_base = cru_regs_base + 0x40;
+	clk_lcpll.regs_base =	cru_regs_base + 0x00 ;
+	clk_genpll.regs_base =	cru_regs_base + 0x40 ;
 
 	/* Set parent as reference ckock */
-	clk_lcpll.parent = clk_ref;
-	clk_genpll.parent = clk_ref;
+	clk_lcpll.parent	= clk_ref;
+	clk_genpll.parent	= clk_ref;
 
 #ifdef	__DEPRECATED__
 	{
-	int i;
+	int i ;
 	/* We need to clear dev_id fields in the lookups,
-	 * because if it is set, it will not match by con_id
-	 */
-	for (i = 0; i < ARRAY_SIZE(soc_clk_lookups); i++)
+	   because if it is set, it will not match by con_id */
+	for(i = 0; i < ARRAY_SIZE(soc_clk_lookups); i++ )
 		soc_clk_lookups[i].dev_id = NULL;
 	}
 #endif
 
 	/* Install clock sources into the lookup table */
-	clkdev_add_table(soc_clk_lookups, ARRAY_SIZE(soc_clk_lookups));
-
-	/* Correct GMAC 2.66G line rate issue, it should be 2Gbps */
-	/* This incorrect setting only exist in OTP present 4708 chip */
-	/* is a OTPed 4708 chip which Ndiv == 0x50 */
-	reg = clk_genpll.regs_base + 0x14;
-	val = readl(reg);
-	if (((val >> 20) & 0x3ff) == 0x50) {
-		/* CRU_CLKSET_KEY, unlock */
-		reg = clk_genpll.regs_base + 0x40;
-		val = 0x0000ea68;
-		writel(val, reg);
-
-		/* Change CH0_MDIV to 8 */
-		/* After changing the CH0_MDIV to 8, the customer has been reporting that
-		 * there are differences between input throughput vs. output throughput.
-		 * The output throughput is slightly lower (927.537 mbps input rate vs. 927.49
-		 * mbps output rate).  Below is the solution to fix it.
-		 * 1. Change the oscillator on WLAN reference board from 25.000 to 25.001
-		 * 2. Change the CH0_MDIV to 7
-		 */
-		reg = clk_genpll.regs_base + 0x18;
-		val = readl(reg);
-		val &= ~((u32)0xff << 16);
-		val |= ((u32)0x7 << 16);
-		writel(val, reg);
-
-		/* Load Enable CH0 */
-		reg = clk_genpll.regs_base + 0x4;
-		val = readl(reg);
-		val &= ~(u32)0x1;
-		writel(val, reg);
-		val |= (u32)0x1;
-		writel(val, reg);
-		val &= ~(u32)0x1;
-		writel(val, reg);
-
-		/* CRU_CLKSET_KEY, lock */
-		reg = clk_genpll.regs_base + 0x40;
-		val = 0x0;
-		writel(val, reg);
-	}
+	clkdev_add_table(soc_clk_lookups, 
+			ARRAY_SIZE(soc_clk_lookups));
 }
 
-void __init soc_dmu_init(struct clk *clk_ref)
+void __init soc_dmu_init( struct clk *	clk_ref )
 {
 	void * __iomem 	reg_base;
 
-	if (IS_ERR_OR_NULL(clk_ref)) {
-		printk(KERN_ERR "DMU no clock source - skip init\n");
-		return;
-	}
+        if( IS_ERR_OR_NULL( clk_ref ))
+                {
+                printk( KERN_ERR "DMU no clock source - skip init\n");
+                return;
+                }
 
-	BUG_ON(request_resource(&iomem_resource, &dmu_regs));
+	BUG_ON( request_resource( &iomem_resource, &dmu_regs ));
 
 	/* DMU regs are mapped as part of the fixed mapping with CCA+CCB */
-	reg_base = (void *)SOC_DMU_BASE_VA;
+	reg_base =	(void *) SOC_DMU_BASE_VA;
 
-	BUG_ON(IS_ERR_OR_NULL(reg_base));
+	BUG_ON( IS_ERR_OR_NULL(reg_base ));
 
 	/* Initialize clocks */
-	soc_clocks_init(reg_base + 0x100, clk_ref); /* CRU LCPLL control0 */
+	soc_clocks_init( reg_base + 0x100, clk_ref );	/* CRU LCPLL control0 */
 
 	dmu_gpiomux_init();
 }
@@ -485,20 +444,22 @@ void __init soc_dmu_init(struct clk *clk_ref)
 
 
 
-void soc_clocks_show(void)
+
+void soc_clocks_show( void )
 {
 	unsigned i;
 
-	printk("DMU Clocks:\n");
-	for (i = 0; i < ARRAY_SIZE(soc_clk_lookups); i++) {
-		printk("%s, %s: (%s) %lu\n",
+	printk( "DMU Clocks:\n" );
+	for(i = 0; i < ARRAY_SIZE( soc_clk_lookups); i++ )
+		{
+		printk( "%s, %s: (%s) %lu\n",
 			soc_clk_lookups[i].con_id,
 			soc_clk_lookups[i].dev_id,
 			soc_clk_lookups[i].clk->name,
-			clk_get_rate(soc_clk_lookups[i].clk));
-	}
-
-	printk("DMU Clocks# %u\n", i);
+			clk_get_rate( soc_clk_lookups[i].clk )
+			);
+		}
+	printk( "DMU Clocks# %u\n", i );
 }
 
 #ifdef CONFIG_PROC_FS
