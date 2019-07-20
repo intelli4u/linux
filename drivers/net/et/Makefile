@@ -57,7 +57,7 @@ endif
 endif	# /* CONFIG_ET_ALL_PASSIVE_ON */
 
 # Search for sources under src/et/sys or objects under src/et/linux
-srcbase_et := $(ROOTDIR)$(if $(MERLIN),$(SRCBASE_A),$(SRCBASE))/et
+srcbase_et := $(ROOTDIR)$(SRCBASE)/et
 ifneq ($(wildcard $(srcbase_et)/include),)
 EXTRA_CFLAGS	+= $(addprefix -I$(srcbase_et)/,sys include)
 else
