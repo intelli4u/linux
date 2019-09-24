@@ -382,7 +382,7 @@ BCM_REL_DIR := $(patsubst $(srctree)/%/$(SRCBASE),%/,$(strip \
 		$(addprefix $(srctree)/, ../$(SRCBASE) ../../$(SRCBASE) ../../../$(SRCBASE))))))
 export BCM_REL_DIR
 
-ifeq ($(PROFILE),R7000)
+ifeq ($(PROFILE),R8000)
 KBUILD_CFLAGS += -DR7000
 endif
 

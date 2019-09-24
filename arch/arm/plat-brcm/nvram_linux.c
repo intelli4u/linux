@@ -97,7 +97,7 @@ BCMINITFN(nand_find_nvram)(hndnand_t *nfl, uint32 off)
 	int rlen = sizeof(nflash_nvh);
 	int len;
 
-	for (; off < NFL_BOOT_SIZE; off += blocksize) {
+	for (; off < nfl_boot_size(nfl); off += blocksize) {
 		if (hndnand_checkbadb(nfl, off) != 0)
 			continue;
 
@@ -131,7 +131,7 @@ early_nvram_init(void)
 #endif
 	char *nvram_space_str;
 	int bootdev;
-	uint32 flash_base = 0;
+	uint32 flash_base;
 	uint32 lim = SI_FLASH_WINDOW;
 	uint32 off;
 	hndsflash_t *sfl_info;
@@ -152,7 +152,7 @@ early_nvram_init(void)
 		flash_base = nfl_info->base;
 		blocksize = nfl_info->blocksize;
 		off = blocksize;
-		for (; off < NFL_BOOT_SIZE; off += blocksize) {
+		for (; off < nfl_boot_size(nfl_info); off += blocksize) {
 			if (hndnand_checkbadb(nfl_info, off) != 0)
 				continue;
 			header = (struct nvram_header *)(flash_base + off);
@@ -468,26 +468,6 @@ nvram_nflash_commit(void)
 	}
 
 	down(&nvram_sem);
-	/* foxconn added start, zacker, 11/17/2010 */
-	/* read header for checking */
-	offset = 0;
-	i = sizeof(struct nvram_header);
-	ret = nvram_mtd->read(nvram_mtd, offset, i, &len, buf);
-	if (ret || len != i) {
-		printk("nvram_commit: read error ret = %d, len = %d/%d\n", ret, len, i);
-		ret = -EIO;
-		goto done;
-	}
-
-	header = (struct nvram_header *)buf;
-	/* do NOT commit after loaddefault */
-	if (header->magic == NVRAM_INVALID_MAGIC) {
-		printk(KERN_EMERG "nvram_commit: NOT allow commit, magic = 0x%x\n",
-							header->magic);
-		ret = -EPERM;
-		goto done;
-	}
-	/* foxconn added end, zacker, 11/17/2010 */
 
 	offset = 0;
 	header = (struct nvram_header *)buf;
@@ -569,8 +549,8 @@ nvram_commit(void)
 		magic_offset = i + ((void *)&header->magic - (void *)header);
 	} else {
 		offset = nvram_mtd->size - nvram_space;
-		header = (struct nvram_header *)buf;
 		magic_offset = ((void *)&header->magic - (void *)header);
+		header = (struct nvram_header *)buf;
 	}
 
 	/* clear the existing magic # to mark the NVRAM as unusable 
