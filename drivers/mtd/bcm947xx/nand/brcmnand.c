@@ -774,17 +774,25 @@ struct mtd_partition brcmnand_parts[] = {
 };
 
 struct mtd_partition *
-init_brcmnand_mtd_partitions(struct mtd_info *mtd, size_t size)
+init_brcmnand_mtd_partitions(struct mtd_info *mtd, uint64_t size)
 {
 	int knldev;
-	int offset = 0;
+	uint64_t offset = 0;
 	struct nand_chip *chip = mtd->priv;
 	struct brcmnand_mtd *brcmnand = chip->priv;
 
 	knldev = soc_knl_dev((void *)brcmnand->sih);
 	if (knldev == SOC_KNLDEV_NANDFLASH)
-		/*Foxconn modify by Hank for change offset in Foxconn firmware 10/24/2012*/
-		offset = 0x2600000;;
+	{
+		//offset = nfl_boot_os_size(brcmnand->nfl);
+		offset = 0x3200000;	    /*foxconn modified*/
+    }
+
+#ifndef CONFIG_YAFFS_FS
+	/* Since JFFS2 still uses uint32 for size, hence we have to force the size < 4GB */
+	if (size >= ((uint64_t)4 << 30))
+		size = ((uint64_t)4 << 30) - mtd->erasesize;
+#endif /* CONFIG_YAFFS_FS */
 
 	ASSERT(size > offset);
 
