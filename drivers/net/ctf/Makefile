@@ -37,7 +37,7 @@ ifneq (,$(wildcard $(src)/$(CTFSRC)/*.c))
   EXTRA_CFLAGS += -I$(src)/$(CTFSRC)/../../router/ctf${BCMEX} -DHNDCTF
   ctf-objs := $(CTFOBJ) ctf_ksyms.o
 else
-  ctf-objs := $(CTFSRC)/$(if $(ARM),$(if $(EX7),bcm7,bcm6),linux)/ctf.o
+  ctf-objs := $(CTFSRC)/$(if $(MERLIN),$(if $(BCM7),bcm7,bcm6),linux)/ctf.o
 endif
 
 ifeq (,${KERNELRELEASE})
