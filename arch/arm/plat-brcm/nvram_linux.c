@@ -1,11 +1,7 @@
 /*
  * NVRAM variable manipulation (Linux kernel half)
  *
-<<<<<<< HEAD
  * Copyright (C) 2013, Broadcom Corporation. All Rights Reserved.
-=======
- * Copyright (C) 2012, Broadcom Corporation. All Rights Reserved.
->>>>>>> remotes/origin/i4u/merlin/r7000
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
